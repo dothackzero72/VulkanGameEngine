@@ -26,7 +26,7 @@ VkShaderModule Shader_BuildGLSLShaderFile(const char* path)
     };
 
     VkShaderModule shaderModule = VK_NULL_HANDLE;
-    VULKAN_RESULT(vkCreateShaderModule(Renderer.Device, &shaderModuleCreateInfo, NULL, &shaderModule));
+    VULKAN_RESULT(vkCreateShaderModule(renderer.Device, &shaderModuleCreateInfo, NULL, &shaderModule));
 
     return shaderModule;
 }

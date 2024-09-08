@@ -1,5 +1,7 @@
 #pragma once
-#include "VulkanRenderer.h"
+#include <vulkan/vulkan_core.h>
+#include "Macro.h"
+#include "CTypedef.h".h"
 
 enum TextureUsageEnum 
 {

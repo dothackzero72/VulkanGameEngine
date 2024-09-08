@@ -10,7 +10,7 @@ static VkResult Buffer_AllocateMemory(VkBuffer* bufferData, VkDeviceMemory* buff
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(Renderer.Device, *bufferData, &memRequirements);
+    vkGetBufferMemoryRequirements(renderer.Device, *bufferData, &memRequirements);
 
     VkMemoryAllocateFlagsInfoKHR ExtendedAllocFlagsInfo =
     {
@@ -24,7 +24,7 @@ static VkResult Buffer_AllocateMemory(VkBuffer* bufferData, VkDeviceMemory* buff
         .pNext = &ExtendedAllocFlagsInfo,
     };
 
-    return vkAllocateMemory(Renderer.Device, &allocInfo, NULL, bufferMemory);
+    return vkAllocateMemory(renderer.Device, &allocInfo, NULL, bufferMemory);
 }
 
  void* Buffer_MapBufferMemory(struct BufferInfo* bufferInfo)
@@ -36,7 +36,7 @@ static VkResult Buffer_AllocateMemory(VkBuffer* bufferData, VkDeviceMemory* buff
     }
 
     void* mappedData;
-    VULKAN_RESULT(vkMapMemory(Renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, &mappedData));
+    VULKAN_RESULT(vkMapMemory(renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, &mappedData));
     *bufferInfo->IsMapped = true; 
     return mappedData; 
 }
@@ -45,7 +45,7 @@ static VkResult Buffer_AllocateMemory(VkBuffer* bufferData, VkDeviceMemory* buff
 {
     if (*bufferInfo->IsMapped)
     {
-        vkUnmapMemory(Renderer.Device, *bufferInfo->BufferMemory);
+        vkUnmapMemory(renderer.Device, *bufferInfo->BufferMemory);
         *bufferInfo->IsMapped = false;
     }
     return VK_SUCCESS;
@@ -69,14 +69,14 @@ VkResult Buffer_CreateBuffer(struct BufferInfo* bufferInfo, void* bufferData, Vk
     bufferInfoStruct.usage = bufferUsage;
     bufferInfoStruct.sharingMode = VK_SHARING_MODE_EXCLUSIVE; 
 
-    VULKAN_RESULT(vkCreateBuffer(Renderer.Device, &bufferInfoStruct, NULL, bufferInfo->Buffer));
+    VULKAN_RESULT(vkCreateBuffer(renderer.Device, &bufferInfoStruct, NULL, bufferInfo->Buffer));
     VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo->Buffer, bufferInfo->BufferMemory, properties));
-    VULKAN_RESULT(vkBindBufferMemory(Renderer.Device, *bufferInfo->Buffer, *bufferInfo->BufferMemory, 0));
+    VULKAN_RESULT(vkBindBufferMemory(renderer.Device, *bufferInfo->Buffer, *bufferInfo->BufferMemory, 0));
 
     void* mappedData;
-    VULKAN_RESULT(vkMapMemory(Renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, &mappedData));
+    VULKAN_RESULT(vkMapMemory(renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, &mappedData));
     memcpy(mappedData, bufferData, (size_t)*bufferInfo->BufferSize);
-    vkUnmapMemory(Renderer.Device, *bufferInfo->BufferMemory);
+    vkUnmapMemory(renderer.Device, *bufferInfo->BufferMemory);
 
     return VK_SUCCESS;
 }
@@ -91,10 +91,10 @@ VkResult Buffer_CreateStagingBuffer(struct BufferInfo* bufferInfo, void* bufferD
         .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
-    VULKAN_RESULT(vkCreateBuffer(Renderer.Device, &bufferCreateInfo, NULL, bufferInfo->StagingBuffer));
-    vkGetBufferMemoryRequirements(Renderer.Device, *bufferInfo->StagingBuffer, &memRequirements);
+    VULKAN_RESULT(vkCreateBuffer(renderer.Device, &bufferCreateInfo, NULL, bufferInfo->StagingBuffer));
+    vkGetBufferMemoryRequirements(renderer.Device, *bufferInfo->StagingBuffer, &memRequirements);
     VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo->StagingBuffer, bufferInfo->StagingBufferMemory, properties));
-    return vkBindBufferMemory(Renderer.Device, *bufferInfo->StagingBuffer, *bufferInfo->StagingBufferMemory, 0);
+    return vkBindBufferMemory(renderer.Device, *bufferInfo->StagingBuffer, *bufferInfo->StagingBufferMemory, 0);
 }
 
 VkResult Buffer_CopyBuffer(struct BufferInfo* bufferInfo, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
@@ -152,10 +152,10 @@ VkResult Buffer_UpdateBufferSize(struct BufferInfo* bufferInfo, VkDeviceSize buf
         .usage = bufferInfo->BufferUsage,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
-    VULKAN_RESULT(vkCreateBuffer(Renderer.Device, &buffer, NULL, &bufferInfo->Buffer));
+    VULKAN_RESULT(vkCreateBuffer(renderer.Device, &buffer, NULL, &bufferInfo->Buffer));
     VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo->Buffer, bufferInfo->BufferMemory, bufferInfo->BufferProperties));
-    VULKAN_RESULT(vkBindBufferMemory(Renderer.Device, bufferInfo->Buffer, bufferInfo->BufferMemory, 0));
-    return vkMapMemory(Renderer.Device, bufferInfo->BufferMemory, 0, bufferInfo->BufferSize, 0, &bufferInfo->BufferData);
+    VULKAN_RESULT(vkBindBufferMemory(renderer.Device, bufferInfo->Buffer, bufferInfo->BufferMemory, 0));
+    return vkMapMemory(renderer.Device, bufferInfo->BufferMemory, 0, bufferInfo->BufferSize, 0, &bufferInfo->BufferData);
 }
 
 VkResult Buffer_UpdateBufferMemory(struct BufferInfo* bufferInfo, void* dataToCopy, VkDeviceSize bufferSize)
@@ -167,14 +167,14 @@ VkResult Buffer_UpdateBufferMemory(struct BufferInfo* bufferInfo, void* dataToCo
     }
 
     void* mappedData;
-    VkResult result = vkMapMemory(Renderer.Device, *bufferInfo->BufferMemory, 0, bufferSize, 0, &mappedData);
+    VkResult result = vkMapMemory(renderer.Device, *bufferInfo->BufferMemory, 0, bufferSize, 0, &mappedData);
     if (result != VK_SUCCESS) {
         RENDERER_ERROR("Failed to map buffer memory.");
         return result;
     }
 
     memcpy(mappedData, dataToCopy, (size_t)bufferSize);
-    vkUnmapMemory(Renderer.Device, *bufferInfo->BufferMemory);
+    vkUnmapMemory(renderer.Device, *bufferInfo->BufferMemory);
 
     return VK_SUCCESS;
 }
@@ -182,9 +182,9 @@ VkResult Buffer_UpdateBufferMemory(struct BufferInfo* bufferInfo, void* dataToCo
 VkResult Buffer_UpdateStagingBufferMemory(struct BufferInfo* bufferInfo, void* DataToCopy, VkDeviceSize BufferSize)
 {
     void* mappedData;
-    vkMapMemory(Renderer.Device, bufferInfo->StagingBufferMemory, 0, BufferSize, 0, &mappedData);
+    vkMapMemory(renderer.Device, bufferInfo->StagingBufferMemory, 0, BufferSize, 0, &mappedData);
     memcpy(mappedData, DataToCopy, (size_t)BufferSize);
-    vkUnmapMemory(Renderer.Device, bufferInfo->StagingBufferMemory);
+    vkUnmapMemory(renderer.Device, bufferInfo->StagingBufferMemory);
 }
 
 void Buffer_DestroyBuffer(struct BufferInfo* bufferInfo)

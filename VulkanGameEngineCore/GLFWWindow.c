@@ -10,6 +10,7 @@ GLFWWindow* Window_GetGLFWWindowPointer(VulkanWindow* self)
 VulkanWindow* Window_GLFW_CreateGraphicsWindow(VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height)
 {
 	GLFWWindow* glfwWindow = Window_GetGLFWWindowPointer(self);
+	glfwWindow->base = self;
 	glfwWindow->base->FrameBufferResized = false;
 	glfwWindow->base->Width = width;
 	glfwWindow->base->Height = height;

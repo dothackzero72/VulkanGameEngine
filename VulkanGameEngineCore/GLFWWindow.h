@@ -1,7 +1,7 @@
 #ifndef GLFWWINDOW_H
 #define GLFWWINDOW_H
 
-#include <GLFW/glfw3.h>
+#include <glfw/include/GLFW/glfw3.h>
 #include <vulkan/vulkan_core.h>
 #include <stdio.h>
 #include <stdbool.h>

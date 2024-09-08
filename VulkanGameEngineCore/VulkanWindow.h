@@ -7,9 +7,9 @@
 
 typedef enum Window_Type
 {
-    Win32,
-    SDL,
-    GLFW
+    Win32 = 0,
+    SDL = 1,
+    GLFW = 2
 } Window_Type;
 
 typedef struct VulkanWindow 

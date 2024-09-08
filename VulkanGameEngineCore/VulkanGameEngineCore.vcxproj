@@ -79,7 +79,7 @@
     <LibraryPath>C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;C:\Users\dotha\source\repos\WindowTest\External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)External\stb;C:\VulkanSDK\1.3.290.0\Include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\glfw\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)External\;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;C:\Users\dotha\source\repos\WindowTest\External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,12 +154,8 @@
     <ClCompile Include="CBuffer.c" />
     <ClCompile Include="CShaderCompiler.c" />
     <ClCompile Include="CTexture.c" />
-    <ClCompile Include="CTimer.c" />
     <ClCompile Include="DLLMain.c" />
-    <ClCompile Include="FrameTime.c" />
-    <ClCompile Include="GameController.c" />
     <ClCompile Include="GLFWWindow.c" />
-    <ClCompile Include="GraphicsDevice.c" />
     <ClCompile Include="io.c" />
     <ClCompile Include="Keyboard.c" />
     <ClCompile Include="Mouse.c" />
@@ -173,14 +169,9 @@
     <ClInclude Include="CBuffer.h" />
     <ClInclude Include="CShaderCompiler.h" />
     <ClInclude Include="CTexture.h" />
-    <ClInclude Include="CTimer.h" />
     <ClInclude Include="CTypedef.h" />
     <ClInclude Include="DLLMain.h" />
-    <ClInclude Include="enum.h" />
-    <ClInclude Include="FrameTime.h" />
-    <ClInclude Include="GameController.h" />
     <ClInclude Include="GLFWWindow.h" />
-    <ClInclude Include="GraphicsDevice.h" />
     <ClInclude Include="io.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />
@@ -189,7 +180,6 @@
     <ClInclude Include="SDLWindow.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanRenderer.h" />
-    <ClInclude Include="VulkanRendererStruct.h" />
     <ClInclude Include="VulkanSwapChain.h" />
     <ClInclude Include="VulkanWindow.h" />
   </ItemGroup>

@@ -5,11 +5,23 @@
 
 #include "Macro.h"
 #include "CTypedef.h"
-#include "VulkanRendererStruct.h"
 #include "VulkanSwapChain.h"
 #include "VulkanError.h"
 
 static const int MAX_FRAMES_IN_FLIGHT = 3;
+
+typedef struct
+{
+	VkRenderPass* pRenderPass;
+	const VkAttachmentDescription* pAttachmentList;
+	const VkSubpassDescription* pSubpassDescriptionList;
+	const VkSubpassDependency* pSubpassDependencyList;
+	uint32						AttachmentCount;
+	uint32						SubpassCount;
+	uint32						DependencyCount;
+	uint32						Width;
+	uint32						Height;
+}Renderer_RenderPassCreateInfoStruct;
 
 typedef struct rendererState
 {
@@ -29,7 +41,7 @@ typedef struct rendererState
 	VkSemaphore* PresentImageSemaphores;
 	bool RebuildRendererFlag;
 }RendererState;
-extern RendererState Renderer;
+extern RendererState renderer;
 
 DLL_EXPORT void Renderer_Windows_Renderer(uint32* pExtensionCount, VkExtensionProperties** extensionProperties);
 DLL_EXPORT VkInstance Renderer_CreateVulkanInstance(VkInstanceCreateInfo instanceInfo);

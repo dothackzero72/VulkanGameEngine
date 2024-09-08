@@ -22,10 +22,10 @@ void Texture_CreateTextureImage(struct TextureInfo* textureInfo)
 		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 	};
-	VULKAN_RESULT(vkCreateImage(Renderer.Device, &ImageCreateInfo, NULL, textureInfo->Image));
+	VULKAN_RESULT(vkCreateImage(renderer.Device, &ImageCreateInfo, NULL, textureInfo->Image));
 
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(Renderer.Device, *textureInfo->Image, &memRequirements);
+	vkGetImageMemoryRequirements(renderer.Device, *textureInfo->Image, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo =
 	{
@@ -33,8 +33,8 @@ void Texture_CreateTextureImage(struct TextureInfo* textureInfo)
 		.allocationSize = memRequirements.size,
 		.memoryTypeIndex = Renderer_GetMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 	};
-	VULKAN_RESULT(vkAllocateMemory(Renderer.Device, &allocInfo, NULL, textureInfo->Memory));
-	VULKAN_RESULT(vkBindImageMemory(Renderer.Device, *textureInfo->Image, *textureInfo->Memory, 0));
+	VULKAN_RESULT(vkAllocateMemory(renderer.Device, &allocInfo, NULL, textureInfo->Memory));
+	VULKAN_RESULT(vkBindImageMemory(renderer.Device, *textureInfo->Image, *textureInfo->Memory, 0));
 }
 
 void Texture_QuickTransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayout newImageLayout)
@@ -156,7 +156,7 @@ void Texture_GenerateMipmaps(struct TextureInfo* textureInfo)
 		int32_t mipHeight = *textureInfo->Height;
 
 		VkFormatProperties formatProperties;
-		vkGetPhysicalDeviceFormatProperties(Renderer.PhysicalDevice, *textureInfo->TextureByteFormat, &formatProperties);
+		vkGetPhysicalDeviceFormatProperties(renderer.PhysicalDevice, *textureInfo->TextureByteFormat, &formatProperties);
 		if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
 		{
 			//throw std::runtime_error("Texture image format does not support linear blitting.");
@@ -232,10 +232,10 @@ void Texture_GenerateMipmaps(struct TextureInfo* textureInfo)
 
 VkResult Texture_CreateTextureView(struct TextureInfo* textureInfo, VkImageViewCreateInfo* imageViewCreateInfo)
 {
-	return vkCreateImageView(Renderer.Device, imageViewCreateInfo, NULL, textureInfo->View);
+	return vkCreateImageView(renderer.Device, imageViewCreateInfo, NULL, textureInfo->View);
 }
 
 VkResult Texture_CreateTextureSampler(struct TextureInfo* textureInfo, VkSamplerCreateInfo* samplerCreateInfo)
 {
-	return vkCreateSampler(Renderer.Device, samplerCreateInfo, NULL, textureInfo->Sampler);
+	return vkCreateSampler(renderer.Device, samplerCreateInfo, NULL, textureInfo->Sampler);
 }

@@ -33,6 +33,15 @@
     <ClCompile Include="VulkanError.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VulkanWindow.c">
+      <Filter>Source Files\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="SDLWindow.c">
+      <Filter>Source Files\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="GLFWWindow.c">
+      <Filter>Source Files\Window</Filter>
+    </ClCompile>
     <ClCompile Include="CBuffer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -40,18 +49,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CTexture.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CTimer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameTime.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameController.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsDevice.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="io.c">
@@ -63,24 +60,9 @@
     <ClCompile Include="Mouse.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanWindow.c">
-      <Filter>Source Files\Window</Filter>
-    </ClCompile>
-    <ClCompile Include="SDLWindow.c">
-      <Filter>Source Files\Window</Filter>
-    </ClCompile>
-    <ClCompile Include="GLFWWindow.c">
-      <Filter>Source Files\Window</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Macro.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="VulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanRendererStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VulkanSwapChain.h">
@@ -95,6 +77,15 @@
     <ClInclude Include="VulkanError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GLFWWindow.h">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanWindow.h">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="SDLWindow.h">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
     <ClInclude Include="CBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -104,25 +95,13 @@
     <ClInclude Include="CTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CTimer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="enum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameTime.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsDevice.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="io.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Keyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mouse.h">
@@ -130,15 +109,6 @@
     </ClInclude>
     <ClInclude Include="pixel.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GLFWWindow.h">
-      <Filter>Header Files\Window</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanWindow.h">
-      <Filter>Header Files\Window</Filter>
-    </ClInclude>
-    <ClInclude Include="SDLWindow.h">
-      <Filter>Header Files\Window</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
