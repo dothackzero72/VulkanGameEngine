@@ -2,6 +2,9 @@
 #define GLFWWINDOW_H
 
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan_core.h>
+#include <stdio.h>
+#include <stdbool.h>
 #include "VulkanWindow.h"
 
 typedef struct GLFWWindow
@@ -10,6 +13,7 @@ typedef struct GLFWWindow
     GLFWwindow* glfwWindowHandle;
 } GLFWWindow;
 
+DLL_EXPORT GLFWWindow* Window_GetGLFWWindowPointer(VulkanWindow* self);
 DLL_EXPORT VulkanWindow* Window_GLFW_CreateGraphicsWindow(struct VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height);
 DLL_EXPORT void Window_GLFW_PollEventHandler(struct VulkanWindow* self);
 DLL_EXPORT void Window_GLFW_FrameBufferResizeCallBack(GLFWwindow* window, int width, int height);

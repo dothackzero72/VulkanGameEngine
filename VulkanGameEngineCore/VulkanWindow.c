@@ -71,7 +71,7 @@ VulkanWindow* Window_CreateWindow(Window_Type windowType, const char* WindowName
             fprintf(stderr, "Failed to allocate memory for GLFWWindow.\n");
             return NULL;
         }
-        window->base = (VulkanWindow*)malloc(sizeof(VulkanWindow));
+        window->base = (GLFWWindow*)malloc(sizeof(GLFWWindow));
         if (!window->base)
         {
             fprintf(stderr, "Failed to allocate memory for VulkanWindow.\n");

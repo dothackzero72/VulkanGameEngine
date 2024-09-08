@@ -9,7 +9,7 @@ extern "C"
 
 int main(int argc, char* argv[]) // Change main signature if needed
 {
-    vulkanWindow = Window_CreateWindow(Window_Type::SDL, "Game", 1280, 720);
+    vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);
     if (!vulkanWindow) {
         fprintf(stderr, "Failed to create window.\n");
         return -1;

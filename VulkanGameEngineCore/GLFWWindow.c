@@ -1,17 +1,15 @@
 #include "GLFWWindow.h"
 
-static GLFWWindow* Window_GetGLFWWindowPointer(VulkanWindow* self)
+GLFWWindow* Window_GetGLFWWindowPointer(VulkanWindow* self)
 {
-	GLFWWindow* glfwWindow = (GLFWWindow*)malloc(sizeof(GLFWWindow));
-	glfwWindow->glfwWindowHandle = (GLFWWindow*)self->WindowHandle;
-	glfwWindow->base = self;
-	return glfwWindow;
+	GLFWWindow* window = (GLFWWindow*)self;
+	window->base = self;
+	return window;
 }
 
 VulkanWindow* Window_GLFW_CreateGraphicsWindow(VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height)
 {
-	GLFWWindow* glfwWindow = (GLFWWindow*)malloc(sizeof(GLFWWindow));
-	glfwWindow->base = self;
+	GLFWWindow* glfwWindow = Window_GetGLFWWindowPointer(self);
 	glfwWindow->base->FrameBufferResized = false;
 	glfwWindow->base->Width = width;
 	glfwWindow->base->Height = height;

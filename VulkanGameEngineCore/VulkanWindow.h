@@ -12,7 +12,8 @@ typedef enum Window_Type
     GLFW
 } Window_Type;
 
-typedef struct VulkanWindow {
+typedef struct VulkanWindow 
+{
     Window_Type WindowType;
     void* WindowHandle;
     uint32_t    Width;
@@ -32,5 +33,4 @@ typedef struct VulkanWindow {
 DLL_EXPORT extern VulkanWindow* vulkanWindow;
 
 DLL_EXPORT VulkanWindow* Window_CreateWindow(Window_Type windowType, const char* WindowName, uint32_t width, uint32_t height);
-
 #endif

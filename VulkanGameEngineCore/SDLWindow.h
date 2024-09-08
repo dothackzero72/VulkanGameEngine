@@ -16,7 +16,7 @@ typedef struct SDLWindow
     SDL_Window* sdlWindowHandle;
 } SDLWindow;
 
-DLL_EXPORT SDLWindow* Window_GetGLFWWindowPointer(VulkanWindow* self);
+DLL_EXPORT SDLWindow* Window_GetSDLWindowPointer(VulkanWindow* self);
 DLL_EXPORT VulkanWindow* Window_SDL_CreateGraphicsWindow(struct VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height);
 DLL_EXPORT void Window_SDL_PollEventHandler(struct VulkanWindow* self);
 DLL_EXPORT void Window_SDL_SwapBuffer(struct VulkanWindow* self);

@@ -1,16 +1,15 @@
 #include "SDLWindow.h"
 
-SDLWindow* Window_GetGLFWWindowPointer(VulkanWindow* self)
+SDLWindow* Window_GetSDLWindowPointer(VulkanWindow* self)
 {
-    SDLWindow* sdlWindow = (SDLWindow*)malloc(sizeof(SDLWindow));
-    sdlWindow->sdlWindowHandle = (SDLWindow*)self->WindowHandle;
-    sdlWindow->base = self;
-    return sdlWindow;
+    SDLWindow* window = (SDLWindow*)self;
+    window->base = self;
+    return window;
 }
 
 VulkanWindow* Window_SDL_CreateGraphicsWindow(struct VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height)
 {
-    SDLWindow* sdlWindow = Window_GetGLFWWindowPointer(self);
+    SDLWindow* sdlWindow = Window_GetSDLWindowPointer(self);
     sdlWindow->base = self;
     sdlWindow->base->FrameBufferResized = false;
     sdlWindow->base->Width = width;
@@ -36,7 +35,7 @@ VulkanWindow* Window_SDL_CreateGraphicsWindow(struct VulkanWindow* self, const c
 
 void Window_SDL_PollEventHandler(struct VulkanWindow* self)
 {
-    SDLWindow* sdlWindow = Window_GetGLFWWindowPointer(self);
+    SDLWindow* sdlWindow = Window_GetSDLWindowPointer(self);
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
@@ -67,7 +66,7 @@ void Window_SDL_SwapBuffer(struct VulkanWindow* self)
 
 void Window_SDL_GetInstanceExtensions(struct VulkanWindow* self, uint32_t* pExtensionCount, VkExtensionProperties** extensionProperties)
 {
-    SDLWindow* sdlWindow = Window_GetGLFWWindowPointer(self);
+    SDLWindow* sdlWindow = Window_GetSDLWindowPointer(self);
     SDL_Vulkan_GetInstanceExtensions(NULL, pExtensionCount, NULL);
     const char** extensions = malloc(sizeof(const char*) * (*pExtensionCount + 1));
     if (!extensions)
@@ -84,25 +83,25 @@ void Window_SDL_GetInstanceExtensions(struct VulkanWindow* self, uint32_t* pExte
 
 void Window_SDL_CreateSurface(struct VulkanWindow* self, VkInstance* instance, VkSurfaceKHR* surface)
 {
-    SDLWindow* sdlWindow = Window_GetGLFWWindowPointer(self);
+    SDLWindow* sdlWindow = Window_GetSDLWindowPointer(self);
     SDL_Vulkan_CreateSurface(sdlWindow->sdlWindowHandle, *instance, surface);
 }
 
 void Window_SDL_GetFrameBufferSize(VulkanWindow* self, int* width, int* height)
 {
-    SDLWindow* sdlWindow = Window_GetGLFWWindowPointer(self);
+    SDLWindow* sdlWindow = Window_GetSDLWindowPointer(self);
     SDL_Vulkan_GetDrawableSize(sdlWindow->sdlWindowHandle, &*width, &*height);
 }
 
 void Window_SDL_DestroyWindow(struct VulkanWindow* self)
 {
-    SDLWindow* sdlWindow = Window_GetGLFWWindowPointer(self);
+    SDLWindow* sdlWindow = Window_GetSDLWindowPointer(self);
     SDL_DestroyWindow(sdlWindow->sdlWindowHandle);
     SDL_Quit();
 }
 
 bool Window_SDL_WindowShouldClose(VulkanWindow* self)
 {
-    SDLWindow* sdlWindow = Window_GetGLFWWindowPointer(self);
+    SDLWindow* sdlWindow = Window_GetSDLWindowPointer(self);
     return sdlWindow->base->ShouldClose;
 }
