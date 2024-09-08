@@ -1,9 +1,11 @@
-#ifndef VULKANWINDOW_H
-#define VULKANWINDOW_H
-
+#pragma once
 #include <vulkan/vulkan_core.h>
 #include <stdbool.h>
 #include "Macro.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef enum Window_Type
 {
@@ -24,13 +26,15 @@ typedef struct VulkanWindow
     struct VulkanWindow* (*CreateGraphicsWindow)(struct VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height);
     void (*PollEventHandler)(struct VulkanWindow* self);
     void (*SwapBuffer)(struct VulkanWindow* self);
-    void (*GetInstanceExtensions)(struct VulkanWindow* self, uint32_t* pExtensionCount, VkExtensionProperties** extensionProperties);
+    const char** (*GetInstanceExtensions)(struct VulkanWindow* self, uint32_t* outExtensionCount, bool enableValidationLayers);
     void (*CreateSurface)(struct VulkanWindow* self, VkInstance* instance, VkSurfaceKHR* surface);
     void (*GetFrameBufferSize)(struct VulkanWindow* self, int* width, int* height);
     void (*DestroyWindow)(struct VulkanWindow* self);
     bool (*WindowShouldClose)(struct VulkanWindow* self);
 } VulkanWindow;
-DLL_EXPORT extern VulkanWindow* vulkanWindow;
+extern VulkanWindow* vulkanWindow;
 
-DLL_EXPORT VulkanWindow* Window_CreateWindow(Window_Type windowType, const char* WindowName, uint32_t width, uint32_t height);
+VulkanWindow* Window_CreateWindow(Window_Type windowType, const char* WindowName, uint32_t width, uint32_t height);
+#ifdef __cplusplus
+}
 #endif

@@ -1,5 +1,7 @@
 #include "VulkanRenderer.h"
 #include "VulkanWindow.h"
+#include "GLFWWindow.h"
+#include "CTypedef.h"
 
 RendererState renderer = {0};
 
@@ -257,12 +259,22 @@ void Renderer_Windows_Renderer(uint32* pExtensionCount, VkExtensionProperties** 
     *extensionProperties = (VkExtensionProperties*)extensionProperties;
 }
 
+void listAvailableExtensions(uint32_t* count, VkExtensionProperties** properties) {
+    vkEnumerateInstanceExtensionProperties(NULL, count, NULL);
+    *properties = malloc(sizeof(VkExtensionProperties) * (*count));
+    vkEnumerateInstanceExtensionProperties(NULL, count, *properties);
+}
+
 VkResult Renderer_RendererSetUp()
 {
     renderer.RebuildRendererFlag = false;
-    uint32 pExtensionCount = 0;
-    VkExtensionProperties* extensions = NULL;
-    vulkanWindow->GetInstanceExtensions(vulkanWindow, &pExtensionCount, &extensions);
+
+    uint32_t extensionCount;
+    int enableValidationLayers = 1;
+#ifdef NDEBUG
+    enableValidationLayers = 0;
+#endif
+    const char** requiredExtensions = vulkanWindow->GetInstanceExtensions(vulkanWindow, &extensionCount, enableValidationLayers);
 
     VkDebugUtilsMessengerCreateInfoEXT debugInfo =
     {
@@ -282,20 +294,15 @@ VkResult Renderer_RendererSetUp()
         .apiVersion = VK_API_VERSION_1_3
     };
 
-    VkInstanceCreateInfo vulkanCreateInfo =
-    {
+    VkInstanceCreateInfo vulkanCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pApplicationInfo = &applicationInfo,
-        .enabledExtensionCount = pExtensionCount,
-        .ppEnabledExtensionNames = extensions
+        .enabledLayerCount = (enableValidationLayers ? 1 : 0),
+        .ppEnabledLayerNames = (enableValidationLayers ? ValidationLayers : NULL),
+        .enabledExtensionCount = extensionCount,
+        .ppEnabledExtensionNames = requiredExtensions,
+        .pNext = (enableValidationLayers ? &debugInfo : NULL)
     };
-#ifdef NDEBUG
-    vulkanCreateInfo.enabledLayerCount = 0;
-#else
-    vulkanCreateInfo.enabledLayerCount = ARRAY_SIZE(ValidationLayers);
-    vulkanCreateInfo.ppEnabledLayerNames = ValidationLayers;
-    vulkanCreateInfo.pNext = &debugInfo;
-#endif
 
     VULKAN_RESULT(vkCreateInstance(&vulkanCreateInfo, NULL, &renderer.Instance));
 
@@ -303,8 +310,7 @@ VkResult Renderer_RendererSetUp()
 #else
     VULKAN_RESULT(CreateDebugUtilsMessengerEXT(renderer.Instance, &debugInfo, NULL, &renderer.DebugMessenger));
 #endif
-
-    vulkanWindow->CreateSurface(vulkanWindow, &renderer.Instance, &renderer.Surface);
+vulkanWindow->CreateSurface(vulkanWindow, &renderer.Instance, &renderer.Surface);
 
     uint32 deviceCount = UINT32_MAX;
     VULKAN_RESULT(vkEnumeratePhysicalDevices(renderer.Instance, &deviceCount, NULL));
@@ -502,7 +508,7 @@ VkResult Renderer_RendererSetUp()
 
     vkGetDeviceQueue(renderer.Device, renderer.SwapChain.GraphicsFamily, 0, &renderer.SwapChain.GraphicsQueue);
     vkGetDeviceQueue(renderer.Device, renderer.SwapChain.PresentFamily, 0, &renderer.SwapChain.PresentQueue);
-    free(extensions);
+
 
     //PFN_vkGetBufferDeviceAddressKHR vkGetBufferDeviceAddressKHR = (PFN_vkGetBufferDeviceAddressKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkGetBufferDeviceAddressKHR"));
     //PFN_vkCreateAccelerationStructureKHR vkCreateAccelerationStructureKHR = (PFN_vkCreateAccelerationStructureKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkCreateAccelerationStructureKHR"));

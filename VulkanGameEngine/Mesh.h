@@ -4,12 +4,7 @@ extern "C"
 	#include <CTexture.h>
 	#include <CBuffer.h>
 }
-#include <memory>
-#include "Typedef.h"
 #include "VulkanDynamicBuffer.h"
-#include "Vertex.h"
-#include "Material.h"
-#include "Timer.h"
 #include "SceneDataBuffer.h"
 
 struct MeshProperitiesStruct
@@ -64,7 +59,7 @@ public:
 
 		Mesh();
 		virtual ~Mesh();
-		virtual void Update(Timer& timer);
+		virtual void Update();
 		virtual void BufferUpdate(VkCommandBuffer& commandBuffer);
 		virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
 		virtual void Destroy();

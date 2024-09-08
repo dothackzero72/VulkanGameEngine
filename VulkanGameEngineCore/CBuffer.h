@@ -4,6 +4,10 @@
 #include <stdbool.h>  
 #include "Macro.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct BufferInfo {
     VkBuffer* Buffer;
     VkBuffer* StagingBuffer;
@@ -18,14 +22,18 @@ typedef struct BufferInfo {
     bool* IsMapped;
 } BufferInfo;
 
-DLL_EXPORT VkResult Buffer_CreateBuffer(BufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
-DLL_EXPORT VkResult Buffer_CreateStagingBuffer(BufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
-DLL_EXPORT VkResult Buffer_CopyBuffer(BufferInfo* bufferInfo, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
-DLL_EXPORT VkResult Buffer_CopyStagingBuffer(BufferInfo* bufferInfo, VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
-DLL_EXPORT VkResult Buffer_UpdateBufferSize(BufferInfo* bufferInfo, VkDeviceSize bufferSize);
-DLL_EXPORT VkResult Buffer_UnmapBufferMemory(BufferInfo* bufferInfo);
-DLL_EXPORT VkResult Buffer_UpdateBufferMemory(BufferInfo* bufferInfo, void* dataToCopy, VkDeviceSize bufferSize);
-DLL_EXPORT VkResult Buffer_UpdateStagingBufferMemory(BufferInfo* bufferInfo, void* dataToCopy, VkDeviceSize bufferSize);
-DLL_EXPORT void* Buffer_MapBufferMemory(BufferInfo* bufferInfo);
-DLL_EXPORT void* Buffer_CheckBufferContents(BufferInfo* bufferInfo);
-DLL_EXPORT void Buffer_DestroyBuffer(BufferInfo* bufferInfo);
+VkResult Buffer_CreateBuffer(BufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
+VkResult Buffer_CreateStagingBuffer(BufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
+VkResult Buffer_CopyBuffer(BufferInfo* bufferInfo, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
+VkResult Buffer_CopyStagingBuffer(BufferInfo* bufferInfo, VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
+VkResult Buffer_UpdateBufferSize(BufferInfo* bufferInfo, VkDeviceSize bufferSize);
+VkResult Buffer_UnmapBufferMemory(BufferInfo* bufferInfo);
+VkResult Buffer_UpdateBufferMemory(BufferInfo* bufferInfo, void* dataToCopy, VkDeviceSize bufferSize);
+VkResult Buffer_UpdateStagingBufferMemory(BufferInfo* bufferInfo, void* dataToCopy, VkDeviceSize bufferSize);
+void* Buffer_MapBufferMemory(BufferInfo* bufferInfo);
+void* Buffer_CheckBufferContents(BufferInfo* bufferInfo);
+void Buffer_DestroyBuffer(BufferInfo* bufferInfo);
+
+#ifdef __cplusplus
+}
+#endif

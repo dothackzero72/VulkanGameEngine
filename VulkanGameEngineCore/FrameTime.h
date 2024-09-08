@@ -2,6 +2,10 @@
 #include "CTypedef.h"
 #include "Macro.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //typedef struct time_state {
 //	float delta;
 //	float now;
@@ -15,6 +19,10 @@
 //	uint32 frame_count;
 //} Time_State;
 //
-//DLL_EXPORT void time_init(float frame_rate);
-//DLL_EXPORT void time_update(void);
-//DLL_EXPORT void time_update_late(void);
+//void time_init(float frame_rate);
+//void time_update(void);
+//void time_update_late(void);
+
+#ifdef __cplusplus
+}
+#endif

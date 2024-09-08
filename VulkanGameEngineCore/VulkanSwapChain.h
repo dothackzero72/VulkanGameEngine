@@ -3,6 +3,10 @@
 #include "CTypedef.h"
 #include "Macro.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct swapChainState
 {
 	uint32 SwapChainImageCount;
@@ -16,8 +20,12 @@ typedef struct swapChainState
 	VkSwapchainKHR Swapchain;
 }SwapChainState;
 
-DLL_EXPORT VkResult Vulkan_SetUpSwapChain();
-DLL_EXPORT VkResult Vulkan_RebuildSwapChain();
-DLL_EXPORT void SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, uint32* graphicsFamily, uint32* presentFamily);
-DLL_EXPORT void Vulkan_DestroyImageView();
-DLL_EXPORT void Vulkan_DestroySwapChain();
+VkResult Vulkan_SetUpSwapChain();
+VkResult Vulkan_RebuildSwapChain();
+void SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, uint32* graphicsFamily, uint32* presentFamily);
+void Vulkan_DestroyImageView();
+void Vulkan_DestroySwapChain();
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,5 +1,5 @@
 #include "Scene.h"
-#include "Global.h"
+#include <VulkanRenderer.h>
 #include "Texture.h"
 #include "SceneDataBuffer.h"
 
@@ -10,19 +10,19 @@ void Scene::StartUp()
 	   1, 2, 3
 	};
 
-	Timer timer;
-	timer.Time = 0.0f;
+	//Timer timer;
+	//timer.Time = 0.0f;
 
 	texture = std::make_shared<Texture>(Texture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 	mesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList));
-	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)VulkanRenderer.SwapChain.SwapChainResolution.width, (float)VulkanRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
+	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)renderer.SwapChain.SwapChainResolution.width, (float)renderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
 
 	BuildRenderPasses();
 }
 
 void Scene::Update()
 {
-	if (VulkanRenderer.RebuildRendererFlag)
+	if (renderer.RebuildRendererFlag)
 	{
 		UpdateRenderPasses();
 	}
@@ -51,29 +51,29 @@ void Scene::Update()
 
 void Scene::ImGuiUpdate()
 {
-	//ImGui_ImplVulkan_NewFrame();
-	//ImGui_ImplSDL2_NewFrame();
-	//ImGui::NewFrame();
-	//ImGui::Begin("Button Window");
-	//ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / global.time.frame_time, global.time.frame_rate);
-	//texture.get()->ImGuiShowTexture(ImVec2(256, 128));
-	//ImGui::End();
-	//ImGui::Render();
+	ImGui_ImplVulkan_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+	ImGui::Begin("Button Window");
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	texture.get()->ImGuiShowTexture(ImVec2(256, 128));
+	ImGui::End();
+	ImGui::Render();
 }
 
 void Scene::BuildRenderPasses()
 {
 	renderPass2D.BuildRenderPass(mesh);
-	//frameRenderPass.BuildRenderPass(renderPass2D.GetRenderedTexture());
+	frameRenderPass.BuildRenderPass(renderPass2D.GetRenderedTexture());
 }
 
 void Scene::UpdateRenderPasses()
 {
 	Renderer_RebuildSwapChain();
 	renderPass2D.UpdateRenderPass(mesh);
-	//frameRenderPass.UpdateRenderPass(renderPass2D.GetRenderedTexture());
-	//InterfaceRenderPass::RebuildSwapChain();
-	VulkanRenderer.RebuildRendererFlag = false;
+	frameRenderPass.UpdateRenderPass(renderPass2D.GetRenderedTexture());
+	InterfaceRenderPass::RebuildSwapChain();
+	renderer.RebuildRendererFlag = false;
 }
 
 void Scene::Draw()
@@ -81,11 +81,9 @@ void Scene::Draw()
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 
 	VULKAN_RESULT(Renderer_StartFrame());
-
 	CommandBufferSubmitList.emplace_back(renderPass2D.Draw(mesh, sceneProperties));
 	CommandBufferSubmitList.emplace_back(frameRenderPass.Draw());
-	//CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
-
+	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
 	VULKAN_RESULT(Renderer_EndFrame(CommandBufferSubmitList.data(), static_cast<uint32_t>(CommandBufferSubmitList.size())));
 }
 

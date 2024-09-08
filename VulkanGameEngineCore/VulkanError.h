@@ -2,7 +2,11 @@
 #include <vulkan/vulkan.h>
 #include "Macro.h"
 
-DLL_EXPORT const char* Renderer_GetError(VkResult result);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    const char* Renderer_GetError(VkResult result);
 
 #define VULKAN_RESULT(call) { \
     VkResult result = (call); \
@@ -11,3 +15,7 @@ DLL_EXPORT const char* Renderer_GetError(VkResult result);
                 #call, __FILE__, __LINE__, __func__, Renderer_GetError(result)); \
     } \
 }
+
+#ifdef __cplusplus
+}
+#endif

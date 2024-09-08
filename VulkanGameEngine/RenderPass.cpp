@@ -1,13 +1,17 @@
 #include "RenderPass.h"
-#include "Global.h"
+extern "C" 
+{
+#include "VulkanRenderer.h"
+#include <VulkanError.h>
+}
 
 RenderPass::RenderPass()
 {
-	RenderPassResolution = glm::ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height);
+	RenderPassResolution = glm::ivec2((int)renderer.SwapChain.SwapChainResolution.width, (int)renderer.SwapChain.SwapChainResolution.height);
 	SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
-	CommandBufferList.resize(VulkanRenderer.SwapChain.SwapChainImageCount);
-	FrameBufferList.resize(VulkanRenderer.SwapChain.SwapChainImageCount);
+	CommandBufferList.resize(renderer.SwapChain.SwapChainImageCount);
+	FrameBufferList.resize(renderer.SwapChain.SwapChainImageCount);
 
 	VULKAN_RESULT(Renderer_CreateCommandBuffers(CommandBufferList.data()));
 }
@@ -60,7 +64,7 @@ VkWriteDescriptorSet RenderPass::CreateStorageDescriptorSet(std::shared_ptr<Mesh
     };
     return buffer;
 }
-
+//
 //VkWriteDescriptorSet RenderPass::CreateUnimformDescriptorSet()
 //{
 //    return VK_NULL_HANDLE;
@@ -74,6 +78,6 @@ VkCommandBuffer RenderPass::Draw()
 void RenderPass::Destroy()
 {
 	Renderer_DestroyRenderPass(&RenderPassPtr);
-	Renderer_DestroyCommandBuffers(&VulkanRenderer.CommandPool, CommandBufferList.data());
+	Renderer_DestroyCommandBuffers(&renderer.CommandPool, CommandBufferList.data());
 	Renderer_DestroyFrameBuffers(FrameBufferList.data());
 }

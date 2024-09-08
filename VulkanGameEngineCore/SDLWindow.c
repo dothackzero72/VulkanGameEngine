@@ -64,21 +64,26 @@ void Window_SDL_SwapBuffer(struct VulkanWindow* self)
 
 }
 
-void Window_SDL_GetInstanceExtensions(struct VulkanWindow* self, uint32_t* pExtensionCount, VkExtensionProperties** extensionProperties)
+const char** Window_SDL_GetInstanceExtensions(struct VulkanWindow* self, uint32_t* outExtensionCount, bool enableValidationLayers)
 {
-    SDLWindow* sdlWindow = Window_GetSDLWindowPointer(self);
-    SDL_Vulkan_GetInstanceExtensions(NULL, pExtensionCount, NULL);
-    const char** extensions = malloc(sizeof(const char*) * (*pExtensionCount + 1));
-    if (!extensions)
-    {
-        *pExtensionCount = 0;
-        *extensionProperties = NULL;
-        return;
+    uint32_t sdlExtensionCount;
+
+    SDL_Vulkan_GetInstanceExtensions(NULL, &sdlExtensionCount, NULL);
+
+    size_t totalCount = sdlExtensionCount + (enableValidationLayers ? 1 : 0);
+    const char** extensions = (const char**)malloc(totalCount * sizeof(const char*));
+    if (!extensions) {
+        fprintf(stderr, "Failed to allocate memory for extensions\n");
+        return NULL;
     }
-    SDL_Vulkan_GetInstanceExtensions(NULL, pExtensionCount, extensions);
-    extensions[*pExtensionCount] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
-    (*pExtensionCount)++;
-    *extensionProperties = (VkExtensionProperties*)extensions;
+    SDL_Vulkan_GetInstanceExtensions(NULL, outExtensionCount, extensions);
+
+    if (enableValidationLayers) {
+        extensions[sdlExtensionCount] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+    }
+
+    *outExtensionCount = totalCount;
+    return extensions;
 }
 
 void Window_SDL_CreateSurface(struct VulkanWindow* self, VkInstance* instance, VkSurfaceKHR* surface)

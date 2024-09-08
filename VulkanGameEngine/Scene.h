@@ -1,18 +1,18 @@
 #pragma once
 #include "InterfaceRenderPass.h"
-#include "RenderPass2D.h"
-#include "Texture.h"
-#include "OrthographicCamera.h"
+#include "Vertex.h"
+#include "SceneDataBuffer.h"
 #include "FrameBufferRenderPass.h"
-#include "RenderedColorTexture.h"
-#include "Mesh2D.h"
+#include "RenderPass2D.h"
+#include "OrthographicCamera.h"
+
 
 class Scene
 {
 	private:
 		std::vector<Vertex2D> SpriteVertexList;
 
-		Timer timer;
+		//Timer timer;
 		SceneDataBuffer sceneProperties;
 		std::shared_ptr<Texture> texture;
 		std::shared_ptr<Mesh2D> mesh;

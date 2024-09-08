@@ -1,7 +1,5 @@
 #pragma once
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include "VulkanRenderer.h"
+#include <VulkanRenderer.h>
 #include "Typedef.h"
 #include "SceneDataBuffer.h"
 

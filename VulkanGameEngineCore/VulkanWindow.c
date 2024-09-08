@@ -68,10 +68,10 @@ VulkanWindow* Window_CreateWindow(Window_Type windowType, const char* WindowName
         GLFWWindow* window = (GLFWWindow*)malloc(sizeof(GLFWWindow));
         if (!window)
         {
-            fprintf(stderr, "Failed to allocate memory for GLFWWindow.\n");
+            fprintf(stderr, "Failed to allocate memory for SDLWindow.\n");
             return NULL;
         }
-        window->base = (GLFWWindow*)malloc(sizeof(GLFWWindow));
+        window->base = (VulkanWindow*)malloc(sizeof(VulkanWindow));
         if (!window->base)
         {
             fprintf(stderr, "Failed to allocate memory for VulkanWindow.\n");
@@ -87,7 +87,7 @@ VulkanWindow* Window_CreateWindow(Window_Type windowType, const char* WindowName
         window->base->DestroyWindow = Window_GLFW_DestroyWindow;
         window->base->WindowShouldClose = Window_GLFW_WindowShouldClose;
 
-        window = window->base->CreateGraphicsWindow(window->base, WindowName, width, height);
+        window->base = window->base->CreateGraphicsWindow(window->base, WindowName, width, height);
         return window->base;
     }
     default:

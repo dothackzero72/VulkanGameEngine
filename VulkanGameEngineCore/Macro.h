@@ -12,10 +12,3 @@
 { \
     fprintf(stderr, "Error in %s at line %d: %s: %s\n", __FILE__, __LINE__, __func__, (errorMessage)); \
 }
-
-#ifdef Renderer_EXPORTS
-#define DLL_EXPORT __declspec(dllexport)
-#else
-#define DLL_EXPORT __declspec(dllimport)
-#endif
-

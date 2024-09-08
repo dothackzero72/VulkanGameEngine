@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum TextureUsageEnum {
     kUndefined,
     k2DImageTexture,
@@ -33,3 +37,7 @@ enum TextureTypeEnum {
     kRenderedCubeMap,
     kBakedTexture
 };
+
+#ifdef __cplusplus
+}
+#endif

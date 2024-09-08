@@ -1,5 +1,8 @@
 #pragma once
-#pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef unsigned char byte;
 struct Pixel
 {
@@ -56,3 +59,7 @@ struct Pixel
 
 const Pixel NullPixel = Pixel(0x00, 0x00, 0x00, 0xFF);
 const Pixel ClearPixel = Pixel(0x00, 0x00, 0x00, 0x00);
+
+#ifdef __cplusplus
+}
+#endif

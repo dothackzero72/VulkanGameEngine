@@ -1,15 +1,12 @@
 #pragma once
-#include <array>
-#include <vector>
-#include <memory>
-#include "RenderedColorTexture.h"
 #include "Mesh.h"
+#include "Texture.h"
 
 class RenderPass
 {
 	private:
 	protected:
-		glm::ivec2 RenderPassResolution;
+		ivec2 RenderPassResolution;
 		VkSampleCountFlagBits SampleCount;
 
 		VkRenderPass RenderPassPtr;

@@ -17,7 +17,7 @@ Mesh::~Mesh()
 {
 }
 
-void Mesh::Update(Timer& timer)
+void Mesh::Update()
 {
 }
 
