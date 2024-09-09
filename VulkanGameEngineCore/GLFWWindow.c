@@ -1,4 +1,7 @@
 #include "GLFWWindow.h"
+#include "Mouse.h"
+#include "Keyboard.h"
+
 static void error_callback(int error, const char* description) 
 {
 	fprintf(stderr, "GLFW Error %d: %s\n", error, description);
@@ -29,6 +32,10 @@ VulkanWindow* Window_GLFW_CreateGraphicsWindow(VulkanWindow* self, const char* W
 	glfwSetWindowUserPointer((GLFWWindow*)self->WindowHandle, self);
 	glfwSetErrorCallback(error_callback);
 	glfwSetFramebufferSizeCallback((GLFWWindow*)self->WindowHandle, Window_GLFW_FrameBufferResizeCallBack);
+	glfwSetCursorPosCallback((GLFWWindow*)self->WindowHandle, GameEngine_GLFW_MouseMoveEvent);
+	glfwSetMouseButtonCallback((GLFWWindow*)self->WindowHandle, GameEngine_GLFW_MouseButtonPressedEvent);
+	glfwSetScrollCallback((GLFWWindow*)self->WindowHandle, GameEngine_GLFW_MouseWheelEvent);
+	glfwSetKeyCallback((GLFWWindow*)self->WindowHandle, GameEngine_GLFW_KeyboardKeyPressed);
 	return self;
 }
 

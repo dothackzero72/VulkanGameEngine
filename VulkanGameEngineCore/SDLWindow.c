@@ -1,4 +1,6 @@
 #include "SDLWindow.h"
+#include "Mouse.h"
+#include "Keyboard.h"
 
 SDLWindow* Window_GetSDLWindowPointer(VulkanWindow* self)
 {
@@ -41,20 +43,20 @@ void Window_SDL_PollEventHandler(struct VulkanWindow* self)
     {
         switch (event.type)
         {
-            //case SDL_MOUSEMOTION:           GameEngine_SDL_MouseMoveEvent(&event); break;
-            //case SDL_MOUSEBUTTONDOWN:       GameEngine_SDL_MouseButtonPressedEvent(&event); break;
-            //case SDL_MOUSEBUTTONUP:         GameEngine_SDL_MouseButtonUnPressedEvent(&event); break;
-            //case SDL_MOUSEWHEEL:            GameEngine_SDL_MouseWheelEvent(&event); break;
-            //case SDL_KEYDOWN:               GameEngine_KeyboardKeyDown(&event); break;
-            //case SDL_KEYUP:                 GameEngine_KeyboardKeyUp(&event); break;
+            case SDL_MOUSEMOTION:           GameEngine_SDL_MouseMoveEvent(self, &event); break;
+            case SDL_MOUSEBUTTONDOWN:       GameEngine_SDL_MouseButtonPressedEvent(self, &event); break;
+            case SDL_MOUSEBUTTONUP:         GameEngine_SDL_MouseButtonPressedEvent(self, &event); break;
+            case SDL_MOUSEWHEEL:            GameEngine_SDL_MouseWheelEvent(self, &event); break;
+            case SDL_KEYDOWN:               GameEngine_SDL_KeyboardKeyPressed(self, &event); break;
+            case SDL_KEYUP:                 GameEngine_SDL_KeyboardKeyPressed(self, &event); break;
             //case SDL_CONTROLLERAXISMOTION:  GameEngine_ControllerMoveAxis(&event); break;
             //case SDL_CONTROLLERBUTTONDOWN:  GameEngine_ControllerButtonDown(&event); break;
             //case SDL_CONTROLLERBUTTONUP:    GameEngine_ControllerButtonUp(&event); break;
-        case SDL_WINDOWEVENT_MINIMIZED: SDL_MinimizeWindow(sdlWindow->sdlWindowHandle); break;
-        case SDL_WINDOWEVENT_MAXIMIZED: SDL_MaximizeWindow(sdlWindow->sdlWindowHandle); break;
-        case SDL_WINDOWEVENT_RESTORED:  SDL_RestoreWindow(sdlWindow->sdlWindowHandle); break;
-        case SDL_QUIT:                  sdlWindow->base->ShouldClose = true; break;
-        default: break;
+            case SDL_WINDOWEVENT_MINIMIZED: SDL_MinimizeWindow(sdlWindow->sdlWindowHandle); break;
+            case SDL_WINDOWEVENT_MAXIMIZED: SDL_MaximizeWindow(sdlWindow->sdlWindowHandle); break;
+            case SDL_WINDOWEVENT_RESTORED:  SDL_RestoreWindow(sdlWindow->sdlWindowHandle); break;
+            case SDL_QUIT:                  sdlWindow->base->ShouldClose = true; break;
+            default: break;
         }
     }
 }
