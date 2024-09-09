@@ -123,6 +123,9 @@
     <ClCompile Include="..\External\ImGui\imgui_widgets.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="TextureFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\External\ImGui\imconfig.h">
@@ -221,7 +224,7 @@
     <ClInclude Include="VulkanBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanDynamicBuffer.h">
+    <ClInclude Include="DynamicVulkanBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\External\ImGui\imgui_impl_glfw.h">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="..\External\ImGui\imstb_rectpack.h">
       <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureFunctions.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

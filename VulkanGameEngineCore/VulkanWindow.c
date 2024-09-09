@@ -1,7 +1,6 @@
 #include "VulkanWindow.h"
 #include "SDLWindow.h"
 #include "GLFWWindow.h"
-//#include "Win32Window.h"
 
 VulkanWindow* vulkanWindow = { 0 };
 
@@ -9,88 +8,48 @@ VulkanWindow* Window_CreateWindow(Window_Type windowType, const char* WindowName
 {
     switch (windowType)
     {
-    case Win32:
-    {
-        /*      Win32Window* window = (Win32Window*)malloc(sizeof(Win32Window));
-              if (!window)
-              {
-                  fprintf(stderr, "Failed to allocate memory for Win32Window.\n");
-                  return NULL;
-              }
-              window->base = (VulkanWindow*)malloc(sizeof(VulkanWindow));
-              if (!window->base)
-              {
-                  fprintf(stderr, "Failed to allocate memory for VulkanWindow.\n");
-                  free(window);
-                  return NULL;
-              }
-              window->base->CreateGraphicsWindow = Window_Win32_CreateGraphicsWindow;
-              window->base->PollEventHandler = Window_Win32_PollEventHandler;
-              window->base->SwapBuffer = Window_Win32_SwapBuffer;
-              window->base->GetInstanceExtensions = Window_Win32_GetInstanceExtensions;
-              window->base->CreateSurface = Window_Win32_CreateSurface;
-              window->base->DestroyWindow = Window_Win32_DestroyWindow;
-              window->base->WindowShouldClose = Window_Win32_WindowShouldClose;
-
-              window = window->base->CreateGraphicsWindow(window->base, WindowName, width, height);
-              return window->base;*/
-    }
-
-    case SDL:
-    {
-        SDLWindow* window = (SDLWindow*)malloc(sizeof(SDLWindow));
-        if (!window)
+        case SDL:
         {
-            fprintf(stderr, "Failed to allocate memory for SDLWindow.\n");
+            VulkanWindow* window = malloc(sizeof(VulkanWindow));
+            if (!window)
+            {
+                fprintf(stderr, "Failed to allocate memory for SDLWindow.\n");
+                return NULL;
+            }
+            window->CreateGraphicsWindow = Window_SDL_CreateGraphicsWindow;
+            window->PollEventHandler = Window_SDL_PollEventHandler;
+            window->SwapBuffer = Window_SDL_SwapBuffer;
+            window->GetInstanceExtensions = Window_SDL_GetInstanceExtensions;
+            window->CreateSurface = Window_SDL_CreateSurface;
+            window->GetFrameBufferSize = Window_SDL_GetFrameBufferSize;
+            window->DestroyWindow = Window_SDL_DestroyWindow;
+            window->WindowShouldClose = Window_SDL_WindowShouldClose;
+            window->CreateGraphicsWindow(window, WindowName, width, height);
+            return window;
+        }
+        case GLFW:
+        {
+            VulkanWindow* window = malloc(sizeof(VulkanWindow));
+            if (!window)
+            {
+                fprintf(stderr, "Failed to allocate memory for SDLWindow.\n");
+                return NULL;
+            }
+            window->WindowType = GLFW;
+            window->CreateGraphicsWindow = Window_GLFW_CreateGraphicsWindow;
+            window->PollEventHandler = Window_GLFW_PollEventHandler;
+            window->SwapBuffer = Window_GLFW_SwapBuffer;
+            window->GetInstanceExtensions = Window_GLFW_GetInstanceExtensions;
+            window->CreateSurface = Window_GLFW_CreateSurface;
+            window->GetFrameBufferSize = Window_GLFW_GetFrameBufferSize;
+            window->DestroyWindow = Window_GLFW_DestroyWindow;
+            window->WindowShouldClose = Window_GLFW_WindowShouldClose;
+            window->CreateGraphicsWindow(window, WindowName, width, height);
+            return window;
+        }
+        default:
+        {
             return NULL;
         }
-        window->base = (VulkanWindow*)malloc(sizeof(VulkanWindow));
-        if (!window->base)
-        {
-            fprintf(stderr, "Failed to allocate memory for VulkanWindow.\n");
-            free(window);
-            return NULL;
-        }
-        window->base->CreateGraphicsWindow = Window_SDL_CreateGraphicsWindow;
-        window->base->PollEventHandler = Window_SDL_PollEventHandler;
-        window->base->SwapBuffer = Window_SDL_SwapBuffer;
-        window->base->GetInstanceExtensions = Window_SDL_GetInstanceExtensions;
-        window->base->CreateSurface = Window_SDL_CreateSurface;
-        window->base->GetFrameBufferSize = Window_SDL_GetFrameBufferSize;
-        window->base->DestroyWindow = Window_SDL_DestroyWindow;
-        window->base->WindowShouldClose = Window_SDL_WindowShouldClose;
-
-        window = window->base->CreateGraphicsWindow(window->base, WindowName, width, height);
-        return window->base;
-    }
-    case GLFW:
-    {
-        GLFWWindow* window = (GLFWWindow*)malloc(sizeof(GLFWWindow));
-        if (!window)
-        {
-            fprintf(stderr, "Failed to allocate memory for SDLWindow.\n");
-            return NULL;
-        }
-        window->base = (VulkanWindow*)malloc(sizeof(VulkanWindow));
-        if (!window->base)
-        {
-            fprintf(stderr, "Failed to allocate memory for VulkanWindow.\n");
-            free(window);
-            return NULL;
-        }
-        window->base->CreateGraphicsWindow = Window_GLFW_CreateGraphicsWindow;
-        window->base->PollEventHandler = Window_GLFW_PollEventHandler;
-        window->base->SwapBuffer = Window_GLFW_SwapBuffer;
-        window->base->GetInstanceExtensions = Window_GLFW_GetInstanceExtensions;
-        window->base->CreateSurface = Window_GLFW_CreateSurface;
-        window->base->GetFrameBufferSize = Window_GLFW_GetFrameBufferSize;
-        window->base->DestroyWindow = Window_GLFW_DestroyWindow;
-        window->base->WindowShouldClose = Window_GLFW_WindowShouldClose;
-
-        window->base = window->base->CreateGraphicsWindow(window->base, WindowName, width, height);
-        return window->base;
-    }
-    default:
-        return NULL;
     }
 }

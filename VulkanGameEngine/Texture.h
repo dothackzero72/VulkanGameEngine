@@ -2,16 +2,16 @@
 extern "C"
 {
 	#include <CTexture.h>
-	#include <CBuffer.h>
 }
 #include <cmath>
 #include <algorithm>
 #include <string>
 #include "typedef.h"
-#include "VulkanBuffer.h"
+#include "DynamicVulkanBuffer.h"
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_vulkan.h>
 
+class TextureFunctions;
 class Texture
 {
 	private:
@@ -29,13 +29,13 @@ class Texture
 		VkImageLayout TextureImageLayout;
 		VkSampleCountFlagBits SampleCount;
 
-		std::unique_ptr<TextureInfo> SendCTextureInfo();
 		virtual void CreateImageTexture(const std::string& FilePath);
-		virtual void CreateTextureView();
 		virtual void CreateTextureSampler();
 
 
 	public:
+		friend class TextureFunctions;
+
 		VkDescriptorSet ImGuiDescriptorSet;
 		VkImage Image;
 		VkDeviceMemory Memory;

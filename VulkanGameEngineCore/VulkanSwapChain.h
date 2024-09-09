@@ -9,11 +9,15 @@ extern "C" {
 
 typedef struct swapChainState
 {
-	uint32 SwapChainImageCount;
-	uint32 GraphicsFamily;
-	uint32 PresentFamily;
-	VkQueue GraphicsQueue;
-	VkQueue PresentQueue;
+	uint32			   SwapChainImageCount;
+	uint32			   GraphicsFamily;
+	uint32			   PresentFamily;
+	VkQueue			   GraphicsQueue;
+	VkQueue			   PresentQueue;
+	VkFormat           Format;
+	VkColorSpaceKHR    ColorSpace;
+	VkPresentModeKHR   PresentMode;
+
 	VkImage* SwapChainImages;
 	VkImageView* SwapChainImageViews;
 	VkExtent2D SwapChainResolution;

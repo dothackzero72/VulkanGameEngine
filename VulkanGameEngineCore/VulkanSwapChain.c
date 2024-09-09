@@ -86,6 +86,10 @@ VkResult Vulkan_SetUpSwapChain()
 	VkSurfaceFormatKHR SwapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList, &surfaceFormatCount);
 	VkPresentModeKHR SwapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList, &presentModeCount);
 
+	renderer.SwapChain.Format = SwapChainImageFormat.format;
+	renderer.SwapChain.ColorSpace = SwapChainImageFormat.colorSpace;
+	renderer.SwapChain.PresentMode = SwapChainPresentMode;
+
 	int width = 0;
 	int height = 0;
 	vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);

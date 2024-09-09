@@ -11,11 +11,22 @@ void GameEngine_SDL_MouseButtonPressedEvent(VulkanWindow* self, const SDL_Event*
 {
     switch (event->button.button)
     {
-		case SDL_BUTTON_LEFT:   self->mouse.MouseButtonState[MB_Left-1] = MS_PRESSED;  break;
+		case SDL_BUTTON_LEFT:   self->mouse.MouseButtonState[MB_Left-1] = MS_PRESSED; break;
 		case SDL_BUTTON_MIDDLE: self->mouse.MouseButtonState[MB_Middle-1] = MS_PRESSED; break;
 		case SDL_BUTTON_RIGHT:  self->mouse.MouseButtonState[MB_Right-1] = MS_PRESSED; break;
         default: break;
     }
+}
+
+void GameEngine_SDL_MouseButtonReleasedEvent(VulkanWindow* self, const SDL_Event* event)
+{
+	switch (event->button.button)
+	{
+		case SDL_BUTTON_LEFT:   self->mouse.MouseButtonState[MB_Left - 1] = MS_RELEASED; break;
+		case SDL_BUTTON_MIDDLE: self->mouse.MouseButtonState[MB_Middle - 1] = MS_RELEASED; break;
+		case SDL_BUTTON_RIGHT:  self->mouse.MouseButtonState[MB_Right - 1] = MS_RELEASED; break;
+		default: break;
+	}
 }
 
 void GameEngine_SDL_MouseWheelEvent(VulkanWindow* self, const SDL_Event* event)
@@ -23,31 +34,31 @@ void GameEngine_SDL_MouseWheelEvent(VulkanWindow* self, const SDL_Event* event)
 	self->mouse.WheelOffset += event->wheel.y;
 }
 
-void GameEngine_GLFW_MouseMoveEvent(VulkanWindow* self, double XPosition, double YPosition)
+void GameEngine_GLFW_MouseMoveEvent(GLFWwindow* window, double Xoffset, double Yoffset)
 {
-	self->mouse.X = XPosition;
-	self->mouse.Y = YPosition;
+	vulkanWindow->mouse.X = Xoffset;
+	vulkanWindow->mouse.Y = Yoffset;
 }
 
-void GameEngine_GLFW_MouseButtonPressedEvent(VulkanWindow* self, int action, int button)
+void GameEngine_GLFW_MouseButtonPressedEvent(GLFWwindow* window, int button, int action, int mods)
 {
 	if (action == GLFW_PRESS)
 	{
-		if (button < 3)
+		if (button < MAXMOUSEKEY)
 		{
-			self->mouse.MouseButtonState[button] = MS_PRESSED;
+			vulkanWindow->mouse.MouseButtonState[button] = MS_PRESSED;
 		}
 	}
 	else if (action == GLFW_RELEASE)
 	{
-		if (button < 3)
+		if (button < MAXMOUSEKEY)
 		{
-			self->mouse.MouseButtonState[button] = MS_UNPRESSED;
+			vulkanWindow->mouse.MouseButtonState[button] = MS_RELEASED;
 		}
 	}
 }
 
-void GameEngine_GLFW_MouseWheelEvent(VulkanWindow* self, double Yoffset)
+void GameEngine_GLFW_MouseWheelEvent(GLFWwindow* window, double xpos, double ypos)
 {
-	self->mouse.WheelOffset += (int)Yoffset;
+	vulkanWindow->mouse.WheelOffset += (int)ypos;
 }

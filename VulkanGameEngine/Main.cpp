@@ -9,7 +9,6 @@ extern "C"
 #include "InterfaceRenderPass.h"
 #include "Scene.h"
 
-
 int main(int argc, char* argv[])
 { 
     vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);

@@ -18,8 +18,7 @@ typedef struct GLFWWindow
     GLFWwindow* glfwWindowHandle;
 } GLFWWindow;
 
-GLFWWindow* Window_GetGLFWWindowPointer(VulkanWindow* self);
-VulkanWindow* Window_GLFW_CreateGraphicsWindow(struct VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height);
+void Window_GLFW_CreateGraphicsWindow(struct VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height);
 void Window_GLFW_PollEventHandler(struct VulkanWindow* self);
 void Window_GLFW_SwapBuffer(struct VulkanWindow* self);
 void Window_GLFW_CreateSurface(struct VulkanWindow* self, VkInstance* instance, VkSurfaceKHR* surface);

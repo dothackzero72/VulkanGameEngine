@@ -4,7 +4,7 @@ extern "C"
 	#include <CTexture.h>
 	#include <CBuffer.h>
 }
-#include "VulkanDynamicBuffer.h"
+#include "DynamicVulkanBuffer.h"
 #include "SceneDataBuffer.h"
 
 struct MeshProperitiesStruct
@@ -14,9 +14,9 @@ struct MeshProperitiesStruct
 	mat4   MeshTransform = mat4(1.0f);
 };
 
-typedef VulkanDynamicBuffer<Vertex2D> VertexBuffer;
-typedef VulkanDynamicBuffer<uint32> IndexBuffer;
-typedef VulkanDynamicBuffer<MeshProperitiesStruct> MeshPropertiesBuffer;
+typedef DynamicVulkanBuffer<Vertex2D> VertexBuffer;
+typedef DynamicVulkanBuffer<uint32> IndexBuffer;
+typedef DynamicVulkanBuffer<MeshProperitiesStruct> MeshPropertiesBuffer;
 
 class Mesh
 {

@@ -2,7 +2,7 @@
 #include "VulkanBuffer.h"
 
 template <class T>
-class VulkanDynamicBuffer : public VulkanBuffer<T>
+class DynamicVulkanBuffer : public VulkanBuffer<T>
 {
 private:
 
@@ -52,11 +52,11 @@ private:
 
 public:
 
-	VulkanDynamicBuffer() : VulkanBuffer<T>::VulkanBuffer()
+	DynamicVulkanBuffer() : VulkanBuffer<T>::VulkanBuffer()
 	{
 	}
 
-	VulkanDynamicBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties) : VulkanBuffer<T>::VulkanBuffer(bufferData, bufferSize, usage, properties)
+	DynamicVulkanBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties) : VulkanBuffer<T>::VulkanBuffer(bufferData, bufferSize, usage, properties)
 	{
 		CreateBuffer(bufferData, bufferSize, usage, properties);
 	}

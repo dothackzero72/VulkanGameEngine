@@ -31,22 +31,22 @@ void Scene::Update()
 	Renderer_EndSingleUseCommandBuffer(commandBuffer);
 
 	orthographicCamera->Update(sceneProperties);
-	//if (global.Keyboard.KeyPressed[INPUTKEY_W] == KS_Pressed)
-	//{
-	//	orthographicCamera->Position.y -= .01f;
-	//}
-	//if (global.Keyboard.KeyPressed[INPUTKEY_A] == KS_Pressed)
-	//{
-	//	orthographicCamera->Position.x += .01f;
-	//}
-	//if (global.Keyboard.KeyPressed[INPUTKEY_S] == KS_Pressed)
-	//{
-	//	orthographicCamera->Position.y += .01f;
-	//}
-	//if (global.Keyboard.KeyPressed[INPUTKEY_D] == KS_Pressed)
-	//{
-	//	orthographicCamera->Position.x -= .01f;
-	//}
+	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_W] == KS_PRESSED)
+	{
+		orthographicCamera->Position.y -= .01f;
+	}
+	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_A] == KS_PRESSED)
+	{
+		orthographicCamera->Position.x += .01f;
+	}
+	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_S] == KS_PRESSED)
+	{
+		orthographicCamera->Position.y += .01f;
+	}
+	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_D] == KS_PRESSED)
+	{
+		orthographicCamera->Position.x -= .01f;
+	}
 }
 
 void Scene::ImGuiUpdate()

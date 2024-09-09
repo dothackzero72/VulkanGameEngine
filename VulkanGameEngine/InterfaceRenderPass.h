@@ -7,6 +7,7 @@
 #include <ImGui/imgui_impl_glfw.h>
 #include <vector>
 #include <VulkanWindow.h>
+#include <SDLWindow.h>
 
 class InterfaceRenderPass
 {
@@ -121,7 +122,12 @@ public:
         ImGuiIO& io = ImGui::GetIO(); (void)io;
 
         ImGui::StyleColorsDark();
-        ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)vulkanWindow->WindowHandle, true);
+        switch (vulkanWindow->WindowType)
+        {
+            case SDL: ImGui_ImplSDL2_InitForVulkan((SDL_Window*)vulkanWindow->WindowHandle); break;
+            case GLFW: ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)vulkanWindow->WindowHandle, true); break;
+        }
+        
         CreateRenderPass();
         CreateRendererFramebuffers();
 
@@ -189,6 +195,49 @@ public:
         ImGui_ImplVulkan_CreateFontsTexture();
     }
 
+    static void TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
+        VkImageMemoryBarrier barrier = {};
+        barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        barrier.oldLayout = oldLayout;
+        barrier.newLayout = newLayout;
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.image = image;
+        barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        barrier.subresourceRange.baseMipLevel = 0;
+        barrier.subresourceRange.levelCount = 1;
+        barrier.subresourceRange.baseArrayLayer = 0;
+        barrier.subresourceRange.layerCount = 1;
+
+        VkPipelineStageFlags sourceStage;
+        VkPipelineStageFlags destinationStage;
+
+        if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+            barrier.srcAccessMask = 0;
+            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        }
+        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+            barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        }
+        else {
+            //throw std::invalid_argument("Unsupported layout transition!");
+        }
+
+        vkCmdPipelineBarrier(
+            commandBuffer,
+            sourceStage, destinationStage,
+            0,
+            0, nullptr,
+            0, nullptr,
+            1, &barrier
+        );
+    }
+
      static VkCommandBuffer Draw()
     {
          std::vector<VkClearValue> clearValues
@@ -222,7 +271,7 @@ public:
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), ImGuiCommandBuffers[renderer.CommandIndex]);
         vkCmdEndRenderPass(ImGuiCommandBuffers[renderer.CommandIndex]);
         VULKAN_RESULT(vkEndCommandBuffer(ImGuiCommandBuffers[renderer.CommandIndex]));
-
+       
         return ImGuiCommandBuffers[renderer.CommandIndex];
     }
 
@@ -242,7 +291,11 @@ public:
         Renderer_DestroyCommnadPool(&ImGuiCommandPool);
         Renderer_DestroyRenderPass(&RenderPass);
         DestroyFrameBuffers();
-        ImGui_ImplGlfw_Shutdown();
+        switch (vulkanWindow->WindowType)
+        {
+            case SDL: ImGui_ImplSDL2_Shutdown(); break;
+            case GLFW: ImGui_ImplGlfw_Shutdown(); break;
+        }
         ImGui::DestroyContext(); 
     }
 };

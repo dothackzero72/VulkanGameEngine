@@ -7,20 +7,17 @@ static void error_callback(int error, const char* description)
 	fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-
-GLFWWindow* Window_GetGLFWWindowPointer(VulkanWindow* self)
-{
-	GLFWWindow* window = (GLFWWindow*)self;
-	window->base = self;
-	return window;
-}
-
-VulkanWindow* Window_GLFW_CreateGraphicsWindow(VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height)
+void Window_GLFW_CreateGraphicsWindow(VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height)
 {
 	self->FrameBufferResized = false;
 	self->Width = width;
 	self->Height = height;
 	self->ShouldClose = false;
+	self->mouse.X = 0;
+	self->mouse.Y = 0;
+	self->mouse.WheelOffset = 0;
+	memset(self->mouse.MouseButtonState, 0, sizeof(self->mouse.MouseButtonState));
+	memset(self->keyboard.KeyPressed, 0, sizeof(self->keyboard.KeyPressed));
 
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -44,23 +41,22 @@ void Window_GLFW_PollEventHandler(VulkanWindow* self)
 	glfwPollEvents();
 }
 
-void Window_GLFW_FrameBufferResizeCallBack(VulkanWindow* self, int width, int height)
+void Window_GLFW_FrameBufferResizeCallBack(GLFWwindow* self, int width, int height)
 {
-	GLFWWindow* glfwWindow = (GLFWWindow*)self;
-	VulkanWindow* app = (VulkanWindow*)glfwGetWindowUserPointer(glfwWindow);
+	GLFWwindow* app = glfwGetWindowUserPointer(vulkanWindow->WindowHandle);
 	if (app)
 	{
-		app->FrameBufferResized = true;
-		glfwGetFramebufferSize((GLFWWindow*)self->WindowHandle, &width, &height);
+		vulkanWindow->FrameBufferResized = true;
+		glfwGetFramebufferSize(vulkanWindow->WindowHandle, &width, &height);
 
 		while (width == 0 || height == 0)
 		{
-			glfwGetFramebufferSize((GLFWWindow*)self->WindowHandle, &width, &height);
+			glfwGetFramebufferSize(vulkanWindow->WindowHandle, &width, &height);
 			glfwWaitEvents();
 		}
 
-		self->Width = width;
-		self->Height = height;
+		vulkanWindow->Width = width;
+		vulkanWindow->Height = height;
 	}
 }
 
@@ -81,8 +77,8 @@ const char** Window_GLFW_GetInstanceExtensions(struct VulkanWindow* self, uint32
 		return NULL;
 	}
 
-	for (uint32_t i = 0; i < glfwExtensionCount; i++) {
-		extensions[i] = glfwExtensions[i];
+	for (uint32_t x = 0; x < glfwExtensionCount; x++) {
+		extensions[x] = glfwExtensions[x];
 	}
 
 	if (enableValidationLayers)
@@ -96,21 +92,21 @@ const char** Window_GLFW_GetInstanceExtensions(struct VulkanWindow* self, uint32
 
 void Window_GLFW_CreateSurface(VulkanWindow* self, VkInstance* instance, VkSurfaceKHR* surface)
 {
-	glfwCreateWindowSurface(*instance, (GLFWWindow*)self->WindowHandle, NULL, surface);
+	glfwCreateWindowSurface(*instance, self->WindowHandle, NULL, surface);
 }
 
 void Window_GLFW_GetFrameBufferSize(VulkanWindow* self, int* width, int* height)
 {
-	glfwGetFramebufferSize((GLFWWindow*)self->WindowHandle, &*width, &*height);
+	glfwGetFramebufferSize(self->WindowHandle, &*width, &*height);
 }
 
 void Window_GLFW_DestroyWindow(VulkanWindow* self)
 {
-	glfwDestroyWindow((GLFWWindow*)self->WindowHandle);
+	glfwDestroyWindow(self->WindowHandle);
 	glfwTerminate();
 }
 
 bool Window_GLFW_WindowShouldClose(VulkanWindow* self)
 {
-	return  glfwWindowShouldClose((GLFWWindow*)self->WindowHandle);
+	return  glfwWindowShouldClose(self->WindowHandle);
 }

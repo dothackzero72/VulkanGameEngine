@@ -47,33 +47,13 @@ enum TextureTypeEnum
     kType_BakedTexture
 };
 
-struct TextureInfo 
-{
-    int* Width;
-    int* Height;
-    int* Depth;
-    uint32* MipMapLevels;
-
-    VkDescriptorSet* ImGuiDescriptorSet;
-    VkImage* Image;
-    VkDeviceMemory* Memory;
-    VkImageView* View;
-    VkSampler* Sampler;
-
-    enum TextureUsageEnum* TextureUsage;
-    enum TextureTypeEnum* TextureType;
-    VkFormat* TextureByteFormat;
-    VkImageLayout* TextureImageLayout;
-    VkSampleCountFlagBits* SampleCount;
-};
-
-void Texture_CreateTextureImage(struct TextureInfo* textureInfo);
-void Texture_QuickTransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayout imageLayout);
-void Texture_CommandBufferTransitionImageLayout(VkCommandBuffer* commandBuffer, struct TextureInfo* textureInfo, VkImageLayout newImageLayout);
-void Texture_CopyBufferToTexture(struct TextureInfo* textureInfo, VkBuffer* buffer);
-void Texture_GenerateMipmaps(struct TextureInfo* textureInfo);
-VkResult Texture_CreateTextureView(struct TextureInfo* textureInfo, VkImageViewCreateInfo* imageViewCreateInfo);
-VkResult Texture_CreateTextureSampler(struct TextureInfo* textureInfo, VkSamplerCreateInfo* samplerCreateInfo);
+VkResult Texture_CreateTextureImage(VkImage* image, VkDeviceMemory memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat);
+VkResult Texture_CreateTextureView(VkImageView* view, VkImage image, VkFormat format, uint32 mipmapLevels);
+VkResult Texture_CreateTextureSampler(VkSamplerCreateInfo* samplerCreateInfo, VkSampler* smapler);
+VkResult Texture_QuickTransitionImageLayout(VkImage image, uint32 MipmapLevels, VkImageLayout* oldLayout, VkImageLayout* newLayout);
+VkResult Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint32 MipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout);
+VkResult Texture_CopyBufferToTexture(VkImage image, VkBuffer buffer, enum TextureUsageEnum textureType, int width, int height, int depth);
+VkResult Texture_GenerateMipmaps(VkImage image, VkFormat* textureByteFormat, uint32 mipmapLevels, int width, int height);
 
 #ifdef __cplusplus
 }

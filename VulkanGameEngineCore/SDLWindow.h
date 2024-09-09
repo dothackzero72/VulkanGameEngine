@@ -19,8 +19,7 @@ typedef struct SDLWindow
     SDL_Window* sdlWindowHandle;
 } SDLWindow;
 
-SDLWindow* Window_GetSDLWindowPointer(VulkanWindow* self);
-VulkanWindow* Window_SDL_CreateGraphicsWindow(struct VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height);
+void Window_SDL_CreateGraphicsWindow(struct VulkanWindow* self, const char* WindowName, uint32_t width, uint32_t height);
 void Window_SDL_PollEventHandler(struct VulkanWindow* self);
 void Window_SDL_SwapBuffer(struct VulkanWindow* self);
 const char** Window_SDL_GetInstanceExtensions(struct VulkanWindow* self, uint32_t* outExtensionCount, bool enableValidationLayers);
