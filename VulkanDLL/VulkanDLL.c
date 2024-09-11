@@ -1103,11 +1103,11 @@ void Renderer_vkCmdResetEvent2(VkCommandBuffer commandBuffer, VkEvent event, VkP
     }
 }
 
-void Renderer_vkCmdWaitEvents2(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent* pEvents, const VkDependencyInfo* pDependencyInfos) {
-    if (vkCmdWaitEvents2) {
-        vkCmdWaitEvents2(commandBuffer, eventCount, pEvents, pDependencyInfos);
-    }
-}
+//void Renderer_vkCmdWaitEvents2(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent* pEvents, const VkDependencyInfo* pDependencyInfos) {
+//    if (vkCmdWaitEvents2) {
+//        vkCmdWaitEvents2(commandBuffer, eventCount, pEvents, pDependencyInfos);
+//    }
+//}
 
 void Renderer_vkCmdPipelineBarrier2(VkCommandBuffer commandBuffer, const VkDependencyInfo* pDependencyInfo) {
     if (vkCmdPipelineBarrier2) {
@@ -1284,268 +1284,266 @@ void Renderer_vkGetDeviceImageSparseMemoryRequirements(VkDevice device, const Vk
     }
 }
 
-uint64_t Renderer_vkGetDeviceMemoryOpaqueCaptureAddressKHR(VkDevice device, const VkDeviceMemoryOpaqueCaptureAddressInfo* pInfo) {
-    if (vkGetDeviceMemoryOpaqueCaptureAddressKHR) {
-        return vkGetDeviceMemoryOpaqueCaptureAddressKHR(device, pInfo);
-    }
-    return 0;  // Or some appropriate error code
-}
+//uint64_t Renderer_vkGetDeviceMemoryOpaqueCaptureAddressKHR(VkDevice device, const VkDeviceMemoryOpaqueCaptureAddressInfo* pInfo) {
+//    if (vkGetDeviceMemoryOpaqueCaptureAddressKHR) {
+//        return vkGetDeviceMemoryOpaqueCaptureAddressKHR(device, pInfo);
+//    }
+//    return 0;  // Or some appropriate error code
+//}
 
-VkResult Renderer_vkCreateDeferredOperationKHR(VkDevice device, const VkAllocationCallbacks* pAllocator, VkDeferredOperationKHR* pDeferredOperation) {
-    if (vkCreateDeferredOperationKHR) {
-        return vkCreateDeferredOperationKHR(device, pAllocator, pDeferredOperation);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
-}
+//VkResult Renderer_vkCreateDeferredOperationKHR(VkDevice device, const VkAllocationCallbacks* pAllocator, VkDeferredOperationKHR* pDeferredOperation) {
+//    if (vkCreateDeferredOperationKHR) {
+//        return vkCreateDeferredOperationKHR(device, pAllocator, pDeferredOperation);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
+//}
 
-void Renderer_vkDestroyDeferredOperationKHR(VkDevice device, VkDeferredOperationKHR operation, const VkAllocationCallbacks* pAllocator) {
-    if (vkDestroyDeferredOperationKHR) {
-        vkDestroyDeferredOperationKHR(device, operation, pAllocator);
-    }
-}
+//void Renderer_vkDestroyDeferredOperationKHR(VkDevice device, VkDeferredOperationKHR operation, const VkAllocationCallbacks* pAllocator) {
+//    if (vkDestroyDeferredOperationKHR) {
+//        vkDestroyDeferredOperationKHR(device, operation, pAllocator);
+//    }
+//}
 
-uint32_t Renderer_vkGetDeferredOperationMaxConcurrencyKHR(VkDevice device, VkDeferredOperationKHR operation) {
-    if (vkGetDeferredOperationMaxConcurrencyKHR) {
-        return vkGetDeferredOperationMaxConcurrencyKHR(device, operation);
-    }
-    return 0;  // Or some appropriate error code
-}
+//uint32_t Renderer_vkGetDeferredOperationMaxConcurrencyKHR(VkDevice device, VkDeferredOperationKHR operation) {
+//    if (vkGetDeferredOperationMaxConcurrencyKHR) {
+//        return vkGetDeferredOperationMaxConcurrencyKHR(device, operation);
+//    }
+//    return 0;  // Or some appropriate error code
+//}
 
-VkResult Renderer_vkGetDeferredOperationResultKHR(VkDevice device, VkDeferredOperationKHR operation) {
-    if (vkGetDeferredOperationResultKHR) {
-        return vkGetDeferredOperationResultKHR(device, operation);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
-}
+//VkResult Renderer_vkGetDeferredOperationResultKHR(VkDevice device, VkDeferredOperationKHR operation) {
+//
+//        return vkGetDeferredOperationResultKHR(device, operation);
+//}
 
-VkResult Renderer_vkDeferredOperationJoinKHR(VkDevice device, VkDeferredOperationKHR operation) {
-    if (vkDeferredOperationJoinKHR) {
-        return vkDeferredOperationJoinKHR(device, operation);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
-}
+//VkResult Renderer_vkDeferredOperationJoinKHR(VkDevice device, VkDeferredOperationKHR operation) {
+//    if (vkDeferredOperationJoinKHR) {
+//        return vkDeferredOperationJoinKHR(device, operation);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
+//}
 
-VkResult Renderer_vkGetPipelineExecutablePropertiesKHR(VkDevice device, const VkPipelineInfoKHR* pPipelineInfo, uint32_t* pExecutableCount, VkPipelineExecutablePropertiesKHR* pProperties) {
-    if (vkGetPipelineExecutablePropertiesKHR) {
-        return vkGetPipelineExecutablePropertiesKHR(device, pPipelineInfo, pExecutableCount, pProperties);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
-}
+//VkResult Renderer_vkGetPipelineExecutablePropertiesKHR(VkDevice device, const VkPipelineInfoKHR* pPipelineInfo, uint32_t* pExecutableCount, VkPipelineExecutablePropertiesKHR* pProperties) {
+//    if (vkGetPipelineExecutablePropertiesKHR) {
+//        return vkGetPipelineExecutablePropertiesKHR(device, pPipelineInfo, pExecutableCount, pProperties);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
+//}
 
-VkResult Renderer_vkGetPipelineExecutableStatisticsKHR(VkDevice device, const VkPipelineExecutableInfoKHR* pExecutableInfo, uint32_t* pStatisticCount, VkPipelineExecutableStatisticKHR* pStatistics) {
-    if (vkGetPipelineExecutableStatisticsKHR) {
-        return vkGetPipelineExecutableStatisticsKHR(device, pExecutableInfo, pStatisticCount, pStatistics);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
-}
+//VkResult Renderer_vkGetPipelineExecutableStatisticsKHR(VkDevice device, const VkPipelineExecutableInfoKHR* pExecutableInfo, uint32_t* pStatisticCount, VkPipelineExecutableStatisticKHR* pStatistics) {
+//    if (vkGetPipelineExecutableStatisticsKHR) {
+//        return vkGetPipelineExecutableStatisticsKHR(device, pExecutableInfo, pStatisticCount, pStatistics);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
+//}
+//
+//VkResult Renderer_vkGetPipelineExecutableInternalRepresentationsKHR(VkDevice device, const VkPipelineExecutableInfoKHR* pExecutableInfo, uint32_t* pInternalRepresentationCount, VkPipelineExecutableInternalRepresentationKHR* pInternalRepresentations) {
+//    if (vkGetPipelineExecutableInternalRepresentationsKHR) {
+//        return vkGetPipelineExecutableInternalRepresentationsKHR(device, pExecutableInfo, pInternalRepresentationCount, pInternalRepresentations);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
+//}
 
-VkResult Renderer_vkGetPipelineExecutableInternalRepresentationsKHR(VkDevice device, const VkPipelineExecutableInfoKHR* pExecutableInfo, uint32_t* pInternalRepresentationCount, VkPipelineExecutableInternalRepresentationKHR* pInternalRepresentations) {
-    if (vkGetPipelineExecutableInternalRepresentationsKHR) {
-        return vkGetPipelineExecutableInternalRepresentationsKHR(device, pExecutableInfo, pInternalRepresentationCount, pInternalRepresentations);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
-}
+//VkResult Renderer_vkMapMemory2KHR(VkDevice device, const VkMemoryMapInfoKHR* pMemoryMapInfo, void** ppData) {
+//    if (vkMapMemory2KHR) {
+//        return vkMapMemory2KHR(device, pMemoryMapInfo, ppData);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
+//}
 
-VkResult Renderer_vkMapMemory2KHR(VkDevice device, const VkMemoryMapInfoKHR* pMemoryMapInfo, void** ppData) {
-    if (vkMapMemory2KHR) {
-        return vkMapMemory2KHR(device, pMemoryMapInfo, ppData);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
-}
+//VkResult Renderer_vkUnmapMemory2KHR(VkDevice device, const VkMemoryUnmapInfoKHR* pMemoryUnmapInfo) {
+//    if (vkUnmapMemory2KHR) {
+//        return vkUnmapMemory2KHR(device, pMemoryUnmapInfo);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
+//}
 
-VkResult Renderer_vkUnmapMemory2KHR(VkDevice device, const VkMemoryUnmapInfoKHR* pMemoryUnmapInfo) {
-    if (vkUnmapMemory2KHR) {
-        return vkUnmapMemory2KHR(device, pMemoryUnmapInfo);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
-}
+//VkResult Renderer_vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR(VkPhysicalDevice physicalDevice, const VkPhysicalDeviceVideoEncodeQualityLevelInfoKHR* pQualityLevelInfo, VkVideoEncodeQualityLevelPropertiesKHR* pQualityLevelProperties) {
+//    if (vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR) {
+//        return vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR(physicalDevice, pQualityLevelInfo, pQualityLevelProperties);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
+//}
 
-VkResult Renderer_vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR(VkPhysicalDevice physicalDevice, const VkPhysicalDeviceVideoEncodeQualityLevelInfoKHR* pQualityLevelInfo, VkVideoEncodeQualityLevelPropertiesKHR* pQualityLevelProperties) {
-    if (vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR) {
-        return vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR(physicalDevice, pQualityLevelInfo, pQualityLevelProperties);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
-}
+//VkResult Renderer_vkGetEncodedVideoSessionParametersKHR(VkDevice device, const VkVideoEncodeSessionParametersGetInfoKHR* pVideoSessionParametersInfo, VkVideoEncodeSessionParametersFeedbackInfoKHR* pFeedbackInfo, size_t* pDataSize, void* pData) {
+//    if (vkGetEncodedVideoSessionParametersKHR) {
+//        return vkGetEncodedVideoSessionParametersKHR(device, pVideoSessionParametersInfo, pFeedbackInfo, pDataSize, pData);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
+//}
 
-VkResult Renderer_vkGetEncodedVideoSessionParametersKHR(VkDevice device, const VkVideoEncodeSessionParametersGetInfoKHR* pVideoSessionParametersInfo, VkVideoEncodeSessionParametersFeedbackInfoKHR* pFeedbackInfo, size_t* pDataSize, void* pData) {
-    if (vkGetEncodedVideoSessionParametersKHR) {
-        return vkGetEncodedVideoSessionParametersKHR(device, pVideoSessionParametersInfo, pFeedbackInfo, pDataSize, pData);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
-}
+//void Renderer_vkCmdEncodeVideoKHR(VkCommandBuffer commandBuffer, const VkVideoEncodeInfoKHR* pEncodeInfo) {
+//    if (vkCmdEncodeVideoKHR) {
+//        vkCmdEncodeVideoKHR(commandBuffer, pEncodeInfo);
+//    }
+//}
 
-void Renderer_vkCmdEncodeVideoKHR(VkCommandBuffer commandBuffer, const VkVideoEncodeInfoKHR* pEncodeInfo) {
-    if (vkCmdEncodeVideoKHR) {
-        vkCmdEncodeVideoKHR(commandBuffer, pEncodeInfo);
-    }
-}
+//void Renderer_vkCmdSetEvent2KHR(VkCommandBuffer commandBuffer, VkEvent event, const VkDependencyInfo* pDependencyInfo) {
+//    if (vkCmdSetEvent2KHR) {
+//        vkCmdSetEvent2KHR(commandBuffer, event, pDependencyInfo);
+//    }
+//}
+//
+//void Renderer_vkCmdResetEvent2KHR(VkCommandBuffer commandBuffer, VkEvent event, VkPipelineStageFlags2 stageMask) {
+//    if (vkCmdResetEvent2KHR) {
+//        vkCmdResetEvent2KHR(commandBuffer, event, stageMask);
+//    }
+//}
 
-void Renderer_vkCmdSetEvent2KHR(VkCommandBuffer commandBuffer, VkEvent event, const VkDependencyInfo* pDependencyInfo) {
-    if (vkCmdSetEvent2KHR) {
-        vkCmdSetEvent2KHR(commandBuffer, event, pDependencyInfo);
-    }
-}
+//void Renderer_vkCmdWaitEvents2KHR(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent* pEvents, const VkDependencyInfo* pDependencyInfos) {
+//    if (vkCmdWaitEvents2KHR) {
+//        vkCmdWaitEvents2KHR(commandBuffer, eventCount, pEvents, pDependencyInfos);
+//    }
+//}
 
-void Renderer_vkCmdResetEvent2KHR(VkCommandBuffer commandBuffer, VkEvent event, VkPipelineStageFlags2 stageMask) {
-    if (vkCmdResetEvent2KHR) {
-        vkCmdResetEvent2KHR(commandBuffer, event, stageMask);
-    }
-}
+//void Renderer_vkCmdPipelineBarrier2KHR(VkCommandBuffer commandBuffer, const VkDependencyInfo* pDependencyInfo) {
+//    if (vkCmdPipelineBarrier2KHR) {
+//        vkCmdPipelineBarrier2KHR(commandBuffer, pDependencyInfo);
+//    }
+//}
 
-void Renderer_vkCmdWaitEvents2KHR(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent* pEvents, const VkDependencyInfo* pDependencyInfos) {
-    if (vkCmdWaitEvents2KHR) {
-        vkCmdWaitEvents2KHR(commandBuffer, eventCount, pEvents, pDependencyInfos);
-    }
-}
+//void Renderer_vkCmdWriteTimestamp2KHR(VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage, VkQueryPool queryPool, uint32_t query) {
+//    if (vkCmdWriteTimestamp2KHR) {
+//        vkCmdWriteTimestamp2KHR(commandBuffer, stage, queryPool, query);
+//    }
+//}
 
-void Renderer_vkCmdPipelineBarrier2KHR(VkCommandBuffer commandBuffer, const VkDependencyInfo* pDependencyInfo) {
-    if (vkCmdPipelineBarrier2KHR) {
-        vkCmdPipelineBarrier2KHR(commandBuffer, pDependencyInfo);
-    }
-}
+//VkResult Renderer_vkQueueSubmit2KHR(VkQueue queue, uint32_t submitCount, const VkSubmitInfo2* pSubmits, VkFence fence) {
+//    if (vkQueueSubmit2KHR) {
+//        return vkQueueSubmit2KHR(queue, submitCount, pSubmits, fence);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
+//}
 
-void Renderer_vkCmdWriteTimestamp2KHR(VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage, VkQueryPool queryPool, uint32_t query) {
-    if (vkCmdWriteTimestamp2KHR) {
-        vkCmdWriteTimestamp2KHR(commandBuffer, stage, queryPool, query);
-    }
-}
+//VkResult Renderer_vkCreateDeferredOperationKHR(VkDevice device, const VkAllocationCallbacks* pAllocator, VkDeferredOperationKHR* pDeferredOperation) {
+//    if (vkCreateDeferredOperationKHR) {
+//        return vkCreateDeferredOperationKHR(device, pAllocator, pDeferredOperation);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
+//}
 
-VkResult Renderer_vkQueueSubmit2KHR(VkQueue queue, uint32_t submitCount, const VkSubmitInfo2* pSubmits, VkFence fence) {
-    if (vkQueueSubmit2KHR) {
-        return vkQueueSubmit2KHR(queue, submitCount, pSubmits, fence);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other appropriate error
-}
+//void Renderer_vkDestroyDeferredOperationKHR(VkDevice device, VkDeferredOperationKHR operation, const VkAllocationCallbacks* pAllocator) {
+//    if (vkDestroyDeferredOperationKHR) {
+//        vkDestroyDeferredOperationKHR(device, operation, pAllocator);
+//    }
+//}
 
-VkResult Renderer_vkCreateDeferredOperationKHR(VkDevice device, const VkAllocationCallbacks* pAllocator, VkDeferredOperationKHR* pDeferredOperation) {
-    if (vkCreateDeferredOperationKHR) {
-        return vkCreateDeferredOperationKHR(device, pAllocator, pDeferredOperation);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
-}
+//uint32_t Renderer_vkGetDeferredOperationMaxConcurrencyKHR(VkDevice device, VkDeferredOperationKHR operation) {
+//    if (vkGetDeferredOperationMaxConcurrencyKHR) {
+//        return vkGetDeferredOperationMaxConcurrencyKHR(device, operation);
+//    }
+//    return 0;  // Or other error handling
+//}
 
-void Renderer_vkDestroyDeferredOperationKHR(VkDevice device, VkDeferredOperationKHR operation, const VkAllocationCallbacks* pAllocator) {
-    if (vkDestroyDeferredOperationKHR) {
-        vkDestroyDeferredOperationKHR(device, operation, pAllocator);
-    }
-}
+//VkResult Renderer_vkGetDeferredOperationResultKHR(VkDevice device, VkDeferredOperationKHR operation) {
+//    if (vkGetDeferredOperationResultKHR) {
+//        return vkGetDeferredOperationResultKHR(device, operation);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
+//}
 
-uint32_t Renderer_vkGetDeferredOperationMaxConcurrencyKHR(VkDevice device, VkDeferredOperationKHR operation) {
-    if (vkGetDeferredOperationMaxConcurrencyKHR) {
-        return vkGetDeferredOperationMaxConcurrencyKHR(device, operation);
-    }
-    return 0;  // Or other error handling
-}
+//VkResult Renderer_vkDeferredOperationJoinKHR(VkDevice device, VkDeferredOperationKHR operation) {
+//    if (vkDeferredOperationJoinKHR) {
+//        return vkDeferredOperationJoinKHR(device, operation);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
+//}
 
-VkResult Renderer_vkGetDeferredOperationResultKHR(VkDevice device, VkDeferredOperationKHR operation) {
-    if (vkGetDeferredOperationResultKHR) {
-        return vkGetDeferredOperationResultKHR(device, operation);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
-}
+//uint64_t Renderer_vkGetDeviceMemoryOpaqueCaptureAddressKHR(VkDevice device, const VkDeviceMemoryOpaqueCaptureAddressInfo* pInfo) {
+//    if (vkGetDeviceMemoryOpaqueCaptureAddressKHR) {
+//        return vkGetDeviceMemoryOpaqueCaptureAddressKHR(device, pInfo);
+//    }
+//    return 0;  // Or other error handling
+//}
 
-VkResult Renderer_vkDeferredOperationJoinKHR(VkDevice device, VkDeferredOperationKHR operation) {
-    if (vkDeferredOperationJoinKHR) {
-        return vkDeferredOperationJoinKHR(device, operation);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
-}
+//VkResult Renderer_vkGetPipelineExecutablePropertiesKHR(VkDevice device, const VkPipelineInfoKHR* pPipelineInfo, uint32_t* pExecutableCount, VkPipelineExecutablePropertiesKHR* pProperties) {
+//    if (vkGetPipelineExecutablePropertiesKHR) {
+//        return vkGetPipelineExecutablePropertiesKHR(device, pPipelineInfo, pExecutableCount, pProperties);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
+//}
+//
+//VkResult Renderer_vkGetPipelineExecutableStatisticsKHR(VkDevice device, const VkPipelineExecutableInfoKHR* pExecutableInfo, uint32_t* pStatisticCount, VkPipelineExecutableStatisticKHR* pStatistics) {
+//    if (vkGetPipelineExecutableStatisticsKHR) {
+//        return vkGetPipelineExecutableStatisticsKHR(device, pExecutableInfo, pStatisticCount, pStatistics);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
+//}
 
-uint64_t Renderer_vkGetDeviceMemoryOpaqueCaptureAddressKHR(VkDevice device, const VkDeviceMemoryOpaqueCaptureAddressInfo* pInfo) {
-    if (vkGetDeviceMemoryOpaqueCaptureAddressKHR) {
-        return vkGetDeviceMemoryOpaqueCaptureAddressKHR(device, pInfo);
-    }
-    return 0;  // Or other error handling
-}
+//VkResult Renderer_vkGetPipelineExecutableInternalRepresentationsKHR(VkDevice device, const VkPipelineExecutableInfoKHR* pExecutableInfo, uint32_t* pInternalRepresentationCount, VkPipelineExecutableInternalRepresentationKHR* pInternalRepresentations) {
+//    if (vkGetPipelineExecutableInternalRepresentationsKHR) {
+//        return vkGetPipelineExecutableInternalRepresentationsKHR(device, pExecutableInfo, pInternalRepresentationCount, pInternalRepresentations);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
+//}
 
-VkResult Renderer_vkGetPipelineExecutablePropertiesKHR(VkDevice device, const VkPipelineInfoKHR* pPipelineInfo, uint32_t* pExecutableCount, VkPipelineExecutablePropertiesKHR* pProperties) {
-    if (vkGetPipelineExecutablePropertiesKHR) {
-        return vkGetPipelineExecutablePropertiesKHR(device, pPipelineInfo, pExecutableCount, pProperties);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
-}
+//VkResult Renderer_vkMapMemory2KHR(VkDevice device, const VkMemoryMapInfoKHR* pMemoryMapInfo, void** ppData) {
+//    if (vkMapMemory2KHR) {
+//        return vkMapMemory2KHR(device, pMemoryMapInfo, ppData);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
+//}
 
-VkResult Renderer_vkGetPipelineExecutableStatisticsKHR(VkDevice device, const VkPipelineExecutableInfoKHR* pExecutableInfo, uint32_t* pStatisticCount, VkPipelineExecutableStatisticKHR* pStatistics) {
-    if (vkGetPipelineExecutableStatisticsKHR) {
-        return vkGetPipelineExecutableStatisticsKHR(device, pExecutableInfo, pStatisticCount, pStatistics);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
-}
+//VkResult Renderer_vkUnmapMemory2KHR(VkDevice device, const VkMemoryUnmapInfoKHR* pMemoryUnmapInfo) {
+//    if (vkUnmapMemory2KHR) {
+//        return vkUnmapMemory2KHR(device, pMemoryUnmapInfo);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
+//}
 
-VkResult Renderer_vkGetPipelineExecutableInternalRepresentationsKHR(VkDevice device, const VkPipelineExecutableInfoKHR* pExecutableInfo, uint32_t* pInternalRepresentationCount, VkPipelineExecutableInternalRepresentationKHR* pInternalRepresentations) {
-    if (vkGetPipelineExecutableInternalRepresentationsKHR) {
-        return vkGetPipelineExecutableInternalRepresentationsKHR(device, pExecutableInfo, pInternalRepresentationCount, pInternalRepresentations);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
-}
+//VkResult Renderer_vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR(VkPhysicalDevice physicalDevice, const VkPhysicalDeviceVideoEncodeQualityLevelInfoKHR* pQualityLevelInfo, VkVideoEncodeQualityLevelPropertiesKHR* pQualityLevelProperties) {
+//    if (vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR) {
+//        return vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR(physicalDevice, pQualityLevelInfo, pQualityLevelProperties);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
+//}
 
-VkResult Renderer_vkMapMemory2KHR(VkDevice device, const VkMemoryMapInfoKHR* pMemoryMapInfo, void** ppData) {
-    if (vkMapMemory2KHR) {
-        return vkMapMemory2KHR(device, pMemoryMapInfo, ppData);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
-}
+//VkResult Renderer_vkGetEncodedVideoSessionParametersKHR(VkDevice device, const VkVideoEncodeSessionParametersGetInfoKHR* pVideoSessionParametersInfo, VkVideoEncodeSessionParametersFeedbackInfoKHR* pFeedbackInfo, size_t* pDataSize, void* pData) {
+//    if (vkGetEncodedVideoSessionParametersKHR) {
+//        return vkGetEncodedVideoSessionParametersKHR(device, pVideoSessionParametersInfo, pFeedbackInfo, pDataSize, pData);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
+//}
 
-VkResult Renderer_vkUnmapMemory2KHR(VkDevice device, const VkMemoryUnmapInfoKHR* pMemoryUnmapInfo) {
-    if (vkUnmapMemory2KHR) {
-        return vkUnmapMemory2KHR(device, pMemoryUnmapInfo);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
-}
+//void Renderer_vkCmdEncodeVideoKHR(VkCommandBuffer commandBuffer, const VkVideoEncodeInfoKHR* pEncodeInfo) {
+//    if (vkCmdEncodeVideoKHR) {
+//        vkCmdEncodeVideoKHR(commandBuffer, pEncodeInfo);
+//    }
+//}
 
-VkResult Renderer_vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR(VkPhysicalDevice physicalDevice, const VkPhysicalDeviceVideoEncodeQualityLevelInfoKHR* pQualityLevelInfo, VkVideoEncodeQualityLevelPropertiesKHR* pQualityLevelProperties) {
-    if (vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR) {
-        return vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR(physicalDevice, pQualityLevelInfo, pQualityLevelProperties);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
-}
+//void Renderer_vkCmdSetEvent2KHR(VkCommandBuffer commandBuffer, VkEvent event, const VkDependencyInfo* pDependencyInfo) {
+//    if (vkCmdSetEvent2KHR) {
+//        vkCmdSetEvent2KHR(commandBuffer, event, pDependencyInfo);
+//    }
+//}
 
-VkResult Renderer_vkGetEncodedVideoSessionParametersKHR(VkDevice device, const VkVideoEncodeSessionParametersGetInfoKHR* pVideoSessionParametersInfo, VkVideoEncodeSessionParametersFeedbackInfoKHR* pFeedbackInfo, size_t* pDataSize, void* pData) {
-    if (vkGetEncodedVideoSessionParametersKHR) {
-        return vkGetEncodedVideoSessionParametersKHR(device, pVideoSessionParametersInfo, pFeedbackInfo, pDataSize, pData);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
-}
+//void Renderer_vkCmdResetEvent2KHR(VkCommandBuffer commandBuffer, VkEvent event, VkPipelineStageFlags2 stageMask) {
+//    if (vkCmdResetEvent2KHR) {
+//        vkCmdResetEvent2KHR(commandBuffer, event, stageMask);
+//    }
+//}
 
-void Renderer_vkCmdEncodeVideoKHR(VkCommandBuffer commandBuffer, const VkVideoEncodeInfoKHR* pEncodeInfo) {
-    if (vkCmdEncodeVideoKHR) {
-        vkCmdEncodeVideoKHR(commandBuffer, pEncodeInfo);
-    }
-}
+//void Renderer_vkCmdWaitEvents2KHR(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent* pEvents, const VkDependencyInfo* pDependencyInfos) {
+//    if (vkCmdWaitEvents2KHR) {
+//        vkCmdWaitEvents2KHR(commandBuffer, eventCount, pEvents, pDependencyInfos);
+//    }
+//}
 
-void Renderer_vkCmdSetEvent2KHR(VkCommandBuffer commandBuffer, VkEvent event, const VkDependencyInfo* pDependencyInfo) {
-    if (vkCmdSetEvent2KHR) {
-        vkCmdSetEvent2KHR(commandBuffer, event, pDependencyInfo);
-    }
-}
+//void Renderer_vkCmdPipelineBarrier2KHR(VkCommandBuffer commandBuffer, const VkDependencyInfo* pDependencyInfo) {
+//    if (vkCmdPipelineBarrier2KHR) {
+//        vkCmdPipelineBarrier2KHR(commandBuffer, pDependencyInfo);
+//    }
+//}
 
-void Renderer_vkCmdResetEvent2KHR(VkCommandBuffer commandBuffer, VkEvent event, VkPipelineStageFlags2 stageMask) {
-    if (vkCmdResetEvent2KHR) {
-        vkCmdResetEvent2KHR(commandBuffer, event, stageMask);
-    }
-}
+//void Renderer_vkCmdWriteTimestamp2KHR(VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage, VkQueryPool queryPool, uint32_t query) {
+//    if (vkCmdWriteTimestamp2KHR) {
+//        vkCmdWriteTimestamp2KHR(commandBuffer, stage, queryPool, query);
+//    }
+//}
 
-void Renderer_vkCmdWaitEvents2KHR(VkCommandBuffer commandBuffer, uint32_t eventCount, const VkEvent* pEvents, const VkDependencyInfo* pDependencyInfos) {
-    if (vkCmdWaitEvents2KHR) {
-        vkCmdWaitEvents2KHR(commandBuffer, eventCount, pEvents, pDependencyInfos);
-    }
-}
-
-void Renderer_vkCmdPipelineBarrier2KHR(VkCommandBuffer commandBuffer, const VkDependencyInfo* pDependencyInfo) {
-    if (vkCmdPipelineBarrier2KHR) {
-        vkCmdPipelineBarrier2KHR(commandBuffer, pDependencyInfo);
-    }
-}
-
-void Renderer_vkCmdWriteTimestamp2KHR(VkCommandBuffer commandBuffer, VkPipelineStageFlags2 stage, VkQueryPool queryPool, uint32_t query) {
-    if (vkCmdWriteTimestamp2KHR) {
-        vkCmdWriteTimestamp2KHR(commandBuffer, stage, queryPool, query);
-    }
-}
-
-VkResult Renderer_vkQueueSubmit2KHR(VkQueue queue, uint32_t submitCount, const VkSubmitInfo2* pSubmits, VkFence fence) {
-    if (vkQueueSubmit2KHR) {
-        return vkQueueSubmit2KHR(queue, submitCount, pSubmits, fence);
-    }
-    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
-}
+//VkResult Renderer_vkQueueSubmit2KHR(VkQueue queue, uint32_t submitCount, const VkSubmitInfo2* pSubmits, VkFence fence) {
+//    if (vkQueueSubmit2KHR) {
+//        return vkQueueSubmit2KHR(queue, submitCount, pSubmits, fence);
+//    }
+//    return VK_ERROR_INITIALIZATION_FAILED;  // Or other error handling
+//}
