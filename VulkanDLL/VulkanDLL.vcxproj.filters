@@ -18,9 +18,18 @@
     <ClInclude Include="VulkanDLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VulkanImp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VulkanDLL.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanImp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLL.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

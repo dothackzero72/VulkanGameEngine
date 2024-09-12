@@ -81,7 +81,39 @@ static void DestroyDebugUtilsMessengerEXT(VkInstance instance, const VkAllocatio
 
 VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType, const VkDebugUtilsMessengerCallbackDataEXT* CallBackData, void* UserData)
 {
-    fprintf(stderr, "Validation Layer: %s\n", CallBackData->pMessage);
+    RichTextBoxCallback callback = (RichTextBoxCallback)UserData;
+    if (callback)
+    {
+        fprintf(stderr, "Validation Layer: %s\n", CallBackData->pMessage);
+    }
+    else
+    {
+        char message[4096]; // Ensure this is large enough for typical messages
+        snprintf(message, sizeof(message), "Vulkan Message [Severity: %d, Type: %d]: %s",
+            MessageSeverity, MessageType, CallBackData->pMessage);
+
+        // Logging Severity Levels
+        switch (MessageSeverity)
+        {
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+            fprintf(stdout, "VERBOSE: %s\n", message);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+            fprintf(stdout, "INFO: %s\n", message);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+            fprintf(stderr, "WARNING: %s\n", message);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+            fprintf(stderr, "ERROR: %s\n", message);
+            break;
+        default:
+            fprintf(stderr, "UNKNOWN SEVERITY: %s\n", message);
+            break;
+        }
+        if (callback)
+        callback(message);
+    }
     return VK_FALSE;
 }
 
@@ -240,52 +272,54 @@ static void GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDevice
     physicalDeviceVulkan11Features->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
     physicalDeviceVulkan11Features->multiview = VK_TRUE;
     physicalDeviceVulkan11Features->pNext = &deviceFeatures2;
-
 }
 
-VkInstance Renderer_CreateVulkanInstance(VkInstanceCreateInfo instanceInfo)
+void Renderer_GetWin32Extensions(uint32_t* extensionCount, const char*** enabledExtensions) 
 {
-    VkInstance Instance = VK_NULL_HANDLE;
-    vkCreateInstance(&instanceInfo, NULL, &Instance);
-    return Instance;
+    vkEnumerateInstanceExtensionProperties(NULL, extensionCount, NULL);
+    VkExtensionProperties* extensions = (VkExtensionProperties*)malloc(sizeof(VkExtensionProperties) * (*extensionCount));
+    vkEnumerateInstanceExtensionProperties(NULL, extensionCount, extensions);
+
+    const char** extensionNames = (const char**)malloc(sizeof(const char*) * (*extensionCount));
+    for (uint32_t x = 0; x < *extensionCount; x++)
+    {
+        extensionNames[x] = (const char*)malloc(256);
+        strncpy((char*)extensionNames[x], extensions[x].extensionName, 256);
+        printf("Extension: %s, Spec Version: %d\n", extensions[x].extensionName, extensions[x].specVersion);
+    }
+
+    free(extensions);
+    *enabledExtensions = extensionNames;
 }
 
-void Renderer_Windows_Renderer(uint32* pExtensionCount, VkExtensionProperties** extensionProperties)
+VkInstance Renderer_CreateVulkanInstance()
 {
-    vkEnumerateInstanceExtensionProperties(NULL, &pExtensionCount, NULL);
-    VkExtensionProperties* instanceExtensions = (VkExtensionProperties*)malloc(sizeof(VkExtensionProperties) * (*pExtensionCount));
-    vkEnumerateInstanceExtensionProperties(NULL, &pExtensionCount, instanceExtensions);
-    (*pExtensionCount)++;
-    *extensionProperties = (VkExtensionProperties*)extensionProperties;
-}
+    VkInstance instance = VK_NULL_HANDLE;
+    VkDebugUtilsMessengerEXT* debugMessenger = VK_NULL_HANDLE;
+    VkDebugUtilsMessengerCreateInfoEXT debugInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+        .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                       VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                       VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+        .pfnUserCallback = Vulkan_DebugCallBack
+    };
 
-void listAvailableExtensions(uint32_t* count, VkExtensionProperties** properties) {
-    vkEnumerateInstanceExtensionProperties(NULL, count, NULL);
-    *properties = malloc(sizeof(VkExtensionProperties) * (*count));
-    vkEnumerateInstanceExtensionProperties(NULL, count, *properties);
-}
-
-VkResult Renderer_RendererSetUp()
-{
-    renderer.RebuildRendererFlag = false;
-
-    uint32_t extensionCount;
     int enableValidationLayers = 1;
 #ifdef NDEBUG
     enableValidationLayers = 0;
 #endif
-    const char** requiredExtensions = vulkanWindow->GetInstanceExtensions(vulkanWindow, &extensionCount, enableValidationLayers);
 
-    VkDebugUtilsMessengerCreateInfoEXT debugInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
-        .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-        .pfnUserCallback = Vulkan_DebugCallBack
-    };
+    uint32_t extensionCount = 0;
+    const VkExtensionProperties* extensions = NULL;
+    Renderer_GetWin32Extensions(&extensionCount, &extensions);
 
-    VkApplicationInfo applicationInfo =
-    {
+    // Create the Vulkan instance and setup your debug messenger here
+    VkApplicationInfo applicationInfo = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
         .pApplicationName = "Vulkan Application",
         .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
@@ -297,20 +331,51 @@ VkResult Renderer_RendererSetUp()
     VkInstanceCreateInfo vulkanCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pApplicationInfo = &applicationInfo,
-        .enabledLayerCount = (enableValidationLayers ? 1 : 0),
+        .enabledLayerCount = (enableValidationLayers),
         .ppEnabledLayerNames = (enableValidationLayers ? ValidationLayers : NULL),
         .enabledExtensionCount = extensionCount,
-        .ppEnabledExtensionNames = requiredExtensions,
+        .ppEnabledExtensionNames = extensions,
         .pNext = (enableValidationLayers ? &debugInfo : NULL)
     };
 
-    VULKAN_RESULT(vkCreateInstance(&vulkanCreateInfo, NULL, &renderer.Instance));
+    VkResult result = vkCreateInstance(&vulkanCreateInfo, NULL, &instance);
+    if (result != VK_SUCCESS) {
+        fprintf(stderr, "Failed to create Vulkan instance\n");
+        return VK_NULL_HANDLE;
+    }
 
-#ifdef NDEBUG
-#else
-    VULKAN_RESULT(CreateDebugUtilsMessengerEXT(renderer.Instance, &debugInfo, NULL, &renderer.DebugMessenger));
-#endif
-vulkanWindow->CreateSurface(vulkanWindow, &renderer.Instance, &renderer.Surface);
+    return instance;
+}
+
+ VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance)
+{
+    VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
+
+    VkDebugUtilsMessengerCreateInfoEXT debugInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+        .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+        .pfnUserCallback = Vulkan_DebugCallBack
+    };
+
+    if (CreateDebugUtilsMessengerEXT(instance, &debugInfo, NULL, &debugMessenger) != VK_SUCCESS)
+    {
+        fprintf(stderr, "Failed to set up debug messenger!\n");
+        return VK_NULL_HANDLE;
+    }
+
+    return debugMessenger;
+}
+
+VkResult Renderer_RendererSetUp()
+{
+    renderer.RebuildRendererFlag = false;
+    VkDebugUtilsMessengerEXT debugMessager = VK_NULL_HANDLE;
+    renderer.Instance = Renderer_CreateVulkanInstance(&debugMessager);
+    renderer.DebugMessenger = Renderer_SetupDebugMessenger(renderer.Instance);
+
+    vulkanWindow->CreateSurface(vulkanWindow, &renderer.Instance, &renderer.Surface);
 
     uint32 deviceCount = UINT32_MAX;
     VULKAN_RESULT(vkEnumeratePhysicalDevices(renderer.Instance, &deviceCount, NULL));
@@ -846,6 +911,69 @@ void Renderer_DestroyInstance()
     }
 }
 
+void Renderer_CSDestroyFences(VkDevice* device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount, int bufferCount)
+{
+    for (size_t x = 0; x < bufferCount; x++)
+    {
+        if (acquireImageSemaphores[x] != VK_NULL_HANDLE)
+        {
+            vkDestroySemaphore(*device, acquireImageSemaphores[x], NULL);
+            acquireImageSemaphores[x] = VK_NULL_HANDLE;
+        }
+        if (presentImageSemaphores[x] != VK_NULL_HANDLE)
+        {
+            vkDestroySemaphore(*device, presentImageSemaphores[x], NULL);
+            presentImageSemaphores[x] = VK_NULL_HANDLE;
+        }
+        if (fences[x] != VK_NULL_HANDLE)
+        {
+            vkDestroyFence(*device, fences[x], NULL);
+            fences[x] = VK_NULL_HANDLE;
+        }
+    }
+}
+
+void Renderer_CSDestroyCommandPool(VkDevice* device, VkCommandBuffer* commandPool)
+{
+    if (*commandPool != VK_NULL_HANDLE)
+    {
+        vkDestroyCommandPool(*device, *commandPool, NULL);
+        *commandPool = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_CSDestroyDevice(VkDevice* device)
+{
+    if (*device != VK_NULL_HANDLE)
+    {
+        vkDestroyDevice(*device, NULL);
+        *device = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_CSDestroySurface(VkInstance* instance, VkSurfaceKHR* surface)
+{
+    if (*surface != VK_NULL_HANDLE)
+    {
+        vkDestroySurfaceKHR(*instance, *surface, NULL);
+        *surface = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_CSDestroyDebugger(VkInstance* instance)
+{
+    DestroyDebugUtilsMessengerEXT(instance, NULL);
+}
+
+void Renderer_CSDestroyInstance(VkInstance* instance)
+{
+    if (*instance != VK_NULL_HANDLE)
+    {
+        vkDestroyInstance(*instance, NULL);
+        *instance = VK_NULL_HANDLE;
+    }
+}
+
 void Renderer_DestroyRenderPass(VkRenderPass* renderPass)
 {
     if (*renderPass != VK_NULL_HANDLE)
@@ -978,7 +1106,7 @@ void Renderer_DestroyPipelineCache(VkPipelineCache* pipelineCache)
     }
 }
 
-int SimpleTest()
+int Renderer_SimpleTestLIB()
 {
-    return 42;
+    return 43;
 }

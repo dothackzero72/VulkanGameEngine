@@ -13,6 +13,8 @@ extern "C" {
 #endif
 
 static const int MAX_FRAMES_IN_FLIGHT = 3;
+typedef void (*TextCallback)(const char*);
+typedef void (*RichTextBoxCallback)(const char*);
 
 typedef struct
 {
@@ -47,8 +49,9 @@ typedef struct rendererState
 }RendererState;
 extern RendererState renderer;
 
-void Renderer_Windows_Renderer(uint32* pExtensionCount, VkExtensionProperties** extensionProperties);
-VkInstance Renderer_CreateVulkanInstance(VkInstanceCreateInfo instanceInfo);
+void Renderer_GetWin32Extensions(uint32_t* extensionCount, const char*** enabledExtensions);
+VkInstance Renderer_CreateVulkanInstance();
+VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance);
 VkResult Renderer_RendererSetUp();
 VkResult Renderer_RebuildSwapChain();
 VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* pCommandBufferList);
@@ -79,6 +82,12 @@ void Renderer_DestroyDevice();
 void Renderer_DestroySurface();
 void Renderer_DestroyDebugger();
 void Renderer_DestroyInstance();
+void Renderer_CSDestroyFences(VkDevice* device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount, int bufferCount);
+void Renderer_CSDestroyCommandPool(VkDevice* device, VkCommandBuffer* commandPool);
+void Renderer_CSDestroyDevice(VkDevice* device);
+void Renderer_CSDestroySurface(VkInstance* instance, VkSurfaceKHR* surface);
+void Renderer_CSDestroyDebugger(VkInstance* instance);
+void Renderer_CSDestroyInstance(VkInstance* instance);
 void Renderer_DestroyRenderPass(VkRenderPass* renderPass);
 void Renderer_DestroyFrameBuffers(VkFramebuffer* frameBufferList);
 void Renderer_DestroyDescriptorPool(VkDescriptorPool* descriptorPool);
@@ -93,9 +102,7 @@ void Renderer_DestroyPipeline(VkPipeline* pipeline);
 void Renderer_DestroyPipelineLayout(VkPipelineLayout* pipelineLayout);
 void Renderer_DestroyPipelineCache(VkPipelineCache* pipelineCache);
 void Renderer_FreeMemory(VkDeviceMemory* memory);
-
-extern __declspec(dllexport) int SimpleTest();
-
+int Renderer_SimpleTestLIB();
 #ifdef __cplusplus
 }
 #endif
