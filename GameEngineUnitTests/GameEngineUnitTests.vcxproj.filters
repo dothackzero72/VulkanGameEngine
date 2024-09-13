@@ -15,37 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="VulkanDLL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanImp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DLLVulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DLL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DLLVulkanSwapChain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="GameEngineUnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLLUnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="VulkanDLL.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VulkanImp.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DLL.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DLLVulkanRenderer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DLLVulkanSwapChain.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLLUnitTests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

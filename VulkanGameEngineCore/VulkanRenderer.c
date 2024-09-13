@@ -3,7 +3,8 @@
 #include "GLFWWindow.h"
 #include "CTypedef.h"
 
-RendererState renderer = {0};
+RendererState renderer = { 0 };
+//RayTracingFunctions RTX = { 0 };
 
 static const char* DeviceExtensionList[] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -29,19 +30,23 @@ static VkValidationFeatureDisableEXT disabledList[] = { VK_VALIDATION_FEATURE_DI
                                                         VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT,
                                                         VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT };
 
-//PFN_vkGetBufferDeviceAddressKHR vkGetBufferDeviceAddressKHR;
-//PFN_vkCreateAccelerationStructureKHR vkCreateAccelerationStructureKHR;
-//PFN_vkDestroyAccelerationStructureKHR vkDestroyAccelerationStructureKHR;
-//PFN_vkGetAccelerationStructureBuildSizesKHR vkGetAccelerationStructureBuildSizesKHR;
-//PFN_vkGetAccelerationStructureDeviceAddressKHR vkGetAccelerationStructureDeviceAddressKHR;
-//PFN_vkCmdBuildAccelerationStructuresKHR vkCmdBuildAccelerationStructuresKHR;
-//PFN_vkBuildAccelerationStructuresKHR vkBuildAccelerationStructuresKHR;
-//PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR;
-//PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR;
-//PFN_vkCreateRayTracingPipelinesKHR vkCreateRayTracingPipelinesKHR;
+VkResult Renderer_RendererSetUp()
+{
+    renderer.RebuildRendererFlag = false;
+    VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
+    renderer.Instance = Renderer_CreateVulkanInstance(&debugMessenger);
+    renderer.DebugMessenger = Renderer_SetupDebugMessenger(renderer.Instance);
+    vulkanWindow->CreateSurface(vulkanWindow, &renderer.Instance, &renderer.Surface);
+    VkResult deviceSetupResult = Renderer_SetUpPhysicalDevice(renderer.Instance, &renderer.PhysicalDevice, renderer.Surface, &renderer.PhysicalDeviceFeatures, &renderer.SwapChain.GraphicsFamily, &renderer.SwapChain.PresentFamily);
+    renderer.Device = Renderer_SetUpDevice(renderer.PhysicalDevice, renderer.SwapChain.GraphicsFamily, renderer.SwapChain.PresentFamily);
+    VULKAN_RESULT(Vulkan_SetUpSwapChain(renderer.Device, renderer.PhysicalDevice, renderer.Surface));
+    renderer.CommandPool = Renderer_SetUpCommandPool(renderer.Device, renderer.SwapChain.GraphicsFamily);
+    VULKAN_RESULT(Renderer_SetUpSemaphores(renderer.Device, &renderer.InFlightFences, &renderer.AcquireImageSemaphores, &renderer.PresentImageSemaphores, MAX_FRAMES_IN_FLIGHT));
+    VULKAN_RESULT(Renderer_GetDeviceQueue(renderer.Device, renderer.SwapChain.GraphicsFamily, renderer.SwapChain.PresentFamily, &renderer.SwapChain.GraphicsQueue, &renderer.SwapChain.PresentQueue));
+    return VK_SUCCESS;
+}
 
-
-static bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32 arrayCount, const char* target)
+ bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32 arrayCount, const char* target)
 {
     for (uint32 x = 0; x < arrayCount; x++)
     {
@@ -53,7 +58,7 @@ static bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array
     return false;
 }
 
-static VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
+ VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
     PFN_vkCreateDebugUtilsMessengerEXT func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
     if (func != NULL)
@@ -66,7 +71,7 @@ static VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugU
     }
 }
 
-static void DestroyDebugUtilsMessengerEXT(VkInstance instance, const VkAllocationCallbacks* pAllocator)
+ void DestroyDebugUtilsMessengerEXT(VkInstance instance, const VkAllocationCallbacks* pAllocator)
 {
     PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
     if (func != NULL)
@@ -88,11 +93,10 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
     }
     else
     {
-        char message[4096]; // Ensure this is large enough for typical messages
+        char message[4096];
         snprintf(message, sizeof(message), "Vulkan Message [Severity: %d, Type: %d]: %s",
             MessageSeverity, MessageType, CallBackData->pMessage);
 
-        // Logging Severity Levels
         switch (MessageSeverity)
         {
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
@@ -117,7 +121,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
     return VK_FALSE;
 }
 
-static VkExtensionProperties* GetDeviceExtensions(VkPhysicalDevice physicalDevice, uint32* deviceExtensionCountPtr)
+ VkExtensionProperties* Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice, uint32* deviceExtensionCountPtr)
 {
     uint32 deviceExtensionCount = 0;
     VULKAN_RESULT(vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, NULL));
@@ -135,24 +139,23 @@ static VkExtensionProperties* GetDeviceExtensions(VkPhysicalDevice physicalDevic
     return deviceExtensions;
 }
 
-static void GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceFormatKHR* surfaceFormat, uint32* surfaceFormatCount)
+ VkResult Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceFormatKHR* surfaceFormat, uint32* surfaceFormatCount)
 {
-    VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, renderer.Surface, surfaceFormatCount, NULL));
+    VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, surfaceFormatCount, NULL));
     if (surfaceFormatCount > 0)
     {
-        VkSurfaceFormatKHR* surfaceFormats = malloc(sizeof(VkSurfaceFormatKHR) * *surfaceFormatCount);
+        VkSurfaceFormatKHR* surfaceFormats = malloc(sizeof(VkSurfaceFormatKHR) * (*surfaceFormatCount));
         if (!surfaceFormats)
         {
             fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
         }
-
-        VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, renderer.Surface, surfaceFormatCount, surfaceFormats));
+        return vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, surfaceFormatCount, surfaceFormats);
     }
 }
 
-static void GetPresentModes(VkPhysicalDevice physicalDevice, VkPresentModeKHR* presentMode, int32* presentModeCount)
+ VkResult Renderer_GetPresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR* presentMode, int32* presentModeCount)
 {
-    VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, renderer.Surface, presentModeCount, NULL));
+    VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, presentModeCount, NULL));
     if (presentModeCount > 0)
     {
         VkPresentModeKHR* presentModes = malloc(sizeof(VkPresentModeKHR) * *presentModeCount);
@@ -160,12 +163,11 @@ static void GetPresentModes(VkPhysicalDevice physicalDevice, VkPresentModeKHR* p
         {
             fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
         }
-
-        VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, renderer.Surface, presentModeCount, presentModes));
+        return vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, presentModeCount, presentModes);
     }
 }
 
-static bool GetRayTracingSupport()
+ bool Renderer_GetRayTracingSupport()
 {
    /* uint32 deviceExtensionCount = INT32_MAX;
     VkExtensionProperties* deviceExtensions = GetDeviceExtensions(Renderer.PhysicalDevice, &deviceExtensionCount);
@@ -214,7 +216,7 @@ static bool GetRayTracingSupport()
     return false;
 }
 
-static void GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features)
+ void Renderer_GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features)
 {
     VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures =
     {
@@ -237,7 +239,7 @@ static void GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDevice
         .pNext = &physicalDeviceDescriptorIndexingFeatures,
     };
 
-    if (GetRayTracingSupport())
+    if (Renderer_GetRayTracingSupport())
     {
         VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures =
         {
@@ -318,7 +320,6 @@ VkInstance Renderer_CreateVulkanInstance()
     const VkExtensionProperties* extensions = NULL;
     Renderer_GetWin32Extensions(&extensionCount, &extensions);
 
-    // Create the Vulkan instance and setup your debug messenger here
     VkApplicationInfo applicationInfo = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
         .pApplicationName = "Vulkan Application",
@@ -368,226 +369,230 @@ VkInstance Renderer_CreateVulkanInstance()
     return debugMessenger;
 }
 
-VkResult Renderer_RendererSetUp()
-{
-    renderer.RebuildRendererFlag = false;
-    VkDebugUtilsMessengerEXT debugMessager = VK_NULL_HANDLE;
-    renderer.Instance = Renderer_CreateVulkanInstance(&debugMessager);
-    renderer.DebugMessenger = Renderer_SetupDebugMessenger(renderer.Instance);
+ VkResult Renderer_SetUpPhysicalDevice(VkInstance instance, VkPhysicalDevice* physicalDevice, VkSurfaceKHR surface, VkPhysicalDeviceFeatures* physicalDeviceFeatures, uint32* graphicsFamily, uint32* presentFamily)
+ {
+     fprintf(stderr, "Entered DLL_Renderer_SetUpPhysicalDevice\n");
+     uint32 deviceCount = 0;
+     VkResult result = vkEnumeratePhysicalDevices(instance, &deviceCount, NULL);
+     fprintf(stderr, "Device count: %d\n", deviceCount);
 
-    vulkanWindow->CreateSurface(vulkanWindow, &renderer.Instance, &renderer.Surface);
+     VULKAN_RESULT(vkEnumeratePhysicalDevices(instance, &deviceCount, NULL));
+     VkPhysicalDevice* physicalDeviceList = malloc(sizeof(VkPhysicalDevice) * deviceCount);
+     VULKAN_RESULT(vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDeviceList));
 
-    uint32 deviceCount = UINT32_MAX;
-    VULKAN_RESULT(vkEnumeratePhysicalDevices(renderer.Instance, &deviceCount, NULL));
+     VkPresentModeKHR* presentMode = NULL;
+     for (uint32 x = 0; x < deviceCount; x++)
+     {
+         VkSurfaceFormatKHR surfaceFormat;
+         VkPresentModeKHR presentMode;
+         uint32 surfaceFormatCount = 0;
+         uint32 presentModeCount = 0;
 
-    VkPhysicalDevice* physicalDeviceList = malloc(sizeof(VkPhysicalDevice) * deviceCount);
-    VULKAN_RESULT(vkEnumeratePhysicalDevices(renderer.Instance, &deviceCount, physicalDeviceList));
+         vkGetPhysicalDeviceFeatures(physicalDeviceList[x], physicalDeviceFeatures);
+         VULKAN_RESULT(SwapChain_GetQueueFamilies(physicalDeviceList[x], surface, graphicsFamily, presentFamily));
+         VULKAN_RESULT(Renderer_GetSurfaceFormats(physicalDeviceList[x], surface, &surfaceFormat, &surfaceFormatCount));
+         VULKAN_RESULT(Renderer_GetPresentModes(physicalDeviceList[x], surface, &presentMode, &presentModeCount));
 
-    VkPresentModeKHR* presentMode = NULL;
-    for (uint32 x = 0; x < deviceCount; x++)
-    {
-        vkGetPhysicalDeviceFeatures(physicalDeviceList[x], &renderer.PhysicalDeviceFeatures);
-        SwapChain_GetQueueFamilies(physicalDeviceList[x], &renderer.SwapChain.GraphicsFamily, &renderer.SwapChain.PresentFamily);
+         if (*graphicsFamily != -1 &&
+             *presentFamily != -1 &&
+             surfaceFormatCount > 0 &&
+             presentModeCount != 0 &&
+             physicalDeviceFeatures->samplerAnisotropy)
+         {
+             *physicalDevice = physicalDeviceList[x];
+             break;
+         }
+         else
+         {
+             return VK_ERROR_DEVICE_LOST;
+         }
+     }
 
-        VkSurfaceFormatKHR surfaceFormat;
-        VkPresentModeKHR presentMode;
-        uint32 surfaceFormatCount = 0;
-        uint32 presentModeCount = 0;
-        GetSurfaceFormats(physicalDeviceList[x], &surfaceFormat, &surfaceFormatCount);
-        GetPresentModes(physicalDeviceList[x], &presentMode, &presentModeCount);
+     return VK_SUCCESS;
+ }
 
-        if (renderer.SwapChain.GraphicsFamily != -1 &&
-            renderer.SwapChain.PresentFamily != -1 &&
-            surfaceFormatCount > 0 &&
-            presentModeCount != 0 &&
-            renderer.PhysicalDeviceFeatures.samplerAnisotropy)
-        {
-            renderer.PhysicalDevice = physicalDeviceList[x];
-            break;
-        }
-        else
-        {
-            Renderer_DestroyRenderer();
-            SDL_Quit();
-        }
-    }
+ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFamily, uint32 presentFamily)
+ {
+     VkDevice device = VK_NULL_HANDLE;
 
-    //VkPhysicalDeviceProperties deviceProperties;
-    //vkGetPhysicalDeviceProperties(physicalDeviceList[0], &deviceProperties);
+     float queuePriority = 1.0f;
+     VkDeviceQueueCreateInfo queueCreateInfo[2];
+     uint32 queueCreateInfoCount = 0;
+     if (graphicsFamily != UINT32_MAX)
+     {
+         queueCreateInfo[queueCreateInfoCount++] = (VkDeviceQueueCreateInfo){
+             .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+             .queueFamilyIndex = graphicsFamily,
+             .queueCount = 1,
+             .pQueuePriorities = &queuePriority
+         };
+     }
 
-    //VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features;
-    //GetRendererFeatures(&physicalDeviceVulkan11Features);
+     if (presentFamily != UINT32_MAX &&
+         presentFamily != graphicsFamily)
+     {
+         queueCreateInfo[queueCreateInfoCount++] = (VkDeviceQueueCreateInfo)
+         {
+             .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+             .queueFamilyIndex = presentFamily,
+             .queueCount = 1,
+             .pQueuePriorities = &queuePriority
+         };
+     }
 
-    float queuePriority = 1.0f;
-    VkDeviceQueueCreateInfo queueCreateInfo[2];
-    uint32 queueCreateInfoCount = 0;
-    if (renderer.SwapChain.GraphicsFamily != UINT32_MAX)
-    {
-        queueCreateInfo[queueCreateInfoCount++] = (VkDeviceQueueCreateInfo){
-            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-            .queueFamilyIndex = renderer.SwapChain.GraphicsFamily,
-            .queueCount = 1,
-            .pQueuePriorities = &queuePriority
-        };
-    }
+     VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures =
+     {
+         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
+         .bufferDeviceAddress = VK_TRUE,
+     };
 
-    if (renderer.SwapChain.PresentFamily != UINT32_MAX &&
-        renderer.SwapChain.PresentFamily != renderer.SwapChain.GraphicsFamily)
-    {
-        queueCreateInfo[queueCreateInfoCount++] = (VkDeviceQueueCreateInfo)
-        {
-            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-            .queueFamilyIndex = renderer.SwapChain.PresentFamily,
-            .queueCount = 1,
-            .pQueuePriorities = &queuePriority
-        };
-    }
+     VkPhysicalDeviceDescriptorIndexingFeatures physicalDeviceDescriptorIndexingFeatures =
+     {
+         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
+         .runtimeDescriptorArray = VK_TRUE,
+         .shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
+         .descriptorBindingVariableDescriptorCount = VK_TRUE,
+     };
 
-    VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
-        .bufferDeviceAddress = VK_TRUE,
-    };
+     VkPhysicalDeviceRobustness2FeaturesEXT PhysicalDeviceRobustness2Features =
+     {
+         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
+         .nullDescriptor = VK_TRUE,
+         .pNext = &physicalDeviceDescriptorIndexingFeatures,
+     };
 
-    VkPhysicalDeviceDescriptorIndexingFeatures physicalDeviceDescriptorIndexingFeatures =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
-        .runtimeDescriptorArray = VK_TRUE,
-        .shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
-        .descriptorBindingVariableDescriptorCount = VK_TRUE,
-    };
+     if (Renderer_GetRayTracingSupport())
+     {
+         VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures =
+         {
+             .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
+             .accelerationStructure = VK_TRUE,
+         };
 
-    VkPhysicalDeviceRobustness2FeaturesEXT PhysicalDeviceRobustness2Features =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
-        .nullDescriptor = VK_TRUE,
-        .pNext = &physicalDeviceDescriptorIndexingFeatures,
-    };
+         VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures =
+         {
+             .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
+             .rayTracingPipeline = VK_TRUE,
+             .pNext = &accelerationStructureFeatures,
+         };
 
-    if (GetRayTracingSupport())
-    {
-        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
-            .accelerationStructure = VK_TRUE,
-        };
+         bufferDeviceAddressFeatures.pNext = &rayTracingPipelineFeatures;
+     }
+     PhysicalDeviceRobustness2Features.pNext = &bufferDeviceAddressFeatures;
 
-        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
-            .rayTracingPipeline = VK_TRUE,
-            .pNext = &accelerationStructureFeatures,
-        };
+     VkPhysicalDeviceFeatures deviceFeatures =
+     {
+         .samplerAnisotropy = VK_TRUE,
+         .fillModeNonSolid = VK_TRUE,
+     };
 
-        bufferDeviceAddressFeatures.pNext = &rayTracingPipelineFeatures;
-    }
-    PhysicalDeviceRobustness2Features.pNext = &bufferDeviceAddressFeatures;
+     VkPhysicalDeviceFeatures2 deviceFeatures2 =
+     {
+         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+         .features = deviceFeatures,
+         .pNext = &PhysicalDeviceRobustness2Features,
+     };
 
-    VkPhysicalDeviceFeatures deviceFeatures =
-    {
-        .samplerAnisotropy = VK_TRUE,
-        .fillModeNonSolid = VK_TRUE,
-    };
+     VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features = { 0 };
+     physicalDeviceVulkan11Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+     physicalDeviceVulkan11Features.multiview = VK_TRUE;
+     physicalDeviceVulkan11Features.pNext = &deviceFeatures2;
 
-    VkPhysicalDeviceFeatures2 deviceFeatures2 =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-        .features = deviceFeatures,
-        .pNext = &PhysicalDeviceRobustness2Features,
-    };
-
-    VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features = { 0 };
-    physicalDeviceVulkan11Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
-    physicalDeviceVulkan11Features.multiview = VK_TRUE;
-    physicalDeviceVulkan11Features.pNext = &deviceFeatures2;
-
-    VkDeviceCreateInfo deviceCreateInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-        .queueCreateInfoCount = queueCreateInfoCount,
-        .pQueueCreateInfos = queueCreateInfo,
-        .pEnabledFeatures = NULL,
-        .enabledExtensionCount = ARRAY_SIZE(DeviceExtensionList),
-        .ppEnabledExtensionNames = DeviceExtensionList,
-        .pNext = &physicalDeviceVulkan11Features
-    };
+     VkDeviceCreateInfo deviceCreateInfo =
+     {
+         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+         .queueCreateInfoCount = queueCreateInfoCount,
+         .pQueueCreateInfos = queueCreateInfo,
+         .pEnabledFeatures = NULL,
+         .enabledExtensionCount = ARRAY_SIZE(DeviceExtensionList),
+         .ppEnabledExtensionNames = DeviceExtensionList,
+         .pNext = &physicalDeviceVulkan11Features
+     };
 
 #ifdef NDEBUG
-    deviceCreateInfo.enabledLayerCount = 0;
+     deviceCreateInfo.enabledLayerCount = 0;
 #else
-    deviceCreateInfo.enabledLayerCount = ARRAY_SIZE(ValidationLayers);
-    deviceCreateInfo.ppEnabledLayerNames = ValidationLayers;
+     deviceCreateInfo.enabledLayerCount = ARRAY_SIZE(ValidationLayers);
+     deviceCreateInfo.ppEnabledLayerNames = ValidationLayers;
 #endif
 
-    VULKAN_RESULT(vkCreateDevice(renderer.PhysicalDevice, &deviceCreateInfo, NULL, &renderer.Device));
-    Vulkan_SetUpSwapChain();
+      vkCreateDevice(physicalDevice, &deviceCreateInfo, NULL, &device);
+      return device;
+ }
 
+ VkCommandPool Renderer_SetUpCommandPool(VkDevice device, uint32 graphicsFamily)
+ {
+    VkCommandPool commandPool = VK_NULL_HANDLE;
     VkCommandPoolCreateInfo CommandPoolCreateInfo =
     {
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
         .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-        .queueFamilyIndex = renderer.SwapChain.GraphicsFamily
+        .queueFamilyIndex = graphicsFamily
     };
+    VULKAN_RESULT(vkCreateCommandPool(device, &CommandPoolCreateInfo, NULL, &commandPool));
+    return commandPool;
+ }
 
-    VULKAN_RESULT(vkCreateCommandPool(renderer.Device, &CommandPoolCreateInfo, NULL, &renderer.CommandPool));
+ VkResult Renderer_SetUpSemaphores(VkDevice device, VkFence** inFlightFences, VkSemaphore** acquireImageSemaphores, VkSemaphore** presentImageSemaphores, int maxFramesInFlight)
+ {
+     *inFlightFences = malloc(sizeof(VkFence) * maxFramesInFlight);
+     if (*inFlightFences == NULL)
+     {
+         return VK_ERROR_OUT_OF_HOST_MEMORY; 
+     }
 
-    renderer.InFlightFences = malloc(sizeof(VkFence) * MAX_FRAMES_IN_FLIGHT);
-    VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
-        .semaphoreType = VK_SEMAPHORE_TYPE_BINARY,
-        .initialValue = 0,
-        .pNext = NULL
-    };
+     *acquireImageSemaphores = malloc(sizeof(VkSemaphore) * maxFramesInFlight);
+     if (*acquireImageSemaphores == NULL)
+     {
+         free(*inFlightFences);
+         return VK_ERROR_OUT_OF_HOST_MEMORY; 
+     }
 
-    renderer.AcquireImageSemaphores = malloc(sizeof(VkSemaphore) * MAX_FRAMES_IN_FLIGHT);
-    VkSemaphoreCreateInfo semaphoreCreateInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
-        .pNext = &semaphoreTypeCreateInfo
-    };
+     *presentImageSemaphores = malloc(sizeof(VkSemaphore) * maxFramesInFlight);
+     if (*presentImageSemaphores == NULL)
+     {
+         free(*inFlightFences); 
+         free(*acquireImageSemaphores);
+         return VK_ERROR_OUT_OF_HOST_MEMORY; 
+     }
 
-    renderer.PresentImageSemaphores = malloc(sizeof(VkSemaphore) * MAX_FRAMES_IN_FLIGHT);
-    VkFenceCreateInfo fenceInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-        .flags = VK_FENCE_CREATE_SIGNALED_BIT
-    };
+     VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo =
+     {
+         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
+         .semaphoreType = VK_SEMAPHORE_TYPE_BINARY,
+         .initialValue = 0,
+         .pNext = NULL
+     };
 
-    if (renderer.InFlightFences &&
-        renderer.AcquireImageSemaphores &&
-        renderer.PresentImageSemaphores)
-    {
-        for (size_t x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
-        {
-            VULKAN_RESULT(vkCreateSemaphore(renderer.Device, &semaphoreCreateInfo, NULL, &renderer.AcquireImageSemaphores[x]));
-            VULKAN_RESULT(vkCreateSemaphore(renderer.Device, &semaphoreCreateInfo, NULL, &renderer.PresentImageSemaphores[x]));
-            VULKAN_RESULT(vkCreateFence(renderer.Device, &fenceInfo, NULL, &renderer.InFlightFences[x]));
-        }
-    }
-    else
-    {
-        Renderer_DestroyRenderer();
-        SDL_Quit();
-    }
+     VkSemaphoreCreateInfo semaphoreCreateInfo =
+     {
+         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+         .pNext = &semaphoreTypeCreateInfo
+     };
 
-    vkGetDeviceQueue(renderer.Device, renderer.SwapChain.GraphicsFamily, 0, &renderer.SwapChain.GraphicsQueue);
-    vkGetDeviceQueue(renderer.Device, renderer.SwapChain.PresentFamily, 0, &renderer.SwapChain.PresentQueue);
+     VkFenceCreateInfo fenceInfo =
+     {
+         .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+         .flags = VK_FENCE_CREATE_SIGNALED_BIT
+     };
 
+     for (size_t x = 0; x < maxFramesInFlight; x++)
+     {
+         VULKAN_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, NULL, &(*acquireImageSemaphores)[x]));
+         VULKAN_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, NULL, &(*presentImageSemaphores)[x]));
+         VULKAN_RESULT(vkCreateFence(device, &fenceInfo, NULL, &(*inFlightFences)[x]));
+     }
 
-    //PFN_vkGetBufferDeviceAddressKHR vkGetBufferDeviceAddressKHR = (PFN_vkGetBufferDeviceAddressKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkGetBufferDeviceAddressKHR"));
-    //PFN_vkCreateAccelerationStructureKHR vkCreateAccelerationStructureKHR = (PFN_vkCreateAccelerationStructureKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkCreateAccelerationStructureKHR"));
-    //PFN_vkDestroyAccelerationStructureKHR vkDestroyAccelerationStructureKHR = (PFN_vkDestroyAccelerationStructureKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkDestroyAccelerationStructureKHR"));
-    //PFN_vkGetAccelerationStructureBuildSizesKHR vkGetAccelerationStructureBuildSizesKHR = (PFN_vkGetAccelerationStructureBuildSizesKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkGetAccelerationStructureBuildSizesKHR"));
-    //PFN_vkGetAccelerationStructureDeviceAddressKHR vkGetAccelerationStructureDeviceAddressKHR = (PFN_vkGetAccelerationStructureDeviceAddressKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkGetAccelerationStructureDeviceAddressKHR"));
-    //PFN_vkCmdBuildAccelerationStructuresKHR vkCmdBuildAccelerationStructuresKHR = (PFN_vkCmdBuildAccelerationStructuresKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkCmdBuildAccelerationStructuresKHR"));
-    //PFN_vkBuildAccelerationStructuresKHR vkBuildAccelerationStructuresKHR = (PFN_vkBuildAccelerationStructuresKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkBuildAccelerationStructuresKHR"));
-    //PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR = (PFN_vkCmdTraceRaysKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkCmdTraceRaysKHR"));
-    //PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR = (PFN_vkGetRayTracingShaderGroupHandlesKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkGetRayTracingShaderGroupHandlesKHR"));
-    //PFN_vkCreateRayTracingPipelinesKHR vkCreateRayTracingPipelinesKHR = (PFN_vkCreateRayTracingPipelinesKHR)(vkGetDeviceProcAddr(Renderer.Device, "vkCreateRayTracingPipelinesKHR"));
+     return VK_SUCCESS;
+ }
 
-    return VK_SUCCESS;
-}
+ VkResult Renderer_GetDeviceQueue(VkDevice device, uint32 graphicsFamily, uint32 presentFamily, VkQueue* graphicsQueue, VkQueue* presentQueue)
+ {
+     vkGetDeviceQueue(device, graphicsFamily, 0, graphicsQueue);
+     vkGetDeviceQueue(device, presentFamily, 0, presentQueue);
+     return VK_SUCCESS;
+ }
+
 
 VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* commandBufferList)
 {
@@ -673,7 +678,7 @@ VkResult Renderer_RebuildSwapChain()
     VULKAN_RESULT(vkDeviceWaitIdle(renderer.Device));
     Vulkan_DestroyImageView();
     vkDestroySwapchainKHR(renderer.Device, renderer.SwapChain.Swapchain, NULL);
-    return Vulkan_RebuildSwapChain();
+    return Vulkan_RebuildSwapChain(renderer.Device, renderer.PhysicalDevice, renderer.Surface);
 }
 
 VkResult Renderer_StartFrame()

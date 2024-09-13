@@ -29,6 +29,7 @@ typedef struct
 	uint32						Height;
 }Renderer_RenderPassCreateInfoStruct;
 
+
 typedef struct rendererState
 {
 	VkInstance Instance;
@@ -49,21 +50,39 @@ typedef struct rendererState
 }RendererState;
 extern RendererState renderer;
 
-void Renderer_GetWin32Extensions(uint32_t* extensionCount, const char*** enabledExtensions);
+VkResult Renderer_RendererSetUp();
 VkInstance Renderer_CreateVulkanInstance();
 VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance);
-VkResult Renderer_RendererSetUp();
-VkResult Renderer_RebuildSwapChain();
-VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* pCommandBufferList);
+VkResult Renderer_SetUpPhysicalDevice(VkInstance instance, VkPhysicalDevice* physicalDevice, VkSurfaceKHR surface, VkPhysicalDeviceFeatures* physicalDeviceFeatures, uint32* graphicsFamily, uint32* presentFamily);
+VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFamily, uint32 presentFamily);
+VkCommandPool Renderer_SetUpCommandPool(VkDevice device, uint32 graphicsFamily);
+VkResult Renderer_SetUpSemaphores(VkDevice device, VkFence** inFlightFences, VkSemaphore** acquireImageSemaphores, VkSemaphore** presentImageSemaphores, int maxFramesInFlight);
+VkResult Renderer_GetDeviceQueue(VkDevice device, uint32 graphicsFamily, uint32 presentFamily, VkQueue* graphicsQueue, VkQueue* presentQueue);
+ 
+VkResult Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceFormatKHR* surfaceFormat, uint32* surfaceFormatCount);
+VkResult Renderer_GetPresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR* presentMode, int32* presentModeCount);
+bool Renderer_GetRayTracingSupport();
+void Renderer_GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features);
+void Renderer_GetWin32Extensions(uint32_t* extensionCount, const char*** enabledExtensions);
+
+VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
+void DestroyDebugUtilsMessengerEXT(VkInstance instance, const VkAllocationCallbacks* pAllocator);
+VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType, const VkDebugUtilsMessengerCallbackDataEXT* CallBackData, void* UserData);
+VkExtensionProperties* Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice, uint32* deviceExtensionCountPtr);
+
+VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* commandBufferList);
 VkResult Renderer_CreateFrameBuffer(VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);
-VkResult Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* pRenderPassCreateInfo);
+VkResult Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* renderPassCreateInfo);
 VkResult Renderer_CreateDescriptorPool(VkDescriptorPool* descriptorPool, VkDescriptorPoolCreateInfo* descriptorPoolCreateInfo);
 VkResult Renderer_CreateDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout, VkDescriptorSetLayoutCreateInfo* descriptorSetLayoutCreateInfo);
 VkResult Renderer_CreatePipelineLayout(VkPipelineLayout* pipelineLayout, VkPipelineLayoutCreateInfo* pipelineLayoutCreateInfo);
 VkResult Renderer_AllocateDescriptorSets(VkDescriptorSet* descriptorSet, VkDescriptorSetAllocateInfo* descriptorSetAllocateInfo);
-VkResult Renderer_AllocateCommandBuffers(VkCommandBuffer* commandBuffer, VkCommandBufferAllocateInfo* ImGuiCommandBuffers);
+VkResult Renderer_AllocateCommandBuffers(VkCommandBuffer* commandBuffer, VkCommandBufferAllocateInfo* commandBufferAllocateInfo);
 VkResult Renderer_CreateGraphicsPipelines(VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32 createGraphicPipelinesCount);
 VkResult Renderer_CreateCommandPool(VkCommandPool* commandPool, VkCommandPoolCreateInfo* commandPoolInfo);
+void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32 count);
+VkResult Renderer_RebuildSwapChain();
+
 VkResult Renderer_StartFrame();
 VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount);
 VkResult Renderer_BeginCommandBuffer(VkCommandBuffer* pCommandBuffer, VkCommandBufferBeginInfo* commandBufferBeginInfo);
@@ -71,13 +90,15 @@ VkResult Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer);
 VkResult Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
 
 uint32 Renderer_GetMemoryType(uint32 typeFilter, VkMemoryPropertyFlags properties);
+
 VkCommandBuffer Renderer_BeginSingleUseCommandBuffer();
 VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer commandBuffer);
 
-void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32 count);
+bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32 arrayCount, const char* target);
+
 void Renderer_DestroyRenderer();
-void Renderer_DestroyFences();
 void Renderer_DestroyCommandPool();
+void Renderer_DestroyFences();
 void Renderer_DestroyDevice();
 void Renderer_DestroySurface();
 void Renderer_DestroyDebugger();
@@ -95,13 +116,13 @@ void Renderer_DestroyDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLay
 void Renderer_DestroyCommandBuffers(VkCommandPool* commandPool, VkCommandBuffer* commandBufferList);
 void Renderer_DestroyCommnadPool(VkCommandPool* commandPool);
 void Renderer_DestroyBuffer(VkBuffer* buffer);
+void Renderer_FreeMemory(VkDeviceMemory* memory);
 void Renderer_DestroyImageView(VkImageView* imageView);
 void Renderer_DestroyImage(VkImage* image);
 void Renderer_DestroySampler(VkSampler* sampler);
 void Renderer_DestroyPipeline(VkPipeline* pipeline);
 void Renderer_DestroyPipelineLayout(VkPipelineLayout* pipelineLayout);
 void Renderer_DestroyPipelineCache(VkPipelineCache* pipelineCache);
-void Renderer_FreeMemory(VkDeviceMemory* memory);
 int Renderer_SimpleTestLIB();
 #ifdef __cplusplus
 }

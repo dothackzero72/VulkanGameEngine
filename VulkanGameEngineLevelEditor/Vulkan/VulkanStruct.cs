@@ -1676,10 +1676,60 @@ namespace VulkanGameEngineLevelEditor
     [StructLayout(LayoutKind.Sequential)]
     public struct VkWin32SurfaceCreateInfoKHR
     {
-        public uint sType;
+        public VkStructureType sType;
         public IntPtr pNext;
         public uint flags;
         public IntPtr hinstance;
         public IntPtr hwnd;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkSurfaceCapabilitiesKHR
+    {
+        public uint minImageCount;                      // Minimum number of images
+        public uint maxImageCount;                      // Maximum number of images
+        public VkExtent2D currentExtent;                // Current extent of the surface
+        public VkExtent2D minImageExtent;               // Minimum extent for images
+        public VkExtent2D maxImageExtent;               // Maximum extent for images
+        public uint maxImageArrayLayers;                // Maximum layers for images
+        public VkSurfaceTransformFlagsKHR supportedTransforms; // Supported transforms
+        public VkCompositeAlphaFlagsKHR supportedCompositeAlpha; // Supported composite alpha modes
+        public VkPresentModeKHR supportedPresentModes;  // Supported present modes
+        public bool clipped;                             // Clipping behavior
+        public IntPtr display;                           // Handle to the display
+    }
+
+    // Flags for surface transform
+    [Flags]
+    public enum VkSurfaceTransformFlagsKHR : uint
+    {
+        VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR = 1 << 0,
+        VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR = 1 << 1,
+        VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR = 1 << 2,
+        VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR = 1 << 3,
+        VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR = 1 << 4,
+        VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR = 1 << 5,
+        VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR = 1 << 6,
+        VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR = 1 << 7,
+        VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR = 1 << 8,
+    }
+
+    // Flags for composite alpha
+    [Flags]
+    public enum VkCompositeAlphaFlagsKHR : uint
+    {
+        VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR = 1 << 0,
+        VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR = 1 << 1,
+        VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR = 1 << 2,
+        VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR = 1 << 3,
+    }
+
+    // Enum for Present Mode
+    public enum VkPresentModeKHR : uint
+    {
+        VK_PRESENT_MODE_IMMEDIATE_KHR = 0,
+        VK_PRESENT_MODE_MAILBOX_KHR = 1,
+        VK_PRESENT_MODE_FIFO_KHR = 2,
+        VK_PRESENT_MODE_FIFO_RELAXED_KHR = 3,
     }
 }

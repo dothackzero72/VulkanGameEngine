@@ -8,10 +8,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor
 {
-    public partial class Form1 : Form
+    public unsafe partial class Form1 : Form
     {
         public delegate void TextCallback(string message);
         public delegate void RichTextCallback(string message);
@@ -32,12 +33,15 @@ namespace VulkanGameEngineLevelEditor
 
         public Form1()
         {
-            InitializeComponent();
-            VulkanInstance.Instance = GameEngineAPI_DLL.GameEngineAPI_CreateVulkanInstance(new RichTextCallback(GetCText));
-            VulkanInstance.DebugMessenger = GameEngineAPI_DLL.GameEngineAPI_SetupDebugMessenger(new RichTextCallback(GetCText), VulkanInstance.Instance);
-            GameEngineAPI.CreateVulkanSurface(this.Handle);
-            GameEngineAPI_DLL.GameEngineAPI_DestroyInstance(VulkanInstance.Instance);
-            var a = 324;
+            try
+            {
+                InitializeComponent();
+                vulkanRenderer.SetUpRenderer(this.Handle);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception occurred: {ex.Message}");
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
