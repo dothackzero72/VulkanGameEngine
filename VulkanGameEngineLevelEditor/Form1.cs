@@ -36,7 +36,7 @@ namespace VulkanGameEngineLevelEditor
             try
             {
                 InitializeComponent();
-                vulkanRenderer.SetUpRenderer(this.Handle);
+                vulkanRenderer.SetUpRenderer(this.Handle, pictureBox1);
             }
             catch (Exception ex)
             {
@@ -48,6 +48,11 @@ namespace VulkanGameEngineLevelEditor
         {
 
             //Console.SetOut(new RichTextCallback(richTextBox1));
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

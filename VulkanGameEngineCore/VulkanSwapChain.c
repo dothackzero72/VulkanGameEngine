@@ -15,13 +15,12 @@ VkResult Vulkan_SetUpSwapChain()
 	VULKAN_RESULT(SwapChain_GetSurfaceCapabilities(renderer.PhysicalDevice, renderer.Surface, &surfaceCapabilities));
 	VULKAN_RESULT(SwapChain_GetPhysicalDeviceFormats(renderer.PhysicalDevice, renderer.Surface, &compatibleSwapChainFormatList, &surfaceFormatCount));
 	VULKAN_RESULT(SwapChain_GetQueueFamilies(renderer.PhysicalDevice, renderer.Surface, &renderer.SwapChain.GraphicsFamily, &renderer.SwapChain.PresentFamily));
-	VULKAN_RESULT(SwapChain_GetSurfaceCapabilities(renderer.PhysicalDevice, renderer.Surface, &surfaceCapabilities));
 	VULKAN_RESULT(SwapChain_GetPhysicalDevicePresentModes(renderer.PhysicalDevice, renderer.Surface, &compatiblePresentModesList, &presentModeCount));
 	VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList, surfaceFormatCount);
 	VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList, presentModeCount);
 	vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
 	renderer.SwapChain.Swapchain = SwapChain_SetUpSwapChain(renderer.Device, renderer.Surface, surfaceCapabilities, swapChainImageFormat, swapChainPresentMode, renderer.SwapChain.GraphicsFamily, renderer.SwapChain.PresentFamily, width, height, &renderer.SwapChain.SwapChainImageCount);
-	renderer.SwapChain.SwapChainImages = SwapChain_SetUpSwapChainImages(renderer.Device, renderer.SwapChain.Swapchain, &renderer.SwapChain.SwapChainImageCount);
+	renderer.SwapChain.SwapChainImages = SwapChain_SetUpSwapChainImages(renderer.Device, renderer.SwapChain.Swapchain, renderer.SwapChain.SwapChainImageCount);
 	renderer.SwapChain.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderer.Device, renderer.SwapChain.SwapChainImages, compatibleSwapChainFormatList, renderer.SwapChain.SwapChainImageCount);
 
 	renderer.SwapChain.SwapChainResolution.width = width;
@@ -166,12 +165,12 @@ VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkSurfaceKHR surface, V
 	return swapChain;
 }
 
-VkImage* SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32* swapChainImageCount)
+VkImage* SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32 swapChainImageCount)
 {
 	VkImage* swapChainImages = VK_NULL_HANDLE;
-	VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, swapChainImageCount, NULL));
-	swapChainImages = malloc(sizeof(VkImage) * (*swapChainImageCount));
-	VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, swapChainImageCount, swapChainImages));
+	VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, &swapChainImageCount, NULL));
+	swapChainImages = malloc(sizeof(VkImage) * swapChainImageCount);
+	VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, &swapChainImageCount, swapChainImages));
 	return swapChainImages;
 }
 

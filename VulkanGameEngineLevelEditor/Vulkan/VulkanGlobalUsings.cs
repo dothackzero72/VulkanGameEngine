@@ -23,7 +23,6 @@ global using VkDescriptorSet = System.UIntPtr;
 global using VkCommandPool = System.UIntPtr;
 global using VkPresentModeKHR = System.UIntPtr;
 global using VkSwapchainKHR = System.UIntPtr;
-global using VkSurfaceFormatKHR = System.UIntPtr;
 global using VkDescriptorSetLayout = System.UIntPtr;
 global using VkQueryPool = System.UIntPtr;
 global using VkEvent = System.UIntPtr;

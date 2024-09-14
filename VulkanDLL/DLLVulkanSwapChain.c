@@ -32,10 +32,10 @@ VkResult DLL_SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevice physicalDe
 
 VkSwapchainKHR DLL_SwapChain_SetUpSwapChain(VkDevice device, VkSurfaceKHR surface, VkSurfaceCapabilitiesKHR surfaceCapabilities, VkSurfaceFormatKHR SwapChainImageFormat, VkPresentModeKHR SwapChainPresentMode, uint32 graphicsFamily, uint32 presentFamily, uint32 width, uint32 height, uint32* swapChainImageCount)
 {
-	return SwapChain_SetUpSwapChain( device,  surface,  surfaceCapabilities,  SwapChainImageFormat,  SwapChainPresentMode,  graphicsFamily,  presentFamily,  width,  height,  * swapChainImageCount);
+	return SwapChain_SetUpSwapChain( device,  surface,  surfaceCapabilities,  SwapChainImageFormat,  SwapChainPresentMode,  graphicsFamily,  presentFamily,  width,  height, swapChainImageCount);
 }
 
-VkImage* DLL_SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32* swapChainImageCount)
+VkImage* DLL_SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32 swapChainImageCount)
 {
 	return SwapChain_SetUpSwapChainImages(device, swapChain, swapChainImageCount);
 }

@@ -8,7 +8,7 @@ extern "C"
 #include <stdio.h>
 #include "InterfaceRenderPass.h"
 #include "Scene.h"
-
+#include <../External/nlohmann/json.hpp>
 int main(int argc, char* argv[])
 { 
     vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);

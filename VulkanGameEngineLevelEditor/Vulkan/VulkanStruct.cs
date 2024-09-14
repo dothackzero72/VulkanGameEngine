@@ -1699,37 +1699,10 @@ namespace VulkanGameEngineLevelEditor
         public IntPtr display;                           // Handle to the display
     }
 
-    // Flags for surface transform
-    [Flags]
-    public enum VkSurfaceTransformFlagsKHR : uint
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkSurfaceFormatKHR
     {
-        VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR = 1 << 0,
-        VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR = 1 << 1,
-        VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR = 1 << 2,
-        VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR = 1 << 3,
-        VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR = 1 << 4,
-        VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR = 1 << 5,
-        VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR = 1 << 6,
-        VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR = 1 << 7,
-        VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR = 1 << 8,
-    }
-
-    // Flags for composite alpha
-    [Flags]
-    public enum VkCompositeAlphaFlagsKHR : uint
-    {
-        VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR = 1 << 0,
-        VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR = 1 << 1,
-        VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR = 1 << 2,
-        VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR = 1 << 3,
-    }
-
-    // Enum for Present Mode
-    public enum VkPresentModeKHR : uint
-    {
-        VK_PRESENT_MODE_IMMEDIATE_KHR = 0,
-        VK_PRESENT_MODE_MAILBOX_KHR = 1,
-        VK_PRESENT_MODE_FIFO_KHR = 2,
-        VK_PRESENT_MODE_FIFO_RELAXED_KHR = 3,
+        public VkFormat format;
+        public VkColorSpaceKHR colorSpace;
     }
 }
