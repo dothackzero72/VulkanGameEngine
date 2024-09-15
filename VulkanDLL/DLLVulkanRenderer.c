@@ -59,3 +59,28 @@ void DLL_Renderer_GetWin32Extensions(uint32_t* extensionCount, const char*** ena
 {
  	Renderer_GetWin32Extensions(extensionCount, enabledExtensions);
 }
+
+VkResult DLL_Renderer_StartFrame()
+{
+	return Renderer_StartFrame();
+}
+
+VkResult DLL_Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount)
+{
+	return Renderer_EndFrame( pCommandBufferSubmitList, commandBufferCount);
+}
+
+VkResult DLL_Renderer_BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo)
+{
+	return Renderer_BeginCommandBuffer(pCommandBufferList, commandBufferBeginInfo);
+}
+
+VkResult DLL_Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBufferList)
+{
+	return Renderer_EndCommandBuffer(pCommandBufferList);
+}
+
+VkResult DLL_Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
+{
+	return Renderer_SubmitDraw(pCommandBufferSubmitList);
+}

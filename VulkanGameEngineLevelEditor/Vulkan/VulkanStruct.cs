@@ -1705,4 +1705,20 @@ namespace VulkanGameEngineLevelEditor
         public VkFormat format;
         public VkColorSpaceKHR colorSpace;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VulkanBufferInfo
+    {
+        public VkBuffer Buffer;
+        public VkBuffer StagingBuffer;
+        public VkDeviceMemory BufferMemory;
+        public VkDeviceMemory StagingBufferMemory;
+        public VkDeviceSize BufferSize;
+        public VkBufferUsageFlags BufferUsage;
+        public VkMemoryPropertyFlags BufferProperties;
+        public ulong BufferDeviceAddress;
+        public VkAccelerationStructureKHR BufferHandle;
+        public void* BufferData;
+        public bool IsMapped;
+    }
 }

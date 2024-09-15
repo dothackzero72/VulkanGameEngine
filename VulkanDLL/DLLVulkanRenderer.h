@@ -14,3 +14,8 @@ DLL_EXPORT VkResult DLL_Renderer_GetPresentModes(VkPhysicalDevice physicalDevice
 DLL_EXPORT bool DLL_Renderer_GetRayTracingSupport();
 DLL_EXPORT void DLL_Renderer_GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features);
 DLL_EXPORT void DLL_Renderer_GetWin32Extensions(uint32_t* extensionCount, const char*** enabledExtensions);
+DLL_EXPORT VkResult DLL_Renderer_StartFrame();
+DLL_EXPORT VkResult DLL_Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount);
+DLL_EXPORT VkResult DLL_Renderer_BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo);
+DLL_EXPORT VkResult DLL_Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBufferList);
+DLL_EXPORT VkResult DLL_Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);

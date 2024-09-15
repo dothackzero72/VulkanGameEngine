@@ -48,6 +48,7 @@ class Texture
 		virtual ~Texture();
 		virtual void UpdateTextureSize(vec2 TextureResolution);
 		virtual void Destroy();
+
 		void ImGuiShowTexture(const ImVec2& TextureDisplaySize);
 		VkDescriptorImageInfo* GetTextureBuffer();
 

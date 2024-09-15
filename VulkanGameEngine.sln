@@ -11,13 +11,23 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VulkanGameEngineCore", "VulkanGameEngineCore\VulkanGameEngineCore.vcxproj", "{1F7762E6-CF2F-435A-8255-61E117650A26}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VulkanGameEngineLevelEditor", "VulkanGameEngineLevelEditor\VulkanGameEngineLevelEditor.csproj", "{44233629-8998-416F-B8FB-E454D1A0CDCA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F7762E6-CF2F-435A-8255-61E117650A26} = {1F7762E6-CF2F-435A-8255-61E117650A26}
+		{6BB46CA5-81ED-4A08-9AEF-885A15F5B43C} = {6BB46CA5-81ED-4A08-9AEF-885A15F5B43C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VulkanDLL", "VulkanDLL\VulkanDLL.vcxproj", "{6BB46CA5-81ED-4A08-9AEF-885A15F5B43C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1F7762E6-CF2F-435A-8255-61E117650A26} = {1F7762E6-CF2F-435A-8255-61E117650A26}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameEngineUnitTests", "GameEngineUnitTests\GameEngineUnitTests.vcxproj", "{30D1FD10-F068-42CA-B8EA-164232858ADB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zGameEngineUnitTests", "GameEngineUnitTests\GameEngineUnitTests.vcxproj", "{30D1FD10-F068-42CA-B8EA-164232858ADB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1F7762E6-CF2F-435A-8255-61E117650A26} = {1F7762E6-CF2F-435A-8255-61E117650A26}
+		{6BB46CA5-81ED-4A08-9AEF-885A15F5B43C} = {6BB46CA5-81ED-4A08-9AEF-885A15F5B43C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zLevelEditorUnitTests", "LevelEditorUnitTests\zLevelEditorUnitTests.csproj", "{CD98CBF9-D7E9-434D-B57C-790894D6357C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +99,18 @@ Global
 		{30D1FD10-F068-42CA-B8EA-164232858ADB}.Release|x64.Build.0 = Release|x64
 		{30D1FD10-F068-42CA-B8EA-164232858ADB}.Release|x86.ActiveCfg = Release|Win32
 		{30D1FD10-F068-42CA-B8EA-164232858ADB}.Release|x86.Build.0 = Release|Win32
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Debug|x64.Build.0 = Debug|Any CPU
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Debug|x86.Build.0 = Debug|Any CPU
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Release|x64.ActiveCfg = Release|Any CPU
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Release|x64.Build.0 = Release|Any CPU
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Release|x86.ActiveCfg = Release|Any CPU
+		{CD98CBF9-D7E9-434D-B57C-790894D6357C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

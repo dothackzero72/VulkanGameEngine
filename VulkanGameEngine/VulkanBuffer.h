@@ -25,9 +25,9 @@ class VulkanBuffer
 		void* BufferData;
 		bool IsMapped = false;
 
-		std::unique_ptr<BufferInfo> SendCBufferInfo()
+		std::unique_ptr<VulkanBufferInfo> SendCBufferInfo()
 		{
-			std::unique_ptr<BufferInfo>  bufferInfo = std::make_unique<BufferInfo>();
+			std::unique_ptr<VulkanBufferInfo>  bufferInfo = std::make_unique<VulkanBufferInfo>();
 			bufferInfo->Buffer = &Buffer;
 			bufferInfo->StagingBuffer = &StagingBuffer;
 			bufferInfo->BufferMemory = &BufferMemory;

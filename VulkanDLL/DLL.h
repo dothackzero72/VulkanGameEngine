@@ -1,4 +1,8 @@
 #pragma once
+#ifdef DLLEXCLUDE
+#define DLL_EXCLUDE
+#endif
+
 #include <Windows.h>
 
 #ifdef VulkanEngine_DLL

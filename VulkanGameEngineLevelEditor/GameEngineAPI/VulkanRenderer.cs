@@ -13,6 +13,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class VulkanRenderer
     {
         public const int MAX_FRAMES_IN_FLIGHT = 3;
+        public bool RebuildRendererFlag { get; set; } = false;
         public IntPtr WindowHandleCopy = IntPtr.Zero;
         public VkInstance Instance { get; private set; } = new VkInstance();
         public VkDevice Device { get; private set; } = new VkDevice();
@@ -22,14 +23,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public UInt32 ImageIndex { get; private set; } = new UInt32();
         public UInt32 CommandIndex { get; private set; } = new UInt32();
         public VkDebugUtilsMessengerEXT DebugMessenger { get; private set; } = new VkDebugUtilsMessengerEXT();
-
         public VkPhysicalDeviceFeatures PhysicalDeviceFeatures { get; private set; } = new VkPhysicalDeviceFeatures();
-
         public List<VkFence> InFlightFences { get; private set; } = new List<VkFence>();
         public List<VkSemaphore> AcquireImageSemaphores { get; private set; } = new List<VkSemaphore>();
         public List<VkSemaphore> PresentImageSemaphores { get; private set; } = new List<VkSemaphore>();
-        bool RebuildRendererFlag;
-
         public UInt32 SwapChainImageCount { get; private set; } = new UInt32();
         public UInt32 GraphicsFamily { get; private set; } = new UInt32();
         public UInt32 PresentFamily { get; private set; } = new UInt32();
@@ -54,7 +51,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             WindowHandleCopy = handle;
             CreateVulkanInstance();
             SetupDebugMessenger();
-            CreateVulkanSurface(handle);
+            CreateVulkanSurface(pictureBox);
             SetUpPhysicalDevice();
             SetUpDevice();
             VkSurfaceCapabilitiesKHR surfaceCapabilities = GetSurfaceCapabilities();
@@ -104,13 +101,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        public void CreateVulkanSurface(IntPtr handle)
+        public void CreateVulkanSurface(PictureBox pictureBox)
         {
             var surfaceCreateInfo = new VkWin32SurfaceCreateInfoKHR
             {
-                sType = 0,
-                hwnd = handle,
-                hinstance = System.Diagnostics.Process.GetCurrentProcess().MainModule.BaseAddress
+                sType = VkStructureType.VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+                hwnd = pictureBox.Handle,
+                hinstance = Marshal.GetHINSTANCE(typeof(Form1).Module)
             };
 
             VkSurfaceKHR surface = UIntPtr.Zero;
@@ -184,17 +181,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             try
             {
-                VkFence[] inFlightFences;
-                VkSemaphore[] acquireImageSemaphores;
-                VkSemaphore[] presentImageSemaphores;
-                if (GameEngineDLL.DLL_Renderer_SetUpSemaphores(Device, out inFlightFences, out acquireImageSemaphores, out presentImageSemaphores, MAX_FRAMES_IN_FLIGHT) != VkResult.VK_SUCCESS)
+                IntPtr inFlightFencesPtr = IntPtr.Zero;
+                IntPtr acquireImageSemaphoresPtr = IntPtr.Zero;
+                IntPtr presentImageSemaphoresPtr = IntPtr.Zero;
+
+                if (GameEngineDLL.DLL_Renderer_SetUpSemaphores(Device, out inFlightFencesPtr, out acquireImageSemaphoresPtr, out presentImageSemaphoresPtr, MAX_FRAMES_IN_FLIGHT) != VkResult.VK_SUCCESS)
                 {
                     MessageBox.Show("Failed to set up semaphores.");
                     return;
                 }
-                InFlightFences =  InFlightFences.ToList();
-                AcquireImageSemaphores = AcquireImageSemaphores.ToList();
-                PresentImageSemaphores = PresentImageSemaphores.ToList(); 
+
+                VkFence[] inFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
+                Marshal.Copy(inFlightFencesPtr, inFlightFences, 0, MAX_FRAMES_IN_FLIGHT);
+                InFlightFences = inFlightFences.ToList();
+
+                VkSemaphore[] acquireImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+                Marshal.Copy(acquireImageSemaphoresPtr, acquireImageSemaphores, 0, MAX_FRAMES_IN_FLIGHT);
+                AcquireImageSemaphores = acquireImageSemaphores.ToList();
+
+                VkSemaphore[] presentImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+                Marshal.Copy(presentImageSemaphoresPtr, presentImageSemaphores, 0, MAX_FRAMES_IN_FLIGHT);
+                PresentImageSemaphores = presentImageSemaphores.ToList();
+
             }
             catch (Exception ex)
             {

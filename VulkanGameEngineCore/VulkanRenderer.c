@@ -30,6 +30,18 @@ static VkValidationFeatureDisableEXT disabledList[] = { VK_VALIDATION_FEATURE_DI
                                                         VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT,
                                                         VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT };
 
+static bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32 arrayCount, const char* target)
+{
+    for (uint32 x = 0; x < arrayCount; x++)
+    {
+        if (strcmp(array[x].extensionName, target) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 VkResult Renderer_RendererSetUp()
 {
     renderer.RebuildRendererFlag = false;
@@ -44,18 +56,6 @@ VkResult Renderer_RendererSetUp()
     VULKAN_RESULT(Renderer_SetUpSemaphores(renderer.Device, &renderer.InFlightFences, &renderer.AcquireImageSemaphores, &renderer.PresentImageSemaphores, MAX_FRAMES_IN_FLIGHT));
     VULKAN_RESULT(Renderer_GetDeviceQueue(renderer.Device, renderer.SwapChain.GraphicsFamily, renderer.SwapChain.PresentFamily, &renderer.SwapChain.GraphicsQueue, &renderer.SwapChain.PresentQueue));
     return VK_SUCCESS;
-}
-
- bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32 arrayCount, const char* target)
-{
-    for (uint32 x = 0; x < arrayCount; x++)
-    {
-        if (strcmp(array[x].extensionName, target) == 0)
-        {
-            return true;
-        }
-    }
-    return false;
 }
 
  VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
@@ -131,11 +131,13 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
     {
         fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
         *deviceExtensionCountPtr = 0;
+        free(deviceExtensions);
         return NULL;
     }
 
     VULKAN_RESULT(vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, deviceExtensions));
     *deviceExtensionCountPtr = deviceExtensionCount;
+    free(deviceExtensions);
     return deviceExtensions;
 }
 
@@ -149,7 +151,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
         {
             fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
         }
-        return vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, surfaceFormatCount, surfaceFormats);
+        VkResult result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, surfaceFormatCount, surfaceFormats);
+        free(surfaceFormats);
+        return result;
     }
 }
 
@@ -163,7 +167,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
         {
             fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
         }
-        return vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, presentModeCount, presentModes);
+        VkResult result = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, presentModeCount, presentModes);
+        free(presentModes);
+        return result;
     }
 }
 
@@ -404,10 +410,12 @@ VkInstance Renderer_CreateVulkanInstance()
          }
          else
          {
+             free(physicalDeviceList);
              return VK_ERROR_DEVICE_LOST;
          }
      }
 
+     free(physicalDeviceList);
      return VK_SUCCESS;
  }
 
@@ -739,14 +747,14 @@ VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32 com
     return result;
 }
 
-VkResult Renderer_BeginCommandBuffer(VkCommandBuffer* pCommandBuffer, VkCommandBufferBeginInfo* commandBufferBeginInfo)
+VkResult Renderer_BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo)
 {
-    return vkBeginCommandBuffer(*pCommandBuffer, commandBufferBeginInfo);
+    return vkBeginCommandBuffer(*pCommandBufferList, commandBufferBeginInfo);
 }
 
-VkResult Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer)
+VkResult Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBufferList)
 {
-    return vkEndCommandBuffer(*pCommandBuffer);
+    return vkEndCommandBuffer(*pCommandBufferList);
 }
 
 VkResult Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
@@ -843,8 +851,10 @@ VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer commandBuffer)
 
 void Renderer_DestroyRenderer()
 {
+
     Vulkan_DestroyImageView();
     Vulkan_DestroySwapChain();
+    Renderer_DestroyFences();
     Renderer_DestroyCommandPool();
     Renderer_DestroyFences();
     Renderer_DestroyDevice();
@@ -855,90 +865,57 @@ void Renderer_DestroyRenderer()
 
 void Renderer_DestroyCommandPool()
 {
-    if (renderer.CommandPool != VK_NULL_HANDLE)
-    {
-        vkDestroyCommandPool(renderer.Device, renderer.CommandPool, NULL);
-        renderer.CommandPool = VK_NULL_HANDLE;
-    }
+    Renderer_BaseDestroyCommandPool(&renderer.Device, &renderer.CommandPool);
 }
 
 void Renderer_DestroyFences()
 {
-    for (size_t x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
-    {
-        if (renderer.AcquireImageSemaphores[x] != VK_NULL_HANDLE)
-        {
-            vkDestroySemaphore(renderer.Device, renderer.AcquireImageSemaphores[x], NULL);
-            renderer.AcquireImageSemaphores[x] = VK_NULL_HANDLE;
-        }
-        if (renderer.PresentImageSemaphores[x] != VK_NULL_HANDLE)
-        {
-            vkDestroySemaphore(renderer.Device, renderer.PresentImageSemaphores[x], NULL);
-            renderer.PresentImageSemaphores[x] = VK_NULL_HANDLE;
-        }
-        if (renderer.InFlightFences[x] != VK_NULL_HANDLE)
-        {
-            vkDestroyFence(renderer.Device, renderer.InFlightFences[x], NULL);
-            renderer.InFlightFences[x] = VK_NULL_HANDLE;
-        }
-    }
+    Renderer_BaseDestroyFences(renderer.Device, renderer.AcquireImageSemaphores, renderer.PresentImageSemaphores, renderer.InFlightFences, MAX_FRAMES_IN_FLIGHT);
 }
 
 void Renderer_DestroyDevice()
 {
-    if (renderer.Device != VK_NULL_HANDLE)
-    {
-        vkDestroyDevice(renderer.Device, NULL);
-        renderer.Device = VK_NULL_HANDLE;
-    }
+    Renderer_BaseDestroyDevice(&renderer.Device);
 }
 
 void Renderer_DestroySurface()
 {
-    if (renderer.Surface != VK_NULL_HANDLE)
-    {
-        vkDestroySurfaceKHR(renderer.Instance, renderer.Surface, NULL);
-        renderer.Surface = VK_NULL_HANDLE;
-    }
+    Renderer_BaseDestroySurface(&renderer.Instance, &renderer.Surface);
 }
 
 void Renderer_DestroyDebugger()
 {
-    DestroyDebugUtilsMessengerEXT(renderer.Instance, NULL);
+    Renderer_BaseDestroyDebugger(&renderer.Instance);
 }
 
 void Renderer_DestroyInstance()
 {
-    if (renderer.Instance != VK_NULL_HANDLE)
-    {
-        vkDestroyInstance(renderer.Instance, NULL);
-        renderer.Instance = VK_NULL_HANDLE;
-    }
+    Renderer_BaseDestroyInstance(&renderer.Instance);
 }
 
-void Renderer_CSDestroyFences(VkDevice* device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount, int bufferCount)
+void Renderer_BaseDestroyFences(VkDevice* device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount)
 {
-    for (size_t x = 0; x < bufferCount; x++)
+    for (size_t x = 0; x < semaphoreCount; x++)
     {
         if (acquireImageSemaphores[x] != VK_NULL_HANDLE)
         {
-            vkDestroySemaphore(*device, acquireImageSemaphores[x], NULL);
+            vkDestroySemaphore(device, acquireImageSemaphores[x], NULL);
             acquireImageSemaphores[x] = VK_NULL_HANDLE;
         }
         if (presentImageSemaphores[x] != VK_NULL_HANDLE)
         {
-            vkDestroySemaphore(*device, presentImageSemaphores[x], NULL);
+            vkDestroySemaphore(device, presentImageSemaphores[x], NULL);
             presentImageSemaphores[x] = VK_NULL_HANDLE;
         }
         if (fences[x] != VK_NULL_HANDLE)
         {
-            vkDestroyFence(*device, fences[x], NULL);
+            vkDestroyFence(device, fences[x], NULL);
             fences[x] = VK_NULL_HANDLE;
         }
     }
 }
 
-void Renderer_CSDestroyCommandPool(VkDevice* device, VkCommandBuffer* commandPool)
+void Renderer_BaseDestroyCommandPool(VkDevice* device, VkCommandBuffer* commandPool)
 {
     if (*commandPool != VK_NULL_HANDLE)
     {
@@ -947,7 +924,7 @@ void Renderer_CSDestroyCommandPool(VkDevice* device, VkCommandBuffer* commandPoo
     }
 }
 
-void Renderer_CSDestroyDevice(VkDevice* device)
+void Renderer_BaseDestroyDevice(VkDevice* device)
 {
     if (*device != VK_NULL_HANDLE)
     {
@@ -956,7 +933,7 @@ void Renderer_CSDestroyDevice(VkDevice* device)
     }
 }
 
-void Renderer_CSDestroySurface(VkInstance* instance, VkSurfaceKHR* surface)
+void Renderer_BaseDestroySurface(VkInstance* instance, VkSurfaceKHR* surface)
 {
     if (*surface != VK_NULL_HANDLE)
     {
@@ -965,12 +942,12 @@ void Renderer_CSDestroySurface(VkInstance* instance, VkSurfaceKHR* surface)
     }
 }
 
-void Renderer_CSDestroyDebugger(VkInstance* instance)
+void Renderer_BaseDestroyDebugger(VkInstance* instance)
 {
-    DestroyDebugUtilsMessengerEXT(instance, NULL);
+    DestroyDebugUtilsMessengerEXT(*instance, NULL);
 }
 
-void Renderer_CSDestroyInstance(VkInstance* instance)
+void Renderer_BaseDestroyInstance(VkInstance* instance)
 {
     if (*instance != VK_NULL_HANDLE)
     {

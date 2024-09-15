@@ -1,5 +1,6 @@
 #include "Texture.h"
 
+
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image.h>
@@ -53,7 +54,13 @@ Texture::Texture(const std::string& filePath, VkFormat textureByteFormat, Textur
 	CreateImageTexture(filePath);
 	TextureFunctions::CreateTextureView(this);
 	CreateTextureSampler();
+
+
+#ifdef DLL_EXCLUDE2
+	ImGuiDescriptorSet = VK_NULL_HANDLE;
+#else
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+#endif
 }
 
 Texture::~Texture()
