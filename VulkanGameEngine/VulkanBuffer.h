@@ -76,17 +76,17 @@ public:
 		return Buffer_CreateBuffer(SendCBufferInfo().get(), bufferData, bufferSize, usage, properties);
 	}
 
-	virtual void UpdateBufferData(const T& bufferData)
+	virtual void UpdateBufferData(T& bufferData)
 	{
 		if (BufferSize < sizeof(T))
 		{
 			RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
 			return;
 		}
-		Buffer_UpdateBufferMemory(SendCBufferInfo().get(), const_cast<void*>(static_cast<const void*>(&bufferData)), sizeof(T));
+		Buffer_UpdateBufferMemory(SendCBufferInfo().get(), &bufferData, sizeof(T));
 	}
 
-	virtual void UpdateBufferData(const List<T>& bufferData)
+	virtual void UpdateBufferData(List<T>& bufferData)
 	{
 		const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
 		if (BufferSize != newBufferSize)
@@ -104,7 +104,7 @@ public:
 			return;
 		}
 
-		Buffer_UpdateBufferMemory(SendCBufferInfo().get(), const_cast<void*>(static_cast<const void*>(bufferData.data())), newBufferSize);
+		Buffer_UpdateBufferMemory(SendCBufferInfo().get(), bufferData.data(), newBufferSize);
 	}
 
 	virtual void UpdateBufferData(void* bufferData)
@@ -117,12 +117,12 @@ public:
 		Buffer_UpdateBufferMemory(SendCBufferInfo().get(), bufferData, sizeof(T));
 	}
 
-	std::vector<T> CheckBufferContents()
+	std::vector<T> CheckStagingBufferContents()
 	{
 		std::vector<T> DataList;
 		size_t dataListSize = BufferSize / sizeof(T);
 
-		void* data = Buffer_MapBufferMemory(SendCBufferInfo().get());
+		void* data = Buffer_MapBufferMemory(renderer.Device, StagingBufferMemory, BufferSize, &IsMapped);
 		if (data == nullptr) {
 			std::cerr << "Failed to map buffer memory\n";
 			return DataList;
@@ -134,7 +134,29 @@ public:
 			DataList.emplace_back(*reinterpret_cast<T*>(newPtr));
 			newPtr += sizeof(T);
 		}
-		Buffer_UnmapBufferMemory(SendCBufferInfo().get());
+		Buffer_UnmapBufferMemory(renderer.Device, StagingBufferMemory, &IsMapped);
+
+		return DataList;
+	}
+
+	std::vector<T> CheckBufferContents()
+	{
+		std::vector<T> DataList;
+		size_t dataListSize = BufferSize / sizeof(T);
+
+		void* data = Buffer_MapBufferMemory(renderer.Device, BufferMemory, BufferSize, &IsMapped);
+		if (data == nullptr) {
+			std::cerr << "Failed to map buffer memory\n";
+			return DataList;
+		}
+
+		char* newPtr = static_cast<char*>(data);
+		for (size_t x = 0; x < dataListSize; ++x)
+		{
+			DataList.emplace_back(*reinterpret_cast<T*>(newPtr));
+			newPtr += sizeof(T);
+		}
+		Buffer_UnmapBufferMemory(renderer.Device, BufferMemory, &IsMapped);
 
 		return DataList;
 	}

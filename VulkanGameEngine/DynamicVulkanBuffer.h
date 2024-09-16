@@ -6,17 +6,17 @@ class DynamicVulkanBuffer : public VulkanBuffer<T>
 {
 private:
 
-	virtual void UpdateBufferData(const T& bufferData) 
+	virtual void UpdateBufferData(T& bufferData) 
 	{
 		if (VulkanBuffer<T>::BufferSize < sizeof(T))
 		{
 			RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
 			return;
 		}
-		Buffer_UpdateStagingBufferMemory(VulkanBuffer<T>::SendCBufferInfo().get(), const_cast<void*>(static_cast<const void*>(&bufferData)), sizeof(T));
+		Buffer_UpdateStagingBufferMemory(VulkanBuffer<T>::SendCBufferInfo().get(), static_cast<void*>(&bufferData), sizeof(T));
 	}
 
-	virtual void UpdateBufferData(const List<T>& bufferData) override
+	virtual void UpdateBufferData(List<T>& bufferData) override
 	{
 		const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
 		if (VulkanBuffer<T>::BufferSize != newBufferSize)
@@ -34,7 +34,7 @@ private:
 			return;
 		}
 
-		Buffer_UpdateStagingBufferMemory(VulkanBuffer<T>::SendCBufferInfo().get(), const_cast<void*>(static_cast<const void*>(bufferData.data())), newBufferSize);
+		Buffer_UpdateStagingBufferMemory(VulkanBuffer<T>::SendCBufferInfo().get(), bufferData.data(), newBufferSize);
 	}
 
 	virtual void UpdateBufferData(void* bufferData) override
@@ -44,7 +44,7 @@ private:
 			RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
 			return;
 		}
-		Buffer_UpdateStagingBufferMemory(VulkanBuffer<T>::SendCBufferInfo().get(), const_cast<void*>(static_cast<const void*>(&bufferData)), sizeof(T));
+		Buffer_UpdateStagingBufferMemory(VulkanBuffer<T>::SendCBufferInfo().get(), bufferData, sizeof(T));
 	}
 
 	virtual VkResult CopyStagingBuffer(VkCommandBuffer& commandBuffer)
@@ -71,15 +71,15 @@ public:
 		return Buffer_CreateStagingBuffer(VulkanBuffer<T>::SendCBufferInfo().get(), bufferData, bufferSize, usage, properties);
 	}
 
-	virtual void UpdateBuffer(VkCommandBuffer& commandBuffer, const T& bufferData)
+	virtual void UpdateBuffer(VkCommandBuffer& commandBuffer, T& bufferData)
 	{
-		UpdateBufferData(data);
+		UpdateBufferData(bufferData);
 		CopyStagingBuffer(commandBuffer);
 	}
 
-	virtual void UpdateBuffer(VkCommandBuffer& commandBuffer, const List<T>& bufferData)
+	virtual void UpdateBuffer(VkCommandBuffer& commandBuffer, List<T>& bufferData)
 	{
-		UpdateBufferData(data);
+		UpdateBufferData(bufferData);
 		CopyStagingBuffer(commandBuffer);
 	}
 

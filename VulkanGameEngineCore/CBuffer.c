@@ -36,7 +36,7 @@ void* Buffer_MapBufferMemory(VkDevice device, VkDeviceMemory deviceMemory, size_
     }
 
     void* mappedData;
-    VULKAN_RESULT(vkMapMemory(device, &deviceMemory, 0, bufferSize, 0, &mappedData));
+    VULKAN_RESULT(vkMapMemory(device, deviceMemory, 0, bufferSize, 0, &mappedData));
     *isMapped = true;
     return mappedData;
 }
@@ -182,9 +182,9 @@ VkResult Buffer_UpdateBufferMemory(struct VulkanBufferInfo* bufferInfo, void* da
 VkResult Buffer_UpdateStagingBufferMemory(struct VulkanBufferInfo* bufferInfo, void* DataToCopy, VkDeviceSize BufferSize)
 {
     void* mappedData;
-    vkMapMemory(renderer.Device, bufferInfo->StagingBufferMemory, 0, BufferSize, 0, &mappedData);
+    vkMapMemory(renderer.Device, *bufferInfo->StagingBufferMemory, 0, BufferSize, 0, &mappedData);
     memcpy(mappedData, DataToCopy, (size_t)BufferSize);
-    vkUnmapMemory(renderer.Device, bufferInfo->StagingBufferMemory);
+    vkUnmapMemory(renderer.Device, *bufferInfo->StagingBufferMemory);
 }
 
 void Buffer_DestroyBuffer(struct VulkanBufferInfo* bufferInfo)

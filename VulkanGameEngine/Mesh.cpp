@@ -33,7 +33,10 @@ void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer)
 	MeshProperties.MeshIndex++;
 	MeshProperties.MaterialIndex++;
 	MeshProperties.MeshTransform = MeshTransform;
+	//auto b = PropertiesBuffer.CheckStagingBufferContents();
+	//auto c = PropertiesBuffer.CheckBufferContents();
 	PropertiesBuffer.UpdateBuffer(commandBuffer, static_cast<void*>(&MeshProperties));
+	//auto a = PropertiesBuffer.CheckBufferContents();
 }
 
 void Mesh::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
