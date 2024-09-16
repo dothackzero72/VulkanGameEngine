@@ -47,6 +47,7 @@ public:
 	template <class T> static VkResult CopyBufferToTexture(Texture& texture, DynamicVulkanBuffer<T>& buffer);
 	template <class T> static VkResult CopyBufferToTexture(Texture* texture, DynamicVulkanBuffer<T>& buffer);
 	template <class T> static VkResult CopyBufferToTexture(std::shared_ptr<Texture> texture, DynamicVulkanBuffer<T>& buffer);
+
 	static VkResult CopyBufferToTexture(Texture& texture, VkBuffer& buffer);
 	static VkResult CopyBufferToTexture(Texture* texture, VkBuffer& buffer);
 	static VkResult CopyBufferToTexture(std::shared_ptr<Texture> texture, VkBuffer& buffer);

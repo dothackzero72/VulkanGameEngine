@@ -1,7 +1,7 @@
 #pragma once
 #include "VulkanRenderer.h"
 #include <ImGui/imgui.h>
-#include <glfw/glfw3.h> 
+#include <../External/glfw/include/GLFW/glfw3.h>
 #include <ImGui/imgui_impl_vulkan.h>
 #include <ImGui/imgui_impl_sdl2.h>
 #include <ImGui/imgui_impl_glfw.h>

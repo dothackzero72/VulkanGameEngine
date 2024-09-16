@@ -58,6 +58,9 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="StbImageSharp, Version=2.27.14.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StbImageSharp.2.27.14\lib\net471\StbImageSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -77,7 +80,10 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameEngineAPI\DynamicVulkanBuffer.cs" />
     <Compile Include="GameEngineAPI\GameEngineDLL.cs" />
+    <Compile Include="GameEngineAPI\GameEngineEnums.cs" />
+    <Compile Include="GameEngineAPI\Texture.cs" />
     <Compile Include="GameEngineAPI\VulkanBuffer.cs" />
     <Compile Include="GameEngineAPI\VulkanRenderer.cs" />
     <Compile Include="Program.cs" />

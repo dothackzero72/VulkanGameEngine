@@ -10,43 +10,40 @@ using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public unsafe class VulkanRenderer
+    public static unsafe class VulkanRenderer
     {
+
+
         public const int MAX_FRAMES_IN_FLIGHT = 3;
-        public bool RebuildRendererFlag { get; set; } = false;
-        public IntPtr WindowHandleCopy = IntPtr.Zero;
-        public VkInstance Instance { get; private set; } = new VkInstance();
-        public VkDevice Device { get; private set; } = new VkDevice();
-        public VkPhysicalDevice PhysicalDevice { get; private set; } = new VkPhysicalDevice();
-        public VkSurfaceKHR Surface { get; private set; } = new VkSurfaceKHR();
-        public VkCommandPool CommandPool { get; private set; } = new VkCommandPool();
-        public UInt32 ImageIndex { get; private set; } = new UInt32();
-        public UInt32 CommandIndex { get; private set; } = new UInt32();
-        public VkDebugUtilsMessengerEXT DebugMessenger { get; private set; } = new VkDebugUtilsMessengerEXT();
-        public VkPhysicalDeviceFeatures PhysicalDeviceFeatures { get; private set; } = new VkPhysicalDeviceFeatures();
-        public List<VkFence> InFlightFences { get; private set; } = new List<VkFence>();
-        public List<VkSemaphore> AcquireImageSemaphores { get; private set; } = new List<VkSemaphore>();
-        public List<VkSemaphore> PresentImageSemaphores { get; private set; } = new List<VkSemaphore>();
-        public UInt32 SwapChainImageCount { get; private set; } = new UInt32();
-        public UInt32 GraphicsFamily { get; private set; } = new UInt32();
-        public UInt32 PresentFamily { get; private set; } = new UInt32();
-        public VkQueue GraphicsQueue { get; private set; } = new VkQueue();
-        public VkQueue PresentQueue { get; private set; } = new VkQueue();
-        public VkFormat Format { get; private set; } = new VkFormat();
-        public VkColorSpaceKHR ColorSpace { get; private set; } = new VkColorSpaceKHR();
-        public VkPresentModeKHR PresentMode { get; private set; } = new VkPresentModeKHR();
-        public List<VkImage> SwapChainImages { get; private set; } = new List<VkImage> { };
-        public List<VkImageView> SwapChainImageViews { get; private set; } = new List<VkImageView> { };
-        public VkExtent2D SwapChainResolution { get; private set; } = new VkExtent2D();
-        public VkSwapchainKHR Swapchain { get; private set; } = new VkSwapchainKHR();
+        public static bool RebuildRendererFlag { get; set; } = false;
+        public static IntPtr WindowHandleCopy = IntPtr.Zero;
+        public static VkInstance Instance { get; private set; } = new VkInstance();
+        public static VkDevice Device { get; private set; } = new VkDevice();
+        public static VkPhysicalDevice PhysicalDevice { get; private set; } = new VkPhysicalDevice();
+        public static VkSurfaceKHR Surface { get; private set; } = new VkSurfaceKHR();
+        public static VkCommandPool CommandPool { get; private set; } = new VkCommandPool();
+        public static UInt32 ImageIndex { get; private set; } = new UInt32();
+        public static UInt32 CommandIndex { get; private set; } = new UInt32();
+        public static VkDebugUtilsMessengerEXT DebugMessenger { get; private set; } = new VkDebugUtilsMessengerEXT();
+        public static VkPhysicalDeviceFeatures PhysicalDeviceFeatures { get; private set; } = new VkPhysicalDeviceFeatures();
+        public static List<VkFence> InFlightFences { get; private set; } = new List<VkFence>();
+        public static List<VkSemaphore> AcquireImageSemaphores { get; private set; } = new List<VkSemaphore>();
+        public static List<VkSemaphore> PresentImageSemaphores { get; private set; } = new List<VkSemaphore>();
+        public static UInt32 SwapChainImageCount { get; private set; } = new UInt32();
+        public static UInt32 GraphicsFamily { get; private set; } = new UInt32();
+        public static UInt32 PresentFamily { get; private set; } = new UInt32();
+        public static VkQueue GraphicsQueue { get; private set; } = new VkQueue();
+        public static VkQueue PresentQueue { get; private set; } = new VkQueue();
+        public static VkFormat Format { get; private set; } = new VkFormat();
+        public static VkColorSpaceKHR ColorSpace { get; private set; } = new VkColorSpaceKHR();
+        public static VkPresentModeKHR PresentMode { get; private set; } = new VkPresentModeKHR();
+        public static List<VkImage> SwapChainImages { get; private set; } = new List<VkImage> { };
+        public static List<VkImageView> SwapChainImageViews { get; private set; } = new List<VkImageView> { };
+        public static VkExtent2D SwapChainResolution { get; private set; } = new VkExtent2D();
+        public static VkSwapchainKHR Swapchain { get; private set; } = new VkSwapchainKHR();
 
 
-        public VulkanRenderer()
-        {
-
-        }
-
-        public void SetUpRenderer(IntPtr handle, PictureBox pictureBox)
+        public static void SetUpRenderer(IntPtr handle, PictureBox pictureBox)
         {
             WindowHandleCopy = handle;
             CreateVulkanInstance();
@@ -69,12 +66,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GetDeviceQueue();
         }
 
-        public void CreateVulkanInstance()
+        public static void CreateVulkanInstance()
         {
             try
             {
                 Instance = GameEngineDLL.DLL_Renderer_CreateVulkanInstance();
-                if (Instance == UIntPtr.Zero)
+                if (Instance == IntPtr.Zero)
                 {
                     MessageBox.Show("Failed to create Vulkan instance.");
                 }
@@ -85,12 +82,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private void SetupDebugMessenger()
+        private static void SetupDebugMessenger()
         {
             try
             {
                 DebugMessenger = GameEngineDLL.DLL_Renderer_SetupDebugMessenger(Instance);
-                if (DebugMessenger == UIntPtr.Zero)
+                if (DebugMessenger == IntPtr.Zero)
                 {
                     MessageBox.Show("Failed to set up debug messenger.");
                 }
@@ -101,7 +98,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        public void CreateVulkanSurface(PictureBox pictureBox)
+        public static void CreateVulkanSurface(PictureBox pictureBox)
         {
             var surfaceCreateInfo = new VkWin32SurfaceCreateInfoKHR
             {
@@ -110,7 +107,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 hinstance = Marshal.GetHINSTANCE(typeof(Form1).Module)
             };
 
-            VkSurfaceKHR surface = UIntPtr.Zero;
+            VkSurfaceKHR surface = IntPtr.Zero;
             if (VulkanAPI.vkCreateWin32SurfaceKHR(Instance, ref surfaceCreateInfo, IntPtr.Zero, out surface) != 0)
             {
                 MessageBox.Show("Failed to create Vulkan surface.");
@@ -119,7 +116,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Surface = surface;
         }
 
-        private void SetUpPhysicalDevice()
+        private static void SetUpPhysicalDevice()
         {
             try
             {
@@ -145,12 +142,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private void SetUpDevice()
+        private static void SetUpDevice()
         {
             try
             {
                 Device = GameEngineDLL.DLL_Renderer_SetUpDevice(PhysicalDevice, GraphicsFamily, PresentFamily);
-                if (Device == UIntPtr.Zero)
+                if (Device == IntPtr.Zero)
                 {
                     MessageBox.Show("Failed to set up Vulkan device.");
                 }
@@ -161,12 +158,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private void SetUpCommandPool()
+        private static void SetUpCommandPool()
         {
             try
             {
                 CommandPool = GameEngineDLL.DLL_Renderer_SetUpCommandPool(Device, GraphicsFamily);
-                if (CommandPool == UIntPtr.Zero)
+                if (CommandPool == IntPtr.Zero)
                 {
                     MessageBox.Show("Failed to set up command pool.");
                 }
@@ -177,7 +174,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private void SetUpSemaphores()
+        private static void SetUpSemaphores()
         {
             try
             {
@@ -210,7 +207,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private void GetDeviceQueue()
+        private static void GetDeviceQueue()
         {
             try
             {
@@ -230,7 +227,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private List<VkSurfaceFormatKHR> GetSurfaceFormats()
+        private static  List<VkSurfaceFormatKHR> GetSurfaceFormats()
         {
             try
             {
@@ -259,7 +256,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private List<VkPresentModeKHR> GetPresentModes()
+        private static List<VkPresentModeKHR> GetPresentModes()
         {
             try
             {
@@ -288,7 +285,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return new List<VkPresentModeKHR>();
         }
 
-        private VkSurfaceFormatKHR FindSwapSurfaceFormat(List<VkSurfaceFormatKHR> surfaceFormatList)
+        private static VkSurfaceFormatKHR FindSwapSurfaceFormat(List<VkSurfaceFormatKHR> surfaceFormatList)
         {
             try
             {
@@ -306,7 +303,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private VkPresentModeKHR FindSwapPresentMode(List<VkPresentModeKHR> presentModeList)
+        private static VkPresentModeKHR FindSwapPresentMode(List<VkPresentModeKHR> presentModeList)
         {
             try
             {
@@ -319,7 +316,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private void GetQueueFamilies()
+        private static void GetQueueFamilies()
         {
             try
             {
@@ -335,7 +332,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private VkSurfaceCapabilitiesKHR GetSurfaceCapabilities()
+        private static VkSurfaceCapabilitiesKHR GetSurfaceCapabilities()
         {
             try
             {
@@ -355,7 +352,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private List<VkSurfaceFormatKHR> GetPhysicalDeviceFormats()
+        private static List<VkSurfaceFormatKHR> GetPhysicalDeviceFormats()
         {
             uint surfaceFormatCount = 0;
             IntPtr compatibleFormatsPtr = IntPtr.Zero;
@@ -384,7 +381,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return compatibleFormats.ToList();
         }
 
-        private List<VkPresentModeKHR> GetPhysicalDevicePresentModes()
+        private static List<VkPresentModeKHR> GetPhysicalDevicePresentModes()
         {
             uint presentModeCount = 0;
             IntPtr presentModesPointer = IntPtr.Zero;
@@ -414,7 +411,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return presentModes;
         }
 
-        private void GetFrameBufferSize(PictureBox pictureBox)
+        private static void GetFrameBufferSize(PictureBox pictureBox)
         {
             SwapChainResolution = new VkExtent2D
             {   
@@ -422,22 +419,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Height = (uint)pictureBox.Height
             };
         }
-        private void SetUpSwapChain(VkSurfaceCapabilitiesKHR surfaceCapabilities, VkSurfaceFormatKHR surfaceFormat, VkPresentModeKHR presentMode)
+        private static void SetUpSwapChain(VkSurfaceCapabilitiesKHR surfaceCapabilities, VkSurfaceFormatKHR surfaceFormat, VkPresentModeKHR presentMode)
         {
             try
             {
                 uint swapChainImageCount = 0;
-                Swapchain = GameEngineDLL.DLL_SwapChain_SetUpSwapChain(
-                    Device,
-                    Surface,
-                    surfaceCapabilities,
-                    surfaceFormat,
-                    presentMode,
-                    GraphicsFamily,
-                    PresentFamily,
-                    SwapChainResolution.Width,
-                    SwapChainResolution.Height,
-                    out swapChainImageCount);
+                Swapchain = GameEngineDLL.DLL_SwapChain_SetUpSwapChain(Device, Surface, surfaceCapabilities, surfaceFormat, presentMode, GraphicsFamily, PresentFamily, SwapChainResolution.Width, SwapChainResolution.Height, out swapChainImageCount);
                 SwapChainImageCount = swapChainImageCount;
             }
             catch (Exception ex)
@@ -446,7 +433,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private void SetUpSwapChainImages()
+        private static void SetUpSwapChainImages()
         {
             try
             {
@@ -473,7 +460,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private void SetUpSwapChainImageViews(VkSurfaceFormatKHR surfaceFormat)
+        private static void SetUpSwapChainImageViews(VkSurfaceFormatKHR surfaceFormat)
         {
             try
             {

@@ -2,57 +2,57 @@
 
 VkResult TextureFunctions::CreateTextureImage(Texture& texture)
 {
-	return Texture_CreateTextureImage(&texture.Image, texture.Memory, texture.Width, texture.Height, texture.MipMapLevels, texture.TextureByteFormat);
+	return Texture_CreateTextureImage(renderer.Device, &texture.Image, texture.Memory, texture.Width, texture.Height, texture.MipMapLevels, texture.TextureByteFormat);
 }
 
 VkResult TextureFunctions::CreateTextureImage(Texture* texture)
 {
-	return Texture_CreateTextureImage(&texture->Image, texture->Memory, texture->Width, texture->Height, texture->MipMapLevels, texture->TextureByteFormat);
+	return Texture_CreateTextureImage(renderer.Device, &texture->Image, texture->Memory, texture->Width, texture->Height, texture->MipMapLevels, texture->TextureByteFormat);
 }
 
 VkResult TextureFunctions::CreateTextureImage(std::shared_ptr<Texture> texture)
 {
-	return Texture_CreateTextureImage(&texture->Image, texture->Memory, texture->Width, texture->Height, texture->MipMapLevels, texture->TextureByteFormat);
+	return Texture_CreateTextureImage(renderer.Device, &texture->Image, texture->Memory, texture->Width, texture->Height, texture->MipMapLevels, texture->TextureByteFormat);
 }
 
 VkResult TextureFunctions::CreateTextureImage(VkImage& image, VkDeviceMemory memory, vec2 textureSize, uint32 mipmapLevels, VkFormat textureByteFormat)
 {
-	return Texture_CreateTextureImage(&image, memory, static_cast<int>(textureSize.x), static_cast<int>(textureSize.y), mipmapLevels, textureByteFormat);
+	return Texture_CreateTextureImage(renderer.Device, &image, memory, static_cast<int>(textureSize.x), static_cast<int>(textureSize.y), mipmapLevels, textureByteFormat);
 }
 
 VkResult TextureFunctions::CreateTextureImage(VkImage& image, VkDeviceMemory memory, ivec2 textureSize, uint32 mipmapLevels, VkFormat textureByteFormat)
 {
-	return Texture_CreateTextureImage(&image, memory, textureSize.x, textureSize.y, mipmapLevels, textureByteFormat);
+	return Texture_CreateTextureImage(renderer.Device, &image, memory, textureSize.x, textureSize.y, mipmapLevels, textureByteFormat);
 }
 
 VkResult TextureFunctions::CreateTextureImage(VkImage& image, VkDeviceMemory memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat)
 {
-	return Texture_CreateTextureImage(&image, memory, width, height, mipmapLevels, textureByteFormat);
+	return Texture_CreateTextureImage(renderer.Device, &image, memory, width, height, mipmapLevels, textureByteFormat);
 }
 
 VkResult TextureFunctions::CreateTextureView(Texture& texture)
 {
-	return Texture_CreateTextureView(&texture.View, texture.Image, texture.TextureByteFormat, texture.MipMapLevels);
+	return Texture_CreateTextureView(renderer.Device, &texture.View, texture.Image, texture.TextureByteFormat, texture.MipMapLevels);
 }
 
 VkResult TextureFunctions::CreateTextureView(Texture* texture)
 {
-	return Texture_CreateTextureView(&texture->View, texture->Image, texture->TextureByteFormat, texture->MipMapLevels);
+	return Texture_CreateTextureView(renderer.Device, &texture->View, texture->Image, texture->TextureByteFormat, texture->MipMapLevels);
 }
 
 VkResult TextureFunctions::CreateTextureView(std::shared_ptr<Texture> texture)
 {
-	return Texture_CreateTextureView(&texture->View, texture->Image, texture->TextureByteFormat, texture->MipMapLevels);
+	return Texture_CreateTextureView(renderer.Device, &texture->View, texture->Image, texture->TextureByteFormat, texture->MipMapLevels);
 }
 
 VkResult TextureFunctions::CreateTextureView(VkImageView& view, VkImage image, VkFormat format, uint32 mipmapLevels)
 {
-	return Texture_CreateTextureView(&view, image, format, mipmapLevels);
+	return Texture_CreateTextureView(renderer.Device, &view, image, format, mipmapLevels);
 }
 
 VkResult TextureFunctions::CreateTextureSampler(VkSamplerCreateInfo* samplerCreateInfo, VkSampler* smapler)
 {
-	return Texture_CreateTextureSampler(samplerCreateInfo, smapler);
+	return Texture_CreateTextureSampler(renderer.Device, samplerCreateInfo, smapler);
 }
 
 VkResult TextureFunctions::TransitionImageLayout(Texture texture, VkImageLayout newLayout)
@@ -162,30 +162,30 @@ VkResult TextureFunctions::CopyBufferToTexture(VkImage image, VkBuffer buffer, T
 
 VkResult TextureFunctions::GenerateMipmaps(Texture& texture)
 {
-	return Texture_GenerateMipmaps(texture.Image, &texture.TextureByteFormat, texture.MipMapLevels, texture.Width, texture.Height);
+	return Texture_GenerateMipmaps(renderer.PhysicalDevice, texture.Image, &texture.TextureByteFormat, texture.MipMapLevels, texture.Width, texture.Height);
 }
 
 VkResult TextureFunctions::GenerateMipmaps(Texture* texture)
 {
-	return Texture_GenerateMipmaps(texture->Image, &texture->TextureByteFormat, texture->MipMapLevels, texture->Width, texture->Height);
+	return Texture_GenerateMipmaps(renderer.PhysicalDevice, texture->Image, &texture->TextureByteFormat, texture->MipMapLevels, texture->Width, texture->Height);
 }
 
 VkResult TextureFunctions::GenerateMipmaps(std::shared_ptr<Texture> texture)
 {
-	return Texture_GenerateMipmaps(texture->Image, &texture->TextureByteFormat, texture->MipMapLevels, texture->Width, texture->Height);
+	return Texture_GenerateMipmaps(renderer.PhysicalDevice, texture->Image, &texture->TextureByteFormat, texture->MipMapLevels, texture->Width, texture->Height);
 }
 
 VkResult TextureFunctions::GenerateMipmaps(VkImage image, VkFormat& textureByteFormat, uint32 mipmapLevels, int width, int height)
 {
-	return Texture_GenerateMipmaps(image, &textureByteFormat, mipmapLevels, width, height);
+	return Texture_GenerateMipmaps(renderer.PhysicalDevice, image, &textureByteFormat, mipmapLevels, width, height);
 }
 
 VkResult TextureFunctions::GenerateMipmaps(VkImage image, VkFormat& textureByteFormat, uint32 mipmapLevels, ivec2 textureSize)
 {
-	return Texture_GenerateMipmaps(image, &textureByteFormat, mipmapLevels, textureSize.x, textureSize.y);
+	return Texture_GenerateMipmaps(renderer.PhysicalDevice, image, &textureByteFormat, mipmapLevels, textureSize.x, textureSize.y);
 }
 
 VkResult TextureFunctions::GenerateMipmaps(VkImage image, VkFormat& textureByteFormat, uint32 mipmapLevels, vec2 textureSize)
 {
-	return Texture_GenerateMipmaps(image, &textureByteFormat, mipmapLevels, static_cast<int>(textureSize.x), static_cast<int>(textureSize.y));
+	return Texture_GenerateMipmaps(renderer.PhysicalDevice, image, &textureByteFormat, mipmapLevels, static_cast<int>(textureSize.x), static_cast<int>(textureSize.y));
 }

@@ -11,6 +11,14 @@ extern "C"
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_vulkan.h>
 
+enum ColorChannelUsed
+{
+	ChannelR = 1,
+	ChannelRG,
+	ChannelRGB,
+	ChannelRGBA
+};
+
 class TextureFunctions;
 class Texture
 {
@@ -21,6 +29,7 @@ class Texture
 		int Width;
 		int Height;
 		int Depth;
+		ColorChannelUsed ColorChannels;
 		uint32 MipMapLevels;
 
 		TextureUsageEnum TextureUsage;

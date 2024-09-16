@@ -210,7 +210,7 @@ namespace VulkanGameEngineLevelEditor
     [StructLayout(LayoutKind.Sequential)]
     public struct VkMemoryType
     {
-        public VkMemoryPropertyFlags propertyFlags;
+        public VkMemoryPropertyFlagBits propertyFlags;
         public uint heapIndex;
     }
 
@@ -431,7 +431,7 @@ namespace VulkanGameEngineLevelEditor
     [StructLayout(LayoutKind.Sequential)]
     public struct VkQueueFamilyProperties
     {
-        public VkQueueFlags queueFlags;
+        public VkQueueFlagBits queueFlags;
         public uint queueCount;
         public uint timestampValidBits;
         public VkExtent3D minImageTransferGranularity;
@@ -1040,7 +1040,12 @@ namespace VulkanGameEngineLevelEditor
     {
         public VkBuffer buffer;
         public VkDeviceSize offset;
-        public VkDeviceSize range;
+        public ulong range;
+
+        public VkDescriptorBufferInfo()
+        {
+            range = ulong.MaxValue;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1715,10 +1720,10 @@ namespace VulkanGameEngineLevelEditor
         public VkDeviceMemory StagingBufferMemory;
         public VkDeviceSize BufferSize;
         public VkBufferUsageFlags BufferUsage;
-        public VkMemoryPropertyFlags BufferProperties;
-        public ulong BufferDeviceAddress;
-        public VkAccelerationStructureKHR BufferHandle;
-        public void* BufferData;
+        public VkMemoryPropertyFlagBits BufferProperties;
+        public IntPtr BufferDeviceAddress;
+        public IntPtr BufferHandle;
+        public IntPtr BufferData;
         public bool IsMapped;
     }
 }

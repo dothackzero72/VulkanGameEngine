@@ -10,9 +10,9 @@ VkResult DLL_Buffer_CreateStagingBuffer(VulkanBufferInfo* bufferInfo, void* buff
     return Buffer_CreateStagingBuffer(bufferInfo, bufferData, bufferSize, bufferUsage, properties);
 }
 
-VkResult DLL_Buffer_CopyBuffer(VulkanBufferInfo* bufferInfo, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
+VkResult DLL_Buffer_CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 {
-    return Buffer_CopyBuffer(bufferInfo, srcBuffer, dstBuffer, size);
+    return Buffer_CopyBuffer(srcBuffer, dstBuffer, size);
 }
 
 VkResult DLL_Buffer_CopyStagingBuffer(VulkanBufferInfo* bufferInfo, VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
@@ -49,3 +49,8 @@ VkResult DLL_Buffer_UpdateBufferSize(VulkanBufferInfo* bufferInfo, VkDeviceSize 
  {
     Buffer_DestroyBuffer(bufferInfo);
 }
+
+ int DLL_BUFFER_BufferTest()
+ {
+     return 45;
+ }

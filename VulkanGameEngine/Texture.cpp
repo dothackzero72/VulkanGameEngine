@@ -54,13 +54,7 @@ Texture::Texture(const std::string& filePath, VkFormat textureByteFormat, Textur
 	CreateImageTexture(filePath);
 	TextureFunctions::CreateTextureView(this);
 	CreateTextureSampler();
-
-
-#ifdef DLL_EXCLUDE2
-	ImGuiDescriptorSet = VK_NULL_HANDLE;
-#else
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-#endif
 }
 
 Texture::~Texture()
@@ -112,6 +106,7 @@ void Texture::CreateImageTexture(const std::string& FilePath)
 	VULKAN_RESULT(TextureFunctions::GenerateMipmaps(this));
 	buffer.DestroyBuffer();
 
+	ColorChannels = (ColorChannelUsed)colorChannels;
 	stbi_image_free(data);
 }
 

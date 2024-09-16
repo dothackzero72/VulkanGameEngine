@@ -97,7 +97,7 @@ VkResult Buffer_CreateStagingBuffer(struct VulkanBufferInfo* bufferInfo, void* b
     return vkBindBufferMemory(renderer.Device, *bufferInfo->StagingBuffer, *bufferInfo->StagingBufferMemory, 0);
 }
 
-VkResult Buffer_CopyBuffer(struct VulkanBufferInfo* bufferInfo, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
+VkResult Buffer_CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 {
     if (srcBuffer == NULL)
     {

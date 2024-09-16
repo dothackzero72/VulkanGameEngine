@@ -47,13 +47,14 @@ enum TextureTypeEnum
     kType_BakedTexture
 };
 
-VkResult Texture_CreateTextureImage(VkImage* image, VkDeviceMemory memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat);
-VkResult Texture_CreateTextureView(VkImageView* view, VkImage image, VkFormat format, uint32 mipmapLevels);
-VkResult Texture_CreateTextureSampler(VkSamplerCreateInfo* samplerCreateInfo, VkSampler* smapler);
-VkResult Texture_QuickTransitionImageLayout(VkImage image, uint32 MipmapLevels, VkImageLayout* oldLayout, VkImageLayout* newLayout);
-VkResult Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint32 MipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout);
+VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint32 mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout);
+VkResult Texture_CreateTextureImage(VkDevice Device, VkImage* image, VkDeviceMemory memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat);
+VkResult Texture_QuickTransitionImageLayout(VkImage image, uint32 mipmapLevels, VkImageLayout* oldLayout, VkImageLayout* newLayout);
+VkResult Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint32 mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout);
 VkResult Texture_CopyBufferToTexture(VkImage image, VkBuffer buffer, enum TextureUsageEnum textureType, int width, int height, int depth);
-VkResult Texture_GenerateMipmaps(VkImage image, VkFormat* textureByteFormat, uint32 mipmapLevels, int width, int height);
+VkResult Texture_GenerateMipmaps(VkPhysicalDevice physicalDevice, VkImage image, VkFormat* textureByteFormat, uint32 mipmapLevels, int width, int height);
+VkResult Texture_CreateTextureView(VkDevice device, VkImageView* view, VkImage image, VkFormat format, uint32 mipmapLevels);
+VkResult Texture_CreateTextureSampler(VkDevice device, VkSamplerCreateInfo* samplerCreateInfo, VkSampler* smapler);
 
 #ifdef __cplusplus
 }

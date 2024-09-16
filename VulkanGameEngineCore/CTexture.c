@@ -1,7 +1,7 @@
 #include "CTexture.h"
 #include "VulkanRenderer.h"
 
-static TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint32 mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout)
+VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint32 mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
 	VkPipelineStageFlags sourceStage = VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM;
 	VkPipelineStageFlags destinationStage = VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM;
@@ -39,9 +39,10 @@ static TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint3
 	}
 
 	vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, NULL, 0, NULL, 1, &barrier);
+	return VK_SUCCESS;
 }
 
-VkResult Texture_CreateTextureImage(VkImage* image, VkDeviceMemory memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat)
+VkResult Texture_CreateTextureImage(VkDevice Device, VkImage* image, VkDeviceMemory memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat)
 {
 	VkImageCreateInfo ImageCreateInfo =
 	{
@@ -62,10 +63,10 @@ VkResult Texture_CreateTextureImage(VkImage* image, VkDeviceMemory memory, int w
 		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 	};
-	VULKAN_RESULT(vkCreateImage(renderer.Device, &ImageCreateInfo, NULL, image));
+	VULKAN_RESULT(vkCreateImage(Device, &ImageCreateInfo, NULL, image));
 
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(renderer.Device, *image, &memRequirements);
+	vkGetImageMemoryRequirements(Device, *image, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo =
 	{
@@ -73,14 +74,14 @@ VkResult Texture_CreateTextureImage(VkImage* image, VkDeviceMemory memory, int w
 		.allocationSize = memRequirements.size,
 		.memoryTypeIndex = Renderer_GetMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 	};
-	VULKAN_RESULT(vkAllocateMemory(renderer.Device, &allocInfo, NULL, &memory));
-	return vkBindImageMemory(renderer.Device, *image, memory, 0);
+	VULKAN_RESULT(vkAllocateMemory(Device, &allocInfo, NULL, &memory));
+	return vkBindImageMemory(Device, *image, memory, 0);
 }
 
 VkResult Texture_QuickTransitionImageLayout(VkImage image, uint32 mipmapLevels, VkImageLayout* oldLayout, VkImageLayout* newLayout)
 {
 	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer();
-	TransitionImageLayout(commandBuffer, image, mipmapLevels, *oldLayout, *newLayout);
+	Texture_TransitionImageLayout(commandBuffer, image, mipmapLevels, *oldLayout, *newLayout);
 	VkResult result = Renderer_EndSingleUseCommandBuffer(commandBuffer);
 	if (result == VK_SUCCESS)
 	{
@@ -91,7 +92,7 @@ VkResult Texture_QuickTransitionImageLayout(VkImage image, uint32 mipmapLevels, 
 
 VkResult Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint32 mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
-	TransitionImageLayout(commandBuffer, image, mipmapLevels, oldLayout, newLayout);
+	Texture_TransitionImageLayout(commandBuffer, image, mipmapLevels, oldLayout, newLayout);
 	return VK_SUCCESS;
 }
 
@@ -122,14 +123,14 @@ VkResult Texture_CopyBufferToTexture(VkImage image, VkBuffer buffer, enum Textur
 	return Renderer_EndSingleUseCommandBuffer(commandBuffer);
 }
 
-VkResult Texture_GenerateMipmaps(VkImage image, VkFormat* textureByteFormat, uint32 mipmapLevels, int width, int height)
+VkResult Texture_GenerateMipmaps(VkPhysicalDevice physicalDevice, VkImage image, VkFormat* textureByteFormat, uint32 mipmapLevels, int width, int height)
 {
 
 	int32_t mipWidth = width;
 	int32_t mipHeight = height;
 
 	VkFormatProperties formatProperties;
-	vkGetPhysicalDeviceFormatProperties(renderer.PhysicalDevice, *textureByteFormat, &formatProperties);
+	vkGetPhysicalDeviceFormatProperties(physicalDevice, *textureByteFormat, &formatProperties);
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
 	{
 		//throw std::runtime_error("Texture image format does not support linear blitting.");
@@ -200,7 +201,7 @@ VkResult Texture_GenerateMipmaps(VkImage image, VkFormat* textureByteFormat, uin
 	return Renderer_EndSingleUseCommandBuffer(commandBuffer);
 }
 
-VkResult Texture_CreateTextureView(VkImageView* view, VkImage image, VkFormat format, uint32 mipmapLevels)
+VkResult Texture_CreateTextureView(VkDevice device, VkImageView* view, VkImage image, VkFormat format, uint32 mipmapLevels)
 {
 
 	VkImageSubresourceRange imageSubresourceRange =
@@ -220,10 +221,10 @@ VkResult Texture_CreateTextureView(VkImageView* view, VkImage image, VkFormat fo
 		.format = format,
 		.subresourceRange = imageSubresourceRange
 	};
-	return vkCreateImageView(renderer.Device, &TextureImageViewInfo, NULL, view);
+	return vkCreateImageView(device, &TextureImageViewInfo, NULL, view);
 }
 
-VkResult Texture_CreateTextureSampler(VkSamplerCreateInfo* samplerCreateInfo, VkSampler* smapler)
+VkResult Texture_CreateTextureSampler(VkDevice device, VkSamplerCreateInfo* samplerCreateInfo, VkSampler* smapler)
 {
-	return vkCreateSampler(renderer.Device, samplerCreateInfo, NULL, smapler);
+	return vkCreateSampler(device, samplerCreateInfo, NULL, smapler);
 }

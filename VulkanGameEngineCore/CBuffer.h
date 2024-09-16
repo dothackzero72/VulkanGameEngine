@@ -24,7 +24,7 @@ typedef struct VulkanBufferInfo {
 
 VkResult Buffer_CreateBuffer(VulkanBufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
 VkResult Buffer_CreateStagingBuffer(VulkanBufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
-VkResult Buffer_CopyBuffer(VulkanBufferInfo* bufferInfo, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
+VkResult Buffer_CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
 VkResult Buffer_CopyStagingBuffer(VulkanBufferInfo* bufferInfo, VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
 VkResult Buffer_UpdateBufferSize(VulkanBufferInfo* bufferInfo, VkDeviceSize bufferSize);
 VkResult Buffer_UnmapBufferMemory(VulkanBufferInfo* bufferInfo);

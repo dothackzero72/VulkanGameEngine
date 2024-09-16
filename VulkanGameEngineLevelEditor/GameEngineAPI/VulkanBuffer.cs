@@ -1,156 +1,129 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-//using VulkanGameEngineLevelEditor.GameEngineAPI;
-//using VulkanGameEngineLevelEditor;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor;
+using System.Runtime.InteropServices;
 
-//namespace VulkanGameEngineLevelEditor.GameEngineAPI
-//{
-//public unsafe class VulkanBuffer<T>
-//    {
-//        protected VkBuffer StagingBuffer;
-//        protected VkDeviceMemory StagingBufferMemory;
-//        protected VkDeviceMemory BufferMemory;
-//        protected VkDeviceSize BufferSize;
-//        protected VkBufferUsageFlags BufferUsage;
-//        protected VkMemoryPropertyFlags BufferProperties;
-//        protected ulong BufferDeviceAddress;
-//        protected VkAccelerationStructureKHR BufferHandle;
-//        protected void* BufferData;
-//        protected bool IsMapped;
-//        public VkBuffer Buffer;
-//        public VkDescriptorBufferInfo DescriptorBufferInfo;
+namespace VulkanGameEngineLevelEditor.GameEngineAPI
+{
+    public unsafe class VulkanBuffer<T> where T : unmanaged
+    {
+        public VkBuffer Buffer { get; private set; }
+        public VkBuffer StagingBuffer { get; private set; }
+        public VkDeviceMemory BufferMemory { get; private set; }
+        public VkDeviceMemory StagingBufferMemory { get; private set; }
+        public VkDeviceSize BufferSize { get; private set; }
+        public VkBufferUsageFlags BufferUsage { get; private set; }
+        public VkMemoryPropertyFlagBits BufferProperties { get; private set; }
+        public IntPtr BufferDeviceAddress { get; private set; }
+        public IntPtr BufferHandle { get; private set; }
+        public IntPtr BufferData { get; private set; }
+        public bool IsMapped { get; private set; }
+        public VkDescriptorBufferInfo DescriptorBufferInfo { get; private set; }
 
-//        protected VulkanBufferInfo SendCBufferInfo()
-//        {
-//            VulkanBufferInfo bufferInfo = new VulkanBufferInfo
-//            {
-//                Buffer =  Buffer,
-//                StagingBuffer = StagingBuffer,
-//                BufferMemory = BufferMemory,
-//                StagingBufferMemory = StagingBufferMemory,
-//                BufferSize = BufferSize,
-//                BufferUsage = BufferUsage,
-//                BufferProperties = BufferProperties,
-//                BufferDeviceAddress = BufferDeviceAddress,
-//                BufferHandle = BufferHandle,
-//                BufferData = BufferData,
-//                IsMapped = IsMapped
-//            };
-//            return bufferInfo;
-//        }
+        protected VulkanBufferInfo SendCBufferInfo()
+        {
+            return new VulkanBufferInfo
+            {
+                Buffer = Buffer,
+                StagingBuffer = StagingBuffer,
+                BufferMemory = BufferMemory,
+                StagingBufferMemory = StagingBufferMemory,
+                BufferSize = BufferSize,
+                BufferUsage = BufferUsage,
+                BufferProperties = BufferProperties,
+                BufferDeviceAddress = BufferDeviceAddress,
+                BufferHandle = BufferHandle,
+                BufferData = BufferData,
+                IsMapped = IsMapped
+            };
+        }
 
-//        VkResult UpdateBufferSize(VkDeviceSize bufferSize)
-//        {
-//            BufferSize = bufferSize;
-//            return DLL_Buffer_UpdateBufferSize(ref SendCBufferInfo(), bufferSize);
-//        }
+        VkResult UpdateBufferSize(VkDeviceSize bufferSize)
+        {
+            BufferSize = bufferSize;
+            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
+            return GameEngineDLL.DLL_Buffer_UpdateBufferSize(ref vulkanBufferInfo, bufferSize);
+        }
 
-//        public VulkanBuffer()
-//        {
-//        }
+        public VulkanBuffer()
+        {
+        }
 
-//        public VulkanBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
-//        {
-//            BufferData = bufferData;
-//            CreateBuffer(bufferData, bufferSize, usage, properties);
-//        }
+        public VulkanBuffer(IntPtr bufferData, UInt32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
+        {
+            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
+            IntPtr vulkanBufferInfoPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VulkanBufferInfo)));
+            CreateBuffer(vulkanBufferInfoPtr, bufferSize, usage, properties);
+        }
 
-//        public static VkResult CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
-//        {
-//            return Buffer_CopyBuffer(SendCBufferInfo().get(), srcBuffer, dstBuffer, size);
-//        }
+        public virtual VkResult CopyBuffer(ref VkBuffer srcBuffer, ref VkBuffer dstBuffer, VkDeviceSize size)
+        {
+            return GameEngineDLL.DLL_Buffer_CopyBuffer( srcBuffer, dstBuffer, size);
+        }
 
-//        public VkResult CreateBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
-//        {
-//            return Buffer_CreateBuffer(SendCBufferInfo().get(), bufferData, bufferSize, usage, properties);
-//        }
+        public virtual VkResult CreateBuffer(VkBuffer bufferData, UInt32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
+        {
+            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
+            IntPtr vulkanBufferInfoPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VulkanBufferInfo)));
+            return GameEngineDLL.DLL_Buffer_CreateBuffer(vulkanBufferInfoPtr, bufferData, bufferSize, usage, properties);
+        }
 
-//        public void UpdateBufferData(const T& bufferData)
-//		{
-//			if (BufferSize< sizeof(T)) 
-//			{
-//				RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
-//				return;
-//			}
-//            Buffer_UpdateBufferMemory(SendCBufferInfo().get(), const_cast<void*>(static_cast<const void*>(&bufferData)), sizeof(T));
-//		}
+        public virtual void UpdateBufferData(VkBuffer bufferData)
+        {
+            if (BufferSize < (ulong)sizeof(T))
+            {
+               // RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
+                return;
+            }
+            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
+            GameEngineDLL.DLL_Buffer_UpdateBufferMemory(ref vulkanBufferInfo, bufferData, (uint)sizeof(T));
+        }
 
-//    public void UpdateBufferData(const List<T>& bufferData)
-//    {
-//        const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
-//        if (BufferSize != newBufferSize)
-//        {
-//            if (UpdateBufferSize(newBufferSize) != VK_SUCCESS)
-//            {
-//                RENDERER_ERROR("Failed to update buffer size.");
-//                return;
-//            }
-//        }
+        public List<T> CheckBufferContents()
+        {
+            List<T> DataList = new List<T>();
+            ulong dataListSize = BufferSize / (ulong)sizeof(T);
 
-//        if (!IsMapped)
-//        {
-//            RENDERER_ERROR("Buffer is not mapped! Cannot update data.");
-//            return;
-//        }
+            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
+            IntPtr data = GameEngineDLL.DLL_Buffer_MapBufferMemory(ref vulkanBufferInfo);
+            if (data == IntPtr.Zero)
+            {
+                return DataList;
+            }
 
-//        Buffer_UpdateBufferMemory(SendCBufferInfo().get(), const_cast<void*>(static_cast <const void*> (bufferData.data())), newBufferSize);
-//    }
+            for (int x = 0; x < (int)dataListSize; ++x)
+            {
+                IntPtr newPtr = IntPtr.Add(data, x * (int)sizeof(T));
+                T item = Marshal.PtrToStructure<T>(newPtr);
+                DataList.Add(item);
+            }
 
-//    public void UpdateBufferData(void* bufferData)
-//    {
-//        if (BufferSize < sizeof(T))
-//        {
-//            RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
-//            return;
-//        }
-//        Buffer_UpdateBufferMemory(SendCBufferInfo().get(), bufferData, sizeof(T));
-//    }
+            GameEngineDLL.DLL_Buffer_UnmapBufferMemory(ref vulkanBufferInfo);
 
-//     List<T> CheckBufferContents<T>()
-//    {
-//        List<T> DataList;
-//        size_t dataListSize = BufferSize / sizeof(T);
+            return DataList;
+        }
 
-//        void* data = Buffer_MapBufferMemory(SendCBufferInfo().get());
-//        if (data == nullptr)
-//        {
-//            std::cerr << "Failed to map buffer memory\n";
-//            return DataList;
-//        }
+        public VkDescriptorBufferInfo GetDescriptorbuffer()
+        {
+            return new VkDescriptorBufferInfo
+            {
+				buffer = Buffer,
+				offset = 0,
+				range = VulkanConsts.VK_WHOLE_SIZE
+            };
+        }
 
-//        char* newPtr = static_cast<char*>(data);
-//        for (size_t x = 0; x < dataListSize; ++x)
-//        {
-//            DataList.emplace_back(*reinterpret_cast<T*>(newPtr));
-//            newPtr += sizeof(T);
-//        }
-//        Buffer_UnmapBufferMemory(SendCBufferInfo().get());
-//        return DataList;
-//    }
-
-//    public VkDescriptorBufferInfo GetDescriptorbuffer()
-//    {
-//        DescriptorBufferInfo = VkDescriptorBufferInfo
-
-//                {
-//				    .buffer = Buffer,
-//				    .offset = 0,
-//				    .range = VK_WHOLE_SIZE
-
-//                };
-//        return &DescriptorBufferInfo;
-//    }
-
-//    public void DestroyBuffer()
-//    {
-//        Buffer_DestroyBuffer(SendCBufferInfo().get());
-//    }
-
-
-//};
+        public void DestroyBuffer()
+        {
+            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
+            GameEngineDLL.DLL_Buffer_DestroyBuffer(ref vulkanBufferInfo);
+        }
+    }
+}
 
 
 

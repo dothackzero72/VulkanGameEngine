@@ -16,9 +16,7 @@ namespace VulkanGameEngineLevelEditor
     {
         public delegate void TextCallback(string message);
         public delegate void RichTextCallback(string message);
-
-        public VulkanRenderer vulkanRenderer = new VulkanRenderer();
-
+        Texture texture;
         public void GetCText(string text)
         {
             if (textBox1.InvokeRequired)
@@ -36,7 +34,9 @@ namespace VulkanGameEngineLevelEditor
             try
             {
                 InitializeComponent();
-                vulkanRenderer.SetUpRenderer(this.Handle, pictureBox1);
+                VulkanRenderer.SetUpRenderer(this.Handle, pictureBox1);
+                var asdf = GameEngineDLL.DLL_BUFFER_BufferTest();
+                texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", VkFormat.VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum.kType_DiffuseTextureMap);
             }
             catch (Exception ex)
             {
