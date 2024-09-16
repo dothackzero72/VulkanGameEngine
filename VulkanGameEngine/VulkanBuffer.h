@@ -42,10 +42,15 @@ class VulkanBuffer
 			return bufferInfo;
 		}
 
+		virtual VkResult CreateStagingBuffer(void* bufferData)
+		{
+			return Buffer_CreateStagingBuffer(renderer.Device, &StagingBuffer, &StagingBufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
+		}
+
 		VkResult UpdateBufferSize(VkDeviceSize bufferSize)
 		{
 			BufferSize = bufferSize;
-			return Buffer_UpdateBufferSize(SendCBufferInfo().get(), bufferSize);
+			return Buffer_UpdateBufferSize(SendCBufferInfo().get(), renderer.Device, bufferSize);
 		}
 
 	public:
@@ -59,7 +64,10 @@ class VulkanBuffer
 		VulkanBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 		{
 			BufferData = bufferData;
-			CreateBuffer(bufferData, bufferSize, usage, properties);
+			BufferSize = bufferSize;
+			BufferUsage = usage;
+			BufferProperties = properties;
+			CreateBuffer(bufferData);
 		}
 
 		virtual ~VulkanBuffer()
@@ -71,9 +79,9 @@ class VulkanBuffer
 			return Buffer_CopyBuffer(SendCBufferInfo().get(), srcBuffer, dstBuffer, size);
 		}
 
-		virtual VkResult CreateBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+		virtual VkResult CreateBuffer(void* bufferData)
 		{
-			return Buffer_CreateBuffer(SendCBufferInfo().get(), bufferData, bufferSize, usage, properties);
+			return Buffer_CreateBuffer(renderer.Device, &Buffer, &BufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
 		}
 
 		virtual void UpdateBufferData(const T& bufferData)
@@ -83,7 +91,7 @@ class VulkanBuffer
 				RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
 				return;
 			}
-			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), const_cast<void*>(static_cast<const void*>(&bufferData)), sizeof(T));
+			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), renderer.Device, const_cast<void*>(static_cast<const void*>(&bufferData)), sizeof(T));
 		}
 
 		virtual void UpdateBufferData(const List<T>& bufferData)
@@ -104,7 +112,7 @@ class VulkanBuffer
 				return;
 			}
 
-			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), const_cast<void*>(static_cast<const void*>(bufferData.data())), newBufferSize);
+			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), renderer.Device, const_cast<void*>(static_cast<const void*>(bufferData.data())), newBufferSize);
 		}
 
 		virtual void UpdateBufferData(void* bufferData)
@@ -114,7 +122,7 @@ class VulkanBuffer
 				RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
 				return;
 			}
-			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), bufferData, sizeof(T));
+			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), renderer.Device, bufferData, sizeof(T));
 		}
 
 		std::vector<T> CheckBufferContents() 

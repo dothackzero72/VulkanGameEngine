@@ -46,7 +46,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             BufferSize = bufferSize;
             VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
-            return GameEngineDLL.DLL_Buffer_UpdateBufferSize(ref vulkanBufferInfo, bufferSize);
+            return GameEngineDLL.DLL_Buffer_UpdateBufferSize(ref vulkanBufferInfo, VulkanRenderer.Device, bufferSize);
         }
 
         public VulkanBuffer()
@@ -67,9 +67,24 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public virtual VkResult CreateBuffer(VkBuffer bufferData, UInt32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
         {
-            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
+            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo(); // Adjust if this needs to return details
             IntPtr vulkanBufferInfoPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VulkanBufferInfo)));
-            return GameEngineDLL.DLL_Buffer_CreateBuffer(vulkanBufferInfoPtr, bufferData, bufferSize, usage, properties);
+
+            // Initialize the allocated memory
+            // Note: You need to set the Buffer and BufferMemory to IntPtr.Zero here
+            Marshal.WriteIntPtr(vulkanBufferInfoPtr, IntPtr.Zero); // Buffer
+            Marshal.WriteIntPtr(vulkanBufferInfoPtr + IntPtr.Size, IntPtr.Zero); // BufferMemory - offset by size of IntPtr for the next field
+            Marshal.WriteInt64(vulkanBufferInfoPtr + IntPtr.Size * 2, 0); // BufferSize
+            Marshal.WriteInt32(vulkanBufferInfoPtr + IntPtr.Size * 3, (int)usage); // BufferUsage
+            Marshal.WriteInt32(vulkanBufferInfoPtr + IntPtr.Size * 4, (int)properties); // BufferProperties
+
+            // Finally, make the PInvoke call
+            var result = GameEngineDLL.DLL_Buffer_CreateBuffer(vulkanBufferInfoPtr, VulkanRenderer.Device, bufferData, bufferSize, usage, properties);
+
+            // After using the pointer, be sure to free the allocated memory afterwards
+            Marshal.FreeHGlobal(vulkanBufferInfoPtr);
+
+            return result;
         }
 
         public virtual void UpdateBufferData(VkBuffer bufferData)
@@ -80,7 +95,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 return;
             }
             VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
-            GameEngineDLL.DLL_Buffer_UpdateBufferMemory(ref vulkanBufferInfo, bufferData, (uint)sizeof(T));
+            GameEngineDLL.DLL_Buffer_UpdateBufferMemory(ref vulkanBufferInfo, VulkanRenderer.Device, bufferData, (uint)sizeof(T));
         }
 
         public List<T> CheckBufferContents()
@@ -89,7 +104,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ulong dataListSize = BufferSize / (ulong)sizeof(T);
 
             VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
-            IntPtr data = GameEngineDLL.DLL_Buffer_MapBufferMemory(ref vulkanBufferInfo);
+            IntPtr data = GameEngineDLL.DLL_Buffer_MapBufferMemory(ref vulkanBufferInfo, VulkanRenderer.Device);
             if (data == IntPtr.Zero)
             {
                 return DataList;
@@ -102,7 +117,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 DataList.Add(item);
             }
 
-            GameEngineDLL.DLL_Buffer_UnmapBufferMemory(ref vulkanBufferInfo);
+            GameEngineDLL.DLL_Buffer_UnmapBufferMemory(ref vulkanBufferInfo, VulkanRenderer.Device);
 
             return DataList;
         }

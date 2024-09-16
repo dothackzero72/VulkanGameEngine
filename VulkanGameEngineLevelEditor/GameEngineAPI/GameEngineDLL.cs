@@ -36,21 +36,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkImageView[] DLL_SwapChain_SetUpSwapChainImageViews(VkDevice device, VkImage[] swapChainImages, VkSurfaceFormatKHR swapChainImageFormat, uint swapChainImageCount);
 
         //Buffer functions:
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Buffer_CreateBuffer(
-            IntPtr bufferInfo,         // Pointer to VulkanBufferInfo (not ref)
-            IntPtr bufferData,         // Pointer to data (void*)
-            ulong bufferSize,          // Size of the buffer
-            VkBufferUsageFlags bufferUsage,
-            VkMemoryPropertyFlagBits properties);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_CreateStagingBuffer(ref VulkanBufferInfo bufferInfo, VkBuffer bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlagBits properties);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_CreateBuffer(IntPtr bufferInfo, VkDevice device, IntPtr bufferData, ulong bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlagBits properties);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_CreateStagingBuffer(ref VulkanBufferInfo bufferInfo, VkDevice device, VkBuffer bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlagBits properties);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_CopyStagingBuffer(ref VulkanBufferInfo bufferInfo, VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_UpdateBufferSize(ref VulkanBufferInfo bufferInfo, VkDeviceSize bufferSize);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_UnmapBufferMemory(ref VulkanBufferInfo bufferInfo);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_UpdateBufferMemory(ref VulkanBufferInfo bufferInfo, IntPtr dataToCopy, VkDeviceSize bufferSize);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_UpdateStagingBufferMemory(ref VulkanBufferInfo bufferInfo, IntPtr dataToCopy, VkDeviceSize bufferSize);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern IntPtr DLL_Buffer_MapBufferMemory(ref VulkanBufferInfo bufferInfo);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_UpdateBufferSize(ref VulkanBufferInfo bufferInfo, VkDevice device, VkDeviceSize bufferSize);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_UnmapBufferMemory(ref VulkanBufferInfo bufferInfo, VkDevice device);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_UpdateBufferMemory(ref VulkanBufferInfo bufferInfo, VkDevice device, IntPtr dataToCopy, VkDeviceSize bufferSize);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Buffer_UpdateStagingBufferMemory(ref VulkanBufferInfo bufferInfo, VkDevice device, IntPtr dataToCopy, VkDeviceSize bufferSize);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern IntPtr DLL_Buffer_MapBufferMemory(ref VulkanBufferInfo bufferInfo, VkDevice device);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Buffer_DestroyBuffer(ref VulkanBufferInfo bufferInfo);
 
         //Texture Functions:

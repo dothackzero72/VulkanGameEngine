@@ -22,15 +22,15 @@ typedef struct VulkanBufferInfo {
     bool* IsMapped;
 } VulkanBufferInfo;
 
-VkResult Buffer_CreateBuffer(VulkanBufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
-VkResult Buffer_CreateStagingBuffer(VulkanBufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
+VkResult Buffer_CreateBuffer(VkDevice device, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, size_t bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
+VkResult Buffer_CreateStagingBuffer(VkDevice device, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
 VkResult Buffer_CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
-VkResult Buffer_CopyStagingBuffer(VulkanBufferInfo* bufferInfo, VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
-VkResult Buffer_UpdateBufferSize(VulkanBufferInfo* bufferInfo, VkDeviceSize bufferSize);
-VkResult Buffer_UnmapBufferMemory(VulkanBufferInfo* bufferInfo);
-VkResult Buffer_UpdateBufferMemory(VulkanBufferInfo* bufferInfo, void* dataToCopy, VkDeviceSize bufferSize);
-VkResult Buffer_UpdateStagingBufferMemory(VulkanBufferInfo* bufferInfo, void* dataToCopy, VkDeviceSize bufferSize);
-void* Buffer_MapBufferMemory(VulkanBufferInfo* bufferInfo);
+VkResult Buffer_RenderPassCopyBuffer(VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
+VkResult Buffer_UpdateBufferSize(VulkanBufferInfo* bufferInfo, VkDevice device, VkDeviceSize bufferSize);
+VkResult Buffer_UnmapBufferMemory(VulkanBufferInfo* bufferInfo, VkDevice device);
+VkResult Buffer_UpdateBufferMemory(VulkanBufferInfo* bufferInfo, VkDevice device, void* dataToCopy, VkDeviceSize bufferSize);
+VkResult Buffer_UpdateStagingBufferMemory(VulkanBufferInfo* bufferInfo, VkDevice device, void* dataToCopy, VkDeviceSize bufferSize);
+void* Buffer_MapBufferMemory(VulkanBufferInfo* bufferInfo, VkDevice device);
 void Buffer_DestroyBuffer(VulkanBufferInfo* bufferInfo);
 
 #ifdef __cplusplus
