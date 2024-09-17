@@ -2,6 +2,7 @@
 #include <VulkanRenderer.h>
 #include "Texture.h"
 #include "SceneDataBuffer.h"
+#include "implot.h"
 
 void Scene::StartUp()
 {
@@ -20,44 +21,64 @@ void Scene::StartUp()
 	BuildRenderPasses();
 }
 
-void Scene::Update()
+void Scene::Update(const float& deltaTime)
 {
 	if (renderer.RebuildRendererFlag)
 	{
 		UpdateRenderPasses();
 	}
 	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer();
-	mesh->BufferUpdate(commandBuffer);
+	mesh->BufferUpdate(commandBuffer, deltaTime);
 	Renderer_EndSingleUseCommandBuffer(commandBuffer);
 
 	orthographicCamera->Update(sceneProperties);
 	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_W] == KS_PRESSED)
 	{
-		orthographicCamera->Position.y -= .01f;
+		orthographicCamera->Position.y -= 1.0f * deltaTime;
 	}
 	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_A] == KS_PRESSED)
 	{
-		orthographicCamera->Position.x += .01f;
+		orthographicCamera->Position.x += 1.0f * deltaTime;
 	}
 	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_S] == KS_PRESSED)
 	{
-		orthographicCamera->Position.y += .01f;
+		orthographicCamera->Position.y += 1.0f * deltaTime;
 	}
 	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_D] == KS_PRESSED)
 	{
-		orthographicCamera->Position.x -= .01f;
+		orthographicCamera->Position.x -= 1.0f * deltaTime;
 	}
 }
 
-void Scene::ImGuiUpdate()
+void Scene::ImGuiUpdate(const float& deltaTime)
 {
 	ImGui_ImplVulkan_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
+	
 	ImGui::NewFrame();
-	ImGui::Begin("Button Window");
-	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	texture.get()->ImGuiShowTexture(ImVec2(256, 128));
+		ImGui::Begin("Button Window");
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		texture.get()->ImGuiShowTexture(ImVec2(256, 128));
 	ImGui::End();
+
+	
+	//ImGui::Begin("Basic Graph");
+
+	//// Sample data for the graph
+	//static double x_data[100], y_data[100];
+	//for (int i = 0; i < 100; ++i) {
+	//	x_data[i] = i * 0.1;     // x values from 0 to 9.9
+	//	y_data[i] = sin(x_data[i]); // Example: sine function
+	//}
+
+	//// Create a plot
+	//ImPlot::BeginPlot("Sine Wave");
+	//ImPlot::PlotLine("sin(x)", x_data, y_data, 100);
+	//ImPlot::EndPlot();
+
+	//ImGui::End();
+	
+
 	ImGui::Render();
 }
 

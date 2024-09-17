@@ -6,14 +6,19 @@ class DynamicVulkanBuffer : public VulkanBuffer<T>
 {
 private:
 
-	virtual void UpdateBufferData(T& bufferData) 
+	virtual VkResult CreateBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties) override
+	{
+		return VulkanBuffer<T>::CreateStagingBuffer(bufferData, bufferSize, usage, properties);
+	}
+
+	virtual void UpdateBufferData(T& bufferData) override
 	{
 		if (VulkanBuffer<T>::BufferSize < sizeof(T))
 		{
 			RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
 			return;
 		}
-		Buffer_UpdateStagingBufferMemory(VulkanBuffer<T>::SendCBufferInfo().get(), static_cast<void*>(&bufferData), sizeof(T));
+		Buffer_UpdateStagingBufferMemory(renderer.Device, VulkanBuffer<T>::StagingBufferMemory, static_cast<void*>(&bufferData), sizeof(T));
 	}
 
 	virtual void UpdateBufferData(List<T>& bufferData) override
@@ -34,17 +39,33 @@ private:
 			return;
 		}
 
-		Buffer_UpdateStagingBufferMemory(VulkanBuffer<T>::SendCBufferInfo().get(), bufferData.data(), newBufferSize);
+		Buffer_UpdateStagingBufferMemory(renderer.Device, VulkanBuffer<T>::StagingBufferMemory, static_cast<void*>(bufferData.data()), newBufferSize);
+	}
+
+	virtual void UpdateBufferData(void* bufferData, VkDeviceSize bufferListCount) override
+	{
+		const VkDeviceSize newBufferSize = sizeof(T) * bufferListCount;
+		if (VulkanBuffer<T>::BufferSize != newBufferSize)
+		{
+			if (VulkanBuffer<T>::UpdateBufferSize(newBufferSize) != VK_SUCCESS)
+			{
+				RENDERER_ERROR("Failed to update buffer size.");
+				return;
+			}
+		}
+
+		if (!VulkanBuffer<T>::IsMapped)
+		{
+			RENDERER_ERROR("Buffer is not mapped! Cannot update data.");
+			return;
+		}
+
+		Buffer_UpdateStagingBufferMemory(renderer.Device, VulkanBuffer<T>::StagingBufferMemory, bufferData, newBufferSize);
 	}
 
 	virtual void UpdateBufferData(void* bufferData) override
 	{
-		if (VulkanBuffer<T>::BufferSize < sizeof(T))
-		{
-			RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
-			return;
-		}
-		Buffer_UpdateStagingBufferMemory(VulkanBuffer<T>::SendCBufferInfo().get(), bufferData, sizeof(T));
+		VulkanBuffer<T>::UpdateBufferData(bufferData);
 	}
 
 	virtual VkResult CopyStagingBuffer(VkCommandBuffer& commandBuffer)
@@ -52,7 +73,7 @@ private:
 		VkBuffer stagingBuffer = VulkanBuffer<T>::StagingBuffer;
 		VkBuffer buffer = VulkanBuffer<T>::Buffer;
 		VkDeviceSize bufferSize = VulkanBuffer<T>::BufferSize;
-		return Buffer_CopyStagingBuffer(VulkanBuffer<T>::SendCBufferInfo().get(), &commandBuffer, &stagingBuffer, &buffer, bufferSize);
+		return Buffer_CopyStagingBuffer(&commandBuffer, &stagingBuffer, &buffer, bufferSize);
 	}
 
 public:
@@ -66,26 +87,10 @@ public:
 		CreateBuffer(bufferData, bufferSize, usage, properties);
 	}
 
-	virtual VkResult CreateBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties) override
-	{
-		return Buffer_CreateStagingBuffer(VulkanBuffer<T>::SendCBufferInfo().get(), bufferData, bufferSize, usage, properties);
-	}
-
-	virtual void UpdateBuffer(VkCommandBuffer& commandBuffer, T& bufferData)
-	{
-		UpdateBufferData(bufferData);
-		CopyStagingBuffer(commandBuffer);
-	}
-
-	virtual void UpdateBuffer(VkCommandBuffer& commandBuffer, List<T>& bufferData)
-	{
-		UpdateBufferData(bufferData);
-		CopyStagingBuffer(commandBuffer);
-	}
-
 	virtual void UpdateBuffer(VkCommandBuffer& commandBuffer, void* data)
 	{
-		UpdateBufferData(data);
+		VulkanBuffer<T>::UpdateBufferData(data);
+		//UpdateBufferData(data);
 		CopyStagingBuffer(commandBuffer);
 	}
 };

@@ -6,6 +6,7 @@ extern "C"
 }
 #include "DynamicVulkanBuffer.h"
 #include "SceneDataBuffer.h"
+#include "FrameTimer.h"
 
 struct MeshProperitiesStruct
 {
@@ -59,8 +60,8 @@ public:
 
 		Mesh();
 		virtual ~Mesh();
-		virtual void Update();
-		virtual void BufferUpdate(VkCommandBuffer& commandBuffer);
+		virtual void Update(const float& deltaTime);
+		virtual void BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime);
 		virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
 		virtual void Destroy();
 

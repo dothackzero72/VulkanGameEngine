@@ -97,8 +97,8 @@ void Texture::CreateImageTexture(const std::string& FilePath)
 	int* width = &Width;
 	int* height = &Height;
 	int colorChannels = 0;
-	unsigned char* data = stbi_load(FilePath.c_str(), width, height, &colorChannels, 0);
-	VulkanBuffer<unsigned char*> buffer(data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+	byte* data = stbi_load(FilePath.c_str(), width, height, &colorChannels, 0);
+	VulkanBuffer<byte*> buffer(data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 	VULKAN_RESULT(TextureFunctions::CreateTextureImage(this));
 	VULKAN_RESULT(TextureFunctions::TransitionImageLayout(this, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));

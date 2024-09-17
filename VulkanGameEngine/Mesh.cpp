@@ -17,11 +17,11 @@ Mesh::~Mesh()
 {
 }
 
-void Mesh::Update()
+void Mesh::Update(const float& deltaTime)
 {
 }
 
-void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer)
+void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
 	mat4 MeshMatrix = mat4(1.0f);
 	MeshMatrix = glm::translate(MeshMatrix, MeshPosition);

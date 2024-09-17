@@ -5,6 +5,7 @@
 #include "FrameBufferRenderPass.h"
 #include "RenderPass2D.h"
 #include "OrthographicCamera.h"
+#include "FrameTimer.h"
 
 
 class Scene
@@ -12,7 +13,7 @@ class Scene
 	private:
 		std::vector<Vertex2D> SpriteVertexList;
 
-		//Timer timer;
+		FrameTimer timer;
 		SceneDataBuffer sceneProperties;
 		std::shared_ptr<Texture> texture;
 		std::shared_ptr<Mesh2D> mesh;
@@ -22,8 +23,8 @@ class Scene
 	
 	public:
 		void StartUp();
-		void Update();
-		void ImGuiUpdate();
+		void Update(const float& deltaTime);
+		void ImGuiUpdate(const float& deltaTime);
 		void BuildRenderPasses();
 		void UpdateRenderPasses();
 		void Draw();

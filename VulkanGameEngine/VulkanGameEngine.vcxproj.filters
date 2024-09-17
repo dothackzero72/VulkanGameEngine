@@ -126,6 +126,27 @@
     <ClCompile Include="TextureFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\External\ImGui\implot.cpp">
+      <Filter>Header Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\ImGui\implot_demo.cpp">
+      <Filter>Header Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\ImGui\implot_items.cpp">
+      <Filter>Header Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgramStats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemClock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\External\ImGui\imconfig.h">
@@ -246,6 +267,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\ImGui\implot.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\ImGui\implot_internal.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgramStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemClock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

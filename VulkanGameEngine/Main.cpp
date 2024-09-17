@@ -9,11 +9,18 @@ extern "C"
 #include "InterfaceRenderPass.h"
 #include "Scene.h"
 #include <../External/nlohmann/json.hpp>
+#include <ImGui/implot.h>
+#include "SystemClock.h"
+#include "FrameTime.h"
+
 int main(int argc, char* argv[])
 { 
+    SystemClock systemClock = SystemClock();
+    FrameTimer deltaTime = FrameTimer();
     vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);
     Renderer_RendererSetUp();
     InterfaceRenderPass::StartUp();
+    ImPlot::CreateContext();
 
     Scene scene;
     scene.StartUp();
@@ -21,11 +28,13 @@ int main(int argc, char* argv[])
     {
         vulkanWindow->PollEventHandler(vulkanWindow);
         vulkanWindow->SwapBuffer(vulkanWindow);
-        scene.Update();
-        scene.ImGuiUpdate();
+        scene.Update(deltaTime.GetFrameTime());
+        scene.ImGuiUpdate(deltaTime.GetFrameTime());
         scene.Draw();
+        deltaTime.EndFrameTime();
     }
     vkDeviceWaitIdle(renderer.Device);
+    ImPlot::DestroyContext();
     InterfaceRenderPass::Destroy();
     scene.Destroy();
     Renderer_DestroyRenderer();
