@@ -2,8 +2,8 @@
 #include <vulkan/vulkan_core.h>
 #include <stdbool.h>
 #include "Macro.h"
-#include"SDL.h"
-#include <SDL2/SDL_keycode.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_keycode.h>
 #include <glfw/include/GLFW/glfw3.h>
 
 #ifdef __cplusplus

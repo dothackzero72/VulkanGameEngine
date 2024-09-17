@@ -19,9 +19,6 @@
     <Filter Include="Source Files\Window">
       <UniqueIdentifier>{01c8a8da-b71c-421d-9dc0-3ec4af3066fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\ImGui">
-      <UniqueIdentifier>{e051c193-7a5c-4446-ad17-a00e9ccd4ef1}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VulkanSwapChain.c">
@@ -74,33 +71,6 @@
     </ClCompile>
     <ClCompile Include="GraphicsDevice.c">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImGui\imgui.cpp">
-      <Filter>Header Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImGui\imgui_demo.cpp">
-      <Filter>Header Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImGui\imgui_draw.cpp">
-      <Filter>Header Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImGui\imgui_impl_glfw.cpp">
-      <Filter>Header Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImGui\imgui_impl_sdl2.cpp">
-      <Filter>Header Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImGui\imgui_impl_vulkan.cpp">
-      <Filter>Header Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImGui\imgui_impl_win32.cpp">
-      <Filter>Header Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImGui\imgui_tables.cpp">
-      <Filter>Header Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImGui\imgui_widgets.cpp">
-      <Filter>Header Files\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
 #include "ImGui/imgui.h"
-#include "ImGui/implot.h"
+#include "ImPlot/implot.h"
 
 class ProgramStats
 {

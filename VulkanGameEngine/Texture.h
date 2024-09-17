@@ -9,7 +9,7 @@ extern "C"
 #include "typedef.h"
 #include "DynamicVulkanBuffer.h"
 #include <Imgui/imgui.h>
-#include <Imgui/imgui_impl_vulkan.h>
+#include <Imgui/backends/imgui_impl_vulkan.h>
 
 enum ColorChannelUsed
 {

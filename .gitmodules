@@ -7,3 +7,18 @@
 [submodule "External/stb"]
 	path = External/stb
 	url = https://github.com/nothings/stb.git
+[submodule "External/nlohmann"]
+	path = External/nlohmann
+	url = https://github.com/nlohmann/json.git
+[submodule "External/sdl"]
+	path = External/sdl
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "External/glfw"]
+	path = External/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "External/imgui"]
+	path = External/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "External/ImPlot"]
+	path = External/ImPlot
+	url = https://github.com/epezent/implot.git

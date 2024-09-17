@@ -1,41 +1,42 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "Keyboard.h"
-
-static void UpdateKeyState(VulkanWindow* self, const SDL_Event* event, KeyState keyState)
-{
-    KeyCode unifiedKey = ConvertSDLKeyToUnified(event->key.keysym.sym);
-    switch (event->type) 
-    {
-        case SDL_KEYDOWN:
-        {
-            if (self->keyboard.KeyPressed[unifiedKey] == KS_PRESSED)
-            {
-                self->keyboard.KeyPressed[unifiedKey] = KS_HELD;
-            }
-            else
-            {
-                self->keyboard.KeyPressed[unifiedKey] = KS_PRESSED;
-            }
-            break;
-        }
-        case SDL_KEYUP:
-        {
-            self->keyboard.KeyPressed[unifiedKey] = KS_RELEASED;
-            break;
-        }
-    }
-}
-
-void GameEngine_SDL_KeyboardKeyPressed(VulkanWindow* self, const SDL_Event* event)
-{
-    UpdateKeyState(self, event, KS_PRESSED);
-}
-
-void GameEngine_SDL_KeyboardKeyReleased(VulkanWindow* self, const SDL_Event* event)
-{
-    UpdateKeyState(self, event, KS_RELEASED);
-}
+//#include <SDL2/SDL_events.h>
+//
+//static void UpdateKeyState(VulkanWindow* self, const SDL_Event* event, KeyState keyState)
+//{
+//    KeyCode unifiedKey = ConvertSDLKeyToUnified(event->key.keysym.sym);
+//    switch (event->type) 
+//    {
+//        case SDL_KEYDOWN:
+//        {
+//            if (self->keyboard.KeyPressed[unifiedKey] == KS_PRESSED)
+//            {
+//                self->keyboard.KeyPressed[unifiedKey] = KS_HELD;
+//            }
+//            else
+//            {
+//                self->keyboard.KeyPressed[unifiedKey] = KS_PRESSED;
+//            }
+//            break;
+//        }
+//        case SDL_KEYUP:
+//        {
+//            self->keyboard.KeyPressed[unifiedKey] = KS_RELEASED;
+//            break;
+//        }
+//    }
+//}
+//
+//void GameEngine_SDL_KeyboardKeyPressed(VulkanWindow* self, const SDL_Event* event)
+//{
+//    UpdateKeyState(self, event, KS_PRESSED);
+//}
+//
+//void GameEngine_SDL_KeyboardKeyReleased(VulkanWindow* self, const SDL_Event* event)
+//{
+//    UpdateKeyState(self, event, KS_RELEASED);
+//}
 
 void GameEngine_GLFW_KeyboardKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -130,83 +131,83 @@ KeyCode ConvertGLFWKeyToUnified(int glfwKey)
     }
 }
 
-KeyCode ConvertSDLKeyToUnified(SDL_Keycode sdlKey)
-{
-    switch (sdlKey)
-    {
-    case SDLK_a: return KEY_A;
-    case SDLK_b: return KEY_B;
-    case SDLK_c: return KEY_C;
-    case SDLK_d: return KEY_D;
-    case SDLK_e: return KEY_E;
-    case SDLK_f: return KEY_F;
-    case SDLK_g: return KEY_G;
-    case SDLK_h: return KEY_H;
-    case SDLK_i: return KEY_I;
-    case SDLK_j: return KEY_J;
-    case SDLK_k: return KEY_K;
-    case SDLK_l: return KEY_L;
-    case SDLK_m: return KEY_M;
-    case SDLK_n: return KEY_N;
-    case SDLK_o: return KEY_O;
-    case SDLK_p: return KEY_P;
-    case SDLK_q: return KEY_Q;
-    case SDLK_r: return KEY_R;
-    case SDLK_s: return KEY_S;
-    case SDLK_t: return KEY_T;
-    case SDLK_u: return KEY_U;
-    case SDLK_v: return KEY_V;
-    case SDLK_w: return KEY_W;
-    case SDLK_x: return KEY_X;
-    case SDLK_y: return KEY_Y;
-    case SDLK_z: return KEY_Z;
-    case SDLK_0: return KEY_0;
-    case SDLK_1: return KEY_1;
-    case SDLK_2: return KEY_2;
-    case SDLK_3: return KEY_3;
-    case SDLK_4: return KEY_4;
-    case SDLK_5: return KEY_5;
-    case SDLK_6: return KEY_6;
-    case SDLK_7: return KEY_7;
-    case SDLK_8: return KEY_8;
-    case SDLK_9: return KEY_9;
-    case SDLK_SPACE: return KEY_SPACE;
-    case SDLK_RETURN: return KEY_ENTER;
-    case SDLK_ESCAPE: return KEY_ESCAPE;
-    case SDLK_TAB: return KEY_TAB;
-    case SDLK_BACKSPACE: return KEY_BACKSPACE;
-    case SDLK_DELETE: return KEY_DELETE;
-    case SDLK_LEFT: return KEY_LEFT;
-    case SDLK_RIGHT: return KEY_RIGHT;
-    case SDLK_UP: return KEY_UP;
-    case SDLK_DOWN: return KEY_DOWN;
-    case SDLK_LSHIFT: return KEY_SHIFT;
-    case SDLK_RSHIFT: return KEY_SHIFT;
-    case SDLK_LCTRL: return KEY_CTRL;
-    case SDLK_RCTRL: return KEY_CTRL;
-    case SDLK_LALT: return KEY_ALT;
-    case SDLK_RALT: return KEY_ALT;
-    case SDLK_CAPSLOCK: return KEY_CAPS_LOCK;
-    case SDLK_NUMLOCKCLEAR: return KEY_NUM_LOCK;
-    case SDLK_F1: return KEY_F1;
-    case SDLK_F2: return KEY_F2;
-    case SDLK_F3: return KEY_F3;
-    case SDLK_F4: return KEY_F4;
-    case SDLK_F5: return KEY_F5;
-    case SDLK_F6: return KEY_F6;
-    case SDLK_F7: return KEY_F7;
-    case SDLK_F8: return KEY_F8;
-    case SDLK_F9: return KEY_F9;
-    case SDLK_F10: return KEY_F10;
-    case SDLK_F11: return KEY_F11;
-    case SDLK_F12: return KEY_F12;
-    case SDLK_HOME: return KEY_HOME;
-    case SDLK_END: return KEY_END;
-    case SDLK_PAGEUP: return KEY_PAGE_UP;
-    case SDLK_PAGEDOWN: return KEY_PAGE_DOWN;
-    case SDLK_PRINTSCREEN: return KEY_PRINT_SCREEN;
-    case SDLK_INSERT: return KEY_INSERT;
-    case SDLK_MENU: return KEY_MENU;
-    default: return KEY_UNKNOWN;
-    }
-}
+//KeyCode ConvertSDLKeyToUnified(SDL_Keycode sdlKey)
+//{
+//    switch (sdlKey)
+//    {
+//    case SDLK_a: return KEY_A;
+//    case SDLK_b: return KEY_B;
+//    case SDLK_c: return KEY_C;
+//    case SDLK_d: return KEY_D;
+//    case SDLK_e: return KEY_E;
+//    case SDLK_f: return KEY_F;
+//    case SDLK_g: return KEY_G;
+//    case SDLK_h: return KEY_H;
+//    case SDLK_i: return KEY_I;
+//    case SDLK_j: return KEY_J;
+//    case SDLK_k: return KEY_K;
+//    case SDLK_l: return KEY_L;
+//    case SDLK_m: return KEY_M;
+//    case SDLK_n: return KEY_N;
+//    case SDLK_o: return KEY_O;
+//    case SDLK_p: return KEY_P;
+//    case SDLK_q: return KEY_Q;
+//    case SDLK_r: return KEY_R;
+//    case SDLK_s: return KEY_S;
+//    case SDLK_t: return KEY_T;
+//    case SDLK_u: return KEY_U;
+//    case SDLK_v: return KEY_V;
+//    case SDLK_w: return KEY_W;
+//    case SDLK_x: return KEY_X;
+//    case SDLK_y: return KEY_Y;
+//    case SDLK_z: return KEY_Z;
+//    case SDLK_0: return KEY_0;
+//    case SDLK_1: return KEY_1;
+//    case SDLK_2: return KEY_2;
+//    case SDLK_3: return KEY_3;
+//    case SDLK_4: return KEY_4;
+//    case SDLK_5: return KEY_5;
+//    case SDLK_6: return KEY_6;
+//    case SDLK_7: return KEY_7;
+//    case SDLK_8: return KEY_8;
+//    case SDLK_9: return KEY_9;
+//    case SDLK_SPACE: return KEY_SPACE;
+//    case SDLK_RETURN: return KEY_ENTER;
+//    case SDLK_ESCAPE: return KEY_ESCAPE;
+//    case SDLK_TAB: return KEY_TAB;
+//    case SDLK_BACKSPACE: return KEY_BACKSPACE;
+//    case SDLK_DELETE: return KEY_DELETE;
+//    case SDLK_LEFT: return KEY_LEFT;
+//    case SDLK_RIGHT: return KEY_RIGHT;
+//    case SDLK_UP: return KEY_UP;
+//    case SDLK_DOWN: return KEY_DOWN;
+//    case SDLK_LSHIFT: return KEY_SHIFT;
+//    case SDLK_RSHIFT: return KEY_SHIFT;
+//    case SDLK_LCTRL: return KEY_CTRL;
+//    case SDLK_RCTRL: return KEY_CTRL;
+//    case SDLK_LALT: return KEY_ALT;
+//    case SDLK_RALT: return KEY_ALT;
+//    case SDLK_CAPSLOCK: return KEY_CAPS_LOCK;
+//    case SDLK_NUMLOCKCLEAR: return KEY_NUM_LOCK;
+//    case SDLK_F1: return KEY_F1;
+//    case SDLK_F2: return KEY_F2;
+//    case SDLK_F3: return KEY_F3;
+//    case SDLK_F4: return KEY_F4;
+//    case SDLK_F5: return KEY_F5;
+//    case SDLK_F6: return KEY_F6;
+//    case SDLK_F7: return KEY_F7;
+//    case SDLK_F8: return KEY_F8;
+//    case SDLK_F9: return KEY_F9;
+//    case SDLK_F10: return KEY_F10;
+//    case SDLK_F11: return KEY_F11;
+//    case SDLK_F12: return KEY_F12;
+//    case SDLK_HOME: return KEY_HOME;
+//    case SDLK_END: return KEY_END;
+//    case SDLK_PAGEUP: return KEY_PAGE_UP;
+//    case SDLK_PAGEDOWN: return KEY_PAGE_DOWN;
+//    case SDLK_PRINTSCREEN: return KEY_PRINT_SCREEN;
+//    case SDLK_INSERT: return KEY_INSERT;
+//    case SDLK_MENU: return KEY_MENU;
+//    default: return KEY_UNKNOWN;
+//    }
+//}

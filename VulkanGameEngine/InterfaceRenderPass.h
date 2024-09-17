@@ -2,9 +2,9 @@
 #include "VulkanRenderer.h"
 #include <ImGui/imgui.h>
 #include <../External/glfw/include/GLFW/glfw3.h>
-#include <ImGui/imgui_impl_vulkan.h>
-#include <ImGui/imgui_impl_sdl2.h>
-#include <ImGui/imgui_impl_glfw.h>
+#include <ImGui/backends/imgui_impl_vulkan.h>
+//#include <ImGui/backends/imgui_impl_sdl3.h>
+#include <ImGui/backends/imgui_impl_glfw.h>
 #include <vector>
 #include <VulkanWindow.h>
 #include <SDLWindow.h>
@@ -124,7 +124,7 @@ public:
         ImGui::StyleColorsDark();
         switch (vulkanWindow->WindowType)
         {
-            case SDL: ImGui_ImplSDL2_InitForVulkan((SDL_Window*)vulkanWindow->WindowHandle); break;
+            //case SDL: ImGui_ImplSDL3_InitForVulkan((SDL_Window*)vulkanWindow->WindowHandle); break;
             case GLFW: ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)vulkanWindow->WindowHandle, true); break;
         }
         
@@ -293,7 +293,7 @@ public:
         DestroyFrameBuffers();
         switch (vulkanWindow->WindowType)
         {
-            case SDL: ImGui_ImplSDL2_Shutdown(); break;
+            //case SDL: ImGui_ImplSDL3_Shutdown(); break;
             case GLFW: ImGui_ImplGlfw_Shutdown(); break;
         }
         ImGui::DestroyContext(); 

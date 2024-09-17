@@ -1,8 +1,7 @@
 #pragma once
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_vulkan.h>
-#include <SDL2/SDL_syswm.h>
-#include <SDL2/SDL_events.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_vulkan.h>
+#include <SDL3/SDL_events.h>
 #include <glfw/include/GLFW/glfw3.h>
 #include <vulkan/vulkan_core.h>
 #include <stdio.h>

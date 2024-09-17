@@ -8,13 +8,14 @@ extern "C"
 #include <stdio.h>
 #include "InterfaceRenderPass.h"
 #include "Scene.h"
-#include <../External/nlohmann/json.hpp>
-#include <ImGui/implot.h>
+#include <nlohmann/json.hpp>
+#include <ImPlot/implot.h>
 #include "SystemClock.h"
 #include "FrameTime.h"
+#include <iostream>
 
-int main(int argc, char* argv[])
-{ 
+int main()
+{
     SystemClock systemClock = SystemClock();
     FrameTimer deltaTime = FrameTimer();
     vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);
