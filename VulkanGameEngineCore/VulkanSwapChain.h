@@ -24,9 +24,6 @@ typedef struct swapChainState
 	VkSwapchainKHR Swapchain;
 }SwapChainState;
 
-VkResult Vulkan_SetUpSwapChain();
-VkResult Vulkan_RebuildSwapChain();
-
 VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR* availableFormats, uint32_t availableFormatsCount);
 VkPresentModeKHR SwapChain_FindSwapPresentMode(VkPresentModeKHR* availablePresentModes, uint32_t availablePresentModesCount);
 VkResult SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32* graphicsFamily, uint32* presentFamily);

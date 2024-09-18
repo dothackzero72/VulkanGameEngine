@@ -90,7 +90,7 @@ void Scene::BuildRenderPasses()
 
 void Scene::UpdateRenderPasses()
 {
-	Renderer_RebuildSwapChain();
+	VulkanRenderer::RebuildSwapChain();
 	renderPass2D.UpdateRenderPass(mesh);
 	frameRenderPass.UpdateRenderPass(renderPass2D.GetRenderedTexture());
 	InterfaceRenderPass::RebuildSwapChain();

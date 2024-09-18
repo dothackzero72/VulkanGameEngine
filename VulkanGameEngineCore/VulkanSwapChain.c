@@ -2,37 +2,6 @@
 #include "VulkanWindow.h"
 #include "CVulkanRenderer.h"
 
-VkResult Vulkan_SetUpSwapChain()
-{
-	int width = 0;
-	int height = 0;
-	uint32 surfaceFormatCount = 0;
-	uint32 presentModeCount = 0;
-	VkSurfaceFormatKHR* compatibleSwapChainFormatList = NULL;
-	VkPresentModeKHR* compatiblePresentModesList = NULL;
-	VkSurfaceCapabilitiesKHR surfaceCapabilities = { 0 };
-
-	VULKAN_RESULT(SwapChain_GetSurfaceCapabilities(renderer.PhysicalDevice, renderer.Surface, &surfaceCapabilities));
-	VULKAN_RESULT(SwapChain_GetPhysicalDeviceFormats(renderer.PhysicalDevice, renderer.Surface, &compatibleSwapChainFormatList, &surfaceFormatCount));
-	VULKAN_RESULT(SwapChain_GetQueueFamilies(renderer.PhysicalDevice, renderer.Surface, &renderer.SwapChain.GraphicsFamily, &renderer.SwapChain.PresentFamily));
-	VULKAN_RESULT(SwapChain_GetPhysicalDevicePresentModes(renderer.PhysicalDevice, renderer.Surface, &compatiblePresentModesList, &presentModeCount));
-	VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList, surfaceFormatCount);
-	VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList, presentModeCount);
-	vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
-	renderer.SwapChain.Swapchain = SwapChain_SetUpSwapChain(renderer.Device, renderer.Surface, surfaceCapabilities, swapChainImageFormat, swapChainPresentMode, renderer.SwapChain.GraphicsFamily, renderer.SwapChain.PresentFamily, width, height, &renderer.SwapChain.SwapChainImageCount);
-	renderer.SwapChain.SwapChainImages = SwapChain_SetUpSwapChainImages(renderer.Device, renderer.SwapChain.Swapchain, renderer.SwapChain.SwapChainImageCount);
-	renderer.SwapChain.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderer.Device, renderer.SwapChain.SwapChainImages, compatibleSwapChainFormatList, renderer.SwapChain.SwapChainImageCount);
-
-	renderer.SwapChain.SwapChainResolution.width = width;
-	renderer.SwapChain.SwapChainResolution.height = height;
-	return VK_SUCCESS;
-}
-
-VkResult Vulkan_RebuildSwapChain()
-{
-	return Vulkan_SetUpSwapChain();
-}
-
 VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR* availableFormats, uint32_t availableFormatsCount)
 {
     for (uint32_t x = 0; x < availableFormatsCount; x++)
@@ -85,7 +54,6 @@ VkResult SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKH
 	else
 	{
 		free(queueFamilies);
-		Renderer_DestroyRenderer();
 	}
 	return VK_SUCCESS;
 }
@@ -194,25 +162,7 @@ VkImageView* SwapChain_SetUpSwapChainImageViews(VkDevice device, VkImage* swapCh
 				.layerCount = 1
 			}
 		};
-		VkResult result = vkCreateImageView(device, &SwapChainViewInfo, NULL, &swapChainImageViews[x]);
+		VULKAN_RESULT(vkCreateImageView(device, &SwapChainViewInfo, NULL, &swapChainImageViews[x]));
 	}
 	return swapChainImageViews;
-}
-
-void Vulkan_DestroyImageView()
-{
-	for (uint32 x = 0; x < renderer.SwapChain.SwapChainImageCount; x++)
-	{
-		if (renderer.Surface != VK_NULL_HANDLE)
-		{
-			vkDestroyImageView(renderer.Device, renderer.SwapChain.SwapChainImageViews[x], NULL);
-			renderer.SwapChain.SwapChainImageViews[x] = VK_NULL_HANDLE;
-		}
-	}
-}
-
-void Vulkan_DestroySwapChain()
-{
-	vkDestroySwapchainKHR(renderer.Device, renderer.SwapChain.Swapchain, NULL);
-	renderer.SwapChain.Swapchain = VK_NULL_HANDLE;
 }

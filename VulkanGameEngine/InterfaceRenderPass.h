@@ -1,5 +1,5 @@
 #pragma once
-#include "CVulkanRenderer.h"
+#include "VulkanRenderer.h"
 #include <ImGui/imgui.h>
 #include <../External/glfw/include/GLFW/glfw3.h>
 #include <ImGui/backends/imgui_impl_vulkan.h>
@@ -94,13 +94,13 @@ private:
 
     static void DestroyCommandBuffers()
     {
-        Renderer_DestroyCommandBuffers(&ImGuiCommandPool, ImGuiCommandBuffers.data());
+        VulkanRenderer::DestroyCommandBuffers(ImGuiCommandBuffers);
         ImGuiCommandBuffers.clear();
     }
 
     static void DestroyFrameBuffers()
     {
-        Renderer_DestroyFrameBuffers(SwapChainFramebuffers.data());
+        VulkanRenderer::DestroyFrameBuffers(SwapChainFramebuffers);
         SwapChainFramebuffers.clear();
     }
 
@@ -137,7 +137,7 @@ public:
             .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
             .queueFamilyIndex = renderer.SwapChain.GraphicsFamily
         };
-        VULKAN_RESULT(Renderer_CreateCommandPool(&ImGuiCommandPool, &poolInfo));
+        VULKAN_RESULT(VulkanRenderer::CreateCommandPool(ImGuiCommandPool, poolInfo));
 
         VkDescriptorPoolSize poolSizes[] =
         {
@@ -161,7 +161,7 @@ public:
             .poolSizeCount = (uint32)IM_ARRAYSIZE(poolSizes),
             .pPoolSizes = poolSizes
         };
-        VULKAN_RESULT(Renderer_CreateDescriptorPool(&ImGuiDescriptorPool, &pool_info));
+        VULKAN_RESULT(VulkanRenderer::CreateDescriptorPool(ImGuiDescriptorPool, pool_info));
 
         ImGuiCommandBuffers.resize(renderer.SwapChain.SwapChainImageCount);
         for (size_t x = 0; x < renderer.SwapChain.SwapChainImageCount; x++)
@@ -277,8 +277,8 @@ public:
 
     static void RebuildSwapChain()
     {
-        Renderer_DestroyRenderPass(&RenderPass);
-        Renderer_DestroyFrameBuffers(SwapChainFramebuffers.data());
+        VulkanRenderer::DestroyRenderPass(RenderPass);
+        VulkanRenderer::DestroyFrameBuffers(SwapChainFramebuffers);
         CreateRenderPass();
         CreateRendererFramebuffers();
     }
@@ -287,9 +287,9 @@ public:
     {
         DestroyCommandBuffers();
         ImGui_ImplVulkan_Shutdown(); 
-        Renderer_DestroyDescriptorPool(&ImGuiDescriptorPool);
-        Renderer_DestroyCommnadPool(&ImGuiCommandPool);
-        Renderer_DestroyRenderPass(&RenderPass);
+        VulkanRenderer::DestroyDescriptorPool(ImGuiDescriptorPool);
+        //VulkanRenderer::DestroyCommandPool();
+        VulkanRenderer::DestroyRenderPass(RenderPass);
         DestroyFrameBuffers();
         switch (vulkanWindow->WindowType)
         {

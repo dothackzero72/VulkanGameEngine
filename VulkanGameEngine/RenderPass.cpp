@@ -13,7 +13,7 @@ RenderPass::RenderPass()
 	CommandBufferList.resize(renderer.SwapChain.SwapChainImageCount);
 	FrameBufferList.resize(renderer.SwapChain.SwapChainImageCount);
 
-	VULKAN_RESULT(Renderer_CreateCommandBuffers(CommandBufferList.data()));
+	VULKAN_RESULT(VulkanRenderer::CreateCommandBuffers(CommandBufferList));
 }
 
 RenderPass::~RenderPass()
@@ -77,7 +77,7 @@ VkCommandBuffer RenderPass::Draw()
 
 void RenderPass::Destroy()
 {
-	Renderer_DestroyRenderPass(&RenderPassPtr);
-	Renderer_DestroyCommandBuffers(&renderer.CommandPool, CommandBufferList.data());
-	Renderer_DestroyFrameBuffers(FrameBufferList.data());
+    VulkanRenderer::DestroyRenderPass(RenderPassPtr);
+    VulkanRenderer::DestroyCommandBuffers(CommandBufferList);
+    VulkanRenderer::DestroyFrameBuffers(FrameBufferList);
 }

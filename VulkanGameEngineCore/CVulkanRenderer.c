@@ -42,22 +42,6 @@ static bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array
     return false;
 }
 
-VkResult Renderer_RendererSetUp()
-{
-    renderer.RebuildRendererFlag = false;
-    VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
-    renderer.Instance = Renderer_CreateVulkanInstance(&debugMessenger);
-    renderer.DebugMessenger = Renderer_SetupDebugMessenger(renderer.Instance);
-    vulkanWindow->CreateSurface(vulkanWindow, &renderer.Instance, &renderer.Surface);
-    VkResult deviceSetupResult = Renderer_SetUpPhysicalDevice(renderer.Instance, &renderer.PhysicalDevice, renderer.Surface, &renderer.PhysicalDeviceFeatures, &renderer.SwapChain.GraphicsFamily, &renderer.SwapChain.PresentFamily);
-    renderer.Device = Renderer_SetUpDevice(renderer.PhysicalDevice, renderer.SwapChain.GraphicsFamily, renderer.SwapChain.PresentFamily);
-    VULKAN_RESULT(Vulkan_SetUpSwapChain(renderer.Device, renderer.PhysicalDevice, renderer.Surface));
-    renderer.CommandPool = Renderer_SetUpCommandPool(renderer.Device, renderer.SwapChain.GraphicsFamily);
-    VULKAN_RESULT(Renderer_SetUpSemaphores(renderer.Device, &renderer.InFlightFences, &renderer.AcquireImageSemaphores, &renderer.PresentImageSemaphores, MAX_FRAMES_IN_FLIGHT));
-    VULKAN_RESULT(Renderer_GetDeviceQueue(renderer.Device, renderer.SwapChain.GraphicsFamily, renderer.SwapChain.PresentFamily, &renderer.SwapChain.GraphicsQueue, &renderer.SwapChain.PresentQueue));
-    return VK_SUCCESS;
-}
-
  VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
     PFN_vkCreateDebugUtilsMessengerEXT func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -602,29 +586,29 @@ VkInstance Renderer_CreateVulkanInstance()
  }
 
 
-VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* commandBufferList)
+VkResult Renderer_CreateCommandBuffers(VkDevice device, VkCommandPool commandPool, VkCommandBuffer* commandBufferList, uint32 commandBufferCount)
 {
-    for (size_t x = 0; x < renderer.SwapChain.SwapChainImageCount; x++)
+    for (size_t x = 0; x < commandBufferCount; x++)
     {
         VkCommandBufferAllocateInfo commandBufferAllocateInfo =
         {
             .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-            .commandPool = renderer.CommandPool,
+            .commandPool = commandPool,
             .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
             .commandBufferCount = 1
         };
 
-        VULKAN_RESULT(vkAllocateCommandBuffers(renderer.Device, &commandBufferAllocateInfo, &commandBufferList[x]));
+        VULKAN_RESULT(vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &commandBufferList[x]));
     }
     return VK_SUCCESS;
 }
 
-VkResult Renderer_CreateFrameBuffer(VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo)
+VkResult Renderer_CreateFrameBuffer(VkDevice device, VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo)
 {
-    return vkCreateFramebuffer(renderer.Device, *&frameBufferCreateInfo, NULL, pFrameBuffer);
+    return vkCreateFramebuffer(device, *&frameBufferCreateInfo, NULL, pFrameBuffer);
 }
 
-VkResult Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* renderPassCreateInfo)
+VkResult Renderer_CreateRenderPass(VkDevice device, RenderPassCreateInfoStruct* renderPassCreateInfo)
 {
     VkRenderPassCreateInfo renderPassInfo =
     {
@@ -636,57 +620,47 @@ VkResult Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* renderPa
         .dependencyCount = renderPassCreateInfo->DependencyCount,
         .pDependencies = renderPassCreateInfo->pSubpassDependencyList
     };
-    return vkCreateRenderPass(renderer.Device, &renderPassInfo, NULL, renderPassCreateInfo->pRenderPass);
+    return vkCreateRenderPass(device, &renderPassInfo, NULL, renderPassCreateInfo->pRenderPass);
 }
 
-VkResult Renderer_CreateDescriptorPool(VkDescriptorPool* descriptorPool, VkDescriptorPoolCreateInfo* descriptorPoolCreateInfo)
+VkResult Renderer_CreateDescriptorPool(VkDevice device, VkDescriptorPool* descriptorPool, VkDescriptorPoolCreateInfo* descriptorPoolCreateInfo)
 {
-    return vkCreateDescriptorPool(renderer.Device, descriptorPoolCreateInfo, NULL, descriptorPool);
+    return vkCreateDescriptorPool(device, descriptorPoolCreateInfo, NULL, descriptorPool);
 }
 
-VkResult Renderer_CreateDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout, VkDescriptorSetLayoutCreateInfo* descriptorSetLayoutCreateInfo)
+VkResult Renderer_CreateDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayout, VkDescriptorSetLayoutCreateInfo* descriptorSetLayoutCreateInfo)
 {
-    return vkCreateDescriptorSetLayout(renderer.Device, descriptorSetLayoutCreateInfo, NULL, descriptorSetLayout);
+    return vkCreateDescriptorSetLayout(device, descriptorSetLayoutCreateInfo, NULL, descriptorSetLayout);
 }
 
-VkResult Renderer_CreatePipelineLayout(VkPipelineLayout* pipelineLayout, VkPipelineLayoutCreateInfo* pipelineLayoutCreateInfo)
+VkResult Renderer_CreatePipelineLayout(VkDevice device, VkPipelineLayout* pipelineLayout, VkPipelineLayoutCreateInfo* pipelineLayoutCreateInfo)
 {
-    return vkCreatePipelineLayout(renderer.Device, pipelineLayoutCreateInfo, NULL, pipelineLayout);
+    return vkCreatePipelineLayout(device, pipelineLayoutCreateInfo, NULL, pipelineLayout);
 }
 
-VkResult Renderer_AllocateDescriptorSets(VkDescriptorSet* descriptorSet, VkDescriptorSetAllocateInfo* descriptorSetAllocateInfo)
+VkResult Renderer_AllocateDescriptorSets(VkDevice device, VkDescriptorSet* descriptorSet, VkDescriptorSetAllocateInfo* descriptorSetAllocateInfo)
 {
-    return vkAllocateDescriptorSets(renderer.Device, descriptorSetAllocateInfo, descriptorSet);
+    return vkAllocateDescriptorSets(device, descriptorSetAllocateInfo, descriptorSet);
 }
 
-VkResult Renderer_AllocateCommandBuffers(VkCommandBuffer* commandBuffer, VkCommandBufferAllocateInfo* ImGuiCommandBuffers)
+VkResult Renderer_AllocateCommandBuffers(VkDevice device, VkCommandBuffer* commandBuffer, VkCommandBufferAllocateInfo* ImGuiCommandBuffers)
 {
-    return vkAllocateCommandBuffers(renderer.Device, ImGuiCommandBuffers, commandBuffer);
+    return vkAllocateCommandBuffers(device, ImGuiCommandBuffers, commandBuffer);
 }
 
-VkResult Renderer_CreateGraphicsPipelines(VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32 createGraphicPipelinesCount)
+VkResult Renderer_CreateGraphicsPipelines(VkDevice device, VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32 createGraphicPipelinesCount)
 {
-    return vkCreateGraphicsPipelines(renderer.Device, VK_NULL_HANDLE, createGraphicPipelinesCount, createGraphicPipelines, NULL, graphicPipeline);
+    return vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, createGraphicPipelinesCount, createGraphicPipelines, NULL, graphicPipeline);
 }
 
-VkResult Renderer_CreateCommandPool(VkCommandPool* commandPool, VkCommandPoolCreateInfo* commandPoolInfo)
+VkResult Renderer_CreateCommandPool(VkDevice device, VkCommandPool* commandPool, VkCommandPoolCreateInfo* commandPoolInfo)
 {
-    return vkCreateCommandPool(renderer.Device, commandPoolInfo, NULL, commandPool);
+    return vkCreateCommandPool(device, commandPoolInfo, NULL, commandPool);
 }
 
-void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32 count)
+void Renderer_UpdateDescriptorSet(VkDevice device, VkWriteDescriptorSet* writeDescriptorSet, uint32 count)
 {
-    vkUpdateDescriptorSets(renderer.Device, count, writeDescriptorSet, 0, NULL);
-}
-
-VkResult Renderer_RebuildSwapChain()
-{
-    renderer.RebuildRendererFlag = true;
-
-    VULKAN_RESULT(vkDeviceWaitIdle(renderer.Device));
-    Vulkan_DestroyImageView();
-    vkDestroySwapchainKHR(renderer.Device, renderer.SwapChain.Swapchain, NULL);
-    return Vulkan_RebuildSwapChain(renderer.Device, renderer.PhysicalDevice, renderer.Surface);
+    vkUpdateDescriptorSets(device, count, writeDescriptorSet, 0, NULL);
 }
 
 VkResult Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* fenceList, VkSemaphore* acquireImageSemaphoreList, uint32* pImageIndex, uint32* pCommandIndex, bool* pRebuildRendererFlag)
@@ -744,7 +718,7 @@ VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSe
     return result;
 }
 
-VkResult Renderer_SubmitDraw(VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint32 commandIndex, uint32 imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount, bool* rebuildRendererFlag)
+VkResult Renderer_SubmitDraw(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint32 commandIndex, uint32 imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount, bool* rebuildRendererFlag)
 {
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
@@ -767,7 +741,7 @@ VkResult Renderer_SubmitDraw(VkSemaphore* acquireImageSemaphoreList, VkSemaphore
         .waitSemaphoreCount = 1,
         .pWaitSemaphores = &presentImageSemaphoreList[imageIndex],
         .swapchainCount = 1,
-        .pSwapchains = &renderer.SwapChain.Swapchain,
+        .pSwapchains = &swapChain,
         .pImageIndices = &imageIndex
     };
     VkResult result = vkQueuePresentKHR(presentQueue, &presentInfo);
@@ -802,8 +776,6 @@ uint32_t Renderer_GetMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFi
         }
     }
 
-    Renderer_DestroyRenderer();
-    vulkanWindow->DestroyWindow(vulkanWindow);
     return UINT32_MAX; 
 }
 
@@ -844,51 +816,7 @@ VkResult Renderer_EndSingleUseCommandBuffer(VkDevice device, VkCommandPool comma
     return VK_SUCCESS;
 }
 
-void Renderer_DestroyRenderer()
-{
-
-    Vulkan_DestroyImageView();
-    Vulkan_DestroySwapChain();
-    Renderer_DestroyFences();
-    Renderer_DestroyCommandPool();
-    Renderer_DestroyFences();
-    Renderer_DestroyDevice();
-    Renderer_DestroyDebugger();
-    Renderer_DestroySurface();
-    Renderer_DestroyInstance();
-}
-
-void Renderer_DestroyCommandPool()
-{
-    Renderer_BaseDestroyCommandPool(&renderer.Device, &renderer.CommandPool);
-}
-
-void Renderer_DestroyFences()
-{
-    Renderer_BaseDestroyFences(renderer.Device, renderer.AcquireImageSemaphores, renderer.PresentImageSemaphores, renderer.InFlightFences, MAX_FRAMES_IN_FLIGHT);
-}
-
-void Renderer_DestroyDevice()
-{
-    Renderer_BaseDestroyDevice(&renderer.Device);
-}
-
-void Renderer_DestroySurface()
-{
-    Renderer_BaseDestroySurface(&renderer.Instance, &renderer.Surface);
-}
-
-void Renderer_DestroyDebugger()
-{
-    Renderer_BaseDestroyDebugger(&renderer.Instance);
-}
-
-void Renderer_DestroyInstance()
-{
-    Renderer_BaseDestroyInstance(&renderer.Instance);
-}
-
-void Renderer_BaseDestroyFences(VkDevice* device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount)
+void Renderer_DestroyFences(VkDevice* device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount)
 {
     for (size_t x = 0; x < semaphoreCount; x++)
     {
@@ -910,7 +838,7 @@ void Renderer_BaseDestroyFences(VkDevice* device, VkSemaphore* acquireImageSemap
     }
 }
 
-void Renderer_BaseDestroyCommandPool(VkDevice* device, VkCommandBuffer* commandPool)
+void Renderer_DestroyCommandPool(VkDevice* device, VkCommandPool* commandPool)
 {
     if (*commandPool != VK_NULL_HANDLE)
     {
@@ -919,7 +847,7 @@ void Renderer_BaseDestroyCommandPool(VkDevice* device, VkCommandBuffer* commandP
     }
 }
 
-void Renderer_BaseDestroyDevice(VkDevice* device)
+void Renderer_DestroyDevice(VkDevice* device)
 {
     if (*device != VK_NULL_HANDLE)
     {
@@ -928,7 +856,7 @@ void Renderer_BaseDestroyDevice(VkDevice* device)
     }
 }
 
-void Renderer_BaseDestroySurface(VkInstance* instance, VkSurfaceKHR* surface)
+void Renderer_DestroySurface(VkInstance* instance, VkSurfaceKHR* surface)
 {
     if (*surface != VK_NULL_HANDLE)
     {
@@ -937,12 +865,12 @@ void Renderer_BaseDestroySurface(VkInstance* instance, VkSurfaceKHR* surface)
     }
 }
 
-void Renderer_BaseDestroyDebugger(VkInstance* instance)
+void Renderer_DestroyDebugger(VkInstance* instance)
 {
     DestroyDebugUtilsMessengerEXT(*instance, NULL);
 }
 
-void Renderer_BaseDestroyInstance(VkInstance* instance)
+void Renderer_DestroyInstance(VkInstance* instance)
 {
     if (*instance != VK_NULL_HANDLE)
     {
@@ -951,134 +879,143 @@ void Renderer_BaseDestroyInstance(VkInstance* instance)
     }
 }
 
-void Renderer_DestroyRenderPass(VkRenderPass* renderPass)
+void Renderer_DestroyRenderPass(VkDevice device, VkRenderPass* renderPass)
 {
     if (*renderPass != VK_NULL_HANDLE)
     {
-        vkDestroyRenderPass(renderer.Device, *renderPass, NULL);
+        vkDestroyRenderPass(device, *renderPass, NULL);
         *renderPass = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroyFrameBuffers(VkFramebuffer* frameBufferList)
+void Renderer_DestroyFrameBuffers(VkDevice device, VkFramebuffer* frameBufferList, uint32 count)
 {
-    for (size_t x = 0; x < renderer.SwapChain.SwapChainImageCount; x++)
+    for (size_t x = 0; x < count; x++)
     {
         if (frameBufferList[x] != VK_NULL_HANDLE)
         {
-            vkDestroyFramebuffer(renderer.Device, frameBufferList[x], NULL);
+            vkDestroyFramebuffer(device, frameBufferList[x], NULL);
             frameBufferList[x] = VK_NULL_HANDLE;
         }
     }
 }
 
-void Renderer_DestroyDescriptorPool(VkDescriptorPool* descriptorPool)
+void Renderer_DestroyDescriptorPool(VkDevice device, VkDescriptorPool* descriptorPool)
 {
     if (*descriptorPool != VK_NULL_HANDLE)
     {
-        vkDestroyDescriptorPool(renderer.Device, *descriptorPool, NULL);
+        vkDestroyDescriptorPool(device, *descriptorPool, NULL);
         *descriptorPool = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroyDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout)
+void Renderer_DestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayout)
 {
     if (*descriptorSetLayout != VK_NULL_HANDLE)
     {
-        vkDestroyDescriptorSetLayout(renderer.Device, *descriptorSetLayout, NULL);
+        vkDestroyDescriptorSetLayout(device, *descriptorSetLayout, NULL);
         *descriptorSetLayout = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroyCommandBuffers(VkCommandPool* commandPool, VkCommandBuffer* commandBufferList)
+void Renderer_DestroyCommandBuffers(VkDevice device, VkCommandPool* commandPool, VkCommandBuffer* commandBufferList, uint32 count)
 {
     if (*commandBufferList != VK_NULL_HANDLE)
     {
-        vkFreeCommandBuffers(renderer.Device, *commandPool, renderer.SwapChain.SwapChainImageCount, &*commandBufferList);
-        for (size_t x = 0; x < renderer.SwapChain.SwapChainImageCount; x++)
+        vkFreeCommandBuffers(device, *commandPool, count, &*commandBufferList);
+        for (size_t x = 0; x < count; x++)
         {
             commandBufferList[x] = VK_NULL_HANDLE;
         }
     }
 }
 
-void Renderer_DestroyCommnadPool(VkCommandPool* commandPool)
-{
-    if (*commandPool != VK_NULL_HANDLE)
-    {
-        vkDestroyCommandPool(renderer.Device, *commandPool, NULL);
-        *commandPool = VK_NULL_HANDLE;
-    }
-}
-
-void Renderer_DestroyBuffer(VkBuffer* buffer)
+void Renderer_DestroyBuffer(VkDevice device, VkBuffer* buffer)
 {
     if (*buffer != VK_NULL_HANDLE)
     {
-        vkDestroyBuffer(renderer.Device, *buffer, NULL);
+        vkDestroyBuffer(device, *buffer, NULL);
         *buffer = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_FreeMemory(VkDeviceMemory* memory)
+void Renderer_FreeMemory(VkDevice device, VkDeviceMemory* memory)
 {
     if (*memory != VK_NULL_HANDLE)
     {
-        vkFreeMemory(renderer.Device, *memory, NULL);
+        vkFreeMemory(device, *memory, NULL);
         *memory = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroyImageView(VkImageView* imageView)
+void Renderer_DestroySwapChainImageView(VkDevice device, VkImageView* pSwapChainImageViewList, uint32 count)
+{
+    for (uint32 x = 0; x < count; x++)
+    {
+        if (renderer.Surface != VK_NULL_HANDLE)
+        {
+            vkDestroyImageView(device, pSwapChainImageViewList[x], NULL);
+            pSwapChainImageViewList[x] = VK_NULL_HANDLE;
+        }
+    }
+}
+
+void Renderer_DestroySwapChain(VkDevice device, VkSwapchainKHR* swapChain)
+{
+    vkDestroySwapchainKHR(device, swapChain, NULL);
+    swapChain = VK_NULL_HANDLE;
+}
+
+void Renderer_DestroyImageView(VkDevice device, VkImageView* imageView)
 {
     if (*imageView != VK_NULL_HANDLE)
     {
-        vkDestroyImageView(renderer.Device, *imageView, NULL);
+        vkDestroyImageView(device, *imageView, NULL);
         *imageView = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroyImage(VkImage* image)
+void Renderer_DestroyImage(VkDevice device, VkImage* image)
 {
     if (*image != VK_NULL_HANDLE)
     {
-        vkDestroyImage(renderer.Device, *image, NULL);
+        vkDestroyImage(device, *image, NULL);
         *image = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroySampler(VkSampler* sampler)
+void Renderer_DestroySampler(VkDevice device, VkSampler* sampler)
 {
     if (*sampler != VK_NULL_HANDLE)
     {
-        vkDestroySampler(renderer.Device, *sampler, NULL);
+        vkDestroySampler(device, *sampler, NULL);
         *sampler = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroyPipeline(VkPipeline* pipeline)
+void Renderer_DestroyPipeline(VkDevice device, VkPipeline* pipeline)
 {
     if (*pipeline != VK_NULL_HANDLE)
     {
-        vkDestroyPipeline(renderer.Device, *pipeline, NULL);
+        vkDestroyPipeline(device, *pipeline, NULL);
         *pipeline = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroyPipelineLayout(VkPipelineLayout* pipelineLayout)
+void Renderer_DestroyPipelineLayout(VkDevice device, VkPipelineLayout* pipelineLayout)
 {
     if (*pipelineLayout != VK_NULL_HANDLE)
     {
-        vkDestroyPipelineLayout(renderer.Device, *pipelineLayout, NULL);
+        vkDestroyPipelineLayout(device, *pipelineLayout, NULL);
         *pipelineLayout = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroyPipelineCache(VkPipelineCache* pipelineCache)
+void Renderer_DestroyPipelineCache(VkDevice device, VkPipelineCache* pipelineCache)
 {
     if (*pipelineCache != VK_NULL_HANDLE)
     {
-        vkDestroyPipelineCache(renderer.Device, *pipelineCache, NULL);
+        vkDestroyPipelineCache(device, *pipelineCache, NULL);
         *pipelineCache = VK_NULL_HANDLE;
     }
 }

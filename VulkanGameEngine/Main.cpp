@@ -2,9 +2,10 @@
 extern "C"
 {
 #include <VulkanWindow.h>
-#include <CVulkanRenderer.h>
+
 #include <GLFWWindow.h>
 }
+#include "VulkanRenderer.h"
 #include <stdio.h>
 #include "InterfaceRenderPass.h"
 #include "Scene.h"
@@ -19,7 +20,7 @@ int main()
     SystemClock systemClock = SystemClock();
     FrameTimer deltaTime = FrameTimer();
     vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);
-    Renderer_RendererSetUp();
+    VulkanRenderer::RendererSetUp();
     InterfaceRenderPass::StartUp();
     ImPlot::CreateContext();
 
@@ -38,7 +39,7 @@ int main()
     ImPlot::DestroyContext();
     InterfaceRenderPass::Destroy();
     scene.Destroy();
-    Renderer_DestroyRenderer();
+    VulkanRenderer::DestroyRenderer();
     vulkanWindow->DestroyWindow(vulkanWindow); 
     return 0;
 }
