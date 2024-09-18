@@ -7,11 +7,11 @@ extern "C"
 
 RenderPass::RenderPass()
 {
-	RenderPassResolution = glm::ivec2((int)renderer.SwapChain.SwapChainResolution.width, (int)renderer.SwapChain.SwapChainResolution.height);
+	RenderPassResolution = glm::ivec2((int)cRenderer.SwapChain.SwapChainResolution.width, (int)cRenderer.SwapChain.SwapChainResolution.height);
 	SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
-	CommandBufferList.resize(renderer.SwapChain.SwapChainImageCount);
-	FrameBufferList.resize(renderer.SwapChain.SwapChainImageCount);
+	CommandBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
+	FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
 
 	VULKAN_RESULT(VulkanRenderer::CreateCommandBuffers(CommandBufferList));
 }

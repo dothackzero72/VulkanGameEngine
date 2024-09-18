@@ -35,7 +35,7 @@ int main()
         scene.Draw();
         deltaTime.EndFrameTime();
     }
-    vkDeviceWaitIdle(renderer.Device);
+    vkDeviceWaitIdle(cRenderer.Device);
     ImPlot::DestroyContext();
     InterfaceRenderPass::Destroy();
     scene.Destroy();

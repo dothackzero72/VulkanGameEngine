@@ -16,14 +16,14 @@ void Scene::StartUp()
 
 	texture = std::make_shared<Texture>(Texture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 	mesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList));
-	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)renderer.SwapChain.SwapChainResolution.width, (float)renderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
+	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
 
 	BuildRenderPasses();
 }
 
 void Scene::Update(const float& deltaTime)
 {
-	if (renderer.RebuildRendererFlag)
+	if (cRenderer.RebuildRendererFlag)
 	{
 		UpdateRenderPasses();
 	}
@@ -94,7 +94,7 @@ void Scene::UpdateRenderPasses()
 	renderPass2D.UpdateRenderPass(mesh);
 	frameRenderPass.UpdateRenderPass(renderPass2D.GetRenderedTexture());
 	InterfaceRenderPass::RebuildSwapChain();
-	renderer.RebuildRendererFlag = false;
+	cRenderer.RebuildRendererFlag = false;
 }
 
 void Scene::Draw()

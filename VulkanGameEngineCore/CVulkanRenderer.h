@@ -48,7 +48,7 @@ typedef struct rendererState
 	VkSemaphore* PresentImageSemaphores;
 	bool RebuildRendererFlag;
 }RendererState;
-extern RendererState renderer;
+extern RendererState cRenderer;
 
 VkInstance Renderer_CreateVulkanInstance();
 VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance);

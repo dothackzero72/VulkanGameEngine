@@ -65,17 +65,17 @@ private:
             .dependencyCount = 1,
             .pDependencies = &dependency
         };
-        VULKAN_RESULT(vkCreateRenderPass(renderer.Device, &renderPassInfo, nullptr, &RenderPass));
+        VULKAN_RESULT(vkCreateRenderPass(cRenderer.Device, &renderPassInfo, nullptr, &RenderPass));
     }
 
     static void CreateRendererFramebuffers()
     {
-        SwapChainFramebuffers.resize(renderer.SwapChain.SwapChainImageCount);
-        for (size_t x = 0; x < renderer.SwapChain.SwapChainImageCount; x++) 
+        SwapChainFramebuffers.resize(cRenderer.SwapChain.SwapChainImageCount);
+        for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++) 
         {
             std::vector<VkImageView> attachments = 
             {
-                renderer.SwapChain.SwapChainImageViews[x]
+                cRenderer.SwapChain.SwapChainImageViews[x]
             };
 
             VkFramebufferCreateInfo frameBufferInfo =
@@ -84,11 +84,11 @@ private:
                 .renderPass = RenderPass,
                 .attachmentCount = static_cast<uint32>(attachments.size()),
                 .pAttachments = attachments.data(),
-                .width = renderer.SwapChain.SwapChainResolution.width,
-                .height = renderer.SwapChain.SwapChainResolution.height,
+                .width = cRenderer.SwapChain.SwapChainResolution.width,
+                .height = cRenderer.SwapChain.SwapChainResolution.height,
                 .layers = 1
             };
-            VULKAN_RESULT(vkCreateFramebuffer(renderer.Device, &frameBufferInfo, nullptr, &SwapChainFramebuffers[x]));
+            VULKAN_RESULT(vkCreateFramebuffer(cRenderer.Device, &frameBufferInfo, nullptr, &SwapChainFramebuffers[x]));
         }
     }
 
@@ -135,7 +135,7 @@ public:
         {
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-            .queueFamilyIndex = renderer.SwapChain.GraphicsFamily
+            .queueFamilyIndex = cRenderer.SwapChain.GraphicsFamily
         };
         VULKAN_RESULT(VulkanRenderer::CreateCommandPool(ImGuiCommandPool, poolInfo));
 
@@ -163,8 +163,8 @@ public:
         };
         VULKAN_RESULT(VulkanRenderer::CreateDescriptorPool(ImGuiDescriptorPool, pool_info));
 
-        ImGuiCommandBuffers.resize(renderer.SwapChain.SwapChainImageCount);
-        for (size_t x = 0; x < renderer.SwapChain.SwapChainImageCount; x++)
+        ImGuiCommandBuffers.resize(cRenderer.SwapChain.SwapChainImageCount);
+        for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
         {
             VkCommandBufferAllocateInfo commandBufferAllocateInfo
             {
@@ -173,20 +173,20 @@ public:
                 .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
                 .commandBufferCount = 1
             };
-            VULKAN_RESULT(vkAllocateCommandBuffers(renderer.Device, &commandBufferAllocateInfo, &ImGuiCommandBuffers[x]));
+            VULKAN_RESULT(vkAllocateCommandBuffers(cRenderer.Device, &commandBufferAllocateInfo, &ImGuiCommandBuffers[x]));
         }
 
         ImGui_ImplVulkan_InitInfo init_info =
         {
-            .Instance = renderer.Instance,
-            .PhysicalDevice = renderer.PhysicalDevice,
-            .Device = renderer.Device,
-            .QueueFamily = renderer.SwapChain.GraphicsFamily,
-            .Queue = renderer.SwapChain.GraphicsQueue,
+            .Instance = cRenderer.Instance,
+            .PhysicalDevice = cRenderer.PhysicalDevice,
+            .Device = cRenderer.Device,
+            .QueueFamily = cRenderer.SwapChain.GraphicsFamily,
+            .Queue = cRenderer.SwapChain.GraphicsQueue,
             .DescriptorPool = ImGuiDescriptorPool,
             .RenderPass = RenderPass,
-            .MinImageCount = renderer.SwapChain.SwapChainImageCount,
-            .ImageCount = renderer.SwapChain.SwapChainImageCount,
+            .MinImageCount = cRenderer.SwapChain.SwapChainImageCount,
+            .ImageCount = cRenderer.SwapChain.SwapChainImageCount,
             .PipelineCache = VK_NULL_HANDLE,
             .Allocator = nullptr,
             .CheckVkResultFn = check_vk_result
@@ -250,11 +250,11 @@ public:
          {
              .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
              .renderPass = RenderPass,
-             .framebuffer = SwapChainFramebuffers[renderer.ImageIndex],
+             .framebuffer = SwapChainFramebuffers[cRenderer.ImageIndex],
              .renderArea
              {
                  .offset = { 0, 0 },
-                 .extent = renderer.SwapChain.SwapChainResolution,
+                 .extent = cRenderer.SwapChain.SwapChainResolution,
              },
              .clearValueCount = static_cast<uint32>(clearValues.size()),
              .pClearValues = clearValues.data()
@@ -266,13 +266,13 @@ public:
             .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
         };
         
-        VULKAN_RESULT(vkBeginCommandBuffer(ImGuiCommandBuffers[renderer.CommandIndex], &beginInfo));
-        vkCmdBeginRenderPass(ImGuiCommandBuffers[renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), ImGuiCommandBuffers[renderer.CommandIndex]);
-        vkCmdEndRenderPass(ImGuiCommandBuffers[renderer.CommandIndex]);
-        VULKAN_RESULT(vkEndCommandBuffer(ImGuiCommandBuffers[renderer.CommandIndex]));
+        VULKAN_RESULT(vkBeginCommandBuffer(ImGuiCommandBuffers[cRenderer.CommandIndex], &beginInfo));
+        vkCmdBeginRenderPass(ImGuiCommandBuffers[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), ImGuiCommandBuffers[cRenderer.CommandIndex]);
+        vkCmdEndRenderPass(ImGuiCommandBuffers[cRenderer.CommandIndex]);
+        VULKAN_RESULT(vkEndCommandBuffer(ImGuiCommandBuffers[cRenderer.CommandIndex]));
        
-        return ImGuiCommandBuffers[renderer.CommandIndex];
+        return ImGuiCommandBuffers[cRenderer.CommandIndex];
     }
 
     static void RebuildSwapChain()

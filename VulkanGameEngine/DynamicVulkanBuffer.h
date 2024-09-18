@@ -18,7 +18,7 @@ private:
 			RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
 			return;
 		}
-		Buffer_UpdateStagingBufferMemory(renderer.Device, VulkanBuffer<T>::StagingBufferMemory, static_cast<void*>(&bufferData), sizeof(T));
+		Buffer_UpdateStagingBufferMemory(cRenderer.Device, VulkanBuffer<T>::StagingBufferMemory, static_cast<void*>(&bufferData), sizeof(T));
 	}
 
 	virtual void UpdateBufferData(List<T>& bufferData) override
@@ -39,7 +39,7 @@ private:
 			return;
 		}
 
-		Buffer_UpdateStagingBufferMemory(renderer.Device, VulkanBuffer<T>::StagingBufferMemory, static_cast<void*>(bufferData.data()), newBufferSize);
+		Buffer_UpdateStagingBufferMemory(cRenderer.Device, VulkanBuffer<T>::StagingBufferMemory, static_cast<void*>(bufferData.data()), newBufferSize);
 	}
 
 	virtual void UpdateBufferData(void* bufferData, VkDeviceSize bufferListCount) override
@@ -60,7 +60,7 @@ private:
 			return;
 		}
 
-		Buffer_UpdateStagingBufferMemory(renderer.Device, VulkanBuffer<T>::StagingBufferMemory, bufferData, newBufferSize);
+		Buffer_UpdateStagingBufferMemory(cRenderer.Device, VulkanBuffer<T>::StagingBufferMemory, bufferData, newBufferSize);
 	}
 
 	virtual void UpdateBufferData(void* bufferData) override
@@ -89,8 +89,7 @@ public:
 
 	virtual void UpdateBuffer(VkCommandBuffer& commandBuffer, void* data)
 	{
-		VulkanBuffer<T>::UpdateBufferData(data);
-		//UpdateBufferData(data);
+		UpdateBufferData(data);
 		CopyStagingBuffer(commandBuffer);
 	}
 };

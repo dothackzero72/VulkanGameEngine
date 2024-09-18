@@ -3,7 +3,7 @@
 #include "GLFWWindow.h"
 #include "CTypedef.h"
 
-RendererState renderer = { 0 };
+RendererState cRenderer = { 0 };
 //RayTracingFunctions RTX = { 0 };
 
 static const char* DeviceExtensionList[] = {
@@ -60,7 +60,7 @@ static bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array
     PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
     if (func != NULL)
     {
-        func(instance, renderer.DebugMessenger, pAllocator);
+        func(instance, cRenderer.DebugMessenger, pAllocator);
     }
     else
     {
@@ -160,7 +160,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
  bool Renderer_GetRayTracingSupport()
 {
    /* uint32 deviceExtensionCount = INT32_MAX;
-    VkExtensionProperties* deviceExtensions = GetDeviceExtensions(Renderer.PhysicalDevice, &deviceExtensionCount);
+    VkExtensionProperties* deviceExtensions = GetDeviceExtensions(cRenderer.PhysicalDevice, &deviceExtensionCount);
     VkPhysicalDeviceAccelerationStructureFeaturesKHR physicalDeviceAccelerationStructureFeatures =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR
@@ -177,7 +177,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
         .pNext = &physicalDeviceRayTracingPipelineFeatures
     };
-    vkGetPhysicalDeviceFeatures2(Renderer.PhysicalDevice, &physicalDeviceFeatures2);
+    vkGetPhysicalDeviceFeatures2(cRenderer.PhysicalDevice, &physicalDeviceFeatures2);
 
     if (physicalDeviceRayTracingPipelineFeatures.rayTracingPipeline == VK_TRUE &&
         physicalDeviceAccelerationStructureFeatures.accelerationStructure == VK_TRUE)
@@ -952,7 +952,7 @@ void Renderer_DestroySwapChainImageView(VkDevice device, VkImageView* pSwapChain
 {
     for (uint32 x = 0; x < count; x++)
     {
-        if (renderer.Surface != VK_NULL_HANDLE)
+        if (cRenderer.Surface != VK_NULL_HANDLE)
         {
             vkDestroyImageView(device, pSwapChainImageViewList[x], NULL);
             pSwapChainImageViewList[x] = VK_NULL_HANDLE;

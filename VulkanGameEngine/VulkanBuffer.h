@@ -30,7 +30,7 @@ protected:
 		BufferSize = bufferSize;
 		BufferUsage = usage;
 		BufferProperties = properties;
-		return Buffer_CreateBuffer(renderer.Device, renderer.PhysicalDevice, &Buffer, &BufferMemory, bufferData, bufferSize, usage, properties);
+		return Buffer_CreateBuffer(cRenderer.Device, cRenderer.PhysicalDevice, &Buffer, &BufferMemory, bufferData, bufferSize, usage, properties);
 	}
 
 	virtual VkResult CreateStagingBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
@@ -38,12 +38,12 @@ protected:
 		BufferSize = bufferSize;
 		BufferUsage = usage;
 		BufferProperties = properties;
-		return Buffer_CreateStagingBuffer(renderer.Device, renderer.PhysicalDevice, &StagingBuffer, &StagingBufferMemory, bufferData, bufferSize, usage, properties);
+		return Buffer_CreateStagingBuffer(cRenderer.Device, cRenderer.PhysicalDevice, &StagingBuffer, &StagingBufferMemory, bufferData, bufferSize, usage, properties);
 	}
 
 	VkResult UpdateBufferSize(VkDeviceSize newBufferSize)
 	{
-		VkResult result = Buffer_UpdateBufferSize(renderer.Device, renderer.PhysicalDevice, Buffer, &BufferMemory, BufferData, &BufferSize, newBufferSize, BufferUsage, BufferProperties);
+		VkResult result = Buffer_UpdateBufferSize(cRenderer.Device, cRenderer.PhysicalDevice, Buffer, &BufferMemory, BufferData, &BufferSize, newBufferSize, BufferUsage, BufferProperties);
 		DestroyBuffer();
 		return result;
 	}
@@ -68,7 +68,7 @@ public:
 
 	static VkResult CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 	{
-		return Buffer_CopyBuffer(renderer.Device, renderer.CommandPool, renderer.SwapChain.GraphicsQueue, srcBuffer, dstBuffer, size);
+		return Buffer_CopyBuffer(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, srcBuffer, dstBuffer, size);
 	}
 
 	virtual void UpdateBufferData(T& bufferData)
@@ -78,7 +78,7 @@ public:
 			RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
 			return;
 		}
-		Buffer_UpdateBufferMemory(renderer.Device, BufferMemory, static_cast<void*>(&bufferData), sizeof(T));
+		Buffer_UpdateBufferMemory(cRenderer.Device, BufferMemory, static_cast<void*>(&bufferData), sizeof(T));
 	}
 
 	virtual void UpdateBufferData(List<T>& bufferData)
@@ -99,7 +99,7 @@ public:
 			return;
 		}
 
-		Buffer_UpdateBufferMemory(renderer.Device, BufferMemory, static_cast<void*>(bufferData.data()), newBufferSize);
+		Buffer_UpdateBufferMemory(cRenderer.Device, BufferMemory, static_cast<void*>(bufferData.data()), newBufferSize);
 	}
 
 	virtual void UpdateBufferData(void* bufferData, VkDeviceSize bufferListCount)
@@ -120,7 +120,7 @@ public:
 			return;
 		}
 
-		Buffer_UpdateBufferMemory(renderer.Device, BufferMemory, static_cast<void*>(&bufferData), newBufferSize);
+		Buffer_UpdateBufferMemory(cRenderer.Device, BufferMemory, static_cast<void*>(&bufferData), newBufferSize);
 	}
 
 	virtual void UpdateBufferData(void* bufferData)
@@ -130,7 +130,7 @@ public:
 			RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
 			return;
 		}
-		Buffer_UpdateBufferMemory(renderer.Device, BufferMemory, bufferData, sizeof(T));
+		Buffer_UpdateBufferMemory(cRenderer.Device, BufferMemory, bufferData, sizeof(T));
 	}
 
 	std::vector<T> CheckBufferContents()
@@ -138,7 +138,7 @@ public:
 		std::vector<T> DataList;
 		size_t dataListSize = BufferSize / sizeof(T);
 
-		void* data = Buffer_MapBufferMemory(renderer.Device, BufferMemory, BufferSize, *IsMapped);
+		void* data = Buffer_MapBufferMemory(cRenderer.Device, BufferMemory, BufferSize, *IsMapped);
 		if (data == nullptr) {
 			std::cerr << "Failed to map buffer memory\n";
 			return DataList;
@@ -150,7 +150,7 @@ public:
 			DataList.emplace_back(*reinterpret_cast<T*>(newPtr));
 			newPtr += sizeof(T);
 		}
-		Buffer_UnmapBufferMemory(renderer.Device, BufferMemory, *IsMapped);
+		Buffer_UnmapBufferMemory(cRenderer.Device, BufferMemory, *IsMapped);
 
 		return DataList;
 	}
@@ -168,7 +168,7 @@ public:
 
 	void DestroyBuffer()
 	{
-		Buffer_DestroyBuffer(renderer.Device, &Buffer, &BufferMemory, &BufferData, &BufferSize, &BufferUsage, &BufferProperties);
+		Buffer_DestroyBuffer(cRenderer.Device, &Buffer, &BufferMemory, &BufferData, &BufferSize, &BufferUsage, &BufferProperties);
 	}
 
 	VkBuffer GetBuffer() { return Buffer; }
