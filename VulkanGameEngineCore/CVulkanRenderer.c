@@ -837,7 +837,7 @@ void Renderer_DestroyFences(VkDevice* device, VkSemaphore* acquireImageSemaphore
         }
     }
 }
-
+ 
 void Renderer_DestroyCommandPool(VkDevice* device, VkCommandPool* commandPool)
 {
     if (*commandPool != VK_NULL_HANDLE)
