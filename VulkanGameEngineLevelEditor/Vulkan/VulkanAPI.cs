@@ -60,7 +60,7 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern VkResult vkQueueSubmit(VkQueue queue, uint submitCount, [In] VkSubmitInfo[] pSubmits, VkFence fence);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkQueueWaitIdle(VkQueue queue);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkDeviceWaitIdle(VkDevice device);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkAllocateMemory(VkDevice device, in VkMemoryAllocateInfo pAllocateInfo, IntPtr pAllocator, out VkDeviceMemory pMemory);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkAllocateMemory(VkDevice device, ref VkMemoryAllocateInfo pAllocateInfo, IntPtr pAllocator, out VkDeviceMemory pMemory);
         [DllImport("vulkan-1.dll")] public static extern void vkFreeMemory(VkDevice device, VkDeviceMemory memory, IntPtr pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkMapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags, out IntPtr ppData);
         [DllImport("vulkan-1.dll")] public static extern void vkUnmapMemory(VkDevice device, VkDeviceMemory memory);
@@ -93,7 +93,7 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyBuffer(VkDevice device, VkBuffer buffer, IntPtr pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateBufferView(VkDevice device, in VkBufferViewCreateInfo pCreateInfo, IntPtr pAllocator, out VkBufferView pView);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyBufferView(VkDevice device, VkBufferView bufferView, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateImage(VkDevice device, in VkImageCreateInfo pCreateInfo, IntPtr pAllocator, out VkImage pImage);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateImage(VkDevice device, ref VkImageCreateInfo pCreateInfo, IntPtr pAllocator, out VkImage pImage);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyImage(VkDevice device, VkImage image, IntPtr pAllocator);
         [DllImport("vulkan-1.dll")] public static extern void vkGetImageSubresourceLayout(VkDevice device, VkImage image, in VkImageSubresource pSubresource, out VkSubresourceLayout pLayout);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateImageView(VkDevice device, in VkImageViewCreateInfo pCreateInfo, IntPtr pAllocator, out VkImageView pView);

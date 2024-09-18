@@ -1,5 +1,5 @@
 #include "CShaderCompiler.h"
-#include "VulkanRenderer.h"
+#include "CVulkanRenderer.h"
 
 VkPipelineShaderStageCreateInfo Shader_CreateShader(VkShaderModule shaderModule, VkShaderStageFlagBits shaderStages)
 {

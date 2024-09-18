@@ -1,5 +1,5 @@
 #include "Scene.h"
-#include <VulkanRenderer.h>
+#include "VulkanRenderer.h"
 #include "Texture.h"
 #include "SceneDataBuffer.h"
 #include "implot.h"
@@ -27,9 +27,9 @@ void Scene::Update(const float& deltaTime)
 	{
 		UpdateRenderPasses();
 	}
-	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer();
+	VkCommandBuffer commandBuffer = VulkanRenderer::BeginCommandBuffer();
 	mesh->BufferUpdate(commandBuffer, deltaTime);
-	Renderer_EndSingleUseCommandBuffer(commandBuffer);
+	VulkanRenderer::EndCommandBuffer(commandBuffer);
 
 	orthographicCamera->Update(sceneProperties);
 	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_W] == KS_PRESSED)
@@ -101,11 +101,11 @@ void Scene::Draw()
 {
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 
-	VULKAN_RESULT(Renderer_StartFrame());
+	VULKAN_RESULT(VulkanRenderer::StartFrame());
 	CommandBufferSubmitList.emplace_back(renderPass2D.Draw(mesh, sceneProperties));
 	CommandBufferSubmitList.emplace_back(frameRenderPass.Draw());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
-	VULKAN_RESULT(Renderer_EndFrame(CommandBufferSubmitList.data(), static_cast<uint32_t>(CommandBufferSubmitList.size())));
+	VULKAN_RESULT(VulkanRenderer::EndFrame(CommandBufferSubmitList));
 }
 
 void Scene::Destroy()

@@ -1,9 +1,9 @@
 #pragma once
 extern "C"
 {
-#include <VulkanRenderer.h>
 #include <CBuffer.h>
 }
+#include "VulkanRenderer.h"
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -30,7 +30,7 @@ protected:
 		BufferSize = bufferSize;
 		BufferUsage = usage;
 		BufferProperties = properties;
-		return Buffer_CreateBuffer(renderer.Device, &Buffer, &BufferMemory, bufferData, bufferSize, usage, properties);
+		return Buffer_CreateBuffer(renderer.Device, renderer.PhysicalDevice, &Buffer, &BufferMemory, bufferData, bufferSize, usage, properties);
 	}
 
 	virtual VkResult CreateStagingBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
@@ -38,12 +38,12 @@ protected:
 		BufferSize = bufferSize;
 		BufferUsage = usage;
 		BufferProperties = properties;
-		return Buffer_CreateStagingBuffer(renderer.Device, &StagingBuffer, &StagingBufferMemory, bufferData, bufferSize, usage, properties);
+		return Buffer_CreateStagingBuffer(renderer.Device, renderer.PhysicalDevice, &StagingBuffer, &StagingBufferMemory, bufferData, bufferSize, usage, properties);
 	}
 
 	VkResult UpdateBufferSize(VkDeviceSize newBufferSize)
 	{
-		VkResult result = Buffer_UpdateBufferSize(renderer.Device, Buffer, &BufferMemory, BufferData, &BufferSize, newBufferSize, BufferUsage, BufferProperties);
+		VkResult result = Buffer_UpdateBufferSize(renderer.Device, renderer.PhysicalDevice, Buffer, &BufferMemory, BufferData, &BufferSize, newBufferSize, BufferUsage, BufferProperties);
 		DestroyBuffer();
 		return result;
 	}
@@ -68,7 +68,7 @@ public:
 
 	static VkResult CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 	{
-		return Buffer_CopyBuffer(srcBuffer, dstBuffer, size);
+		return Buffer_CopyBuffer(renderer.Device, renderer.CommandPool, renderer.SwapChain.GraphicsQueue, srcBuffer, dstBuffer, size);
 	}
 
 	virtual void UpdateBufferData(T& bufferData)

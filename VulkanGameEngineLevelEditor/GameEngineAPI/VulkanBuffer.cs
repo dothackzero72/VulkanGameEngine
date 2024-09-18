@@ -24,78 +24,97 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public bool IsMapped { get; private set; }
         public VkDescriptorBufferInfo DescriptorBufferInfo { get; private set; }
 
-        protected VulkanBufferInfo SendCBufferInfo()
-        {
-            return new VulkanBufferInfo
-            {
-                Buffer = Buffer,
-                StagingBuffer = StagingBuffer,
-                BufferMemory = BufferMemory,
-                StagingBufferMemory = StagingBufferMemory,
-                BufferSize = BufferSize,
-                BufferUsage = BufferUsage,
-                BufferProperties = BufferProperties,
-                BufferDeviceAddress = BufferDeviceAddress,
-                BufferHandle = BufferHandle,
-                BufferData = BufferData,
-                IsMapped = IsMapped
-            };
-        }
-
-        VkResult UpdateBufferSize(VkDeviceSize bufferSize)
-        {
-            BufferSize = bufferSize;
-            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
-            return GameEngineDLL.DLL_Buffer_UpdateBufferSize(ref vulkanBufferInfo, VulkanRenderer.Device, bufferSize);
-        }
-
         public VulkanBuffer()
         {
         }
 
         public VulkanBuffer(IntPtr bufferData, UInt32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
         {
-            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
-            IntPtr vulkanBufferInfoPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VulkanBufferInfo)));
-            CreateBuffer(vulkanBufferInfoPtr, bufferSize, usage, properties);
+            BufferSize = bufferSize;
+            BufferUsage = usage;
+            BufferProperties = properties;
+            CreateBuffer(bufferData, bufferSize, usage, properties);
         }
 
-        public virtual VkResult CopyBuffer(ref VkBuffer srcBuffer, ref VkBuffer dstBuffer, VkDeviceSize size)
+        private VkResult AllocateMemory(VkDevice device, VkPhysicalDevice physicalDevice, ref VkBuffer bufferData, ref VkDeviceMemory bufferMemory, VkMemoryPropertyFlagBits properties)
         {
-            return GameEngineDLL.DLL_Buffer_CopyBuffer( srcBuffer, dstBuffer, size);
+            var bufferData2 = bufferData;
+            var bufferMemory2 = bufferMemory;
+            return GameEngineDLL.DLL_Buffer_AllocateMemory(device, VulkanRenderer.PhysicalDevice, ref bufferData2, ref bufferMemory2, properties);
         }
 
-        public virtual VkResult CreateBuffer(VkBuffer bufferData, UInt32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
+        virtual protected VkResult CreateBuffer(IntPtr bufferData, ulong bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlagBits properties)
         {
-            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo(); // Adjust if this needs to return details
-            IntPtr vulkanBufferInfoPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VulkanBufferInfo)));
+            VkBuffer buffer = new VkBuffer();
+            VkDeviceMemory bufferMemory = new VkDeviceMemory();
 
-            // Initialize the allocated memory
-            // Note: You need to set the Buffer and BufferMemory to IntPtr.Zero here
-            Marshal.WriteIntPtr(vulkanBufferInfoPtr, IntPtr.Zero); // Buffer
-            Marshal.WriteIntPtr(vulkanBufferInfoPtr + IntPtr.Size, IntPtr.Zero); // BufferMemory - offset by size of IntPtr for the next field
-            Marshal.WriteInt64(vulkanBufferInfoPtr + IntPtr.Size * 2, 0); // BufferSize
-            Marshal.WriteInt32(vulkanBufferInfoPtr + IntPtr.Size * 3, (int)usage); // BufferUsage
-            Marshal.WriteInt32(vulkanBufferInfoPtr + IntPtr.Size * 4, (int)properties); // BufferProperties
+            VkResult result = GameEngineDLL.DLL_Buffer_CreateBuffer(
+                VulkanRenderer.Device,
+                VulkanRenderer.PhysicalDevice,
+                ref buffer,
+                ref bufferMemory,
+                bufferData,
+                bufferSize,
+                bufferUsage,
+                properties);
 
-            // Finally, make the PInvoke call
-            var result = GameEngineDLL.DLL_Buffer_CreateBuffer(vulkanBufferInfoPtr, VulkanRenderer.Device, bufferData, bufferSize, usage, properties);
-
-            // After using the pointer, be sure to free the allocated memory afterwards
-            Marshal.FreeHGlobal(vulkanBufferInfoPtr);
+            Buffer = buffer;
+            BufferMemory = bufferMemory;
 
             return result;
         }
 
-        public virtual void UpdateBufferData(VkBuffer bufferData)
+        virtual protected VkResult CreateStagingBuffer()
         {
-            if (BufferSize < (ulong)sizeof(T))
+            VkBuffer stagingBuffer = StagingBuffer;
+            VkDeviceMemory stagingBufferMemory = StagingBufferMemory;
+            var result = GameEngineDLL.DLL_Buffer_CreateStagingBuffer(VulkanRenderer.Device, VulkanRenderer.PhysicalDevice, out stagingBuffer, out stagingBufferMemory, BufferData, BufferSize, BufferUsage, BufferProperties);
+            return result;
+        }
+
+        virtual protected VkResult CopyStagingBuffer(IntPtr commandBuffer)
+        {
+            return GameEngineDLL.DLL_Buffer_CopyStagingBuffer(commandBuffer, StagingBuffer, Buffer, BufferSize);
+        }
+
+        virtual protected VkResult UpdateBufferSize(ulong newBufferSize)
+        {
+            var buffer = Buffer;
+            var bufferMemory = BufferMemory;
+            return GameEngineDLL.DLL_Buffer_UpdateBufferSize(VulkanRenderer.Device, VulkanRenderer.PhysicalDevice, out buffer, out bufferMemory, BufferData, ref newBufferSize, BufferSize, BufferUsage, BufferProperties);
+        }
+
+        virtual protected VkResult UpdateStagingBufferData(IntPtr bufferData)
+        {
+            return GameEngineDLL.DLL_Buffer_UpdateStagingBufferMemory(VulkanRenderer.Device, StagingBufferMemory, bufferData, (uint)sizeof(T));
+        }
+
+        virtual public VkResult UpdateBufferData(IntPtr bufferData)
+        {
+            return GameEngineDLL.DLL_Buffer_UpdateBufferMemory(VulkanRenderer.Device, BufferMemory, bufferData, (uint)sizeof(T));
+        }
+
+        public VkResult CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+        {
+            return GameEngineDLL.DLL_Buffer_CopyBuffer(srcBuffer, dstBuffer, size);
+        }
+
+        public void DestroyBuffer()
+        {
+            var bufferSize = BufferSize;
+            var bufferUsage = BufferUsage;
+            var bufferProperties = BufferProperties;
+            GameEngineDLL.DLL_Buffer_DestroyBuffer(Buffer, BufferMemory, BufferData, ref bufferSize, ref bufferUsage, ref bufferProperties);
+        }
+
+        public VkDescriptorBufferInfo GetDescriptorbuffer()
+        {
+            return new VkDescriptorBufferInfo
             {
-               // RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
-                return;
-            }
-            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
-            GameEngineDLL.DLL_Buffer_UpdateBufferMemory(ref vulkanBufferInfo, VulkanRenderer.Device, bufferData, (uint)sizeof(T));
+                buffer = Buffer,
+                offset = 0,
+                range = VulkanConsts.VK_WHOLE_SIZE
+            };
         }
 
         public List<T> CheckBufferContents()
@@ -103,8 +122,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             List<T> DataList = new List<T>();
             ulong dataListSize = BufferSize / (ulong)sizeof(T);
 
-            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
-            IntPtr data = GameEngineDLL.DLL_Buffer_MapBufferMemory(ref vulkanBufferInfo, VulkanRenderer.Device);
+            var isMapped = IsMapped;
+            IntPtr data = GameEngineDLL.DLL_Buffer_MapBufferMemory(VulkanRenderer.Device, BufferMemory, BufferSize, out isMapped);
             if (data == IntPtr.Zero)
             {
                 return DataList;
@@ -117,25 +136,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 DataList.Add(item);
             }
 
-            GameEngineDLL.DLL_Buffer_UnmapBufferMemory(ref vulkanBufferInfo, VulkanRenderer.Device);
+            GameEngineDLL.DLL_Buffer_UnmapBufferMemory(VulkanRenderer.Device, BufferMemory, out isMapped);
 
             return DataList;
-        }
-
-        public VkDescriptorBufferInfo GetDescriptorbuffer()
-        {
-            return new VkDescriptorBufferInfo
-            {
-				buffer = Buffer,
-				offset = 0,
-				range = VulkanConsts.VK_WHOLE_SIZE
-            };
-        }
-
-        public void DestroyBuffer()
-        {
-            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
-            GameEngineDLL.DLL_Buffer_DestroyBuffer(ref vulkanBufferInfo);
         }
     }
 }

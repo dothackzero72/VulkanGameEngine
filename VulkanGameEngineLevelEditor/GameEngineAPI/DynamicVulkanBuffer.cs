@@ -20,29 +20,22 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             base.CreateBuffer(bufferData, bufferSize, usage, properties);
         }
 
-        override public VkResult CreateBuffer(IntPtr bufferData, uint bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
+        override protected VkResult CreateBuffer(IntPtr bufferData, ulong bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlagBits properties)
         {
-            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
-            return GameEngineDLL.DLL_Buffer_CreateStagingBuffer(ref vulkanBufferInfo, VulkanRenderer.Device, bufferData, bufferSize, usage, properties);
+            VkBuffer stagingBuffer = StagingBuffer;
+            VkDeviceMemory stagingBufferMemory = StagingBufferMemory;
+            return GameEngineDLL.DLL_Buffer_CreateStagingBuffer(VulkanRenderer.Device, VulkanRenderer.PhysicalDevice, out stagingBuffer, out stagingBufferMemory, bufferData, bufferSize, bufferUsage, properties);
         }
 
-        public void UpdateBuffer(ref VkCommandBuffer commandBuffer, IntPtr data)
+        override protected VkResult CopyStagingBuffer(VkCommandBuffer commandBuffer)
         {
-            base.UpdateBufferData(data);
-
-            var CommandBuffer = commandBuffer;
-            CopyStagingBuffer(CommandBuffer);
+            return base.CopyStagingBuffer(commandBuffer);
         }
 
-        override public void UpdateBufferData(IntPtr bufferData)
+        override public VkResult UpdateBufferData(IntPtr bufferData)
         {
-            base.UpdateBufferData(bufferData);
+            return base.UpdateStagingBufferData(bufferData);
         }
 
-        public VkResult CopyStagingBuffer(VkCommandBuffer commandBuffer)
-        {
-            VulkanBufferInfo vulkanBufferInfo = SendCBufferInfo();
-            return GameEngineDLL.DLL_Buffer_CopyStagingBuffer(ref vulkanBufferInfo, commandBuffer, StagingBuffer, Buffer, BufferSize);
-        }
     }
 }

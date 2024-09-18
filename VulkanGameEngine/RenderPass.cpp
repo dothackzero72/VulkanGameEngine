@@ -1,7 +1,7 @@
 #include "RenderPass.h"
 extern "C" 
 {
-#include "VulkanRenderer.h"
+#include "CVulkanRenderer.h"
 #include <VulkanError.h>
 }
 

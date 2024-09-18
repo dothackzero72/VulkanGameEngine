@@ -1,5 +1,5 @@
 #include "FrameBufferRenderPass.h"
-#include <VulkanRenderer.h>
+#include <CVulkanRenderer.h>
 #include "ShaderCompiler.h"
 #include <stdexcept>
 
@@ -389,7 +389,7 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
     vkCmdBindDescriptorSets(CommandBufferList[renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &DescriptorSet, 0, nullptr);
     vkCmdDraw(CommandBufferList[renderer.CommandIndex], 6, 1, 0, 0);
     vkCmdEndRenderPass(CommandBufferList[renderer.CommandIndex]);
-    VULKAN_RESULT(Renderer_EndCommandBuffer(&CommandBufferList[renderer.CommandIndex]));
+    VULKAN_RESULT(VulkanRenderer::EndCommandBuffer(&CommandBufferList[renderer.CommandIndex]));
     return CommandBufferList[renderer.CommandIndex];
 }
 

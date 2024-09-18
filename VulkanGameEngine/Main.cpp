@@ -2,7 +2,7 @@
 extern "C"
 {
 #include <VulkanWindow.h>
-#include <VulkanRenderer.h>
+#include <CVulkanRenderer.h>
 #include <GLFWWindow.h>
 }
 #include <stdio.h>

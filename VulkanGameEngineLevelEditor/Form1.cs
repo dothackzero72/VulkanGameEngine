@@ -35,7 +35,6 @@ namespace VulkanGameEngineLevelEditor
             {
                 InitializeComponent();
                 VulkanRenderer.SetUpRenderer(this.Handle, pictureBox1);
-                var asdf = GameEngineDLL.DLL_BUFFER_BufferTest();
                 texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", VkFormat.VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum.kType_DiffuseTextureMap);
             }
             catch (Exception ex)

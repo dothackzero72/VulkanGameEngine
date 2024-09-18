@@ -1,7 +1,7 @@
 #include "CBuffer.h"
-#include "VulkanRenderer.h"
+#include "CVulkanRenderer.h"
 
-static VkResult Buffer_AllocateMemory(VkBuffer* bufferData, VkDeviceMemory* bufferMemory, VkMemoryPropertyFlags properties)
+VkResult Buffer_AllocateMemory(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer* bufferData, VkDeviceMemory* bufferMemory, VkMemoryPropertyFlags properties)
 {
     if (bufferData == NULL)
     {
@@ -10,7 +10,7 @@ static VkResult Buffer_AllocateMemory(VkBuffer* bufferData, VkDeviceMemory* buff
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(renderer.Device, *bufferData, &memRequirements);
+    vkGetBufferMemoryRequirements(device, *bufferData, &memRequirements);
 
     VkMemoryAllocateFlagsInfoKHR ExtendedAllocFlagsInfo =
     {
@@ -20,11 +20,10 @@ static VkResult Buffer_AllocateMemory(VkBuffer* bufferData, VkDeviceMemory* buff
     {
         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
         .allocationSize = memRequirements.size,
-        .memoryTypeIndex = Renderer_GetMemoryType(memRequirements.memoryTypeBits, properties),
+        .memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties),
         .pNext = &ExtendedAllocFlagsInfo,
     };
-
-    return vkAllocateMemory(renderer.Device, &allocInfo, NULL, bufferMemory);
+    return vkAllocateMemory(device, &allocInfo, NULL, bufferMemory);
 }
 
 void* Buffer_MapBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, VkDeviceSize bufferSize, bool* isMapped)
@@ -45,13 +44,13 @@ VkResult Buffer_UnmapBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, 
 {
     if (*isMapped)
     {
-        vkUnmapMemory(renderer.Device, bufferMemory);
+        vkUnmapMemory(device, bufferMemory);
         *isMapped = false;
     }
     return VK_SUCCESS;
 }
 
-VkResult Buffer_CreateBuffer(VkDevice device, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties)
+VkResult Buffer_CreateBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties)
 {
     if (bufferData == NULL || bufferSize == 0)
     {
@@ -66,7 +65,7 @@ VkResult Buffer_CreateBuffer(VkDevice device, VkBuffer* buffer, VkDeviceMemory* 
     bufferInfoStruct.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
     VULKAN_RESULT(vkCreateBuffer(device, &bufferInfoStruct, NULL, buffer));
-    VULKAN_RESULT(Buffer_AllocateMemory(buffer, bufferMemory, properties));
+    VULKAN_RESULT(Buffer_AllocateMemory(device, physicalDevice, buffer, bufferMemory, properties));
     VULKAN_RESULT(vkBindBufferMemory(device, *buffer, *bufferMemory, 0));
 
     void* mappedData;
@@ -77,7 +76,7 @@ VkResult Buffer_CreateBuffer(VkDevice device, VkBuffer* buffer, VkDeviceMemory* 
     return VK_SUCCESS;
 }
 
-VkResult Buffer_CreateStagingBuffer(VkDevice device, VkBuffer* stagingBuffer, VkDeviceMemory* stagingBufferMemory, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties)
+VkResult Buffer_CreateStagingBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer* stagingBuffer, VkDeviceMemory* stagingBufferMemory, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties)
 {
     VkMemoryRequirements memRequirements;
     VkBufferCreateInfo bufferCreateInfo =
@@ -89,11 +88,11 @@ VkResult Buffer_CreateStagingBuffer(VkDevice device, VkBuffer* stagingBuffer, Vk
     };
     VULKAN_RESULT(vkCreateBuffer(device, &bufferCreateInfo, NULL, stagingBuffer));
     vkGetBufferMemoryRequirements(device, *stagingBuffer, &memRequirements);
-    VULKAN_RESULT(Buffer_AllocateMemory(stagingBuffer, stagingBufferMemory, properties));
+    VULKAN_RESULT(Buffer_AllocateMemory(device, physicalDevice, stagingBuffer, stagingBufferMemory, properties));
     return vkBindBufferMemory(device, *stagingBuffer, *stagingBufferMemory, 0);
 }
 
-VkResult Buffer_CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
+VkResult Buffer_CopyBuffer(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 {
     if (srcBuffer == NULL)
     {
@@ -107,9 +106,9 @@ VkResult Buffer_CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSiz
         .dstOffset = 0,
         .size = size
     };
-    VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer();
+    VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
     vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-    return Renderer_EndSingleUseCommandBuffer(&commandBuffer);
+    return Renderer_EndSingleUseCommandBuffer(device, commandBuffer, &commandBuffer, graphicsQueue);
 }
 
 VkResult Buffer_CopyStagingBuffer(VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
@@ -130,7 +129,7 @@ VkResult Buffer_CopyStagingBuffer(VkCommandBuffer* commandBuffer, VkBuffer* srcB
     return VK_SUCCESS;
 }
 
-VkResult Buffer_UpdateBufferSize(VkDevice device, VkBuffer buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize* oldBufferSize, VkDeviceSize newBufferSize, VkBufferUsageFlags bufferUsageFlags, VkMemoryPropertyFlags propertyFlags)
+VkResult Buffer_UpdateBufferSize(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize* oldBufferSize, VkDeviceSize newBufferSize, VkBufferUsageFlags bufferUsageFlags, VkMemoryPropertyFlags propertyFlags)
 {
     if (newBufferSize < *oldBufferSize)
     {
@@ -148,7 +147,7 @@ VkResult Buffer_UpdateBufferSize(VkDevice device, VkBuffer buffer, VkDeviceMemor
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
     VULKAN_RESULT(vkCreateBuffer(device, &bufferCreateInfo, NULL, &buffer));
-    VULKAN_RESULT(Buffer_AllocateMemory(&buffer, bufferMemory, propertyFlags));
+    VULKAN_RESULT(Buffer_AllocateMemory(device, physicalDevice, &buffer, bufferMemory, propertyFlags));
     VULKAN_RESULT(vkBindBufferMemory(device, &buffer, bufferMemory, 0));
     return vkMapMemory(device, bufferMemory, 0, newBufferSize, 0, bufferData);
 }
@@ -162,9 +161,9 @@ VkResult Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory bufferMemory,
     }
 
     void* mappedData;
-    VkResult result = vkMapMemory(renderer.Device, bufferMemory, 0, bufferSize, 0, &mappedData);
+    VkResult result = vkMapMemory(device, bufferMemory, 0, bufferSize, 0, &mappedData);
     memcpy(mappedData, dataToCopy, (size_t)bufferSize);
-    vkUnmapMemory(renderer.Device, bufferMemory);
+    vkUnmapMemory(device, bufferMemory);
     return VK_SUCCESS;
 }
 
@@ -177,9 +176,9 @@ VkResult Buffer_UpdateStagingBufferMemory(VkDevice device, VkDeviceMemory buffer
     }
 
     void* mappedData;
-    vkMapMemory(renderer.Device, bufferMemory, 0, bufferSize, 0, &mappedData);
+    vkMapMemory(device, bufferMemory, 0, bufferSize, 0, &mappedData);
     memcpy(mappedData, dataToCopy, (size_t)bufferSize);
-    vkUnmapMemory(renderer.Device, bufferMemory);
+    vkUnmapMemory(device, bufferMemory);
     return VK_SUCCESS;
 }
 

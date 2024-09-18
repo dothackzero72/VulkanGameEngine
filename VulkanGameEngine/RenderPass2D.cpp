@@ -1,5 +1,5 @@
 #include "RenderPass2D.h"
-#include <VulkanRenderer.h>
+#include <CVulkanRenderer.h>
 #include "ShaderCompiler.h"
 
 RenderPass2D::RenderPass2D() : RenderPass()

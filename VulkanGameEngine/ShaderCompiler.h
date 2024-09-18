@@ -1,7 +1,7 @@
 #pragma once
 extern "C"
 {
-#include <VulkanRenderer.h>
+#include <CVulkanRenderer.h>
 	#include <CShaderCompiler.h>
 	#include <io.h>
 }

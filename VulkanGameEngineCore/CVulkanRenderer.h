@@ -83,16 +83,16 @@ VkResult Renderer_CreateCommandPool(VkCommandPool* commandPool, VkCommandPoolCre
 void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32 count);
 VkResult Renderer_RebuildSwapChain();
 
-VkResult Renderer_StartFrame();
-VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount);
+VkResult Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* pFence, VkSemaphore* pAcquireImageSemaphore, uint32* pImageIndex, uint32* pCommandIndex, bool* pRebuildRendererFlag);
+VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint32 commandIndex, uint32 imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount, bool* rebuildRendererFlag);
+VkResult Renderer_SubmitDraw(VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint32 commandIndex, uint32 imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount);
+
+uint32 Renderer_GetMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
 VkResult Renderer_BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo);
 VkResult Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBufferList);
-VkResult Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
-
-uint32 Renderer_GetMemoryType(uint32 typeFilter, VkMemoryPropertyFlags properties);
-
-VkCommandBuffer Renderer_BeginSingleUseCommandBuffer();
-VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer commandBuffer);
+VkCommandBuffer Renderer_BeginSingleUseCommandBuffer(VkDevice device, VkCommandPool commandPool);
+VkResult Renderer_EndSingleUseCommandBuffer(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkCommandBuffer commandBuffer);
 
 bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32 arrayCount, const char* target);
 

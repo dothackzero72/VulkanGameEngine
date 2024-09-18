@@ -80,7 +80,21 @@ VkResult DLL_Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBufferList)
 	return Renderer_EndCommandBuffer(pCommandBufferList);
 }
 
+VkCommandBuffer DLL_Renderer_BeginSingleUseCommandBuffer(VkDevice device, VkCommandBuffer commandBuffer)
+{
+	return Renderer_BeginSingleUseCommandBuffer(device, commandBuffer);
+}
+VkResult DLL_Renderer_EndSingleUseCommandBuffer(VkDevice device, VkCommandBuffer commandBuffer, VkCommandPool commandPool, VkQueue graphicsQueue)
+{
+	return Renderer_EndSingleUseCommandBuffer(device, commandBuffer, commandPool, graphicsQueue);
+}
+
 VkResult DLL_Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
 {
 	return Renderer_SubmitDraw(pCommandBufferSubmitList);
+}
+
+uint32_t DLL_Renderer_GetMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties)
+{
+	return Renderer_GetMemoryType(physicalDevice, typeFilter, properties);
 }

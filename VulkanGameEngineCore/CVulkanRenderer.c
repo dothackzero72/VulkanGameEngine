@@ -1,4 +1,4 @@
-#include "VulkanRenderer.h"
+#include "CVulkanRenderer.h"
 #include "VulkanWindow.h"
 #include "GLFWWindow.h"
 #include "CTypedef.h"
@@ -689,27 +689,24 @@ VkResult Renderer_RebuildSwapChain()
     return Vulkan_RebuildSwapChain(renderer.Device, renderer.PhysicalDevice, renderer.Surface);
 }
 
-VkResult Renderer_StartFrame()
+VkResult Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* fenceList, VkSemaphore* acquireImageSemaphoreList, uint32* pImageIndex, uint32* pCommandIndex, bool* pRebuildRendererFlag)
 {
-    renderer.CommandIndex = (renderer.CommandIndex + 1) % MAX_FRAMES_IN_FLIGHT;
+    *pCommandIndex = (*pCommandIndex + 1) % MAX_FRAMES_IN_FLIGHT;
 
-    vkWaitForFences(renderer.Device, 1, &renderer.InFlightFences[renderer.CommandIndex], VK_TRUE, UINT64_MAX);
-    vkResetFences(renderer.Device, 1, &renderer.InFlightFences[renderer.CommandIndex]);
+    VULKAN_RESULT(vkWaitForFences(device, 1, &fenceList[*pCommandIndex], VK_TRUE, UINT64_MAX));
+    VULKAN_RESULT(vkResetFences(device, 1, &fenceList[*pCommandIndex]));
 
-    VkSemaphore imageAvailableSemaphore = renderer.AcquireImageSemaphores[renderer.CommandIndex];
-    VkSemaphore renderFinishedSemaphore = renderer.PresentImageSemaphores[renderer.CommandIndex];
-
-    VkResult result = vkAcquireNextImageKHR(renderer.Device, renderer.SwapChain.Swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &renderer.ImageIndex);
+    VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, acquireImageSemaphoreList[*pCommandIndex], VK_NULL_HANDLE, pImageIndex);
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
-        renderer.RebuildRendererFlag = true;
+        *pRebuildRendererFlag = true;
         return result;
     }
 
     return result;
 }
 
-VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount)
+VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint32 commandIndex, uint32 imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount, bool* rebuildRendererFlag)
 {
     VkPipelineStageFlags waitStages[] =
     {
@@ -720,30 +717,64 @@ VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32 com
     {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
         .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &renderer.AcquireImageSemaphores[renderer.CommandIndex],
+        .pWaitSemaphores = &acquireImageSemaphoreList[commandIndex],
         .pWaitDstStageMask = waitStages,
         .commandBufferCount = commandBufferCount,
         .pCommandBuffers = pCommandBufferSubmitList,
         .signalSemaphoreCount = 1,
-        .pSignalSemaphores = &renderer.PresentImageSemaphores[renderer.ImageIndex]
+        .pSignalSemaphores = &presentImageSemaphoreList[imageIndex]
     };
-    VULKAN_RESULT(vkQueueSubmit(renderer.SwapChain.GraphicsQueue, 1, &submitInfo, renderer.InFlightFences[renderer.CommandIndex]));
+    VULKAN_RESULT(vkQueueSubmit(graphicsQueue, 1, &submitInfo, fenceList[commandIndex]));
 
     VkPresentInfoKHR presentInfo =
     {
         .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
         .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &renderer.PresentImageSemaphores[renderer.ImageIndex],
+        .pWaitSemaphores = &presentImageSemaphoreList[imageIndex],
         .swapchainCount = 1,
-        .pSwapchains = &renderer.SwapChain.Swapchain,
-        .pImageIndices = &renderer.ImageIndex,
+        .pSwapchains = &swapChain,
+        .pImageIndices = &imageIndex
     };
-    VkResult result = vkQueuePresentKHR(renderer.SwapChain.PresentQueue, &presentInfo);
+    VkResult result = vkQueuePresentKHR(presentQueue, &presentInfo);
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
-        renderer.RebuildRendererFlag = true;
+        *rebuildRendererFlag = true;
     }
 
+    return result;
+}
+
+VkResult Renderer_SubmitDraw(VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint32 commandIndex, uint32 imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount, bool* rebuildRendererFlag)
+{
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+    VkSubmitInfo submitInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &acquireImageSemaphoreList[commandIndex],
+        .pWaitDstStageMask = waitStages,
+        .commandBufferCount = commandBufferCount,
+        .pCommandBuffers = pCommandBufferSubmitList,
+        .signalSemaphoreCount = 1,
+        .pSignalSemaphores = &presentImageSemaphoreList[imageIndex]
+    };
+    VULKAN_RESULT(vkQueueSubmit(graphicsQueue, 1, &submitInfo, fenceList[commandIndex]));
+
+    VkPresentInfoKHR presentInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &presentImageSemaphoreList[imageIndex],
+        .swapchainCount = 1,
+        .pSwapchains = &renderer.SwapChain.Swapchain,
+        .pImageIndices = &imageIndex
+    };
+    VkResult result = vkQueuePresentKHR(presentQueue, &presentInfo);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        *rebuildRendererFlag = true;
+    }
     return result;
 }
 
@@ -757,72 +788,36 @@ VkResult Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBufferList)
     return vkEndCommandBuffer(*pCommandBufferList);
 }
 
-VkResult Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
-{
-    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-
-    VkSubmitInfo SubmitInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-        .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &renderer.AcquireImageSemaphores[renderer.CommandIndex],
-        .pWaitDstStageMask = waitStages,
-        .commandBufferCount = 3,
-        .pCommandBuffers = pCommandBufferSubmitList,
-        .signalSemaphoreCount = 1,
-        .pSignalSemaphores = &renderer.PresentImageSemaphores[renderer.ImageIndex],
-    };
-    VULKAN_RESULT(vkQueueSubmit(renderer.SwapChain.GraphicsQueue, 1, &SubmitInfo, renderer.InFlightFences[renderer.CommandIndex]));
-
-    VkPresentInfoKHR PresentInfoKHR =
-    {
-        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-        .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &renderer.PresentImageSemaphores[renderer.ImageIndex],
-        .swapchainCount = 1,
-        .pSwapchains = &renderer.SwapChain.Swapchain,
-        .pImageIndices = &renderer.ImageIndex
-    };
-    VkResult result = vkQueuePresentKHR(renderer.SwapChain.PresentQueue, &PresentInfoKHR);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR)
-    {
-        renderer.RebuildRendererFlag = true;
-        return result;
-    }
-    return result;
-}
-
-uint32 Renderer_GetMemoryType(uint32 typeFilter, VkMemoryPropertyFlags properties)
+uint32_t Renderer_GetMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties) 
 {
     VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(renderer.PhysicalDevice, &memProperties);
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 
-    for (uint32 x = 0; x < memProperties.memoryTypeCount; x++)
+    for (uint32_t x = 0; x < memProperties.memoryTypeCount; x++) 
     {
         if ((typeFilter & (1 << x)) &&
-            (memProperties.memoryTypes[x].propertyFlags & properties) == properties)
+            (memProperties.memoryTypes[x].propertyFlags & properties) == properties) 
         {
             return x;
         }
     }
 
-    fprintf(stderr, "Couldn't find suitable memory type.\n");
     Renderer_DestroyRenderer();
     vulkanWindow->DestroyWindow(vulkanWindow);
-    return -1;
+    return UINT32_MAX; 
 }
 
-VkCommandBuffer Renderer_BeginSingleUseCommandBuffer()
+VkCommandBuffer Renderer_BeginSingleUseCommandBuffer(VkDevice device, VkCommandPool commandPool)
 {
     VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
     VkCommandBufferAllocateInfo allocInfo =
     {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-        .commandPool = renderer.CommandPool,
+        .commandPool = commandPool,
         .commandBufferCount = 1
     };
-    VULKAN_RESULT(vkAllocateCommandBuffers(renderer.Device, &allocInfo, &commandBuffer));
+    VULKAN_RESULT(vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer));
 
     VkCommandBufferBeginInfo beginInfo =
     {
@@ -833,19 +828,19 @@ VkCommandBuffer Renderer_BeginSingleUseCommandBuffer()
     return commandBuffer;
 }
 
-VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer commandBuffer)
+VkResult Renderer_EndSingleUseCommandBuffer(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkCommandBuffer commandBuffer)
 {
-    VULKAN_RESULT(vkEndCommandBuffer(commandBuffer));
-
     VkSubmitInfo submitInfo =
     {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
         .commandBufferCount = 1,
         .pCommandBuffers = &commandBuffer
     };
-    VULKAN_RESULT(vkQueueSubmit(renderer.SwapChain.GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE));
-    VULKAN_RESULT(vkQueueWaitIdle(renderer.SwapChain.GraphicsQueue));
-    vkFreeCommandBuffers(renderer.Device, renderer.CommandPool, 1, &commandBuffer);
+
+    VULKAN_RESULT(vkEndCommandBuffer(commandBuffer));
+    VULKAN_RESULT(vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE));
+    VULKAN_RESULT(vkQueueWaitIdle(graphicsQueue));
+    vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
     return VK_SUCCESS;
 }
 

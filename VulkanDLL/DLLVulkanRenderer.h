@@ -1,6 +1,6 @@
 #pragma once
 #include "DLL.h"
-#include <VulkanRenderer.h>
+#include <CVulkanRenderer.h>
 
 
 	DLL_EXPORT VkInstance DLL_Renderer_CreateVulkanInstance();
@@ -19,4 +19,7 @@
 	DLL_EXPORT VkResult DLL_Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount);
 	DLL_EXPORT VkResult DLL_Renderer_BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo);
 	DLL_EXPORT VkResult DLL_Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBufferList);
+	DLL_EXPORT VkCommandBuffer DLL_Renderer_BeginSingleUseCommandBuffer(VkDevice device, VkCommandBuffer commandBuffer);
+	DLL_EXPORT VkResult DLL_Renderer_EndSingleUseCommandBuffer(VkDevice device, VkCommandBuffer commandBuffer, VkCommandPool commandPool, VkQueue graphicsQueue);
 	DLL_EXPORT VkResult DLL_Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
+	DLL_EXPORT uint32_t DLL_Renderer_GetMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
