@@ -128,7 +128,7 @@ VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(const std::string& 
 //            VkShaderModuleCreateInfo ShaderModuleCreateInfo{};
 //            ShaderModuleCreateInfo.codeSize = spriv_buffer->GetBufferSize();
 //            ShaderModuleCreateInfo.pCode = (uint32*)spriv_buffer->GetBufferPointer();
-//            vkCreateShaderModule(VulkanRenderer::GetDevice(), &ShaderModuleCreateInfo, nullptr, &shaderModule);
+//            vkCreateShaderModule(renderer.GetDevice(), &ShaderModuleCreateInfo, nullptr, &shaderModule);
 //
 //            return shaderModule;
 //        }
@@ -145,7 +145,7 @@ VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(const std::string& 
 //        VkShaderModuleCreateInfo ShaderModuleCreateInfo{};
 //        ShaderModuleCreateInfo.codeSize = spriv_buffer->GetBufferSize();
 //        ShaderModuleCreateInfo.pCode = (uint32*)spriv_buffer->GetBufferPointer();
-//        vkCreateShaderModule(VulkanRenderer::GetDevice(), &ShaderModuleCreateInfo, nullptr, &shaderModule);
+//        vkCreateShaderModule(renderer.GetDevice(), &ShaderModuleCreateInfo, nullptr, &shaderModule);
 //
 //        return shaderModule;
 //    }*/

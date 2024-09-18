@@ -27,9 +27,9 @@ void Scene::Update(const float& deltaTime)
 	{
 		UpdateRenderPasses();
 	}
-	VkCommandBuffer commandBuffer = VulkanRenderer::BeginCommandBuffer();
+	VkCommandBuffer commandBuffer = renderer.BeginCommandBuffer();
 	mesh->BufferUpdate(commandBuffer, deltaTime);
-	VulkanRenderer::EndCommandBuffer(commandBuffer);
+	renderer.EndCommandBuffer(commandBuffer);
 
 	orthographicCamera->Update(sceneProperties);
 	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_W] == KS_PRESSED)
@@ -90,7 +90,7 @@ void Scene::BuildRenderPasses()
 
 void Scene::UpdateRenderPasses()
 {
-	VulkanRenderer::RebuildSwapChain();
+	renderer.RebuildSwapChain();
 	renderPass2D.UpdateRenderPass(mesh);
 	frameRenderPass.UpdateRenderPass(renderPass2D.GetRenderedTexture());
 	InterfaceRenderPass::RebuildSwapChain();
@@ -101,11 +101,11 @@ void Scene::Draw()
 {
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 
-	VULKAN_RESULT(VulkanRenderer::StartFrame());
+	VULKAN_RESULT(renderer.StartFrame());
 	CommandBufferSubmitList.emplace_back(renderPass2D.Draw(mesh, sceneProperties));
 	CommandBufferSubmitList.emplace_back(frameRenderPass.Draw());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
-	VULKAN_RESULT(VulkanRenderer::EndFrame(CommandBufferSubmitList));
+	VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
 }
 
 void Scene::Destroy()

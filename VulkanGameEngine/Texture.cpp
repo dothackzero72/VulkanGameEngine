@@ -75,19 +75,19 @@ VkDescriptorImageInfo* Texture::GetTextureBuffer()
 
 void Texture::UpdateTextureSize(glm::vec2 TextureResolution)
 {
-	VulkanRenderer::DestroyImageView(View);
-	VulkanRenderer::DestroySampler(Sampler);
-	VulkanRenderer::DestroyImage(Image);
-	VulkanRenderer::FreeMemory(Memory);
+	renderer.DestroyImageView(View);
+	renderer.DestroySampler(Sampler);
+	renderer.DestroyImage(Image);
+	renderer.FreeMemory(Memory);
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
 void Texture::Destroy()
 {
-	VulkanRenderer::DestroyImageView(View);
-	VulkanRenderer::DestroySampler(Sampler);
-	VulkanRenderer::DestroyImage(Image);
-	VulkanRenderer::FreeMemory(Memory);
+	renderer.DestroyImageView(View);
+	renderer.DestroySampler(Sampler);
+	renderer.DestroyImage(Image);
+	renderer.FreeMemory(Memory);
 }
 
 void Texture::CreateImageTexture(const std::string& FilePath)

@@ -94,13 +94,13 @@ private:
 
     static void DestroyCommandBuffers()
     {
-        VulkanRenderer::DestroyCommandBuffers(ImGuiCommandBuffers);
+        renderer.DestroyCommandBuffers(ImGuiCommandBuffers);
         ImGuiCommandBuffers.clear();
     }
 
     static void DestroyFrameBuffers()
     {
-        VulkanRenderer::DestroyFrameBuffers(SwapChainFramebuffers);
+        renderer.DestroyFrameBuffers(SwapChainFramebuffers);
         SwapChainFramebuffers.clear();
     }
 
@@ -137,7 +137,7 @@ public:
             .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
             .queueFamilyIndex = cRenderer.SwapChain.GraphicsFamily
         };
-        VULKAN_RESULT(VulkanRenderer::CreateCommandPool(ImGuiCommandPool, poolInfo));
+        VULKAN_RESULT(renderer.CreateCommandPool(ImGuiCommandPool, poolInfo));
 
         VkDescriptorPoolSize poolSizes[] =
         {
@@ -161,7 +161,7 @@ public:
             .poolSizeCount = (uint32)IM_ARRAYSIZE(poolSizes),
             .pPoolSizes = poolSizes
         };
-        VULKAN_RESULT(VulkanRenderer::CreateDescriptorPool(ImGuiDescriptorPool, pool_info));
+        VULKAN_RESULT(renderer.CreateDescriptorPool(ImGuiDescriptorPool, pool_info));
 
         ImGuiCommandBuffers.resize(cRenderer.SwapChain.SwapChainImageCount);
         for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
@@ -277,8 +277,8 @@ public:
 
     static void RebuildSwapChain()
     {
-        VulkanRenderer::DestroyRenderPass(RenderPass);
-        VulkanRenderer::DestroyFrameBuffers(SwapChainFramebuffers);
+        renderer.DestroyRenderPass(RenderPass);
+        renderer.DestroyFrameBuffers(SwapChainFramebuffers);
         CreateRenderPass();
         CreateRendererFramebuffers();
     }
@@ -287,9 +287,9 @@ public:
     {
         DestroyCommandBuffers();
         ImGui_ImplVulkan_Shutdown(); 
-        VulkanRenderer::DestroyDescriptorPool(ImGuiDescriptorPool);
-        //VulkanRenderer::DestroyCommandPool();
-        VulkanRenderer::DestroyRenderPass(RenderPass);
+        renderer.DestroyDescriptorPool(ImGuiDescriptorPool);
+        //renderer.DestroyCommandPool();
+        renderer.DestroyRenderPass(RenderPass);
         DestroyFrameBuffers();
         switch (vulkanWindow->WindowType)
         {

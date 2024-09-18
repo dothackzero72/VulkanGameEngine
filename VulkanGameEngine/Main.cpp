@@ -20,7 +20,7 @@ int main()
     SystemClock systemClock = SystemClock();
     FrameTimer deltaTime = FrameTimer();
     vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);
-    VulkanRenderer::RendererSetUp();
+    renderer.RendererSetUp();
     InterfaceRenderPass::StartUp();
     ImPlot::CreateContext();
 
@@ -39,7 +39,7 @@ int main()
     ImPlot::DestroyContext();
     InterfaceRenderPass::Destroy();
     scene.Destroy();
-    VulkanRenderer::DestroyRenderer();
+    renderer.DestroyRenderer();
     vulkanWindow->DestroyWindow(vulkanWindow); 
     return 0;
 }

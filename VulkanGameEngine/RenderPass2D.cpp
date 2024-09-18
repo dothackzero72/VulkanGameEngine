@@ -78,7 +78,7 @@ void RenderPass2D::BuildRenderPass(std::shared_ptr<Mesh2D> mesh)
       .Width = static_cast<uint32>(RenderPassResolution.x),
       .Height = static_cast<uint32>(RenderPassResolution.y)
     };
-    VULKAN_RESULT(VulkanRenderer::CreateRenderPass(renderPassCreateInfo));
+    VULKAN_RESULT(renderer.CreateRenderPass(renderPassCreateInfo));
 
     for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
     {
@@ -117,7 +117,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
         .poolSizeCount = static_cast<uint32>(DescriptorPoolBinding.size()),
         .pPoolSizes = DescriptorPoolBinding.data(),
     };
-    VULKAN_RESULT(VulkanRenderer::CreateDescriptorPool(DescriptorPool, poolInfo));
+    VULKAN_RESULT(renderer.CreateDescriptorPool(DescriptorPool, poolInfo));
 
     std::vector<VkDescriptorSetLayoutBinding> LayoutBindingList =
     {
@@ -145,7 +145,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
         .bindingCount = static_cast<uint32>(LayoutBindingList.size()),
         .pBindings = LayoutBindingList.data(),
     };
-    VULKAN_RESULT(VulkanRenderer::CreateDescriptorSetLayout(DescriptorSetLayout, layoutInfo));
+    VULKAN_RESULT(renderer.CreateDescriptorSetLayout(DescriptorSetLayout, layoutInfo));
 
     VkDescriptorSetAllocateInfo allocInfo =
     {
@@ -154,7 +154,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
         .descriptorSetCount = 1,
         .pSetLayouts = &DescriptorSetLayout
     };
-    VULKAN_RESULT(VulkanRenderer::AllocateDescriptorSets(DescriptorSet, allocInfo));
+    VULKAN_RESULT(renderer.AllocateDescriptorSets(DescriptorSet, allocInfo));
 
     for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
     {
@@ -163,7 +163,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
             CreateStorageDescriptorSet(mesh, 0),
             CreateTextureDescriptorSet(RenderedTexture, 1)
         };
-        VulkanRenderer::UpdateDescriptorSet(descriptorSets);
+        renderer.UpdateDescriptorSet(descriptorSets);
     }
 
     std::vector<VkVertexInputBindingDescription> bindingDescriptionList
@@ -292,7 +292,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
     };
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-    VULKAN_RESULT(VulkanRenderer::CreatePipelineLayout(ShaderPipelineLayout, pipelineLayoutInfo));
+    VULKAN_RESULT(renderer.CreatePipelineLayout(ShaderPipelineLayout, pipelineLayoutInfo));
 
     std::vector<VkPipelineShaderStageCreateInfo> PipelineShaderStageList
     {
@@ -319,7 +319,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
             .basePipelineHandle = VK_NULL_HANDLE
         }
     };
-    VULKAN_RESULT(VulkanRenderer::CreateGraphicsPipelines(ShaderPipeline, pipelineInfo));
+    VULKAN_RESULT(renderer.CreateGraphicsPipelines(ShaderPipeline, pipelineInfo));
 
     for (auto& shader : PipelineShaderStageList)
     {
@@ -329,13 +329,13 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
 
 void RenderPass2D::UpdateRenderPass(std::shared_ptr<Mesh2D> mesh)
 {
-    VulkanRenderer::DestroyFrameBuffers(FrameBufferList);
-    VulkanRenderer::DestroyRenderPass(RenderPassPtr);
-    VulkanRenderer::DestroyPipeline(ShaderPipeline);
-    VulkanRenderer::DestroyPipelineLayout(ShaderPipelineLayout);
-    VulkanRenderer::DestroyPipelineCache(PipelineCache);
-    VulkanRenderer::DestroyDescriptorSetLayout(DescriptorSetLayout);
-    VulkanRenderer::DestroyDescriptorPool(DescriptorPool);
+    renderer.DestroyFrameBuffers(FrameBufferList);
+    renderer.DestroyRenderPass(RenderPassPtr);
+    renderer.DestroyPipeline(ShaderPipeline);
+    renderer.DestroyPipelineLayout(ShaderPipelineLayout);
+    renderer.DestroyPipelineCache(PipelineCache);
+    renderer.DestroyDescriptorSetLayout(DescriptorSetLayout);
+    renderer.DestroyDescriptorPool(DescriptorPool);
 
     RenderPassResolution = glm::ivec2((int)cRenderer.SwapChain.SwapChainResolution.width, (int)cRenderer.SwapChain.SwapChainResolution.height);
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -377,16 +377,16 @@ VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<Mesh2D> mesh, SceneDataBuffer
     vkCmdBeginRenderPass(CommandBufferList[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     mesh->Draw(CommandBufferList[cRenderer.CommandIndex], ShaderPipeline, ShaderPipelineLayout, DescriptorSet, sceneProperties);
     vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
-    VULKAN_RESULT(VulkanRenderer::EndCommandBuffer(&CommandBufferList[cRenderer.CommandIndex]));
+    VULKAN_RESULT(renderer.EndCommandBuffer(&CommandBufferList[cRenderer.CommandIndex]));
     return CommandBufferList[cRenderer.CommandIndex];
 }
 
 void RenderPass2D::Destroy()
 {
     RenderPass::Destroy();
-    VulkanRenderer::DestroyPipeline(ShaderPipeline);
-    VulkanRenderer::DestroyPipelineLayout(ShaderPipelineLayout);
-    VulkanRenderer::DestroyPipelineCache(PipelineCache);
-    VulkanRenderer::DestroyDescriptorSetLayout(DescriptorSetLayout);
-    VulkanRenderer::DestroyDescriptorPool(DescriptorPool);
+    renderer.DestroyPipeline(ShaderPipeline);
+    renderer.DestroyPipelineLayout(ShaderPipelineLayout);
+    renderer.DestroyPipelineCache(PipelineCache);
+    renderer.DestroyDescriptorSetLayout(DescriptorSetLayout);
+    renderer.DestroyDescriptorPool(DescriptorPool);
 }

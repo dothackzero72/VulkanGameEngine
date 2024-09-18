@@ -77,7 +77,7 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
       .Width = static_cast<uint32>(RenderPassResolution.x),
       .Height = static_cast<uint32>(RenderPassResolution.y)
     };
-    VULKAN_RESULT(VulkanRenderer::CreateRenderPass(renderPassCreateInfo));
+    VULKAN_RESULT(renderer.CreateRenderPass(renderPassCreateInfo));
 
     for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
     {
@@ -314,13 +314,13 @@ void FrameBufferRenderPass::UpdateRenderPass(std::shared_ptr<Texture> texture)
     RenderPassResolution = glm::ivec2((int)cRenderer.SwapChain.SwapChainResolution.width, (int)cRenderer.SwapChain.SwapChainResolution.height);
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
-    VulkanRenderer::DestroyFrameBuffers(FrameBufferList);
-    VulkanRenderer::DestroyRenderPass(RenderPassPtr);
-    VulkanRenderer::DestroyPipeline(ShaderPipeline);
-    VulkanRenderer::DestroyPipelineLayout(ShaderPipelineLayout);
-    VulkanRenderer::DestroyPipelineCache(PipelineCache);
-    VulkanRenderer::DestroyDescriptorSetLayout(DescriptorSetLayout);
-    VulkanRenderer::DestroyDescriptorPool(DescriptorPool);
+    renderer.DestroyFrameBuffers(FrameBufferList);
+    renderer.DestroyRenderPass(RenderPassPtr);
+    renderer.DestroyPipeline(ShaderPipeline);
+    renderer.DestroyPipelineLayout(ShaderPipelineLayout);
+    renderer.DestroyPipelineCache(PipelineCache);
+    renderer.DestroyDescriptorSetLayout(DescriptorSetLayout);
+    renderer.DestroyDescriptorPool(DescriptorPool);
     BuildRenderPass(texture);
 }
 
@@ -389,16 +389,16 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
     vkCmdBindDescriptorSets(CommandBufferList[cRenderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &DescriptorSet, 0, nullptr);
     vkCmdDraw(CommandBufferList[cRenderer.CommandIndex], 6, 1, 0, 0);
     vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
-    VULKAN_RESULT(VulkanRenderer::EndCommandBuffer(&CommandBufferList[cRenderer.CommandIndex]));
+    VULKAN_RESULT(renderer.EndCommandBuffer(&CommandBufferList[cRenderer.CommandIndex]));
     return CommandBufferList[cRenderer.CommandIndex];
 }
 
 void FrameBufferRenderPass::Destroy()
 {
     RenderPass::Destroy();
-    VulkanRenderer::DestroyPipeline(ShaderPipeline);
-    VulkanRenderer::DestroyPipelineLayout(ShaderPipelineLayout);
-    VulkanRenderer::DestroyPipelineCache(PipelineCache);
-    VulkanRenderer::DestroyDescriptorSetLayout(DescriptorSetLayout);
-    VulkanRenderer::DestroyDescriptorPool(DescriptorPool);
+    renderer.DestroyPipeline(ShaderPipeline);
+    renderer.DestroyPipelineLayout(ShaderPipelineLayout);
+    renderer.DestroyPipelineCache(PipelineCache);
+    renderer.DestroyDescriptorSetLayout(DescriptorSetLayout);
+    renderer.DestroyDescriptorPool(DescriptorPool);
 }

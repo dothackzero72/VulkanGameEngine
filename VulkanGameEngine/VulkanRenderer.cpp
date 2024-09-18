@@ -35,7 +35,7 @@ VkResult VulkanRenderer::RendererSetUp()
     vulkanWindow->CreateSurface(vulkanWindow, &cRenderer.Instance, &cRenderer.Surface);
     VkResult deviceSetupResult = Renderer_SetUpPhysicalDevice(cRenderer.Instance, &cRenderer.PhysicalDevice, cRenderer.Surface, &cRenderer.PhysicalDeviceFeatures, &cRenderer.SwapChain.GraphicsFamily, &cRenderer.SwapChain.PresentFamily);
     cRenderer.Device = Renderer_SetUpDevice(cRenderer.PhysicalDevice, cRenderer.SwapChain.GraphicsFamily, cRenderer.SwapChain.PresentFamily);
-    VULKAN_RESULT(VulkanRenderer::SetUpSwapChain());
+    VULKAN_RESULT(renderer.SetUpSwapChain());
     cRenderer.CommandPool = Renderer_SetUpCommandPool(cRenderer.Device, cRenderer.SwapChain.GraphicsFamily);
     VULKAN_RESULT(Renderer_SetUpSemaphores(cRenderer.Device, &cRenderer.InFlightFences, &cRenderer.AcquireImageSemaphores, &cRenderer.PresentImageSemaphores, MAX_FRAMES_IN_FLIGHT));
     VULKAN_RESULT(Renderer_GetDeviceQueue(cRenderer.Device, cRenderer.SwapChain.GraphicsFamily, cRenderer.SwapChain.PresentFamily, &cRenderer.SwapChain.GraphicsQueue, &cRenderer.SwapChain.PresentQueue));
@@ -49,7 +49,7 @@ VkResult VulkanRenderer::RebuildSwapChain()
     VULKAN_RESULT(vkDeviceWaitIdle(cRenderer.Device));
     Renderer_DestroySwapChainImageView(cRenderer.Device, cRenderer.SwapChain.SwapChainImageViews, MAX_FRAMES_IN_FLIGHT);
     vkDestroySwapchainKHR(cRenderer.Device, cRenderer.SwapChain.Swapchain, NULL);
-    VulkanRenderer::SetUpSwapChain();
+    renderer.SetUpSwapChain();
     return VK_SUCCESS;
 }
 
@@ -96,13 +96,13 @@ VkResult VulkanRenderer::SubmitDraw(List<VkCommandBuffer> commandBufferSubmitLis
 
 void VulkanRenderer::DestroyRenderer()
 {
-    VulkanRenderer::DestroyFences();
-    VulkanRenderer::DestroyCommandPool();
-    VulkanRenderer::DestroyFences();
-    VulkanRenderer::DestroyDevice();
-    VulkanRenderer::DestroyDebugger();
-    VulkanRenderer::DestroySurface();
-    VulkanRenderer::DestroyInstance();
+    renderer.DestroyFences();
+    renderer.DestroyCommandPool();
+    renderer.DestroyFences();
+    renderer.DestroyDevice();
+    renderer.DestroyDebugger();
+    renderer.DestroySurface();
+    renderer.DestroyInstance();
 }
 
 VkResult VulkanRenderer::CreateCommandBuffers(List<VkCommandBuffer>& commandBufferList)

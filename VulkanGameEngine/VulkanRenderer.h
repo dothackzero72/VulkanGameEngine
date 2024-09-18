@@ -10,55 +10,56 @@ extern "C"
 class VulkanRenderer
 {
     private:
-        static VkResult SetUpSwapChain();
+        VkResult SetUpSwapChain();
 
     public:
-        static VkResult RendererSetUp();
-        static VkResult RebuildSwapChain();
+        VkResult RendererSetUp();
+        VkResult RebuildSwapChain();
 
-        static VkResult StartFrame();
-        static VkResult EndFrame(List<VkCommandBuffer> commandBufferSubmitList);
-        static VkResult SubmitDraw(List<VkCommandBuffer> commandBufferSubmitList);
+        VkResult StartFrame();
+        VkResult EndFrame(List<VkCommandBuffer> commandBufferSubmitList);
+        VkResult SubmitDraw(List<VkCommandBuffer> commandBufferSubmitList);
 
-        static VkResult CreateCommandBuffers(List<VkCommandBuffer>& commandBufferList);
-        static VkResult CreateFrameBuffer(VkFramebuffer frameBuffer, VkFramebufferCreateInfo& frameBufferCreateInfo);
-        static VkResult CreateRenderPass(RenderPassCreateInfoStruct& renderPassCreateInfo);
-        static VkResult CreateGraphicsPipelines(VkPipeline& graphicPipeline, VkGraphicsPipelineCreateInfo createGraphicPipelines);
-        static VkResult CreateDescriptorPool(VkDescriptorPool& descriptorPool, VkDescriptorPoolCreateInfo& descriptorPoolCreateInfo);
-        static VkResult CreateDescriptorSetLayout(VkDescriptorSetLayout& descriptorSetLayout, VkDescriptorSetLayoutCreateInfo& descriptorSetLayoutCreateInfo);
-        static VkResult CreatePipelineLayout(VkPipelineLayout& pipelineLayout, VkPipelineLayoutCreateInfo& pipelineLayoutCreateInfo);
-        static VkResult AllocateDescriptorSets(VkDescriptorSet& descriptorSet, VkDescriptorSetAllocateInfo& descriptorSetAllocateInfo);
-        static VkResult AllocateCommandBuffers(VkCommandBuffer commandBuffer, VkCommandBufferAllocateInfo& commandBufferAllocateInfo);
-        static VkResult CreateGraphicsPipelines(VkPipeline& graphicPipeline, List<VkGraphicsPipelineCreateInfo> createGraphicPipelines);
-        static VkResult CreateCommandPool(VkCommandPool& commandPool, VkCommandPoolCreateInfo commandPoolInfo);
-        static void UpdateDescriptorSet(List<VkWriteDescriptorSet> writeDescriptorSetList);
+        VkResult CreateCommandBuffers(List<VkCommandBuffer>& commandBufferList);
+        VkResult CreateFrameBuffer(VkFramebuffer frameBuffer, VkFramebufferCreateInfo& frameBufferCreateInfo);
+        VkResult CreateRenderPass(RenderPassCreateInfoStruct& renderPassCreateInfo);
+        VkResult CreateGraphicsPipelines(VkPipeline& graphicPipeline, VkGraphicsPipelineCreateInfo createGraphicPipelines);
+        VkResult CreateDescriptorPool(VkDescriptorPool& descriptorPool, VkDescriptorPoolCreateInfo& descriptorPoolCreateInfo);
+        VkResult CreateDescriptorSetLayout(VkDescriptorSetLayout& descriptorSetLayout, VkDescriptorSetLayoutCreateInfo& descriptorSetLayoutCreateInfo);
+        VkResult CreatePipelineLayout(VkPipelineLayout& pipelineLayout, VkPipelineLayoutCreateInfo& pipelineLayoutCreateInfo);
+        VkResult AllocateDescriptorSets(VkDescriptorSet& descriptorSet, VkDescriptorSetAllocateInfo& descriptorSetAllocateInfo);
+        VkResult AllocateCommandBuffers(VkCommandBuffer commandBuffer, VkCommandBufferAllocateInfo& commandBufferAllocateInfo);
+        VkResult CreateGraphicsPipelines(VkPipeline& graphicPipeline, List<VkGraphicsPipelineCreateInfo> createGraphicPipelines);
+        VkResult CreateCommandPool(VkCommandPool& commandPool, VkCommandPoolCreateInfo commandPoolInfo);
+        void UpdateDescriptorSet(List<VkWriteDescriptorSet> writeDescriptorSetList);
 
-        static VkCommandBuffer BeginCommandBuffer();
-        static VkResult BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo);
-        static VkResult EndCommandBuffer(VkCommandBuffer* pCommandBufferList);
-        static VkResult EndCommandBuffer(VkCommandBuffer commandBuffer);
+        VkCommandBuffer BeginCommandBuffer();
+        VkResult BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo);
+        VkResult EndCommandBuffer(VkCommandBuffer* pCommandBufferList);
+        VkResult EndCommandBuffer(VkCommandBuffer commandBuffer);
 
-        static void DestroyRenderer();
-        static void DestroyFences();
-        static void DestroyCommandPool();
-        static void DestroyDevice();
-        static void DestroySurface();
-        static void DestroyDebugger();
-        static void DestroyInstance();
-        static void DestroyRenderPass(VkRenderPass& renderPass);
-        static void DestroyFrameBuffers(List<VkFramebuffer>& frameBufferList);
-        static void DestroyDescriptorPool(VkDescriptorPool& descriptorPool);
-        static void DestroyDescriptorSetLayout(VkDescriptorSetLayout& descriptorSetLayout);
-        static void DestroyCommandBuffers(List<VkCommandBuffer>& commandBufferList);
-        static void DestroyBuffer(VkBuffer& buffer);
-        static void FreeMemory(VkDeviceMemory& memory);
-        static void DestroySwapChainImageView(List<VkImageView>& swapChainImageViewList);
-        static void DestroySwapChain(VkSwapchainKHR& swapChain);
-        static void DestroyImageView(VkImageView& imageView);
-        static void DestroyImage(VkImage& image);
-        static void DestroySampler(VkSampler& sampler);
-        static void DestroyPipeline(VkPipeline& pipeline);
-        static void DestroyPipelineLayout(VkPipelineLayout& pipelineLayout);
-        static void DestroyPipelineCache(VkPipelineCache& pipelineCache);
+        void DestroyRenderer();
+        void DestroyFences();
+        void DestroyCommandPool();
+        void DestroyDevice();
+        void DestroySurface();
+        void DestroyDebugger();
+        void DestroyInstance();
+        void DestroyRenderPass(VkRenderPass& renderPass);
+        void DestroyFrameBuffers(List<VkFramebuffer>& frameBufferList);
+        void DestroyDescriptorPool(VkDescriptorPool& descriptorPool);
+        void DestroyDescriptorSetLayout(VkDescriptorSetLayout& descriptorSetLayout);
+        void DestroyCommandBuffers(List<VkCommandBuffer>& commandBufferList);
+        void DestroyBuffer(VkBuffer& buffer);
+        void FreeMemory(VkDeviceMemory& memory);
+        void DestroySwapChainImageView(List<VkImageView>& swapChainImageViewList);
+        void DestroySwapChain(VkSwapchainKHR& swapChain);
+        void DestroyImageView(VkImageView& imageView);
+        void DestroyImage(VkImage& image);
+        void DestroySampler(VkSampler& sampler);
+        void DestroyPipeline(VkPipeline& pipeline);
+        void DestroyPipelineLayout(VkPipelineLayout& pipelineLayout);
+        void DestroyPipelineCache(VkPipelineCache& pipelineCache);
 };
+static VulkanRenderer renderer;
 
