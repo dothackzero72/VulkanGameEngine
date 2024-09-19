@@ -112,5 +112,6 @@ void Scene::Destroy()
 {
 	mesh->Destroy();
 	texture->Destroy();
+	renderPass2D.Destroy();
 	frameRenderPass.Destroy();
 }

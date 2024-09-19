@@ -35,10 +35,11 @@ int main()
         scene.Draw();
         deltaTime.EndFrameTime();
     }
+    
     vkDeviceWaitIdle(cRenderer.Device);
+    scene.Destroy();
     ImPlot::DestroyContext();
     InterfaceRenderPass::Destroy();
-    scene.Destroy();
     renderer.DestroyRenderer();
     vulkanWindow->DestroyWindow(vulkanWindow); 
     return 0;

@@ -1,5 +1,4 @@
 #include "RenderedColorTexture.h"
-#include "TextureFunctions.h"
 
 RenderedColorTexture::RenderedColorTexture() : Texture()
 {
@@ -13,8 +12,8 @@ RenderedColorTexture::RenderedColorTexture(glm::ivec2& textureResolution, VkForm
     TextureType = TextureTypeEnum::kType_RenderedColorTexture;
     TextureByteFormat = format;
     
-	VULKAN_RESULT(TextureFunctions::CreateTextureImage(this));
-	VULKAN_RESULT(TextureFunctions::CreateTextureView(this));
+	VULKAN_RESULT(CreateTextureImage());
+	VULKAN_RESULT(CreateTextureView());
     CreateTextureSampler();
 
     ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -45,6 +44,6 @@ void RenderedColorTexture::CreateTextureSampler()
 		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
 		.unnormalizedCoordinates = VK_FALSE,
 	};
-	VULKAN_RESULT(TextureFunctions::CreateTextureSampler(&TextureImageSamplerInfo, &Sampler));
+	VULKAN_RESULT(Texture::CreateTextureSampler(TextureImageSamplerInfo));
 }
 

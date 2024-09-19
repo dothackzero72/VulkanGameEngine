@@ -35,7 +35,7 @@ void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 	MeshProperties.MeshTransform = MeshTransform;
 	//auto b = PropertiesBuffer.CheckStagingBufferContents();
 	//auto c = PropertiesBuffer.CheckBufferContents();
-	PropertiesBuffer.UpdateBuffer(commandBuffer, static_cast<void*>(&MeshProperties));
+	//PropertiesBuffer.UpdateBuffer(commandBuffer, static_cast<void*>(&MeshProperties));
 	//auto a = PropertiesBuffer.CheckBufferContents();
 }
 

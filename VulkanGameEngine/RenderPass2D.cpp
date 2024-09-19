@@ -383,6 +383,7 @@ VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<Mesh2D> mesh, SceneDataBuffer
 
 void RenderPass2D::Destroy()
 {
+    RenderedTexture->Destroy();
     RenderPass::Destroy();
     renderer.DestroyPipeline(ShaderPipeline);
     renderer.DestroyPipelineLayout(ShaderPipelineLayout);

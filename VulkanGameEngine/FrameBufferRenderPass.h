@@ -6,12 +6,7 @@
 class FrameBufferRenderPass : public RenderPass
 {
 private:
-	VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
-	VkDescriptorSetLayout DescriptorSetLayout = VK_NULL_HANDLE;
-	VkDescriptorSet DescriptorSet = VK_NULL_HANDLE;
-	VkPipeline ShaderPipeline = VK_NULL_HANDLE;
-	VkPipelineLayout ShaderPipelineLayout = VK_NULL_HANDLE;
-	VkPipelineCache PipelineCache = VK_NULL_HANDLE;
+
 
 public:
 	FrameBufferRenderPass();

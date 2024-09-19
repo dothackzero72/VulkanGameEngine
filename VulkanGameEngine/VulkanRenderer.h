@@ -52,8 +52,8 @@ class VulkanRenderer
         void DestroyCommandBuffers(List<VkCommandBuffer>& commandBufferList);
         void DestroyBuffer(VkBuffer& buffer);
         void FreeMemory(VkDeviceMemory& memory);
-        void DestroySwapChainImageView(List<VkImageView>& swapChainImageViewList);
-        void DestroySwapChain(VkSwapchainKHR& swapChain);
+        void DestroySwapChainImageView();
+        void DestroySwapChain();
         void DestroyImageView(VkImageView& imageView);
         void DestroyImage(VkImage& image);
         void DestroySampler(VkSampler& sampler);

@@ -816,7 +816,7 @@ VkResult Renderer_EndSingleUseCommandBuffer(VkDevice device, VkCommandPool comma
     return VK_SUCCESS;
 }
 
-void Renderer_DestroyFences(VkDevice* device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount)
+void Renderer_DestroyFences(VkDevice device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount)
 {
     for (size_t x = 0; x < semaphoreCount; x++)
     {
@@ -838,29 +838,29 @@ void Renderer_DestroyFences(VkDevice* device, VkSemaphore* acquireImageSemaphore
     }
 }
  
-void Renderer_DestroyCommandPool(VkDevice* device, VkCommandPool* commandPool)
+void Renderer_DestroyCommandPool(VkDevice device, VkCommandPool* commandPool)
 {
     if (*commandPool != VK_NULL_HANDLE)
     {
-        vkDestroyCommandPool(*device, *commandPool, NULL);
+        vkDestroyCommandPool(device, *commandPool, NULL);
         *commandPool = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroyDevice(VkDevice* device)
+void Renderer_DestroyDevice(VkDevice device)
 {
-    if (*device != VK_NULL_HANDLE)
+    if (device != VK_NULL_HANDLE)
     {
-        vkDestroyDevice(*device, NULL);
-        *device = VK_NULL_HANDLE;
+        vkDestroyDevice(device, NULL);
+        device = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroySurface(VkInstance* instance, VkSurfaceKHR* surface)
+void Renderer_DestroySurface(VkInstance instance, VkSurfaceKHR* surface)
 {
     if (*surface != VK_NULL_HANDLE)
     {
-        vkDestroySurfaceKHR(*instance, *surface, NULL);
+        vkDestroySurfaceKHR(instance, *surface, NULL);
         *surface = VK_NULL_HANDLE;
     }
 }
@@ -962,8 +962,8 @@ void Renderer_DestroySwapChainImageView(VkDevice device, VkImageView* pSwapChain
 
 void Renderer_DestroySwapChain(VkDevice device, VkSwapchainKHR* swapChain)
 {
-    vkDestroySwapchainKHR(device, swapChain, NULL);
-    swapChain = VK_NULL_HANDLE;
+    vkDestroySwapchainKHR(device, *swapChain, NULL);
+    *swapChain = VK_NULL_HANDLE;
 }
 
 void Renderer_DestroyImageView(VkDevice device, VkImageView* imageView)

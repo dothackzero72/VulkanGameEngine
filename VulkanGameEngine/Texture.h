@@ -25,6 +25,9 @@ class Texture
 	private:
 		uint64 TextureBufferIndex;
 
+		VkResult CopyBufferToTexture(VkBuffer buffer);
+		VkResult GenerateMipmaps();
+
 	protected:
 		int Width;
 		int Height;
@@ -38,9 +41,11 @@ class Texture
 		VkImageLayout TextureImageLayout;
 		VkSampleCountFlagBits SampleCount;
 
+		VkResult CreateTextureImage();
 		virtual void CreateImageTexture(const std::string& FilePath);
 		virtual void CreateTextureSampler();
-
+		VkResult CreateTextureView();
+		VkResult CreateTextureSampler(VkSamplerCreateInfo samplerCreateInfo);
 
 	public:
 		friend class TextureFunctions;
@@ -57,6 +62,11 @@ class Texture
 		virtual ~Texture();
 		virtual void UpdateTextureSize(vec2 TextureResolution);
 		virtual void Destroy();
+
+		VkResult TransitionImageLayout(VkImageLayout newLayout);
+		VkResult TransitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout);
+		VkResult TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
+		VkResult TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 		void ImGuiShowTexture(const ImVec2& TextureDisplaySize);
 		VkDescriptorImageInfo* GetTextureBuffer();

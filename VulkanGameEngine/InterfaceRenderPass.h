@@ -8,13 +8,13 @@
 #include <vector>
 #include <VulkanWindow.h>
 #include <SDLWindow.h>
+#include <ImPlot/implot.h>
 
 class InterfaceRenderPass
 {
 private:
     static VkRenderPass RenderPass;
     static VkDescriptorPool ImGuiDescriptorPool;
-    static VkCommandPool ImGuiCommandPool;
     static std::vector<VkFramebuffer> SwapChainFramebuffers;
    
     static void CreateRenderPass()
@@ -131,13 +131,13 @@ public:
         CreateRenderPass();
         CreateRendererFramebuffers();
 
-        VkCommandPoolCreateInfo poolInfo
+ /*       VkCommandPoolCreateInfo poolInfo
         {
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
             .queueFamilyIndex = cRenderer.SwapChain.GraphicsFamily
         };
-        VULKAN_RESULT(renderer.CreateCommandPool(ImGuiCommandPool, poolInfo));
+        VULKAN_RESULT(renderer.CreateCommandPool(ImGuiCommandPool, poolInfo));*/
 
         VkDescriptorPoolSize poolSizes[] =
         {
@@ -169,7 +169,7 @@ public:
             VkCommandBufferAllocateInfo commandBufferAllocateInfo
             {
                 .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-                .commandPool = ImGuiCommandPool,
+                .commandPool = cRenderer.CommandPool,
                 .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
                 .commandBufferCount = 1
             };

@@ -168,7 +168,7 @@ public:
 
 	void DestroyBuffer()
 	{
-		Buffer_DestroyBuffer(cRenderer.Device, &Buffer, &BufferMemory, &BufferData, &BufferSize, &BufferUsage, &BufferProperties);
+		Buffer_DestroyBuffer(cRenderer.Device, &Buffer, &StagingBuffer, &BufferMemory, &StagingBufferMemory,&BufferData, &BufferSize, &BufferUsage, &BufferProperties);
 	}
 
 	VkBuffer GetBuffer() { return Buffer; }

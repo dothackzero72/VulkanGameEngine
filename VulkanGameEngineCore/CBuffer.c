@@ -182,12 +182,14 @@ VkResult Buffer_UpdateStagingBufferMemory(VkDevice device, VkDeviceMemory buffer
     return VK_SUCCESS;
 }
 
-void Buffer_DestroyBuffer(VkDevice device, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsageFlags, VkMemoryPropertyFlags* propertyFlags)
+void Buffer_DestroyBuffer(VkDevice device, VkBuffer* buffer, VkBuffer* stagingBuffer, VkDeviceMemory* bufferMemory, VkDeviceMemory* stagingBufferMemory, void* bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsageFlags, VkMemoryPropertyFlags* propertyFlags)
 {
     *bufferSize = 0;
     *bufferUsageFlags = 0;
     *propertyFlags = 0;
     bufferData = VK_NULL_HANDLE;
     Renderer_DestroyBuffer(device, buffer);
+    Renderer_DestroyBuffer(device, stagingBuffer);
     Renderer_FreeMemory(device, bufferMemory);
+    Renderer_FreeMemory(device, stagingBufferMemory);
 }

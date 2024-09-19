@@ -190,7 +190,6 @@
     <ClCompile Include="SystemClock.cpp" />
     <ClCompile Include="TextFormatter.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="TextureFunctions.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VulkanRenderer.cpp" />
   </ItemGroup>
@@ -233,7 +232,6 @@
     <ClInclude Include="SystemClock.h" />
     <ClInclude Include="TextFormatter.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="TextureFunctions.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Typedef.h" />
     <ClInclude Include="Vertex.h" />

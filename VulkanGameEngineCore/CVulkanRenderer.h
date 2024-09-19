@@ -94,10 +94,10 @@ VkResult Renderer_EndSingleUseCommandBuffer(VkDevice device, VkCommandPool comma
 
 bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32 arrayCount, const char* target);
 
-void Renderer_DestroyFences(VkDevice* device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount);
-void Renderer_DestroyCommandPool(VkDevice* device, VkCommandPool* commandPool);
-void Renderer_DestroyDevice(VkDevice* device);
-void Renderer_DestroySurface(VkInstance* instance, VkSurfaceKHR* surface);
+void Renderer_DestroyFences(VkDevice device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount);
+void Renderer_DestroyCommandPool(VkDevice device, VkCommandPool* commandPool);
+void Renderer_DestroyDevice(VkDevice device);
+void Renderer_DestroySurface(VkInstance instance, VkSurfaceKHR* surface);
 void Renderer_DestroyDebugger(VkInstance* instance);
 void Renderer_DestroyInstance(VkInstance* instance);
 void Renderer_DestroyRenderPass(VkDevice device, VkRenderPass* renderPass);

@@ -1,6 +1,4 @@
 #include "Texture.h"
-
-
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image.h>
@@ -8,7 +6,6 @@
 #ifdef max 
 #undef max
 #endif
-#include "TextureFunctions.h"
 
 Texture::Texture()
 {
@@ -52,7 +49,7 @@ Texture::Texture(const std::string& filePath, VkFormat textureByteFormat, Textur
 	SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
 	CreateImageTexture(filePath);
-	TextureFunctions::CreateTextureView(this);
+	CreateTextureView();
 	CreateTextureSampler();
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
@@ -99,10 +96,10 @@ void Texture::CreateImageTexture(const std::string& FilePath)
 	VulkanBuffer<byte*> buffer(data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 	MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
-	VULKAN_RESULT(TextureFunctions::CreateTextureImage(this));
-	VULKAN_RESULT(TextureFunctions::TransitionImageLayout(this, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));
-	VULKAN_RESULT(TextureFunctions::CopyBufferToTexture(this, buffer.Buffer));
-	VULKAN_RESULT(TextureFunctions::GenerateMipmaps(this));
+	VULKAN_RESULT(CreateTextureImage());
+	VULKAN_RESULT(TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));
+	VULKAN_RESULT(CopyBufferToTexture(buffer.Buffer));
+	VULKAN_RESULT(GenerateMipmaps());
 	buffer.DestroyBuffer();
 
 	ColorChannels = (ColorChannelUsed)colorChannels;
@@ -130,10 +127,55 @@ void Texture::CreateTextureSampler()
 		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
 		.unnormalizedCoordinates = VK_FALSE,
 	};
-	VULKAN_RESULT(TextureFunctions::CreateTextureSampler(&TextureImageSamplerInfo, &Sampler));
+	VULKAN_RESULT(CreateTextureSampler(TextureImageSamplerInfo));
 }
 
 void Texture::ImGuiShowTexture(const ImVec2& TextureDisplaySize)
 {
 	ImGui::Image(ImGuiDescriptorSet, TextureDisplaySize);
+}
+
+VkResult Texture::CreateTextureImage()
+{
+	return Texture_CreateTextureImage(cRenderer.Device, cRenderer.PhysicalDevice, &Image, &Memory, Width, Height, MipMapLevels, TextureByteFormat);
+}
+
+VkResult Texture::TransitionImageLayout(VkImageLayout newLayout)
+{
+	return Texture_QuickTransitionImageLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, MipMapLevels, &TextureImageLayout, &newLayout);
+}
+
+VkResult Texture::TransitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout)
+{
+	return Texture_QuickTransitionImageLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, MipMapLevels, &oldLayout, &newLayout);
+}
+
+VkResult Texture::TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout)
+{
+	return Texture_CommandBufferTransitionImageLayout(commandBuffer, Image, MipMapLevels, TextureImageLayout, newLayout);
+}
+
+VkResult Texture::TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout)
+{
+	return Texture_CommandBufferTransitionImageLayout(commandBuffer, Image, MipMapLevels, oldLayout, newLayout);
+}
+
+VkResult Texture::CopyBufferToTexture(VkBuffer buffer)
+{
+	return Texture_CopyBufferToTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, buffer, TextureUsage, Width, Height, Depth);
+}
+
+VkResult Texture::GenerateMipmaps()
+{
+	return Texture_GenerateMipmaps(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, &TextureByteFormat, MipMapLevels, Width, Height);
+}
+
+VkResult Texture::CreateTextureView()
+{
+	return Texture_CreateTextureView(cRenderer.Device, &View, Image, TextureByteFormat, MipMapLevels);
+}
+
+VkResult Texture::CreateTextureSampler(VkSamplerCreateInfo samplerCreateInfo)
+{
+	return Texture_CreateTextureSampler(cRenderer.Device, &samplerCreateInfo, &Sampler);
 }

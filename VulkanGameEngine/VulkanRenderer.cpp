@@ -96,9 +96,10 @@ VkResult VulkanRenderer::SubmitDraw(List<VkCommandBuffer> commandBufferSubmitLis
 
 void VulkanRenderer::DestroyRenderer()
 {
+    renderer.DestroySwapChainImageView();
+    renderer.DestroySwapChain();
     renderer.DestroyFences();
     renderer.DestroyCommandPool();
-    renderer.DestroyFences();
     renderer.DestroyDevice();
     renderer.DestroyDebugger();
     renderer.DestroySurface();
@@ -187,22 +188,22 @@ VkResult VulkanRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
 
 void VulkanRenderer::DestroyFences()
 {
-    Renderer_DestroyFences(&cRenderer.Device, cRenderer.AcquireImageSemaphores, cRenderer.PresentImageSemaphores, cRenderer.InFlightFences, MAX_FRAMES_IN_FLIGHT);
+    Renderer_DestroyFences(cRenderer.Device, cRenderer.AcquireImageSemaphores, cRenderer.PresentImageSemaphores, cRenderer.InFlightFences, MAX_FRAMES_IN_FLIGHT);
 }
 
 void VulkanRenderer::DestroyCommandPool()
 {
-    Renderer_DestroyCommandPool(&cRenderer.Device, &cRenderer.CommandPool);
+    Renderer_DestroyCommandPool(cRenderer.Device, &cRenderer.CommandPool);
 }
 
 void VulkanRenderer::DestroyDevice()
 {
-    Renderer_DestroyDevice(&cRenderer.Device);
+    Renderer_DestroyDevice(cRenderer.Device);
 }
 
 void VulkanRenderer::DestroySurface()
 {
-    Renderer_DestroySurface(&cRenderer.Instance, &cRenderer.Surface);
+    Renderer_DestroySurface(cRenderer.Instance, &cRenderer.Surface);
 }
 
 void VulkanRenderer::DestroyDebugger()
@@ -250,14 +251,14 @@ void VulkanRenderer::FreeMemory(VkDeviceMemory& memory)
     Renderer_FreeMemory(cRenderer.Device, &memory);
 }
 
-void VulkanRenderer::DestroySwapChainImageView(List<VkImageView>& swapChainImageViewList)
+void VulkanRenderer::DestroySwapChainImageView()
 {
-    Renderer_DestroySwapChainImageView(cRenderer.Device, swapChainImageViewList.data(), swapChainImageViewList.size());
+    Renderer_DestroySwapChainImageView(cRenderer.Device, cRenderer.SwapChain.SwapChainImageViews, MAX_FRAMES_IN_FLIGHT);
 }
 
-void VulkanRenderer::DestroySwapChain(VkSwapchainKHR& swapChain)
+void VulkanRenderer::DestroySwapChain()
 {
-    Renderer_DestroySwapChain(cRenderer.Device, &swapChain);
+    Renderer_DestroySwapChain(cRenderer.Device, &cRenderer.SwapChain.Swapchain);
 }
 
 void VulkanRenderer::DestroyImageView(VkImageView& imageView)
