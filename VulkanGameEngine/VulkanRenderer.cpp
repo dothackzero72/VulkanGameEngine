@@ -246,9 +246,9 @@ void VulkanRenderer::DestroyBuffer(VkBuffer& buffer)
     Renderer_DestroyBuffer(cRenderer.Device, &buffer);
 }
 
-void VulkanRenderer::FreeMemory(VkDeviceMemory& memory)
+void VulkanRenderer::FreeDeviceMemory(VkDeviceMemory& memory)
 {
-    Renderer_FreeMemory(cRenderer.Device, &memory);
+    Renderer_FreeDeviceMemory(cRenderer.Device, &memory);
 }
 
 void VulkanRenderer::DestroySwapChainImageView()

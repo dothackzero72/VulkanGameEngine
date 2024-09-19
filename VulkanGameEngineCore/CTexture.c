@@ -12,7 +12,7 @@ VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* i
 		.newLayout = newLayout,
 		.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
 		.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-		.image = image,
+		.image = *image,
 		.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
 		.subresourceRange.baseMipLevel = 0,
 		.subresourceRange.levelCount = mipmapLevels,
@@ -81,7 +81,7 @@ VkResult Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDe
 VkResult Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, uint32 mipmapLevels, VkImageLayout* oldLayout, VkImageLayout* newLayout)
 {
 	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
-	Texture_TransitionImageLayout(commandBuffer, image, mipmapLevels, *oldLayout, *newLayout);
+	Texture_TransitionImageLayout(commandBuffer, &image, mipmapLevels, *oldLayout, *newLayout);
 	VkResult result = Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);
 	if (result == VK_SUCCESS)
 	{
@@ -92,7 +92,7 @@ VkResult Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool comma
 
 VkResult Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint32 mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout)
 {
-	Texture_TransitionImageLayout(commandBuffer, image, mipmapLevels, oldLayout, newLayout);
+	Texture_TransitionImageLayout(commandBuffer, &image, mipmapLevels, oldLayout, newLayout);
 	return VK_SUCCESS;
 }
 

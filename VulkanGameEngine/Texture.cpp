@@ -75,7 +75,7 @@ void Texture::UpdateTextureSize(glm::vec2 TextureResolution)
 	renderer.DestroyImageView(View);
 	renderer.DestroySampler(Sampler);
 	renderer.DestroyImage(Image);
-	renderer.FreeMemory(Memory);
+	renderer.FreeDeviceMemory(Memory);
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
@@ -84,7 +84,7 @@ void Texture::Destroy()
 	renderer.DestroyImageView(View);
 	renderer.DestroySampler(Sampler);
 	renderer.DestroyImage(Image);
-	renderer.FreeMemory(Memory);
+	renderer.FreeDeviceMemory(Memory);
 }
 
 void Texture::CreateImageTexture(const std::string& FilePath)

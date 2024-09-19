@@ -58,11 +58,11 @@ VkCommandPool Renderer_SetUpCommandPool(VkDevice device, uint32 graphicsFamily);
 VkResult Renderer_SetUpSemaphores(VkDevice device, VkFence** inFlightFences, VkSemaphore** acquireImageSemaphores, VkSemaphore** presentImageSemaphores, int maxFramesInFlight);
 VkResult Renderer_GetDeviceQueue(VkDevice device, uint32 graphicsFamily, uint32 presentFamily, VkQueue* graphicsQueue, VkQueue* presentQueue);
  
-VkResult Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceFormatKHR* surfaceFormat, uint32* surfaceFormatCount);
+VkResult Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceFormatKHR* surfaceFormat, uint32* surfaceFormatCount);
 VkResult Renderer_GetPresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR* presentMode, int32* presentModeCount);
 bool Renderer_GetRayTracingSupport();
 void Renderer_GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features);
-void Renderer_GetWin32Extensions(uint32_t* extensionCount, const char*** enabledExtensions);
+VkResult Renderer_GetWin32Extensions(uint32_t* extensionCount, char*** enabledExtensions);
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
 void DestroyDebugUtilsMessengerEXT(VkInstance instance, const VkAllocationCallbacks* pAllocator);
@@ -106,7 +106,7 @@ void Renderer_DestroyDescriptorPool(VkDevice device, VkDescriptorPool* descripto
 void Renderer_DestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayout);
 void Renderer_DestroyCommandBuffers(VkDevice device, VkCommandPool* commandPool, VkCommandBuffer* commandBufferList, uint32 count);
 void Renderer_DestroyBuffer(VkDevice device, VkBuffer* buffer);
-void Renderer_FreeMemory(VkDevice device, VkDeviceMemory* memory);
+void Renderer_FreeDeviceMemory(VkDevice device, VkDeviceMemory* memory);
 void Renderer_DestroySwapChainImageView(VkDevice device, VkImageView* pSwapChainImageViewList, uint32 count);
 void Renderer_DestroySwapChain(VkDevice device, VkSwapchainKHR* swapChain);
 void Renderer_DestroyImageView(VkDevice device, VkImageView* imageView);

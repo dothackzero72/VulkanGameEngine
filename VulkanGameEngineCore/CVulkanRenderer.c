@@ -105,56 +105,104 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
     return VK_FALSE;
 }
 
- VkExtensionProperties* Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice, uint32* deviceExtensionCountPtr)
+VkExtensionProperties* Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice, uint32_t* deviceExtensionCountPtr)
 {
-    uint32 deviceExtensionCount = 0;
-    VULKAN_RESULT(vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, NULL));
-
-    VkExtensionProperties* deviceExtensions = malloc(sizeof(VkExtensionProperties) * deviceExtensionCount);
-    if (!deviceExtensions)
+    uint32_t deviceExtensionCount = 0;
+    VkResult result = vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, NULL);
+    if (result != VK_SUCCESS)
     {
-        fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
+        fprintf(stderr, "Failed to enumerate device extension properties. Error: %d\n", result);
         *deviceExtensionCountPtr = 0;
-        free(deviceExtensions);
         return NULL;
     }
 
-    VULKAN_RESULT(vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, deviceExtensions));
+    VkExtensionProperties* deviceExtensions = malloc(sizeof(VkExtensionProperties) * deviceExtensionCount);
+    if (!deviceExtensions) 
+    {
+        fprintf(stderr, "Failed to allocate memory for device extensions.\n");
+        *deviceExtensionCountPtr = 0;
+        return NULL;
+    }
+
+    result = vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, deviceExtensions);
+    if (result != VK_SUCCESS)
+    {
+        fprintf(stderr, "Failed to enumerate device extension properties. Error: %d\n", result);
+        free(deviceExtensions);
+        *deviceExtensionCountPtr = 0;
+        return NULL;
+    }
+
     *deviceExtensionCountPtr = deviceExtensionCount;
-    free(deviceExtensions);
     return deviceExtensions;
 }
 
- VkResult Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceFormatKHR* surfaceFormat, uint32* surfaceFormatCount)
+VkResult Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceFormatKHR** surfaceFormats, uint32_t* surfaceFormatCount)
 {
-    VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, surfaceFormatCount, NULL));
-    if (surfaceFormatCount > 0)
+    VkResult result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, surfaceFormatCount, NULL);
+    if (result != VK_SUCCESS) 
     {
-        VkSurfaceFormatKHR* surfaceFormats = malloc(sizeof(VkSurfaceFormatKHR) * (*surfaceFormatCount));
-        if (!surfaceFormats)
-        {
-            fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
-        }
-        VkResult result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, surfaceFormatCount, surfaceFormats);
-        free(surfaceFormats);
+        fprintf(stderr, "Failed to get the physical device surface formats count. Error: %d\n", result);
         return result;
     }
+
+    if (*surfaceFormatCount > 0) 
+    {
+        *surfaceFormats = malloc(sizeof(VkSurfaceFormatKHR) * (*surfaceFormatCount));
+        if (!(*surfaceFormats)) 
+        {
+            fprintf(stderr, "Failed to allocate memory for surface formats.\n");
+            return VK_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, surfaceFormatCount, *surfaceFormats);
+        if (result != VK_SUCCESS) 
+        {
+            free(*surfaceFormats);
+            *surfaceFormats = NULL;
+            fprintf(stderr, "Failed to get physical device surface formats. Error: %d\n", result);
+            return result;
+        }
+    }
+    else 
+    {
+        *surfaceFormats = NULL;
+    }
+    return VK_SUCCESS;
 }
 
- VkResult Renderer_GetPresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR* presentMode, int32* presentModeCount)
+VkResult Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR** presentModes, uint32_t* presentModeCount)
 {
-    VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, presentModeCount, NULL));
-    if (presentModeCount > 0)
+    VkResult result = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, presentModeCount, NULL);
+    if (result != VK_SUCCESS) 
     {
-        VkPresentModeKHR* presentModes = malloc(sizeof(VkPresentModeKHR) * *presentModeCount);
-        if (!presentModes)
-        {
-            fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
-        }
-        VkResult result = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, presentModeCount, presentModes);
-        free(presentModes);
+        fprintf(stderr, "Failed to get the physical device surface present modes count. Error: %d\n", result);
         return result;
     }
+
+    if (*presentModeCount > 0) 
+    {
+        *presentModes = malloc(sizeof(VkPresentModeKHR) * (*presentModeCount));
+        if (!(*presentModes)) 
+        {
+            fprintf(stderr, "Failed to allocate memory for present modes.\n");
+            return VK_ERROR_OUT_OF_HOST_MEMORY;
+        }
+
+        result = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, presentModeCount, *presentModes);
+        if (result != VK_SUCCESS) 
+        {
+            free(*presentModes);
+            *presentModes = NULL;
+            fprintf(stderr, "Failed to get physical device surface present modes. Error: %d\n", result);
+            return result;
+        }
+    }
+    else
+    {
+        *presentModes = NULL;
+    }
+    return VK_SUCCESS;
 }
 
  bool Renderer_GetRayTracingSupport()
@@ -266,23 +314,68 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
     physicalDeviceVulkan11Features->pNext = &deviceFeatures2;
 }
 
-void Renderer_GetWin32Extensions(uint32_t* extensionCount, const char*** enabledExtensions) 
-{
-    vkEnumerateInstanceExtensionProperties(NULL, extensionCount, NULL);
-    VkExtensionProperties* extensions = (VkExtensionProperties*)malloc(sizeof(VkExtensionProperties) * (*extensionCount));
-    vkEnumerateInstanceExtensionProperties(NULL, extensionCount, extensions);
+ VkResult Renderer_GetWin32Extensions(uint32_t* extensionCount, char*** enabledExtensions)
+ {
+     if (extensionCount == NULL || enabledExtensions == NULL) 
+     {
+         fprintf(stderr, "Invalid arguments: extensionCount and enabledExtensions cannot be NULL.\n");
+         return VK_ERROR_INITIALIZATION_FAILED;
+     }
 
-    const char** extensionNames = (const char**)malloc(sizeof(const char*) * (*extensionCount));
-    for (uint32_t x = 0; x < *extensionCount; x++)
-    {
-        extensionNames[x] = (const char*)malloc(256);
-        strncpy((char*)extensionNames[x], extensions[x].extensionName, 256);
-        printf("Extension: %s, Spec Version: %d\n", extensions[x].extensionName, extensions[x].specVersion);
-    }
+     VkResult result = vkEnumerateInstanceExtensionProperties(NULL, extensionCount, NULL);
+     if (result != VK_SUCCESS) 
+     {
+         fprintf(stderr, "Failed to enumerate instance extension properties. Error: %d\n", result);
+         *extensionCount = 0;
+         return result;
+     }
 
-    free(extensions);
-    *enabledExtensions = extensionNames;
-}
+     VkExtensionProperties* extensions = malloc(sizeof(VkExtensionProperties) * (*extensionCount));
+     if (!extensions) 
+     {
+         fprintf(stderr, "Failed to allocate memory for extension properties.\n");
+         return VK_ERROR_OUT_OF_HOST_MEMORY;
+     }
+
+     result = vkEnumerateInstanceExtensionProperties(NULL, extensionCount, extensions);
+     if (result != VK_SUCCESS) 
+     {
+         fprintf(stderr, "Failed to enumerate instance extension properties after allocation. Error: %d\n", result);
+         free(extensions);
+         return result;
+     }
+
+     char** extensionNames = malloc(sizeof(char*) * (*extensionCount));
+     if (!extensionNames) 
+     {
+         fprintf(stderr, "Failed to allocate memory for extension names.\n");
+         free(extensions);
+         return VK_ERROR_OUT_OF_HOST_MEMORY;
+     }
+
+     for (uint32_t x = 0; x < *extensionCount; x++) 
+     {
+         extensionNames[x] = malloc(256);
+         if (!extensionNames[x]) 
+         {
+             fprintf(stderr, "Failed to allocate memory for extension name at index %d.\n", x);
+             for (uint32_t y = 0; y < x; y++) {
+                 free(extensionNames[y]);
+             }
+             free(extensionNames);
+             free(extensions);
+             return VK_ERROR_OUT_OF_HOST_MEMORY;
+         }
+         strncpy(extensionNames[x], extensions[x].extensionName, 256);
+         extensionNames[x][256 - 1] = '\0'; 
+         printf("Extension: %s, Spec Version: %d\n", extensionNames[x], extensions[x].specVersion);
+     }
+
+     free(extensions);
+     *enabledExtensions = extensionNames;
+
+     return VK_SUCCESS;
+ }
 
 VkInstance Renderer_CreateVulkanInstance()
 {
@@ -307,7 +400,7 @@ VkInstance Renderer_CreateVulkanInstance()
 #endif
 
     uint32_t extensionCount = 0;
-    const VkExtensionProperties* extensions = NULL;
+    const char** extensions = NULL;
     Renderer_GetWin32Extensions(&extensionCount, &extensions);
 
     VkApplicationInfo applicationInfo = {
@@ -359,48 +452,80 @@ VkInstance Renderer_CreateVulkanInstance()
     return debugMessenger;
 }
 
- VkResult Renderer_SetUpPhysicalDevice(VkInstance instance, VkPhysicalDevice* physicalDevice, VkSurfaceKHR surface, VkPhysicalDeviceFeatures* physicalDeviceFeatures, uint32* graphicsFamily, uint32* presentFamily)
+ VkResult Renderer_SetUpPhysicalDevice(VkInstance instance, VkPhysicalDevice* physicalDevice, VkSurfaceKHR surface, VkPhysicalDeviceFeatures* physicalDeviceFeatures, uint32_t* graphicsFamily, uint32_t* presentFamily) 
  {
-     fprintf(stderr, "Entered DLL_Renderer_SetUpPhysicalDevice\n");
-     uint32 deviceCount = 0;
+     uint32_t deviceCount = 0;
      VkResult result = vkEnumeratePhysicalDevices(instance, &deviceCount, NULL);
-     fprintf(stderr, "Device count: %d\n", deviceCount);
-
-     VULKAN_RESULT(vkEnumeratePhysicalDevices(instance, &deviceCount, NULL));
-     VkPhysicalDevice* physicalDeviceList = malloc(sizeof(VkPhysicalDevice) * deviceCount);
-     VULKAN_RESULT(vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDeviceList));
-
-     VkPresentModeKHR* presentMode = NULL;
-     for (uint32 x = 0; x < deviceCount; x++)
+     if (result != VK_SUCCESS) 
      {
-         VkSurfaceFormatKHR surfaceFormat;
-         VkPresentModeKHR presentMode;
-         uint32 surfaceFormatCount = 0;
-         uint32 presentModeCount = 0;
+         fprintf(stderr, "Failed to enumerate physical devices. Error: %d\n", result);
+         return result;
+     }
+     if (deviceCount == 0) {
+         fprintf(stderr, "No physical devices found.\n");
+         return VK_ERROR_INITIALIZATION_FAILED;
+     }
 
+     VkPhysicalDevice* physicalDeviceList = malloc(sizeof(VkPhysicalDevice) * deviceCount);
+     if (!physicalDeviceList) 
+     {
+         fprintf(stderr, "Failed to allocate memory for physical devices.\n");
+         return VK_ERROR_OUT_OF_HOST_MEMORY;
+     }
+
+     result = vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDeviceList);
+     if (result != VK_SUCCESS) 
+     {
+         fprintf(stderr, "Failed to enumerate physical devices after allocation. Error: %d\n", result);
+         free(physicalDeviceList);
+         return result;
+     }
+
+     VkSurfaceFormatKHR surfaceFormat; 
+     uint32_t surfaceFormatCount = 0;
+     VkPresentModeKHR* presentMode = NULL;
+     uint32_t presentModeCount = 0;
+
+     for (uint32_t x = 0; x < deviceCount; x++) 
+     {
          vkGetPhysicalDeviceFeatures(physicalDeviceList[x], physicalDeviceFeatures);
-         VULKAN_RESULT(SwapChain_GetQueueFamilies(physicalDeviceList[x], surface, graphicsFamily, presentFamily));
-         VULKAN_RESULT(Renderer_GetSurfaceFormats(physicalDeviceList[x], surface, &surfaceFormat, &surfaceFormatCount));
-         VULKAN_RESULT(Renderer_GetPresentModes(physicalDeviceList[x], surface, &presentMode, &presentModeCount));
+         result = SwapChain_GetQueueFamilies(physicalDeviceList[x], surface, graphicsFamily, presentFamily);
+         if (result != VK_SUCCESS) 
+         {
+             fprintf(stderr, "Failed to get queue families. Error: %d\n", result);
+             continue;
+         }
 
-         if (*graphicsFamily != -1 &&
-             *presentFamily != -1 &&
+         result = Renderer_GetSurfaceFormats(physicalDeviceList[x], surface, &surfaceFormat, &surfaceFormatCount);
+         if (result != VK_SUCCESS) 
+         {
+             fprintf(stderr, "Failed to get surface formats. Error: %d\n", result);
+             continue;
+         }
+
+         result = Renderer_GetSurfacePresentModes(physicalDeviceList[x], surface, &presentMode, &presentModeCount);
+         if (result != VK_SUCCESS) 
+         {
+             fprintf(stderr, "Failed to get surface present modes. Error: %d\n", result);
+             continue; 
+         }
+
+         if (*graphicsFamily != UINT32_MAX &&
+             *presentFamily != UINT32_MAX && 
              surfaceFormatCount > 0 &&
-             presentModeCount != 0 &&
-             physicalDeviceFeatures->samplerAnisotropy)
+             presentModeCount > 0 &&
+             physicalDeviceFeatures->samplerAnisotropy) 
          {
              *physicalDevice = physicalDeviceList[x];
-             break;
-         }
-         else
-         {
+             free(presentMode);
              free(physicalDeviceList);
-             return VK_ERROR_DEVICE_LOST;
+             return VK_SUCCESS;
          }
      }
 
-     free(physicalDeviceList);
-     return VK_SUCCESS;
+     free(presentMode);
+     free(physicalDeviceList); 
+     return VK_ERROR_DEVICE_LOST;
  }
 
  VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFamily, uint32 presentFamily)
@@ -663,31 +788,55 @@ void Renderer_UpdateDescriptorSet(VkDevice device, VkWriteDescriptorSet* writeDe
     vkUpdateDescriptorSets(device, count, writeDescriptorSet, 0, NULL);
 }
 
-VkResult Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* fenceList, VkSemaphore* acquireImageSemaphoreList, uint32* pImageIndex, uint32* pCommandIndex, bool* pRebuildRendererFlag)
+VkResult Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* fenceList, VkSemaphore* acquireImageSemaphoreList, uint32_t* pImageIndex, uint32_t* pCommandIndex, bool* pRebuildRendererFlag)
 {
+    if (!pImageIndex || 
+        !pCommandIndex || 
+        !pRebuildRendererFlag)
+    {
+        fprintf(stderr, "Error: Null pointer passed to Renderer_StartFrame.\n");
+        return VK_ERROR_INITIALIZATION_FAILED; 
+    }
+
     *pCommandIndex = (*pCommandIndex + 1) % MAX_FRAMES_IN_FLIGHT;
 
-    VULKAN_RESULT(vkWaitForFences(device, 1, &fenceList[*pCommandIndex], VK_TRUE, UINT64_MAX));
-    VULKAN_RESULT(vkResetFences(device, 1, &fenceList[*pCommandIndex]));
+    VkResult waitResult = vkWaitForFences(device, 1, &fenceList[*pCommandIndex], VK_TRUE, UINT64_MAX);
+    if (waitResult != VK_SUCCESS) 
+    {
+        fprintf(stderr, "Error: vkWaitForFences failed with error code: %s\n", Renderer_GetError(waitResult));
+        return waitResult;
+    }
+
+    VkResult resetResult = vkResetFences(device, 1, &fenceList[*pCommandIndex]);
+    if (resetResult != VK_SUCCESS) 
+    {
+        fprintf(stderr, "Error: vkResetFences failed with error code: %s\n", Renderer_GetError(resetResult));
+        return resetResult;
+    }
 
     VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, acquireImageSemaphoreList[*pCommandIndex], VK_NULL_HANDLE, pImageIndex);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    if (result == VK_ERROR_OUT_OF_DATE_KHR) 
     {
         *pRebuildRendererFlag = true;
+        return result;
+    }
+    else if (result != VK_SUCCESS) 
+    {
+        fprintf(stderr, "Error: vkAcquireNextImageKHR failed with error code: %s\n", Renderer_GetError(result));
         return result;
     }
 
     return result;
 }
 
-VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint32 commandIndex, uint32 imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount, bool* rebuildRendererFlag)
+VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint32_t commandIndex, uint32_t imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint32_t commandBufferCount, bool* rebuildRendererFlag)
 {
-    VkPipelineStageFlags waitStages[] =
+    VkPipelineStageFlags waitStages[] = 
     {
         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
     };
 
-    VkSubmitInfo submitInfo =
+    VkSubmitInfo submitInfo = 
     {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
         .waitSemaphoreCount = 1,
@@ -698,9 +847,15 @@ VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSe
         .signalSemaphoreCount = 1,
         .pSignalSemaphores = &presentImageSemaphoreList[imageIndex]
     };
-    VULKAN_RESULT(vkQueueSubmit(graphicsQueue, 1, &submitInfo, fenceList[commandIndex]));
 
-    VkPresentInfoKHR presentInfo =
+    VkResult submitResult = vkQueueSubmit(graphicsQueue, 1, &submitInfo, fenceList[commandIndex]);
+    if (submitResult != VK_SUCCESS) 
+    {
+        fprintf(stderr, "Error: vkQueueSubmit failed with error code: %s\n", Renderer_GetError(submitResult));
+        return submitResult; 
+    }
+
+    VkPresentInfoKHR presentInfo = 
     {
         .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
         .waitSemaphoreCount = 1,
@@ -709,20 +864,28 @@ VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSe
         .pSwapchains = &swapChain,
         .pImageIndices = &imageIndex
     };
+
     VkResult result = vkQueuePresentKHR(presentQueue, &presentInfo);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || 
+        result == VK_SUBOPTIMAL_KHR) 
     {
         *rebuildRendererFlag = true;
     }
+    else if (result != VK_SUCCESS) {
+        fprintf(stderr, "Error: vkQueuePresentKHR failed with error code: %s\n", Renderer_GetError(result));
+    }
 
-    return result;
+    return result; 
 }
 
-VkResult Renderer_SubmitDraw(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint32 commandIndex, uint32 imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount, bool* rebuildRendererFlag)
+VkResult Renderer_SubmitDraw(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint32_t commandIndex, uint32_t imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint32_t commandBufferCount, bool* rebuildRendererFlag)
 {
-    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    VkPipelineStageFlags waitStages[] = 
+    { 
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT 
+    };
 
-    VkSubmitInfo submitInfo =
+    VkSubmitInfo submitInfo = 
     {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
         .waitSemaphoreCount = 1,
@@ -733,10 +896,14 @@ VkResult Renderer_SubmitDraw(VkSwapchainKHR swapChain, VkSemaphore* acquireImage
         .signalSemaphoreCount = 1,
         .pSignalSemaphores = &presentImageSemaphoreList[imageIndex]
     };
-    VULKAN_RESULT(vkQueueSubmit(graphicsQueue, 1, &submitInfo, fenceList[commandIndex]));
-
-    VkPresentInfoKHR presentInfo =
+    VkResult submitResult = vkQueueSubmit(graphicsQueue, 1, &submitInfo, fenceList[commandIndex]);
+    if (submitResult != VK_SUCCESS) 
     {
+        fprintf(stderr, "Error: vkQueueSubmit failed with error code: %s\n", Renderer_GetError(submitResult));
+        return submitResult;
+    }
+
+    VkPresentInfoKHR presentInfo = {
         .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
         .waitSemaphoreCount = 1,
         .pWaitSemaphores = &presentImageSemaphoreList[imageIndex],
@@ -744,11 +911,17 @@ VkResult Renderer_SubmitDraw(VkSwapchainKHR swapChain, VkSemaphore* acquireImage
         .pSwapchains = &swapChain,
         .pImageIndices = &imageIndex
     };
+
     VkResult result = vkQueuePresentKHR(presentQueue, &presentInfo);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) 
     {
         *rebuildRendererFlag = true;
     }
+    else if (result != VK_SUCCESS) 
+    {
+        fprintf(stderr, "Error: vkQueuePresentKHR failed with error code: %s\n", Renderer_GetError(result));
+    }
+
     return result;
 }
 
@@ -939,7 +1112,7 @@ void Renderer_DestroyBuffer(VkDevice device, VkBuffer* buffer)
     }
 }
 
-void Renderer_FreeMemory(VkDevice device, VkDeviceMemory* memory)
+void Renderer_FreeDeviceMemory(VkDevice device, VkDeviceMemory* memory)
 {
     if (*memory != VK_NULL_HANDLE)
     {

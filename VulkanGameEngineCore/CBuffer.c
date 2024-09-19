@@ -107,8 +107,8 @@ VkResult Buffer_CopyBuffer(VkDevice device, VkCommandPool commandPool, VkQueue g
         .size = size
     };
     VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
-    vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-    return Renderer_EndSingleUseCommandBuffer(device, commandBuffer, &commandBuffer, graphicsQueue);
+    vkCmdCopyBuffer(commandBuffer, *srcBuffer, *dstBuffer, 1, &copyRegion);
+    return Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);
 }
 
 VkResult Buffer_CopyStagingBuffer(VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
@@ -148,8 +148,8 @@ VkResult Buffer_UpdateBufferSize(VkDevice device, VkPhysicalDevice physicalDevic
     };
     VULKAN_RESULT(vkCreateBuffer(device, &bufferCreateInfo, NULL, &buffer));
     VULKAN_RESULT(Buffer_AllocateMemory(device, physicalDevice, &buffer, bufferMemory, propertyFlags));
-    VULKAN_RESULT(vkBindBufferMemory(device, &buffer, bufferMemory, 0));
-    return vkMapMemory(device, bufferMemory, 0, newBufferSize, 0, bufferData);
+    VULKAN_RESULT(vkBindBufferMemory(device, buffer, *bufferMemory, 0));
+    return vkMapMemory(device, *bufferMemory, 0, newBufferSize, 0, bufferData);
 }
 
 VkResult Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize)
@@ -190,6 +190,6 @@ void Buffer_DestroyBuffer(VkDevice device, VkBuffer* buffer, VkBuffer* stagingBu
     bufferData = VK_NULL_HANDLE;
     Renderer_DestroyBuffer(device, buffer);
     Renderer_DestroyBuffer(device, stagingBuffer);
-    Renderer_FreeMemory(device, bufferMemory);
-    Renderer_FreeMemory(device, stagingBufferMemory);
+    Renderer_FreeDeviceMemory(device, bufferMemory);
+    Renderer_FreeDeviceMemory(device, stagingBufferMemory);
 }
