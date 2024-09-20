@@ -34,9 +34,6 @@ VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkSurfaceKHR surface, V
 VkImage* SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32 swapChainImageCount);
 VkImageView* SwapChain_SetUpSwapChainImageViews(VkDevice device, VkImage* swapChainImages, VkSurfaceFormatKHR* swapChainImageFormat, uint32_t swapChainImageCount);
 
-void Vulkan_DestroyImageView();
-void Vulkan_DestroySwapChain();
-
 #ifdef __cplusplus
 }
 #endif

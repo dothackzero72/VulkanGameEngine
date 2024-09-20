@@ -21,50 +21,50 @@ typedef DynamicVulkanBuffer<MeshProperitiesStruct> MeshPropertiesBuffer;
 
 class Mesh
 {
-	private:
-		const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | 
-														   VK_BUFFER_USAGE_INDEX_BUFFER_BIT | 
-														   VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
-														   VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+private:
+	const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+		VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
+		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+		VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
-		const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-												                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+	const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
+protected:
 
-	protected:
 public:
-		uint64 MeshBufferIndex;
-		uint32 VertexCount;
-		uint32 IndexCount;
+	uint64 MeshBufferIndex;
+	uint32 VertexCount;
+	uint32 IndexCount;
 
-		MeshProperitiesStruct MeshProperties;
-		mat4 MeshTransform;
-		vec3 MeshPosition;
-		vec3 MeshRotation;
-		vec3 MeshScale;
+	MeshProperitiesStruct MeshProperties;
+	mat4 MeshTransform;
+	vec3 MeshPosition;
+	vec3 MeshRotation;
+	vec3 MeshScale;
 
-		VertexBuffer MeshVertexBuffer;
-		IndexBuffer MeshIndexBuffer;
-		MeshPropertiesBuffer PropertiesBuffer;
+	VertexBuffer MeshVertexBuffer;
+	IndexBuffer MeshIndexBuffer;
+	MeshPropertiesBuffer PropertiesBuffer;
 
-		template<class T>
-		void MeshStartUp(List<T>& vertexList, List<uint32>& indexList)
-		{
-			VertexCount = vertexList.size();
-			IndexCount = indexList.size();
+	template<class T>
+	void MeshStartUp(List<T>& vertexList, List<uint32>& indexList)
+	{
+		VertexCount = vertexList.size();
+		IndexCount = indexList.size();
 
-			MeshVertexBuffer = VertexBuffer(vertexList.data(), sizeof(T) * VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings);
-			MeshIndexBuffer = IndexBuffer(indexList.data(), sizeof(uint32) * IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings);
-			PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), sizeof(MeshProperitiesStruct), MeshBufferUsageSettings, MeshBufferPropertySettings);
-		}
+		MeshVertexBuffer = VertexBuffer(vertexList.data(), sizeof(T) * VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings);
+		MeshIndexBuffer = IndexBuffer(indexList.data(), sizeof(uint32) * IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings);
+		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), sizeof(MeshProperitiesStruct), MeshBufferUsageSettings, MeshBufferPropertySettings);
+	}
 
-		Mesh();
-		virtual ~Mesh();
-		virtual void Update(const float& deltaTime);
-		virtual void BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime);
-		virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
-		virtual void Destroy();
+	Mesh();
+	virtual ~Mesh();
+	virtual void Update(const float& deltaTime);
+	virtual void BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime);
+	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
+	virtual void Destroy();
 
-		MeshPropertiesBuffer* GetMeshPropertiesBuffer() { return &PropertiesBuffer; }
+	MeshPropertiesBuffer* GetMeshPropertiesBuffer() { return &PropertiesBuffer; }
 };
 

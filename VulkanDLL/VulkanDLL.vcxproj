@@ -126,7 +126,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;VulkanGameEngineCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;VulkanGameEngineCore.lib;VulkanGameEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DLL.h" />
+    <ClInclude Include="DLLMesh.h" />
     <ClInclude Include="DLLTexture.h" />
     <ClInclude Include="DLLVulkanBuffer.h" />
     <ClInclude Include="DLLVulkanRenderer.h" />
@@ -157,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DLL.c" />
+    <ClCompile Include="DLLMesh.cpp" />
     <ClCompile Include="DLLTexture.cpp" />
     <ClCompile Include="DLLVulkanBuffer.cpp" />
     <ClCompile Include="DLLVulkanRenderer.c" />

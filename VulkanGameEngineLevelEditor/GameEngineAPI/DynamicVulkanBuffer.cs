@@ -14,13 +14,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
         }
 
-        public DynamicVulkanBuffer(IntPtr bufferData, uint bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
+        public DynamicVulkanBuffer(void* bufferData, uint bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
 
         {
             base.CreateBuffer(bufferData, bufferSize, usage, properties);
         }
 
-        override protected VkResult CreateBuffer(IntPtr bufferData, ulong bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlagBits properties)
+        override protected VkResult CreateBuffer(void* bufferData, ulong bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlagBits properties)
         {
             VkBuffer stagingBuffer = StagingBuffer;
             VkDeviceMemory stagingBufferMemory = StagingBufferMemory;

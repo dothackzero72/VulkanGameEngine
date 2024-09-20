@@ -85,8 +85,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 GCHandle handle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
                 IntPtr dataPtr = handle.AddrOfPinnedObject();
 
-                var buffer = new VulkanBuffer<byte>(dataPtr, (uint)(Width * Height * (int)ColorChannels), VkBufferUsageFlags.VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-                var bHandle = buffer.BufferHandle;
+                var buffer = new VulkanBuffer<byte>((void*)dataPtr, (uint)(Width * Height * (int)ColorChannels), VkBufferUsageFlags.VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                var bHandle = buffer.Buffer;
 
                 CreateTextureImage();
                 TransitionImageLayout(VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
@@ -121,7 +121,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             VkSampler sampler = new VkSampler();
-            VkResult result = GameEngineDLL.DLL_Texture_CreateTextureSampler(VulkanRenderer.Device, in textureImageSamplerInfo, ref sampler);
+            VkResult result = GameEngineDLL.DLL_Texture_CreateTextureSampler(VulkanRenderer.Device, ref textureImageSamplerInfo, out sampler);
             Sampler = sampler;
         }
 
@@ -210,7 +210,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         private VkResult CreateTextureView()
         {
             var textureView = new IntPtr();
-            VkResult result = GameEngineDLL.DLL_Texture_CreateTextureView(VulkanRenderer.Device, ref textureView, Image, TextureByteFormat, MipMapLevels);
+            VkResult result = GameEngineDLL.DLL_Texture_CreateTextureView(VulkanRenderer.Device, out textureView, Image, TextureByteFormat, MipMapLevels);
             View = textureView;
             return result;
         }
@@ -218,7 +218,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         private VkResult TransitionImageLayout(VkImageLayout newLayout)
         {
             VkImageLayout oldLayout = TextureImageLayout;
-            var result = GameEngineDLL.DLL_Texture_QuickTransitionImageLayout(Image, MipMapLevels, ref oldLayout, ref newLayout);
+            var result = GameEngineDLL.DLL_Texture_QuickTransitionImageLayout(VulkanRenderer.Device, VulkanRenderer.CommandPool, VulkanRenderer.GraphicsQueue, Image, MipMapLevels, ref oldLayout, ref newLayout);
             TextureImageLayout = newLayout;
             return result;
         }
@@ -235,21 +235,44 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         private VkResult CopyBufferToTexture(ref VkBuffer buffer)
         {
-            var Buffer = new VkBuffer();
-            VkResult result = GameEngineDLL.DLL_Texture_CopyBufferToTexture(Image, Buffer, TextureUsage, Width, Height, Depth);
-            buffer = Buffer;
+            // Ensure buffer is initialized correctly
+            if (buffer == IntPtr.Zero)
+            {
+                throw new InvalidOperationException("Buffer has not been initialized.");
+            }
+
+            // Call the DLL function to copy the buffer to the texture
+            VkResult result = GameEngineDLL.DLL_Texture_CopyBufferToTexture(
+                (IntPtr)VulkanRenderer.Device,
+                (IntPtr)VulkanRenderer.CommandPool,
+                (IntPtr)VulkanRenderer.GraphicsQueue,
+                (IntPtr)Image,
+                (IntPtr)buffer, // Use .Handle if VkBuffer is a struct with a Handle field
+                TextureUsage,
+                Width,
+                Height,
+                Depth
+            );
+
+            // Additional post-call checks can be done based on the result
+            if (result != VkResult.VK_SUCCESS)
+            {
+                // Handle error here
+                throw new InvalidOperationException($"Failed to copy buffer to texture: {result}");
+            }
+
             return result;
         }
 
         private VkResult CopyBufferToTexture(VkImage image, ref VkBuffer buffer, TextureUsageEnum textureType, vec3 textureSize)
         {
-            return GameEngineDLL.DLL_Texture_CopyBufferToTexture(image, buffer, textureType, (int)textureSize.x, (int)textureSize.y, (int)textureSize.z);
+            return GameEngineDLL.DLL_Texture_CopyBufferToTexture(VulkanRenderer.Device, VulkanRenderer.CommandPool, VulkanRenderer.GraphicsQueue, image, buffer, textureType, (int)textureSize.x, (int)textureSize.y, (int)textureSize.z);
         }
 
         private VkResult GenerateMipmaps()
         {
             var textureByteFormat = TextureByteFormat;
-            VkResult result = GameEngineDLL.DLL_Texture_GenerateMipmaps(VulkanRenderer.PhysicalDevice, Image, out textureByteFormat, MipMapLevels, Width, Height);
+            VkResult result = GameEngineDLL.DLL_Texture_GenerateMipmaps(VulkanRenderer.Device, VulkanRenderer.PhysicalDevice, VulkanRenderer.CommandPool, VulkanRenderer.GraphicsQueue, Image, ref textureByteFormat, MipMapLevels, Width, Height);
             TextureByteFormat = textureByteFormat;
             return result;
         }

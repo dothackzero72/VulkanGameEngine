@@ -100,6 +100,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public static void CreateVulkanSurface(PictureBox pictureBox)
         {
+            var surface = new VkSurfaceKHR();
             var surfaceCreateInfo = new VkWin32SurfaceCreateInfoKHR
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
@@ -107,7 +108,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 hinstance = Marshal.GetHINSTANCE(typeof(Form1).Module)
             };
 
-            VkSurfaceKHR surface = IntPtr.Zero;
             if (VulkanAPI.vkCreateWin32SurfaceKHR(Instance, ref surfaceCreateInfo, IntPtr.Zero, out surface) != 0)
             {
                 MessageBox.Show("Failed to create Vulkan surface.");
@@ -121,10 +121,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             try
             {
                 VkPhysicalDevice physicalDevice = VkPhysicalDevice.Zero;
-                VkPhysicalDeviceFeatures physicalDeviceFeatures = new VkPhysicalDeviceFeatures();
-                UInt32 graphicsFamily = new UInt32();
-                UInt32 presentFamily = new UInt32();
-
+                UInt32 graphicsFamily, presentFamily;
+                var physicalDeviceFeatures = PhysicalDeviceFeatures;
                 if (GameEngineDLL.DLL_Renderer_SetUpPhysicalDevice(Instance, ref physicalDevice, Surface, ref physicalDeviceFeatures, out graphicsFamily, out presentFamily) != VkResult.VK_SUCCESS)
                 {
                     MessageBox.Show("Physical Device setup failed.");
@@ -132,7 +130,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
 
                 PhysicalDevice = physicalDevice;
-                PhysicalDeviceFeatures = physicalDeviceFeatures;
                 GraphicsFamily = graphicsFamily;
                 PresentFamily = presentFamily;
             }
@@ -178,9 +175,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             try
             {
-                IntPtr inFlightFencesPtr = IntPtr.Zero;
-                IntPtr acquireImageSemaphoresPtr = IntPtr.Zero;
-                IntPtr presentImageSemaphoresPtr = IntPtr.Zero;
+                IntPtr inFlightFencesPtr;
+                IntPtr acquireImageSemaphoresPtr;
+                IntPtr presentImageSemaphoresPtr;
 
                 if (GameEngineDLL.DLL_Renderer_SetUpSemaphores(Device, out inFlightFencesPtr, out acquireImageSemaphoresPtr, out presentImageSemaphoresPtr, MAX_FRAMES_IN_FLIGHT) != VkResult.VK_SUCCESS)
                 {
@@ -211,12 +208,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             try
             {
-                VkQueue graphicsQueue = new VkQueue();
-                VkQueue presentQueue = new VkQueue();
+                var graphicsQueue = new VkQueue();
+                var presentQueue = new VkQueue();
                 if (GameEngineDLL.DLL_Renderer_GetDeviceQueue(Device, GraphicsFamily, PresentFamily, out graphicsQueue, out presentQueue) != VkResult.VK_SUCCESS)
                 {
                     MessageBox.Show("Failed to get device queues.");
-                    return;
                 }
                 GraphicsQueue = graphicsQueue;
                 PresentQueue = presentQueue;
@@ -227,27 +223,46 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private static  List<VkSurfaceFormatKHR> GetSurfaceFormats()
+        private static List<VkSurfaceFormatKHR> GetSurfaceFormats()
         {
             try
             {
+                // Step 1: Get the count of surface formats
                 uint surfaceFormatCount = 0;
-                VkResult result = GameEngineDLL.DLL_Renderer_GetSurfaceFormats(PhysicalDevice, Surface, null, ref surfaceFormatCount);
+                VkResult result = GameEngineDLL.DLL_Renderer_GetSurfaceFormats(PhysicalDevice, Surface, IntPtr.Zero, ref surfaceFormatCount);
                 if (result != VkResult.VK_SUCCESS || surfaceFormatCount == 0)
                 {
                     MessageBox.Show($"Failed to get surface format count or no formats available: {result}");
                     return new List<VkSurfaceFormatKHR>();
                 }
 
-                VkSurfaceFormatKHR[] surfaceFormat = new VkSurfaceFormatKHR[surfaceFormatCount];
-                result = GameEngineDLL.DLL_Renderer_GetSurfaceFormats(PhysicalDevice, Surface, surfaceFormat, ref surfaceFormatCount);
-                if (result != VkResult.VK_SUCCESS || surfaceFormatCount == 0)
+                // Step 2: Allocate memory for the surface formats
+                IntPtr surfaceFormatsPtr = Marshal.AllocHGlobal((int)(surfaceFormatCount * Marshal.SizeOf<VkSurfaceFormatKHR>()));
+                try
                 {
-                    MessageBox.Show($"Failed to get surface formats: {result}");
-                    return new List<VkSurfaceFormatKHR>();
-                }
+                    // Step 3: Retrieve the surface formats
+                    result = GameEngineDLL.DLL_Renderer_GetSurfaceFormats(PhysicalDevice, Surface, surfaceFormatsPtr, ref surfaceFormatCount);
+                    if (result != VkResult.VK_SUCCESS)
+                    {
+                        MessageBox.Show($"Failed to get surface formats: {result}");
+                        return new List<VkSurfaceFormatKHR>();
+                    }
 
-                return surfaceFormat.ToList();
+                    // Step 4: Convert the IntPtr to an array
+                    VkSurfaceFormatKHR[] surfaceFormats = new VkSurfaceFormatKHR[surfaceFormatCount];
+                    for (uint i = 0; i < surfaceFormatCount; i++)
+                    {
+                        IntPtr formatPtr = IntPtr.Add(surfaceFormatsPtr, (int)(i * Marshal.SizeOf<VkSurfaceFormatKHR>()));
+                        surfaceFormats[i] = Marshal.PtrToStructure<VkSurfaceFormatKHR>(formatPtr);
+                    }
+
+                    return surfaceFormats.ToList();
+                }
+                finally
+                {
+                    // Free allocated memory
+                    Marshal.FreeHGlobal(surfaceFormatsPtr);
+                }
             }
             catch (Exception ex)
             {
@@ -261,18 +276,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             try
             {
                 uint presentModeCount = 0;
-                VkResult result = GameEngineDLL.DLL_Renderer_GetPresentModes(PhysicalDevice, Surface, null, ref presentModeCount);
+                VkResult result = GameEngineDLL.DLL_Renderer_GetPresentModes(PhysicalDevice, Surface, null, out presentModeCount);
                 if (result != VkResult.VK_SUCCESS || presentModeCount == 0)
                 {
-                    MessageBox.Show($"Failed to get surface format count or no formats available: {result}");
+                    MessageBox.Show($"Failed to get present mode count or no present modes available: {result}");
                     return new List<VkPresentModeKHR>();
                 }
 
                 VkPresentModeKHR[] presentFormat = new VkPresentModeKHR[presentModeCount];
-                result = GameEngineDLL.DLL_Renderer_GetPresentModes(PhysicalDevice, Surface, presentFormat, ref presentModeCount);
+                result = GameEngineDLL.DLL_Renderer_GetPresentModes(PhysicalDevice, Surface, presentFormat, out presentModeCount);
                 if (result != VkResult.VK_SUCCESS || presentModeCount == 0)
                 {
-                    MessageBox.Show($"Failed to get surface formats: {result}");
+                    MessageBox.Show($"Failed to get present modes: {result}");
                     return new List<VkPresentModeKHR>();
                 }
 
@@ -289,8 +304,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             try
             {
-                VkSurfaceFormatKHR surfaceFormat = GameEngineDLL.DLL_SwapChain_FindSwapSurfaceFormat(surfaceFormatList.ToArray(), ((uint)surfaceFormatList.Count));
-                return surfaceFormat;
+                return GameEngineDLL.DLL_SwapChain_FindSwapSurfaceFormat(surfaceFormatList.ToArray(), (uint)surfaceFormatList.Count);
             }
             catch (Exception ex)
             {
@@ -323,8 +337,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 uint graphicsFamily;
                 uint presentFamily;
                 VkResult result = GameEngineDLL.DLL_SwapChain_GetQueueFamilies(PhysicalDevice, Surface, out graphicsFamily, out presentFamily);
-                GraphicsFamily = graphicsFamily;
-                PresentFamily = presentFamily;
+                if (result == VkResult.VK_SUCCESS)
+                {
+                    GraphicsFamily = graphicsFamily;
+                    PresentFamily = presentFamily;
+                }
+                else
+                {
+                    MessageBox.Show($"Failed to get queue families: {result}");
+                }
             }
             catch (Exception ex)
             {
@@ -336,14 +357,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             try
             {
-                VkSurfaceCapabilitiesKHR surfaceFormats = new VkSurfaceCapabilitiesKHR();
-                VkResult result = GameEngineDLL.DLL_SwapChain_GetSurfaceCapabilities(PhysicalDevice, Surface, out surfaceFormats);
+                VkSurfaceCapabilitiesKHR surfaceCapabilities;
+                VkResult result = GameEngineDLL.DLL_SwapChain_GetSurfaceCapabilities(PhysicalDevice, Surface, out surfaceCapabilities);
                 if (result != VkResult.VK_SUCCESS)
                 {
-                    MessageBox.Show($"Failed to get surface format count or no formats available: {result}");
+                    MessageBox.Show($"Failed to get surface capabilities: {result}");
                     return new VkSurfaceCapabilitiesKHR();
                 }
-                return surfaceFormats;
+                return surfaceCapabilities;
             }
             catch (Exception ex)
             {
@@ -357,50 +378,55 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             uint surfaceFormatCount = 0;
             IntPtr compatibleFormatsPtr = IntPtr.Zero;
 
-            IntPtr compatibleFormatsPointer = Marshal.AllocHGlobal(IntPtr.Size);
-            VkResult result = GameEngineDLL.DLL_SwapChain_GetPhysicalDeviceFormats(PhysicalDevice, Surface, compatibleFormatsPointer, ref surfaceFormatCount);
-            if (result != VkResult.VK_SUCCESS)
+            try
             {
-                Console.WriteLine("Failed to get the surface format count.");
+                // Step 1: Get the count of surface formats
+                VkResult result = GameEngineDLL.DLL_SwapChain_GetPhysicalDeviceFormats(PhysicalDevice, Surface, out compatibleFormatsPtr, out surfaceFormatCount);
+                if (result != VkResult.VK_SUCCESS)
+                {
+                    Console.WriteLine("Failed to get the surface format count.");
+                    return new List<VkSurfaceFormatKHR>();
+                }
+
+                // Step 2: Check for no compatible formats
+                if (surfaceFormatCount == 0 || compatibleFormatsPtr == IntPtr.Zero)
+                {
+                    Console.WriteLine("No compatible swap chain formats.");
+                    return new List<VkSurfaceFormatKHR>();
+                }
+
+                // Step 3: Allocate an array to hold the compatible formats
+                VkSurfaceFormatKHR[] compatibleFormats = new VkSurfaceFormatKHR[surfaceFormatCount];
+                for (uint x = 0; x < surfaceFormatCount; x++)
+                {
+                    IntPtr currentFormatPtr = IntPtr.Add(compatibleFormatsPtr, (int)(x * Marshal.SizeOf<VkSurfaceFormatKHR>()));
+                    compatibleFormats[x] = Marshal.PtrToStructure<VkSurfaceFormatKHR>(currentFormatPtr);
+                }
+
+                return compatibleFormats.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception occurred: {ex.Message}");
                 return new List<VkSurfaceFormatKHR>();
             }
-
-            compatibleFormatsPtr = Marshal.ReadIntPtr(compatibleFormatsPointer);
-            if (surfaceFormatCount == 0 || compatibleFormatsPtr == IntPtr.Zero)
-            {
-                Console.WriteLine("No compatible swap chain formats.");
-                return new List<VkSurfaceFormatKHR>();
-            }
-
-            VkSurfaceFormatKHR[] compatibleFormats = new VkSurfaceFormatKHR[surfaceFormatCount];
-            for (uint x = 0; x < surfaceFormatCount; x++)
-            {
-                IntPtr currentFormatPtr = IntPtr.Add(compatibleFormatsPtr, (int)(x * Marshal.SizeOf<VkSurfaceFormatKHR>()));
-                compatibleFormats[x] = Marshal.PtrToStructure<VkSurfaceFormatKHR>(currentFormatPtr);
-            }
-            return compatibleFormats.ToList();
         }
 
         private static List<VkPresentModeKHR> GetPhysicalDevicePresentModes()
         {
             uint presentModeCount = 0;
             IntPtr presentModesPointer = IntPtr.Zero;
-            IntPtr presentModesPtr = Marshal.AllocHGlobal(IntPtr.Size);
 
-            VkResult result = GameEngineDLL.DLL_SwapChain_GetPhysicalDevicePresentModes(PhysicalDevice, Surface, presentModesPtr, out presentModeCount);
+            VkResult result = GameEngineDLL.DLL_SwapChain_GetPhysicalDevicePresentModes(PhysicalDevice, Surface, out presentModesPointer, out presentModeCount);
+
             if (result != VkResult.VK_SUCCESS || presentModeCount == 0)
             {
                 MessageBox.Show($"Failed to get present mode count or no present modes available: {result}");
                 return new List<VkPresentModeKHR>();
             }
 
-            presentModesPointer = Marshal.ReadIntPtr(presentModesPtr);
-            if (presentModesPointer == IntPtr.Zero)
-            {
-                MessageBox.Show("No compatible present modes found.");
-                return new List<VkPresentModeKHR>();
-            }
-
+            // No need to dereference presentModesPointer again
+            // Now read the present modes directly
             List<VkPresentModeKHR> presentModes = new List<VkPresentModeKHR>();
             for (uint x = 0; x < presentModeCount; x++)
             {
@@ -408,22 +434,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VkPresentModeKHR presentMode = (VkPresentModeKHR)Marshal.ReadInt32(currentPresentModePtr);
                 presentModes.Add(presentMode);
             }
+
+            // If Vulkan allocated the memory, ensure to free it here if applicable
+            // This line depends on how memory is managed by Vulkan
+            // Marshal.FreeHGlobal(presentModesPointer); // Uncomment this line if Vulkan does not manage its memory
+
             return presentModes;
         }
 
         private static void GetFrameBufferSize(PictureBox pictureBox)
         {
             SwapChainResolution = new VkExtent2D
-            {   
+            {
                 Width = (uint)pictureBox.Width,
                 Height = (uint)pictureBox.Height
             };
         }
+
         private static void SetUpSwapChain(VkSurfaceCapabilitiesKHR surfaceCapabilities, VkSurfaceFormatKHR surfaceFormat, VkPresentModeKHR presentMode)
         {
             try
             {
-                uint swapChainImageCount = 0;
+                uint swapChainImageCount;
                 Swapchain = GameEngineDLL.DLL_SwapChain_SetUpSwapChain(Device, Surface, surfaceCapabilities, surfaceFormat, presentMode, GraphicsFamily, PresentFamily, SwapChainResolution.Width, SwapChainResolution.Height, out swapChainImageCount);
                 SwapChainImageCount = swapChainImageCount;
             }
@@ -449,7 +481,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 for (uint x = 0; x < swapChainImageCount; x++)
                 {
                     IntPtr currentImagePtr = IntPtr.Add(swapChainImagesPtr, (int)(x * IntPtr.Size));
-                    VkImage image = Marshal.PtrToStructure<VkImage>(currentImagePtr); 
+                    VkImage image = Marshal.PtrToStructure<VkImage>(currentImagePtr);
                     swapChainImages.Add(image);
                 }
                 SwapChainImages = swapChainImages;
@@ -465,7 +497,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             try
             {
                 uint swapChainImageCount = SwapChainImageCount;
-                IntPtr swapChainViewPtr = GameEngineDLL.DLL_SwapChain_SetUpSwapChainImages(Device, Swapchain, swapChainImageCount);
+                IntPtr swapChainViewPtr = GameEngineDLL.DLL_SwapChain_SetUpSwapChainImageViews(Device, SwapChainImages.ToArray(), ref surfaceFormat, swapChainImageCount);
                 if (swapChainViewPtr == IntPtr.Zero)
                 {
                     MessageBox.Show("Failed to retrieve swap chain images.");
@@ -488,4 +520,3 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         }
     }
 }
-

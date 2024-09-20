@@ -15,9 +15,9 @@ VkResult DLL_Buffer_CreateStagingBuffer(VkDevice device, VkPhysicalDevice physic
     return Buffer_CreateStagingBuffer(device, physicalDevice, stagingBuffer, stagingBufferMemory, bufferData, bufferSize, bufferUsage, properties);
 }
 
-VkResult DLL_Buffer_CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
+VkResult DLL_Buffer_CopyBuffer(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 {
-    return Buffer_CopyBuffer(srcBuffer, dstBuffer, size);
+    return Buffer_CopyBuffer(device, commandPool, graphicsQueue, srcBuffer, dstBuffer, size);
 }
 
 VkResult DLL_Buffer_CopyStagingBuffer(VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
@@ -50,9 +50,9 @@ void* DLL_Buffer_MapBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, V
     return Buffer_MapBufferMemory(device, bufferMemory, bufferSize, isMapped);
 }
 
-void DLL_Buffer_DestroyBuffer(VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsageFlags, VkMemoryPropertyFlags* propertyFlags)
+void DLL_Buffer_DestroyBuffer(VkDevice device, VkBuffer* buffer, VkBuffer* stagingBuffer, VkDeviceMemory* bufferMemory, VkDeviceMemory* stagingBufferMemory, void* bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsageFlags, VkMemoryPropertyFlags* propertyFlags)
 {
-    Buffer_DestroyBuffer(buffer, bufferMemory, bufferData, bufferSize, bufferUsageFlags, propertyFlags);
+    Buffer_DestroyBuffer(device, buffer, stagingBuffer, bufferMemory, stagingBufferMemory, bufferData, bufferSize, bufferUsageFlags, propertyFlags);
 }
 
 int DLL_BUFFER_BufferTest()

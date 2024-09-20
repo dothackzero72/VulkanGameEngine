@@ -1726,4 +1726,37 @@ namespace VulkanGameEngineLevelEditor
         public IntPtr BufferData;
         public bool IsMapped;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RenderPassCreateInfoStruct
+    {
+        VkRenderPass pRenderPass;
+        IntPtr pAttachmentList;
+        IntPtr pSubpassDescriptionList;
+        IntPtr pSubpassDependencyList;
+        UInt32 AttachmentCount;
+        UInt32 SubpassCount;
+        UInt32 DependencyCount;
+        UInt32 Width;
+        UInt32 Height;
+    };
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPhysicalDeviceVulkan11Features
+    {
+        VkStructureType sType;
+        void* pNext;
+        VkBool32 storageBuffer16BitAccess;
+        VkBool32 uniformAndStorageBuffer16BitAccess;
+        VkBool32 storagePushConstant16;
+        VkBool32 storageInputOutput16;
+        VkBool32 multiview;
+        VkBool32 multiviewGeometryShader;
+        VkBool32 multiviewTessellationShader;
+        VkBool32 variablePointersStorageBuffer;
+        VkBool32 variablePointers;
+        VkBool32 protectedMemory;
+        VkBool32 samplerYcbcrConversion;
+        VkBool32 shaderDrawParameters;
+    };
 }

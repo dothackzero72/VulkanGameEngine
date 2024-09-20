@@ -13,9 +13,9 @@ VkResult DLL_Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physic
 }
 
 // Quick transition of image layout
-VkResult DLL_Texture_QuickTransitionImageLayout(VkImage image, uint32_t mipmapLevels, VkImageLayout* oldLayout, VkImageLayout* newLayout)
+VkResult DLL_Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, uint32_t mipmapLevels, VkImageLayout* oldLayout, VkImageLayout* newLayout)
 {
-    return Texture_QuickTransitionImageLayout(image, mipmapLevels, oldLayout, newLayout);
+    return Texture_QuickTransitionImageLayout(device, commandPool, graphicsQueue, image, mipmapLevels, oldLayout, newLayout);
 }
 
 // Transition of image layout using a command buffer
@@ -25,15 +25,15 @@ VkResult DLL_Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandB
 }
 
 // Copy buffer to texture
-VkResult DLL_Texture_CopyBufferToTexture(VkImage image, VkBuffer buffer, TextureUsageEnum textureType, int width, int height, int depth)
+VkResult DLL_Texture_CopyBufferToTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkBuffer buffer, TextureUsageEnum textureType, int width, int height, int depth)
 {
-    return Texture_CopyBufferToTexture(image, buffer, textureType, width, height, depth);
+    return Texture_CopyBufferToTexture(device, commandPool, graphicsQueue, image, buffer, textureType, width, height, depth);
 }
 
 // Generate mipmaps for the texture
-VkResult DLL_Texture_GenerateMipmaps(VkPhysicalDevice physicalDevice, VkImage image, VkFormat* textureByteFormat, uint32_t mipmapLevels, int width, int height)
+VkResult DLL_Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkFormat* textureByteFormat, uint32_t mipmapLevels, int width, int height)
 {
-    return Texture_GenerateMipmaps(physicalDevice, image, textureByteFormat, mipmapLevels, width, height);
+    return Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, image, textureByteFormat, mipmapLevels, width, height);
 }
 
 // Create a texture view

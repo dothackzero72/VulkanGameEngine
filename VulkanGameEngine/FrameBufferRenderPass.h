@@ -6,8 +6,13 @@
 class FrameBufferRenderPass : public RenderPass
 {
 private:
-
-
+	void CreateRenderPass();
+	void CreateFrameBuffer();
+	void CreateDescriptorPool();
+	void CreateDescriptorSetLayout();
+	void AllocateDescriptorSet();
+	void UpdateDescriptorSet();
+	void CreatePipelineLayout();
 public:
 	FrameBufferRenderPass();
 	virtual ~FrameBufferRenderPass();
