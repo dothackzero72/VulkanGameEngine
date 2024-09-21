@@ -25,7 +25,7 @@ VkResult DLL_Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandB
 }
 
 // Copy buffer to texture
-VkResult DLL_Texture_CopyBufferToTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkBuffer buffer, TextureUsageEnum textureType, int width, int height, int depth)
+VkResult DLL_Texture_CopyBufferToTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkBuffer buffer, int textureType, int width, int height, int depth)
 {
     return Texture_CopyBufferToTexture(device, commandPool, graphicsQueue, image, buffer, textureType, width, height, depth);
 }

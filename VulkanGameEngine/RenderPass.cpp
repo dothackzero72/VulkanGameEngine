@@ -5,7 +5,7 @@ extern "C"
 #include <VulkanError.h>
 }
 
-RenderPass::RenderPass()
+Renderpass::Renderpass()
 {
 	RenderPassResolution = glm::ivec2((int)cRenderer.SwapChain.SwapChainResolution.width, (int)cRenderer.SwapChain.SwapChainResolution.height);
 	SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -16,21 +16,21 @@ RenderPass::RenderPass()
 	VULKAN_RESULT(renderer.CreateCommandBuffers(CommandBufferList));
 }
 
-RenderPass::~RenderPass()
+Renderpass::~Renderpass()
 {
 }
 
-VkWriteDescriptorSet RenderPass::CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot)
+VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot)
 {
     return CreateTextureDescriptorSet(texture, bindingSlot, 1);
 }
 
-VkWriteDescriptorSet RenderPass::CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount)
+VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount)
 {
     return CreateTextureDescriptorSet(texture, bindingSlot, descriptorCount, 0);
 }
 
-VkWriteDescriptorSet RenderPass::CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount, uint32 arrayElement)
+VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount, uint32 arrayElement)
 {
     VkWriteDescriptorSet textureBuffer
     {
@@ -45,12 +45,12 @@ VkWriteDescriptorSet RenderPass::CreateTextureDescriptorSet(std::shared_ptr<Text
     return textureBuffer;
 }
 
-VkWriteDescriptorSet RenderPass::CreateStorageDescriptorSet(std::shared_ptr<Mesh> mesh, uint32 bindingSlot)
+VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(std::shared_ptr<Mesh> mesh, uint32 bindingSlot)
 {
    return CreateStorageDescriptorSet(mesh, bindingSlot, 0);
 }
 
-VkWriteDescriptorSet RenderPass::CreateStorageDescriptorSet(std::shared_ptr<Mesh> mesh, uint32 bindingSlot, uint32 arrayElement)
+VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(std::shared_ptr<Mesh> mesh, uint32 bindingSlot, uint32 arrayElement)
 {
     VkWriteDescriptorSet buffer
     {
@@ -70,14 +70,14 @@ VkWriteDescriptorSet RenderPass::CreateStorageDescriptorSet(std::shared_ptr<Mesh
 //    return VK_NULL_HANDLE;
 //}
 
-VkCommandBuffer RenderPass::Draw()
+VkCommandBuffer Renderpass::Draw()
 {
 	return VK_NULL_HANDLE;
 }
 
-void RenderPass::Destroy()
+void Renderpass::Destroy()
 {
-    renderer.DestroyRenderPass(RenderPassPtr);
+    renderer.DestroyRenderPass(RenderPass);
     renderer.DestroyCommandBuffers(CommandBufferList);
     renderer.DestroyFrameBuffers(FrameBufferList);
 }

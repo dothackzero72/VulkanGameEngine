@@ -4,7 +4,7 @@
 Mesh::Mesh()
 {
 	MeshBufferIndex = 0;
-	MeshTransform = mat4(1.0f);
+	MeshTransform = mat4(0.0f);
 	MeshPosition = vec3(0.0f);
 	MeshRotation = vec3(0.0f);
 	MeshScale = vec3(1.0f);

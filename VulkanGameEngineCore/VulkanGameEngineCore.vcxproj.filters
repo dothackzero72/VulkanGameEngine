@@ -125,9 +125,6 @@
     <ClInclude Include="CTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="enum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>

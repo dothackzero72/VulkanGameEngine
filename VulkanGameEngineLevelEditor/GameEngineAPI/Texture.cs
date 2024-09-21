@@ -85,7 +85,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 GCHandle handle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
                 IntPtr dataPtr = handle.AddrOfPinnedObject();
 
-                var buffer = new VulkanBuffer<byte>((void*)dataPtr, (uint)(Width * Height * (int)ColorChannels), VkBufferUsageFlags.VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                var buffer = new VulkanBuffer<byte>(dataPtr, (uint)(Width * Height * (int)ColorChannels), VkBufferUsageFlags.VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
                 var bHandle = buffer.Buffer;
 
                 CreateTextureImage();
@@ -152,7 +152,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkImage textureImage;
             VkDeviceMemory textureMemory;
 
-            // Create image with the desired properties
             VkImageCreateInfo imageInfo = new VkImageCreateInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -168,18 +167,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED
             };
 
-        // Allocate image
               VkResult result = VulkanAPI.vkCreateImage(VulkanRenderer.Device, ref imageInfo, IntPtr.Zero, out textureImage);
             if (result != VkResult.VK_SUCCESS)
             {
-                // Handle error...
+                
             }
 
-            // Get memory requirements for the image
             VkMemoryRequirements memRequirements;
             VulkanAPI.vkGetImageMemoryRequirements(VulkanRenderer.Device, textureImage, out memRequirements);
 
-            // Allocate memory for the image
             VkMemoryAllocateInfo allocInfo = new VkMemoryAllocateInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
@@ -190,17 +186,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             result = VulkanAPI.vkAllocateMemory(VulkanRenderer.Device, ref allocInfo, IntPtr.Zero, out textureMemory);
             if (result != VkResult.VK_SUCCESS)
             {
-                // Handle error...
             }
 
-            // Bind memory to image
             result = VulkanAPI.vkBindImageMemory(VulkanRenderer.Device, textureImage, textureMemory, 0);
             if (result != VkResult.VK_SUCCESS)
             {
-                // Handle error...
             }
 
-            // Store the texture image and memory for later use
             Image = textureImage;
             Memory = textureMemory;
 

@@ -2,7 +2,7 @@
 #include <CVulkanRenderer.h>
 #include "ShaderCompiler.h"
 
-RenderPass2D::RenderPass2D() : RenderPass()
+RenderPass2D::RenderPass2D() : Renderpass()
 {
 }
 
@@ -68,7 +68,7 @@ void RenderPass2D::BuildRenderPass(std::shared_ptr<Mesh2D> mesh)
 
     RenderPassCreateInfoStruct renderPassCreateInfo
     {
-      .pRenderPass = &RenderPassPtr,
+      .pRenderPass = &RenderPass,
       .pAttachmentList = attachmentDescriptionList.data(),
       .pSubpassDescriptionList = subpassDescriptionList.data(),
       .pSubpassDependencyList = subpassDependencyList.data(),
@@ -88,7 +88,7 @@ void RenderPass2D::BuildRenderPass(std::shared_ptr<Mesh2D> mesh)
         VkFramebufferCreateInfo framebufferInfo
         {
             .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = RenderPassPtr,
+            .renderPass = RenderPass,
             .attachmentCount = static_cast<uint32>(TextureAttachmentList.size()),
             .pAttachments = TextureAttachmentList.data(),
             .width = static_cast<uint32>(RenderPassResolution.x),
@@ -314,7 +314,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
             .pDepthStencilState = &blendDepthAttachment,
             .pColorBlendState = &colorBlending,
             .layout = ShaderPipelineLayout,
-            .renderPass = RenderPassPtr,
+            .renderPass = RenderPass,
             .subpass = 0,
             .basePipelineHandle = VK_NULL_HANDLE
         }
@@ -330,7 +330,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
 void RenderPass2D::UpdateRenderPass(std::shared_ptr<Mesh2D> mesh)
 {
     renderer.DestroyFrameBuffers(FrameBufferList);
-    renderer.DestroyRenderPass(RenderPassPtr);
+    renderer.DestroyRenderPass(RenderPass);
     renderer.DestroyPipeline(ShaderPipeline);
     renderer.DestroyPipelineLayout(ShaderPipelineLayout);
     renderer.DestroyPipelineCache(PipelineCache);
@@ -352,7 +352,7 @@ VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<Mesh2D> mesh, SceneDataBuffer
     VkRenderPassBeginInfo renderPassInfo
     {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .renderPass = RenderPassPtr,
+        .renderPass = RenderPass,
         .framebuffer = FrameBufferList[cRenderer.ImageIndex],
         .renderArea
         {
@@ -384,7 +384,7 @@ VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<Mesh2D> mesh, SceneDataBuffer
 void RenderPass2D::Destroy()
 {
     RenderedTexture->Destroy();
-    RenderPass::Destroy();
+    Renderpass::Destroy();
     renderer.DestroyPipeline(ShaderPipeline);
     renderer.DestroyPipelineLayout(ShaderPipelineLayout);
     renderer.DestroyPipelineCache(PipelineCache);

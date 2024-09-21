@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-enum TextureUsageEnum 
+    typedef enum TextureUsageEnum
 {
     kUse_Undefined,
     kUse_2DImageTexture,
@@ -22,7 +22,7 @@ enum TextureUsageEnum
     kUse_CubeMapDepthTexture
 };
 
-enum TextureTypeEnum 
+typedef enum TextureTypeEnum
 {
     kType_UndefinedTexture,
     kType_TextureAtlas,

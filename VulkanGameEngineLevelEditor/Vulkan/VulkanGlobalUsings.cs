@@ -50,7 +50,6 @@ global using VkBufferCreateFlags = System.UInt32;
 global using VkBufferViewCreateFlags = System.UInt32;
 global using VkImageViewCreateFlags = System.UInt32;
 global using VkPipelineCacheCreateFlags = System.UInt32;
-global using VkColorComponentFlags = System.UInt32;
 global using VkPipelineCreateFlags = System.UInt32;
 global using VkPipelineShaderStageCreateFlags = System.UInt32;
 global using VkPipelineVertexInputStateCreateFlags = System.UInt32;

@@ -3,7 +3,7 @@
 #include "ShaderCompiler.h"
 #include <stdexcept>
 
-FrameBufferRenderPass::FrameBufferRenderPass() : RenderPass()
+FrameBufferRenderPass::FrameBufferRenderPass() : Renderpass()
 {
 }
 
@@ -67,7 +67,7 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
 
     RenderPassCreateInfoStruct renderPassCreateInfo
     {
-      .pRenderPass = &RenderPassPtr,
+      .pRenderPass = &RenderPass,
       .pAttachmentList = attachmentDescriptionList.data(),
       .pSubpassDescriptionList = subpassDescriptionList.data(),
       .pSubpassDependencyList = subpassDependencyList.data(),
@@ -87,7 +87,7 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
         VkFramebufferCreateInfo framebufferInfo
         {
             .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = RenderPassPtr,
+            .renderPass = RenderPass,
             .attachmentCount = static_cast<uint32>(TextureAttachmentList.size()),
             .pAttachments = TextureAttachmentList.data(),
             .width = static_cast<uint32>(RenderPassResolution.x),
@@ -296,7 +296,7 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
             .pDepthStencilState = &blendDepthAttachment,
             .pColorBlendState = &colorBlending,
             .layout = ShaderPipelineLayout,
-            .renderPass = RenderPassPtr,
+            .renderPass = RenderPass,
             .subpass = 0,
             .basePipelineHandle = VK_NULL_HANDLE
         }
@@ -315,7 +315,7 @@ void FrameBufferRenderPass::UpdateRenderPass(std::shared_ptr<Texture> texture)
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
     renderer.DestroyFrameBuffers(FrameBufferList);
-    renderer.DestroyRenderPass(RenderPassPtr);
+    renderer.DestroyRenderPass(RenderPass);
     renderer.DestroyPipeline(ShaderPipeline);
     renderer.DestroyPipelineLayout(ShaderPipelineLayout);
     renderer.DestroyPipelineCache(PipelineCache);
@@ -360,7 +360,7 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
     VkRenderPassBeginInfo renderPassInfo
     {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .renderPass = RenderPassPtr,
+        .renderPass = RenderPass,
         .framebuffer = FrameBufferList[cRenderer.ImageIndex],
         .renderArea
         {
@@ -395,7 +395,7 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
 
 void FrameBufferRenderPass::Destroy()
 {
-    RenderPass::Destroy();
+    Renderpass::Destroy();
     renderer.DestroyPipeline(ShaderPipeline);
     renderer.DestroyPipelineLayout(ShaderPipelineLayout);
     renderer.DestroyPipelineCache(PipelineCache);

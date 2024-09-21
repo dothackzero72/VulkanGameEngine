@@ -2,14 +2,14 @@
 #include "Mesh.h"
 #include "Texture.h"
 
-class RenderPass
+class Renderpass
 {
 	private:
 	protected:
 		ivec2 RenderPassResolution;
 		VkSampleCountFlagBits SampleCount;
 
-		VkRenderPass RenderPassPtr;
+		VkRenderPass RenderPass;
 		std::vector<VkCommandBuffer> CommandBufferList;
 		std::vector<VkFramebuffer> FrameBufferList;
 
@@ -28,8 +28,8 @@ class RenderPass
 		//VkWriteDescriptorSet CreateUnimformDescriptorSet();
 
 	public:
-		RenderPass();
-		virtual ~RenderPass();
+		Renderpass();
+		virtual ~Renderpass();
 		virtual VkCommandBuffer Draw();
 		virtual void Destroy();
 };

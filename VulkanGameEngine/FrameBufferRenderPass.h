@@ -3,16 +3,9 @@
 #include "RenderPass.h"
 #include "vertex.h"
 
-class FrameBufferRenderPass : public RenderPass
+class FrameBufferRenderPass : public Renderpass
 {
 private:
-	void CreateRenderPass();
-	void CreateFrameBuffer();
-	void CreateDescriptorPool();
-	void CreateDescriptorSetLayout();
-	void AllocateDescriptorSet();
-	void UpdateDescriptorSet();
-	void CreatePipelineLayout();
 public:
 	FrameBufferRenderPass();
 	virtual ~FrameBufferRenderPass();

@@ -15,13 +15,14 @@ DLL_EXPORT VkResult DLL_Renderer_GetSurfacePresentModes(VkPhysicalDevice physica
 DLL_EXPORT bool DLL_Renderer_GetRayTracingSupport();
 DLL_EXPORT void DLL_Renderer_GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features);
 DLL_EXPORT VkResult DLL_Renderer_GetWin32Extensions(uint32_t* extensionCount, char*** enabledExtensions);
+DLL_EXPORT VkResult DLL_Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceFormatKHR** surfaceFormats, uint32_t* surfaceFormatCount);
 
+DLL_EXPORT VkResult DLL_Renderer_CreateRenderPass(VkDevice device, RenderPassCreateInfoStruct* renderPassCreateInfo);
 DLL_EXPORT VkResult DLL_Renderer_CreateCommandBuffers(VkDevice device, VkCommandPool commandPool, VkCommandBuffer* commandBufferList, uint32_t commandBufferCount);
 DLL_EXPORT VkResult DLL_Renderer_CreateFrameBuffer(VkDevice device, VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);
 DLL_EXPORT VkResult DLL_Renderer_CreateDescriptorPool(VkDevice device, VkDescriptorPool* descriptorPool, VkDescriptorPoolCreateInfo* descriptorPoolCreateInfo);
 DLL_EXPORT VkResult DLL_Renderer_CreateDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayout, VkDescriptorSetLayoutCreateInfo* descriptorSetLayoutCreateInfo);
 DLL_EXPORT VkResult DLL_Renderer_CreatePipelineLayout(VkDevice device, VkPipelineLayout* pipelineLayout, VkPipelineLayoutCreateInfo* pipelineLayoutCreateInfo);
-DLL_EXPORT VkResult DLL_Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceFormatKHR** surfaceFormats, uint32_t* surfaceFormatCount);
 DLL_EXPORT VkResult DLL_Renderer_AllocateDescriptorSets(VkDevice device, VkDescriptorSet* descriptorSet, VkDescriptorSetAllocateInfo* descriptorSetAllocateInfo);
 DLL_EXPORT VkResult DLL_Renderer_AllocateCommandBuffers(VkDevice device, VkCommandBuffer* commandBuffer, VkCommandBufferAllocateInfo* commandBufferAllocateInfo);
 DLL_EXPORT VkResult DLL_Renderer_CreateGraphicsPipelines(VkDevice device, VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32_t createGraphicPipelinesCount);

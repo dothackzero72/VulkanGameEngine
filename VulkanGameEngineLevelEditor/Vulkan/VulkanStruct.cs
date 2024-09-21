@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GlmSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -927,7 +928,7 @@ namespace VulkanGameEngineLevelEditor
         public VkBlendFactor srcAlphaBlendFactor;
         public VkBlendFactor dstAlphaBlendFactor;
         public VkBlendOp alphaBlendOp;
-        public VkColorComponentFlags colorWriteMask;
+        public VkColorComponentFlagBits colorWriteMask;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1730,33 +1731,48 @@ namespace VulkanGameEngineLevelEditor
     [StructLayout(LayoutKind.Sequential)]
     public struct RenderPassCreateInfoStruct
     {
-        VkRenderPass pRenderPass;
-        IntPtr pAttachmentList;
-        IntPtr pSubpassDescriptionList;
-        IntPtr pSubpassDependencyList;
-        UInt32 AttachmentCount;
-        UInt32 SubpassCount;
-        UInt32 DependencyCount;
-        UInt32 Width;
-        UInt32 Height;
+        public VkStructureType sType; // Required for Vulkan to identify the structure
+        public IntPtr pNext;           // We can usually set this to IntPtr.Zero
+        public uint flags;             // Vulkan flags for the render pass
+        public uint attachmentCount;    // Number of attachments
+        public IntPtr pAttachmentList; // Pointer to an array of VkAttachmentDescription
+        public uint subpassCount;       // Number of subpasses
+        public IntPtr pSubpassDescriptionList; // Pointer to an array of VkSubpassDescription
+        public uint dependencyCount;    // Number of subpass dependencies
+        public IntPtr pSubpassDependencyList; // Pointer to an array of VkSubpassDependency
     };
 
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkPhysicalDeviceVulkan11Features
     {
-        VkStructureType sType;
-        void* pNext;
-        VkBool32 storageBuffer16BitAccess;
-        VkBool32 uniformAndStorageBuffer16BitAccess;
-        VkBool32 storagePushConstant16;
-        VkBool32 storageInputOutput16;
-        VkBool32 multiview;
-        VkBool32 multiviewGeometryShader;
-        VkBool32 multiviewTessellationShader;
-        VkBool32 variablePointersStorageBuffer;
-        VkBool32 variablePointers;
-        VkBool32 protectedMemory;
-        VkBool32 samplerYcbcrConversion;
-        VkBool32 shaderDrawParameters;
+        public VkStructureType sType;
+        public void* pNext;
+        public VkBool32 storageBuffer16BitAccess;
+        public VkBool32 uniformAndStorageBuffer16BitAccess;
+        public VkBool32 storagePushConstant16;
+        public VkBool32 storageInputOutput16;
+        public VkBool32 multiview;
+        public VkBool32 multiviewGeometryShader;
+        public VkBool32 multiviewTessellationShader;
+        public VkBool32 variablePointersStorageBuffer;
+        public VkBool32 variablePointers;
+        public VkBool32 protectedMemory;
+        public VkBool32 samplerYcbcrConversion;
+        public VkBool32 shaderDrawParameters;
+    };
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MeshProperitiesStruct
+    {
+        public UInt32 MeshIndex;
+        public UInt32 MaterialIndex;
+        public mat4 MeshTransform;
+
+        public MeshProperitiesStruct()
+        {
+             MeshIndex = 0;
+             MaterialIndex = 0;
+             MeshTransform = new mat4();
+        }
     };
 }

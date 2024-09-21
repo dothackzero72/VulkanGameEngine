@@ -43,6 +43,11 @@ bool DLL_Renderer_GetRayTracingSupport() {
     return Renderer_GetRayTracingSupport();
 }
 
+VkResult DLL_Renderer_CreateRenderPass(VkDevice device, RenderPassCreateInfoStruct* renderPassCreateInfo)
+{
+    return Renderer_CreateRenderPass(device, renderPassCreateInfo);
+}
+
 void DLL_Renderer_GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features) {
     Renderer_GetRendererFeatures(physicalDeviceVulkan11Features);
 }
@@ -59,10 +64,6 @@ VkResult DLL_Renderer_CreateCommandBuffers(VkDevice device, VkCommandPool comman
 VkResult DLL_Renderer_CreateFrameBuffer(VkDevice device, VkFramebuffer* pFrameBuffer,
     VkFramebufferCreateInfo* frameBufferCreateInfo) {
     return Renderer_CreateFrameBuffer(device, pFrameBuffer, frameBufferCreateInfo);
-}
-
-VkResult DLL_Renderer_CreateRenderPass(VkDevice device, void* renderPassCreateInfo) {
-    return Renderer_CreateRenderPass(device, renderPassCreateInfo);
 }
 
 VkResult DLL_Renderer_CreateDescriptorPool(VkDevice device, VkDescriptorPool* descriptorPool,

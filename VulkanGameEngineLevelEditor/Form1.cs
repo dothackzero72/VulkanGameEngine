@@ -17,6 +17,8 @@ namespace VulkanGameEngineLevelEditor
         public delegate void TextCallback(string message);
         public delegate void RichTextCallback(string message);
         Texture texture;
+        Mesh2D mesh;
+        FrameBufferRenderPass renderPass;
         public void GetCText(string text)
         {
             if (textBox1.InvokeRequired)
@@ -36,6 +38,9 @@ namespace VulkanGameEngineLevelEditor
                 InitializeComponent();
                 VulkanRenderer.SetUpRenderer(this.Handle, pictureBox1);
                 texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", VkFormat.VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum.kType_DiffuseTextureMap);
+                mesh = new Mesh2D();
+                renderPass = new FrameBufferRenderPass();
+                renderPass.BuildRenderPass(texture);
             }
             catch (Exception ex)
             {

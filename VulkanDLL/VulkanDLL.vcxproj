@@ -79,7 +79,7 @@
     <LibraryPath>$(SolutionDir)x64\Release;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;C:\Users\dotha\source\repos\WindowTest\External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)External\nlohmann\include;C:\Users\dotha\Documents\GitHub\VulkanGameEngine\External\glfw\include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\glfw\include\GLFW;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngine;$(SolutionDir)VulkanGameEngineCore;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)External\nlohmann\include;C:\Users\dotha\Documents\GitHub\VulkanGameEngine\External\glfw\include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\glfw\include\GLFW;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngineCore;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)x64\Debug;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;C:\Users\dotha\source\repos\WindowTest\External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -126,7 +126,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;VulkanGameEngineCore.lib;VulkanGameEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;VulkanGameEngineCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,7 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DLL.h" />
-    <ClInclude Include="DLLMesh.h" />
+    <ClInclude Include="DLLShader.h" />
     <ClInclude Include="DLLTexture.h" />
     <ClInclude Include="DLLVulkanBuffer.h" />
     <ClInclude Include="DLLVulkanRenderer.h" />
@@ -158,9 +158,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DLL.c" />
-    <ClCompile Include="DLLMesh.cpp" />
-    <ClCompile Include="DLLTexture.cpp" />
-    <ClCompile Include="DLLVulkanBuffer.cpp" />
+    <ClCompile Include="DLLShader.c" />
+    <ClCompile Include="DLLTexture.c" />
+    <ClCompile Include="DLLVulkanBuffer.c" />
     <ClCompile Include="DLLVulkanRenderer.c" />
     <ClCompile Include="DLLVulkanSwapChain.c" />
   </ItemGroup>

@@ -11,39 +11,82 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class VulkanBuffer<T> where T : unmanaged
     {
-        public VkBuffer Buffer { get; private set; }
-        public VkBuffer StagingBuffer { get; private set; }
-        public VkDeviceMemory BufferMemory { get; private set; }
-        public VkDeviceMemory StagingBufferMemory { get; private set; }
-        public VkDeviceSize BufferSize { get; private set; }
-        public VkBufferUsageFlags BufferUsage { get; private set; }
-        public VkMemoryPropertyFlagBits BufferProperties { get; private set; }
-        public IntPtr BufferDeviceAddress { get; private set; }
-        public IntPtr BufferHandle { get; private set; }
-        public void* BufferData { get; private set; }
-        public bool IsMapped { get; private set; }
-        public VkDescriptorBufferInfo DescriptorBufferInfo { get; private set; }
+        public VkBuffer Buffer { get; protected set; }
+        public VkBuffer StagingBuffer { get; protected set; }
+        public VkDeviceMemory BufferMemory { get; protected set; }
+        public VkDeviceMemory StagingBufferMemory { get; protected set; }
+        public VkDeviceSize BufferSize { get; protected set; }
+        public VkBufferUsageFlags BufferUsage { get; protected set; }
+        public VkMemoryPropertyFlagBits BufferProperties { get; protected set; }
+        public IntPtr BufferDeviceAddress { get; protected set; }
+        public IntPtr BufferHandle { get; protected set; }
+        public IntPtr BufferData { get; protected set; }
+        public bool IsMapped { get; protected set; }
+        public VkDescriptorBufferInfo DescriptorBufferInfo { get; protected set; }
 
         public VulkanBuffer()
         {
         }
 
-        public VulkanBuffer(void* bufferData, UInt32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
+        public VulkanBuffer(T data, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
+        {
+            List<T> dataList = new List<T> { data };
+            BufferSize = (UInt32)sizeof(T) * (UInt32)dataList.Count;
+            BufferUsage = usage;
+            BufferProperties = properties;
+            CreateBuffer(dataList, usage, properties);
+        }
+
+        public VulkanBuffer(List<T> dataList, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
+        {
+            BufferSize = (UInt32)sizeof(T) * (UInt32)dataList.Count;
+            BufferUsage = usage;
+            BufferProperties = properties;
+            CreateBuffer(dataList, usage, properties);
+        }
+
+        public VulkanBuffer(IntPtr data, ulong bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties)
         {
             BufferSize = bufferSize;
             BufferUsage = usage;
             BufferProperties = properties;
-            CreateBuffer(bufferData, bufferSize, usage, properties);
+            CreateBuffer(data, bufferSize, usage, properties);
         }
 
         private VkResult AllocateMemory(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer bufferData, ref VkDeviceMemory bufferMemory, VkMemoryPropertyFlagBits properties)
         {
             var bufferData2 = bufferData;
             var bufferMemory2 = bufferMemory;
-            return GameEngineDLL.DLL_Buffer_AllocateMemory(device, VulkanRenderer.PhysicalDevice, out bufferData2, out bufferMemory2, properties);
+           return GameEngineDLL.DLL_Buffer_AllocateMemory(device, VulkanRenderer.PhysicalDevice, out bufferData2, out bufferMemory2, properties);
         }
 
-        virtual protected VkResult CreateBuffer(void* bufferData, ulong bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlagBits properties)
+        virtual protected VkResult CreateBuffer(List<T> dataList, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlagBits properties)
+        {
+            GCHandle dataListHandle = GCHandle.Alloc(dataList.ToArray(), GCHandleType.Pinned);
+            IntPtr dataListPtr = dataListHandle.AddrOfPinnedObject();
+
+            VkBuffer buffer = new VkBuffer();
+            VkDeviceMemory bufferMemory = new VkDeviceMemory();
+
+            VkResult result = GameEngineDLL.DLL_Buffer_CreateBuffer(
+                VulkanRenderer.Device,
+                VulkanRenderer.PhysicalDevice,
+                out buffer,
+                out bufferMemory,
+                dataListPtr,
+                BufferSize,
+                bufferUsage,
+                properties);
+
+            Buffer = buffer;
+            BufferMemory = bufferMemory;
+
+            dataListHandle.Free();
+
+            return result;
+        }
+
+        virtual protected VkResult CreateBuffer(IntPtr bufferData, ulong bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlagBits properties)
         {
             VkBuffer buffer = new VkBuffer();
             VkDeviceMemory bufferMemory = new VkDeviceMemory();
@@ -86,12 +129,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         virtual protected VkResult UpdateStagingBufferData(IntPtr bufferData)
         {
-            return GameEngineDLL.DLL_Buffer_UpdateStagingBufferMemory(VulkanRenderer.Device, StagingBufferMemory, (void*)bufferData, (uint)sizeof(T));
+            return GameEngineDLL.DLL_Buffer_UpdateStagingBufferMemory(VulkanRenderer.Device, StagingBufferMemory, bufferData, (uint)sizeof(T));
         }
 
         virtual public VkResult UpdateBufferData(IntPtr bufferData)
         {
-            return GameEngineDLL.DLL_Buffer_UpdateBufferMemory(VulkanRenderer.Device, BufferMemory, (void*)bufferData, (uint)sizeof(T));
+            return GameEngineDLL.DLL_Buffer_UpdateBufferMemory(VulkanRenderer.Device, BufferMemory, bufferData, (uint)sizeof(T));
         }
 
         public VkResult CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)

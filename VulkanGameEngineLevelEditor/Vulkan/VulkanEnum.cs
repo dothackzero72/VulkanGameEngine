@@ -2048,12 +2048,14 @@ namespace VulkanGameEngineLevelEditor
         VK_STENCIL_OP_MAX_ENUM = 0x7FFFFFFF
     }
 
+    [Flags]
     public enum VkRenderPassCreateFlagBits
     {
         VK_RENDER_PASS_CREATE_TRANSFORM_BIT_QCOM = 0x00000002,
         VK_RENDER_PASS_CREATE_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
     }
 
+    [Flags]
     public enum VkCommandBufferUsageFlagBits
     {
         VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT = 0x00000001,
@@ -2429,6 +2431,16 @@ namespace VulkanGameEngineLevelEditor
         VK_QUEUE_VIDEO_ENCODE_BIT_KHR = 0x00000040,
         VK_QUEUE_OPTICAL_FLOW_BIT_NV = 0x00000100,
         VK_QUEUE_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
+    }
+
+    [Flags]
+    public enum VkColorComponentFlagBits : uint // Use uint to match Vulkan's flag bits
+    {
+        VK_COLOR_COMPONENT_R_BIT = 0x00000001,
+        VK_COLOR_COMPONENT_G_BIT = 0x00000002,
+        VK_COLOR_COMPONENT_B_BIT = 0x00000004,
+        VK_COLOR_COMPONENT_A_BIT = 0x00000008,
+        VK_COLOR_COMPONENT_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
     }
 }
 

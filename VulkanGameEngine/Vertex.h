@@ -5,9 +5,6 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
-using glm::vec2; // or use glm::vec2 directly
-using glm::vec4;
-
 struct Vertex2D
 {
     vec2 Position; // Changed from initialization to direct declaration

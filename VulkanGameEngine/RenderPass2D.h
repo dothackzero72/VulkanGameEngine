@@ -6,7 +6,7 @@
 #include "vertex.h"
 #include "SceneDataBuffer.h"
 
-class RenderPass2D : public RenderPass
+class RenderPass2D : public Renderpass
 {
 private:
 	std::shared_ptr<RenderedColorTexture> RenderedTexture;

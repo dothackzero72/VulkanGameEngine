@@ -42,7 +42,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static VkExtent2D SwapChainResolution { get; private set; } = new VkExtent2D();
         public static VkSwapchainKHR Swapchain { get; private set; } = new VkSwapchainKHR();
 
-
         public static void SetUpRenderer(IntPtr handle, PictureBox pictureBox)
         {
             WindowHandleCopy = handle;
@@ -64,6 +63,62 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             SetUpCommandPool();
             SetUpSemaphores();
             GetDeviceQueue();
+        }
+
+         public static VkResult CreateRenderPass(RenderPassCreateInfoStruct renderPassCreateInfo)
+        {
+            return GameEngineDLL.DLL_Renderer_CreateRenderPass(Device, Helper.GetObjectPtr(renderPassCreateInfo));
+        }
+
+        public static VkResult CreateDescriptorPool(VkDescriptorPool descriptorPool, VkDescriptorPoolCreateInfo descriptorPoolCreateInfo)
+        {
+            IntPtr ptr = Helper.GetObjectPtr(descriptorPoolCreateInfo);
+            return GameEngineDLL.DLL_Renderer_CreateDescriptorPool(Device, out ptr, Helper.GetObjectPtr(descriptorPoolCreateInfo));
+        }
+
+        public static VkResult CreateDescriptorSetLayout(VkDescriptorSetLayout descriptorSetLayout, VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo)
+        {
+            IntPtr ptr = Helper.GetObjectPtr(descriptorSetLayout);
+            return GameEngineDLL.DLL_Renderer_CreateDescriptorSetLayout(Device, out ptr, Helper.GetObjectPtr(descriptorSetLayoutCreateInfo));
+        }
+
+        public static VkResult CreatePipelineLayout(VkPipelineLayout pipelineLayout, VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo)
+        {
+            IntPtr ptr = Helper.GetObjectPtr(pipelineLayout);
+            return GameEngineDLL.DLL_Renderer_CreatePipelineLayout(Device, out ptr, Helper.GetObjectPtr(pipelineLayoutCreateInfo));
+        }
+
+        public static VkResult AllocateDescriptorSets(VkDescriptorSet descriptorSet, VkDescriptorSetAllocateInfo descriptorSetAllocateInfo)
+        {
+            IntPtr ptr = Helper.GetObjectPtr(descriptorSet);
+            return GameEngineDLL.DLL_Renderer_AllocateDescriptorSets(Device, out ptr, Helper.GetObjectPtr(descriptorSetAllocateInfo));
+        }
+
+        public static VkResult AllocateCommandBuffers(VkCommandBuffer commandBuffer, VkCommandBufferAllocateInfo commandBufferAllocateInfo)
+        {
+            IntPtr ptr = Helper.GetObjectPtr(commandBuffer);
+            return GameEngineDLL.DLL_Renderer_AllocateCommandBuffers(Device, out ptr, Helper.GetObjectPtr(commandBufferAllocateInfo));
+        }
+
+        public static VkResult CreateGraphicsPipelines(VkPipeline graphicPipeline, List<VkGraphicsPipelineCreateInfo> createGraphicPipelines)
+        {
+            IntPtr ptr = Helper.GetObjectPtr(graphicPipeline);
+            return GameEngineDLL.DLL_Renderer_CreateGraphicsPipelines(Device, out ptr, Helper.GetObjectPtr(createGraphicPipelines), (uint)createGraphicPipelines.Count());
+        }
+
+        public static void UpdateDescriptorSet(List<VkWriteDescriptorSet> writeDescriptorSet)
+        {
+            GameEngineDLL.DLL_Renderer_UpdateDescriptorSet(Device, writeDescriptorSet, (uint)writeDescriptorSet.Count());
+        }
+
+        public static VkResult CreateFrameBuffer(VkFramebuffer frameBuffer, VkFramebufferCreateInfo frameBufferCreateInfo)
+        {
+            return GameEngineDLL.DLL_Renderer_CreateFrameBuffer(Device, &frameBuffer, &frameBufferCreateInfo);
+        }
+
+        public static VkPipelineShaderStageCreateInfo CreateShader(string shaderModule, VkShaderStageFlagBits shaderStages)
+        {
+            return GameEngineDLL.DLL_Shader_CreateShader(shaderModule, shaderStages);
         }
 
         public static void CreateVulkanInstance()
@@ -227,7 +282,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             try
             {
-                // Step 1: Get the count of surface formats
                 uint surfaceFormatCount = 0;
                 VkResult result = GameEngineDLL.DLL_Renderer_GetSurfaceFormats(PhysicalDevice, Surface, IntPtr.Zero, ref surfaceFormatCount);
                 if (result != VkResult.VK_SUCCESS || surfaceFormatCount == 0)
@@ -236,11 +290,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     return new List<VkSurfaceFormatKHR>();
                 }
 
-                // Step 2: Allocate memory for the surface formats
                 IntPtr surfaceFormatsPtr = Marshal.AllocHGlobal((int)(surfaceFormatCount * Marshal.SizeOf<VkSurfaceFormatKHR>()));
                 try
                 {
-                    // Step 3: Retrieve the surface formats
                     result = GameEngineDLL.DLL_Renderer_GetSurfaceFormats(PhysicalDevice, Surface, surfaceFormatsPtr, ref surfaceFormatCount);
                     if (result != VkResult.VK_SUCCESS)
                     {
@@ -248,7 +300,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         return new List<VkSurfaceFormatKHR>();
                     }
 
-                    // Step 4: Convert the IntPtr to an array
                     VkSurfaceFormatKHR[] surfaceFormats = new VkSurfaceFormatKHR[surfaceFormatCount];
                     for (uint i = 0; i < surfaceFormatCount; i++)
                     {
@@ -260,7 +311,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
                 finally
                 {
-                    // Free allocated memory
                     Marshal.FreeHGlobal(surfaceFormatsPtr);
                 }
             }

@@ -81,11 +81,18 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GameEngineAPI\DynamicVulkanBuffer.cs" />
+    <Compile Include="GameEngineAPI\FrameBufferRenderPass.cs" />
     <Compile Include="GameEngineAPI\GameEngineDLL.cs" />
     <Compile Include="GameEngineAPI\GameEngineEnums.cs" />
+    <Compile Include="ListExtensions.cs" />
+    <Compile Include="GameEngineAPI\Mesh.cs" />
+    <Compile Include="GameEngineAPI\Mesh2D.cs" />
+    <Compile Include="GameEngineAPI\Renderpass.cs" />
     <Compile Include="GameEngineAPI\Texture.cs" />
+    <Compile Include="GameEngineAPI\Vertex.cs" />
     <Compile Include="GameEngineAPI\VulkanBuffer.cs" />
     <Compile Include="GameEngineAPI\VulkanRenderer.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RichTextBoxWriter.cs" />
