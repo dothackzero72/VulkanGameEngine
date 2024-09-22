@@ -32,7 +32,7 @@ void ShaderCompiler::SetUpCompiler()
 
 VkShaderModule ShaderCompiler::BuildGLSLShader(const char* path)
 {
-	return Shader_BuildGLSLShaderFile(path);
+	return Shader_BuildGLSLShaderFile(cRenderer.Device, path);
 }
 
 //Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::BuildHLSLShader(const std::string& filename, VkShaderStageFlagBits stage)

@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-VkShaderModule Shader_BuildGLSLShaderFile(const char* path);
+VkShaderModule Shader_BuildGLSLShaderFile(VkDevice device, const char* path);
 VkPipelineShaderStageCreateInfo Shader_CreateShader(VkShaderModule shaderModule, VkShaderStageFlagBits shaderStages);
 
 #ifdef __cplusplus

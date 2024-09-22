@@ -1,4 +1,4 @@
-﻿global using VkBool32 = bool;
+﻿global using VkBool32 = System.UInt32;
 global using VkSurfaceKHR = System.IntPtr;
 global using VkDeviceAddress = System.IntPtr;
 global using VkDeviceSize = ulong;

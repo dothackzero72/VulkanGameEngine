@@ -73,7 +73,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         virtual protected void CreateImageTexture(string FilePath)
         {
-            MipMapLevels = (uint)Math.Floor(Math.Log(Math.Max(Width, Height)) / Math.Log(2)) + 1;
 
             using (var stream = File.OpenRead(FilePath))
             {
@@ -81,6 +80,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Width = image.Width;
                 Height = image.Height;
                 ColorChannels = image.Comp;
+
+                MipMapLevels = (uint)Math.Floor(Math.Log(Math.Max(Width, Height)) / Math.Log(2)) + 1;
 
                 GCHandle handle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
                 IntPtr dataPtr = handle.AddrOfPinnedObject();
@@ -110,14 +111,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 addressModeV = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
                 addressModeW = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
                 mipLodBias = 0,
-                anisotropyEnable = true,
+                anisotropyEnable = VulkanConsts.VK_TRUE,
                 maxAnisotropy = 16.0f,
-                compareEnable = false,
+                compareEnable = VulkanConsts.VK_FALSE,
                 compareOp = VkCompareOp.VK_COMPARE_OP_ALWAYS,
                 minLod = 0,
                 maxLod = MipMapLevels,
                 borderColor = VkBorderColor.VK_BORDER_COLOR_INT_OPAQUE_BLACK,
-                unnormalizedCoordinates = false,
+                unnormalizedCoordinates = VulkanConsts.VK_FALSE,
             };
 
             VkSampler sampler = new VkSampler();
@@ -162,7 +163,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 arrayLayers = 1,
                 samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
                 tiling = VkImageTiling.VK_IMAGE_TILING_OPTIMAL,
-                usage = VkImageUsageFlags.VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VkImageUsageFlags.VK_IMAGE_USAGE_SAMPLED_BIT,
+                usage = VkImageUsageFlags.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                        VkImageUsageFlags.VK_IMAGE_USAGE_SAMPLED_BIT |
+                        VkImageUsageFlags.VK_IMAGE_USAGE_TRANSFER_DST_BIT,
                 sharingMode = VkSharingMode.VK_SHARING_MODE_EXCLUSIVE,
                 initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED
             };

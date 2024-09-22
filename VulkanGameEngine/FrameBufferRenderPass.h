@@ -6,6 +6,15 @@
 class FrameBufferRenderPass : public Renderpass
 {
 private:
+	VkRenderPass CreateRenderPass();
+	List<VkFramebuffer> CreateFramebuffer();
+	VkDescriptorPool CreateDescriptorPoolBinding();
+	VkDescriptorSetLayout CreateDescriptorSetLayout();
+    VkDescriptorSet CreateDescriptorSets();
+    void UpdateDescriptorSet(std::shared_ptr<Texture> texture);
+    VkPipelineLayout CreatePipelineLayout();
+    List<VkPipelineShaderStageCreateInfo> CreateShaders();
+
 public:
 	FrameBufferRenderPass();
 	virtual ~FrameBufferRenderPass();

@@ -9,20 +9,29 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe static class ListExtensions
     {
+        public static List<T> PtrToList<T>(this List<T> list, T* listPtr)
+        {
+            if (list == null)
+            { 
+               return null;
+            }
+
+            for (int x = 0; x < list.Count; x++)
+            {
+                list[x] = *(listPtr + x);
+            }
+
+            return list;
+        }
+
+        public static uint UCount<T>(this List<T> list)
+        {
+            return (uint)list.Count;
+        }
+
         public static IntPtr ToPointer<T>(this List<T> list)
         {
-            if (list == null) throw new ArgumentNullException(nameof(list));
-
-            GCHandle handle = GCHandle.Alloc(list, GCHandleType.Pinned);
-            try
-            {
-                IntPtr pointer = Marshal.AllocHGlobal(Marshal.SizeOf<T>() * list.Count());
-                return pointer;
-            }
-            finally
-            {
-                handle.Free();
-            }
+            return Marshal.AllocHGlobal(Marshal.SizeOf<T>() * list.Count());
         }
     }
 }

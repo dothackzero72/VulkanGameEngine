@@ -13,6 +13,14 @@ FrameBufferRenderPass::~FrameBufferRenderPass()
 
 void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
 {
+    RenderPass = CreateRenderPass();
+    FrameBufferList = CreateFramebuffer();
+    BuildRenderPipeline(texture);
+}
+
+VkRenderPass FrameBufferRenderPass::CreateRenderPass()
+{
+    VkRenderPass renderPass = VK_NULL_HANDLE;
     std::vector<VkAttachmentDescription> attachmentDescriptionList
     {
         VkAttachmentDescription
@@ -65,20 +73,25 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
         },
     };
 
-    RenderPassCreateInfoStruct renderPassCreateInfo
+    VkRenderPassCreateInfo renderPassInfo =
     {
-      .pRenderPass = &RenderPass,
-      .pAttachmentList = attachmentDescriptionList.data(),
-      .pSubpassDescriptionList = subpassDescriptionList.data(),
-      .pSubpassDependencyList = subpassDependencyList.data(),
-      .AttachmentCount = static_cast<uint32>(attachmentDescriptionList.size()),
-      .SubpassCount = static_cast<uint32>(subpassDescriptionList.size()),
-      .DependencyCount = static_cast<uint32>(subpassDependencyList.size()),
-      .Width = static_cast<uint32>(RenderPassResolution.x),
-      .Height = static_cast<uint32>(RenderPassResolution.y)
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+        .attachmentCount = static_cast<uint32>(attachmentDescriptionList.size()),
+        .pAttachments = attachmentDescriptionList.data(),
+        .subpassCount = static_cast<uint32>(subpassDescriptionList.size()),
+        .pSubpasses = subpassDescriptionList.data(),
+        .dependencyCount = static_cast<uint32>(subpassDependencyList.size()),
+        .pDependencies = subpassDependencyList.data()
     };
-    VULKAN_RESULT(renderer.CreateRenderPass(renderPassCreateInfo));
 
+    VULKAN_RESULT(vkCreateRenderPass(cRenderer.Device, &renderPassInfo, nullptr, &renderPass));
+
+    return renderPass;
+}
+
+List<VkFramebuffer> FrameBufferRenderPass::CreateFramebuffer()
+{
+    List<VkFramebuffer> frameBuffer = List<VkFramebuffer>(cRenderer.SwapChain.SwapChainImageCount);
     for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
     {
         std::vector<VkImageView> TextureAttachmentList;
@@ -94,13 +107,14 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
             .height = static_cast<uint32>(RenderPassResolution.y),
             .layers = 1
         };
-        VULKAN_RESULT(vkCreateFramebuffer(cRenderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]));
+        VULKAN_RESULT(vkCreateFramebuffer(cRenderer.Device, &framebufferInfo, nullptr, &frameBuffer[x]));
     }
-    BuildRenderPipeline(texture);
+    return frameBuffer;
 }
 
-void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture)
+VkDescriptorPool FrameBufferRenderPass::CreateDescriptorPoolBinding()
 {
+    VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
     std::vector<VkDescriptorPoolSize> DescriptorPoolBinding =
     {
         VkDescriptorPoolSize
@@ -116,9 +130,13 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
         .poolSizeCount = static_cast<uint32>(DescriptorPoolBinding.size()),
         .pPoolSizes = DescriptorPoolBinding.data(),
     };
-    VULKAN_RESULT(Renderer_CreateDescriptorPool(cRenderer.Device, &DescriptorPool, &poolInfo));
+    VULKAN_RESULT(Renderer_CreateDescriptorPool(cRenderer.Device, &descriptorPool, &poolInfo));
+    return descriptorPool;
+}
 
-
+VkDescriptorSetLayout FrameBufferRenderPass::CreateDescriptorSetLayout()
+{
+    VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
     std::vector<VkDescriptorSetLayoutBinding> LayoutBindingList =
     {
         { 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
@@ -130,8 +148,13 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
         .bindingCount = static_cast<uint32>(LayoutBindingList.size()),
         .pBindings = LayoutBindingList.data(),
     };
-    VULKAN_RESULT(Renderer_CreateDescriptorSetLayout(cRenderer.Device, &DescriptorSetLayout, &layoutInfo));
+    VULKAN_RESULT(Renderer_CreateDescriptorSetLayout(cRenderer.Device, &descriptorSetLayout, &layoutInfo));
+    return descriptorSetLayout;
+}
 
+VkDescriptorSet FrameBufferRenderPass::CreateDescriptorSets()
+{
+    VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
     VkDescriptorSetAllocateInfo allocInfo =
     {
          .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
@@ -139,8 +162,12 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
         .descriptorSetCount = 1,
         .pSetLayouts = &DescriptorSetLayout
     };
-    VULKAN_RESULT(Renderer_AllocateDescriptorSets(cRenderer.Device, &DescriptorSet, &allocInfo));
+    VULKAN_RESULT(Renderer_AllocateDescriptorSets(cRenderer.Device, &descriptorSet, &allocInfo));
+    return descriptorSet;
+}
 
+void FrameBufferRenderPass::UpdateDescriptorSet(std::shared_ptr<Texture> texture)
+{
     std::vector<VkDescriptorImageInfo> ColorDescriptorImage
     {
         VkDescriptorImageInfo
@@ -167,6 +194,38 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
         };
         Renderer_UpdateDescriptorSet(cRenderer.Device, descriptorSets.data(), static_cast<uint32_t>(descriptorSets.size()));
     }
+}
+
+VkPipelineLayout FrameBufferRenderPass::CreatePipelineLayout()
+{
+    VkPipelineLayout shaderPipelineLayout = VK_NULL_HANDLE;
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+        .setLayoutCount = 1,
+        .pSetLayouts = &DescriptorSetLayout
+    };
+    VULKAN_RESULT(Renderer_CreatePipelineLayout(cRenderer.Device, &shaderPipelineLayout, &pipelineLayoutInfo));
+    return shaderPipelineLayout;
+}
+
+List<VkPipelineShaderStageCreateInfo> FrameBufferRenderPass::CreateShaders()
+{
+    return List<VkPipelineShaderStageCreateInfo>
+    {
+        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderVert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderFrag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+    };
+}
+
+void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture)
+{
+    DescriptorPool = CreateDescriptorPoolBinding();
+    DescriptorSetLayout = CreateDescriptorSetLayout();
+    DescriptorSet = CreateDescriptorSets();
+    UpdateDescriptorSet(texture);
+    ShaderPipelineLayout = CreatePipelineLayout();
+    List<VkPipelineShaderStageCreateInfo> PipelineShaderStageList = CreateShaders();
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo
     {
@@ -227,9 +286,9 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
             .dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
             .alphaBlendOp = VK_BLEND_OP_ADD,
             .colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-                VK_COLOR_COMPONENT_G_BIT |
-                VK_COLOR_COMPONENT_B_BIT |
-                VK_COLOR_COMPONENT_A_BIT
+                              VK_COLOR_COMPONENT_G_BIT |
+                              VK_COLOR_COMPONENT_B_BIT |
+                              VK_COLOR_COMPONENT_A_BIT
         }
     };
 
@@ -268,19 +327,6 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
         .pAttachments = blendAttachmentList.data()
     };
 
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-        .setLayoutCount = 1,
-        .pSetLayouts = &DescriptorSetLayout
-    };
-    VULKAN_RESULT(Renderer_CreatePipelineLayout(cRenderer.Device, &ShaderPipelineLayout, &pipelineLayoutInfo));
-
-    std::vector<VkPipelineShaderStageCreateInfo> PipelineShaderStageList
-    {
-        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderVert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderFrag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
-    };
     std::vector<VkGraphicsPipelineCreateInfo> pipelineInfo
     {
         VkGraphicsPipelineCreateInfo

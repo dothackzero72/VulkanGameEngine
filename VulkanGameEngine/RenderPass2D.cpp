@@ -66,19 +66,18 @@ void RenderPass2D::BuildRenderPass(std::shared_ptr<Mesh2D> mesh)
         },
     };
 
-    RenderPassCreateInfoStruct renderPassCreateInfo
+    VkRenderPassCreateInfo renderPassInfo =
     {
-      .pRenderPass = &RenderPass,
-      .pAttachmentList = attachmentDescriptionList.data(),
-      .pSubpassDescriptionList = subpassDescriptionList.data(),
-      .pSubpassDependencyList = subpassDependencyList.data(),
-      .AttachmentCount = static_cast<uint32>(attachmentDescriptionList.size()),
-      .SubpassCount = static_cast<uint32>(subpassDescriptionList.size()),
-      .DependencyCount = static_cast<uint32>(subpassDependencyList.size()),
-      .Width = static_cast<uint32>(RenderPassResolution.x),
-      .Height = static_cast<uint32>(RenderPassResolution.y)
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+        .attachmentCount = static_cast<uint32>(attachmentDescriptionList.size()),
+        .pAttachments = attachmentDescriptionList.data(),
+        .subpassCount = static_cast<uint32>(subpassDescriptionList.size()),
+        .pSubpasses = subpassDescriptionList.data(),
+        .dependencyCount = static_cast<uint32>(subpassDependencyList.size()),
+        .pDependencies = subpassDependencyList.data()
     };
-    VULKAN_RESULT(renderer.CreateRenderPass(renderPassCreateInfo));
+
+    VULKAN_RESULT(vkCreateRenderPass(cRenderer.Device, &renderPassInfo, nullptr, &RenderPass));
 
     for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
     {

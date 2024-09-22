@@ -14,7 +14,7 @@ VkPipelineShaderStageCreateInfo Shader_CreateShader(VkShaderModule shaderModule,
     return pipelineShaderStageCreateInfo;
 }
 
-VkShaderModule Shader_BuildGLSLShaderFile(const char* path)
+VkShaderModule Shader_BuildGLSLShaderFile(VkDevice device, const char* path)
 {
     FileState file = File_Read(path);
 
@@ -26,7 +26,7 @@ VkShaderModule Shader_BuildGLSLShaderFile(const char* path)
     };
 
     VkShaderModule shaderModule = VK_NULL_HANDLE;
-    VULKAN_RESULT(vkCreateShaderModule(cRenderer.Device, &shaderModuleCreateInfo, NULL, &shaderModule));
+    VULKAN_RESULT(vkCreateShaderModule(device, &shaderModuleCreateInfo, NULL, &shaderModule));
 
     return shaderModule;
 }

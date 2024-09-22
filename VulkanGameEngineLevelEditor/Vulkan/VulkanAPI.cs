@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor
 {
-    public static class VulkanAPI
+    public static unsafe class VulkanAPI
     {
         [DllImport("vulkan-1.dll")] public static extern VkResult vkEnumerateInstanceExtensionProperties(IntPtr pLayerName, ref UInt32 pPropertyCount, IntPtr pProperties);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateInstance(ref VkInstanceCreateInfo pCreateInfo, IntPtr pAllocator, out VkInstance instance);
@@ -98,30 +98,39 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkGetImageSubresourceLayout(VkDevice device, VkImage image, in VkImageSubresource pSubresource, out VkSubresourceLayout pLayout);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateImageView(VkDevice device, in VkImageViewCreateInfo pCreateInfo, IntPtr pAllocator, out VkImageView pView);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyImageView(VkDevice device, VkImageView imageView, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateShaderModule(VkDevice device, in VkShaderModuleCreateInfo pCreateInfo, IntPtr pAllocator, out VkShaderModule pShaderModule);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateShaderModule(VkDevice device, VkShaderModuleCreateInfo* pCreateInfo, IntPtr pAllocator,VkShaderModule* pShaderModule);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyShaderModule(VkDevice device, VkShaderModule shaderModule, IntPtr pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreatePipelineCache(VkDevice device, in VkPipelineCacheCreateInfo pCreateInfo, IntPtr pAllocator, out VkPipelineCache pPipelineCache);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyPipelineCache(VkDevice device, VkPipelineCache pipelineCache, IntPtr pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkGetPipelineCacheData(VkDevice device, VkPipelineCache pipelineCache, out UIntPtr pDataSize, IntPtr pData);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkMergePipelineCaches(VkDevice device, VkPipelineCache dstCache, uint srcCacheCount, [In] VkPipelineCache[] pSrcCaches);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateGraphicsPipelines(VkDevice device, VkPipelineCache pipelineCache, uint createInfoCount, [In] VkGraphicsPipelineCreateInfo[] pCreateInfos, IntPtr pAllocator, [Out] VkPipeline[] pPipelines);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateGraphicsPipelines(VkDevice device,
+    VkPipelineCache pipelineCache,
+    UInt32 createInfoCount,
+     VkGraphicsPipelineCreateInfo* pCreateInfos,
+     VkAllocationCallbacks* pAllocator,
+    VkPipeline*                                 pPipelines);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateComputePipelines(VkDevice device, VkPipelineCache pipelineCache, uint createInfoCount, [In] VkComputePipelineCreateInfo[] pCreateInfos, IntPtr pAllocator, [Out] VkPipeline[] pPipelines);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyPipeline(VkDevice device, VkPipeline pipeline, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreatePipelineLayout(VkDevice device, in VkPipelineLayoutCreateInfo pCreateInfo, IntPtr pAllocator, out VkPipelineLayout pPipelineLayout);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreatePipelineLayout(VkDevice device, VkPipelineLayoutCreateInfo* pCreateInfo, IntPtr pAllocator, VkPipelineLayout* pPipelineLayout);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout, IntPtr pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateSampler(VkDevice device, in VkSamplerCreateInfo pCreateInfo, IntPtr pAllocator, out VkSampler pSampler);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroySampler(VkDevice device, VkSampler sampler, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDescriptorSetLayout(VkDevice device, in VkDescriptorSetLayoutCreateInfo pCreateInfo, IntPtr pAllocator, out VkDescriptorSetLayout pSetLayout);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDescriptorSetLayout(VkDevice device, VkDescriptorSetLayoutCreateInfo* pCreateInfo, IntPtr pAllocator, VkDescriptorSetLayout* pSetLayout);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout, IntPtr pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDescriptorPool(VkDevice device, in VkDescriptorPoolCreateInfo pCreateInfo, IntPtr pAllocator, out VkDescriptorPool pDescriptorPool);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, IntPtr pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkResetDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorPoolResetFlags flags);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkAllocateDescriptorSets(VkDevice device, in VkDescriptorSetAllocateInfo pAllocateInfo, [Out] VkDescriptorSet[] pDescriptorSets);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkAllocateDescriptorSets(VkDevice device, VkDescriptorSetAllocateInfo* pAllocateInfo, VkDescriptorSet* pDescriptorSets);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkFreeDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, uint descriptorSetCount, [In] VkDescriptorSet[] pDescriptorSets);
-        [DllImport("vulkan-1.dll")] public static extern void vkUpdateDescriptorSets(VkDevice device, uint descriptorWriteCount, [In] VkWriteDescriptorSet[] pDescriptorWrites, uint descriptorCopyCount, [In] VkCopyDescriptorSet[] pDescriptorCopies);
+        [DllImport("vulkan-1.dll")] public static extern void vkUpdateDescriptorSets(VkDevice device,
+    UInt32 descriptorWriteCount,
+     VkWriteDescriptorSet* pDescriptorWrites,
+    UInt32 descriptorCopyCount,
+     VkCopyDescriptorSet* pDescriptorCopies);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateFramebuffer(VkDevice device, in VkFramebufferCreateInfo pCreateInfo, IntPtr pAllocator, out VkFramebuffer pFramebuffer);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateRenderPass(VkDevice device, in VkRenderPassCreateInfo pCreateInfo, IntPtr pAllocator, out VkRenderPass pRenderPass);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateRenderPass(VkDevice device, VkRenderPassCreateInfo* pCreateInfo, VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyRenderPass(VkDevice device, VkRenderPass renderPass, IntPtr pAllocator);
         [DllImport("vulkan-1.dll")] public static extern void vkGetRenderAreaGranularity(VkDevice device, VkRenderPass renderPass, out VkExtent2D pGranularity);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateCommandPool(VkDevice device, in VkCommandPoolCreateInfo pCreateInfo, IntPtr pAllocator, out VkCommandPool pCommandPool);

@@ -80,8 +80,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static extern VkDebugUtilsMessengerEXT DLL_Renderer_SetupDebugMessenger(VkInstance instance);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_SetUpPhysicalDevice(VkInstance instance, ref VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, ref VkPhysicalDeviceFeatures physicalDeviceFeatures, out uint graphicsFamily, out uint presentFamily);
-        
+        public static extern VkResult DLL_Renderer_SetUpPhysicalDevice(VkInstance instance, VkPhysicalDevice* physicalDevice, VkSurfaceKHR surface, ref VkPhysicalDeviceFeatures physicalDeviceFeatures, UInt32* graphicsFamily, UInt32* presentFamily);
+
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkDevice DLL_Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint graphicsFamily, uint presentFamily);
         
@@ -115,8 +115,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         // Command and Rendering functions
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_CreateCommandBuffers(VkDevice device, VkCommandPool commandPool, VkCommandBuffer* commandBufferList, uint commandBufferCount);
-        
+        public static extern VkResult DLL_Renderer_CreateCommandBuffers(VkDevice device, VkCommandPool commandPool, VkCommandBuffer* commandBufferList, UInt32 commandBufferCount);
+
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkResult DLL_Renderer_CreateFrameBuffer(VkDevice device, VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);
         
@@ -124,28 +124,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static extern VkResult DLL_Renderer_CreateRenderPass(VkDevice device, IntPtr renderPassCreateInfo);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_CreateDescriptorPool(VkDevice device, out VkDescriptorPool descriptorPool, IntPtr descriptorPoolCreateInfo);
+        public static extern VkResult DLL_Renderer_CreateDescriptorPool(VkDevice device, VkDescriptorPool* descriptorPool, VkDescriptorPoolCreateInfo* descriptorPoolCreateInfo);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_CreateDescriptorSetLayout(VkDevice device, out VkDescriptorSetLayout descriptorSetLayout, IntPtr descriptorSetLayoutCreateInfo);
+        public static extern VkResult DLL_Renderer_CreateDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayout, VkDescriptorSetLayoutCreateInfo* descriptorSetLayoutCreateInfo);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_CreatePipelineLayout(VkDevice device, out VkPipelineLayout pipelineLayout, IntPtr pipelineLayoutCreateInfo);
+        public static extern VkResult DLL_Renderer_CreatePipelineLayout(VkDevice device, VkPipelineLayout* pipelineLayout, VkPipelineLayoutCreateInfo* pipelineLayoutCreateInfo);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_AllocateDescriptorSets(VkDevice device, out VkDescriptorSet descriptorSet, IntPtr descriptorSetAllocateInfo);
+        public static extern VkResult DLL_Renderer_AllocateDescriptorSets(VkDevice device, VkDescriptorSet* descriptorSet, VkDescriptorSetAllocateInfo* descriptorSetAllocateInfo);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkResult DLL_Renderer_AllocateCommandBuffers(VkDevice device, out VkCommandBuffer commandBuffer, IntPtr commandBufferAllocateInfo);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_CreateGraphicsPipelines(VkDevice device, out VkPipeline graphicPipeline, IntPtr createGraphicPipelines, uint createGraphicPipelinesCount);
+        public static extern VkResult DLL_Renderer_CreateGraphicsPipelines(VkDevice device, VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint createGraphicPipelinesCount);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkResult DLL_Renderer_CreateCommandPool(VkDevice device, out VkCommandPool commandPool, VkCommandPoolCreateInfo* commandPoolInfo);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern void DLL_Renderer_UpdateDescriptorSet(VkDevice device, List<VkWriteDescriptorSet> writeDescriptorSet, uint count);
+        public static extern void DLL_Renderer_UpdateDescriptorSet(VkDevice device, VkWriteDescriptorSet* writeDescriptorSet, uint count);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkResult DLL_Renderer_GetSurfaceFormats(
         VkPhysicalDevice physicalDevice,
@@ -298,12 +298,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MeshProperitiesStruct sceneProperties);
 
         // shader stuff
-        [DllImport(DLLPath, CallingConvention = CallingConvention.Cdecl)]
-        public static extern VkShaderModule DLL_Shader_BuildGLSLShaderFile(string path);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern VkShaderModule DLL_Shader_BuildGLSLShaderFile(VkDevice device, string path);
 
-        [DllImport(DLLPath, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkPipelineShaderStageCreateInfo DLL_Shader_CreateShader(
-            string shaderModule,
+            VkShaderModule shaderModule,
             VkShaderStageFlagBits shaderStages);
     }
 }

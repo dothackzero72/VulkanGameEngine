@@ -216,7 +216,7 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkPhysicalDeviceFeatures
+    public struct VkPhysicalDeviceFeatures 
     {
         public VkBool32 robustBufferAccess;
         public VkBool32 fullDrawIndexUint32;
@@ -725,13 +725,13 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkShaderModuleCreateInfo
+    public unsafe struct VkShaderModuleCreateInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
         public VkShaderModuleCreateFlags flags;
-        public nuint codeSize; // size_t in C
-        public IntPtr pCode; // Pointer to uint array
+        public nuint codeSize; // Use UIntPtr for size_t
+        public byte* pCode; // Pointer to uint array
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -762,16 +762,15 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkPipelineShaderStageCreateInfo
+    public unsafe struct VkPipelineShaderStageCreateInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
         public VkPipelineShaderStageCreateFlags flags;
         public VkShaderStageFlagBits stage;
         public VkShaderModule module;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string pName;
-        public IntPtr pSpecializationInfo; // Pointer to VkSpecializationInfo
+        public IntPtr pName; // Pointer to the name of the entry point, encoded as UTF-8
+        public VkSpecializationInfo* pSpecializationInfo; // Pointer to VkSpecializationInfo or null
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -846,15 +845,15 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkPipelineViewportStateCreateInfo
+    public unsafe struct VkPipelineViewportStateCreateInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
         public VkPipelineViewportStateCreateFlags flags;
         public uint viewportCount;
-        public IntPtr pViewports; // Pointer to VkViewport array
+        public VkViewport* pViewports; // Pointer to VkViewport array
         public uint scissorCount;
-        public IntPtr pScissors; // Pointer to VkRect2D array
+        public VkRect2D* pScissors; // Pointer to VkRect2D array
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -932,7 +931,7 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkPipelineColorBlendStateCreateInfo
+    public unsafe struct VkPipelineColorBlendStateCreateInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
@@ -940,9 +939,10 @@ namespace VulkanGameEngineLevelEditor
         public VkBool32 logicOpEnable;
         public VkLogicOp logicOp;
         public uint attachmentCount;
-        public IntPtr pAttachments; // Pointer to VkPipelineColorBlendAttachmentState array
+        public VkPipelineColorBlendAttachmentState* pAttachments; // Pointer to VkPipelineColorBlendAttachmentState array
+
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public float[] blendConstants;
+        public fixed float blendConstants[4]; // Fixed size array
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -956,22 +956,22 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkGraphicsPipelineCreateInfo
+    public unsafe struct VkGraphicsPipelineCreateInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
         public VkPipelineCreateFlags flags;
         public uint stageCount;
-        public IntPtr pStages; // Pointer to VkPipelineShaderStageCreateInfo array
-        public IntPtr pVertexInputState; // Pointer to VkPipelineVertexInputStateCreateInfo
-        public IntPtr pInputAssemblyState; // Pointer to VkPipelineInputAssemblyStateCreateInfo
-        public IntPtr pTessellationState; // Pointer to VkPipelineTessellationStateCreateInfo
-        public IntPtr pViewportState; // Pointer to VkPipelineViewportStateCreateInfo
-        public IntPtr pRasterizationState; // Pointer to VkPipelineRasterizationStateCreateInfo
-        public IntPtr pMultisampleState; // Pointer to VkPipelineMultisampleStateCreateInfo
-        public IntPtr pDepthStencilState; // Pointer to VkPipelineDepthStencilStateCreateInfo
-        public IntPtr pColorBlendState; // Pointer to VkPipelineColorBlendStateCreateInfo
-        public IntPtr pDynamicState; // Pointer to VkPipelineDynamicStateCreateInfo
+        public VkPipelineShaderStageCreateInfo* pStages; // Pointer to VkPipelineShaderStageCreateInfo array
+        public VkPipelineVertexInputStateCreateInfo* pVertexInputState; // Pointer to VkPipelineVertexInputStateCreateInfo
+        public VkPipelineInputAssemblyStateCreateInfo* pInputAssemblyState; // Pointer to VkPipelineInputAssemblyStateCreateInfo
+        public VkPipelineTessellationStateCreateInfo* pTessellationState; // Pointer to VkPipelineTessellationStateCreateInfo
+        public VkPipelineViewportStateCreateInfo* pViewportState; // Pointer to VkPipelineViewportStateCreateInfo
+        public VkPipelineRasterizationStateCreateInfo* pRasterizationState; // Pointer to VkPipelineRasterizationStateCreateInfo
+        public VkPipelineMultisampleStateCreateInfo* pMultisampleState; // Pointer to VkPipelineMultisampleStateCreateInfo
+        public VkPipelineDepthStencilStateCreateInfo* pDepthStencilState; // Pointer to VkPipelineDepthStencilStateCreateInfo
+        public VkPipelineColorBlendStateCreateInfo* pColorBlendState; // Pointer to VkPipelineColorBlendStateCreateInfo
+        public VkPipelineDynamicStateCreateInfo* pDynamicState; // Pointer to VkPipelineDynamicStateCreateInfo
         public VkPipeline layout;
         public VkRenderPass renderPass;
         public uint subpass;
@@ -988,15 +988,15 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkPipelineLayoutCreateInfo
+    public unsafe struct VkPipelineLayoutCreateInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
         public VkPipelineLayoutCreateFlags flags;
         public uint setLayoutCount;
-        public IntPtr pSetLayouts; // Pointer to VkDescriptorSetLayout array
+        public VkDescriptorSetLayout* pSetLayouts; // Pointer to VkDescriptorSetLayout array
         public uint pushConstantRangeCount;
-        public IntPtr pPushConstantRanges; // Pointer to VkPushConstantRange array
+        public VkPushConstantRange* pPushConstantRanges; // Pointer to VkPushConstantRange array
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1065,24 +1065,24 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkDescriptorPoolCreateInfo
+    public unsafe struct VkDescriptorPoolCreateInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
         public VkDescriptorPoolCreateFlags flags;
         public uint maxSets;
         public uint poolSizeCount;
-        public IntPtr pPoolSizes; // Pointer to VkDescriptorPoolSize array
+        public VkDescriptorPoolSize* pPoolSizes; // Pointer to VkDescriptorPoolSize array
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkDescriptorSetAllocateInfo
+    public unsafe struct VkDescriptorSetAllocateInfo
     {
         public VkStructureType sType;
-        public IntPtr pNext;
+        public void* pNext;
         public VkDescriptorPool descriptorPool;
         public uint descriptorSetCount;
-        public IntPtr pSetLayouts; // Pointer to VkDescriptorSetLayout array
+        public VkDescriptorSetLayout* pSetLayouts; // Pointer to VkDescriptorSetLayout array
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1092,46 +1092,112 @@ namespace VulkanGameEngineLevelEditor
         public VkDescriptorType descriptorType;
         public uint descriptorCount;
         public VkShaderStageFlags stageFlags;
-        public IntPtr pImmutableSamplers; // Pointer to VkSampler array
+        public VkSampler pImmutableSamplers; // Pointer to VkSampler array
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkDescriptorSetLayoutCreateInfo
+    public unsafe struct VkDescriptorSetLayoutCreateInfo
     {
         public VkStructureType sType;
-        public IntPtr pNext;
+        public void* pNext;
         public VkDescriptorSetLayoutCreateFlags flags;
         public uint bindingCount;
-        public IntPtr pBindings; // Pointer to VkDescriptorSetLayoutBinding array
+        public VkDescriptorSetLayoutBinding* pBindings; // Pointer to VkDescriptorSetLayoutBinding array
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkWriteDescriptorSet
+    public unsafe struct VkWriteDescriptorSet
     {
         public VkStructureType sType;
-        public IntPtr pNext;
-        public VkDescriptorSet dstSet;
+        public void* pNext;
+        public IntPtr dstSet;
         public uint dstBinding;
         public uint dstArrayElement;
         public uint descriptorCount;
         public VkDescriptorType descriptorType;
-        public IntPtr pImageInfo; // Pointer to VkDescriptorImageInfo array
-        public IntPtr pBufferInfo; // Pointer to VkDescriptorBufferInfo array
-        public IntPtr pTexelBufferView; // Pointer to VkBufferView array
+        public VkDescriptorImageInfo* pImageInfo; // Pointer to VkDescriptorImageInfo array
+        public VkDescriptorBufferInfo* pBufferInfo; // Pointer to VkDescriptorBufferInfo array
+        public VkBufferView* pTexelBufferView; // Pointer to VkBufferView array
     }
+
+    [Flags]
+    public enum VkAttachmentDescriptionFlags
+    {
+        VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT = 0x00000001, // Indicates that this attachment may alias another attachment
+        VK_ATTACHMENT_DESCRIPTION_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
+    }
+
+    // Define the VkFormat Enum (you already have this, but included for context)
+    public enum VkFormat2
+    {
+        VK_FORMAT_UNDEFINED = 0,
+        // ... Additional formats ...
+        VK_FORMAT_B8G8R8A8_UNORM = 44,
+        VK_FORMAT_R8G8B8A8_UNORM = 37,
+        // ... More formats ...
+        VK_FORMAT_MAX_ENUM = 0x7FFFFFFF
+    }
+
+    // Define the VkSampleCountFlagBits Enum
+    [Flags]
+    public enum VkSampleCountFlagBits2
+    {
+        VK_SAMPLE_COUNT_1_BIT = 0x00000001,
+        VK_SAMPLE_COUNT_2_BIT = 0x00000002,
+        VK_SAMPLE_COUNT_4_BIT = 0x00000004,
+        VK_SAMPLE_COUNT_8_BIT = 0x00000008,
+        VK_SAMPLE_COUNT_16_BIT = 0x00000010,
+        VK_SAMPLE_COUNT_32_BIT = 0x00000020,
+        VK_SAMPLE_COUNT_64_BIT = 0x00000040,
+        VK_SAMPLE_COUNT_MAX_ENUM = 0x7FFFFFFF
+    }
+
+    // Define the VkAttachmentLoadOp Enum
+    public enum VkAttachmentLoadOp2
+    {
+        VK_ATTACHMENT_LOAD_OP_LOAD = 0,
+        VK_ATTACHMENT_LOAD_OP_CLEAR = 1,
+        VK_ATTACHMENT_LOAD_OP_DONT_CARE = 2,
+        VK_ATTACHMENT_LOAD_OP_MAX_ENUM = 0x7FFFFFFF
+    }
+
+    // Define the VkAttachmentStoreOp Enum
+    public enum VkAttachmentStoreOp2
+    {
+        VK_ATTACHMENT_STORE_OP_STORE = 0,
+        VK_ATTACHMENT_STORE_OP_DONT_CARE = 1,
+        VK_ATTACHMENT_STORE_OP_MAX_ENUM = 0x7FFFFFFF
+    }
+
+    // Define the VkImageLayout Enum
+    public enum VkImageLayout2
+    {
+        VK_IMAGE_LAYOUT_UNDEFINED = 0,
+        VK_IMAGE_LAYOUT_GENERAL = 1,
+        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL = 2,
+        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL = 3,
+        VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL = 4,
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL = 5,
+        VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL = 6,
+        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL = 7,
+        VK_IMAGE_LAYOUT_PREINITIALIZED = 8,
+        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR = 1000001002,
+        VK_IMAGE_LAYOUT_MAX_ENUM = 0x7FFFFFFF
+    }
+
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkAttachmentDescription
     {
         public VkAttachmentDescriptionFlags flags;
-        public VkFormat format;
-        public VkSampleCountFlagBits samples;
-        public VkAttachmentLoadOp loadOp;
-        public VkAttachmentStoreOp storeOp;
-        public VkAttachmentLoadOp stencilLoadOp;
-        public VkAttachmentStoreOp stencilStoreOp;
-        public VkImageLayout initialLayout;
-        public VkImageLayout finalLayout;
+        public VkFormat2 format;
+        public VkSampleCountFlagBits2 samples;
+        public VkAttachmentLoadOp2 loadOp;
+        public VkAttachmentStoreOp2 storeOp;
+        public VkAttachmentLoadOp2 stencilLoadOp;
+        public VkAttachmentStoreOp2 stencilStoreOp;
+        public VkImageLayout2 initialLayout;
+        public VkImageLayout2 finalLayout;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1142,32 +1208,32 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkFramebufferCreateInfo
+    public unsafe struct VkFramebufferCreateInfo
     {
         public VkStructureType sType;
-        public IntPtr pNext;
+        public void* pNext;
         public VkFramebufferCreateFlags flags;
         public VkRenderPass renderPass;
-        public uint attachmentCount;
-        public IntPtr pAttachments; // Pointer to array of VkImageView
-        public uint width;
-        public uint height;
-        public uint layers;
+        public UInt32 attachmentCount;
+        public VkImageView* pAttachments;
+        public UInt32 width;
+        public UInt32 height;
+        public UInt32 layers;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkSubpassDescription
+    public unsafe struct VkSubpassDescription
     {
         public VkSubpassDescriptionFlags flags;
         public VkPipelineBindPoint pipelineBindPoint;
         public uint inputAttachmentCount;
-        public IntPtr pInputAttachments; // Pointer to VkAttachmentReference array
+        public VkAttachmentReference* pInputAttachments; // Pointer to VkAttachmentReference array
         public uint colorAttachmentCount;
-        public IntPtr pColorAttachments; // Pointer to VkAttachmentReference array
-        public IntPtr pResolveAttachments; // Pointer to VkAttachmentReference array
-        public IntPtr pDepthStencilAttachment; // Pointer to VkAttachmentReference
+        public VkAttachmentReference* pColorAttachments; // Pointer to VkAttachmentReference array
+        public VkAttachmentReference* pResolveAttachments; // Pointer to VkAttachmentReference array
+        public VkAttachmentReference* pDepthStencilAttachment; // Pointer to VkAttachmentReference
         public uint preserveAttachmentCount;
-        public IntPtr pPreserveAttachments; // Pointer to array of uint
+        public uint* pPreserveAttachments; // Pointer to array of uint
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1183,17 +1249,17 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkRenderPassCreateInfo
+    public unsafe struct VkRenderPassCreateInfo
     {
         public VkStructureType sType;
-        public IntPtr pNext;
+        public void* pNext;
         public VkRenderPassCreateFlags flags;
         public uint attachmentCount;
-        public IntPtr pAttachments; // Pointer to VkAttachmentDescription array
+        public VkAttachmentDescription* pAttachments; // Pointer to VkAttachmentDescription array
         public uint subpassCount;
-        public IntPtr pSubpasses; // Pointer to VkSubpassDescription array
+        public VkSubpassDescription* pSubpasses; // Pointer to VkSubpassDescription array
         public uint dependencyCount;
-        public IntPtr pDependencies; // Pointer to VkSubpassDependency array
+        public VkSubpassDependency* pDependencies; // Pointer to VkSubpassDependency array
     }
 
     [StructLayout(LayoutKind.Sequential)]
