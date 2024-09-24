@@ -155,13 +155,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         // Frame and Submission functions
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* fenceList, VkSemaphore* acquireImageSemaphoreList, out uint pImageIndex, out uint pCommandIndex, out bool pRebuildRendererFlag);
-        
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint commandIndex, uint imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint commandBufferCount, out bool rebuildRendererFlag);
-        
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_SubmitDraw(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint commandIndex, uint imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint commandBufferCount, out bool rebuildRendererFlag);
+        public static extern VkResult DLL_Renderer_SubmitDraw(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint commandIndex, uint imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint commandBufferCount, bool* rebuildRendererFlag);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern uint DLL_Renderer_GetMemoryType(VkPhysicalDevice physicalDevice, uint typeFilter, VkMemoryPropertyFlagBits properties);
@@ -242,7 +236,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern void DLL_Renderer_DestroyPipelineCache(VkDevice device, ref VkPipelineCache pipelineCache);
-        
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* fenceList, VkSemaphore* acquireImageSemaphoreList, UInt32* pImageIndex, UInt32* pCommandIndex, bool* pRebuildRendererFlag);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, UInt32 commandIndex, UInt32 imageIndex, VkCommandBuffer* pCommandBufferSubmitList, UInt32 commandBufferCount, bool* rebuildRendererFlag);
+
+
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern int DLL_Renderer_SimpleTestLIB();
 

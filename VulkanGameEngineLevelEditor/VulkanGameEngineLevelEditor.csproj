@@ -97,6 +97,7 @@
     <Compile Include="GameEngineAPI\FrameBufferRenderPass.cs" />
     <Compile Include="GameEngineAPI\GameEngineDLL.cs" />
     <Compile Include="GameEngineAPI\GameEngineEnums.cs" />
+    <Compile Include="GameEngineAPI\Scene.cs" />
     <Compile Include="ListExtensions.cs" />
     <Compile Include="GameEngineAPI\Mesh.cs" />
     <Compile Include="GameEngineAPI\Mesh2D.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RichTextBoxWriter.cs" />
     <Compile Include="TextWriter.cs" />
+    <Compile Include="Vulkan\temp.cs" />
     <Compile Include="Vulkan\VulkanAPI.cs" />
     <Compile Include="Vulkan\VulkanConsts.cs" />
     <Compile Include="Vulkan\VulkanEnum.cs" />

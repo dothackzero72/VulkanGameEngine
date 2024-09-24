@@ -16,6 +16,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class FrameBufferRenderPass : Renderpass
     {
+        public FrameBufferRenderPass() : base() 
+        { 
+        }
+
         public void BuildRenderPass(Texture renderedTexture)
         {
 
@@ -98,6 +102,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
                     VkPipeline pipeline;
                     VulkanAPI.vkCreateGraphicsPipelines(VulkanRenderer.Device, IntPtr.Zero, 1, &pipelineInfo, null, &pipeline);
+                ShaderPipeline = pipeline;
                 
             }
 
@@ -119,7 +124,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
 
-            List<VkViewport> viewport = new List<VkViewport>()
+            List<VkViewport> viewportList = new List<VkViewport>()
             {
                 new VkViewport
                 {
@@ -133,7 +138,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
 
-            List<VkRect2D> rect2D = new List<VkRect2D>()
+            List<VkRect2D> rect2DList = new List<VkRect2D>()
             {
                 new VkRect2D
                 {
@@ -180,15 +185,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             int imageIndex = (int)VulkanRenderer.ImageIndex;
 
-            VulkanAPI.vkBeginCommandBuffer(CommandBufferList[imageIndex], in CommandBufferBeginInfo);
-            VulkanAPI.vkCmdBeginRenderPass(CommandBufferList[imageIndex], in renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
-            VulkanAPI.vkCmdSetViewport(CommandBufferList[imageIndex], 0, (uint)viewport.Count, viewport.ToArray());
-            VulkanAPI.vkCmdSetScissor(CommandBufferList[imageIndex], 0, (uint)rect2D.Count, rect2D.ToArray());
-            VulkanAPI.vkCmdBindPipeline(CommandBufferList[imageIndex], VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipeline);
-            VulkanAPI.vkCmdBindDescriptorSets(CommandBufferList[imageIndex], VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, new[] { DescriptorSet }, 0, new uint[0]);
-            VulkanAPI.vkCmdDraw(CommandBufferList[imageIndex], 6, 1, 0, 0);
-            VulkanAPI.vkCmdEndRenderPass(CommandBufferList[imageIndex]);
-            VulkanAPI.vkEndCommandBuffer(CommandBufferList[imageIndex]);
+            VkDescriptorSet[] descriptorSetList = { DescriptorSet };
+            uint[] offsetList = { 0 };
+            fixed (VkDescriptorSet* descriptorSet = descriptorSetList.ToArray())
+            fixed (uint* offset = offsetList.ToArray())
+            fixed (VkViewport* viewport = viewportList.ToArray())
+            fixed (VkRect2D* rect2D = rect2DList.ToArray())
+            {
+                VulkanAPI.vkBeginCommandBuffer(CommandBufferList[imageIndex], &CommandBufferBeginInfo);
+                VulkanAPI.vkCmdBeginRenderPass(CommandBufferList[imageIndex], &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
+                VulkanAPI.vkCmdSetViewport(CommandBufferList[imageIndex], 0, (uint)viewportList.Count, viewport);
+                VulkanAPI.vkCmdSetScissor(CommandBufferList[imageIndex], 0, (uint)rect2DList.Count, rect2D);
+                VulkanAPI.vkCmdBindPipeline(CommandBufferList[imageIndex], VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipeline);
+                VulkanAPI.vkCmdBindDescriptorSets(CommandBufferList[imageIndex], VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, descriptorSet, 0, offset);
+                VulkanAPI.vkCmdDraw(CommandBufferList[imageIndex], 6, 1, 0, 0);
+                VulkanAPI.vkCmdEndRenderPass(CommandBufferList[imageIndex]);
+                VulkanAPI.vkEndCommandBuffer(CommandBufferList[imageIndex]);
+            }
             return CommandBufferList[(int)VulkanRenderer.ImageIndex];
         }
 
@@ -275,7 +288,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         private List<VkFramebuffer> CreateFramebuffer()
         {
-            List<VkFramebuffer> frameBuffer = new List<VkFramebuffer>();
+            List<VkFramebuffer> frameBufferList = FrameBufferList;
             for (int x = 0; x < VulkanRenderer.SwapChainImageCount; x++)
             {
                 List<VkImageView> TextureAttachmentList = new List<VkImageView>();
@@ -293,12 +306,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         height = VulkanRenderer.SwapChainResolution.Height,
                         layers = 1
                     };
-                    VulkanRenderer.CreateFrameBuffer(Helper.GetObjectPtr(FrameBufferList[x]), framebufferInfo);
+
+                    VkFramebuffer frameBuffer = FrameBufferList[x];
+                    VulkanAPI.vkCreateFramebuffer(VulkanRenderer.Device, &framebufferInfo, IntPtr.Zero, &frameBuffer);
+                    frameBufferList[x] = frameBuffer;
                 }
             }
 
-            FrameBufferList = frameBuffer;
-            return frameBuffer;
+            FrameBufferList = frameBufferList;
+            return frameBufferList;
         }
 
         private VkDescriptorPool CreateDescriptorPoolBinding()

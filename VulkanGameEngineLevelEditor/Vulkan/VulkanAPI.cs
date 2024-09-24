@@ -62,7 +62,7 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern VkResult vkDeviceWaitIdle(VkDevice device);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkAllocateMemory(VkDevice device, ref VkMemoryAllocateInfo pAllocateInfo, IntPtr pAllocator, out VkDeviceMemory pMemory);
         [DllImport("vulkan-1.dll")] public static extern void vkFreeMemory(VkDevice device, VkDeviceMemory memory, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkMapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags, out IntPtr ppData);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkMapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags, void** ppData);
         [DllImport("vulkan-1.dll")] public static extern void vkUnmapMemory(VkDevice device, VkDeviceMemory memory);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkFlushMappedMemoryRanges(VkDevice device, uint memoryRangeCount, [In] VkMappedMemoryRange[] pMemoryRanges);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkInvalidateMappedMemoryRanges(VkDevice device, uint memoryRangeCount, [In] VkMappedMemoryRange[] pMemoryRanges);
@@ -128,7 +128,7 @@ namespace VulkanGameEngineLevelEditor
      VkWriteDescriptorSet* pDescriptorWrites,
     UInt32 descriptorCopyCount,
      VkCopyDescriptorSet* pDescriptorCopies);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateFramebuffer(VkDevice device, in VkFramebufferCreateInfo pCreateInfo, IntPtr pAllocator, out VkFramebuffer pFramebuffer);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateFramebuffer(VkDevice device, VkFramebufferCreateInfo* pCreateInfo, IntPtr pAllocator, VkFramebuffer *pFramebuffer);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer, IntPtr pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateRenderPass(VkDevice device, VkRenderPassCreateInfo* pCreateInfo, VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyRenderPass(VkDevice device, VkRenderPass renderPass, IntPtr pAllocator);
@@ -138,12 +138,21 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern VkResult vkResetCommandPool(VkDevice device, VkCommandPool commandPool, VkCommandPoolResetFlags flags);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkAllocateCommandBuffers(VkDevice device, in VkCommandBufferAllocateInfo pAllocateInfo, [Out] VkCommandBuffer[] pCommandBuffers);
         [DllImport("vulkan-1.dll")] public static extern void vkFreeCommandBuffers(VkDevice device, VkCommandPool commandPool, uint commandBufferCount, [In] VkCommandBuffer[] pCommandBuffers);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkBeginCommandBuffer(VkCommandBuffer commandBuffer, in VkCommandBufferBeginInfo pBeginInfo);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkBeginCommandBuffer(VkCommandBuffer commandBuffer,
+     VkCommandBufferBeginInfo* pBeginInfo);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkEndCommandBuffer(VkCommandBuffer commandBuffer);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkResetCommandBuffer(VkCommandBuffer commandBuffer, VkCommandBufferResetFlags flags);
-        [DllImport("vulkan-1.dll")] public static extern void vkCmdBindPipeline(VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline);
-        [DllImport("vulkan-1.dll")] public static extern void vkCmdSetViewport(VkCommandBuffer commandBuffer, uint firstViewport, uint viewportCount, [In] VkViewport[] pViewports);
-        [DllImport("vulkan-1.dll")] public static extern void vkCmdSetScissor(VkCommandBuffer commandBuffer, uint firstScissor, uint scissorCount, [In] VkRect2D[] pScissors);
+        [DllImport("vulkan-1.dll")] public static extern void vkCmdBindPipeline(VkCommandBuffer commandBuffer,
+    VkPipelineBindPoint pipelineBindPoint,
+    VkPipeline pipeline);
+        [DllImport("vulkan-1.dll")] public static extern void vkCmdSetViewport(VkCommandBuffer commandBuffer,
+    uint firstViewport,
+    uint viewportCount,
+    VkViewport* pViewports);
+        [DllImport("vulkan-1.dll")] public static extern void vkCmdSetScissor(VkCommandBuffer commandBuffer,
+    uint firstScissor,
+    uint scissorCount,
+    VkRect2D* pScissors);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdSetLineWidth(VkCommandBuffer commandBuffer, float lineWidth);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdSetDepthBias(VkCommandBuffer commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdSetBlendConstants(VkCommandBuffer commandBuffer, [In] float[] blendConstants); // Use array for float[4]
@@ -151,7 +160,14 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkCmdSetStencilCompareMask(VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask, uint compareMask);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdSetStencilWriteMask(VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask, uint writeMask);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdSetStencilReference(VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask, uint reference);
-        [DllImport("vulkan-1.dll")] public static extern void vkCmdBindDescriptorSets(VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipelineLayout layout, uint firstSet, uint descriptorSetCount, [In] VkDescriptorSet[] pDescriptorSets, uint dynamicOffsetCount, [In] uint[] pDynamicOffsets);
+        [DllImport("vulkan-1.dll")] public static extern void vkCmdBindDescriptorSets(VkCommandBuffer commandBuffer,
+    VkPipelineBindPoint pipelineBindPoint,
+    VkPipelineLayout layout,
+    uint firstSet,
+    uint descriptorSetCount,
+     VkDescriptorSet* pDescriptorSets,
+    uint dynamicOffsetCount,
+     uint* pDynamicOffsets);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdBindIndexBuffer(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkIndexType indexType);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdBindVertexBuffers(VkCommandBuffer commandBuffer, uint firstBinding, uint bindingCount, [In] VkBuffer[] pBuffers, [In] VkDeviceSize[] pOffsets);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdDraw(VkCommandBuffer commandBuffer, uint vertexCount, uint instanceCount, uint firstVertex, uint firstInstance);
@@ -181,7 +197,9 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkCmdWriteTimestamp(VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage, VkQueryPool queryPool, uint query);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdCopyQueryPoolResults(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint firstQuery, uint queryCount, VkBuffer dstBuffer, VkDeviceSize dstOffset, VkDeviceSize stride, VkQueryResultFlags flags);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayout layout, VkShaderStageFlags stageFlags, uint offset, uint size, [In] IntPtr pValues);
-        [DllImport("vulkan-1.dll")] public static extern void vkCmdBeginRenderPass(VkCommandBuffer commandBuffer, in VkRenderPassBeginInfo pRenderPassBegin, VkSubpassContents contents);
+        [DllImport("vulkan-1.dll")] public static extern void vkCmdBeginRenderPass(VkCommandBuffer commandBuffer,
+     VkRenderPassBeginInfo* pRenderPassBegin,
+    VkSubpassContents                           contents);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdNextSubpass(VkCommandBuffer commandBuffer, VkSubpassContents contents);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdEndRenderPass(VkCommandBuffer commandBuffer);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdExecuteCommands(VkCommandBuffer commandBuffer, uint commandBufferCount, [In] VkCommandBuffer[] pCommandBuffers);

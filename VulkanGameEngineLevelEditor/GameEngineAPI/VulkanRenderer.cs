@@ -132,9 +132,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        public static VkResult CreateFrameBuffer(VkFramebuffer frameBuffer, VkFramebufferCreateInfo frameBufferCreateInfo)
+        public static VkResult CreateFrameBuffer(VkFramebuffer* frameBuffer, VkFramebufferCreateInfo frameBufferCreateInfo)
         {
-            return GameEngineDLL.DLL_Renderer_CreateFrameBuffer(Device, &frameBuffer, &frameBufferCreateInfo);
+            VkFramebufferCreateInfo createInfo = frameBufferCreateInfo;
+            return GameEngineDLL.DLL_Renderer_CreateFrameBuffer(Device, frameBuffer, &createInfo);
         }
 
         public static VkPipelineShaderStageCreateInfo CreateShader(string path, VkShaderStageFlagBits shaderStage)
@@ -161,6 +162,26 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 Marshal.FreeHGlobal(pName);
             }
+        }
+
+        public static VkCommandBuffer BeginCommandBuffer()
+        {
+            return GameEngineDLL.DLL_Renderer_BeginSingleUseCommandBuffer(Device, CommandPool);
+        }
+
+        public static VkResult BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo)
+        {
+            return GameEngineDLL.DLL_Renderer_BeginCommandBuffer(pCommandBufferList, commandBufferBeginInfo);
+        }
+
+        public static VkResult EndCommandBuffer(VkCommandBuffer* pCommandBufferList)
+        {
+            return GameEngineDLL.DLL_Renderer_EndCommandBuffer(pCommandBufferList);
+        }
+
+        public static VkResult EndCommandBuffer(VkCommandBuffer commandBuffer)
+        {
+            return GameEngineDLL.DLL_Renderer_EndSingleUseCommandBuffer(Device, CommandPool, GraphicsQueue, commandBuffer);
         }
 
         private static VkShaderModule CreateShaderModule(byte[] code)
@@ -320,6 +341,38 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 MessageBox.Show($"Exception occurred: {ex.Message}");
             }
+        }
+
+        public static VkResult StartFrame()
+        {
+            VkResult result;
+            fixed (VkSemaphore* presentImageSemaphores = PresentImageSemaphores.ToArray())
+            fixed (VkSemaphore* fenceList = InFlightFences.ToArray())
+            {
+                uint imageIndex = ImageIndex;
+                uint commandIndex = CommandIndex;
+                bool rebuildRendererFlag = RebuildRendererFlag;
+                result = GameEngineDLL.DLL_Renderer_StartFrame(Device, Swapchain, fenceList, presentImageSemaphores, &imageIndex, &commandIndex, &rebuildRendererFlag);
+                ImageIndex = imageIndex;
+                CommandIndex = commandIndex;
+                RebuildRendererFlag = rebuildRendererFlag;
+            }
+           return result;
+        }
+
+        public static VkResult EndFrame(List<VkCommandBuffer> commandBufferSubmitList)
+        {
+            VkResult result;
+            fixed (VkSemaphore* acquireImageSemaphores = AcquireImageSemaphores.ToArray())
+            fixed (VkSemaphore* presentImageSemaphores = PresentImageSemaphores.ToArray())
+            fixed (VkSemaphore* fenceList = InFlightFences.ToArray())
+            fixed (VkSemaphore* commandBufferSubmit = commandBufferSubmitList.ToArray())
+            {
+                var rebuildRendererFlag = RebuildRendererFlag;
+                result = GameEngineDLL.DLL_Renderer_EndFrame(Swapchain, acquireImageSemaphores, presentImageSemaphores, fenceList, GraphicsQueue, PresentQueue, CommandIndex, ImageIndex, commandBufferSubmit, commandBufferSubmitList.UCount(), &rebuildRendererFlag);
+                RebuildRendererFlag = rebuildRendererFlag;
+            }
+            return result;
         }
 
         private static void GetDeviceQueue()
