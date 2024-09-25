@@ -162,6 +162,7 @@
     <ClCompile Include="..\External\ImPlot\implot.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
+    <ClCompile Include="BakedTexture.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameBufferRenderPass.cpp" />
@@ -183,6 +184,7 @@
     <ClCompile Include="OrthographicCamera.cpp" />
     <ClCompile Include="ProgramStats.cpp" />
     <ClCompile Include="RenderedColorTexture.cpp" />
+    <ClCompile Include="RenderedTexture.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="RenderPass2D.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -204,6 +206,7 @@
     <ClInclude Include="..\External\imgui\imstb_truetype.h" />
     <ClInclude Include="..\External\ImPlot\implot.h" />
     <ClInclude Include="..\External\ImPlot\implot_internal.h" />
+    <ClInclude Include="BakedTexture.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="FrameBufferRenderPass.h" />
@@ -224,6 +227,7 @@
     <ClInclude Include="OrthographicCamera.h" />
     <ClInclude Include="ProgramStats.h" />
     <ClInclude Include="RenderedColorTexture.h" />
+    <ClInclude Include="RenderedTexture.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="RenderPass2D.h" />
     <ClInclude Include="Scene.h" />

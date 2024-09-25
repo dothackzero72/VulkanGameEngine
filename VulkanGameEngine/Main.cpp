@@ -35,6 +35,7 @@ int main()
         scene.Draw();
         deltaTime.EndFrameTime();
     }
+
     
     vkDeviceWaitIdle(cRenderer.Device);
     scene.Destroy();

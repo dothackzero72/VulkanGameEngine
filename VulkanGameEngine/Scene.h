@@ -28,6 +28,7 @@ class Scene
 		void BuildRenderPasses();
 		void UpdateRenderPasses();
 		void Draw();
+		void BakeCubeTextureAtlus(const std::string& FilePath, std::shared_ptr<Texture> texture);
 		void Destroy();
 };
 

@@ -9,7 +9,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public class Scene
     {
-        private Texture texture;
+        public  Texture texture;
         private Mesh2D mesh;
         private FrameBufferRenderPass renderPass;
 

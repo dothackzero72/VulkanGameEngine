@@ -5,11 +5,12 @@
 #include "RenderPass.h"
 #include "vertex.h"
 #include "SceneDataBuffer.h"
+#include "RenderedTexture.h"
 
 class RenderPass2D : public Renderpass
 {
 private:
-	std::shared_ptr<RenderedColorTexture> RenderedTexture;
+	std::shared_ptr<RenderedTexture> renderedTexture;
 
 public:
 	RenderPass2D();
@@ -21,5 +22,5 @@ public:
 	VkCommandBuffer Draw(std::shared_ptr<Mesh2D> mesh, SceneDataBuffer& sceneProperties);
 	void Destroy() override;
 
-	std::shared_ptr<RenderedColorTexture> GetRenderedTexture() { return RenderedTexture; }
+	std::shared_ptr<RenderedTexture> GetRenderedTexture() { return renderedTexture; }
 };

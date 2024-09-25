@@ -2,6 +2,7 @@
 extern "C"
 {
 	#include <CTexture.h>
+	#include <pixel.h>
 }
 #include <cmath>
 #include <algorithm>
@@ -19,16 +20,28 @@ enum ColorChannelUsed
 	ChannelRGBA
 };
 
-class TextureFunctions;
 class Texture
 {
 	private:
 		uint64 TextureBufferIndex;
 
-		VkResult CopyBufferToTexture(VkBuffer buffer);
+		void	 TextureSetUp();
 		VkResult GenerateMipmaps();
 
 	protected:
+	
+
+
+		VkResult NewTextureImage();
+		VkResult CreateTextureImage();
+		virtual void CreateImageTexture(const Pixel& clearColor);
+		virtual void CreateImageTexture(const std::string& FilePath);
+		virtual void CreateTextureSampler();
+		VkResult CopyBufferToTexture(VkBuffer buffer);
+		VkResult CreateTextureView();
+		VkResult CreateTextureSampler(VkSamplerCreateInfo samplerCreateInfo);
+
+	public:
 		int Width;
 		int Height;
 		int Depth;
@@ -41,15 +54,6 @@ class Texture
 		VkImageLayout TextureImageLayout;
 		VkSampleCountFlagBits SampleCount;
 
-		VkResult CreateTextureImage();
-		virtual void CreateImageTexture(const std::string& FilePath);
-		virtual void CreateTextureSampler();
-		VkResult CreateTextureView();
-		VkResult CreateTextureSampler(VkSamplerCreateInfo samplerCreateInfo);
-
-	public:
-		friend class TextureFunctions;
-
 		VkDescriptorSet ImGuiDescriptorSet;
 		VkImage Image;
 		VkDeviceMemory Memory;
@@ -58,6 +62,7 @@ class Texture
 		VkDescriptorImageInfo textureBuffer;
 
 		Texture();
+		Texture(const Pixel& clearColor, int width, int height, VkFormat textureByteFormat, TextureTypeEnum textureType);
 		Texture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
 		virtual ~Texture();
 		virtual void UpdateTextureSize(vec2 TextureResolution);
@@ -67,6 +72,13 @@ class Texture
 		VkResult TransitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout);
 		VkResult TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
 		VkResult TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout);
+
+		void UpdateImageLayout(VkImageLayout newImageLayout);
+		void UpdateImageLayout(VkImageLayout newImageLayout, uint32_t MipLevel);
+		void UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout);
+		void UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout, uint32_t MipLevel);
+		void UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout);
+		void UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, uint32_t MipLevel);
 
 		void ImGuiShowTexture(const ImVec2& TextureDisplaySize);
 		VkDescriptorImageInfo* GetTextureBuffer();

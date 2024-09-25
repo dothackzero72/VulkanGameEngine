@@ -1,7 +1,9 @@
-﻿using System;
+﻿using StbImageSharp;
+using System;
 using System.Collections.Concurrent;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
@@ -18,20 +20,20 @@ namespace VulkanGameEngineLevelEditor
         public Form1()
         {
             InitializeComponent();
-            this.Load += Form1_Load; // Register the Load event
+            this.Load += Form1_Load;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            InitializeRenderTimer(); // Initialize the timer after the form is loaded
-            StartRenderer(); // Start the rendering thread
+            InitializeRenderTimer();
+            StartRenderer();
         }
 
         private void InitializeRenderTimer()
         {
             renderTimer = new System.Windows.Forms.Timer
             {
-                Interval = 100 // Set timer interval for updates
+                Interval = 100
             };
             renderTimer.Tick += UpdateBitmap;
             renderTimer.Start();
@@ -42,7 +44,7 @@ namespace VulkanGameEngineLevelEditor
             running = true;
             renderThread = new Thread(RenderLoop)
             {
-                IsBackground = true // Ensures the thread won't prevent application exit
+                IsBackground = true
             };
             renderThread.Start();
         }
@@ -59,19 +61,67 @@ namespace VulkanGameEngineLevelEditor
             while (running)
             {
                 scene.Update(0);
-                byte[] textureData = GenerateColorByteData(pictureBox1.Width, pictureBox1.Height);
+                byte[] textureData = Texture.UpdateBitmapData(scene.texture);
                 dataCollection.TryAdd(textureData);
-                scene.Draw();
+              //  scene.Draw();
+                Thread.Sleep(16);
             }
         }
 
+     
+
+        //public static byte[] DisplayImageFromStb(string filePath)
+        //{
+        //    // Step 1: Load Image Data with StbImageSharp
+        //    using (var stream = File.OpenRead(filePath))
+        //    {
+        //        ImageResult image = ImageResult.FromStream(stream);
+        //        int width = image.Width;
+        //        int height = image.Height;
+        //        ColorComponents channels = image.Comp;
+
+        //        // Prepare the output byte array to hold ARGB format
+        //        byte[] imageData = new byte[width * height * 4]; // 4 bytes for ARGB per pixel
+
+        //        // Convert from RGB(A) to ARGB
+        //        for (int y = 0; y < height; y++)
+        //        {
+        //            for (int x = 0; x < width; x++)
+        //            {
+        //                int srcIndex = (y * width + x) * (int)channels; // source index in imageData
+        //                int destIndex = (y * width + x) * 4; // destination index in ARGB imageData
+
+        //                // Handle different channel combinations
+        //                //if (channels == ColorComponents.RedGreenBlue)
+        //                //{
+        //                    // Assuming no alpha, set Alpha to 255.
+        //                    imageData[destIndex + 0] = 255; // A
+        //                    imageData[destIndex + 1] = image.Data[srcIndex + 0]; // R
+        //                    imageData[destIndex + 2] = image.Data[srcIndex + 1]; // G
+        //                    imageData[destIndex + 3] = image.Data[srcIndex + 2]; // B
+        //                //}
+        //                //else if (channels == ColorComponents.RedGreenBlueAlpha)
+        //                //{
+        //                //    imageData[destIndex + 0] = image.Data[srcIndex + 3]; // A
+        //                //    imageData[destIndex + 1] = image.Data[srcIndex + 0]; // R
+        //                //    imageData[destIndex + 2] = image.Data[srcIndex + 1]; // G
+        //                //    imageData[destIndex + 3] = image.Data[srcIndex + 2]; // B
+        //                //}
+        //                // You can add more cases for grayscale or other formats if needed
+        //            }
+        //        }
+
+        //        return imageData;
+        //    }
+        //}
+
         private void UpdateBitmap(object sender, EventArgs e)
         {
+            
+
             byte[] textureData;
-            // Try to take texture data from the collection safely
             if (dataCollection.TryTake(out textureData))
             {
-                // Use Invoke to ensure we update the PictureBox on the UI thread
                 if (pictureBox1.InvokeRequired)
                 {
                     pictureBox1.Invoke(new Action(() => UpdateBitmapWithData(textureData)));
@@ -83,8 +133,14 @@ namespace VulkanGameEngineLevelEditor
             }
         }
 
+
+
         private void UpdateBitmapWithData(byte[] textureData)
         {
+            if(textureData == null)
+            {
+                return;
+            }
 
             using (Bitmap bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height, PixelFormat.Format32bppArgb))
             {
@@ -92,23 +148,20 @@ namespace VulkanGameEngineLevelEditor
                 {
                     for (int x = 0; x < bitmap.Width; x++)
                     {
-                        int index = (y * bitmap.Width + x) * 4; // Calculate index in the byte array
+                        int index = (y * bitmap.Width + x) * 4;
                         Color pixelColor = ByteArrayToColor(textureData, index);
-                        bitmap.SetPixel(x, y, pixelColor); // Set the pixel color
+                        bitmap.SetPixel(x, y, pixelColor);
                     }
                 }
 
-                // Dispose of the old image if it exists
                 if (pictureBox1.Image != null)
                 {
                     pictureBox1.Image.Dispose();
                 }
 
-                // Update the PictureBox image
                 pictureBox1.Image = (Bitmap)bitmap.Clone();
                 pictureBox1.Refresh();
             }
-
         }
 
         private byte[] GenerateColorByteData(int width, int height)

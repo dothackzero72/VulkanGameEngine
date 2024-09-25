@@ -12,13 +12,13 @@ RenderPass2D::~RenderPass2D()
 
 void RenderPass2D::BuildRenderPass(std::shared_ptr<Mesh2D> mesh)
 {
-    RenderedTexture = std::make_shared<RenderedColorTexture>(RenderedColorTexture(RenderPassResolution, VK_FORMAT_R32G32B32A32_SFLOAT));
+    renderedTexture = std::make_shared<RenderedTexture>(RenderedTexture(RenderPassResolution, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32A32_SFLOAT));
 
     std::vector<VkAttachmentDescription> attachmentDescriptionList
     {
         VkAttachmentDescription
         {
-            .format = RenderedTexture->GetTextureByteFormat(),
+            .format = renderedTexture->GetTextureByteFormat(),
             .samples = VK_SAMPLE_COUNT_1_BIT,
             .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
             .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
@@ -82,7 +82,7 @@ void RenderPass2D::BuildRenderPass(std::shared_ptr<Mesh2D> mesh)
     for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
     {
         std::vector<VkImageView> TextureAttachmentList;
-        TextureAttachmentList.emplace_back(RenderedTexture->View);
+        TextureAttachmentList.emplace_back(renderedTexture->View);
 
         VkFramebufferCreateInfo framebufferInfo
         {
@@ -160,7 +160,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
         std::vector<VkWriteDescriptorSet> descriptorSets
         {
             CreateStorageDescriptorSet(mesh, 0),
-            CreateTextureDescriptorSet(RenderedTexture, 1)
+            CreateTextureDescriptorSet(renderedTexture, 1)
         };
         renderer.UpdateDescriptorSet(descriptorSets);
     }
@@ -376,13 +376,13 @@ VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<Mesh2D> mesh, SceneDataBuffer
     vkCmdBeginRenderPass(CommandBufferList[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     mesh->Draw(CommandBufferList[cRenderer.CommandIndex], ShaderPipeline, ShaderPipelineLayout, DescriptorSet, sceneProperties);
     vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
-    VULKAN_RESULT(renderer.EndCommandBuffer(&CommandBufferList[cRenderer.CommandIndex]));
+   renderer.EndSingleTimeCommands(CommandBufferList[cRenderer.CommandIndex], cRenderer.CommandPool);
     return CommandBufferList[cRenderer.CommandIndex];
 }
 
 void RenderPass2D::Destroy()
 {
-    RenderedTexture->Destroy();
+    renderedTexture->Destroy();
     Renderpass::Destroy();
     renderer.DestroyPipeline(ShaderPipeline);
     renderer.DestroyPipelineLayout(ShaderPipelineLayout);

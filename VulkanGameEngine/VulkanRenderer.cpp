@@ -166,25 +166,95 @@ void VulkanRenderer::UpdateDescriptorSet(List<VkWriteDescriptorSet> writeDescrip
     Renderer_UpdateDescriptorSet(cRenderer.Device, writeDescriptorSetList.data(), writeDescriptorSetList.size());
 }
 
-VkCommandBuffer VulkanRenderer::BeginCommandBuffer()
-{
-    return Renderer_BeginSingleUseCommandBuffer(cRenderer.Device, cRenderer.CommandPool);
+VkCommandBuffer  VulkanRenderer::BeginSingleTimeCommands() {
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = cRenderer.CommandPool;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(cRenderer.Device, &allocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    return commandBuffer;
 }
 
-VkResult VulkanRenderer::BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo)
-{
-    return Renderer_BeginCommandBuffer(pCommandBufferList, commandBufferBeginInfo);
+VkCommandBuffer  VulkanRenderer::BeginSingleTimeCommands(VkCommandPool& commandPool) {
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = commandPool;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(cRenderer.Device, &allocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    return commandBuffer;
 }
 
-VkResult VulkanRenderer::EndCommandBuffer(VkCommandBuffer* pCommandBufferList)
-{
-	return Renderer_EndCommandBuffer(pCommandBufferList);
+VkResult  VulkanRenderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer) {
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    VkResult result = vkQueueSubmit(cRenderer.SwapChain.GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    result = vkQueueWaitIdle(cRenderer.SwapChain.GraphicsQueue);
+
+    vkFreeCommandBuffers(cRenderer.Device, cRenderer.CommandPool, 1, &commandBuffer);
+
+    return result;
 }
 
-VkResult VulkanRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
-{
-	return Renderer_EndSingleUseCommandBuffer(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, commandBuffer);
+VkResult  VulkanRenderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool& commandPool) {
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    VkResult result = vkQueueSubmit(cRenderer.SwapChain.GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    result = vkQueueWaitIdle(cRenderer.SwapChain.GraphicsQueue);
+
+    vkFreeCommandBuffers(cRenderer.Device, commandPool, 1, &commandBuffer);
+
+    return result;
 }
+
+//VkCommandBuffer VulkanRenderer::BeginCommandBuffer()
+//{
+//    return Renderer_BeginSingleUseCommandBuffer(cRenderer.Device, cRenderer.CommandPool);
+//}
+//
+//VkResult VulkanRenderer::BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo)
+//{
+//    return Renderer_BeginCommandBuffer(pCommandBufferList, commandBufferBeginInfo);
+//}
+//
+//VkResult VulkanRenderer::EndCommandBuffer(VkCommandBuffer* pCommandBufferList)
+//{
+//	return Renderer_EndCommandBuffer(pCommandBufferList);
+//}
+//
+//VkResult VulkanRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
+//{
+//	return Renderer_EndSingleUseCommandBuffer(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, commandBuffer);
+//}
 
 void VulkanRenderer::DestroyFences()
 {

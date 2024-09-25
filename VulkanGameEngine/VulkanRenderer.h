@@ -33,10 +33,15 @@ class VulkanRenderer
         VkResult CreateCommandPool(VkCommandPool& commandPool, VkCommandPoolCreateInfo commandPoolInfo);
         void UpdateDescriptorSet(List<VkWriteDescriptorSet> writeDescriptorSetList);
 
-        VkCommandBuffer BeginCommandBuffer();
-        VkResult BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo);
-        VkResult EndCommandBuffer(VkCommandBuffer* pCommandBufferList);
-        VkResult EndCommandBuffer(VkCommandBuffer commandBuffer);
+        //VkCommandBuffer BeginCommandBuffer();
+        //VkResult BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo);
+        //VkResult EndCommandBuffer(VkCommandBuffer* pCommandBufferList);
+        //VkResult EndCommandBuffer(VkCommandBuffer commandBuffer);
+
+        static VkCommandBuffer  BeginSingleTimeCommands();
+        static VkCommandBuffer  BeginSingleTimeCommands(VkCommandPool& commandPool);
+        static VkResult  EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+        static VkResult  EndSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool& commandPool);
 
         void DestroyRenderer();
         void DestroyFences();
