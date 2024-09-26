@@ -15,7 +15,7 @@ class Scene
 
 		FrameTimer timer;
 		SceneDataBuffer sceneProperties;
-		std::shared_ptr<Texture> texture;
+		std::shared_ptr<BakedTexture> texture;
 		std::shared_ptr<Mesh2D> mesh;
 		std::shared_ptr<OrthographicCamera> orthographicCamera;
 		FrameBufferRenderPass frameRenderPass;
@@ -28,7 +28,7 @@ class Scene
 		void BuildRenderPasses();
 		void UpdateRenderPasses();
 		void Draw();
-		void BakeCubeTextureAtlus(const std::string& FilePath, std::shared_ptr<Texture> texture);
+		void BakeCubeTextureAtlus(const std::string& FilePath, std::shared_ptr<BakedTexture> texture);
 		void Destroy();
 };
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,19 @@ using System.Windows.Forms;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
+    public static class MathHelper
+    {
+        public static float ToRadians(float degrees)
+        {
+            return degrees * ((float)Math.PI / 180f);
+        }
+
+        public static float ToDegrees(float radians)
+        {
+            return radians * (180f / (float)Math.PI);
+        }
+    }
+
     public unsafe class Mesh 
     {
         private const VkBufferUsageFlags MeshBufferUsageSettings = VkBufferUsageFlags.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
@@ -24,11 +38,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public int VertexCount { get; protected set; }
         public int IndexCount { get; protected set; }
 
-        public MeshProperitiesStruct MeshProperties { get; protected set; }
+        public MeshProperitiesStruct MeshProperties { get; set; }
         public mat4 MeshTransform { get; protected set; }
-        public vec3 MeshPosition { get; protected set; }
-        public vec3 MeshRotation { get; protected set; }
-        public vec3 MeshScale { get; protected set; }
+        public Vector3 MeshPosition { get; protected set; }
+        public Vector3 MeshRotation { get; protected set; }
+        public Vector3 MeshScale { get; protected set; }
 
         public DynamicVulkanBuffer<Vertex2D> MeshVertexBuffer { get; protected set; }
         public DynamicVulkanBuffer<UInt32> MeshIndexBuffer { get; protected set; }
@@ -38,9 +52,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             MeshBufferIndex = 0;
             MeshTransform = new mat4();
-            MeshPosition = new vec3(0.0f);
-            MeshRotation = new vec3(0.0f);
-            MeshScale = new vec3(1.0f);
+            MeshPosition = new Vector3(0.0f);
+            MeshRotation = new Vector3(0.0f);
+            MeshScale = new Vector3(1.0f);
 
             VertexCount = 0;
             IndexCount = 0;
@@ -69,25 +83,60 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GameEngineDLL.DLL_Mesh_Update(mesh, deltaTime);
         }
 
-        virtual public void BufferUpdate(VkCommandBuffer commandBuffer,  float deltaTime)
+        public virtual void BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime)
         {
-            //mat4 MeshMatrix = mat4(1.0f);
-            //MeshMatrix = glm::translate(MeshMatrix, MeshPosition);
-            //MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.x), vec3(1.0f, 0.0f, 0.0f));
-            //MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.y), vec3(0.0f, 1.0f, 0.0f));
-            //MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.z), vec3(0.0f, 0.0f, 1.0f));
-            //MeshMatrix = glm::scale(MeshMatrix, MeshScale);
+            // Initialize the mesh transformation matrix as an identity matrix
+            Matrix4x4 meshMatrix = Matrix4x4.Identity;
+
+            // Apply transformations
+            meshMatrix = Matrix4x4.CreateTranslation(MeshPosition) * meshMatrix;
+            meshMatrix = Matrix4x4.CreateRotationX(MathHelper.ToRadians(MeshRotation.X)) * meshMatrix;
+            meshMatrix = Matrix4x4.CreateRotationY(MathHelper.ToRadians(MeshRotation.Y)) * meshMatrix;
+            meshMatrix = Matrix4x4.CreateRotationZ(MathHelper.ToRadians(MeshRotation.Z)) * meshMatrix;
+            meshMatrix = Matrix4x4.CreateScale(MeshScale) * meshMatrix;
+
+            // Create a temporary variable to hold the struct
+            var properties = MeshProperties;
+
+            // Modify the fields of the temporary struct
+            properties.MeshIndex = 1;
+            properties.MaterialIndex++;
+            properties.MeshTransform = MeshTransform;
+
+            // Assign the modified struct back
+            MeshProperties = properties;
+
+            // You may need to upload the meshMatrix to the GPU or use it as needed
         }
 
-        virtual public void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout shaderPipelineLayout, VkDescriptorSet descriptorSet, MeshProperitiesStruct sceneProperties)
+        public virtual unsafe void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout shaderPipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
-            //VkDeviceSize offsets[] = { 0 };
-            //VulkanAPI.vkCmdPushConstants(commandBuffer, shaderPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneProperties);
-            //VulkanAPI.vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-            //VulkanAPI.vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
-            //VulkanAPI.vkCmdBindVertexBuffers(commandBuffer, 0, 1, &MeshVertexBuffer.Buffer, offsets);
-            //VulkanAPI.vkCmdBindIndexBuffer(commandBuffer, MeshIndexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
-            //VulkanAPI.vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+            SceneDataBuffer SceneProperties = new SceneDataBuffer();
+            SceneProperties.Projection = new mat4();
+            SceneProperties.View = new mat4();
+            SceneProperties.CameraPosition = new vec3(0.0f);
+
+            if (commandBuffer == null) throw new ArgumentNullException(nameof(commandBuffer));
+            if (pipeline == null) throw new ArgumentNullException(nameof(pipeline));
+            if (shaderPipelineLayout == null) throw new ArgumentNullException(nameof(shaderPipelineLayout));
+            if (descriptorSet == null) throw new ArgumentNullException(nameof(descriptorSet));
+            //if (sceneProperties == null) throw new ArgumentNullException(nameof(sceneProperties));
+
+            VkDeviceSize offsets = 0;
+            uint sceneDataSize = (uint)sizeof(SceneDataBuffer);
+            // Ensure the size of SceneDataBuffer matches what the shader expects.
+            VulkanAPI.vkCmdPushConstants(commandBuffer, shaderPipelineLayout,
+                VkShaderStageFlags.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlags.VK_SHADER_STAGE_FRAGMENT_BIT,
+                0, sceneDataSize, &SceneProperties);
+
+            VulkanAPI.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+            VulkanAPI.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPipelineLayout, 0, 1, &descriptorSet, 0, null);
+
+            var meshBuffer = MeshVertexBuffer.Buffer;
+            VulkanAPI.vkCmdBindVertexBuffers(commandBuffer, 0, 1, &meshBuffer, &offsets);
+            VulkanAPI.vkCmdBindIndexBuffer(commandBuffer, MeshIndexBuffer.Buffer, 0, VkIndexType.VK_INDEX_TYPE_UINT32);
+
+            VulkanAPI.vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0); // Ensure IndexCount is correct here.
         }
     }
 }

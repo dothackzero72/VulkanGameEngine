@@ -54,7 +54,6 @@ global using VkPipelineCreateFlags = System.UInt32;
 global using VkPipelineShaderStageCreateFlags = System.UInt32;
 global using VkPipelineVertexInputStateCreateFlags = System.UInt32;
 global using VkPipelineInputAssemblyStateCreateFlags = System.UInt32;
-global using VkCommandBufferUsageFlags = System.UInt32;
 global using VkPipelineTessellationStateCreateFlags = System.UInt32;
 global using VkPipelineViewportStateCreateFlags = System.UInt32;
 global using VkPipelineRasterizationStateCreateFlags = System.UInt32;

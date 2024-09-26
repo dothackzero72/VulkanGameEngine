@@ -1,7 +1,20 @@
 #include "RenderedColorTexture.h"
+#include <stb/stb_image.h>
 
 RenderedColorTexture::RenderedColorTexture() : Texture()
 {
+}
+
+RenderedColorTexture::RenderedColorTexture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType) : Texture()
+{
+	//MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
+	TextureType = textureType;
+	TextureByteFormat = textureByteFormat;
+
+	CreateImageTexture(filePath);
+	CreateTextureView();
+	CreateTextureSampler();
+	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
 RenderedColorTexture::RenderedColorTexture(glm::ivec2& textureResolution, VkFormat format) : Texture()
@@ -21,6 +34,23 @@ RenderedColorTexture::RenderedColorTexture(glm::ivec2& textureResolution, VkForm
 
 RenderedColorTexture::~RenderedColorTexture()
 {
+}
+
+void RenderedColorTexture::CreateImageTexture(const std::string& FilePath)
+{
+	int* width = &Width;
+	int* height = &Height;
+	int colorChannels = 0;
+	byte* data = stbi_load(FilePath.c_str(), width, height, &colorChannels, 0);
+	VulkanBuffer<byte*> stagingBuffer(data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+	VULKAN_RESULT(NewTextureImage());
+	VULKAN_RESULT(TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));
+	VULKAN_RESULT(CopyBufferToTexture(stagingBuffer.Buffer));
+	stagingBuffer.DestroyBuffer();
+
+	ColorChannels = (ColorChannelUsed)colorChannels;
+	stbi_image_free(data);
 }
 
 void RenderedColorTexture::CreateTextureSampler()

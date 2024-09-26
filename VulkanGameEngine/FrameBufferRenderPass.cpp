@@ -435,7 +435,7 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
     vkCmdBindDescriptorSets(CommandBufferList[cRenderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &DescriptorSet, 0, nullptr);
     vkCmdDraw(CommandBufferList[cRenderer.CommandIndex], 6, 1, 0, 0);
     vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
-    renderer.EndSingleTimeCommands(CommandBufferList[cRenderer.CommandIndex], cRenderer.CommandPool);
+    renderer.EndSingleTimeCommands(CommandBufferList[cRenderer.CommandIndex]);
     return CommandBufferList[cRenderer.CommandIndex];
 }
 

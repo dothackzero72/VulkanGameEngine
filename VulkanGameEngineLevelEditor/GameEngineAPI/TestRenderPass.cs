@@ -14,14 +14,16 @@ using System.Xml.Linq;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public unsafe class FrameBufferRenderPass : Renderpass
+    public unsafe class TestRenderPass : Renderpass
     {
-        public FrameBufferRenderPass() : base() 
-        { 
+        public RenderedTexture texture { get; set; }
+        public TestRenderPass() : base()
+        {
         }
 
         public void BuildRenderPass(Texture renderedTexture)
         {
+            texture = new RenderedTexture(new GlmSharp.ivec2((int)VulkanRenderer.SwapChainResolution.Width, (int)VulkanRenderer.SwapChainResolution.Height), VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT, VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
 
             var renderPass = CreateRenderPass();
             var frameBuffer = CreateFramebuffer();
@@ -67,9 +69,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
                 pNext = IntPtr.Zero,
                 flags = 0,
-                logicOpEnable = VulkanConsts.VK_FALSE, 
+                logicOpEnable = VulkanConsts.VK_FALSE,
                 logicOp = VkLogicOp.VK_LOGIC_OP_COPY,
-                attachmentCount = 1, 
+                attachmentCount = 1,
                 pAttachments = &blendAttachment,
             };
             blending.blendConstants[0] = 0.0f;
@@ -77,7 +79,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             blending.blendConstants[2] = 0.0f;
             blending.blendConstants[3] = 0.0f;
 
-          
+
             fixed (VkPipelineShaderStageCreateInfo* shaderlist = shaderList.ToArray())
             {
                 var pipelineInfo = new VkGraphicsPipelineCreateInfo
@@ -85,7 +87,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     sType = VkStructureType.VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
                     pNext = IntPtr.Zero,
                     flags = 0,
-                    stageCount = 1, 
+                    stageCount = 1,
                     pStages = shaderlist,
                     pVertexInputState = &vertexInput,
                     pInputAssemblyState = &inputAssembly,
@@ -100,10 +102,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     basePipelineHandle = IntPtr.Zero,
                 };
 
-                    VkPipeline pipeline;
-                    VulkanAPI.vkCreateGraphicsPipelines(VulkanRenderer.Device, IntPtr.Zero, 1, &pipelineInfo, null, &pipeline);
+                VkPipeline pipeline;
+                VulkanAPI.vkCreateGraphicsPipelines(VulkanRenderer.Device, IntPtr.Zero, 1, &pipelineInfo, null, &pipeline);
                 ShaderPipeline = pipeline;
-                
+
             }
 
 
@@ -212,7 +214,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 new VkAttachmentDescription
                 {
-                    format = VkFormat.VK_FORMAT_B8G8R8A8_UNORM,
+                    format = VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
                     samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
                     loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
                     storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_STORE,
@@ -288,19 +290,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         private List<VkFramebuffer> CreateFramebuffer()
         {
+            List<VkImageView> texturesViews = new List<VkImageView> { texture.View };
             List<VkFramebuffer> frameBufferList = FrameBufferList;
             for (int x = 0; x < VulkanRenderer.SwapChainImageCount; x++)
             {
-                List<VkImageView> TextureAttachmentList = new List<VkImageView>();
-                fixed (VkImageView* imageViewPtr = VulkanRenderer.SwapChainImageViews.ToArray())
+                fixed (VkImageView* imageViewPtr = texturesViews.ToArray())
                 {
-                    TextureAttachmentList.Add(VulkanRenderer.SwapChainImageViews[x]);
-
                     VkFramebufferCreateInfo framebufferInfo = new VkFramebufferCreateInfo()
                     {
                         sType = VkStructureType.VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
                         renderPass = RenderPass,
-                        attachmentCount = (uint)TextureAttachmentList.Count(),
+                        attachmentCount = (uint)texturesViews.Count(),
                         pAttachments = imageViewPtr,
                         width = VulkanRenderer.SwapChainResolution.Width,
                         height = VulkanRenderer.SwapChainResolution.Height,

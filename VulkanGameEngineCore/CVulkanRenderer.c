@@ -878,53 +878,6 @@ VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSe
     return result; 
 }
 
-VkResult Renderer_SubmitDraw(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint32_t commandIndex, uint32_t imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint32_t commandBufferCount, bool* rebuildRendererFlag)
-{
-    VkPipelineStageFlags waitStages[] = 
-    { 
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT 
-    };
-
-    VkSubmitInfo submitInfo = 
-    {
-        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-        .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &acquireImageSemaphoreList[commandIndex],
-        .pWaitDstStageMask = waitStages,
-        .commandBufferCount = commandBufferCount,
-        .pCommandBuffers = pCommandBufferSubmitList,
-        .signalSemaphoreCount = 1,
-        .pSignalSemaphores = &presentImageSemaphoreList[imageIndex]
-    };
-    VkResult submitResult = vkQueueSubmit(graphicsQueue, 1, &submitInfo, fenceList[commandIndex]);
-    if (submitResult != VK_SUCCESS) 
-    {
-        fprintf(stderr, "Error: vkQueueSubmit failed with error code: %s\n", Renderer_GetError(submitResult));
-        return submitResult;
-    }
-
-    VkPresentInfoKHR presentInfo = {
-        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-        .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &presentImageSemaphoreList[imageIndex],
-        .swapchainCount = 1,
-        .pSwapchains = &swapChain,
-        .pImageIndices = &imageIndex
-    };
-
-    VkResult result = vkQueuePresentKHR(presentQueue, &presentInfo);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) 
-    {
-        *rebuildRendererFlag = true;
-    }
-    else if (result != VK_SUCCESS) 
-    {
-        fprintf(stderr, "Error: vkQueuePresentKHR failed with error code: %s\n", Renderer_GetError(result));
-    }
-
-    return result;
-}
-
 VkResult Renderer_BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo)
 {
     return vkBeginCommandBuffer(*pCommandBufferList, commandBufferBeginInfo);

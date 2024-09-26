@@ -79,21 +79,6 @@ VkResult VulkanRenderer::EndFrame(List<VkCommandBuffer> commandBufferSubmitList)
                              &cRenderer.RebuildRendererFlag);
 }
 
-VkResult VulkanRenderer::SubmitDraw(List<VkCommandBuffer> commandBufferSubmitList)
-{
-    return Renderer_SubmitDraw(cRenderer.SwapChain.Swapchain,
-                               cRenderer.AcquireImageSemaphores,
-                               cRenderer.PresentImageSemaphores,
-                               cRenderer.InFlightFences,
-                               cRenderer.SwapChain.GraphicsQueue,
-                               cRenderer.SwapChain.PresentQueue,
-                               cRenderer.CommandIndex,
-                               cRenderer.ImageIndex,
-                               commandBufferSubmitList.data(),
-                               commandBufferSubmitList.size(),
-                               &cRenderer.RebuildRendererFlag);
-}
-
 void VulkanRenderer::DestroyRenderer()
 {
     renderer.DestroySwapChainImageView();

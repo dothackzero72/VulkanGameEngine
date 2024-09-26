@@ -18,7 +18,6 @@ class VulkanRenderer
 
         VkResult StartFrame();
         VkResult EndFrame(List<VkCommandBuffer> commandBufferSubmitList);
-        VkResult SubmitDraw(List<VkCommandBuffer> commandBufferSubmitList);
 
         VkResult CreateCommandBuffers(List<VkCommandBuffer>& commandBufferList);
         VkResult CreateFrameBuffer(VkFramebuffer frameBuffer, VkFramebufferCreateInfo& frameBufferCreateInfo);

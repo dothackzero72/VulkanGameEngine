@@ -1,10 +1,24 @@
 #include "BakedTexture.h"
 #include "VulkanBuffer.h"
+#include <stb/stb_image.h>
 
 BakedTexture::BakedTexture()
 {
 
 }
+
+BakedTexture::BakedTexture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType) : Texture()
+{
+	//MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
+	TextureType = textureType;
+	TextureByteFormat = textureByteFormat;
+
+	CreateImageTexture(filePath);
+	CreateTextureView();
+	CreateTextureSampler();
+	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+}
+
 
 BakedTexture::BakedTexture(const Pixel& ClearColor, const glm::ivec2& TextureResolution, VkFormat TextureFormat) : Texture()
 {
@@ -48,6 +62,36 @@ BakedTexture::BakedTexture(const Pixel32& ClearColor, const glm::ivec2& TextureR
 
 BakedTexture::~BakedTexture()
 {
+}
+
+void BakedTexture::CreateTexture(const std::string& filePath)
+{
+	int* width = &Width;
+	int* height = &Height;
+	int colorChannels = 0;
+	byte* data = stbi_load(filePath.c_str(), width, height, &colorChannels, 0);
+	VulkanBuffer<byte*> stagingBuffer(data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+	VkImageCreateInfo ImageCreateInfo = {};
+	ImageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+	ImageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+	ImageCreateInfo.extent.width = Width;
+	ImageCreateInfo.extent.height = Height;
+	ImageCreateInfo.extent.depth = Depth;
+	ImageCreateInfo.mipLevels = 1;
+	ImageCreateInfo.arrayLayers = 1;
+	ImageCreateInfo.format = TextureByteFormat;
+	ImageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+	ImageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	ImageCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+	ImageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+	ImageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+	CreateTextureImage();
+	TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	CopyBufferToTexture(stagingBuffer.Buffer);
+
+	stagingBuffer.DestroyBuffer();
 }
 
 void BakedTexture::CreateTexture(Pixel ClearPixel, VkFormat textureFormat)

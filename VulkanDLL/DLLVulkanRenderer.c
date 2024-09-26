@@ -121,14 +121,6 @@ VkResult DLL_Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireIma
     return Renderer_EndFrame(swapChain, acquireImageSemaphoreList, presentImageSemaphoreList, fenceList, graphicsQueue, presentQueue, commandIndex, imageIndex, pCommandBufferSubmitList, commandBufferCount, rebuildRendererFlag);
 }
 
-VkResult DLL_Renderer_SubmitDraw(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList,
-    VkSemaphore* presentImageSemaphoreList, VkFence* fenceList,
-    VkQueue graphicsQueue, VkQueue presentQueue, uint32_t commandIndex,
-    uint32_t imageIndex, VkCommandBuffer* pCommandBufferSubmitList,
-    uint32_t commandBufferCount, bool* rebuildRendererFlag) {
-    return Renderer_SubmitDraw(swapChain, acquireImageSemaphoreList, presentImageSemaphoreList, fenceList, graphicsQueue, presentQueue, commandIndex, imageIndex, pCommandBufferSubmitList, commandBufferCount, rebuildRendererFlag);
-}
-
 uint32_t DLL_Renderer_GetMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter,
     VkMemoryPropertyFlags properties) {
     return Renderer_GetMemoryType(physicalDevice, typeFilter, properties);

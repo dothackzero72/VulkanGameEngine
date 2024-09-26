@@ -2,6 +2,49 @@
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
+    public struct Pixel3
+    {
+        public byte Red { get; set; }
+        public byte Green { get; set; }
+        public byte Blue { get; set; }
+
+
+        public Pixel3(byte red, byte green, byte blue)
+        {
+            Red = red;
+            Green = green;
+            Blue = blue;
+        }
+
+        // Overloading the equality operator
+        public static bool operator ==(Pixel3 lhs, Pixel3 rhs)
+        {
+            return lhs.Red == rhs.Red &&
+                   lhs.Green == rhs.Green &&
+                   lhs.Blue == rhs.Blue;
+        }
+
+        public static bool operator != (Pixel3 lhs, Pixel3 rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        // Override object.Equals and GetHashCode for proper comparison
+        public override bool Equals(object obj)
+        {
+            if (obj is Pixel3 pixel)
+            {
+                return this == pixel;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return (Red, Green, Blue).GetHashCode();
+        }
+    }
+
     public struct Pixel
     {
         public byte Red { get; set; }

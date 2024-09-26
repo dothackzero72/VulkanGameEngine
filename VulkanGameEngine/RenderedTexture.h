@@ -29,3 +29,5 @@ public:
     std::shared_ptr<BakedTexture> BakeColorTexture(const char* filename, BakeTextureFormat textureFormat);
     //void BakeEnvironmentMapTexture(const char* filename);
 };
+
+std::vector<byte> ExportColorTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, const char* filename, std::shared_ptr<Texture> texture, BakeTextureFormat textureFormat, uint32 channels);

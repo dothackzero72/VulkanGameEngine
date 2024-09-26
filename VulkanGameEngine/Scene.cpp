@@ -17,7 +17,7 @@ void Scene::StartUp()
 	//Timer timer;
 	//timer.Time = 0.0f;
 
-	texture = std::make_shared<Texture>(Texture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
+	texture = std::make_shared<BakedTexture>(BakedTexture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 	mesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList));
 	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
 
@@ -110,10 +110,11 @@ void Scene::Draw()
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
 	VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
 
-	renderPass2D.GetRenderedTexture()->BakeColorTexture("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa.bmp", Bake_BMP);
+	BakeCubeTextureAtlus("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa43.bmp", texture);
+	ExportColorTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa.bmp", texture, Bake_BMP, 4);
 }
 
-void Scene::BakeCubeTextureAtlus(const std::string& FilePath, std::shared_ptr<Texture> texture)
+void Scene::BakeCubeTextureAtlus(const std::string& FilePath, std::shared_ptr<BakedTexture> texture)
 {
 	
 	auto	bakeTexture = std::make_shared<BakedTexture>(BakedTexture(Pixel(255, 0, 0, 255), ivec2(texture->Width, texture->Height), VkFormat::VK_FORMAT_B8G8R8A8_UNORM));

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using static VulkanGameEngineLevelEditor.VulkanAPI;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -196,7 +197,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     pCode = codePtr
                 };
 
-                VkResult result = VulkanAPI.vkCreateShaderModule(Device, &createInfo, IntPtr.Zero, &shaderModule);
+                VkResult result = VulkanAPI.vkCreateShaderModule(Device, &createInfo, null, &shaderModule);
                 if (result != VkResult.VK_SUCCESS)
                 {
                     Console.WriteLine($"Failed to create shader module: {result}");
@@ -210,7 +211,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             try
             {
                 Instance = GameEngineDLL.DLL_Renderer_CreateVulkanInstance();
-                if (Instance == IntPtr.Zero)
+                if (Instance == null)
                 {
                     MessageBox.Show("Failed to create Vulkan instance.");
                 }
@@ -247,7 +248,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 hinstance = Marshal.GetHINSTANCE(typeof(Form1).Module)
             };
 
-            if (VulkanAPI.vkCreateWin32SurfaceKHR(Instance, ref surfaceCreateInfo, IntPtr.Zero, out surface) != 0)
+            if (VulkanAPI.vkCreateWin32SurfaceKHR(Instance, ref surfaceCreateInfo, null, out surface) != 0)
             {
                 MessageBox.Show("Failed to create Vulkan surface.");
                 return;
@@ -360,19 +361,19 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
            return result;
         }
 
-        public static VkResult EndFrame(List<VkCommandBuffer> commandBufferSubmitList)
+        public static void EndFrame(List<VkCommandBuffer> commandBufferSubmitList)
         {
-            VkResult result;
             fixed (VkSemaphore* acquireImageSemaphores = AcquireImageSemaphores.ToArray())
             fixed (VkSemaphore* presentImageSemaphores = PresentImageSemaphores.ToArray())
             fixed (VkSemaphore* fenceList = InFlightFences.ToArray())
             fixed (VkSemaphore* commandBufferSubmit = commandBufferSubmitList.ToArray())
             {
-                var rebuildRendererFlag = RebuildRendererFlag;
-                result = GameEngineDLL.DLL_Renderer_EndFrame(Swapchain, acquireImageSemaphores, presentImageSemaphores, fenceList, GraphicsQueue, PresentQueue, CommandIndex, ImageIndex, commandBufferSubmit, commandBufferSubmitList.UCount(), &rebuildRendererFlag);
-                RebuildRendererFlag = rebuildRendererFlag;
+                VkResult waitResult = vkWaitForFences(Device, 1, &fenceList[CommandIndex], VulkanConsts.VK_TRUE, VulkanConsts.UINT64_MAX);
+                VkResult resetResult = vkResetFences(Device, 1, &fenceList[CommandIndex]);
+                var imageIndex = ImageIndex;
+                vkAcquireNextImageKHR(Device, Swapchain, VulkanConsts.UINT64_MAX, acquireImageSemaphores[CommandIndex], IntPtr.Zero, &imageIndex);
+                ImageIndex = imageIndex;
             }
-            return result;
         }
 
         private static void GetDeviceQueue()
@@ -599,12 +600,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return presentModes;
         }
 
+        public static uint GetMemoryType(uint typeFilter, VkMemoryPropertyFlagBits memoryType)
+        {
+            return GameEngineDLL.DLL_Renderer_GetMemoryType(PhysicalDevice, typeFilter, memoryType);
+        }
+
         private static void GetFrameBufferSize(PictureBox pictureBox)
         {
             SwapChainResolution = new VkExtent2D
             {
-                Width = (uint)pictureBox.Width,
-                Height = (uint)pictureBox.Height
+                Width = (uint)pictureBox.Size.Width,
+                Height = (uint)pictureBox.Size.Height
             };
         }
 

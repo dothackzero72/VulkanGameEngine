@@ -1,4 +1,6 @@
 #include "DLLTexture.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "../External/stb/stb_image_write.h"
 
 // Transition the image layout directly
 VkResult DLL_Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* image, uint32_t mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout)
@@ -46,4 +48,9 @@ VkResult DLL_Texture_CreateTextureView(VkDevice device, VkImageView* view, VkIma
 VkResult DLL_Texture_CreateTextureSampler(VkDevice device, VkSamplerCreateInfo* samplerCreateInfo, VkSampler* sampler)
 {
     return Texture_CreateTextureSampler(device, samplerCreateInfo, sampler);
+}
+
+ void DLL_stbi_write_bmp(const char* filename, int w, int h, int comp, const void* data)
+{
+    stbi_write_bmp(filename, w, h, comp, data);
 }

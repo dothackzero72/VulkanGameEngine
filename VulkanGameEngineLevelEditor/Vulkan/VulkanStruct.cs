@@ -32,6 +32,8 @@ namespace VulkanGameEngineLevelEditor
         public int Y;
     }
 
+   
+
     [StructLayout(LayoutKind.Sequential)]
     public struct VkOffset3D
     {
@@ -484,17 +486,17 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkSubmitInfo
+    public unsafe struct VkSubmitInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
         public uint waitSemaphoreCount;
-        public IntPtr pWaitSemaphores; // Pointer to array of VkSemaphore
-        public IntPtr pWaitDstStageMask; // Pointer to array of VkPipelineStageFlags
+        public VkSemaphore pWaitSemaphores; // Pointer to array of VkSemaphore
+        public VkPipelineStageFlags pWaitDstStageMask; // Pointer to array of VkPipelineStageFlags
         public uint commandBufferCount;
-        public IntPtr pCommandBuffers; // Pointer to array of VkCommandBuffer
+        public VkCommandBuffer* pCommandBuffers; // Pointer to array of VkCommandBuffer
         public uint signalSemaphoreCount;
-        public IntPtr pSignalSemaphores; // Pointer to array of VkSemaphore
+        public VkSemaphore pSignalSemaphores; // Pointer to array of VkSemaphore
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -803,15 +805,15 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkPipelineVertexInputStateCreateInfo
+    public unsafe struct VkPipelineVertexInputStateCreateInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
         public VkPipelineVertexInputStateCreateFlags flags;
         public uint vertexBindingDescriptionCount;
-        public IntPtr pVertexBindingDescriptions; // Pointer to array of VkVertexInputBindingDescription
+        public VkVertexInputBindingDescription* pVertexBindingDescriptions; // Pointer to array of VkVertexInputBindingDescription
         public uint vertexAttributeDescriptionCount;
-        public IntPtr pVertexAttributeDescriptions; // Pointer to array of VkVertexInputAttributeDescription
+        public VkVertexInputAttributeDescription* pVertexAttributeDescriptions; // Pointer to array of VkVertexInputAttributeDescription
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1190,14 +1192,14 @@ namespace VulkanGameEngineLevelEditor
     public struct VkAttachmentDescription
     {
         public VkAttachmentDescriptionFlags flags;
-        public VkFormat2 format;
-        public VkSampleCountFlagBits2 samples;
-        public VkAttachmentLoadOp2 loadOp;
-        public VkAttachmentStoreOp2 storeOp;
-        public VkAttachmentLoadOp2 stencilLoadOp;
-        public VkAttachmentStoreOp2 stencilStoreOp;
-        public VkImageLayout2 initialLayout;
-        public VkImageLayout2 finalLayout;
+        public VkFormat format;
+        public VkSampleCountFlagBits samples;
+        public VkAttachmentLoadOp loadOp;
+        public VkAttachmentStoreOp storeOp;
+        public VkAttachmentLoadOp stencilLoadOp;
+        public VkAttachmentStoreOp stencilStoreOp;
+        public VkImageLayout initialLayout;
+        public VkImageLayout finalLayout;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1295,12 +1297,12 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkCommandBufferBeginInfo
+    public unsafe struct VkCommandBufferBeginInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
-        public VkCommandBufferUsageFlags flags;
-        public IntPtr pInheritanceInfo; // Pointer to VkCommandBufferInheritanceInfo
+        public VkCommandBufferUsageFlagBits flags;
+        public VkCommandBufferInheritanceInfo* pInheritanceInfo; // Pointer to VkCommandBufferInheritanceInfo
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1833,12 +1835,20 @@ namespace VulkanGameEngineLevelEditor
         public UInt32 MeshIndex;
         public UInt32 MaterialIndex;
         public mat4 MeshTransform;
+    };
 
-        public MeshProperitiesStruct()
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SceneDataBuffer
+    {
+        public mat4 Projection;
+        public mat4 View;
+        public vec3 CameraPosition;
+
+        public SceneDataBuffer()
         {
-             MeshIndex = 0;
-             MaterialIndex = 0;
-             MeshTransform = new mat4();
+            Projection = new mat4();
+            View = new mat4();
+            CameraPosition = new vec3(0.0f);
         }
     };
 }

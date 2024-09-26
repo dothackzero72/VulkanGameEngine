@@ -13,9 +13,11 @@ namespace VulkanGameEngineLevelEditor
         public static IntPtr VK_NULL_HANDLE = IntPtr.Zero;
         public const uint VK_SUBPASS_EXTERNAL = uint.MaxValue;
         public const uint VK_REMAINING_MIP_LEVELS = uint.MaxValue;
+        public const uint VK_QUEUE_FAMILY_IGNORED = uint.MaxValue;
+        public const uint VK_REMAINING_ARRAY_LAYERS = uint.MaxValue;
         public const uint VK_TRUE = 1;
         public const uint VK_FALSE = 0;
-
+        public const ulong UINT64_MAX = ulong.MaxValue;
         public const int VK_UUID_SIZE = 16;
         public const int VK_MAX_MEMORY_TYPES = 32;
         public const int VK_MAX_MEMORY_HEAPS = 16;

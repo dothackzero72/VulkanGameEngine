@@ -73,7 +73,7 @@ void RenderedTexture::CreateTextureImage()
 	TextureInfo.samples = SampleCount;
 	TextureInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 	TextureInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-	TextureInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+	TextureInfo.format = TextureByteFormat;
 	vkCreateImage(cRenderer.Device, &TextureInfo, NULL, &Image);
 
 	VkMemoryRequirements memRequirements;
@@ -100,7 +100,7 @@ void RenderedTexture::CreateTextureView()
 	TextureImageViewInfo.subresourceRange.baseArrayLayer = 0;
 	TextureImageViewInfo.subresourceRange.layerCount = 1;
 	TextureImageViewInfo.image = Image;
-	TextureImageViewInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+	TextureImageViewInfo.format = TextureByteFormat;
 	TextureImageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
 	if (vkCreateImageView(cRenderer.Device, &TextureImageViewInfo, nullptr, &View)) {
@@ -247,3 +247,96 @@ std::shared_ptr<BakedTexture> RenderedTexture::BakeColorTexture(const char* file
 //	stbi_write_hdr(filename, Width, Height, STBI_rgb_alpha, data);
 //	BakeTexture->Destroy();
 //}
+std::vector<byte> ExportColorTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, const char* filename, std::shared_ptr<Texture> texture, BakeTextureFormat textureFormat, uint32 channels)
+{
+	std::shared_ptr<BakedTexture> bakeTexture = std::make_shared<BakedTexture>(BakedTexture(Pixel(0x00, 0x00, 0x00, 0xFF), glm::ivec2(texture->Width, texture->Height), texture->TextureByteFormat));
+
+	VkCommandBufferAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandPool = commandPool;
+	allocInfo.commandBufferCount = 1;
+
+	VkCommandBuffer commandBuffer;
+	vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
+
+	VkCommandBufferBeginInfo beginInfo{};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+	// Update image layouts
+	bakeTexture->UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	texture->UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+	// Set up the image copy operation
+	VkImageCopy copyImage{};
+	copyImage.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	copyImage.srcSubresource.layerCount = 1;
+	copyImage.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	copyImage.dstSubresource.layerCount = 1;
+	copyImage.dstOffset = { 0, 0, 0 };
+	copyImage.extent.width = texture->Width;
+	copyImage.extent.height = texture->Height;
+	copyImage.extent.depth = 1;
+
+	// Perform the image copy
+	vkCmdCopyImage(commandBuffer, texture->Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, bakeTexture->Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyImage);
+
+	// Finalize layout transitions
+	bakeTexture->UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_GENERAL);
+	texture->UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	vkEndCommandBuffer(commandBuffer);
+
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &commandBuffer;
+
+	VkResult result = vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	result = vkQueueWaitIdle(graphicsQueue);
+
+	vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
+
+	// Map the memory to read pixel data
+	const char* data = nullptr;
+	vkMapMemory(device, bakeTexture->Memory, 0, VK_WHOLE_SIZE, 0, (void**)&data);
+
+	// Calculate the size of the pixel data
+	size_t dataSize = bakeTexture->Width * bakeTexture->Height * channels;
+
+	// Create a vector to hold the pixel data
+	std::vector<uint8_t> pixelData(dataSize);
+	memcpy(pixelData.data(), data, dataSize); // Copy the mapped data to pixelData
+
+	// Unmap memory after reading
+	vkUnmapMemory(device, bakeTexture->Memory);
+
+	// Create the output filename with the appropriate extension
+	std::string outputFilename = std::string(filename);
+	switch (textureFormat)
+	{
+	case BakeTextureFormat::Bake_BMP:
+		outputFilename += ".bmp";
+		stbi_write_bmp(outputFilename.c_str(), bakeTexture->Width, bakeTexture->Height, channels, pixelData.data());
+		break;
+	case BakeTextureFormat::Bake_JPG:
+		outputFilename += ".jpg";
+		stbi_write_jpg(outputFilename.c_str(), bakeTexture->Width, bakeTexture->Height, channels, pixelData.data(), 100);
+		break;
+	case BakeTextureFormat::Bake_PNG:
+		outputFilename += ".png";
+		stbi_write_png(outputFilename.c_str(), bakeTexture->Width, bakeTexture->Height, channels, pixelData.data(), channels * bakeTexture->Width);
+		break;
+	case BakeTextureFormat::Bake_TGA:
+		outputFilename += ".tga";
+		stbi_write_tga(outputFilename.c_str(), bakeTexture->Width, bakeTexture->Height, channels, pixelData.data());
+		break;
+	}
+
+	// Clean up the baked texture
+	bakeTexture->Destroy();
+	return pixelData;
+}

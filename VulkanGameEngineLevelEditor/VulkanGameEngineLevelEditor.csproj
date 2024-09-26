@@ -93,12 +93,16 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameEngineAPI\BakeTexture.cs" />
     <Compile Include="GameEngineAPI\DynamicVulkanBuffer.cs" />
     <Compile Include="GameEngineAPI\FrameBufferRenderPass.cs" />
     <Compile Include="GameEngineAPI\GameEngineDLL.cs" />
     <Compile Include="GameEngineAPI\GameEngineEnums.cs" />
     <Compile Include="GameEngineAPI\Pixel.cs" />
+    <Compile Include="GameEngineAPI\RenderedTexture.cs" />
+    <Compile Include="GameEngineAPI\RenderPass2D.cs" />
     <Compile Include="GameEngineAPI\Scene.cs" />
+    <Compile Include="GameEngineAPI\TestRenderPass.cs" />
     <Compile Include="ListExtensions.cs" />
     <Compile Include="GameEngineAPI\Mesh.cs" />
     <Compile Include="GameEngineAPI\Mesh2D.cs" />

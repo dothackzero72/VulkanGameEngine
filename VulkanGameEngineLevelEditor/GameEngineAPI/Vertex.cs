@@ -49,14 +49,14 @@ public struct Vertex2D
     public static List<VkVertexInputBindingDescription> GetBindingDescriptions()
     {
         var bindingDescriptions = new List<VkVertexInputBindingDescription>
+    {
+        new VkVertexInputBindingDescription
         {
-            new VkVertexInputBindingDescription
-            {
-                binding = 0,
-                stride = (uint)Marshal.SizeOf(typeof(Vertex2D)),
-                inputRate = VkVertexInputRate.VK_VERTEX_INPUT_RATE_VERTEX
-            }
-        };
+            binding = 0,
+            stride = (uint)Marshal.SizeOf(typeof(Vertex2D)),
+            inputRate = VkVertexInputRate.VK_VERTEX_INPUT_RATE_VERTEX
+        }
+    };
 
         return bindingDescriptions;
     }
@@ -68,7 +68,7 @@ public struct Vertex2D
         attributeDescriptions.Add(new VkVertexInputAttributeDescription
         {
             binding = 0,
-            location = 0,
+            location = 0, // Matches your shader's inPosition
             format = VkFormat.VK_FORMAT_R32G32_SFLOAT,
             offset = (uint)Marshal.OffsetOf(typeof(Vertex2D), nameof(Position)).ToInt32()
         });
@@ -76,7 +76,7 @@ public struct Vertex2D
         attributeDescriptions.Add(new VkVertexInputAttributeDescription
         {
             binding = 0,
-            location = 1,
+            location = 1, // Matches your shader's inUV
             format = VkFormat.VK_FORMAT_R32G32_SFLOAT,
             offset = (uint)Marshal.OffsetOf(typeof(Vertex2D), nameof(UV)).ToInt32()
         });
@@ -84,7 +84,7 @@ public struct Vertex2D
         attributeDescriptions.Add(new VkVertexInputAttributeDescription
         {
             binding = 0,
-            location = 2,
+            location = 2, // Matches your shader's inColor
             format = VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
             offset = (uint)Marshal.OffsetOf(typeof(Vertex2D), nameof(Color)).ToInt32()
         });

@@ -10,9 +10,9 @@ namespace VulkanGameEngineLevelEditor
     public static unsafe class VulkanAPI
     {
         [DllImport("vulkan-1.dll")] public static extern VkResult vkEnumerateInstanceExtensionProperties(IntPtr pLayerName, ref UInt32 pPropertyCount, IntPtr pProperties);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateInstance(ref VkInstanceCreateInfo pCreateInfo, IntPtr pAllocator, out VkInstance instance);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyInstance(VkInstance instance, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern int vkCreateWin32SurfaceKHR(VkInstance instance, ref VkWin32SurfaceCreateInfoKHR pCreateInfo, IntPtr pAllocator, out VkSurfaceKHR pSurface);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateInstance(ref VkInstanceCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkInstance instance);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyInstance(VkInstance instance,  VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern int vkCreateWin32SurfaceKHR(VkInstance instance, ref VkWin32SurfaceCreateInfoKHR pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkSurfaceKHR pSurface);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkEnumeratePhysicalDevices(VkInstance instance, ref uint pPhysicalDeviceCount, IntPtr pPhysicalDevices);
         [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice, IntPtr pFeatures);
         [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceFormatProperties(VkPhysicalDevice physicalDevice, int format, IntPtr pFormatProperties);
@@ -22,8 +22,8 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceMemoryProperties(VkPhysicalDevice physicalDevice, IntPtr pMemoryProperties);
         [DllImport("vulkan-1.dll")] public static extern IntPtr vkGetInstanceProcAddr(VkInstance instance, string pName);
         [DllImport("vulkan-1.dll")] public static extern IntPtr vkGetDeviceProcAddr(IntPtr device, string pName);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDevice(VkPhysicalDevice physicalDevice, IntPtr pCreateInfo, IntPtr pAllocator, out IntPtr pDevice);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyDevice(IntPtr device, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDevice(VkPhysicalDevice physicalDevice, IntPtr pCreateInfo,  VkAllocationCallbacks* pAllocator, out IntPtr pDevice);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyDevice(IntPtr device,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkEnumerateInstanceVersion(out uint pApiVersion);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkBindBufferMemory2(VkDevice device, uint bindInfoCount, IntPtr pBindInfos);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkBindImageMemory2(VkDevice device, uint bindInfoCount, IntPtr pBindInfos);
@@ -43,10 +43,10 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceSparseImageFormatProperties2(VkPhysicalDevice physicalDevice, IntPtr pFormatInfo, out uint pPropertyCount, IntPtr pProperties);
         [DllImport("vulkan-1.dll")] public static extern void vkTrimCommandPool(VkDevice device, VkCommandPool commandPool, VkCommandPoolTrimFlags flags);
         [DllImport("vulkan-1.dll")] public static extern void vkGetDeviceQueue2(VkDevice device, IntPtr pQueueInfo, out VkQueue pQueue);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateSamplerYcbcrConversion(VkDevice device, IntPtr pCreateInfo, IntPtr pAllocator, out VkSamplerYcbcrConversion pYcbcrConversion);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroySamplerYcbcrConversion(VkDevice device, VkSamplerYcbcrConversion ycbcrConversion, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDescriptorUpdateTemplate(VkDevice device, IntPtr pCreateInfo, IntPtr pAllocator, out VkDescriptorUpdateTemplate pDescriptorUpdateTemplate);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyDescriptorUpdateTemplate(VkDevice device, VkDescriptorUpdateTemplate descriptorUpdateTemplate, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateSamplerYcbcrConversion(VkDevice device, IntPtr pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkSamplerYcbcrConversion pYcbcrConversion);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroySamplerYcbcrConversion(VkDevice device, VkSamplerYcbcrConversion ycbcrConversion,  VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDescriptorUpdateTemplate(VkDevice device, IntPtr pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkDescriptorUpdateTemplate pDescriptorUpdateTemplate);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyDescriptorUpdateTemplate(VkDevice device, VkDescriptorUpdateTemplate descriptorUpdateTemplate,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern void vkUpdateDescriptorSetWithTemplate(VkDevice device, VkDescriptorSet descriptorSet, VkDescriptorUpdateTemplate descriptorUpdateTemplate, IntPtr pData);
         [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceExternalBufferProperties(VkPhysicalDevice physicalDevice, IntPtr pExternalBufferInfo, out VkExternalBufferProperties pExternalBufferProperties);
         [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceExternalFenceProperties(VkPhysicalDevice physicalDevice, IntPtr pExternalFenceInfo, out VkExternalFenceProperties pExternalFenceProperties);
@@ -57,51 +57,51 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern VkResult vkEnumerateInstanceLayerProperties(ref uint pPropertyCount, [Out] VkLayerProperties[] pProperties);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkEnumerateDeviceLayerProperties(VkPhysicalDevice physicalDevice, ref uint pPropertyCount, [Out] VkLayerProperties[] pProperties);
         [DllImport("vulkan-1.dll")] public static extern void vkGetDeviceQueue(VkDevice device, uint queueFamilyIndex, uint queueIndex, out VkQueue pQueue);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkQueueSubmit(VkQueue queue, uint submitCount, [In] VkSubmitInfo[] pSubmits, VkFence fence);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkQueueSubmit(VkQueue queue, uint submitCount, VkSubmitInfo* pSubmits, IntPtr fence);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkQueueWaitIdle(VkQueue queue);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkDeviceWaitIdle(VkDevice device);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkAllocateMemory(VkDevice device, ref VkMemoryAllocateInfo pAllocateInfo, IntPtr pAllocator, out VkDeviceMemory pMemory);
-        [DllImport("vulkan-1.dll")] public static extern void vkFreeMemory(VkDevice device, VkDeviceMemory memory, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkAllocateMemory(VkDevice device,  VkMemoryAllocateInfo* pAllocateInfo,  VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMemory);
+        [DllImport("vulkan-1.dll")] public static extern void vkFreeMemory(VkDevice device, VkDeviceMemory memory,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkMapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags, void** ppData);
         [DllImport("vulkan-1.dll")] public static extern void vkUnmapMemory(VkDevice device, VkDeviceMemory memory);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkFlushMappedMemoryRanges(VkDevice device, uint memoryRangeCount, [In] VkMappedMemoryRange[] pMemoryRanges);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkInvalidateMappedMemoryRanges(VkDevice device, uint memoryRangeCount, [In] VkMappedMemoryRange[] pMemoryRanges);
         [DllImport("vulkan-1.dll")] public static extern void vkGetDeviceMemoryCommitment(VkDevice device, VkDeviceMemory memory, out VkDeviceSize pCommittedMemoryInBytes);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkBindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory memory, VkDeviceSize memoryOffset);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkBindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory* memory, VkDeviceSize memoryOffset);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkBindImageMemory(VkDevice device, VkImage image, VkDeviceMemory memory, VkDeviceSize memoryOffset);
-        [DllImport("vulkan-1.dll")] public static extern void vkGetBufferMemoryRequirements(VkDevice device, VkBuffer buffer, out VkMemoryRequirements pMemoryRequirements);
-        [DllImport("vulkan-1.dll")] public static extern void vkGetImageMemoryRequirements(VkDevice device, VkImage image, out VkMemoryRequirements pMemoryRequirements);
+        [DllImport("vulkan-1.dll")] public static extern void vkGetBufferMemoryRequirements(VkDevice device, VkBuffer buffer, VkMemoryRequirements* pMemoryRequirements);
+        [DllImport("vulkan-1.dll")] public static extern void vkGetImageMemoryRequirements(VkDevice device, VkImage image, VkMemoryRequirements* pMemoryRequirements);
         [DllImport("vulkan-1.dll")] public static extern void vkGetImageSparseMemoryRequirements(VkDevice device, VkImage image, ref uint pSparseMemoryRequirementCount, [Out] VkSparseImageMemoryRequirements[] pSparseMemoryRequirements);
         [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceSparseImageFormatProperties(VkPhysicalDevice physicalDevice, VkFormat format, VkImageType type, VkSampleCountFlagBits samples, VkImageUsageFlags usage, VkImageTiling tiling, ref uint pPropertyCount, [Out] VkSparseImageFormatProperties[] pProperties);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkQueueBindSparse(VkQueue queue, uint bindInfoCount, [In] VkBindSparseInfo[] pBindInfo, VkFence fence);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateFence(VkDevice device, in VkFenceCreateInfo pCreateInfo, IntPtr pAllocator, out VkFence pFence);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyFence(VkDevice device, VkFence fence, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkResetFences(VkDevice device, uint fenceCount, [In] VkFence[] pFences);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateFence(VkDevice device, in VkFenceCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkFence pFence);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyFence(VkDevice device, VkFence fence,  VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkResetFences(VkDevice device, uint fenceCount, VkFence* pFences);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkGetFenceStatus(VkDevice device, VkFence fence);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkWaitForFences(VkDevice device, uint fenceCount, [In] VkFence[] pFences, VkBool32 waitAll, ulong timeout);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateSemaphore(VkDevice device, in VkSemaphoreCreateInfo pCreateInfo, IntPtr pAllocator, out VkSemaphore pSemaphore);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroySemaphore(VkDevice device, VkSemaphore semaphore, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateEvent(VkDevice device, in VkEventCreateInfo pCreateInfo, IntPtr pAllocator, out VkEvent pEvent);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyEvent(VkDevice device, VkEvent @event, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkWaitForFences(VkDevice device, uint fenceCount, VkFence* pFences, VkBool32 waitAll, ulong timeout);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateSemaphore(VkDevice device, in VkSemaphoreCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkSemaphore pSemaphore);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroySemaphore(VkDevice device, VkSemaphore semaphore,  VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateEvent(VkDevice device, in VkEventCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkEvent pEvent);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyEvent(VkDevice device, VkEvent @event,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkGetEventStatus(VkDevice device, VkEvent @event);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkSetEvent(VkDevice device, VkEvent @event);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkResetEvent(VkDevice device, VkEvent @event);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateQueryPool(VkDevice device, in VkQueryPoolCreateInfo pCreateInfo, IntPtr pAllocator, out VkQueryPool pQueryPool);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyQueryPool(VkDevice device, VkQueryPool queryPool, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateQueryPool(VkDevice device, in VkQueryPoolCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkQueryPool pQueryPool);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyQueryPool(VkDevice device, VkQueryPool queryPool,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkGetQueryPoolResults(VkDevice device, VkQueryPool queryPool, uint firstQuery, uint queryCount, UIntPtr dataSize, IntPtr pData, VkDeviceSize stride, VkQueryResultFlags flags);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateBuffer(VkDevice device, in VkBufferCreateInfo pCreateInfo, IntPtr pAllocator, out VkBuffer pBuffer);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyBuffer(VkDevice device, VkBuffer buffer, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateBufferView(VkDevice device, in VkBufferViewCreateInfo pCreateInfo, IntPtr pAllocator, out VkBufferView pView);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyBufferView(VkDevice device, VkBufferView bufferView, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateImage(VkDevice device, ref VkImageCreateInfo pCreateInfo, IntPtr pAllocator, out VkImage pImage);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyImage(VkDevice device, VkImage image, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateBuffer(VkDevice device,VkBufferCreateInfo* pCreateInfo,  VkAllocationCallbacks* pAllocator, VkBuffer* pBuffer);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyBuffer(VkDevice device, VkBuffer buffer,  VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateBufferView(VkDevice device, in VkBufferViewCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkBufferView pView);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyBufferView(VkDevice device, VkBufferView bufferView,  VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateImage(VkDevice device, VkImageCreateInfo* pCreateInfo,  VkAllocationCallbacks* pAllocator, VkImage* pImage);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyImage(VkDevice device, VkImage image,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern void vkGetImageSubresourceLayout(VkDevice device, VkImage image, VkImageSubresource* pSubresource, VkSubresourceLayout* pLayout);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateImageView(VkDevice device, in VkImageViewCreateInfo pCreateInfo, IntPtr pAllocator, out VkImageView pView);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyImageView(VkDevice device, VkImageView imageView, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateShaderModule(VkDevice device, VkShaderModuleCreateInfo* pCreateInfo, IntPtr pAllocator,VkShaderModule* pShaderModule);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyShaderModule(VkDevice device, VkShaderModule shaderModule, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreatePipelineCache(VkDevice device, in VkPipelineCacheCreateInfo pCreateInfo, IntPtr pAllocator, out VkPipelineCache pPipelineCache);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyPipelineCache(VkDevice device, VkPipelineCache pipelineCache, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateImageView(VkDevice device,  VkImageViewCreateInfo* pCreateInfo,  VkAllocationCallbacks* pAllocator, VkImageView* pView);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyImageView(VkDevice device, VkImageView imageView,  VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateShaderModule(VkDevice device, VkShaderModuleCreateInfo* pCreateInfo,  VkAllocationCallbacks* pAllocator,VkShaderModule* pShaderModule);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyShaderModule(VkDevice device, VkShaderModule shaderModule, VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreatePipelineCache(VkDevice device, in VkPipelineCacheCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkPipelineCache pPipelineCache);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyPipelineCache(VkDevice device, VkPipelineCache pipelineCache, VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkGetPipelineCacheData(VkDevice device, VkPipelineCache pipelineCache, out UIntPtr pDataSize, IntPtr pData);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkMergePipelineCaches(VkDevice device, VkPipelineCache dstCache, uint srcCacheCount, [In] VkPipelineCache[] pSrcCaches);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateGraphicsPipelines(VkDevice device,
@@ -110,16 +110,16 @@ namespace VulkanGameEngineLevelEditor
      VkGraphicsPipelineCreateInfo* pCreateInfos,
      VkAllocationCallbacks* pAllocator,
     VkPipeline*                                 pPipelines);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateComputePipelines(VkDevice device, VkPipelineCache pipelineCache, uint createInfoCount, [In] VkComputePipelineCreateInfo[] pCreateInfos, IntPtr pAllocator, [Out] VkPipeline[] pPipelines);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyPipeline(VkDevice device, VkPipeline pipeline, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreatePipelineLayout(VkDevice device, VkPipelineLayoutCreateInfo* pCreateInfo, IntPtr pAllocator, VkPipelineLayout* pPipelineLayout);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateSampler(VkDevice device, in VkSamplerCreateInfo pCreateInfo, IntPtr pAllocator, out VkSampler pSampler);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroySampler(VkDevice device, VkSampler sampler, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDescriptorSetLayout(VkDevice device, VkDescriptorSetLayoutCreateInfo* pCreateInfo, IntPtr pAllocator, VkDescriptorSetLayout* pSetLayout);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout, IntPtr pAllocator);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDescriptorPool(VkDevice device, in VkDescriptorPoolCreateInfo pCreateInfo, IntPtr pAllocator, out VkDescriptorPool pDescriptorPool);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateComputePipelines(VkDevice device, VkPipelineCache pipelineCache, uint createInfoCount, [In] VkComputePipelineCreateInfo[] pCreateInfos,  VkAllocationCallbacks* pAllocator, [Out] VkPipeline[] pPipelines);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyPipeline(VkDevice device, VkPipeline pipeline, VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreatePipelineLayout(VkDevice device, VkPipelineLayoutCreateInfo* pCreateInfo, VkAllocationCallbacks* pAllocator, VkPipelineLayout* pPipelineLayout);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout, VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateSampler(VkDevice device, VkSamplerCreateInfo* pCreateInfo, VkAllocationCallbacks* pAllocator, VkSampler* pSampler);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroySampler(VkDevice device, VkSampler sampler, VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDescriptorSetLayout(VkDevice device, VkDescriptorSetLayoutCreateInfo* pCreateInfo, VkAllocationCallbacks* pAllocator, VkDescriptorSetLayout* pSetLayout);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout, VkAllocationCallbacks* pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDescriptorPool(VkDevice device, in VkDescriptorPoolCreateInfo pCreateInfo, VkAllocationCallbacks* pAllocator, out VkDescriptorPool pDescriptorPool);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkResetDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorPoolResetFlags flags);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkAllocateDescriptorSets(VkDevice device, VkDescriptorSetAllocateInfo* pAllocateInfo, VkDescriptorSet* pDescriptorSets);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkFreeDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, uint descriptorSetCount, [In] VkDescriptorSet[] pDescriptorSets);
@@ -128,16 +128,16 @@ namespace VulkanGameEngineLevelEditor
      VkWriteDescriptorSet* pDescriptorWrites,
     UInt32 descriptorCopyCount,
      VkCopyDescriptorSet* pDescriptorCopies);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateFramebuffer(VkDevice device, VkFramebufferCreateInfo* pCreateInfo, IntPtr pAllocator, VkFramebuffer *pFramebuffer);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateFramebuffer(VkDevice device, VkFramebufferCreateInfo* pCreateInfo,  VkAllocationCallbacks* pAllocator, VkFramebuffer *pFramebuffer);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateRenderPass(VkDevice device, VkRenderPassCreateInfo* pCreateInfo, VkAllocationCallbacks* pAllocator, VkRenderPass* pRenderPass);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyRenderPass(VkDevice device, VkRenderPass renderPass, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyRenderPass(VkDevice device, VkRenderPass renderPass,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern void vkGetRenderAreaGranularity(VkDevice device, VkRenderPass renderPass, out VkExtent2D pGranularity);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateCommandPool(VkDevice device, in VkCommandPoolCreateInfo pCreateInfo, IntPtr pAllocator, out VkCommandPool pCommandPool);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyCommandPool(VkDevice device, VkCommandPool commandPool, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateCommandPool(VkDevice device, in VkCommandPoolCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkCommandPool pCommandPool);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyCommandPool(VkDevice device, VkCommandPool commandPool,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkResetCommandPool(VkDevice device, VkCommandPool commandPool, VkCommandPoolResetFlags flags);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkAllocateCommandBuffers(VkDevice device, in VkCommandBufferAllocateInfo pAllocateInfo, [Out] VkCommandBuffer[] pCommandBuffers);
-        [DllImport("vulkan-1.dll")] public static extern void vkFreeCommandBuffers(VkDevice device, VkCommandPool commandPool, uint commandBufferCount, [In] VkCommandBuffer[] pCommandBuffers);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkAllocateCommandBuffers(VkDevice device, VkCommandBufferAllocateInfo* pAllocateInfo, VkCommandBuffer* pCommandBuffers);
+        [DllImport("vulkan-1.dll")] public static extern void vkFreeCommandBuffers(VkDevice device, VkCommandPool commandPool, uint commandBufferCount, VkCommandBuffer* pCommandBuffers);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkBeginCommandBuffer(VkCommandBuffer commandBuffer,
      VkCommandBufferBeginInfo* pBeginInfo);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkEndCommandBuffer(VkCommandBuffer commandBuffer);
@@ -169,7 +169,7 @@ namespace VulkanGameEngineLevelEditor
     uint dynamicOffsetCount,
      uint* pDynamicOffsets);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdBindIndexBuffer(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkIndexType indexType);
-        [DllImport("vulkan-1.dll")] public static extern void vkCmdBindVertexBuffers(VkCommandBuffer commandBuffer, uint firstBinding, uint bindingCount, [In] VkBuffer[] pBuffers, [In] VkDeviceSize[] pOffsets);
+        [DllImport("vulkan-1.dll")] public static extern void vkCmdBindVertexBuffers(VkCommandBuffer commandBuffer, uint firstBinding, uint bindingCount,  VkBuffer* pBuffers, VkDeviceSize* pOffsets);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdDraw(VkCommandBuffer commandBuffer, uint vertexCount, uint instanceCount, uint firstVertex, uint firstInstance);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdDrawIndexed(VkCommandBuffer commandBuffer, uint indexCount, uint instanceCount, uint firstIndex, int vertexOffset, uint firstInstance);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdDrawIndirect(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, uint drawCount, uint stride);
@@ -179,7 +179,7 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkCmdCopyBuffer(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkBuffer dstBuffer, uint regionCount, [In] VkBufferCopy[] pRegions);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdCopyImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout, VkImage dstImage, VkImageLayout dstImageLayout, uint regionCount, VkImageCopy* pRegions);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdBlitImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout, VkImage dstImage, VkImageLayout dstImageLayout, uint regionCount, [In] VkImageBlit[] pRegions, VkFilter filter);
-        [DllImport("vulkan-1.dll")] public static extern void vkCmdCopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage, VkImageLayout dstImageLayout, uint regionCount, [In] VkBufferImageCopy[] pRegions);
+        [DllImport("vulkan-1.dll")] public static extern void vkCmdCopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage, VkImageLayout dstImageLayout, uint regionCount,  VkBufferImageCopy* pRegions);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdCopyImageToBuffer(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout, VkBuffer dstBuffer, uint regionCount, [In] VkBufferImageCopy[] pRegions);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdUpdateBuffer(VkCommandBuffer commandBuffer, VkBuffer dstBuffer, VkDeviceSize dstOffset, VkDeviceSize dataSize, [In] IntPtr pData);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdFillBuffer(VkCommandBuffer commandBuffer, VkBuffer dstBuffer, VkDeviceSize dstOffset, VkDeviceSize size, uint data);
@@ -196,7 +196,19 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkCmdResetQueryPool(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint firstQuery, uint queryCount);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdWriteTimestamp(VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage, VkQueryPool queryPool, uint query);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdCopyQueryPoolResults(VkCommandBuffer commandBuffer, VkQueryPool queryPool, uint firstQuery, uint queryCount, VkBuffer dstBuffer, VkDeviceSize dstOffset, VkDeviceSize stride, VkQueryResultFlags flags);
-        [DllImport("vulkan-1.dll")] public static extern void vkCmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayout layout, VkShaderStageFlags stageFlags, uint offset, uint size, [In] IntPtr pValues);
+        [DllImport("vulkan-1.dll")] public static extern void vkCmdPushConstants(VkCommandBuffer commandBuffer, VkPipelineLayout layout, VkShaderStageFlags stageFlags, uint offset, uint size, void* pValues);
+        [DllImport("vulkan-1.dll")]
+        public static extern void vkCmdPipelineBarrier(
+    VkCommandBuffer commandBuffer,
+    VkPipelineStageFlags srcStageMask,
+    VkPipelineStageFlags dstStageMask,
+    VkDependencyFlags dependencyFlags,
+    uint memoryBarrierCount,
+    VkMemoryBarrier* pMemoryBarriers,
+    uint                                    bufferMemoryBarrierCount,
+     VkBufferMemoryBarrier pBufferMemoryBarriers,
+    uint                                    imageMemoryBarrierCount,
+    VkImageMemoryBarrier* pImageMemoryBarriers);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdBeginRenderPass(VkCommandBuffer commandBuffer,
      VkRenderPassBeginInfo* pRenderPassBegin,
     VkSubpassContents                           contents);
@@ -211,12 +223,15 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkCmdBeginDebugUtilsLabelEXT(VkCommandBuffer commandBuffer, in VkDebugUtilsLabelEXT pLabelInfo);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdEndDebugUtilsLabelEXT(VkCommandBuffer commandBuffer);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdInsertDebugUtilsLabelEXT(VkCommandBuffer commandBuffer, in VkDebugUtilsLabelEXT pLabelInfo);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDebugUtilsMessengerEXT(VkInstance instance, in VkDebugUtilsMessengerCreateInfoEXT pCreateInfo, IntPtr pAllocator, out VkDebugUtilsMessengerEXT pMessenger);
-        [DllImport("vulkan-1.dll")] public static extern void vkDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT messenger, IntPtr pAllocator);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDebugUtilsMessengerEXT(VkInstance instance, in VkDebugUtilsMessengerCreateInfoEXT pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkDebugUtilsMessengerEXT pMessenger);
+        [DllImport("vulkan-1.dll")] public static extern void vkDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT messenger,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern void vkSubmitDebugUtilsMessageEXT(VkInstance instance, VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, in VkDebugUtilsMessengerCallbackDataEXT pCallbackData);
+        [DllImport("vulkan-1.dll")] public static extern void vkAcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, ulong timeout, VkSemaphore semaphore, IntPtr fence, uint* pImageIndex);
 
-        public delegate VkResult PFN_vkCreateInstance(ref VkInstanceCreateInfo pCreateInfo, IntPtr pAllocator, out VkInstance pInstance);
-        public delegate void PFN_vkDestroyInstance(VkInstance instance, IntPtr pAllocator);
+
+
+        public delegate VkResult PFN_vkCreateInstance(ref VkInstanceCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkInstance pInstance);
+        public delegate void PFN_vkDestroyInstance(VkInstance instance,  VkAllocationCallbacks* pAllocator);
         public delegate VkResult PFN_vkEnumeratePhysicalDevices(VkInstance instance, ref uint pPhysicalDeviceCount, IntPtr pPhysicalDevices);
         public delegate void PFN_vkGetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice, out VkPhysicalDeviceFeatures pFeatures);
         public delegate void PFN_vkGetPhysicalDeviceFormatProperties(VkPhysicalDevice physicalDevice, VkFormat format, out VkFormatProperties pFormatProperties);
@@ -226,8 +241,8 @@ namespace VulkanGameEngineLevelEditor
         public delegate void PFN_vkGetPhysicalDeviceMemoryProperties(VkPhysicalDevice physicalDevice, out VkPhysicalDeviceMemoryProperties pMemoryProperties);
         public delegate IntPtr PFN_vkGetInstanceProcAddr(VkInstance instance, string pName);
         public delegate IntPtr PFN_vkGetDeviceProcAddr(VkDevice device, string pName);
-        public delegate VkResult PFN_vkCreateDevice(VkPhysicalDevice physicalDevice, ref VkDeviceCreateInfo pCreateInfo, IntPtr pAllocator, out VkDevice pDevice);
-        public delegate void PFN_vkDestroyDevice(VkDevice device, IntPtr pAllocator);
+        public delegate VkResult PFN_vkCreateDevice(VkPhysicalDevice physicalDevice, ref VkDeviceCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkDevice pDevice);
+        public delegate void PFN_vkDestroyDevice(VkDevice device,  VkAllocationCallbacks* pAllocator);
         public delegate VkResult PFN_vkEnumerateInstanceExtensionProperties(string pLayerName, ref uint pPropertyCount, IntPtr pProperties);
         public delegate VkResult PFN_vkEnumerateDeviceExtensionProperties(VkPhysicalDevice physicalDevice, string pLayerName, ref uint pPropertyCount, IntPtr pProperties);
         public delegate VkResult PFN_vkEnumerateInstanceLayerProperties(ref uint pPropertyCount, IntPtr pProperties);
@@ -236,8 +251,8 @@ namespace VulkanGameEngineLevelEditor
         public delegate VkResult PFN_vkQueueSubmit(VkQueue queue, uint submitCount, IntPtr pSubmits, VkFence fence);
         public delegate VkResult PFN_vkQueueWaitIdle(VkQueue queue);
         public delegate VkResult PFN_vkDeviceWaitIdle(VkDevice device);
-        public delegate VkResult PFN_vkAllocateMemory(VkDevice device, ref VkMemoryAllocateInfo pAllocateInfo, IntPtr pAllocator, out VkDeviceMemory pMemory);
-        public delegate void PFN_vkFreeMemory(VkDevice device, VkDeviceMemory memory, IntPtr pAllocator);
+        public delegate VkResult PFN_vkAllocateMemory(VkDevice device, ref VkMemoryAllocateInfo pAllocateInfo,  VkAllocationCallbacks* pAllocator, out VkDeviceMemory pMemory);
+        public delegate void PFN_vkFreeMemory(VkDevice device, VkDeviceMemory memory,  VkAllocationCallbacks* pAllocator);
         public delegate VkResult PFN_vkMapMemory(VkDevice device, VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags, out IntPtr ppData);
         public delegate void PFN_vkUnmapMemory(VkDevice device, VkDeviceMemory memory);
         public delegate VkResult PFN_vkFlushMappedMemoryRanges(VkDevice device, uint memoryRangeCount, IntPtr pMemoryRanges);
@@ -250,58 +265,58 @@ namespace VulkanGameEngineLevelEditor
         public delegate void PFN_vkGetImageSparseMemoryRequirements(VkDevice device, VkImage image, ref uint pSparseMemoryRequirementCount, IntPtr pSparseMemoryRequirements);
         public delegate void PFN_vkGetPhysicalDeviceSparseImageFormatProperties(VkPhysicalDevice physicalDevice, VkFormat format, VkImageType type, VkSampleCountFlagBits samples, VkImageUsageFlags usage, VkImageTiling tiling, ref uint pPropertyCount, IntPtr pProperties);
         public delegate VkResult PFN_vkQueueBindSparse(VkQueue queue, uint bindInfoCount, IntPtr pBindInfo, VkFence fence);
-        public delegate VkResult PFN_vkCreateFence(VkDevice device, ref VkFenceCreateInfo pCreateInfo, IntPtr pAllocator, out VkFence pFence);
-        public delegate void PFN_vkDestroyFence(VkDevice device, VkFence fence, IntPtr pAllocator);
+        public delegate VkResult PFN_vkCreateFence(VkDevice device, ref VkFenceCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkFence pFence);
+        public delegate void PFN_vkDestroyFence(VkDevice device, VkFence fence,  VkAllocationCallbacks* pAllocator);
         public delegate VkResult PFN_vkResetFences(VkDevice device, uint fenceCount, IntPtr pFences);
         public delegate VkResult PFN_vkGetFenceStatus(VkDevice device, VkFence fence);
         public delegate VkResult PFN_vkWaitForFences(VkDevice device, uint fenceCount, IntPtr pFences, VkBool32 waitAll, ulong timeout);
-        public delegate VkResult PFN_vkCreateSemaphore(VkDevice device, ref VkSemaphoreCreateInfo pCreateInfo, IntPtr pAllocator, out VkSemaphore pSemaphore);
-        public delegate void PFN_vkDestroySemaphore(VkDevice device, VkSemaphore semaphore, IntPtr pAllocator);
-        public delegate VkResult PFN_vkCreateEvent(VkDevice device, ref VkEventCreateInfo pCreateInfo, IntPtr pAllocator, out VkEvent pEvent);
-        public delegate void PFN_vkDestroyEvent(VkDevice device, VkEvent @event, IntPtr pAllocator);
+        public delegate VkResult PFN_vkCreateSemaphore(VkDevice device, ref VkSemaphoreCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkSemaphore pSemaphore);
+        public delegate void PFN_vkDestroySemaphore(VkDevice device, VkSemaphore semaphore,  VkAllocationCallbacks* pAllocator);
+        public delegate VkResult PFN_vkCreateEvent(VkDevice device, ref VkEventCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkEvent pEvent);
+        public delegate void PFN_vkDestroyEvent(VkDevice device, VkEvent @event,  VkAllocationCallbacks* pAllocator);
         public delegate VkResult PFN_vkGetEventStatus(VkDevice device, VkEvent @event);
         public delegate VkResult PFN_vkSetEvent(VkDevice device, VkEvent @event);
         public delegate VkResult PFN_vkResetEvent(VkDevice device, VkEvent @event);
-        public delegate VkResult PFN_vkCreateQueryPool(VkDevice device, ref VkQueryPoolCreateInfo pCreateInfo, IntPtr pAllocator, out VkQueryPool pQueryPool);
-        public delegate void PFN_vkDestroyQueryPool(VkDevice device, VkQueryPool queryPool, IntPtr pAllocator);
+        public delegate VkResult PFN_vkCreateQueryPool(VkDevice device, ref VkQueryPoolCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkQueryPool pQueryPool);
+        public delegate void PFN_vkDestroyQueryPool(VkDevice device, VkQueryPool queryPool,  VkAllocationCallbacks* pAllocator);
         public delegate VkResult PFN_vkGetQueryPoolResults(VkDevice device, VkQueryPool queryPool, uint firstQuery, uint queryCount, IntPtr dataSize, IntPtr pData, VkDeviceSize stride, VkQueryResultFlags flags);
-        public delegate VkResult PFN_vkCreateBuffer(VkDevice device, ref VkBufferCreateInfo pCreateInfo, IntPtr pAllocator, out VkBuffer pBuffer);
-        public delegate void PFN_vkDestroyBuffer(VkDevice device, VkBuffer buffer, IntPtr pAllocator);
-        public delegate VkResult PFN_vkCreateBufferView(VkDevice device, ref VkBufferViewCreateInfo pCreateInfo, IntPtr pAllocator, out VkBufferView pView);
-        public delegate void PFN_vkDestroyBufferView(VkDevice device, VkBufferView bufferView, IntPtr pAllocator);
-        public delegate VkResult PFN_vkCreateImage(VkDevice device, ref VkImageCreateInfo pCreateInfo, IntPtr pAllocator, out VkImage pImage);
-        public delegate void PFN_vkDestroyImage(VkDevice device, VkImage image, IntPtr pAllocator);
+        public delegate VkResult PFN_vkCreateBuffer(VkDevice device, ref VkBufferCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkBuffer pBuffer);
+        public delegate void PFN_vkDestroyBuffer(VkDevice device, VkBuffer buffer,  VkAllocationCallbacks* pAllocator);
+        public delegate VkResult PFN_vkCreateBufferView(VkDevice device, ref VkBufferViewCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkBufferView pView);
+        public delegate void PFN_vkDestroyBufferView(VkDevice device, VkBufferView bufferView,  VkAllocationCallbacks* pAllocator);
+        public delegate VkResult PFN_vkCreateImage(VkDevice device, ref VkImageCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkImage pImage);
+        public delegate void PFN_vkDestroyImage(VkDevice device, VkImage image,  VkAllocationCallbacks* pAllocator);
         public delegate void PFN_vkGetImageSubresourceLayout(VkDevice device, VkImage image, ref VkImageSubresource pSubresource, out VkSubresourceLayout pLayout);
-        public delegate VkResult PFN_vkCreateImageView(VkDevice device, ref VkImageViewCreateInfo pCreateInfo, IntPtr pAllocator, out VkImageView pView);
-        public delegate void PFN_vkDestroyImageView(VkDevice device, VkImageView imageView, IntPtr pAllocator);
-        public delegate VkResult PFN_vkCreateShaderModule(VkDevice device, ref VkShaderModuleCreateInfo pCreateInfo, IntPtr pAllocator, out VkShaderModule pShaderModule);
-        public delegate void PFN_vkDestroyShaderModule(VkDevice device, VkShaderModule shaderModule, IntPtr pAllocator);
-        public delegate VkResult PFN_vkCreatePipelineCache(VkDevice device, ref VkPipelineCacheCreateInfo pCreateInfo, IntPtr pAllocator, out VkPipelineCache pPipelineCache);
-        public delegate void PFN_vkDestroyPipelineCache(VkDevice device, VkPipelineCache pipelineCache, IntPtr pAllocator);
+        public delegate VkResult PFN_vkCreateImageView(VkDevice device, ref VkImageViewCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkImageView pView);
+        public delegate void PFN_vkDestroyImageView(VkDevice device, VkImageView imageView,  VkAllocationCallbacks* pAllocator);
+        public delegate VkResult PFN_vkCreateShaderModule(VkDevice device, ref VkShaderModuleCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkShaderModule pShaderModule);
+        public delegate void PFN_vkDestroyShaderModule(VkDevice device, VkShaderModule shaderModule,  VkAllocationCallbacks* pAllocator);
+        public delegate VkResult PFN_vkCreatePipelineCache(VkDevice device, ref VkPipelineCacheCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkPipelineCache pPipelineCache);
+        public delegate void PFN_vkDestroyPipelineCache(VkDevice device, VkPipelineCache pipelineCache,  VkAllocationCallbacks* pAllocator);
         public delegate VkResult PFN_vkGetPipelineCacheData(VkDevice device, VkPipelineCache pipelineCache, out IntPtr pDataSize, IntPtr pData);
         public delegate VkResult PFN_vkMergePipelineCaches(VkDevice device, VkPipelineCache dstCache, uint srcCacheCount, IntPtr pSrcCaches);
-        public delegate VkResult PFN_vkCreateGraphicsPipelines(VkDevice device, VkPipelineCache pipelineCache, uint createInfoCount, IntPtr pCreateInfos, IntPtr pAllocator, out IntPtr pPipelines);
-        public delegate VkResult PFN_vkCreateComputePipelines(VkDevice device, VkPipelineCache pipelineCache, uint createInfoCount, IntPtr pCreateInfos, IntPtr pAllocator, out IntPtr pPipelines);
-        public delegate void PFN_vkDestroyPipeline(VkDevice device, VkPipeline pipeline, IntPtr pAllocator);
-        public delegate VkResult PFN_vkCreatePipelineLayout(VkDevice device, ref VkPipelineLayoutCreateInfo pCreateInfo, IntPtr pAllocator, out VkPipelineLayout pPipelineLayout);
-        public delegate void PFN_vkDestroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout, IntPtr pAllocator);
-        public delegate VkResult PFN_vkCreateSampler(VkDevice device, ref VkSamplerCreateInfo pCreateInfo, IntPtr pAllocator, out VkSampler pSampler);
-        public delegate void PFN_vkDestroySampler(VkDevice device, VkSampler sampler, IntPtr pAllocator);
-        public delegate VkResult PFN_vkCreateDescriptorSetLayout(VkDevice device, ref VkDescriptorSetLayoutCreateInfo pCreateInfo, IntPtr pAllocator, out VkDescriptorSetLayout pSetLayout);
-        public delegate void PFN_vkDestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout, IntPtr pAllocator);
-        public delegate VkResult PFN_vkCreateDescriptorPool(VkDevice device, ref VkDescriptorPoolCreateInfo pCreateInfo, IntPtr pAllocator, out VkDescriptorPool pDescriptorPool);
-        public delegate void PFN_vkDestroyDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, IntPtr pAllocator);
+        public delegate VkResult PFN_vkCreateGraphicsPipelines(VkDevice device, VkPipelineCache pipelineCache, uint createInfoCount, IntPtr pCreateInfos,  VkAllocationCallbacks* pAllocator, out IntPtr pPipelines);
+        public delegate VkResult PFN_vkCreateComputePipelines(VkDevice device, VkPipelineCache pipelineCache, uint createInfoCount, IntPtr pCreateInfos,  VkAllocationCallbacks* pAllocator, out IntPtr pPipelines);
+        public delegate void PFN_vkDestroyPipeline(VkDevice device, VkPipeline pipeline,  VkAllocationCallbacks* pAllocator);
+        public delegate VkResult PFN_vkCreatePipelineLayout(VkDevice device, ref VkPipelineLayoutCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkPipelineLayout pPipelineLayout);
+        public delegate void PFN_vkDestroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout,  VkAllocationCallbacks* pAllocator);
+        public delegate VkResult PFN_vkCreateSampler(VkDevice device, ref VkSamplerCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkSampler pSampler);
+        public delegate void PFN_vkDestroySampler(VkDevice device, VkSampler sampler,  VkAllocationCallbacks* pAllocator);
+        public delegate VkResult PFN_vkCreateDescriptorSetLayout(VkDevice device, ref VkDescriptorSetLayoutCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkDescriptorSetLayout pSetLayout);
+        public delegate void PFN_vkDestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout,  VkAllocationCallbacks* pAllocator);
+        public delegate VkResult PFN_vkCreateDescriptorPool(VkDevice device, ref VkDescriptorPoolCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkDescriptorPool pDescriptorPool);
+        public delegate void PFN_vkDestroyDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool,  VkAllocationCallbacks* pAllocator);
         public delegate VkResult PFN_vkResetDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorPoolResetFlags flags);
         public delegate VkResult PFN_vkAllocateDescriptorSets(VkDevice device, ref VkDescriptorSetAllocateInfo pAllocateInfo, out IntPtr pDescriptorSets);
         public delegate VkResult PFN_vkFreeDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, uint descriptorSetCount, IntPtr pDescriptorSets);
         public delegate void PFN_vkUpdateDescriptorSets(VkDevice device, uint descriptorWriteCount, IntPtr pDescriptorWrites, uint descriptorCopyCount, IntPtr pDescriptorCopies);
-        public delegate VkResult PFN_vkCreateFramebuffer(VkDevice device, ref VkFramebufferCreateInfo pCreateInfo, IntPtr pAllocator, out VkFramebuffer pFramebuffer);
-        public delegate void PFN_vkDestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer, IntPtr pAllocator);
-        public delegate VkResult PFN_vkCreateRenderPass(VkDevice device, ref VkRenderPassCreateInfo pCreateInfo, IntPtr pAllocator, out VkRenderPass pRenderPass);
-        public delegate void PFN_vkDestroyRenderPass(VkDevice device, VkRenderPass renderPass, IntPtr pAllocator);
+        public delegate VkResult PFN_vkCreateFramebuffer(VkDevice device, ref VkFramebufferCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkFramebuffer pFramebuffer);
+        public delegate void PFN_vkDestroyFramebuffer(VkDevice device, VkFramebuffer framebuffer,  VkAllocationCallbacks* pAllocator);
+        public delegate VkResult PFN_vkCreateRenderPass(VkDevice device, ref VkRenderPassCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkRenderPass pRenderPass);
+        public delegate void PFN_vkDestroyRenderPass(VkDevice device, VkRenderPass renderPass,  VkAllocationCallbacks* pAllocator);
         public delegate void PFN_vkGetRenderAreaGranularity(VkDevice device, VkRenderPass renderPass, out VkExtent2D pGranularity);
-        public delegate VkResult PFN_vkCreateCommandPool(VkDevice device, ref VkCommandPoolCreateInfo pCreateInfo, IntPtr pAllocator, out VkCommandPool pCommandPool);
-        public delegate void PFN_vkDestroyCommandPool(VkDevice device, VkCommandPool commandPool, IntPtr pAllocator);
+        public delegate VkResult PFN_vkCreateCommandPool(VkDevice device, ref VkCommandPoolCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkCommandPool pCommandPool);
+        public delegate void PFN_vkDestroyCommandPool(VkDevice device, VkCommandPool commandPool,  VkAllocationCallbacks* pAllocator);
         public delegate VkResult PFN_vkResetCommandPool(VkDevice device, VkCommandPool commandPool, VkCommandPoolResetFlags flags);
         public delegate VkResult PFN_vkAllocateCommandBuffers(VkDevice device, ref VkCommandBufferAllocateInfo pAllocateInfo, out IntPtr pCommandBuffers);
         public delegate void PFN_vkFreeCommandBuffers(VkDevice device, VkCommandPool commandPool, uint commandBufferCount, IntPtr pCommandBuffers);

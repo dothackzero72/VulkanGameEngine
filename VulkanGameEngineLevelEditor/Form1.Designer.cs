@@ -36,14 +36,14 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(448, 558);
+            this.textBox1.Location = new System.Drawing.Point(811, 767);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(310, 26);
             this.textBox1.TabIndex = 0;
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(249, 636);
+            this.richTextBox1.Location = new System.Drawing.Point(673, 838);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(737, 164);
             this.richTextBox1.TabIndex = 1;
@@ -51,10 +51,10 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.pictureBox1.Location = new System.Drawing.Point(414, 28);
+            this.pictureBox1.BackColor = System.Drawing.SystemColors.Window;
+            this.pictureBox1.Location = new System.Drawing.Point(404, 26);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(476, 476);
+            this.pictureBox1.Size = new System.Drawing.Size(1280, 720);
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
             // 
@@ -62,7 +62,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1463, 892);
+            this.ClientSize = new System.Drawing.Size(2194, 1093);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.textBox1);
