@@ -11,3 +11,4 @@ DLL_EXPORT VkResult DLL_SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevice
 DLL_EXPORT VkSwapchainKHR DLL_SwapChain_SetUpSwapChain(VkDevice device, VkSurfaceKHR surface, VkSurfaceCapabilitiesKHR surfaceCapabilities, VkSurfaceFormatKHR swapChainImageFormat, VkPresentModeKHR swapChainPresentMode, uint32_t graphicsFamily, uint32_t presentFamily, uint32_t width, uint32_t height, uint32_t* swapChainImageCount);
 DLL_EXPORT VkImage* DLL_SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32_t swapChainImageCount);
 DLL_EXPORT VkImageView* DLL_SwapChain_SetUpSwapChainImageViews(VkDevice device, VkImage* swapChainImages, VkSurfaceFormatKHR* swapChainImageFormat, uint32_t swapChainImageCount);
+

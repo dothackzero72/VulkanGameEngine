@@ -177,7 +177,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Height = image.Height;
                 ColorChannels = image.Comp;
                 Data = image.Data.ToArray();
-                WriteImage("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa.bmp", Data);
                 // MipMapLevels = (uint)Math.Floor(Math.Log(Math.Max(Width, Height)) / Math.Log(2)) + 1;
 
                 GCHandle handle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
@@ -243,30 +242,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         virtual public void Destroy()
         {
 
-        }
-
-        [DllImport("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanDLL.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, IntPtr data);
-        public void WriteImage(string filePath, byte[] imageData)
-        {
-            IntPtr dataPtr = Marshal.AllocHGlobal(imageData.Length);
-            Marshal.Copy(imageData, 0, dataPtr, imageData.Length);
-            try
-            {
-                int result = DLL_stbi_write_bmp(filePath, Width, Height, (int)ColorChannels, dataPtr);
-                if (result == 0)
-                {
-                    Console.WriteLine("Failed to write image.");
-                }
-                else
-                {
-                    Console.WriteLine("Image written successfully.");
-                }
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(dataPtr);
-            }
         }
 
         private void CreateBuffer(uint size, VkBufferUsageFlags usage, VkMemoryPropertyFlagBits properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory)

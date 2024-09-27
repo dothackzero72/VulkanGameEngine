@@ -163,11 +163,9 @@ namespace VulkanGameEngineLevelEditor
     {
         public VkStructureType sType;
         public IntPtr pNext;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string pApplicationName;
+        public IntPtr pApplicationName; // Note: You may need to change this to IntPtr if you are planning to marshal manually
         public uint applicationVersion;
-        [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string pEngineName;
+        public IntPtr pEngineName; // Note: as above
         public uint engineVersion;
         public uint apiVersion;
     }
@@ -191,16 +189,18 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkInstanceCreateInfo
+    public unsafe struct VkInstanceCreateInfo
     {
-        public VkStructureType sType;
-        public IntPtr pNext;
-        public VkInstanceCreateFlags flags;
-        public IntPtr pApplicationInfo; // Pointer to VkApplicationInfo
-        public uint enabledLayerCount;
-        public IntPtr pEnabledLayerNames; // Pointer to array of layer names
-        public uint enabledExtensionCount;
-        public IntPtr pEnabledExtensionNames; // Pointer to array of extension names
+        public VkStructureType sType; // Structure type
+        public void* pNext; // Pointer to the next structure in a chain
+        public VkInstanceCreateFlags flags; // Creation flags
+        public VkApplicationInfo* pApplicationInfo; // Pointer to an application info structure
+        public uint enabledLayerCount; // Number of enabled layers
+        public IntPtr ppEnabledLayerNames; // Pointer to an array of layer names
+        public uint enabledExtensionCount; // Number of enabled extensions
+        public IntPtr ppEnabledExtensionNames; // Pointer to an array of extension names
+
+        // Add any additional members if required.
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -485,18 +485,30 @@ namespace VulkanGameEngineLevelEditor
         public string description;
     }
 
+    public unsafe struct VkPresentInfoKHR
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public uint waitSemaphoreCount;
+        public VkSemaphore* pWaitSemaphores;
+        public uint swapchainCount;
+        public VkSwapchainKHR* pSwapchains;
+        public uint* pImageIndices;
+        public VkResult* pResults;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkSubmitInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
         public uint waitSemaphoreCount;
-        public VkSemaphore pWaitSemaphores; // Pointer to array of VkSemaphore
-        public VkPipelineStageFlags pWaitDstStageMask; // Pointer to array of VkPipelineStageFlags
+        public VkSemaphore* pWaitSemaphores; // Pointer to array of VkSemaphore
+        public VkPipelineStageFlags* pWaitDstStageMask; // Pointer to array of VkPipelineStageFlags
         public uint commandBufferCount;
         public VkCommandBuffer* pCommandBuffers; // Pointer to array of VkCommandBuffer
         public uint signalSemaphoreCount;
-        public VkSemaphore pSignalSemaphores; // Pointer to array of VkSemaphore
+        public VkSemaphore* pSignalSemaphores; // Pointer to array of VkSemaphore
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1612,31 +1624,25 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkDebugUtilsMessengerCreateInfoEXT
-    {
-        public VkStructureType sType;
-        public IntPtr pNext; // Pointer to next structure, can be null
-        public VkDebugUtilsMessengerCreateFlagsEXT flags;
-        public VkDebugUtilsMessageSeverityFlagsEXT messageSeverity;
-        public VkDebugUtilsMessageTypeFlagsEXT messageType;
-        public VkDebugUtilsMessengerCallbackEXT pfnUserCallback;
-        public IntPtr pUserData; // Pointer to user data
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct VkDebugUtilsMessengerCallbackDataEXT
     {
         public VkStructureType sType;     // The type of this structure
         public IntPtr pNext;              // Pointer to the next structure or null
         public string pMessageIdName;     // Name of the message ID
         public uint messageIdNumber;      // Numeric message ID
-        public string pMessage;           // The message itself
+        public IntPtr pMessage;           // The message itself
         public uint queueLabelCount;      // Number of queue labels
         public IntPtr pQueueLabels;       // Pointer to queue labels
         public uint cmdBufLabelCount;     // Number of command buffer labels
         public IntPtr pCmdBufLabels;      // Pointer to command buffer labels
         public IntPtr pUserData;          // Pointer to user data
     }
+
+    public delegate VkBool32 PFN_vkDebugUtilsMessengerCallbackEXT(
+    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+    ref VkDebugUtilsMessengerCallbackDataEXT pCallbackData,
+    IntPtr pUserData);
 
     public delegate VkResult VkSetDebugUtilsObjectNameEXT(
     IntPtr device, // Use IntPtr for VkDevice
@@ -1686,7 +1692,7 @@ namespace VulkanGameEngineLevelEditor
     // PFN_vkCreateDebugUtilsMessengerEXT
     public delegate VkResult VkCreateDebugUtilsMessengerEXT(
         IntPtr instance, // Use IntPtr for VkInstance
-        ref VkDebugUtilsMessengerCreateInfoEXT pCreateInfo,
+        ref VulkanGameEngineLevelEditor.GameEngineAPI.VulkanDebugMessenger.VkDebugUtilsMessengerCreateInfoEXT pCreateInfo,
         IntPtr pAllocator, // Use IntPtr for VkAllocationCallbacks
         out IntPtr pMessenger // Use `out` to return the messenger handle
     );

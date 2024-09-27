@@ -13,7 +13,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         // Texture functions
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkResult DLL_Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* image, uint mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout);
-        
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern VkResult DLL_Renderer_GetWin32Extensions(ref uint extensionCount, out IntPtr enabledExtensions);
+
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkResult DLL_Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, int width, int height, uint mipmapLevels, VkFormat textureByteFormat);
         
@@ -95,7 +97,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static extern VkResult DLL_Renderer_GetDeviceQueue(VkDevice device, uint graphicsFamily, uint presentFamily, out VkQueue graphicsQueue, out VkQueue presentQueue);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, out IntPtr presentModes, out uint presentModeCount);
+        public static extern VkResult DLL_Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, out VkPresentModeKHR presentModes, out uint presentModeCount);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkResult DLL_Renderer_GetPresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR[] presentMode, out uint presentModeCount);
@@ -106,8 +108,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern void DLL_Renderer_GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features);
         
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult DLL_Renderer_GetWin32Extensions(out uint extensionCount, out IntPtr enabledExtensions);
 
         // Debug functions
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
@@ -148,10 +148,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static extern void DLL_Renderer_UpdateDescriptorSet(VkDevice device, VkWriteDescriptorSet* writeDescriptorSet, uint count);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkResult DLL_Renderer_GetSurfaceFormats(
-        VkPhysicalDevice physicalDevice,
-        VkSurfaceKHR surface,
-        IntPtr surfaceFormats, // We will handle this with an IntPtr to manage properly.
-        ref uint surfaceFormatCount);
+     VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, out VkSurfaceFormatKHR surfaceFormats, out uint surfaceFormatCount);
 
         // Frame and Submission functions
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]

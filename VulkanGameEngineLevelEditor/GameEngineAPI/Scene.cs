@@ -9,11 +9,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public class Scene
     {
-       // public  Texture texture;
-        private Mesh2D mesh;
+        public  Texture texture;
+       // private Mesh2D mesh;
         private FrameBufferRenderPass renderPass;
-        private Texture texture;
-        public TestRenderPass testRenderPass2D { get; set; }
+       // public Texture texture;
+        //public TestRenderPass testRenderPass2D { get; set; }
+        //public RenderPass2D renderPass2D { get; set; } = new RenderPass2D();
         private SceneDataBuffer sceneProperties;
         public Scene()
         {
@@ -27,9 +28,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             // Ensure this method is called on the UI thread
             texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", VkFormat.VK_FORMAT_R8G8B8A8_UNORM, TextureTypeEnum.kType_DiffuseTextureMap);
-            mesh = new Mesh2D();
+          //  mesh = new Mesh2D();
             renderPass = new FrameBufferRenderPass();
-            testRenderPass2D = new TestRenderPass();
+           // testRenderPass2D = new TestRenderPass();
             BuildRenderPasses();
         }
 
@@ -44,8 +45,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void BuildRenderPasses()
         {
-            testRenderPass2D.BuildRenderPass(texture);
-            renderPass.BuildRenderPass(testRenderPass2D.texture);
+          //  renderPass2D.BuildRenderPass(mesh);
+ //           testRenderPass2D.BuildRenderPass(texture);
+            renderPass.BuildRenderPass(texture);
         }
         public void UpdateRenderPasses()
         {
@@ -55,7 +57,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             List<VkCommandBuffer> CommandBufferSubmitList = new List<VkCommandBuffer>();
             VulkanRenderer.StartFrame();
-            testRenderPass2D.Draw();
+           // renderPass2D.Draw(mesh);
+            //testRenderPass2D.Draw();
             renderPass.Draw();
             VulkanRenderer.EndFrame(CommandBufferSubmitList);
         }

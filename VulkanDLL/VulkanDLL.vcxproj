@@ -156,6 +156,7 @@
     <ClInclude Include="DLLVulkanBuffer.h" />
     <ClInclude Include="DLLVulkanRenderer.h" />
     <ClInclude Include="DLLVulkanSwapChain.h" />
+    <ClInclude Include="DLLWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DLL.c" />
@@ -164,6 +165,7 @@
     <ClCompile Include="DLLVulkanBuffer.c" />
     <ClCompile Include="DLLVulkanRenderer.c" />
     <ClCompile Include="DLLVulkanSwapChain.c" />
+    <ClCompile Include="DLLWindow.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -18,6 +18,7 @@ namespace VulkanGameEngineLevelEditor
         public const uint VK_TRUE = 1;
         public const uint VK_FALSE = 0;
         public const ulong UINT64_MAX = ulong.MaxValue;
+        public const uint UINT32_MAX = uint.MaxValue;
         public const int VK_UUID_SIZE = 16;
         public const int VK_MAX_MEMORY_TYPES = 32;
         public const int VK_MAX_MEMORY_HEAPS = 16;

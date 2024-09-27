@@ -14,12 +14,23 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyInstance(VkInstance instance,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern int vkCreateWin32SurfaceKHR(VkInstance instance, ref VkWin32SurfaceCreateInfoKHR pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkSurfaceKHR pSurface);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkEnumeratePhysicalDevices(VkInstance instance, ref uint pPhysicalDeviceCount, IntPtr pPhysicalDevices);
-        [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice, IntPtr pFeatures);
+        [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures* pFeatures);
         [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceFormatProperties(VkPhysicalDevice physicalDevice, int format, IntPtr pFormatProperties);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkGetPhysicalDeviceImageFormatProperties(VkPhysicalDevice physicalDevice, int format, VkImageType type, int tiling, VkImageUsageFlags usage, VkImageCreateFlags flags, IntPtr pImageFormatProperties);
         [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceProperties(VkPhysicalDevice physicalDevice, IntPtr pProperties);
         [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice, ref uint pQueueFamilyPropertyCount, IntPtr pQueueFamilyProperties);
         [DllImport("vulkan-1.dll")] public static extern void vkGetPhysicalDeviceMemoryProperties(VkPhysicalDevice physicalDevice, IntPtr pMemoryProperties);
+        [DllImport("vulkan-1.dll")]
+        public static extern VkResult vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+    VkPhysicalDevice physicalDevice,
+    VkSurfaceKHR surface,
+    out VkSurfaceCapabilitiesKHR pSurfaceCapabilities);
+        [DllImport("vulkan-1.dll")]
+        public static extern VkResult vkGetPhysicalDeviceSurfaceSupportKHR(
+    VkPhysicalDevice physicalDevice,
+    uint queueFamilyIndex,
+    VkSurfaceKHR surface,
+    out VkBool32 pSupported);
         [DllImport("vulkan-1.dll")] public static extern IntPtr vkGetInstanceProcAddr(VkInstance instance, string pName);
         [DllImport("vulkan-1.dll")] public static extern IntPtr vkGetDeviceProcAddr(IntPtr device, string pName);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDevice(VkPhysicalDevice physicalDevice, IntPtr pCreateInfo,  VkAllocationCallbacks* pAllocator, out IntPtr pDevice);
@@ -223,13 +234,20 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkCmdBeginDebugUtilsLabelEXT(VkCommandBuffer commandBuffer, in VkDebugUtilsLabelEXT pLabelInfo);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdEndDebugUtilsLabelEXT(VkCommandBuffer commandBuffer);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdInsertDebugUtilsLabelEXT(VkCommandBuffer commandBuffer, in VkDebugUtilsLabelEXT pLabelInfo);
-        [DllImport("vulkan-1.dll")] public static extern VkResult vkCreateDebugUtilsMessengerEXT(VkInstance instance, in VkDebugUtilsMessengerCreateInfoEXT pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkDebugUtilsMessengerEXT pMessenger);
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Winapi)]
+        public static extern VkResult vkCreateDebugUtilsMessengerEXT(
+    VkInstance instance,
+    ref VulkanGameEngineLevelEditor.GameEngineAPI.VulkanDebugMessenger.VkDebugUtilsMessengerCreateInfoEXT pCreateInfo,
+    IntPtr pAllocator,
+    out VkDebugUtilsMessengerEXT pMessenger);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT messenger,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern void vkSubmitDebugUtilsMessageEXT(VkInstance instance, VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, in VkDebugUtilsMessengerCallbackDataEXT pCallbackData);
-        [DllImport("vulkan-1.dll")] public static extern void vkAcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, ulong timeout, VkSemaphore semaphore, IntPtr fence, uint* pImageIndex);
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkAcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, ulong timeout, VkSemaphore semaphore, IntPtr fence, uint* pImageIndex);
 
 
-
+        [DllImport("vulkan-1.dll")] public static extern VkResult vkQueuePresentKHR(
+    VkQueue queue,
+     VkPresentInfoKHR* pPresentInfo);
         public delegate VkResult PFN_vkCreateInstance(ref VkInstanceCreateInfo pCreateInfo,  VkAllocationCallbacks* pAllocator, out VkInstance pInstance);
         public delegate void PFN_vkDestroyInstance(VkInstance instance,  VkAllocationCallbacks* pAllocator);
         public delegate VkResult PFN_vkEnumeratePhysicalDevices(VkInstance instance, ref uint pPhysicalDeviceCount, IntPtr pPhysicalDevices);

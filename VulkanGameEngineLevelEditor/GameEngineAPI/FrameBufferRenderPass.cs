@@ -454,8 +454,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             return new List<VkPipelineShaderStageCreateInfo>()
             {
-                VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderVert.spv",  VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT),
-                VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderFrag.spv", VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT)
+                VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/vertex_shader.spv",  VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT),
+                VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/fragment_shader.spv", VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT)
             };
         }
 
