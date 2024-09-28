@@ -16,6 +16,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     {
         const int BufferCount = VulkanRenderer.MAX_FRAMES_IN_FLIGHT;
         public List<Bitmap> BitMapBuffers { get; protected set; } = new List<Bitmap>();
+        public Bitmap DisplayImage { get; protected set; }
         public int CurrentBufferIndex { get; protected set; } = 0;
         private ivec2 SwapChainSize { get; set; } = new ivec2(0,0);
         private readonly Object BufferLock = new Object();
@@ -37,39 +38,40 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 return;
             }
+
+            Bitmap currentBitmap = BitMapBuffers[CurrentBufferIndex];
+            for (int y = 0; y < BitMapBuffers[CurrentBufferIndex].Height; y++)
+            {
+                for (int x = 0; x < BitMapBuffers[CurrentBufferIndex].Width; x++)
+                {
+                    int index = (y * BitMapBuffers[CurrentBufferIndex].Width + x) * 4;
+                    Color pixelColor = ByteArrayToColor(pixelData, index);
+                    BitMapBuffers[CurrentBufferIndex].SetPixel(x, y, pixelColor);
+                }
+            }
+
             lock (BufferLock)
             {
-                Bitmap currentBitmap = BitMapBuffers[CurrentBufferIndex];
-                // BitmapData bitmapData = currentBitmap.LockBits(new Rectangle(0, 0, SwapChainSize.x, SwapChainSize.y), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-
-                for (int y = 0; y < BitMapBuffers[CurrentBufferIndex].Height; y++)
-                {
-                    for (int x = 0; x < BitMapBuffers[CurrentBufferIndex].Width; x++)
-                    {
-                        int index = (y * BitMapBuffers[CurrentBufferIndex].Width + x) * 4;
-                        Color pixelColor = ByteArrayToColor(pixelData, index);
-                        BitMapBuffers[CurrentBufferIndex].SetPixel(x, y, pixelColor);
-                    }
-                }
-
-                //currentBitmap.UnlockBits(bitmapData);
-
-                CurrentBufferIndex = (CurrentBufferIndex + 1) % BufferCount;
+                DisplayImage = currentBitmap;
+                BitMapBuffers[CurrentBufferIndex] = currentBitmap;
             }
+            CurrentBufferIndex = (CurrentBufferIndex + 1) % BufferCount;
         }
 
         public void PresentImage(PictureBox picture)
         {
-            lock (BufferLock)
+            if (DisplayImage == null)
             {
-                if (picture.Image != null)
-                {
-                    picture.Image.Dispose();
-                }
-
-                picture.Image = (Bitmap)BitMapBuffers[CurrentBufferIndex].Clone();
-                picture.Refresh();
+                return;
             }
+
+            if (picture.Image != null)
+            {
+                picture.Image.Dispose();
+            }
+
+            picture.Image = (Bitmap)DisplayImage.Clone();
+            picture.Refresh();
         }
 
         private Color ByteArrayToColor(byte[] data, int index)

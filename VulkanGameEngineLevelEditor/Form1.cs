@@ -65,11 +65,11 @@ namespace VulkanGameEngineLevelEditor
         public void StartLevelEditorRenderer()
         {
             running = true;
-            renderThread = new Thread(LevelEditorLoop)
+            levelEditerDisplayThread = new Thread(LevelEditorLoop)
             {
                 IsBackground = true
             };
-            renderThread.Start();
+            levelEditerDisplayThread.Start();
         }
 
         private void LevelEditorLoop()
@@ -168,34 +168,15 @@ namespace VulkanGameEngineLevelEditor
         {
             pictureBox1.Invoke(new Action(() => levelEditorSwapChain.PresentImage(pictureBox1)));
         }
-        //private void UpdateBitmapWithData(byte[] textureData)
-        //{
-        //    if (textureData == null)
-        //    {
-        //        return;
-        //    }
 
-        //    using (Bitmap bitmap = new Bitmap(scene.testRenderPass2D.texture.Width, scene.testRenderPass2D.texture.Height, PixelFormat.Format32bppArgb))
-        //    {
-        //        for (int y = 0; y < bitmap.Height; y++)
-        //        {
-        //            for (int x = 0; x < bitmap.Width; x++)
-        //            {
-        //                int index = (y * bitmap.Width + x) * 4;
-        //                Color pixelColor = ByteArrayToColor(textureData, index);
-        //                bitmap.SetPixel(x, y, pixelColor);
-        //            }
-        //        }
-
-        //        if (pictureBox1.Image != null)
-        //        {
-        //            pictureBox1.Image.Dispose();
-        //        }
-
-        //        pictureBox1.Image = (Bitmap)bitmap.Clone();
-        //        pictureBox1.Refresh();
-        //    }
-        //}
+        public void StopLevelRenderer()
+        {
+            running = false;
+            if (renderThread != null && renderThread.IsAlive)
+            {
+                renderThread.Join();
+            }
+        }
 
         public void StopRenderer()
         {
