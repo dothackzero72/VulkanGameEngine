@@ -22,7 +22,8 @@ namespace VulkanGameEngineLevelEditor
         private BlockingCollection<byte[]> dataCollection = new BlockingCollection<byte[]>(boundedCapacity: 10);
         private System.Windows.Forms.Timer renderTimer;
         private static Scene scene;
-      
+        private Bitmap[] bitmapBuffer = new Bitmap[3];
+        private uint NextTexture = 0;
         public Form1()
         {
             InitializeComponent();
@@ -80,10 +81,8 @@ namespace VulkanGameEngineLevelEditor
 
         public unsafe byte[] BakeColorTexture(string filename, Texture texture)
         {
-            //std::shared_ptr<Texture2D> BakeTexture = std::make_shared<Texture2D>(Texture2D(Pixel(255, 0, 0), glm::vec2(1280,720), VkFormat::VK_FORMAT_R8G8B8A8_UNORM, TextureTypeEnum::kTextureAtlus));
             var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
-
-            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
+            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2((int)VulkanRenderer.SwapChainResolution.Width, (int)VulkanRenderer.SwapChainResolution.Height), VkFormat.VK_FORMAT_A8B8G8R8_UNORM_PACK32);
 
             VkCommandBuffer commandBuffer = VulkanRenderer.BeginCommandBuffer();
 
@@ -115,27 +114,13 @@ namespace VulkanGameEngineLevelEditor
             VkSubresourceLayout subResourceLayout;
             vkGetImageSubresourceLayout(VulkanRenderer.Device, bakeTexture.Image, &subResource, &subResourceLayout);
 
-            byte* data;
-            VulkanAPI.vkMapMemory(VulkanRenderer.Device, bakeTexture.Memory, 0, VulkanConsts.VK_WHOLE_SIZE, 0, (void**)&data);
-
-            DLL_stbi_write_bmp(filename, bakeTexture.Width, bakeTexture.Height, 4, data);
-
-
             int pixelCount = bakeTexture.Width * bakeTexture.Height;
-            byte[] pixelData = new byte[pixelCount * 4]; // ARGB format (4 bytes per pixel)
-            for (int y = 0; y < bakeTexture.Height; y++)
-            {
-                for (int x = 0; x < bakeTexture.Width; x++)
-                {
-                    int index = (y * bakeTexture.Width + x) * 4; // Original RGBA index
+            byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
 
-                    // Directly fill the pixelData
-                    pixelData[(y * bakeTexture.Width + x) * 4 + 0] = data[index + 3]; // Alpha
-                    pixelData[(y * bakeTexture.Width + x) * 4 + 1] = data[index + 0]; // Red
-                    pixelData[(y * bakeTexture.Width + x) * 4 + 2] = data[index + 1]; // Green
-                    pixelData[(y * bakeTexture.Width + x) * 4 + 3] = data[index + 2]; // Blue
-                }
-            }
+            IntPtr mappedMemory;
+            VulkanAPI.vkMapMemory(VulkanRenderer.Device, bakeTexture.Memory, 0, VulkanConsts.VK_WHOLE_SIZE, 0, (void**)&mappedMemory);
+            Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
+            VulkanAPI.vkUnmapMemory(VulkanRenderer.Device, bakeTexture.Memory);
 
             return pixelData;
         }
@@ -163,7 +148,7 @@ namespace VulkanGameEngineLevelEditor
                 }
                 else
                 {
-                   UpdateBitmapWithData(textureData);
+                    UpdateBitmapWithData(textureData);
                 }
             }
         }
@@ -174,18 +159,25 @@ namespace VulkanGameEngineLevelEditor
                 return;
             }
 
-            using (Bitmap bitmap = new Bitmap(scene.texture.Width, scene.texture.Height, PixelFormat.Format32bppArgb))
+            using (Bitmap bitmap = new Bitmap((int)VulkanRenderer.SwapChainResolution.Width, (int)VulkanRenderer.SwapChainResolution.Height, PixelFormat.Format32bppArgb))
             {
-                for (int y = 0; y < bitmap.Height; y++)
+                BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                                                         ImageLockMode.WriteOnly,
+                                                         bitmap.PixelFormat);
+
+                int bytesPerPixel = 4;
+                int bitmapDataSize = bitmapData.Stride * bitmapData.Height;
+                byte[] adjustedTextureData = new byte[Math.Min(textureData.Length, bitmapDataSize)];
+                for (int i = 0; i < adjustedTextureData.Length; i += bytesPerPixel)
                 {
-                    for (int x = 0; x < bitmap.Width; x++)
-                    {
-                        int index = (y * bitmap.Width + x) * 4;
-                        Color pixelColor = ByteArrayToColor(textureData, index);
-                        bitmap.SetPixel(x, y, pixelColor);
-                    }
+                    adjustedTextureData[i + 0] = textureData[i + 3];
+                    adjustedTextureData[i + 1] = textureData[i + 0];
+                    adjustedTextureData[i + 2] = textureData[i + 1];
+                    adjustedTextureData[i + 3] = textureData[i + 2];
                 }
 
+                System.Runtime.InteropServices.Marshal.Copy(adjustedTextureData, 0, bitmapData.Scan0, adjustedTextureData.Length);
+                bitmap.UnlockBits(bitmapData);
                 if (pictureBox1.Image != null)
                 {
                     pictureBox1.Image.Dispose();
@@ -198,10 +190,10 @@ namespace VulkanGameEngineLevelEditor
 
         private Color ByteArrayToColor(byte[] data, int index)
         {
-            byte a = data[index + 0];
-            byte r = data[index + 1];
-            byte g = data[index + 2];
-            byte b = data[index + 3];
+            byte a = data[index + 3];
+            byte r = data[index + 0];
+            byte g = data[index + 1];
+            byte b = data[index + 2];
             return Color.FromArgb(a, r, g, b);
         }
 
