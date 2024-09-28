@@ -14,7 +14,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             var attachment = new VkAttachmentDescription
             {
-                format = VkFormat.VK_FORMAT_R8G8B8A8_SNORM, // Use your swap chain image format
+                format = VkFormat.VK_FORMAT_B8G8R8A8_UNORM,
                 samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
                 loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
                 storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_STORE,
@@ -26,7 +26,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             var colorAttachmentRef = new VkAttachmentReference
             {
-                attachment = 0,
+                attachment = 1,
                 layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             };
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static VulkanGameEngineLevelEditor.GameEngineAPI.VulkanDebugMessenger;
 
 namespace VulkanGameEngineLevelEditor
 {
@@ -235,11 +236,12 @@ namespace VulkanGameEngineLevelEditor
         [DllImport("vulkan-1.dll")] public static extern void vkCmdEndDebugUtilsLabelEXT(VkCommandBuffer commandBuffer);
         [DllImport("vulkan-1.dll")] public static extern void vkCmdInsertDebugUtilsLabelEXT(VkCommandBuffer commandBuffer, in VkDebugUtilsLabelEXT pLabelInfo);
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Winapi)]
-        public static extern VkResult vkCreateDebugUtilsMessengerEXT(
+        public static extern VkResult
+        vkCreateDebugUtilsMessengerEXT(
     VkInstance instance,
-    ref VulkanGameEngineLevelEditor.GameEngineAPI.VulkanDebugMessenger.VkDebugUtilsMessengerCreateInfoEXT pCreateInfo,
-    IntPtr pAllocator,
-    out VkDebugUtilsMessengerEXT pMessenger);
+     VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+     VkAllocationCallbacks* pAllocator,
+    VkDebugUtilsMessengerEXT*                   pMessenger);
         [DllImport("vulkan-1.dll")] public static extern void vkDestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT messenger,  VkAllocationCallbacks* pAllocator);
         [DllImport("vulkan-1.dll")] public static extern void vkSubmitDebugUtilsMessageEXT(VkInstance instance, VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, in VkDebugUtilsMessengerCallbackDataEXT pCallbackData);
         [DllImport("vulkan-1.dll")] public static extern VkResult vkAcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapchain, ulong timeout, VkSemaphore semaphore, IntPtr fence, uint* pImageIndex);

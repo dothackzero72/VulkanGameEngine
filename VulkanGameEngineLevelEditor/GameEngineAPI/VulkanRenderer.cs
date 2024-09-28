@@ -1,5 +1,6 @@
 ﻿using GlmSharp;
 using SDL2;
+using Silk.NET.GLFW;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using static VulkanGameEngineLevelEditor.GameEngineAPI.VulkanDebugMessenger;
 using static VulkanGameEngineLevelEditor.VulkanAPI;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -44,6 +46,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public const int MAX_FRAMES_IN_FLIGHT = 3;
         public static bool RebuildRendererFlag { get; set; } = false;
         public static IntPtr WindowHandleCopy = IntPtr.Zero;
+        public static WindowHandle* GlfwWindowHandleCopy;
         public static VkInstance Instance { get; private set; } = new VkInstance();
         public static VkDevice Device { get; private set; } = new VkDevice();
         public static VkPhysicalDevice PhysicalDevice { get; private set; } = new VkPhysicalDevice();
@@ -69,20 +72,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static VkExtent2D SwapChainResolution { get; private set; } = new VkExtent2D();
         public static VkSwapchainKHR Swapchain { get; private set; } = new VkSwapchainKHR();
 
-        public static void SetUpRenderer(IntPtr handle)
+        public static void SetUpRenderer(WindowHandle* handle)
         {
-            WindowHandleCopy = handle;
+            GlfwWindowHandleCopy = handle;
             CreateVulkanInstance();
-          //  SetupDebugMessenger();
-            CreateVulkanSurface();
+            SetupDebugMessenger();
+            CreateVulkanSurface(handle); // Use the SDL window handle directly
             SetUpPhysicalDevice();
             SetUpDevice();
+
             VkSurfaceCapabilitiesKHR surfaceCapabilities = GetSurfaceCapabilities();
             List<VkSurfaceFormatKHR> surfaceFormatList = GetPhysicalDeviceFormats();
             GetQueueFamilies();
             List<VkPresentModeKHR> presentModeList = GetPhysicalDevicePresentModes();
+
             VkSurfaceFormatKHR swapChainImageFormat = FindSwapSurfaceFormat(surfaceFormatList);
             VkPresentModeKHR presentMode = FindSwapPresentMode(presentModeList);
+
             GetFrameBufferSize();
             SetUpSwapChain(surfaceCapabilities, swapChainImageFormat, presentMode);
             SetUpSwapChainImages();
@@ -96,7 +102,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             WindowHandleCopy = handle;
             CreateVulkanInstance();
-            SetupDebugMessenger();
+            //SetupDebugMessenger();
             CreateVulkanSurface(pictureBox);
             SetUpPhysicalDevice();
             SetUpDevice();
@@ -314,9 +320,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             uint extensionCount = 0;
             IntPtr extensions = IntPtr.Zero;
-           Renderer_GetWin32Extensions(ref extensionCount, out extensions);
 
-            VkApplicationInfo applicationInfo = new VkApplicationInfo
+            // Step 1: Retrieve the available extensions
+            Renderer_GetWin32Extensions(ref extensionCount, out extensions);
+
+            // Step 2: Create the application info structure
+            var applicationInfo = new VkApplicationInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_APPLICATION_INFO,
                 pApplicationName = Marshal.StringToHGlobalAnsi("Vulkan Application"),
@@ -326,29 +335,47 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 apiVersion = VK_API_VERSION_1_3
             };
 
+            // Step 3: Prepare the debug messenger creation info
+            var debugInfo = VulkanDebugMessenger.GetDebugInfo(); // Ensure this returns a fully populated structure
+            IntPtr debugInfoPtr = Marshal.AllocHGlobal(Marshal.SizeOf<VkDebugUtilsMessengerCreateInfoEXT>());
+            Marshal.StructureToPtr(debugInfo, debugInfoPtr, false); // Copy debug info to the allocated memory
+
+            // Step 4: Prepare validation layers array
+            IntPtr validationLayersPtr = Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * _validationLayers.Length);
+            for (int i = 0; i < _validationLayers.Length; i++)
+            {
+                IntPtr layerNamePtr = Marshal.StringToHGlobalAnsi(_validationLayers[i]);
+                Marshal.WriteIntPtr(validationLayersPtr, i * IntPtr.Size, layerNamePtr);
+            }
+
+            // Step 5: Set up the Vulkan instance creation info
             VkInstanceCreateInfo vulkanCreateInfo = new VkInstanceCreateInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-                pApplicationInfo = &applicationInfo,
-                enabledLayerCount = 0,
-                ppEnabledLayerNames = IntPtr.Zero,
+                pApplicationInfo = (IntPtr)(&applicationInfo),
+                enabledLayerCount = (uint)_validationLayers.Length,
+                ppEnabledLayerNames = validationLayersPtr,
                 enabledExtensionCount = extensionCount,
-                ppEnabledExtensionNames = extensions
+                ppEnabledExtensionNames = extensions,
+                pNext = debugInfoPtr
             };
 
+            // Step 6: Create the Vulkan instance
             VkResult result = vkCreateInstance(ref vulkanCreateInfo, null, out instance);
+            Instance = instance;
             if (result != VkResult.VK_SUCCESS)
             {
                 Console.Error.WriteLine("Failed to create Vulkan instance");
-                FreeResources(applicationInfo, extensions);
+               // FreeResources(applicationInfo, extensions, validationLayersPtr, debugInfoPtr);
                 return VulkanConsts.VK_NULL_HANDLE;
             }
 
-            // Clean up
+            // Free allocated memory for structs
             Marshal.FreeHGlobal(applicationInfo.pApplicationName);
             Marshal.FreeHGlobal(applicationInfo.pEngineName);
-            Marshal.FreeHGlobal(extensions);
+            Marshal.FreeHGlobal(extensions); // Free the extension pointer
 
+            // Return the created Vulkan instance
             return instance;
         }
 
@@ -367,14 +394,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return VulkanDebugMessenger.SetupDebugMessenger();
         }
     
-    public static void CreateVulkanSurface()
+    public static void CreateVulkanSurface(WindowHandle* handle)
         {
 
             var surface = new VkSurfaceKHR();
             var surfaceCreateInfo = new VkWin32SurfaceCreateInfoKHR
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
-                hwnd = GetWindowHandle(),
+                hwnd = (IntPtr)handle,
                 hinstance = Marshal.GetHINSTANCE(typeof(Program).Module)
             };
 
@@ -562,7 +589,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             var fence = InFlightFences[(int)CommandIndex];
             var imageSemaphore = AcquireImageSemaphores[(int)CommandIndex];
-            var imageIndex = ImageIndex;
 
             // Wait for the current frame to finish
             vkWaitForFences(Device, 1, &fence, VulkanConsts.VK_TRUE, VulkanConsts.UINT64_MAX);
@@ -570,35 +596,38 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             vkResetFences(Device, 1, &fence);
 
             // Acquire the next image
+            var imageIndex = ImageIndex;
             VkResult result = vkAcquireNextImageKHR(Device, Swapchain, VulkanConsts.UINT64_MAX, imageSemaphore, fence, &imageIndex);
+            ImageIndex = imageIndex;
+
             if (result == VkResult.VK_ERROR_OUT_OF_DATE_KHR)
             {
                 RebuildRendererFlag = true;
                 return result;
             }
 
+            // If successful, ImageIndex should point to the right image now
             return result;
         }
 
         public static unsafe VkResult EndFrame(List<VkCommandBuffer> commandBufferSubmitList)
         {
-            var imageIdx = ImageIndex; // Use the acquired image index
-            var fence = InFlightFences[(int)CommandIndex]; // Use the corresponding fence
+            var fence = InFlightFences[(int)CommandIndex];
             var presentSemaphore = PresentImageSemaphores[(int)CommandIndex];
-            var imageSemaphore = AcquireImageSemaphores[(int)CommandIndex]; // Corrected index
-            var swapChain = Swapchain;
+            var imageSemaphore = AcquireImageSemaphores[(int)CommandIndex];
 
-            // Make sure to wait for the fence before we start submission
+            // Wait for the fence before starting submission
             vkWaitForFences(Device, 1, &fence, VulkanConsts.VK_TRUE, VulkanConsts.UINT64_MAX);
+            vkResetFences(Device, 1, &fence); // reset the fence for reuse
+            InFlightFences[(int)CommandIndex] = fence;
 
-            VkPipelineStageFlags[] waitStages = new VkPipelineStageFlags[]
-            {
+            // Prepare command buffer submission info
+            VkPipelineStageFlags[] waitStages = new VkPipelineStageFlags[] {
         VkPipelineStageFlags.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-            };
+    };
 
             fixed (VkPipelineStageFlags* pWaitStages = waitStages)
             {
-                // Allocate command buffers array
                 var commandBufferCount = commandBufferSubmitList.Count;
                 var commandBuffersPtr = (VkCommandBuffer*)Marshal.AllocHGlobal(commandBufferCount * sizeof(VkCommandBuffer));
 
@@ -621,11 +650,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         pSignalSemaphores = &presentSemaphore
                     };
 
-                    // Make sure to wait for the fence before we start submission
-                    vkWaitForFences(Device, 1, &fence, VulkanConsts.VK_TRUE, VulkanConsts.UINT64_MAX);
-
-                    // Reset the fence for reuse
-                    vkResetFences(Device, 1, &fence);
+                    // Submit command buffer
                     VkResult submitResult = vkQueueSubmit(GraphicsQueue, 1, &submitInfo, fence);
                     if (submitResult != VkResult.VK_SUCCESS)
                     {
@@ -633,15 +658,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         return submitResult;
                     }
 
-                    // Use the correct image index
+                    // Present the image
+                    var imageIndex = ImageIndex;
+                    var swapchain = Swapchain;
                     VkPresentInfoKHR presentInfo = new VkPresentInfoKHR()
                     {
                         sType = VkStructureType.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
                         waitSemaphoreCount = 1,
                         pWaitSemaphores = &presentSemaphore,
                         swapchainCount = 1,
-                        pSwapchains = &swapChain,
-                        pImageIndices = &imageIdx // Use the correct image index
+                        pSwapchains = &swapchain,
+                        pImageIndices = &imageIndex // Use the correct image index
                     };
 
                     VkResult result = vkQueuePresentKHR(PresentQueue, &presentInfo);
@@ -836,31 +863,21 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         private static VkSurfaceCapabilitiesKHR GetSurfaceCapabilities()
         {
-            try
+            VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(PhysicalDevice, Surface, out VkSurfaceCapabilitiesKHR surfaceCapabilities);
+
+            if (result == VkResult.VK_ERROR_SURFACE_LOST_KHR)
             {
-                VkResult result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(PhysicalDevice, Surface, out VkSurfaceCapabilitiesKHR surfaceCapabilities);
-
-                if (result == VkResult.VK_ERROR_SURFACE_LOST_KHR)
-                {
-                    // Handle surface loss
-                    MessageBox.Show("Surface is lost, recreating surface and swapchain...");
-                   // HandleSurfaceLost();
-                    return new VkSurfaceCapabilitiesKHR(); // or handle retry logic
-                }
-
-                if (result != VkResult.VK_SUCCESS)
-                {
-                    MessageBox.Show($"Failed to get surface capabilities: {result}");
-                    return new VkSurfaceCapabilitiesKHR(); // or handle error logic
-                }
-
-                return surfaceCapabilities;
+               // HandleSurfaceLost(); // Call a method to handle what to do next
+                return GetSurfaceCapabilities(); // Retry getting capabilities if necessary
             }
-            catch (Exception ex)
+
+            if (result != VkResult.VK_SUCCESS)
             {
-                MessageBox.Show($"Exception occurred: {ex.Message}");
-                return new VkSurfaceCapabilitiesKHR(); // or handle further
+                MessageBox.Show($"Failed to get surface capabilities: {result}");
+                return new VkSurfaceCapabilitiesKHR(); // Return default or handle error logic
             }
+
+            return surfaceCapabilities;
         }
 
         private static List<VkSurfaceFormatKHR> GetPhysicalDeviceFormats()
@@ -1026,12 +1043,5 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return ptr;
         }
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
-
-        public static IntPtr GetWindowHandle()
-        {
-            return GetForegroundWindow(); // This will get the active window, not the specific SDL window.
-        }
     }
 }

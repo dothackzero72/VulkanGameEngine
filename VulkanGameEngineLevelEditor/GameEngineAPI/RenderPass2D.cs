@@ -30,6 +30,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var renderPass = CreateRenderPass();
             var frameBuffer = CreateFramebuffer();
             BuildRenderPipeline(mesh);
+            for (int x = 0; x < 3; x++)
+            {
+                var commandBuffer = VulkanRenderer.BeginCommandBuffer();
+                TransitionImageLayout(VulkanRenderer.SwapChainImages[x], VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED, VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, commandBuffer);
+                TransitionImageLayout(VulkanRenderer.SwapChainImages[x], VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VkImageLayout.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, commandBuffer);
+                VulkanRenderer.EndCommandBuffer(commandBuffer);
+            }
         }
 
         public void BuildRenderPipeline(Mesh2D mesh)
@@ -178,7 +185,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     }
                 },
                 clearValueCount = (uint)clearValues.Count,
-                pClearValues = clearValues.ToPointer()
+              //  pClearValues = clearValues.ToPointer()
             };
 
             VkCommandBufferBeginInfo CommandBufferBeginInfo = new VkCommandBufferBeginInfo()
@@ -635,6 +642,56 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
                 rasterizationSamples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT
             };
+        }
+
+        private void TransitionImageLayout(VkImage image,
+                                    VkImageLayout oldLayout,
+                                    VkImageLayout newLayout,
+                                    VkCommandBuffer commandBuffer)
+        {
+            var barrier = new VkImageMemoryBarrier
+            {
+                sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                oldLayout = oldLayout,
+                newLayout = newLayout,
+                srcQueueFamilyIndex = VulkanConsts.VK_QUEUE_FAMILY_IGNORED,
+                dstQueueFamilyIndex = VulkanConsts.VK_QUEUE_FAMILY_IGNORED,
+                image = image,
+                subresourceRange = new VkImageSubresourceRange
+                {
+                    aspectMask = VkImageAspectFlags.VK_IMAGE_ASPECT_COLOR_BIT,
+                    baseMipLevel = 0,
+                    levelCount = 1,
+                    baseArrayLayer = 0,
+                    layerCount = 1
+                }
+            };
+
+            VkPipelineStageFlags sourceStage;
+            VkPipelineStageFlags destinationStage;
+
+            if (oldLayout == VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+            {
+                barrier.srcAccessMask = 0;
+                barrier.dstAccessMask = VkAccessFlags.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+                sourceStage = VkPipelineStageFlags.VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+                destinationStage = VkPipelineStageFlags.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            }
+            else if (oldLayout == VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VkImageLayout.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
+            {
+                barrier.srcAccessMask = VkAccessFlags.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                barrier.dstAccessMask = 0;
+
+                sourceStage = VkPipelineStageFlags.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                destinationStage = VkPipelineStageFlags.VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+            }
+            else
+            {
+                throw new ArgumentException("Unsupported layout transition!");
+            }
+
+            VulkanAPI.vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, null, 0, null, 1, &barrier);
         }
     }
 }

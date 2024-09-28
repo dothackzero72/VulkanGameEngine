@@ -192,9 +192,9 @@ namespace VulkanGameEngineLevelEditor
     public unsafe struct VkInstanceCreateInfo
     {
         public VkStructureType sType; // Structure type
-        public void* pNext; // Pointer to the next structure in a chain
+        public IntPtr pNext; // Pointer to the next structure in a chain
         public VkInstanceCreateFlags flags; // Creation flags
-        public VkApplicationInfo* pApplicationInfo; // Pointer to an application info structure
+        public IntPtr pApplicationInfo; // Pointer to an application info structure
         public uint enabledLayerCount; // Number of enabled layers
         public IntPtr ppEnabledLayerNames; // Pointer to an array of layer names
         public uint enabledExtensionCount; // Number of enabled extensions
@@ -1450,7 +1450,7 @@ namespace VulkanGameEngineLevelEditor
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkRenderPassBeginInfo
+    public unsafe struct VkRenderPassBeginInfo
     {
         public VkStructureType sType;
         public IntPtr pNext;
@@ -1458,7 +1458,7 @@ namespace VulkanGameEngineLevelEditor
         public VkFramebuffer framebuffer;
         public VkRect2D renderArea;
         public uint clearValueCount;
-        public IntPtr pClearValues; // Pointer to VkClearValue array
+        public VkClearValue* pClearValues; // Pointer to VkClearValue array
     }
 
     public struct VkPhysicalDeviceShaderDrawParametersFeatures

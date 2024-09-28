@@ -77,11 +77,45 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
         }
+        private static bool IsDebugUtilsMessengerSupported()
+        {
+            uint extensionCount = 0;
+
+            // First, get the number of available extensions
+            var result = vkEnumerateInstanceExtensionProperties(IntPtr.Zero, ref extensionCount, IntPtr.Zero);
+            if (result != VkResult.VK_SUCCESS)
+            {
+                // Handle error if needed
+                return false;
+            }
+
+            // Create an array to hold the extension properties
+            VkExtensionProperties[] extensions = new VkExtensionProperties[extensionCount];
+
+            // Get the extension properties
+            fixed (VkExtensionProperties* pExtensions = extensions)
+            {
+                result = vkEnumerateInstanceExtensionProperties(IntPtr.Zero, ref extensionCount, (IntPtr)pExtensions);
+            }
+            // Check if the debug utility extension is available
+            foreach (var extension in extensions)
+            {
+                
+                if (extension.extensionName == "VK_EXT_debug_utils")
+                {
+                    return true; // Extension is supported
+                }
+            }
+
+            return false; // Extension not supported
+        }
 
         public static VkDebugUtilsMessengerEXT SetupDebugMessenger()
         {
+          //  var a = IsDebugUtilsMessengerSupported();
             var debug = GetDebugInfo();
-            if (vkCreateDebugUtilsMessengerEXT(Instance, ref debug, IntPtr.Zero, out debugMessenger) != VkResult.VK_SUCCESS)
+            var debugMessager = new VkDebugUtilsMessengerEXT();
+            if (vkCreateDebugUtilsMessengerEXT(Instance, &debug, null, &debugMessager) != VkResult.VK_SUCCESS)
             {
                 Console.Error.WriteLine("Failed to set up debug messenger!");
                 return default; // Return default on failure

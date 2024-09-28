@@ -57,7 +57,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Pixel[] pixels = new Pixel[Width * Height];
             for (int i = 0; i < pixels.Length; i++)
             {
-                pixels[i] = new Pixel(0x00, 0xFF, 0x00, 0xFF); 
+                pixels[i] = new Pixel(0x00, 0x00, 0xFF,  0xFF); 
             }
 
             GCHandle pixelHandle = GCHandle.Alloc(pixels, GCHandleType.Pinned);

@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using static VulkanGameEngineLevelEditor.VulkanAPI;
 
 namespace VulkanGameEngineLevelEditor
 {
@@ -19,7 +21,8 @@ namespace VulkanGameEngineLevelEditor
         private volatile bool running;
         private BlockingCollection<byte[]> dataCollection = new BlockingCollection<byte[]>(boundedCapacity: 10);
         private System.Windows.Forms.Timer renderTimer;
-
+        private static Scene scene;
+      
         public Form1()
         {
             InitializeComponent();
@@ -54,7 +57,7 @@ namespace VulkanGameEngineLevelEditor
 
         private void RenderLoop()
         {
-            Scene scene = new Scene();
+             scene = new Scene();
             this.Invoke(new Action(() =>
             {
                 VulkanRenderer.SetUpRenderer(this.Handle, pictureBox1);
@@ -64,80 +67,69 @@ namespace VulkanGameEngineLevelEditor
             while (running)
             {
                 scene.Update(0);
-               // byte[] textureData = UpdateBitmapData();
-               // dataCollection.TryAdd(textureData);
+                byte[] textureData = BakeColorTexture("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa.bmp", scene.texture);
+                dataCollection.TryAdd(textureData);
                 scene.Draw();
                 Thread.Sleep(16);
             }
         }
 
         [DllImport("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanDLL.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, IntPtr data);
+        public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, void* data);
 
-        public byte[] UpdateBitmapData(Texture texture)
+
+        public unsafe byte[] BakeColorTexture(string filename, Texture texture)
         {
-            var pixel = new Pixel(0x00, 0x00, 0x00, 0xFF); // Example initialization
-            BakeTexture bakeTexture = new(pixel, new GlmSharp.ivec2(this.Width, this.Height), VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
+            //std::shared_ptr<Texture2D> BakeTexture = std::make_shared<Texture2D>(Texture2D(Pixel(255, 0, 0), glm::vec2(1280,720), VkFormat::VK_FORMAT_R8G8B8A8_UNORM, TextureTypeEnum::kTextureAtlus));
+            var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
 
-            // Command buffer setup
-            VkCommandBufferAllocateInfo allocInfo;
-            allocInfo.sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-            allocInfo.level = VkCommandBufferLevel.VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-            allocInfo.commandPool = VulkanRenderer.CommandPool;
-            allocInfo.commandBufferCount = 1;
+            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
 
-            VkCommandBuffer commandBuffer = new VkCommandBuffer();
-            VulkanAPI.vkAllocateCommandBuffers(VulkanRenderer.Device, &allocInfo, &commandBuffer);
-
-            VkCommandBufferBeginInfo beginInfo;
-            beginInfo.sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-            beginInfo.flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-            VulkanAPI.vkBeginCommandBuffer(commandBuffer, &beginInfo);
+            VkCommandBuffer commandBuffer = VulkanRenderer.BeginCommandBuffer();
 
             bakeTexture.UpdateImageLayout(commandBuffer, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
             texture.UpdateImageLayout(commandBuffer, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
-            VkImageCopy copyImage;
+            VkImageCopy copyImage = new VkImageCopy();
             copyImage.srcSubresource.aspectMask = VkImageAspectFlags.VK_IMAGE_ASPECT_COLOR_BIT;
             copyImage.srcSubresource.layerCount = 1;
+
             copyImage.dstSubresource.aspectMask = VkImageAspectFlags.VK_IMAGE_ASPECT_COLOR_BIT;
             copyImage.dstSubresource.layerCount = 1;
-            copyImage.dstOffset = new VkOffset3D { X = 0, Y = 0, Z = 0 };
+
+            copyImage.dstOffset.X = 0;
+            copyImage.dstOffset.Y = 0;
+            copyImage.dstOffset.Z = 0;
+
             copyImage.extent.Width = (uint)texture.Width;
             copyImage.extent.Height = (uint)texture.Height;
             copyImage.extent.Depth = 1;
 
-            VulkanAPI.vkCmdCopyImage(
-                commandBuffer,
-                texture.Image,
-                VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                bakeTexture.Image,
-                VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                1,
-                &copyImage
-            );
+            vkCmdCopyImage(commandBuffer, texture.Image, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, bakeTexture.Image, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyImage);
 
             bakeTexture.UpdateImageLayout(commandBuffer, VkImageLayout.VK_IMAGE_LAYOUT_GENERAL);
-            texture.UpdateImageLayout(commandBuffer, VkImageLayout.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            texture.UpdateImageLayout(commandBuffer, VkImageLayout.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+            VulkanRenderer.EndCommandBuffer(commandBuffer);
 
-            VulkanAPI.vkEndCommandBuffer(commandBuffer);
+            VkImageSubresource subResource = new VkImageSubresource { aspectMask = VkImageAspectFlags.VK_IMAGE_ASPECT_COLOR_BIT, mipLevel = 0, arrayLayer = 0 };
+            VkSubresourceLayout subResourceLayout;
+            vkGetImageSubresourceLayout(VulkanRenderer.Device, bakeTexture.Image, &subResource, &subResourceLayout);
 
-            // Map memory and read pixel data
             byte* data;
             VulkanAPI.vkMapMemory(VulkanRenderer.Device, bakeTexture.Memory, 0, VulkanConsts.VK_WHOLE_SIZE, 0, (void**)&data);
 
+            DLL_stbi_write_bmp(filename, bakeTexture.Width, bakeTexture.Height, 4, data);
+
+
             int pixelCount = bakeTexture.Width * bakeTexture.Height;
             byte[] pixelData = new byte[pixelCount * 4]; // ARGB format (4 bytes per pixel)
-
-            // Copy data and convert to ARGB format
             for (int y = 0; y < bakeTexture.Height; y++)
             {
                 for (int x = 0; x < bakeTexture.Width; x++)
                 {
-                    int index = (y * bakeTexture.Width + x) * (int)bakeTexture.ColorChannels; // Original RGBA index
+                    int index = (y * bakeTexture.Width + x) * 4; // Original RGBA index
 
-                    // Set pixelData in ARGB order
+                    // Directly fill the pixelData
                     pixelData[(y * bakeTexture.Width + x) * 4 + 0] = data[index + 3]; // Alpha
                     pixelData[(y * bakeTexture.Width + x) * 4 + 1] = data[index + 0]; // Red
                     pixelData[(y * bakeTexture.Width + x) * 4 + 2] = data[index + 1]; // Green
@@ -145,22 +137,11 @@ namespace VulkanGameEngineLevelEditor
                 }
             }
 
-            // Write image to file
-            WriteImage("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa.bmp", pixelData, texture.Width, texture.Height, 4);
-
-            // Unmap Vulkan memory
-            VulkanAPI.vkUnmapMemory(VulkanRenderer.Device, bakeTexture.Memory);
-
             return pixelData;
         }
-
         public static void WriteImage(string filePath, byte[] imageData, int width, int height, int channels)
         {
-            IntPtr dataPtr = Marshal.AllocHGlobal(imageData.Length);
-            Marshal.Copy(imageData, 0, dataPtr, imageData.Length);
-            try
-            {
-                int result = DLL_stbi_write_bmp(filePath, width, height, channels, dataPtr);
+                int result = DLL_stbi_write_bmp(filePath, width, height, channels, (void*)imageData.ToArray()[0]);
                 if (result == 0)
                 {
                     Console.WriteLine("Failed to write image.");
@@ -169,11 +150,6 @@ namespace VulkanGameEngineLevelEditor
                 {
                     Console.WriteLine("Image written successfully.");
                 }
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(dataPtr);
-            }
         }
 
         private void UpdateBitmap(object sender, EventArgs e)
@@ -187,20 +163,18 @@ namespace VulkanGameEngineLevelEditor
                 }
                 else
                 {
-                    UpdateBitmapWithData(textureData);
+                   UpdateBitmapWithData(textureData);
                 }
             }
         }
-
-
         private void UpdateBitmapWithData(byte[] textureData)
         {
-            if(textureData == null)
+            if (textureData == null)
             {
                 return;
             }
 
-            using (Bitmap bitmap = new Bitmap(pictureBox1.Size.Width, pictureBox1.Size.Height, PixelFormat.Format32bppArgb))
+            using (Bitmap bitmap = new Bitmap(scene.texture.Width, scene.texture.Height, PixelFormat.Format32bppArgb))
             {
                 for (int y = 0; y < bitmap.Height; y++)
                 {

@@ -23,7 +23,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void BuildRenderPass(Texture renderedTexture)
         {
-            texture = new RenderedTexture(new GlmSharp.ivec2((int)VulkanRenderer.SwapChainResolution.Width, (int)VulkanRenderer.SwapChainResolution.Height), VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT, VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
+            texture = new RenderedTexture(new GlmSharp.ivec2(1280, 720), VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT, VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
 
             var renderPass = CreateRenderPass();
             var frameBuffer = CreateFramebuffer();
@@ -118,93 +118,73 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public VkCommandBuffer Draw()
         {
-            List<VkClearValue> clearValues = new List<VkClearValue>()
+            VkClearValue clearValue = new VkClearValue
             {
-                new VkClearValue
-                {
-                    color = new VkClearColorValue(new float[] { 1.0f, 0.0f, 0.0f, 1.0f }) // Using the float constructor
-                }
+                color = new VkClearColorValue(new float[] { 0.0f, 1.0f, 1.0f, 1.0f }) // Clear to red
             };
 
-            List<VkViewport> viewportList = new List<VkViewport>()
+            VkViewport viewport = new VkViewport
             {
-                new VkViewport
-                {
-                    x = 0.0f,
-                    y = 0.0f,
-                    width = (float)VulkanRenderer.SwapChainResolution.Width,
-                    height = (float)VulkanRenderer.SwapChainResolution.Height,
-                    minDepth = 0.0f,
-                    maxDepth = 1.0f
-                }
+                x = 0.0f,
+                y = 0.0f,
+                width = (float)VulkanRenderer.SwapChainResolution.Width,
+                height = (float)VulkanRenderer.SwapChainResolution.Height,
+                minDepth = 0.0f,
+                maxDepth = 1.0f
             };
 
-
-            List<VkRect2D> rect2DList = new List<VkRect2D>()
+            VkRect2D scissor = new VkRect2D
             {
-                new VkRect2D
+                Offset = new VkOffset2D { X = 0, Y = 0 },
+                Extent = new VkExtent2D
                 {
-                    Offset = new VkOffset2D()
-                    {
-                        X = 0,
-                        Y = 0
-                    },
-                    Extent = new VkExtent2D()
-                    {
-                        Width = (uint)VulkanRenderer.SwapChainResolution.Width,
-                        Height = (uint)VulkanRenderer.SwapChainResolution.Height,
-                    }
-                }
+                    Width = (uint)VulkanRenderer.SwapChainResolution.Width,
+                    Height = (uint)VulkanRenderer.SwapChainResolution.Height
+                },
             };
 
-            VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo()
+            VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                 renderPass = RenderPass,
                 framebuffer = FrameBufferList[(int)VulkanRenderer.ImageIndex],
                 renderArea = new VkRect2D
                 {
-                    Offset = new VkOffset2D()
-                    {
-                        X = 0,
-                        Y = 0
-                    },
-                    Extent = new VkExtent2D()
+                    Offset = new VkOffset2D { X = 0, Y = 0 },
+                    Extent = new VkExtent2D
                     {
                         Width = (uint)VulkanRenderer.SwapChainResolution.Width,
-                        Height = (uint)VulkanRenderer.SwapChainResolution.Height,
+                        Height = (uint)VulkanRenderer.SwapChainResolution.Height
                     }
                 },
-                clearValueCount = (uint)clearValues.Count,
-                pClearValues = clearValues.ToPointer()
+                clearValueCount = 1, // single clear value
+                pClearValues = &clearValue // address of the clear value
             };
 
-            VkCommandBufferBeginInfo CommandBufferBeginInfo = new VkCommandBufferBeginInfo()
+            VkCommandBufferBeginInfo commandBufferBeginInfo = new VkCommandBufferBeginInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
                 flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
             };
 
             int imageIndex = (int)VulkanRenderer.ImageIndex;
+            var descripton = DescriptorSet;
+            VulkanAPI.vkBeginCommandBuffer(CommandBufferList[imageIndex], &commandBufferBeginInfo);
 
-            VkDescriptorSet[] descriptorSetList = { DescriptorSet };
-            uint[] offsetList = { 0 };
-            fixed (VkDescriptorSet* descriptorSet = descriptorSetList.ToArray())
-            fixed (uint* offset = offsetList.ToArray())
-            fixed (VkViewport* viewport = viewportList.ToArray())
-            fixed (VkRect2D* rect2D = rect2DList.ToArray())
-            {
-                VulkanAPI.vkBeginCommandBuffer(CommandBufferList[imageIndex], &CommandBufferBeginInfo);
-                VulkanAPI.vkCmdBeginRenderPass(CommandBufferList[imageIndex], &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
-                VulkanAPI.vkCmdSetViewport(CommandBufferList[imageIndex], 0, (uint)viewportList.Count, viewport);
-                VulkanAPI.vkCmdSetScissor(CommandBufferList[imageIndex], 0, (uint)rect2DList.Count, rect2D);
-                VulkanAPI.vkCmdBindPipeline(CommandBufferList[imageIndex], VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipeline);
-                VulkanAPI.vkCmdBindDescriptorSets(CommandBufferList[imageIndex], VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, descriptorSet, 0, offset);
-                VulkanAPI.vkCmdDraw(CommandBufferList[imageIndex], 6, 1, 0, 0);
-                VulkanAPI.vkCmdEndRenderPass(CommandBufferList[imageIndex]);
-                VulkanAPI.vkEndCommandBuffer(CommandBufferList[imageIndex]);
-            }
-            return CommandBufferList[(int)VulkanRenderer.ImageIndex];
+            VulkanAPI.vkCmdBeginRenderPass(CommandBufferList[imageIndex], &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
+
+            VulkanAPI.vkCmdSetViewport(CommandBufferList[imageIndex], 0, 1, &viewport);
+            VulkanAPI.vkCmdSetScissor(CommandBufferList[imageIndex], 0, 1, &scissor);
+
+            VulkanAPI.vkCmdBindPipeline(CommandBufferList[imageIndex], VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipeline);
+            VulkanAPI.vkCmdBindDescriptorSets(CommandBufferList[imageIndex], VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &descripton, 0, null);
+
+            VulkanAPI.vkCmdDraw(CommandBufferList[imageIndex], 6, 1, 0, 0); // Ensure this matches your vertex buffer size
+
+            VulkanAPI.vkCmdEndRenderPass(CommandBufferList[imageIndex]);
+            VulkanAPI.vkEndCommandBuffer(CommandBufferList[imageIndex]);
+
+            return CommandBufferList[imageIndex];
         }
 
         private VkRenderPass CreateRenderPass()
@@ -454,8 +434,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             return new List<VkPipelineShaderStageCreateInfo>()
             {
-                VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderVert.spv",  VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT),
-                VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderFrag.spv", VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT)
+                VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/vertex_shader.spv",  VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT),
+                VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/fragment_shader.spv", VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT)
             };
         }
 

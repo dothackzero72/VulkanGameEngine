@@ -372,11 +372,11 @@ VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<Mesh2D> mesh, SceneDataBuffer
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
-    VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[cRenderer.CommandIndex], &CommandBufferBeginInfo));
+ /*   VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[cRenderer.CommandIndex], &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBufferList[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     mesh->Draw(CommandBufferList[cRenderer.CommandIndex], ShaderPipeline, ShaderPipelineLayout, DescriptorSet, sceneProperties);
     vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
-   renderer.EndSingleTimeCommands(CommandBufferList[cRenderer.CommandIndex], cRenderer.CommandPool);
+   renderer.EndSingleTimeCommands(CommandBufferList[cRenderer.CommandIndex], cRenderer.CommandPool);*/
     return CommandBufferList[cRenderer.CommandIndex];
 }
 
