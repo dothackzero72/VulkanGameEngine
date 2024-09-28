@@ -18,12 +18,16 @@ namespace VulkanGameEngineLevelEditor
     public unsafe partial class Form1 : Form
     {
         private Thread renderThread;
+        private Thread levelEditerDisplayThread;
         private volatile bool running;
+        private volatile bool levelEditorRunning;
         private BlockingCollection<byte[]> dataCollection = new BlockingCollection<byte[]>(boundedCapacity: 10);
+        private BlockingCollection<Bitmap> levelEditorImage = new BlockingCollection<Bitmap>(boundedCapacity: 10);
         private System.Windows.Forms.Timer renderTimer;
         private static Scene scene;
         private Bitmap[] bitmapBuffer = new Bitmap[3];
         private uint NextTexture = 0;
+        private LevelEditorDisplaySwapChain levelEditorSwapChain;
         public Form1()
         {
             InitializeComponent();
@@ -33,7 +37,9 @@ namespace VulkanGameEngineLevelEditor
         private void Form1_Load(object sender, EventArgs e)
         {
             InitializeRenderTimer();
+            levelEditorSwapChain = new LevelEditorDisplaySwapChain(new ivec2(pictureBox1.Width, pictureBox1.Height));
             StartRenderer();
+            StartLevelEditorRenderer();
         }
 
         private void InitializeRenderTimer()
@@ -54,6 +60,27 @@ namespace VulkanGameEngineLevelEditor
                 IsBackground = true
             };
             renderThread.Start();
+        }
+
+        public void StartLevelEditorRenderer()
+        {
+            running = true;
+            renderThread = new Thread(LevelEditorLoop)
+            {
+                IsBackground = true
+            };
+            renderThread.Start();
+        }
+
+        private void LevelEditorLoop()
+        {
+            while (running)
+            {
+                if (dataCollection.TryTake(out byte[] textureData))
+                {
+                    levelEditorSwapChain.UpdateBuffer(textureData);
+                }
+            }
         }
 
         private void RenderLoop()
@@ -82,7 +109,7 @@ namespace VulkanGameEngineLevelEditor
         public unsafe byte[] BakeColorTexture(string filename, Texture texture)
         {
             var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
-            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2((int)VulkanRenderer.SwapChainResolution.Width, (int)VulkanRenderer.SwapChainResolution.Height), VkFormat.VK_FORMAT_A8B8G8R8_UNORM_PACK32);
+            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
 
             VkCommandBuffer commandBuffer = VulkanRenderer.BeginCommandBuffer();
 
@@ -139,63 +166,36 @@ namespace VulkanGameEngineLevelEditor
 
         private void UpdateBitmap(object sender, EventArgs e)
         {
-            byte[] textureData;
-            if (dataCollection.TryTake(out textureData))
-            {
-                if (pictureBox1.InvokeRequired)
-                {
-                    pictureBox1.Invoke(new Action(() => UpdateBitmapWithData(textureData)));
-                }
-                else
-                {
-                    UpdateBitmapWithData(textureData);
-                }
-            }
+            pictureBox1.Invoke(new Action(() => levelEditorSwapChain.PresentImage(pictureBox1)));
         }
-        private void UpdateBitmapWithData(byte[] textureData)
-        {
-            if (textureData == null)
-            {
-                return;
-            }
+        //private void UpdateBitmapWithData(byte[] textureData)
+        //{
+        //    if (textureData == null)
+        //    {
+        //        return;
+        //    }
 
-            using (Bitmap bitmap = new Bitmap((int)VulkanRenderer.SwapChainResolution.Width, (int)VulkanRenderer.SwapChainResolution.Height, PixelFormat.Format32bppArgb))
-            {
-                BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                                                         ImageLockMode.WriteOnly,
-                                                         bitmap.PixelFormat);
+        //    using (Bitmap bitmap = new Bitmap(scene.testRenderPass2D.texture.Width, scene.testRenderPass2D.texture.Height, PixelFormat.Format32bppArgb))
+        //    {
+        //        for (int y = 0; y < bitmap.Height; y++)
+        //        {
+        //            for (int x = 0; x < bitmap.Width; x++)
+        //            {
+        //                int index = (y * bitmap.Width + x) * 4;
+        //                Color pixelColor = ByteArrayToColor(textureData, index);
+        //                bitmap.SetPixel(x, y, pixelColor);
+        //            }
+        //        }
 
-                int bytesPerPixel = 4;
-                int bitmapDataSize = bitmapData.Stride * bitmapData.Height;
-                byte[] adjustedTextureData = new byte[Math.Min(textureData.Length, bitmapDataSize)];
-                for (int i = 0; i < adjustedTextureData.Length; i += bytesPerPixel)
-                {
-                    adjustedTextureData[i + 0] = textureData[i + 3];
-                    adjustedTextureData[i + 1] = textureData[i + 0];
-                    adjustedTextureData[i + 2] = textureData[i + 1];
-                    adjustedTextureData[i + 3] = textureData[i + 2];
-                }
+        //        if (pictureBox1.Image != null)
+        //        {
+        //            pictureBox1.Image.Dispose();
+        //        }
 
-                System.Runtime.InteropServices.Marshal.Copy(adjustedTextureData, 0, bitmapData.Scan0, adjustedTextureData.Length);
-                bitmap.UnlockBits(bitmapData);
-                if (pictureBox1.Image != null)
-                {
-                    pictureBox1.Image.Dispose();
-                }
-
-                pictureBox1.Image = (Bitmap)bitmap.Clone();
-                pictureBox1.Refresh();
-            }
-        }
-
-        private Color ByteArrayToColor(byte[] data, int index)
-        {
-            byte a = data[index + 3];
-            byte r = data[index + 0];
-            byte g = data[index + 1];
-            byte b = data[index + 2];
-            return Color.FromArgb(a, r, g, b);
-        }
+        //        pictureBox1.Image = (Bitmap)bitmap.Clone();
+        //        pictureBox1.Refresh();
+        //    }
+        //}
 
         public void StopRenderer()
         {

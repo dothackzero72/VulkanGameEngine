@@ -74,7 +74,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             //std::shared_ptr<Texture2D> BakeTexture = std::make_shared<Texture2D>(Texture2D(Pixel(255, 0, 0), glm::vec2(1280,720), VkFormat::VK_FORMAT_R8G8B8A8_UNORM, TextureTypeEnum::kTextureAtlus));
             var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
 
-            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
+            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(texture.Width, texture.Width), VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
 
             VkCommandBuffer commandBuffer = VulkanRenderer.BeginCommandBuffer();
 
