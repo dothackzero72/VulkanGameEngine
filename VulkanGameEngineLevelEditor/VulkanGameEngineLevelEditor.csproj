@@ -89,6 +89,30 @@
     <Reference Include="Silk.NET.GLFW, Version=2.21.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Silk.NET.GLFW.2.21.0\lib\netstandard2.0\Silk.NET.GLFW.dll</HintPath>
     </Reference>
+    <Reference Include="Silk.NET.Maths, Version=2.21.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Maths.2.21.0\lib\netstandard2.0\Silk.NET.Maths.dll</HintPath>
+    </Reference>
+    <Reference Include="Silk.NET.SDL, Version=2.21.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.SDL.2.21.0\lib\netstandard2.0\Silk.NET.SDL.dll</HintPath>
+    </Reference>
+    <Reference Include="Silk.NET.Vulkan, Version=2.21.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Vulkan.2.21.0\lib\netstandard2.0\Silk.NET.Vulkan.dll</HintPath>
+    </Reference>
+    <Reference Include="Silk.NET.Vulkan.Extensions.EXT, Version=2.21.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Vulkan.Extensions.EXT.2.21.0\lib\netstandard2.0\Silk.NET.Vulkan.Extensions.EXT.dll</HintPath>
+    </Reference>
+    <Reference Include="Silk.NET.Vulkan.Extensions.KHR, Version=2.21.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Vulkan.Extensions.KHR.2.21.0\lib\netstandard2.0\Silk.NET.Vulkan.Extensions.KHR.dll</HintPath>
+    </Reference>
+    <Reference Include="Silk.NET.Windowing.Common, Version=2.21.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Windowing.Common.2.21.0\lib\netstandard2.0\Silk.NET.Windowing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Silk.NET.Windowing.Glfw, Version=2.21.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Windowing.Glfw.2.21.0\lib\netstandard2.0\Silk.NET.Windowing.Glfw.dll</HintPath>
+    </Reference>
+    <Reference Include="Silk.NET.Windowing.Sdl, Version=2.21.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Windowing.Sdl.2.21.0\lib\netstandard2.0\Silk.NET.Windowing.Sdl.dll</HintPath>
+    </Reference>
     <Reference Include="StbImageSharp, Version=2.27.14.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\StbImageSharp.2.27.14\lib\net471\StbImageSharp.dll</HintPath>
     </Reference>
@@ -252,6 +276,9 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Ultz.Bcl.Half, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ultz.Bcl.Half.Fallback.1.0.0\lib\netstandard2.0\Ultz.Bcl.Half.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Form1.cs">
@@ -286,12 +313,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RichTextBoxWriter.cs" />
     <Compile Include="TextWriter.cs" />
-    <Compile Include="Vulkan\VulkanAPI.cs" />
-    <Compile Include="Vulkan\VulkanConsts.cs" />
-    <Compile Include="Vulkan\VulkanEnum.cs" />
-    <Compile Include="Vulkan\VulkanGlobalUsings.cs" />
-    <Compile Include="Vulkan\VulkanInstancePtrs.cs" />
-    <Compile Include="Vulkan\VulkanStruct.cs" />
+    <Compile Include="Vulkan\SilkVulkanDebug.cs" />
+    <Compile Include="Vulkan\SilkVulkanRenderer.cs" />
+    <Compile Include="Vulkan\SilkVulkanSwapChain.cs" />
+    <Compile Include="Vulkan\SilkVulkanWindow.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -340,5 +365,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Ultz.Native.GLFW.3.4.0\build\net461\Ultz.Native.GLFW.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Ultz.Native.GLFW.3.4.0\build\net461\Ultz.Native.GLFW.targets'))" />
+    <Error Condition="!Exists('..\packages\Ultz.Native.SDL.2.30.1\build\net461\Ultz.Native.SDL.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Ultz.Native.SDL.2.30.1\build\net461\Ultz.Native.SDL.targets'))" />
   </Target>
+  <Import Project="..\packages\Ultz.Native.SDL.2.30.1\build\net461\Ultz.Native.SDL.targets" Condition="Exists('..\packages\Ultz.Native.SDL.2.30.1\build\net461\Ultz.Native.SDL.targets')" />
 </Project>

@@ -7,7 +7,12 @@ using SDL2;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using System.Threading;
-using Silk.NET.GLFW;
+using Silk.NET.Maths;
+using Silk.NET.Vulkan;
+using Silk.NET.Vulkan.Extensions.EXT;
+using Silk.NET.Vulkan.Extensions.KHR;
+using Silk.NET.Windowing;
+using GlmSharp;
 namespace VulkanGameEngineLevelEditor
 {
     public class Program
@@ -113,8 +118,6 @@ namespace VulkanGameEngineLevelEditor
         //    }
         //}
 
-
-
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -123,11 +126,7 @@ namespace VulkanGameEngineLevelEditor
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form1 mainForm = new Form1();
             Application.Run(new Form1());
-            mainForm.StartRenderer();
-            mainForm.StopRenderer();
-
         }
 
     }

@@ -12,7 +12,7 @@ RenderPass2D::~RenderPass2D()
 
 void RenderPass2D::BuildRenderPass(std::shared_ptr<Mesh2D> mesh)
 {
-    renderedTexture = std::make_shared<RenderedTexture>(RenderedTexture(RenderPassResolution, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R32G32B32A32_SFLOAT));
+    renderedTexture = std::make_shared<RenderedTexture>(RenderedTexture(RenderPassResolution, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_B8G8R8A8_UNORM));
 
     std::vector<VkAttachmentDescription> attachmentDescriptionList
     {
@@ -232,7 +232,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
             .dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
             .colorBlendOp = VK_BLEND_OP_ADD,
             .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
-            .dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+            .dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA,
             .alphaBlendOp = VK_BLEND_OP_ADD,
             .colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
                               VK_COLOR_COMPONENT_G_BIT |
@@ -372,11 +372,11 @@ VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<Mesh2D> mesh, SceneDataBuffer
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
- /*   VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[cRenderer.CommandIndex], &CommandBufferBeginInfo));
+    VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[cRenderer.CommandIndex], &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBufferList[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     mesh->Draw(CommandBufferList[cRenderer.CommandIndex], ShaderPipeline, ShaderPipelineLayout, DescriptorSet, sceneProperties);
     vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
-   renderer.EndSingleTimeCommands(CommandBufferList[cRenderer.CommandIndex], cRenderer.CommandPool);*/
+    vkEndCommandBuffer(CommandBufferList[cRenderer.CommandIndex]);
     return CommandBufferList[cRenderer.CommandIndex];
 }
 
