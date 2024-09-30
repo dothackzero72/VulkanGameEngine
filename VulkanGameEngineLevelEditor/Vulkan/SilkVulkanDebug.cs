@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VulkanGameEngineLevelEditor
+namespace VulkanGameEngineLevelEditor.Vulkan
 {
     public unsafe class VulkanDebug
     {

@@ -1,4 +1,6 @@
 ﻿using GlmSharp;
+using Silk.NET.Maths;
+using Silk.NET.Vulkan;
 using Silk.NET.Windowing;
 using StbImageSharp;
 using System;
@@ -12,6 +14,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor
 {
@@ -25,7 +28,8 @@ namespace VulkanGameEngineLevelEditor
         //private BlockingCollection<byte[]> dataCollection = new BlockingCollection<byte[]>(boundedCapacity: 10);
         //private BlockingCollection<Bitmap> levelEditorImage = new BlockingCollection<Bitmap>(boundedCapacity: 10);
         //private System.Windows.Forms.Timer renderTimer;
-        //private static Scene scene;
+        private static Scene scene = new Scene();
+        public bool isFramebufferResized = false;
         //private Bitmap[] bitmapBuffer = new Bitmap[3];
         //private uint NextTexture = 0;
         //private LevelEditorDisplaySwapChain levelEditorSwapChain;
@@ -37,13 +41,47 @@ namespace VulkanGameEngineLevelEditor
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            var vulkanrenderer = new SilkVulkanWindow();
+            VulkanRenderer.CreateVulkanRenderer();
+            VulkanRenderer.window.FramebufferResize += OnFramebufferResize;
+
+            scene.StartUp();
+            VulkanRenderer.window.Render += GameLoop;
+            VulkanRenderer.window.Run();
             //InitializeRenderTimer();
             //levelEditorSwapChain = new LevelEditorDisplaySwapChain(new ivec2(pictureBox1.Width, pictureBox1.Height));
             //StartRenderer();
             //StartLevelEditorRenderer();
         }
 
+        private void GameLoop(double obj)
+        {
+            scene.Update(0);
+            scene.Draw();
+            Thread.Sleep(16);
+        }
+
+        void RecreateSwapChain()
+        {
+            while (VulkanRenderer.window.Size.X == 0 || VulkanRenderer.window.Size.Y == 0)
+            {
+                VulkanRenderer.window.DoEvents();
+            }
+
+            //device.WaitIdle();
+
+            //CleanupSwapChain();
+
+            //CreateSwapChain();
+            //CreateRenderPass();
+            //CreateGraphicsPipeline();
+            //CreateDepthResources();
+            //CreateFramebuffers();
+        }
+
+        void OnFramebufferResize(Vector2D<int> obj)
+        {
+            isFramebufferResized = true;
+        }
         //private void InitializeRenderTimer()
         //{
         //    //renderTimer = new System.Windows.Forms.Timer

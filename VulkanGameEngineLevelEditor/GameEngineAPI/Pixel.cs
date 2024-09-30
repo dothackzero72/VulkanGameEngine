@@ -16,7 +16,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Blue = blue;
         }
 
-        // Overloading the equality operator
         public static bool operator ==(Pixel3 lhs, Pixel3 rhs)
         {
             return lhs.Red == rhs.Red &&
@@ -29,7 +28,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return !(lhs == rhs);
         }
 
-        // Override object.Equals and GetHashCode for proper comparison
         public override bool Equals(object obj)
         {
             if (obj is Pixel3 pixel)
@@ -52,19 +50,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public byte Blue { get; set; }
         public byte Alpha { get; set; }
 
-        // Default constructor
         public Pixel() : this(0x00, 0x00, 0x00, 0xFF) { }
-
-        // Constructor with one byte
         public Pixel(byte value) : this(value, value, value, 0xFF) { }
-
-        // Constructor with two bytes
         public Pixel(byte redGreen, byte blue) : this(redGreen, redGreen, blue, 0xFF) { }
-
-        // Constructor with three bytes
         public Pixel(byte red, byte green, byte blue) : this(red, green, blue, 0xFF) { }
-
-        // Constructor with four bytes
         public Pixel(byte red, byte green, byte blue, byte alpha)
         {
             Red = red;
@@ -73,7 +62,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Alpha = alpha;
         }
 
-        // Overloading the equality operator
         public static bool operator ==(Pixel lhs, Pixel rhs)
         {
             return lhs.Red == rhs.Red &&
@@ -86,7 +74,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return !(lhs == rhs);
         }
 
-        // Override object.Equals and GetHashCode for proper comparison
         public override bool Equals(object obj)
         {
             if (obj is Pixel pixel)
@@ -109,19 +96,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public float Blue { get; set; }
         public float Alpha { get; set; }
 
-        // Default constructor
         public Pixel32() : this(0f, 0f, 0f, 1f) { }
-
-        // Constructor with one float
         public Pixel32(float value) : this(value, value, value, 1f) { }
-
-        // Constructor with two floats
         public Pixel32(float redGreen, float blue) : this(redGreen, redGreen, blue, 1f) { }
-
-        // Constructor with three floats
         public Pixel32(float red, float green, float blue) : this(red, green, blue, 1f) { }
-
-        // Constructor with four floats
         public Pixel32(float red, float green, float blue, float alpha)
         {
             Red = red;
@@ -130,7 +108,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Alpha = alpha;
         }
 
-        // Overloading the equality operator
         public static bool operator ==(Pixel32 lhs, Pixel32 rhs)
         {
             return lhs.Red == rhs.Red &&
@@ -143,7 +120,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return !(lhs == rhs);
         }
 
-        // Override object.Equals and GetHashCode for proper comparison
         public override bool Equals(object obj)
         {
             if (obj is Pixel32 pixel32)
@@ -159,7 +135,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         }
     }
 
-    // Static readonly fields for NullPixel and ClearPixel
     public static class PixelConstants
     {
         public static readonly Pixel NullPixel = new Pixel(0x00, 0x00, 0x00, 0xFF);

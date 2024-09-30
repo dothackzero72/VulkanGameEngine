@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VulkanGameEngineLevelEditor
+namespace VulkanGameEngineLevelEditor.Vulkan
 {
     public unsafe class VulkanSwapChain
     {
@@ -18,7 +18,7 @@ namespace VulkanGameEngineLevelEditor
         public Image[] images { get; private set; }
         public ImageView[] imageViews { get; private set; }
         public KhrSwapchain khrSwapchain { get; private set; }
-        public uint ImageCount { get; private set; }
+        public uint ImageCount { get; private set; } = VulkanRenderer.MAX_FRAMES_IN_FLIGHT;
         public void CreateSwapChain()
         {
             SurfaceFormatKHR surfaceFormat = GetSurfaceFormat(GetSurfaceFormats());

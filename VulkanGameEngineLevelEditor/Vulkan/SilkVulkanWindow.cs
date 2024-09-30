@@ -13,18 +13,21 @@ using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Silk.NET.Windowing;
 
-namespace VulkanGameEngineLevelEditor
+namespace VulkanGameEngineLevelEditor.Vulkan
 {
     public unsafe class SilkVulkanWindow
     {
         public IWindow window { get; private set; }
         public SilkVulkanWindow() { }
+        bool isFramebufferResized = false;
         public IWindow CreateWindow(string windowName, Vector2D<int> size, out string[] requiredExtensions)
         {
             var options = WindowOptions.DefaultVulkan;
             options.Title = windowName;
             options.Size = size;
-            /// options.IsResizable = true;
+           
+           // options.IsResizable = true;
+           // options.
 
             // Create the window
             window = Window.Create(options);
@@ -39,6 +42,8 @@ namespace VulkanGameEngineLevelEditor
 
             return window;
         }
+
+       
 
     }
 }

@@ -18,10 +18,12 @@
 //using static VulkanGameEngineLevelEditor.GameEngineAPI.VulkanRenderer;
 //using static VulkanGameEngineLevelEditor.VulkanAPI;
 
-//namespace VulkanGameEngineLevelEditor.GameEngineAPI
-//{
-//    public unsafe class Texture
-//    {
+namespace VulkanGameEngineLevelEditor.GameEngineAPI
+{
+    public unsafe class Texture
+    {
+    }
+}
 //        public UInt64 TextureBufferIndex { get; protected set; }
 //        public int Width { get; protected set; }
 //        public int Height { get; protected set; }
@@ -163,7 +165,7 @@
 //            VkCommandBuffer commandBuffer = VulkanRenderer.BeginCommandBuffer();
 //            TransitionImageLayout(commandBuffer, oldLayout, newLayout);
 //            VkResult result = VulkanRenderer.EndCommandBuffer(commandBuffer);
-          
+
 //            return result;
 //        }
 
@@ -257,7 +259,7 @@
 //            VulkanAPI.vkCreateBuffer(VulkanRenderer.Device, &BufferInfo, null,  buffer);
 
 //            VkMemoryRequirements memRequirements;
-           
+
 //            VulkanAPI.vkGetBufferMemoryRequirements(VulkanRenderer.Device, *buffer, &memRequirements);
 
 //            VkMemoryAllocateInfo allocInfo = new VkMemoryAllocateInfo
@@ -320,7 +322,7 @@
 //            TextureImageLayout = newImageLayout;
 //        }
 
-  
+
 //        public byte[] GetTextureData()
 //        {
 //            if (Data == null || Width <= 0 || Height <= 0)
@@ -398,7 +400,7 @@
 //              VkResult result = VulkanAPI.vkCreateImage(VulkanRenderer.Device, &imageInfo, null, &textureImage);
 //            if (result != VkResult.VK_SUCCESS)
 //            {
-                
+
 //            }
 
 //            VkMemoryRequirements memRequirements;
@@ -451,7 +453,7 @@
 //		        srcQueueFamilyIndex = VulkanConsts.VK_QUEUE_FAMILY_IGNORED,
 //		        dstQueueFamilyIndex = VulkanConsts.VK_QUEUE_FAMILY_IGNORED,
 //		        image = image,
-                
+
 //                subresourceRange = new VkImageSubresourceRange()
 //                {
 //                    aspectMask = VkImageAspectFlags.VK_IMAGE_ASPECT_COLOR_BIT,
@@ -524,7 +526,7 @@
 //                },
 //                 imageOffset = new VkOffset3D
 //                {
-                     
+
 //                    X = 0,
 //                    Y = 0,
 //                    Z = 0
@@ -535,7 +537,7 @@
 //                    Height = (uint)Height,
 //                    Depth = (uint)Depth,
 //                }
-		        
+
 //            };
 //            if (TextureUsage ==  TextureUsageEnum.kUse_CubeMapTexture)
 //            {
@@ -547,7 +549,7 @@
 //            VulkanRenderer.EndCommandBuffer(commandBuffer);
 
 
-     
+
 //            return VkResult.VK_SUCCESS;
 //        }
 
