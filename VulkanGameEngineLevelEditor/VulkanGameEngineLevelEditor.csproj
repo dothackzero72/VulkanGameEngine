@@ -299,7 +299,6 @@
     <Compile Include="GameEngineAPI\Scene.cs" />
     <Compile Include="GameEngineAPI\TestRenderPass.cs" />
     <Compile Include="GameEngineAPI\TestRenderPass2.cs" />
-    <Compile Include="GameEngineAPI\VulkanDebugMessenger.cs" />
     <Compile Include="ListExtensions.cs" />
     <Compile Include="GameEngineAPI\Mesh.cs" />
     <Compile Include="GameEngineAPI\Mesh2D.cs" />
@@ -307,7 +306,6 @@
     <Compile Include="GameEngineAPI\Texture.cs" />
     <Compile Include="GameEngineAPI\Vertex.cs" />
     <Compile Include="GameEngineAPI\VulkanBuffer.cs" />
-    <Compile Include="GameEngineAPI\VulkanRenderer.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
