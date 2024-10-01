@@ -14,25 +14,28 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.Tests;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor
 {
     public unsafe partial class Form1 : Form
     {
-        //private SilkVulkanWindow windows;
-        //private Thread renderThread;
-        //private Thread levelEditerDisplayThread;
-        //private volatile bool running;
-        //private volatile bool levelEditorRunning;
-        //private BlockingCollection<byte[]> dataCollection = new BlockingCollection<byte[]>(boundedCapacity: 10);
-        //private BlockingCollection<Bitmap> levelEditorImage = new BlockingCollection<Bitmap>(boundedCapacity: 10);
-        //private System.Windows.Forms.Timer renderTimer;
-        private static Scene scene = new Scene();
+        private SilkVulkanWindow windows;
+        private Thread renderThread;
+        private Thread levelEditerDisplayThread;
+        private volatile bool running;
+        private volatile bool levelEditorRunning;
+        private BlockingCollection<byte[]> dataCollection = new BlockingCollection<byte[]>(boundedCapacity: 10);
+        private BlockingCollection<Bitmap> levelEditorImage = new BlockingCollection<Bitmap>(boundedCapacity: 10);
+        private System.Windows.Forms.Timer renderTimer;
+        //private static Scene scene = new Scene();
         public bool isFramebufferResized = false;
-        //private Bitmap[] bitmapBuffer = new Bitmap[3];
-        //private uint NextTexture = 0;
-        //private LevelEditorDisplaySwapChain levelEditorSwapChain;
+        private Bitmap[] bitmapBuffer = new Bitmap[3];
+        private uint NextTexture = 0;
+        private LevelEditorDisplaySwapChain levelEditorSwapChain;
+        private VulkanTutorial vulkanTutorial;
+        IWindow window;
         public Form1()
         {
             InitializeComponent();
@@ -41,191 +44,201 @@ namespace VulkanGameEngineLevelEditor
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            VulkanRenderer.CreateVulkanRenderer();
-            VulkanRenderer.window.FramebufferResize += OnFramebufferResize;
+            //VulkanRenderer.CreateVulkanRenderer();
+            //VulkanRenderer.window.FramebufferResize += OnFramebufferResize;
 
-            scene.StartUp();
-            VulkanRenderer.window.Render += GameLoop;
-            VulkanRenderer.window.Run();
+            //scene.StartUp();
+            //VulkanRenderer.window.Render += GameLoop;
+            //VulkanRenderer.window.Run();
             //InitializeRenderTimer();
-            //levelEditorSwapChain = new LevelEditorDisplaySwapChain(new ivec2(pictureBox1.Width, pictureBox1.Height));
-            //StartRenderer();
-            //StartLevelEditorRenderer();
+            levelEditorSwapChain = new LevelEditorDisplaySwapChain(new ivec2(pictureBox1.Width, pictureBox1.Height));
+            StartLevelEditorRenderer();
+            StartRenderer();
+            InitializeRenderTimer();
+
         }
 
-        private void GameLoop(double obj)
+        void LoadVulkan()
         {
-            scene.Update(0);
-            scene.Draw();
-            Thread.Sleep(16);
+            //vulkanTutorial = new VulkanTutorial();
+            //vulkanTutorial.Run();
         }
 
-        void RecreateSwapChain()
+        void Update(double deltaTime)
         {
-            while (VulkanRenderer.window.Size.X == 0 || VulkanRenderer.window.Size.Y == 0)
-            {
-                VulkanRenderer.window.DoEvents();
-            }
-
-            //device.WaitIdle();
-
-            //CleanupSwapChain();
-
-            //CreateSwapChain();
-            //CreateRenderPass();
-            //CreateGraphicsPipeline();
-            //CreateDepthResources();
-            //CreateFramebuffers();
+           // scene.Update(0);
         }
+
+        void Render(double deltaTime)
+        {
+            //scene.Draw();
+        }
+
+
+        //void RecreateSwapChain()
+        //{
+        //    while (VulkanRenderer.window.Size.X == 0 || VulkanRenderer.window.Size.Y == 0)
+        //    {
+        //        VulkanRenderer.window.DoEvents();
+        //    }
+
+        //    device.WaitIdle();
+
+        //    CleanupSwapChain();
+
+        //    CreateSwapChain();
+        //    CreateRenderPass();
+        //    CreateGraphicsPipeline();
+        //    CreateDepthResources();
+        //    CreateFramebuffers();
+        //}
 
         void OnFramebufferResize(Vector2D<int> obj)
         {
             isFramebufferResized = true;
         }
-        //private void InitializeRenderTimer()
-        //{
-        //    //renderTimer = new System.Windows.Forms.Timer
-        //    //{
-        //    //    Interval = 100
-        //    //};
-        //    //renderTimer.Tick += UpdateBitmap;
-        //    //renderTimer.Start();
-        //}
+        private void InitializeRenderTimer()
+        {
+            renderTimer = new System.Windows.Forms.Timer
+            {
+                Interval = 100
+            };
+            renderTimer.Tick += UpdateBitmap;
+            renderTimer.Start();
+        }
 
-        //public void StartRenderer()
-        //{
-        //    //running = true;
-        //    //renderThread = new Thread(RenderLoop)
-        //    //{
-        //    //    IsBackground = true
-        //    //};
-        //    //renderThread.Start();
-        //}
+        public void StartRenderer()
+        {
+            running = true;
+            renderThread = new Thread(RenderLoop)
+            {
+                IsBackground = true
+            };
+            renderThread.Start();
+        }
 
-        //public void StartLevelEditorRenderer()
-        //{
-        //    //running = true;
-        //    //levelEditerDisplayThread = new Thread(LevelEditorLoop)
-        //    //{
-        //    //    IsBackground = true
-        //    //};
-        //    //levelEditerDisplayThread.Start();
-        //}
+        public void StartLevelEditorRenderer()
+        {
+            running = true;
+            levelEditerDisplayThread = new Thread(LevelEditorLoop)
+            {
+                IsBackground = true
+            };
+            levelEditerDisplayThread.Start();
+        }
 
-        //private void LevelEditorLoop()
-        //{
-        //    //while (running)
-        //    //{
-        //    //    if (dataCollection.TryTake(out byte[] textureData))
-        //    //    {
-        //    //        levelEditorSwapChain.UpdateBuffer(textureData);
-        //    //    }
-        //    //}
-        //}
+        private void LevelEditorLoop()
+        {
+            while (running)
+            {
+                if (dataCollection.TryTake(out byte[] textureData))
+                {
+                    levelEditorSwapChain.UpdateBuffer(textureData);
+                }
+            }
+        }
 
-        //private void RenderLoop()
-        //{
-        //    //scene = new Scene();
-        //    //this.Invoke(new Action(() =>
-        //    //{
-        //    //    VulkanRenderer.CreateVulkanRenderer();
-        //    //    scene.StartUp();
-        //    //}));
+        private void RenderLoop()
+        {
+            var opts = WindowOptions.DefaultVulkan;
+            opts.Title = "Texture Demo";
+            opts.Size = new Vector2D<int>((int)800, (int)600);
 
-        //    //while (running)
-        //    //{
-        //    //    scene.Update(0);
-        //    //    byte[] textureData = BakeColorTexture("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa.bmp", scene.testRenderPass2D.texture);
-        //    //    dataCollection.TryAdd(textureData);
-        //    //    scene.Draw();
-        //    //    Thread.Sleep(16);
-        //    //}
-        //}
+            window = Silk.NET.Windowing.Window.Create(opts);
+            window.Initialize();
+            window.FramebufferResize += OnFramebufferResize;
+            vulkanTutorial = new VulkanTutorial();
+            vulkanTutorial.Run(window);
 
-        //[DllImport("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanDLL.dll", CallingConvention = CallingConvention.Cdecl)]
-        //public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, void* data);
+            while (running)
+            {
+                vulkanTutorial.DrawFrame();
+                byte[] textureData = BakeColorTexture(vulkanTutorial.texture);
+                dataCollection.TryAdd(textureData);
+            }
+        }
 
+        [DllImport("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanDLL.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, void* data);
+        public unsafe byte[] BakeColorTexture(Texture texture)
+        {
+            var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
+            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), Format.R8G8B8A8Unorm);
 
-        //public unsafe byte[] BakeColorTexture(string filename, Texture texture)
-        //{
-        //    //var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
-        //    //BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
+            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
 
-        //    //VkCommandBuffer commandBuffer = VulkanRenderer.BeginCommandBuffer();
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal);
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal);
 
-        //    //bakeTexture.UpdateImageLayout(commandBuffer, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        //    //texture.UpdateImageLayout(commandBuffer, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+            ImageCopy copyImage = new ImageCopy();
+            copyImage.SrcSubresource.AspectMask = ImageAspectFlags.ColorBit;
+            copyImage.SrcSubresource.LayerCount = 1;
 
-        //    //VkImageCopy copyImage = new VkImageCopy();
-        //    //copyImage.srcSubresource.aspectMask = VkImageAspectFlags.VK_IMAGE_ASPECT_COLOR_BIT;
-        //    //copyImage.srcSubresource.layerCount = 1;
+            copyImage.DstSubresource.AspectMask = ImageAspectFlags.ColorBit;
+            copyImage.DstSubresource.LayerCount = 1;
 
-        //    //copyImage.dstSubresource.aspectMask = VkImageAspectFlags.VK_IMAGE_ASPECT_COLOR_BIT;
-        //    //copyImage.dstSubresource.layerCount = 1;
+            copyImage.DstOffset.X = 0;
+            copyImage.DstOffset.Y = 0;
+            copyImage.DstOffset.Z = 0;
 
-        //    //copyImage.dstOffset.X = 0;
-        //    //copyImage.dstOffset.Y = 0;
-        //    //copyImage.dstOffset.Z = 0;
+            copyImage.Extent.Width = (uint)texture.Width;
+            copyImage.Extent.Height = (uint)texture.Height;
+            copyImage.Extent.Depth = 1;
 
-        //    //copyImage.extent.Width = (uint)texture.Width;
-        //    //copyImage.extent.Height = (uint)texture.Height;
-        //    //copyImage.extent.Depth = 1;
+            VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
 
-        //    //vkCmdCopyImage(commandBuffer, texture.Image, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, bakeTexture.Image, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyImage);
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General);
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr);
+            SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
-        //    //bakeTexture.UpdateImageLayout(commandBuffer, VkImageLayout.VK_IMAGE_LAYOUT_GENERAL);
-        //    //texture.UpdateImageLayout(commandBuffer, VkImageLayout.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-        //    //VulkanRenderer.EndCommandBuffer(commandBuffer);
+            ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
+            SubresourceLayout subResourceLayout;
+            VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
 
-        //    //VkImageSubresource subResource = new VkImageSubresource { aspectMask = VkImageAspectFlags.VK_IMAGE_ASPECT_COLOR_BIT, mipLevel = 0, arrayLayer = 0 };
-        //    //VkSubresourceLayout subResourceLayout;
-        //    //vkGetImageSubresourceLayout(VulkanRenderer.Device, bakeTexture.Image, &subResource, &subResourceLayout);
+            int pixelCount = bakeTexture.Width * bakeTexture.Height;
+            byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
 
-        //    //int pixelCount = bakeTexture.Width * bakeTexture.Height;
-        //    //byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
+            IntPtr mappedMemory;
+            VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
+            Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
+            VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
 
-        //    //IntPtr mappedMemory;
-        //    //VulkanAPI.vkMapMemory(VulkanRenderer.Device, bakeTexture.Memory, 0, VulkanConsts.VK_WHOLE_SIZE, 0, (void**)&mappedMemory);
-        //    //Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
-        //    //VulkanAPI.vkUnmapMemory(VulkanRenderer.Device, bakeTexture.Memory);
+            return pixelData;
+        }
+        public static void WriteImage(string filePath, byte[] imageData, int width, int height, int channels)
+        {
+            int result = DLL_stbi_write_bmp(filePath, width, height, channels, (void*)imageData.ToArray()[0]);
+            if (result == 0)
+            {
+                Console.WriteLine("Failed to write image.");
+            }
+            else
+            {
+                Console.WriteLine("Image written successfully.");
+            }
+        }
 
-        //    //return pixelData;
-        //    return new byte[0];
-        //}
-        //public static void WriteImage(string filePath, byte[] imageData, int width, int height, int channels)
-        //{
-        //        int result = DLL_stbi_write_bmp(filePath, width, height, channels, (void*)imageData.ToArray()[0]);
-        //        if (result == 0)
-        //        {
-        //            Console.WriteLine("Failed to write image.");
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine("Image written successfully.");
-        //        }
-        //}
+        private void UpdateBitmap(object sender, EventArgs e)
+        {
+            pictureBox1.Invoke(new Action(() => levelEditorSwapChain.PresentImage(pictureBox1)));
+        }
 
-        //private void UpdateBitmap(object sender, EventArgs e)
-        //{
-        //    pictureBox1.Invoke(new Action(() => levelEditorSwapChain.PresentImage(pictureBox1)));
-        //}
+        public void StopLevelRenderer()
+        {
+            running = false;
+            if (renderThread != null && renderThread.IsAlive)
+            {
+                renderThread.Join();
+            }
+        }
 
-        //public void StopLevelRenderer()
-        //{
-        //    running = false;
-        //    if (renderThread != null && renderThread.IsAlive)
-        //    {
-        //        renderThread.Join();
-        //    }
-        //}
-
-        //public void StopRenderer()
-        //{
-        //    running = false;
-        //    if (renderThread != null && renderThread.IsAlive)
-        //    {
-        //        renderThread.Join();
-        //    }
-        //}
+        public void StopRenderer()
+        {
+            running = false;
+            if (renderThread != null && renderThread.IsAlive)
+            {
+                renderThread.Join();
+            }
+        }
     }
 }

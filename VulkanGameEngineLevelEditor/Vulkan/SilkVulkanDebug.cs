@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
-    public unsafe class VulkanDebug
+    public unsafe class SilkVulkanDebug
     {
         private static string GetMessageFromPointer(byte* messagePtr)
         {

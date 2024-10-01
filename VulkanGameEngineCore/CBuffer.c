@@ -193,3 +193,4 @@ void Buffer_DestroyBuffer(VkDevice device, VkBuffer* buffer, VkBuffer* stagingBu
     Renderer_FreeDeviceMemory(device, bufferMemory);
     Renderer_FreeDeviceMemory(device, stagingBufferMemory);
 }
+

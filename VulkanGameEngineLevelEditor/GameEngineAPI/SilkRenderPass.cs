@@ -27,19 +27,19 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             RenderPassResolution = new ivec2
             {
-                x = (int)VulkanRenderer.swapChain.swapchainExtent.Width,
-                y = (int)VulkanRenderer.swapChain.swapchainExtent.Height
+                x = (int)SilkVulkanRenderer.swapChain.swapchainExtent.Width,
+                y = (int)SilkVulkanRenderer.swapChain.swapchainExtent.Height
             };
             sampleCount = SampleCountFlags.Count1Bit;
 
             FrameBufferList = new List<Framebuffer>();
-            for (int x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
+            for (int x = 0; x < SilkVulkanRenderer.swapChain.ImageCount; x++)
             {
                 FrameBufferList.Add(new Framebuffer());
             }
 
-            commandBufferList = new CommandBuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
-            VulkanRenderer.CreateCommandBuffers(commandBufferList);
+            commandBufferList = new CommandBuffer[SilkVulkanRenderer.MAX_FRAMES_IN_FLIGHT];
+            SilkVulkanRenderer.CreateCommandBuffers(commandBufferList);
         }
     }
 }
