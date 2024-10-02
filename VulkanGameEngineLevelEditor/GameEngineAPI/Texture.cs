@@ -9,6 +9,7 @@ using Silk.NET.Vulkan;
 using VulkanGameEngineLevelEditor.Vulkan;
 using Image = Silk.NET.Vulkan.Image;
 using VulkanGameEngineLevelEditor.Tests;
+using System.Collections.Generic;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -119,18 +120,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ColorChannels = ColorComponents.RedGreenBlueAlpha;
             uint size = (uint)Width * (uint)Height * (uint)ColorChannels;
 
-            // Create an array of Pixel initialized with clear color (black with alpha 255)
             Pixel[] pixels = new Pixel[Width * Height];
             for (int i = 0; i < pixels.Length; i++)
             {
-                pixels[i] = new Pixel(0x00, 0x00, 0x00, 0xFF); // Black color with full alpha
+                pixels[i] = new Pixel(0x00, 0x00, 0x00, 0xFF);
             }
 
             GCHandle pixelHandle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
             IntPtr dataPtr;
             dataPtr = pixelHandle.AddrOfPinnedObject();
 
-            // Create the staging buffer and upload pixel data to it
             VulkanBuffer<Pixel> stagingBuffer = new VulkanBuffer<Pixel>(
                 (void*)dataPtr,
                 size,
@@ -172,7 +171,22 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Data = image.Data.ToArray();
                 // MipMapLevels = (uint)Math.Floor(Math.Log(Math.Max(Width, Height)) / Math.Log(2)) + 1;
 
-                GCHandle handle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
+                List<Pixel> pixelList = new List<Pixel>();
+                for(int x = 0; x < Data.Length; x += sizeof(Pixel))
+                {
+                    pixelList.Add(new Pixel(Data[x], Data[x + 1], Data[x + 2], Data[x + 3]));
+                }
+                for(int x = 0; x < pixelList.Count; x += 5)
+                {
+                    for (int y = 0; y < 5; y++)
+                    {
+                        Console.WriteLine($"Red: {pixelList[y].Red}, Green: {pixelList[y].Green}, Blue: {pixelList[y].Blue}, Alpha: {pixelList[y].Alpha}");
+                    }
+                    Console.WriteLine("");
+                }    
+                //WriteImage(Data, Width, Height, (int)ColorChannels);
+
+                 GCHandle handle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
                 IntPtr dataPtr = handle.AddrOfPinnedObject();
 
                 var buffer = new VulkanBuffer<byte>((void*)dataPtr, (uint)(Width * Height * (int)ColorChannels), BufferUsageFlags.TransferSrcBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit);
@@ -259,6 +273,22 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 ImageLayout = Silk.NET.Vulkan.ImageLayout.ReadOnlyOptimal
             };
         }
+
+        [DllImport("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanDLL.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, void* data);
+        protected void WriteImage(byte[] imageData, int width, int height, int channels)
+        {
+            int result = DLL_stbi_write_bmp("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\asdfa", width, height, channels, (void*)imageData.ToArray()[0]);
+            if (result == 0)
+            {
+                Console.WriteLine("Failed to write image.");
+            }
+            else
+            {
+                Console.WriteLine("Image written successfully.");
+            }
+        }
+
         virtual public void UpdateTextureSize(vec2 TextureResolution)
         {
             //GameEngineDLL.DLL_Renderer_DestroyImageView(&View);

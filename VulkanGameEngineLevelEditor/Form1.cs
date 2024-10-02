@@ -158,8 +158,6 @@ namespace VulkanGameEngineLevelEditor
             }
         }
 
-        [DllImport("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanDLL.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, void* data);
         public unsafe byte[] BakeColorTexture(Texture texture)
         {
             var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
@@ -205,6 +203,9 @@ namespace VulkanGameEngineLevelEditor
 
             return pixelData;
         }
+
+        [DllImport("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanDLL.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, void* data);
         public static void WriteImage(string filePath, byte[] imageData, int width, int height, int channels)
         {
             int result = DLL_stbi_write_bmp(filePath, width, height, channels, (void*)imageData.ToArray()[0]);
