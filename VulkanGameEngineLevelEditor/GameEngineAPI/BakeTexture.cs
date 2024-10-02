@@ -4,6 +4,7 @@ using Silk.NET.Vulkan;
 using System;
 using System.Runtime.InteropServices;
 using VulkanGameEngineLevelEditor.Vulkan;
+using VulkanGameEngineLevelEditor.Tests;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -53,15 +54,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             );
             var bHandle = stagingBuffer.Buffer;
 
+            
             CreateTextureImage();
-            Texture_QuickTransitionImageLayout(TextureImageLayout, ImageLayout.TransferDstOptimal);
-            CopyBufferToTexture(ref bHandle);
+            QuickTransitionImageLayout(Image, TextureImageLayout, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal);
+            CTexture.CopyBufferToTexture(ref bHandle, Image, new Extent3D { Width = (uint)Width, Height = (uint)Height, Depth = 1 }, TextureUsage);
+            // GenerateMipmaps();
 
             pixelHandle.Free();
             //stagingBuffer.DestroyBuffer();
         }
 
-        protected override Result CreateTextureImage()
+        protected Result CreateTextureImage()
         {
             Image textureImage;
             DeviceMemory textureMemory;
@@ -114,7 +117,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return result;
         }
 
-        protected override Result CreateTextureView()
+        protected Result CreateTextureView()
         {
             var textureImageViewInfo = new ImageViewCreateInfo
             {

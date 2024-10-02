@@ -292,6 +292,8 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GameEngineAPI\BakeTexture.cs" />
+    <Compile Include="GameEngineAPI\CBuffer.cs" />
+    <Compile Include="GameEngineAPI\CTexture.cs" />
     <Compile Include="GameEngineAPI\DynamicVulkanBuffer.cs" />
     <Compile Include="GameEngineAPI\FrameBufferRenderPass.cs" />
     <Compile Include="GameEngineAPI\GameEngineEnums.cs" />
@@ -360,6 +362,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Shaders\fragshader.frag" />
+    <None Include="Shaders\vertshader.vert" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -376,9 +380,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Shaders\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Ultz.Native.GLFW.3.4.0\build\net461\Ultz.Native.GLFW.targets" Condition="Exists('..\packages\Ultz.Native.GLFW.3.4.0\build\net461\Ultz.Native.GLFW.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

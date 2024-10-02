@@ -153,8 +153,8 @@ namespace VulkanGameEngineLevelEditor
             while (running)
             {
                 vulkanTutorial.DrawFrame();
-                byte[] textureData = BakeColorTexture(vulkanTutorial.texture);
-                dataCollection.TryAdd(textureData);
+               // byte[] textureData = BakeColorTexture(vulkanTutorial.texture);
+               // dataCollection.TryAdd(textureData);
             }
         }
 
