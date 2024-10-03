@@ -30,9 +30,9 @@ void Scene::Update(const float& deltaTime)
 	{
 		UpdateRenderPasses();
 	}
-	//VkCommandBuffer commandBuffer = renderer.BeginCommandBuffer();
-	//mesh->BufferUpdate(commandBuffer, deltaTime);
-	//renderer.EndCommandBuffer(commandBuffer);
+	VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
+	mesh->BufferUpdate(commandBuffer, deltaTime);
+	renderer.EndSingleTimeCommands(commandBuffer);
 
 	orthographicCamera->Update(sceneProperties);
 	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_W] == KS_PRESSED)

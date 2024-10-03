@@ -129,7 +129,7 @@ void BakedTexture::CreateTexture(Pixel32 ClearPixel, VkFormat textureFormat)
 	VkDeviceSize imageSize = Width * Height * 4 * sizeof(Pixel);
 	std::vector<Pixel32> pixels(Width * Height, ClearPixel);
 
-	VulkanBuffer<byte*> stagingBuffer((void*)pixels.data(), pixels.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, false);
+	VulkanBuffer<byte> stagingBuffer((void*)pixels.data(), pixels.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, false);
 
 	VkImageCreateInfo ImageCreateInfo = {};
 	ImageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
