@@ -46,13 +46,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GCHandle pixelHandle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
             IntPtr dataPtr = pixelHandle.AddrOfPinnedObject();
 
-            VulkanBuffer<Pixel> stagingBuffer = new VulkanBuffer<Pixel>(
+            VulkanBuffer <byte> stagingBuffer = new VulkanBuffer<byte>(
                 (void*)dataPtr,
                 size,
-                BufferUsageFlags.BufferUsageTransferSrcBit,
-                MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit
+                MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false
             );
-            var bHandle = stagingBuffer.Buffer;
+            var bHandle = stagingBuffer._bufferHandle;
 
             
             CreateTextureImage();

@@ -1046,8 +1046,57 @@ namespace VulkanGameEngineLevelEditor.Tests
         public static void UpdateDescriptorSets(Device device,
         DescriptorSet descriptorSet,
             (DescriptorType descriptorType, VkBuffer buffer, ulong range, VkBufferView bufferView)[] bufferData,
-            Texture texture,
+            TextureData texture,
             uint bindingOffset = 0)
+        {
+
+            WriteDescriptorSet[] writeDescriptorSets = new WriteDescriptorSet[bufferData.Length + 1];
+            DescriptorBufferInfo* bufferInfos = (DescriptorBufferInfo*)Mem.AllocArray<DescriptorBufferInfo>(bufferData.Length);
+            BufferView* bufferViews = (BufferView*)Mem.AllocArray<BufferView>(bufferData.Length);
+
+            uint dstBinding = bindingOffset;
+
+            int i = 0;
+
+            for (; i < bufferData.Length; i++)
+            {
+                bufferInfos[i] = new(bufferData[i].buffer, 0, bufferData[i].range);
+                bufferViews[i] = bufferData[i].bufferView ?? new BufferView(null);
+
+                writeDescriptorSets[i] = new
+                (
+                    dstSet: descriptorSet,
+                    dstBinding: dstBinding++,
+                    dstArrayElement: 0,
+                    descriptorCount: 1,
+                    descriptorType: bufferData[i].descriptorType,
+                    pBufferInfo: &bufferInfos[i],
+                    pTexelBufferView: &bufferViews[i]
+                );
+            }
+
+            DescriptorImageInfo imageInfo = new(texture.sampler, texture.imageData.imageView, ImageLayout.ShaderReadOnlyOptimal);
+
+            writeDescriptorSets[i] = new
+            (
+                dstSet: descriptorSet,
+                dstBinding: dstBinding,
+                dstArrayElement: 0,
+                descriptorCount: 1,
+                descriptorType: DescriptorType.CombinedImageSampler,
+                pImageInfo: &imageInfo
+            );
+
+            UpdateDescriptorSets(device, writeDescriptorSets, null);
+            Mem.FreeArray(bufferInfos);
+            Mem.FreeArray(bufferViews);
+        }
+
+        public static void UpdateDescriptorSets(Device device,
+DescriptorSet descriptorSet,
+    (DescriptorType descriptorType, VkBuffer buffer, ulong range, VkBufferView bufferView)[] bufferData,
+    Texture texture,
+    uint bindingOffset = 0)
         {
 
             WriteDescriptorSet[] writeDescriptorSets = new WriteDescriptorSet[bufferData.Length + 1];
@@ -1091,6 +1140,7 @@ namespace VulkanGameEngineLevelEditor.Tests
             Mem.FreeArray(bufferInfos);
             Mem.FreeArray(bufferViews);
         }
+
         public static void UpdateDescriptorSets(Device device,
         DescriptorSet descriptorSet,
             (DescriptorType descriptorType, VkBuffer buffer, ulong range, VkBufferView bufferView)[] bufferData,

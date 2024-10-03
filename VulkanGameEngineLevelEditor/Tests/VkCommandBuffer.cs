@@ -62,7 +62,7 @@ namespace VulkanGameEngineLevelEditor.Tests
             vk.CmdBindPipeline(this, pipelineBindPoint, pipeline);
         }
 
-        public void BindIndexBuffer(VkBuffer buffer, ulong offset, IndexType indexType)
+        public void BindIndexBuffer(Silk.NET.Vulkan.Buffer buffer, ulong offset, IndexType indexType)
         {
             vk.CmdBindIndexBuffer(this, buffer, offset, indexType);
         }
@@ -72,7 +72,7 @@ namespace VulkanGameEngineLevelEditor.Tests
             vk.CmdDrawIndexed(this, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
         }
 
-        public void BindVertexBuffers(in VkBuffer buffer, ulong offset)
+        public void BindVertexBuffers(in Silk.NET.Vulkan.Buffer buffer, ulong offset)
         {
             vk.CmdBindVertexBuffers(this, 0, 1, buffer, offset);
         }

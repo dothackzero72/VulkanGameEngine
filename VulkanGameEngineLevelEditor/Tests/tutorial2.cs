@@ -19,7 +19,8 @@ using VulkanGameEngineLevelEditor.Vulkan;
 using StbImageSharp;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using Silk.NET.SDL;
-
+using System.Buffers;
+using Newtonsoft.Json.Linq;
 
 namespace VulkanGameEngineLevelEditor.Tests
 {
@@ -63,8 +64,8 @@ namespace VulkanGameEngineLevelEditor.Tests
         Semaphore[] renderFinishedSemaphores;
         Fence[] inFlightFences;
 
-        BufferData vertexBuffer;
-        BufferData indexBuffer;
+        VulkanBuffer<Vertex> vertexBuffer;
+        VulkanBuffer<ushort> indexBuffer;
         BufferData[] uniformBuffers;
         string[] extensions;
         public GameEngineAPI.Texture texture;
@@ -136,7 +137,7 @@ namespace VulkanGameEngineLevelEditor.Tests
 
             if (result != Result.Success)
             {
-              //  ResultException.Throw(result, "Error waiting for fence");
+                //  ResultException.Throw(result, "Error waiting for fence");
             }
         }
 
@@ -146,7 +147,7 @@ namespace VulkanGameEngineLevelEditor.Tests
 
             if (result != Result.Success)
             {
-               // ResultException.Throw(result, "Error resetting fence");
+                // ResultException.Throw(result, "Error resetting fence");
             }
         }
 
@@ -180,7 +181,7 @@ namespace VulkanGameEngineLevelEditor.Tests
             Result result = khrSurface.GetPhysicalDeviceSurfaceSupport(tempDevice, queueFamilyIndex, surface, out Bool32 presentSupport);
             if (result != Result.Success)
             {
-              //  ResultException.Throw(result, "Error getting supported surfaces by physical device");
+                //  ResultException.Throw(result, "Error getting supported surfaces by physical device");
             }
 
             return presentSupport;
@@ -451,33 +452,8 @@ namespace VulkanGameEngineLevelEditor.Tests
 
         void CreateTextureImage()
         {
-            using (var stream = File.OpenRead("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/VulkanGameEngineLevelEditor/bin/Debug/awesomeface.png"))
-            {
-                ImageResult image = ImageResult.FromStream(stream);
-                var Width = image.Width;
-                var Height = image.Height;
-                var ColorChannels = image.Comp;
-                var Data = image.Data.ToArray();
-                // MipMapLevels = (uint)Math.Floor(Math.Log(Math.Max(Width, Height)) / Math.Log(2)) + 1;
-
-                List<Pixel> pixelList = new List<Pixel>();
-                for (int x = 0; x < Data.Length; x += sizeof(Pixel))
-                {
-                    pixelList.Add(new Pixel(Data[x], Data[x + 1], Data[x + 2], Data[x + 3]));
-                }
-                for (int x = 0; x < pixelList.Count; x += 5)
-                {
-                    for (int y = 0; y < 5; y++)
-                    {
-                        Console.WriteLine($"Red: {pixelList[y].Red}, Green: {pixelList[y].Green}, Blue: {pixelList[y].Blue}, Alpha: {pixelList[y].Alpha}");
-                    }
-                    Console.WriteLine("");
-                }
-            }
-
-                texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Srgb, TextureTypeEnum.kType_DiffuseTextureMap);
+            texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Srgb, TextureTypeEnum.kType_DiffuseTextureMap);
         }
-
 
         public void PresentKHR(Queue queue, KhrSwapchain khrSwapchain, in PresentInfoKHR presentInfo)
         {
@@ -496,31 +472,16 @@ namespace VulkanGameEngineLevelEditor.Tests
 
         void CreateVertexBuffer()
         {
-            uint bufferSize = (uint)(Marshal.SizeOf(vertices[0]) * vertices.Length);
-
-            vertexBuffer = new(physicalDevice,
-                device,
-                bufferSize,
-                BufferUsageFlags.BufferUsageTransferDstBit |
-                    BufferUsageFlags.BufferUsageVertexBufferBit,
-                MemoryPropertyFlags.MemoryPropertyDeviceLocalBit);
-
-            vertexBuffer.Upload<Vertex>(physicalDevice, device, commandPool, graphicsQueue, vertices);
+            GCHandle handle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
+            IntPtr pointer = handle.AddrOfPinnedObject();
+            vertexBuffer = new VulkanBuffer<Vertex>((void*)pointer, (uint)vertices.Count(), MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
         }
 
         void CreateIndexBuffer()
         {
-            uint bufferSize = (uint)(Marshal.SizeOf(indices[0]) * indices.Length);
-
-            indexBuffer = new(physicalDevice,
-                device,
-                bufferSize,
-                BufferUsageFlags.BufferUsageTransferDstBit |
-                    BufferUsageFlags.BufferUsageIndexBufferBit,
-                MemoryPropertyFlags.MemoryPropertyDeviceLocalBit);
-
-            indexBuffer.Upload<ushort>(physicalDevice, device, commandPool, graphicsQueue, indices);
-
+            GCHandle handle = GCHandle.Alloc(indices, GCHandleType.Pinned);
+            IntPtr pointer = handle.AddrOfPinnedObject();
+            indexBuffer = new VulkanBuffer<ushort>((void*)pointer, (uint)indices.Count(), MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
         }
 
         void CreateUniformBuffers()
@@ -623,8 +584,8 @@ namespace VulkanGameEngineLevelEditor.Tests
 
             commandBuffer.BeginRenderPass(renderPassInfo, SubpassContents.Inline);
             commandBuffer.BindPipeline(PipelineBindPoint.Graphics, graphicsPipeline);
-            commandBuffer.BindVertexBuffers(vertexBuffer.buffer, 0);
-            commandBuffer.BindIndexBuffer(indexBuffer.buffer, 0, IndexType.Uint16);
+            commandBuffer.BindVertexBuffers(vertexBuffer._bufferHandle, 0);
+            commandBuffer.BindIndexBuffer(indexBuffer._bufferHandle, 0, IndexType.Uint16);
             commandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, pipelineLayout, descriptorSets[(int)currentFrame]);
             commandBuffer.SetViewport(new Viewport(0.0f, 0.0f, extent.Width, extent.Height, 0.0f, 1.0f));
             commandBuffer.SetScissor(new Rect2D(new Offset2D(0, 0), extent));

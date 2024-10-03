@@ -2,6 +2,7 @@
 #include "Texture.h"
 #include <fstream>
 #include "BakedTexture.h"
+#include "VulkanRenderer.h"
 
 enum BakeTextureFormat
 {

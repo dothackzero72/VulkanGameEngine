@@ -102,7 +102,7 @@ void Texture::CreateImageTexture(const Pixel& clearColor)
 
 	std::vector<Pixel> pixels(Width * Height, clearColor);
 
-	VulkanBuffer<byte*> stagingBuffer(&pixels[0], Width * Height * 4, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+	VulkanBuffer<byte*> stagingBuffer((void*)pixels.data(), pixels.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
 
 	VULKAN_RESULT(NewTextureImage());
 	VULKAN_RESULT(TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));
@@ -117,7 +117,7 @@ void Texture::CreateImageTexture(const std::string& FilePath)
 	int* height = &Height;
 	int colorChannels = 0;
 	byte* data = stbi_load(FilePath.c_str(), width, height, &colorChannels, 0);
-	VulkanBuffer<byte*> stagingBuffer(data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+	VulkanBuffer<byte*> stagingBuffer((void*)data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
 
 	VULKAN_RESULT(CreateTextureImage());
 	VULKAN_RESULT(TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));

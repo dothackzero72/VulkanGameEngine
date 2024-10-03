@@ -4,7 +4,7 @@ extern "C"
 	#include <CTexture.h>
 	#include <CBuffer.h>
 }
-#include "DynamicVulkanBuffer.h"
+#include "VulkanBuffer.h"
 #include "SceneDataBuffer.h"
 #include "FrameTimer.h"
 
@@ -15,9 +15,9 @@ struct MeshProperitiesStruct
 	mat4   MeshTransform = mat4(1.0f);
 };
 
-typedef DynamicVulkanBuffer<Vertex2D> VertexBuffer;
-typedef DynamicVulkanBuffer<uint32> IndexBuffer;
-typedef DynamicVulkanBuffer<MeshProperitiesStruct> MeshPropertiesBuffer;
+typedef VulkanBuffer<Vertex2D> VertexBuffer;
+typedef VulkanBuffer<uint32> IndexBuffer;
+typedef VulkanBuffer<MeshProperitiesStruct> MeshPropertiesBuffer;
 
 class Mesh
 {
@@ -25,6 +25,7 @@ private:
 	const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
 		VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
 		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+		VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
 		VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
 	const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -53,9 +54,9 @@ public:
 		VertexCount = vertexList.size();
 		IndexCount = indexList.size();
 
-		MeshVertexBuffer = VertexBuffer(vertexList.data(), sizeof(T) * VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings);
-		MeshIndexBuffer = IndexBuffer(indexList.data(), sizeof(uint32) * IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings);
-		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), sizeof(MeshProperitiesStruct), MeshBufferUsageSettings, MeshBufferPropertySettings);
+		MeshVertexBuffer = VertexBuffer(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings , MeshBufferPropertySettings, true);
+		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 	}
 
 	Mesh();

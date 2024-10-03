@@ -61,32 +61,34 @@ RenderedTexture::~RenderedTexture()
 
 void RenderedTexture::CreateTextureImage()
 {
-	VkImageCreateInfo TextureInfo = {};
-	TextureInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-	TextureInfo.imageType = VK_IMAGE_TYPE_2D;
-	TextureInfo.extent.width = Width;
-	TextureInfo.extent.height = Height;
-	TextureInfo.extent.depth = 1;
-	TextureInfo.mipLevels = 1;
-	TextureInfo.arrayLayers = 1;
-	TextureInfo.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	TextureInfo.samples = SampleCount;
-	TextureInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-	TextureInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-	TextureInfo.format = TextureByteFormat;
-	vkCreateImage(cRenderer.Device, &TextureInfo, NULL, &Image);
+	Texture::CreateTextureImage();
 
-	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(cRenderer.Device, Image, &memRequirements);
+	//VkImageCreateInfo TextureInfo = {};
+	//TextureInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+	//TextureInfo.imageType = VK_IMAGE_TYPE_2D;
+	//TextureInfo.extent.width = Width;
+	//TextureInfo.extent.height = Height;
+	//TextureInfo.extent.depth = 1;
+	//TextureInfo.mipLevels = 1;
+	//TextureInfo.arrayLayers = 1;
+	//TextureInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	//TextureInfo.samples = SampleCount;
+	//TextureInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+	//TextureInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+	//TextureInfo.format = TextureByteFormat;
+	//vkCreateImage(cRenderer.Device, &TextureInfo, NULL, &Image);
 
-	VkMemoryAllocateInfo allocInfo =
-	{
-		.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-		.allocationSize = memRequirements.size,
-		.memoryTypeIndex = Renderer_GetMemoryType(cRenderer.PhysicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-	};
-	vkAllocateMemory(cRenderer.Device, &allocInfo, NULL, &Memory);
-	vkBindImageMemory(cRenderer.Device, Image, Memory, 0);
+	//VkMemoryRequirements memRequirements = {};
+	//vkGetImageMemoryRequirements(cRenderer.Device, Image, &memRequirements);
+
+	//VkMemoryAllocateInfo allocInfo =
+	//{
+	//	.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+	//	.allocationSize = memRequirements.size,
+	//	.memoryTypeIndex = Renderer_GetMemoryType(cRenderer.PhysicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+	//};
+	//vkAllocateMemory(cRenderer.Device, &allocInfo, NULL, &Memory);
+	//vkBindImageMemory(cRenderer.Device, Image, Memory, 0);
 }
 
 void RenderedTexture::CreateTextureView()

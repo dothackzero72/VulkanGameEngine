@@ -70,7 +70,9 @@ void BakedTexture::CreateTexture(const std::string& filePath)
 	int* height = &Height;
 	int colorChannels = 0;
 	byte* data = stbi_load(filePath.c_str(), width, height, &colorChannels, 0);
-	VulkanBuffer<byte*> stagingBuffer(data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+	VkDeviceSize size = Width * Height * colorChannels;
+	VulkanBuffer<byte> stagingBuffer((void*)data[0], size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
 
 	VkImageCreateInfo ImageCreateInfo = {};
 	ImageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -98,8 +100,7 @@ void BakedTexture::CreateTexture(Pixel ClearPixel, VkFormat textureFormat)
 {
 	VkDeviceSize imageSize = Width * Height * sizeof(Pixel);
 	std::vector<Pixel> pixels(Width * Height, ClearPixel);
-
-	VulkanBuffer<byte*> stagingBuffer(&pixels[0], Width * Height * 4, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+	VulkanBuffer<Pixel> stagingBuffer((void*)pixels.data(), pixels.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, false);
 
 	VkImageCreateInfo ImageCreateInfo = {};
 	ImageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -128,7 +129,7 @@ void BakedTexture::CreateTexture(Pixel32 ClearPixel, VkFormat textureFormat)
 	VkDeviceSize imageSize = Width * Height * 4 * sizeof(Pixel);
 	std::vector<Pixel32> pixels(Width * Height, ClearPixel);
 
-	VulkanBuffer<byte*> stagingBuffer(&pixels[0], Width * Height * 4, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+	VulkanBuffer<byte*> stagingBuffer((void*)pixels.data(), pixels.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, false);
 
 	VkImageCreateInfo ImageCreateInfo = {};
 	ImageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
