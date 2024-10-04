@@ -131,6 +131,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VulkanBuffer<byte> stagingBuffer = new VulkanBuffer<byte>(
                     dataPtr,
                     (uint)size,
+                     BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit,
                     MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false
                 );
 
@@ -139,7 +140,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     // Perform the copy here
                     QuickTransitionImageLayout(tempImage, TextureImageLayout, ImageLayout.TransferDstOptimal);
-                    CTexture.CopyBufferToTexture(ref stagingBuffer._bufferHandle, tempImage, new Extent3D { Width = (uint)Width, Height = (uint)Height, Depth = 1 }, TextureUsage);
+                    CTexture.CopyBufferToTexture(ref stagingBuffer.Buffer, tempImage, new Extent3D { Width = (uint)Width, Height = (uint)Height, Depth = 1 }, TextureUsage);
 
                     // Set class properties
                     Image = tempImage;
@@ -178,10 +179,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 IntPtr dataPtr = handle.AddrOfPinnedObject();
 
                 //var buffer = new VulkanBuffer<byte>((void*)dataPtr, (uint)(Width * Height * (int)ColorChannels), BufferUsageFlags.TransferSrcBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit);
-                VulkanBuffer<byte> buffer = new VulkanBuffer<byte>((void*)dataPtr, (uint)size, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false);
-                var bHandle = buffer._bufferHandle;
+                VulkanBuffer<byte> buffer = new VulkanBuffer<byte>((void*)dataPtr, (uint)size, BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false);
+                var bHandle = buffer.Buffer;
 
-                var tempBuffer = buffer._bufferHandle;
+                var tempBuffer = buffer.Buffer;
                 CTexture.CreateTextureImage(out Silk.NET.Vulkan.Image tempImage, out DeviceMemory memory, Width, Height, TextureByteFormat, MipMapLevels);
                 QuickTransitionImageLayout(tempImage, TextureImageLayout, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal);
                 CTexture.CopyBufferToTexture(ref tempBuffer, tempImage, new Extent3D { Width = (uint)Width, Height = (uint)Height, Depth = 1}, TextureUsage);

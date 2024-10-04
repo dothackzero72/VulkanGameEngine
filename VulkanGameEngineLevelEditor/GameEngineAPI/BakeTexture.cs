@@ -49,9 +49,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VulkanBuffer <byte> stagingBuffer = new VulkanBuffer<byte>(
                 (void*)dataPtr,
                 size,
+                BufferUsageFlags.BufferUsageTransferSrcBit,
                 MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false
             );
-            var bHandle = stagingBuffer._bufferHandle;
+            var bHandle = stagingBuffer.Buffer;
 
             
             CreateTextureImage();

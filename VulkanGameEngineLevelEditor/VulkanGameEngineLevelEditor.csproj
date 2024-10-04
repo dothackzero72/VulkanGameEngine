@@ -298,6 +298,7 @@
     <Compile Include="GameEngineAPI\CTexture.cs" />
     <Compile Include="GameEngineAPI\DynamicVulkanBuffer.cs" />
     <Compile Include="GameEngineAPI\FrameBufferRenderPass.cs" />
+    <Compile Include="GameEngineAPI\GameEngineDLL.cs" />
     <Compile Include="GameEngineAPI\GameEngineEnums.cs" />
     <Compile Include="GameEngineAPI\LevelEditorDisplaySwapChain.cs" />
     <Compile Include="GameEngineAPI\Pixel.cs" />

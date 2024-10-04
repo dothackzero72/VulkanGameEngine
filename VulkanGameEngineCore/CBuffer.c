@@ -5,12 +5,18 @@ static VkResult Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory buffer
 {
     if (dataToCopy == NULL || bufferSize == 0)
     {
-        RENDERER_ERROR("Buffer Data and Size can't be NULL");
+        RENDERER_ERROR("Buffer data and size cannot be NULL");
         return VK_ERROR_MEMORY_MAP_FAILED;
     }
 
     void* mappedData;
     VkResult result = vkMapMemory(device, bufferMemory, 0, bufferSize, 0, &mappedData);
+    if (result != VK_SUCCESS)
+    {
+        RENDERER_ERROR("Failed to map buffer memory");
+        return result;
+    }
+
     memcpy(mappedData, dataToCopy, (size_t)bufferSize);
     vkUnmapMemory(device, bufferMemory);
     return VK_SUCCESS;
@@ -18,14 +24,14 @@ static VkResult Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory buffer
 
 static void Buffer_CopyBufferMemory(VkDeviceMemory srcBuffer, VkDeviceMemory* dstBuffer, VkDeviceSize bufferSize)
 {
-    memcpy(&srcBuffer, dstBuffer, bufferSize);
+    memcpy(dstBuffer, &srcBuffer, bufferSize);
 }
 
 VkResult Buffer_AllocateMemory(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer* bufferData, VkDeviceMemory* bufferMemory, VkMemoryPropertyFlags properties)
 {
-    if (bufferData == NULL)
+    if (bufferData == NULL || bufferMemory == NULL)
     {
-        RENDERER_ERROR("Buffer Data is NULL");
+        RENDERER_ERROR("Buffer data or buffer memory is NULL");
         return VK_ERROR_MEMORY_MAP_FAILED;
     }
 
@@ -43,6 +49,7 @@ VkResult Buffer_AllocateMemory(VkDevice device, VkPhysicalDevice physicalDevice,
         .memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties),
         .pNext = &ExtendedAllocFlagsInfo,
     };
+
     return vkAllocateMemory(device, &allocInfo, NULL, bufferMemory);
 }
 
@@ -50,12 +57,17 @@ void* Buffer_MapBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, VkDev
 {
     if (*isMapped)
     {
-        RENDERER_ERROR("Buffer already mapped!\n");
+        RENDERER_ERROR("Buffer already mapped!");
         return NULL;
     }
 
     void* mappedData;
-    VULKAN_RESULT(vkMapMemory(device, bufferMemory, 0, bufferSize, 0, &mappedData));
+    VkResult result = vkMapMemory(device, bufferMemory, 0, bufferSize, 0, &mappedData);
+    if (result != VK_SUCCESS)
+    {
+        RENDERER_ERROR("Failed to map buffer memory");
+        return NULL;
+    }
     *isMapped = true;
     return mappedData;
 }
@@ -72,6 +84,12 @@ VkResult Buffer_UnmapBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, 
 
 VkResult Buffer_CreateBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkMemoryPropertyFlags properties, VkBufferUsageFlags usage)
 {
+    if (buffer == NULL || bufferMemory == NULL)
+    {
+        RENDERER_ERROR("Buffer and BufferMemory cannot be NULL");
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }
+
     VkBufferCreateInfo bufferCreateInfo =
     {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
@@ -80,12 +98,40 @@ VkResult Buffer_CreateBuffer(VkDevice device, VkPhysicalDevice physicalDevice, V
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
 
-    VULKAN_RESULT(vkCreateBuffer(device, &bufferCreateInfo, NULL, buffer));
-    VULKAN_RESULT(Buffer_AllocateMemory(device, physicalDevice, buffer, bufferMemory, properties)); 
-    VULKAN_RESULT(vkBindBufferMemory(device, *buffer, *bufferMemory, 0));
+    VkResult result = vkCreateBuffer(device, &bufferCreateInfo, NULL, buffer);
+    if (result != VK_SUCCESS)
+    {
+        RENDERER_ERROR("Failed to create buffer");
+        return result;
+    }
+
+    result = Buffer_AllocateMemory(device, physicalDevice, buffer, bufferMemory, properties);
+    if (result != VK_SUCCESS)
+    {
+        RENDERER_ERROR("Failed to allocate buffer memory");
+        vkDestroyBuffer(device, *buffer, NULL);
+        return result;
+    }
+
+    result = vkBindBufferMemory(device, *buffer, *bufferMemory, 0);
+    if (result != VK_SUCCESS)
+    {
+        RENDERER_ERROR("Failed to bind buffer memory");
+        vkDestroyBuffer(device, *buffer, NULL);
+        Renderer_FreeDeviceMemory(device, bufferMemory);
+        return result;
+    }
+
     if (bufferData != NULL)
     {
-        VULKAN_RESULT(Buffer_UpdateBufferMemory(device, *bufferMemory, bufferData, bufferSize))
+        result = Buffer_UpdateBufferMemory(device, *bufferMemory, bufferData, bufferSize);
+        if (result != VK_SUCCESS)
+        {
+            RENDERER_ERROR("Failed to update buffer memory");
+            vkDestroyBuffer(device, *buffer, NULL);
+            Renderer_FreeDeviceMemory(device, bufferMemory);
+            return result;
+        }
     }
 
     return VK_SUCCESS;
@@ -93,17 +139,36 @@ VkResult Buffer_CreateBuffer(VkDevice device, VkPhysicalDevice physicalDevice, V
 
 VkResult Buffer_CreateStagingBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer* stagingBuffer, VkBuffer* buffer, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties)
 {
-    VULKAN_RESULT(Buffer_CreateBuffer(device, physicalDevice, stagingBuffer, stagingBufferMemory, bufferData, bufferSize, properties, bufferUsage));
-    VULKAN_RESULT(Buffer_CreateBuffer(device, physicalDevice, buffer, bufferMemory, bufferData, bufferSize, properties, bufferUsage));
+    if (stagingBuffer == NULL || buffer == NULL || stagingBufferMemory == NULL || bufferMemory == NULL)
+    {
+        RENDERER_ERROR("One or more buffer pointers are NULL");
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }
+
+    VkResult result = Buffer_CreateBuffer(device, physicalDevice, stagingBuffer, stagingBufferMemory, bufferData, bufferSize, properties, bufferUsage);
+    if (result != VK_SUCCESS)
+    {
+        return result;
+    }
+
+    result = Buffer_CreateBuffer(device, physicalDevice, buffer, bufferMemory, bufferData, bufferSize, properties, bufferUsage);
+    if (result != VK_SUCCESS)
+    {
+        RENDERER_ERROR("Failed to create buffer");
+        vkDestroyBuffer(device, *stagingBuffer, NULL);
+        Renderer_FreeDeviceMemory(device, stagingBufferMemory);
+        return result;
+    }
+
     return Buffer_CopyBuffer(device, commandPool, graphicsQueue, stagingBuffer, buffer, bufferSize);
 }
 
 VkResult Buffer_CopyBuffer(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 {
-    if (srcBuffer == NULL)
+    if (srcBuffer == NULL || dstBuffer == NULL)
     {
-        RENDERER_ERROR("Source Buffer is NULL");
-        return VK_ERROR_MEMORY_MAP_FAILED;
+        RENDERER_ERROR("Source or Destination Buffer is NULL");
+        return VK_ERROR_UNKNOWN;
     }
 
     VkBufferCopy copyRegion =
@@ -112,8 +177,11 @@ VkResult Buffer_CopyBuffer(VkDevice device, VkCommandPool commandPool, VkQueue g
         .dstOffset = 0,
         .size = size
     };
+
     VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
+
     vkCmdCopyBuffer(commandBuffer, *srcBuffer, *dstBuffer, 1, &copyRegion);
+
     return Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);
 }
 
@@ -134,33 +202,106 @@ VkResult Buffer_UpdateBufferSize(VkDevice device, VkPhysicalDevice physicalDevic
         .usage = bufferUsageFlags,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
-    VULKAN_RESULT(vkCreateBuffer(device, &bufferCreateInfo, NULL, &buffer));
-    VULKAN_RESULT(Buffer_AllocateMemory(device, physicalDevice, &buffer, bufferMemory, propertyFlags));
-    VULKAN_RESULT(vkBindBufferMemory(device, buffer, *bufferMemory, 0));
-    return vkMapMemory(device, *bufferMemory, 0, newBufferSize, 0, bufferData);
-}
 
+    VkBuffer newBuffer;
+    VkDeviceMemory newBufferMemory;
+
+    VkResult result = vkCreateBuffer(device, &bufferCreateInfo, NULL, &newBuffer);
+    if (result != VK_SUCCESS)
+    {
+        RENDERER_ERROR("Failed to create new buffer");
+        return result;
+    }
+
+    result = Buffer_AllocateMemory(device, physicalDevice, &newBuffer, &newBufferMemory, propertyFlags);
+    if (result != VK_SUCCESS)
+    {
+        RENDERER_ERROR("Failed to allocate memory for new buffer");
+        vkDestroyBuffer(device, newBuffer, NULL);
+        return result;
+    }
+
+    result = vkBindBufferMemory(device, newBuffer, newBufferMemory, 0);
+    if (result != VK_SUCCESS)
+    {
+        RENDERER_ERROR("Failed to bind memory to the new buffer");
+        Renderer_FreeDeviceMemory(device, &newBufferMemory);
+        vkDestroyBuffer(device, newBuffer, NULL);
+        return result;
+    }
+
+    if (bufferData != NULL)
+    {
+        result = Buffer_UpdateBufferMemory(device, newBufferMemory, bufferData, newBufferSize);
+        if (result != VK_SUCCESS)
+        {
+            RENDERER_ERROR("Failed to update memory with buffer data");
+            vkDestroyBuffer(device, newBuffer, NULL);
+            Renderer_FreeDeviceMemory(device, &newBufferMemory);
+            return result;
+        }
+    }
+
+    vkDestroyBuffer(device, buffer, NULL);
+    Renderer_FreeDeviceMemory(device, bufferMemory);
+
+    buffer = newBuffer;
+    *bufferMemory = newBufferMemory;
+
+    return VK_SUCCESS;
+}
 
 void Buffer_UpdateBufferData(VkDevice device, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize, bool IsStagingBuffer)
 {
     if (IsStagingBuffer)
     {
-        VULKAN_RESULT(Buffer_UpdateBufferMemory(device, *stagingBufferMemory, dataToCopy, bufferSize));
-        Buffer_CopyBufferMemory(*stagingBufferMemory, bufferMemory, bufferSize);
+        VkResult result = Buffer_UpdateBufferMemory(device, *stagingBufferMemory, dataToCopy, bufferSize);
+        if (result == VK_SUCCESS)
+        {
+            Buffer_CopyBufferMemory(*stagingBufferMemory, bufferMemory, bufferSize);
+        }
         return;
     }
-    VULKAN_RESULT(Buffer_UpdateBufferMemory(device, *bufferMemory, dataToCopy, bufferSize));
+
+    Buffer_UpdateBufferMemory(device, *bufferMemory, dataToCopy, bufferSize);
 }
 
-void Buffer_DestroyBuffer(VkDevice device, VkBuffer* buffer, VkBuffer* stagingBuffer, VkDeviceMemory* bufferMemory, VkDeviceMemory* stagingBufferMemory, void* bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsageFlags, VkMemoryPropertyFlags* propertyFlags)
+VkResult Buffer_DestroyBuffer(VkDevice device, VkBuffer* buffer, VkBuffer* stagingBuffer, VkDeviceMemory* bufferMemory, VkDeviceMemory* stagingBufferMemory, void* bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsageFlags, VkMemoryPropertyFlags* propertyFlags)
 {
+    if (buffer == NULL && stagingBuffer == NULL)
+    {
+        RENDERER_ERROR("Both buffer and stagingBuffer are NULL");
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }
+
+    if (buffer && *buffer != VK_NULL_HANDLE)
+    {
+        vkDestroyBuffer(device, *buffer, NULL);
+        *buffer = VK_NULL_HANDLE;
+    }
+
+    if (stagingBuffer && *stagingBuffer != VK_NULL_HANDLE)
+    {
+        vkDestroyBuffer(device, *stagingBuffer, NULL);
+        *stagingBuffer = VK_NULL_HANDLE;
+    }
+
+    if (bufferMemory && *bufferMemory != VK_NULL_HANDLE)
+    {
+        Renderer_FreeDeviceMemory(device, bufferMemory);
+        *bufferMemory = VK_NULL_HANDLE;
+    }
+
+    if (stagingBufferMemory && *stagingBufferMemory != VK_NULL_HANDLE)
+    {
+        Renderer_FreeDeviceMemory(device, stagingBufferMemory);
+        *stagingBufferMemory = VK_NULL_HANDLE;
+    }
+
     *bufferSize = 0;
     *bufferUsageFlags = 0;
     *propertyFlags = 0;
     bufferData = VK_NULL_HANDLE;
-    Renderer_DestroyBuffer(device, buffer);
-    Renderer_DestroyBuffer(device, stagingBuffer);
-    Renderer_FreeDeviceMemory(device, bufferMemory);
-    Renderer_FreeDeviceMemory(device, stagingBufferMemory);
-}
 
+    return VK_SUCCESS;
+}

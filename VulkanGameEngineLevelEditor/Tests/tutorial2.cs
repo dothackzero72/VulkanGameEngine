@@ -21,6 +21,7 @@ using VulkanGameEngineLevelEditor.GameEngineAPI;
 using Silk.NET.SDL;
 using System.Buffers;
 using Newtonsoft.Json.Linq;
+using System.Drawing;
 
 namespace VulkanGameEngineLevelEditor.Tests
 {
@@ -52,10 +53,10 @@ namespace VulkanGameEngineLevelEditor.Tests
         Framebuffer[] swapChainFramebuffers;
 
         CommandPool commandPool;
-        VkCommandBuffer[] commandBuffers;
+        CommandBuffer[] commandBuffers;
 
         RenderPass renderPass;
-
+         
         DescriptorSetLayout descriptorSetLayout;
         PipelineLayout pipelineLayout;
         Pipeline graphicsPipeline;
@@ -64,22 +65,30 @@ namespace VulkanGameEngineLevelEditor.Tests
         Semaphore[] renderFinishedSemaphores;
         Fence[] inFlightFences;
 
+        UniformBufferObject ubo = new();
         VulkanBuffer<Vertex> vertexBuffer;
         VulkanBuffer<ushort> indexBuffer;
-        BufferData[] uniformBuffers;
+        VulkanBuffer<UniformBufferObject> uniformBuffers;
         string[] extensions;
         public GameEngineAPI.Texture texture;
 
         DepthBufferData depthBuffer;
 
         DescriptorPool descriptorPool;
-        VkDescriptorSet[] descriptorSets;
+        DescriptorSet descriptorSets;
 
         public string[] validationLayers = { "VK_LAYER_KHRONOS_validation" };
 
         string[] requiredExtensions;
         readonly string[] instanceExtensions = { ExtDebugUtils.ExtensionName };
         readonly string[] deviceExtensions = { KhrSwapchain.ExtensionName };
+
+        Silk.NET.Vulkan.Buffer ubobuffers;
+        VkDeviceMemory bufferMemory;
+        ulong ubosize;
+        BufferUsageFlags ubousage;
+        MemoryPropertyFlags ubopropertyFlags;
+        bool ubodisposedValue;
 
         [StructLayout(LayoutKind.Sequential)]
         struct UniformBufferObject
@@ -154,20 +163,44 @@ namespace VulkanGameEngineLevelEditor.Tests
 
         public void InitializeVulkan()
         {
-            CreateInstance();
-            CreateLogicalDevice();
+            instance = SilkVulkanRenderer.CreateInstance();
 
-            CreateSwapChain();
+            var asdf = SilkVulkanRenderer.CreateSurface(window);
+            surface = asdf.Surface;
+            khrSurface = asdf.KhrSurface;
+            extent = SilkVulkanRenderer.swapChain.swapchainExtent;
+            physicalDevice = SilkVulkanRenderer.CreatePhysicalDevice(khrSurface);
+
+            device = SilkVulkanRenderer.CreateDevice();
+            var ques = SilkVulkanRenderer.CreateDeviceQueue();
+
+            graphicsQueue = ques.graphics;
+            presentQueue = ques.present;
+
+            if (!vk.TryGetDeviceExtension(instance, device, out khrSwapchain))
+            {
+                throw new NotSupportedException("KHR_swapchain extension not found.");
+            }
+            swapChain = SilkVulkanRenderer.swapChain.CreateSwapChain(window, khrSurface, surface);
+
             CreateRenderPass();
             CreateDescriptorSetLayout();
             CreateGraphicsPipeline();
-            CreateCommandPool();
+            commandPool = SilkVulkanRenderer.CreateCommandPool();
 
             CreateDepthResources();
             CreateFramebuffers();
-            CreateTextureImage();
-            CreateVertexBuffer();
-            CreateIndexBuffer();
+            texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Srgb, TextureTypeEnum.kType_DiffuseTextureMap);
+
+
+                GCHandle vhandle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
+                IntPtr vpointer = vhandle.AddrOfPinnedObject();
+                vertexBuffer = new VulkanBuffer<Vertex>((void*)vpointer, (uint)vertices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
+            
+                GCHandle fhandle = GCHandle.Alloc(indices, GCHandleType.Pinned);
+                IntPtr fpointer = fhandle.AddrOfPinnedObject();
+                indexBuffer = new VulkanBuffer<ushort>((void*)fpointer, (uint)indices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
+
             CreateUniformBuffers();
             CreateDescriptorPool();
             CreateDescriptorSets();
@@ -176,87 +209,6 @@ namespace VulkanGameEngineLevelEditor.Tests
             CreateSyncObjects();
         }
 
-        public bool GetSurfaceSupportKHR(PhysicalDevice tempDevice, uint queueFamilyIndex)
-        {
-            Result result = khrSurface.GetPhysicalDeviceSurfaceSupport(tempDevice, queueFamilyIndex, surface, out Bool32 presentSupport);
-            if (result != Result.Success)
-            {
-                //  ResultException.Throw(result, "Error getting supported surfaces by physical device");
-            }
-
-            return presentSupport;
-        }
-
-        public QueueFamilyIndices FindGraphicsAndPresentQueueFamilyIndex(PhysicalDevice tempDevice)
-        {
-            QueueFamilyIndices queueFamilyIndices = new();
-
-            uint queueFamilyCount = 0;
-            SU.GetQueueFamilyProperties(tempDevice, &queueFamilyCount, null);
-
-            QueueFamilyProperties[] queueFamilies = new QueueFamilyProperties[queueFamilyCount];
-            SU.GetQueueFamilyProperties(tempDevice, &queueFamilyCount, queueFamilies);
-
-            uint i = 0;
-            foreach (var queueFamily in queueFamilies)
-            {
-                if (queueFamily.QueueFlags.HasFlag(QueueFlags.QueueGraphicsBit))
-                {
-                    queueFamilyIndices.GraphicsFamily = i;
-                }
-
-                bool isPresentSupport = GetSurfaceSupportKHR(tempDevice, i);
-
-                if (isPresentSupport)
-                {
-                    queueFamilyIndices.PresentFamily = i;
-                }
-
-                if (queueFamilyIndices.IsComplete)
-                {
-                    break;
-                }
-
-                i++;
-            }
-
-            return queueFamilyIndices;
-        }
-
-        void CreateInstance()
-        {
-            instance = SilkVulkanRenderer.CreateInstance();
-
-            var asdf = SilkVulkanRenderer.CreateSurface(window);
-            surface = asdf.Surface;
-            khrSurface = asdf.KhrSurface;
-            extent = SilkVulkanRenderer.swapChain.swapchainExtent;
-            physicalDevice = SilkVulkanRenderer.CreatePhysicalDevice(khrSurface);
-        }
-
-        public void GetQueueFamilyProperties(PhysicalDevice physicalDevice, uint* queueFamilyPropertyCount, Span<QueueFamilyProperties> queueFamilyProperties)
-        {
-            vk.GetPhysicalDeviceQueueFamilyProperties(physicalDevice, queueFamilyPropertyCount, queueFamilyProperties);
-        }
-
-        void CreateLogicalDevice()
-        {
-            device = SilkVulkanRenderer.CreateDevice();
-            var ques = SilkVulkanRenderer.CreateDeviceQueue();
-
-            graphicsQueue = ques.graphics;
-            presentQueue = ques.present;
-        }
-
-        void CreateSwapChain()
-        {
-            if (!vk.TryGetDeviceExtension(instance, device, out khrSwapchain))
-            {
-                throw new NotSupportedException("KHR_swapchain extension not found.");
-            }
-
-            swapChain = SilkVulkanRenderer.swapChain.CreateSwapChain(window, khrSurface, surface);
-        }
 
         void CreateGraphicsPipeline()
         {
@@ -433,11 +385,6 @@ namespace VulkanGameEngineLevelEditor.Tests
                 SilkVulkanRenderer.swapChain.swapchainExtent);
         }
 
-        void CreateCommandPool()
-        {
-            commandPool = SilkVulkanRenderer.CreateCommandPool();
-        }
-
         void CreateDepthResources()
         {
             Format depthFormat = SU.PickDepthFormat(physicalDevice);
@@ -470,32 +417,59 @@ namespace VulkanGameEngineLevelEditor.Tests
             }
         }
 
-        void CreateVertexBuffer()
+        uint FindMemoryType(PhysicalDeviceMemoryProperties memoryProperties, uint typeBits, MemoryPropertyFlags requirementsMask)
         {
-            GCHandle handle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
-            IntPtr pointer = handle.AddrOfPinnedObject();
-            vertexBuffer = new VulkanBuffer<Vertex>((void*)pointer, (uint)vertices.Count(), MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
-        }
+            for (int i = 0; i < memoryProperties.MemoryTypeCount; i++)
+            {
+                if ((typeBits & (i << 1)) != 0 && memoryProperties.MemoryTypes[i].PropertyFlags.HasFlag(requirementsMask))
+                {
+                    return (uint)i;
 
-        void CreateIndexBuffer()
-        {
-            GCHandle handle = GCHandle.Alloc(indices, GCHandleType.Pinned);
-            IntPtr pointer = handle.AddrOfPinnedObject();
-            indexBuffer = new VulkanBuffer<ushort>((void*)pointer, (uint)indices.Count(), MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
+                }
+            }
+
+            throw new Exception("failed to find suitable memory type!");
         }
 
         void CreateUniformBuffers()
         {
             uint bufferSize = (uint)sizeof(UniformBufferObject);
 
-            uniformBuffers = new BufferData[MAX_FRAMES_IN_FLIGHT];
+            ubosize = (uint)sizeof(UniformBufferObject);
+            ubousage = BufferUsageFlags.BufferUsageUniformBufferBit;
+            ubopropertyFlags = MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit;
 
-            for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-            {
-                uniformBuffers[i] = new BufferData(physicalDevice, device, bufferSize,
-                    BufferUsageFlags.BufferUsageUniformBufferBit);
-            }
+
+            var bufferInfo = new BufferCreateInfo(size: ubosize, usage: ubousage);
+             vk.CreateBuffer(device, in bufferInfo, null, out Silk.NET.Vulkan.Buffer ubobufferss);
+            ubobuffers = ubobufferss;
+
+            vk.GetBufferMemoryRequirements(device, ubobuffers, out MemoryRequirements memoryRequirements);
+            uint memoryTypeIndex = FindMemoryType(GetMemoryProperties(physicalDevice), memoryRequirements.MemoryTypeBits, ubopropertyFlags);
+
+            MemoryAllocateInfo allocInfo = new
+            (
+                allocationSize: memoryRequirements.Size,
+                memoryTypeIndex: memoryTypeIndex
+            );
+
+             bufferMemory = new VkDeviceMemory(device, allocInfo);
+            vk.BindBufferMemory(device, ubobuffers, bufferMemory, 0);
+
+         
+            //GCHandle uhandle = GCHandle.Alloc(ubo, GCHandleType.Pinned);
+            //IntPtr upointer = uhandle.AddrOfPinnedObject();
+            //uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false);
+
         }
+
+        public PhysicalDeviceMemoryProperties GetMemoryProperties(PhysicalDevice physicalDevice)
+        {
+            vk.GetPhysicalDeviceMemoryProperties(physicalDevice, out PhysicalDeviceMemoryProperties memProperties);
+
+            return memProperties;
+        }
+
 
         void CreateDescriptorSetLayout()
         {
@@ -541,78 +515,76 @@ namespace VulkanGameEngineLevelEditor.Tests
                 descriptorSetCount: MAX_FRAMES_IN_FLIGHT,
                 pSetLayouts: layouts
             );
-            descriptorSets = new VkDescriptorSets(device, allocInfo).ToArray();
+            SilkVulkanRenderer.vulkan.AllocateDescriptorSets(SilkVulkanRenderer.device, &allocInfo, out DescriptorSet descriptorSet);
+            descriptorSets = descriptorSet;
 
-            for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+                var colorDescriptorImage = new DescriptorImageInfo
+                {
+                    Sampler = texture.Sampler,
+                    ImageView = texture.View,
+                    ImageLayout = ImageLayout.ReadOnlyOptimal
+                };
+            
+
+            DescriptorBufferInfo uniformBuffer= new DescriptorBufferInfo
             {
-                SU.UpdateDescriptorSets(device, descriptorSets[i], new[]{
-                    (DescriptorType.UniformBuffer,uniformBuffers[i].buffer,(ulong)sizeof(UniformBufferObject), (VkBufferView)null)},
-                    texture);
+                Buffer = ubobuffers,
+                Offset = 0,
+                Range = Vk.WholeSize
+            };
+
+            List<WriteDescriptorSet> descriptorSetList = new List<WriteDescriptorSet>();
+                for (uint x = 0; x < SilkVulkanRenderer.swapChain.ImageCount; x++)
+                {
+                    WriteDescriptorSet descriptorSetWrite = new WriteDescriptorSet
+                    {
+                        SType = StructureType.WriteDescriptorSet,
+                        DstSet = descriptorSet,
+                        DstBinding = 0,
+                        DstArrayElement = 0,
+                        DescriptorCount = 1,
+                        DescriptorType = DescriptorType.UniformBuffer,
+                        PImageInfo = null,
+                        PBufferInfo = &uniformBuffer,
+                        PTexelBufferView = null
+                    };
+
+                    WriteDescriptorSet descriptorSetWrite2 = new WriteDescriptorSet
+                    {
+                        SType = StructureType.WriteDescriptorSet,
+                        DstSet = descriptorSet,
+                        DstBinding = 1,
+                        DstArrayElement = 0,
+                        DescriptorCount = 1,
+                        DescriptorType = DescriptorType.CombinedImageSampler,
+                        PImageInfo = &colorDescriptorImage,
+                        PBufferInfo = null,
+                        PTexelBufferView = null
+                    };
+
+                    descriptorSetList.Add(descriptorSetWrite);
+                    descriptorSetList.Add(descriptorSetWrite2);
+                }
+            
+
+            fixed (WriteDescriptorSet* ptr = descriptorSetList.ToArray())
+            {
+                SilkVulkanRenderer.vulkan.UpdateDescriptorSets(SilkVulkanRenderer.device, (uint)descriptorSetList.UCount(), ptr, 0, null);
             }
         }
 
         void CreateCommandBuffer()
         {
-            CommandBufferAllocateInfo allocInfo = new
-            (
-            commandPool: commandPool,
-                level: CommandBufferLevel.Primary,
-                commandBufferCount: MAX_FRAMES_IN_FLIGHT
-            );
-
-            commandBuffers = new VkCommandBuffers(device, allocInfo).ToArray();
-        }
-
-        void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint imageIndex)
-        {
-            commandBuffer.Begin(new(flags: 0));
-
-            ClearValue* clearValues = stackalloc[]
-            {
-                new ClearValue(new ClearColorValue(1, 0, 0, 1)),
-                new ClearValue(null, new ClearDepthStencilValue(1.0f, 0))
-            };
-
-            RenderPassBeginInfo renderPassInfo = new
-            (
-                renderPass: renderPass,
-                framebuffer: swapChainFramebuffers[imageIndex],
-                clearValueCount: 2,
-                pClearValues: clearValues,
-                renderArea: new(new Offset2D(0, 0), SilkVulkanRenderer.swapChain.swapchainExtent)
-            );
-
-            commandBuffer.BeginRenderPass(renderPassInfo, SubpassContents.Inline);
-            commandBuffer.BindPipeline(PipelineBindPoint.Graphics, graphicsPipeline);
-            commandBuffer.BindVertexBuffers(vertexBuffer._bufferHandle, 0);
-            commandBuffer.BindIndexBuffer(indexBuffer._bufferHandle, 0, IndexType.Uint16);
-            commandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, pipelineLayout, descriptorSets[(int)currentFrame]);
-            commandBuffer.SetViewport(new Viewport(0.0f, 0.0f, extent.Width, extent.Height, 0.0f, 1.0f));
-            commandBuffer.SetScissor(new Rect2D(new Offset2D(0, 0), extent));
-            commandBuffer.DrawIndexed((uint)indices.Length, 1, 0, 0, 0);
-            commandBuffer.EndRenderPass();
-            commandBuffer.End();
+            commandBuffers = new CommandBuffer[MAX_FRAMES_IN_FLIGHT];
+            SilkVulkanRenderer.CreateCommandBuffers(commandBuffers);
         }
 
         void CreateSyncObjects()
         {
-            imageAvailableSemaphores = new Semaphore[MAX_FRAMES_IN_FLIGHT];
-            renderFinishedSemaphores = new Semaphore[MAX_FRAMES_IN_FLIGHT];
-            inFlightFences = new Fence[MAX_FRAMES_IN_FLIGHT];
-
-            for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-            {
-                var info = new SemaphoreCreateInfo(flags: 0);
-                var fenceInfo = new FenceCreateInfo(flags: FenceCreateFlags.FenceCreateSignaledBit);
-                vk.CreateSemaphore(device, &info, null, out Semaphore imageAvailable);
-                imageAvailableSemaphores[i] = imageAvailable;
-
-                vk.CreateSemaphore(device, &info, null, out Semaphore renderFinished);
-                renderFinishedSemaphores[i] = renderFinished;
-
-                vk.CreateFence(device, &fenceInfo, null, out Fence fence);
-                inFlightFences[i] = fence;
-            }
+            var timing = SilkVulkanRenderer.CreateSemaphores();
+            imageAvailableSemaphores = timing.acquire;
+            renderFinishedSemaphores = timing.present;
+            inFlightFences = timing.fences;
         }
 
         public (uint imageIndex, Result result) AquireNextImage(ulong timeout, in Semaphore semaphore, Fence fence)
@@ -645,10 +617,40 @@ namespace VulkanGameEngineLevelEditor.Tests
             }
 
             ResetFences(inFlightFences[currentFrame]);
+            vk.ResetCommandBuffer(commandBuffers[currentFrame], 0);
 
-            commandBuffers[currentFrame].Reset(0);
+            ClearValue* clearValues = stackalloc[]
+{
+                new ClearValue(new ClearColorValue(1, 0, 0, 1)),
+                new ClearValue(null, new ClearDepthStencilValue(1.0f, 0))
+            };
 
-            RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
+            RenderPassBeginInfo renderPassInfo = new
+            (
+                renderPass: renderPass,
+                framebuffer: swapChainFramebuffers[imageIndex],
+                clearValueCount: 2,
+                pClearValues: clearValues,
+                renderArea: new(new Offset2D(0, 0), SilkVulkanRenderer.swapChain.swapchainExtent)
+            );
+
+            var viewport = new Viewport(0.0f, 0.0f, extent.Width, extent.Height, 0.0f, 1.0f);
+            var scissor = new Rect2D(new Offset2D(0, 0), extent);
+
+            var descSet = descriptorSets;
+            var vertexbuffer = vertexBuffer.Buffer;
+            var commandInfo = new CommandBufferBeginInfo(flags: 0);
+            VKConst.vulkan.BeginCommandBuffer(commandBuffers[imageIndex], &commandInfo);
+            VKConst.vulkan.CmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo, SubpassContents.Inline);
+            VKConst.vulkan.CmdBindPipeline(commandBuffers[imageIndex], PipelineBindPoint.Graphics, graphicsPipeline);
+            VKConst.vulkan.CmdBindVertexBuffers(commandBuffers[imageIndex], 0, 1, &vertexbuffer, 0);
+            VKConst.vulkan.CmdBindIndexBuffer(commandBuffers[imageIndex], indexBuffer.Buffer, 0, IndexType.Uint16);
+            VKConst.vulkan.CmdBindDescriptorSets(commandBuffers[imageIndex], PipelineBindPoint.Graphics, pipelineLayout, 0, 1, descSet, 0, null);
+            VKConst.vulkan.CmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
+            VKConst.vulkan.CmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
+            VKConst.vulkan.CmdDrawIndexed(commandBuffers[imageIndex], (uint)indices.Length, 1, 0, 0, 0);
+            VKConst.vulkan.CmdEndRenderPass(commandBuffers[imageIndex]);
+            VKConst.vulkan.EndCommandBuffer(commandBuffers[imageIndex]);
 
             UpdateUniformBuffer(imageIndex);
 
@@ -692,7 +694,7 @@ namespace VulkanGameEngineLevelEditor.Tests
         {
             float secondsPassed = (float)TimeSpan.FromTicks(DateTime.Now.Ticks - startTime).TotalSeconds;
 
-            UniformBufferObject ubo = new();
+     
 
             ubo.model = Matrix4X4.CreateFromAxisAngle(
                 new Vector3D<float>(0, 0, 1),
@@ -710,9 +712,22 @@ namespace VulkanGameEngineLevelEditor.Tests
                 10.0f);
 
             ubo.proj.M11 *= -1;
+            uint dataSize = (uint)Marshal.SizeOf(ubo);
 
-            uniformBuffers[currentFrame].Upload(ubo);
+            Debug.Assert(ubopropertyFlags.HasFlag(MemoryPropertyFlags.MemoryPropertyHostCoherentBit | MemoryPropertyFlags.MemoryPropertyHostVisibleBit));
+            Debug.Assert(dataSize <= ubosize);
 
+            void* dataPtr = Unsafe.AsPointer(ref ubo);
+
+            void* dstPtr = bufferMemory.MapMemory(0, dataSize);
+
+
+            System.Buffer.MemoryCopy(dataPtr, dstPtr, ubosize, dataSize);
+
+            bufferMemory.UnmapMemory();
+            //GCHandle vhandle = GCHandle.Alloc(ubo, GCHandleType.Pinned);
+            //IntPtr vpointer = vhandle.AddrOfPinnedObject();
+            //uniformBuffers.UpdateBufferData(vpointer);
         }
 
         void RecreateSwapChain()
@@ -726,7 +741,7 @@ namespace VulkanGameEngineLevelEditor.Tests
 
             CleanupSwapChain();
 
-            CreateSwapChain();
+           // CreateSwapChain();
             CreateRenderPass();
             CreateGraphicsPipeline();
             CreateDepthResources();
@@ -762,10 +777,10 @@ namespace VulkanGameEngineLevelEditor.Tests
 
             CleanupSwapChain();
 
-            for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-            {
-                uniformBuffers[i].Dispose();
-            }
+            //for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+            //{
+            //    uniformBuffers[i].Dispose();
+            //}
 
             //textureData.Dispose();
 
