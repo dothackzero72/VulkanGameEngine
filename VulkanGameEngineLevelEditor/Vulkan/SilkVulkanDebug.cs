@@ -1,16 +1,20 @@
 ﻿using Silk.NET.Vulkan;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
     public unsafe class SilkVulkanDebug
     {
+        private static RichTextBox _logTextBox;
+
+        // Constructor to set the RichTextBox for logging
+        public SilkVulkanDebug(RichTextBox logTextBox)
+        {
+            _logTextBox = logTextBox;
+        }
+
         private static string GetMessageFromPointer(byte* messagePtr)
         {
             int length = 0;
@@ -24,8 +28,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return System.Text.Encoding.ASCII.GetString(messageBytes);
         }
 
-        public static DebugUtilsMessengerCreateInfoEXT MakeDebugUtilsMessengerCreateInfoEXT()
+        public static DebugUtilsMessengerCreateInfoEXT MakeDebugUtilsMessengerCreateInfoEXT(RichTextBox logTextBox)
         {
+            _logTextBox = logTextBox;
             DebugUtilsMessengerCreateInfoEXT createInfo = new
             (
                 messageSeverity:
@@ -43,29 +48,61 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return createInfo;
         }
 
+        //public uint MessageCallback(DebugUtilsMessageSeverityFlagsEXT severity, DebugUtilsMessageTypeFlagsEXT messageType, DebugUtilsMessengerCallbackDataEXT* callbackData, void* userData)
+        //{
+        //    string message = GetMessageFromPointer(callbackData->PMessage);
+        //    string formattedMessage = $"Vulkan Message [Severity: {severity}, Type: {messageType}]: {message}";
+
+        //    // Log messages to the RichTextBox
+        //    if (_logTextBox.InvokeRequired)
+        //    {
+        //        _logTextBox.Invoke(new Action(() => LogMessage(formattedMessage, severity)));
+        //    }
+        //    else
+        //    {
+        //        LogMessage(formattedMessage, severity);
+        //    }
+
+        //    return Vk.False;
+        //}
         public static uint MessageCallback(DebugUtilsMessageSeverityFlagsEXT severity, DebugUtilsMessageTypeFlagsEXT messageType, DebugUtilsMessengerCallbackDataEXT* callbackData, void* userData)
         {
             string message = GetMessageFromPointer(callbackData->PMessage);
             string formattedMessage = $"Vulkan Message [Severity: {severity}, Type: {messageType}]: {message}";
+
+            if (_logTextBox != null)
+            {
+                if (_logTextBox.InvokeRequired)
+                {
+                    _logTextBox.Invoke(new Action(() => LogMessage(formattedMessage, severity)));
+                }
+            }
+
+            return Vk.False;
+        }
+
+        private static void LogMessage(string formattedMessage, DebugUtilsMessageSeverityFlagsEXT severity)
+        {
             switch (severity)
             {
                 case DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt:
-                    Console.WriteLine($"VERBOSE: {formattedMessage}");
+                    _logTextBox.AppendText($"VERBOSE: {formattedMessage}{Environment.NewLine}");
                     break;
                 case DebugUtilsMessageSeverityFlagsEXT.InfoBitExt:
-                    Console.WriteLine($"INFO: {formattedMessage}");
+                    _logTextBox.AppendText($"INFO: {formattedMessage}{Environment.NewLine}");
                     break;
                 case DebugUtilsMessageSeverityFlagsEXT.WarningBitExt:
-                    Console.Error.WriteLine($"WARNING: {formattedMessage}");
+                    _logTextBox.AppendText($"WARNING: {formattedMessage}{Environment.NewLine}");
                     break;
                 case DebugUtilsMessageSeverityFlagsEXT.ErrorBitExt:
-                    Console.Error.WriteLine($"ERROR: {formattedMessage}");
+                    _logTextBox.AppendText($"ERROR: {formattedMessage}{Environment.NewLine}");
                     break;
                 default:
-                    Console.Error.WriteLine($"UNKNOWN SEVERITY: {formattedMessage}");
+                    _logTextBox.AppendText($"UNKNOWN SEVERITY: {formattedMessage}{Environment.NewLine}");
                     break;
             }
-            return Vk.False;
+
+            _logTextBox.ScrollToCaret(); // Scroll to the bottom if new text is added
         }
     }
 }

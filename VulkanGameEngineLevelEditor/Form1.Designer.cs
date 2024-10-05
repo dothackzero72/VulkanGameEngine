@@ -36,16 +36,16 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(1467, 1242);
+            this.textBox1.Location = new System.Drawing.Point(1477, 910);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(310, 26);
             this.textBox1.TabIndex = 0;
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(1318, 1334);
+            this.richTextBox1.Location = new System.Drawing.Point(0, 1113);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(738, 164);
+            this.richTextBox1.Size = new System.Drawing.Size(3190, 1758);
             this.richTextBox1.TabIndex = 1;
             this.richTextBox1.Text = "";
             // 

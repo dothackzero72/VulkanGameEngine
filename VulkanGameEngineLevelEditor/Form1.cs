@@ -29,7 +29,7 @@ namespace VulkanGameEngineLevelEditor
         private BlockingCollection<byte[]> dataCollection = new BlockingCollection<byte[]>(boundedCapacity: 10);
         private BlockingCollection<Bitmap> levelEditorImage = new BlockingCollection<Bitmap>(boundedCapacity: 10);
         private System.Windows.Forms.Timer renderTimer;
-        //private static Scene scene = new Scene();
+        private static Scene scene;
         public bool isFramebufferResized = false;
         private Bitmap[] bitmapBuffer = new Bitmap[3];
         private uint NextTexture = 0;
@@ -47,11 +47,11 @@ namespace VulkanGameEngineLevelEditor
             //VulkanRenderer.CreateVulkanRenderer();
             //VulkanRenderer.window.FramebufferResize += OnFramebufferResize;
 
-            //scene.StartUp();
             //VulkanRenderer.window.Render += GameLoop;
             //VulkanRenderer.window.Run();
             //InitializeRenderTimer();
             levelEditorSwapChain = new LevelEditorDisplaySwapChain(new ivec2(pictureBox1.Width, pictureBox1.Height));
+
             StartLevelEditorRenderer();
             StartRenderer();
             InitializeRenderTimer();
@@ -64,15 +64,15 @@ namespace VulkanGameEngineLevelEditor
             //vulkanTutorial.Run();
         }
 
-        void Update(double deltaTime)
-        {
-           // scene.Update(0);
-        }
+        //void Update(double deltaTime)
+        //{
+        //    scene.Update(0);
+        //}
 
-        void Render(double deltaTime)
-        {
-            //scene.Draw();
-        }
+        //void Render(double deltaTime)
+        //{
+        //    scene.Draw();
+        //}
 
 
         //void RecreateSwapChain()
@@ -147,14 +147,21 @@ namespace VulkanGameEngineLevelEditor
             window = Silk.NET.Windowing.Window.Create(opts);
             window.Initialize();
             window.FramebufferResize += OnFramebufferResize;
-            vulkanTutorial = new VulkanTutorial();
-            vulkanTutorial.Run(window);
 
+            vulkanTutorial = new VulkanTutorial();
+            vulkanTutorial.Run(window, richTextBox1);
+
+            //   SilkVulkanRenderer.CreateVulkanRenderer(window, richTextBox1);
+
+            scene = new Scene();
+            scene.StartUp();
             while (running)
             {
+                //scene.Update(0);
+                //scene.Draw();
                 vulkanTutorial.DrawFrame();
-               // byte[] textureData = BakeColorTexture(vulkanTutorial.texture);
-               // dataCollection.TryAdd(textureData);
+                // byte[] textureData = BakeColorTexture(vulkanTutorial.texture);
+                // dataCollection.TryAdd(textureData);
             }
         }
 

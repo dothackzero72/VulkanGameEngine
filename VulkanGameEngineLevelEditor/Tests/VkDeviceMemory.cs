@@ -16,7 +16,7 @@ using Silk.NET.Windowing;
 
 namespace VulkanGameEngineLevelEditor.Tests
 {
-    unsafe class VkDeviceMemory : IDisposable
+   public unsafe class VkDeviceMemory : IDisposable
     {
         readonly Vk vk;
         readonly Device device;

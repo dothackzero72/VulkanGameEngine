@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using static System.Net.Mime.MediaTypeNames;
@@ -60,11 +61,29 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             public KhrSurface KhrSurface { get; set; }
         }
 
+        public static void CreateVulkanRenderer(IWindow windows, RichTextBox logTextBox)
+        {
+            window = windows;
+            CreateWindow(window);
+            CreateInstance(logTextBox);
+            CreateSurface(window);
+            CreatePhysicalDevice(khrSurface);
+            CreateDevice();
+            //while (true)
+            //{
+
+            //}
+            CreateDeviceQueue();
+            CreateSemaphores();
+            swapChain.CreateSwapChain(window, khrSurface, surface);
+            CreateCommandPool();
+        }
+
         public static void CreateVulkanRenderer(IWindow windows, SurfaceKHR surfacekhrt)
         {
             window = windows;
             CreateWindow(window);
-            CreateInstance();
+            CreateInstance(null);
             CreateSurface(window);
             CreatePhysicalDevice(khrSurface);
             CreateDevice();
@@ -72,7 +91,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             CreateSemaphores();
             swapChain.CreateSwapChain(window, khrSurface, surfacekhrt);
             CreateCommandPool();
-
         }
 
         public static void CreateCommandBuffers(CommandBuffer[] commandBufferList)
@@ -230,7 +248,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             window = tempWindow;
         }
 
-        public static Instance CreateInstance()
+        public static Instance CreateInstance(RichTextBox logTextBox)
         {
 
             validationLayers = CheckAvailableValidationLayers(validationLayers);
@@ -270,7 +288,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 createInfo.PpEnabledLayerNames = (byte**)SilkMarshal.StringArrayToPtr(validationLayers);
             }
 
-            DebugUtilsMessengerCreateInfoEXT debugCreateInfo = SilkVulkanDebug.MakeDebugUtilsMessengerCreateInfoEXT();
+            DebugUtilsMessengerCreateInfoEXT debugCreateInfo = SilkVulkanDebug.MakeDebugUtilsMessengerCreateInfoEXT(logTextBox);
             createInfo.PNext = &debugCreateInfo;
 
 
@@ -327,11 +345,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             surface = windowtemp.VkSurface.Create<AllocationCallbacks>(((Instance)instance).ToHandle(), null).ToSurface();
 
-            if (!VKConst.vulkan.TryGetInstanceExtension(instance, out KhrSurface khrSurface))
+            if (!VKConst.vulkan.TryGetInstanceExtension(instance, out KhrSurface khrSurface2))
             {
                 throw new NotSupportedException("KHR_surface extension not found.");
             }
-
+            khrSurface = khrSurface2;
             //surface = windowtemp.VkSurface.Create<AllocationCallbacks>(((Instance)instance).ToHandle(), null).ToSurface();
 
             //KhrSurface sufacekhr;
