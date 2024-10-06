@@ -215,10 +215,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return renderPass;
         }
 
-        private List<Framebuffer> CreateFramebuffer()
+        private Framebuffer[] CreateFramebuffer()
         {
 
-            List<Framebuffer> frameBufferList = FrameBufferList;
+            Framebuffer[] frameBufferList = FrameBufferList;
             for (int x = 0; x < SilkVulkanRenderer.swapChain.ImageCount; x++)
             {
                 List<ImageView> TextureAttachmentList = new List<ImageView>();
@@ -277,7 +277,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         private DescriptorSetLayout CreateDescriptorSetLayout()
         {
-            DescriptorSetLayout descriptorSetLayout = new DescriptorSetLayout();
             List<DescriptorSetLayoutBinding> LayoutBindingList = new List<DescriptorSetLayoutBinding>()
             {
                 new DescriptorSetLayoutBinding()
@@ -298,9 +297,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     BindingCount = (uint)LayoutBindingList.Count,
                     PBindings = ptr,
                 };
-                SilkVulkanRenderer.vulkan.CreateDescriptorSetLayout(SilkVulkanRenderer.device, in layoutInfo, null, out descriptorSetLayout);
+                SilkVulkanRenderer.vulkan.CreateDescriptorSetLayout(SilkVulkanRenderer.device, in layoutInfo, null, out DescriptorSetLayout descriptorsetLayout);
+
+                descriptorSetLayout = descriptorsetLayout;
             }
-            descriptorsetLayout = descriptorSetLayout;
             return descriptorSetLayout;
         }
 
@@ -308,7 +308,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
 
             DescriptorSet descriptorSet = new DescriptorSet();
-            DescriptorSetLayout layout = descriptorsetLayout;
+            DescriptorSetLayout layout = descriptorSetLayout;
             DescriptorSetAllocateInfo allocInfo = new DescriptorSetAllocateInfo()
             {
                 SType = StructureType.DescriptorSetAllocateInfo,
@@ -364,14 +364,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         private PipelineLayout CreatePipelineLayout()
         {
-            DescriptorSetLayout descriptorSetLayout = descriptorsetLayout;
+            DescriptorSetLayout descriptosetLayout = descriptorSetLayout;
 
             PipelineLayout shaderPipelineLayout = new PipelineLayout();
             PipelineLayoutCreateInfo pipelineLayoutInfo = new PipelineLayoutCreateInfo
             {
                 SType = StructureType.PipelineLayoutCreateInfo,
                 SetLayoutCount = 1,
-                PSetLayouts = &descriptorSetLayout
+                PSetLayouts = &descriptosetLayout
             };
             SilkVulkanRenderer.vulkan.CreatePipelineLayout(SilkVulkanRenderer.device, &pipelineLayoutInfo, null, &shaderPipelineLayout);
 

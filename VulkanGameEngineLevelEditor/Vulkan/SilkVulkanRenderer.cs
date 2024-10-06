@@ -69,10 +69,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             CreateSurface(window);
             CreatePhysicalDevice(khrSurface);
             CreateDevice();
-            //while (true)
-            //{
-
-            //}
             CreateDeviceQueue();
             CreateSemaphores();
             swapChain.CreateSwapChain(window, khrSurface, surface);

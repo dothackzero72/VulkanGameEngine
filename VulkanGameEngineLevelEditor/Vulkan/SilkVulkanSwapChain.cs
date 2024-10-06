@@ -90,7 +90,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             khrSwapchain = khrSwapChain;
 
             var Swapchain = new SwapchainKHR();
-            if (khrSwapchain.CreateSwapchain(SilkVulkanRenderer.device, &createInfo, null, out Swapchain) != Result.Success)
+            var result = khrSwapchain.CreateSwapchain(SilkVulkanRenderer.device, &createInfo, null, out Swapchain);
+            if (result != Result.Success)
             {
                 throw new Exception("failed to create swap chain!");
             }

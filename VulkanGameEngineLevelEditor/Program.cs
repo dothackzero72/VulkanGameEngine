@@ -24,8 +24,7 @@ namespace VulkanGameEngineLevelEditor
         static IWindow window;
       //  static private Scene scene = new Scene();
         static private bool isInitialized = false;
-        static private VulkanTutorial tutorial = new VulkanTutorial();
-
+      
         [STAThread]
         static void Main()
         {

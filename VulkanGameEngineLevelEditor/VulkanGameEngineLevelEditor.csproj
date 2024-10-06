@@ -296,6 +296,7 @@
     <Compile Include="GameEngineAPI\BakeTexture.cs" />
     <Compile Include="GameEngineAPI\CBuffer.cs" />
     <Compile Include="GameEngineAPI\CTexture.cs" />
+    <Compile Include="GameEngineAPI\DepthTexture.cs" />
     <Compile Include="GameEngineAPI\DynamicVulkanBuffer.cs" />
     <Compile Include="GameEngineAPI\FrameBufferRenderPass.cs" />
     <Compile Include="GameEngineAPI\GameEngineDLL.cs" />
@@ -305,6 +306,7 @@
     <Compile Include="GameEngineAPI\RenderedTexture.cs" />
     <Compile Include="GameEngineAPI\RenderPass2D.cs" />
     <Compile Include="GameEngineAPI\Scene.cs" />
+    <Compile Include="GameEngineAPI\Silk3DRendererPass.cs" />
     <Compile Include="GameEngineAPI\SilkFrameBufferRenderPass.cs" />
     <Compile Include="GameEngineAPI\SilkRenderPass.cs" />
     <Compile Include="GameEngineAPI\TestRenderPass.cs" />
@@ -321,21 +323,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RichTextBoxWriter.cs" />
     <Compile Include="Tests\BufferData.cs" />
-    <Compile Include="Tests\Class1.cs" />
     <Compile Include="Tests\DepthBufferData.cs" />
     <Compile Include="Tests\ImageData.cs" />
     <Compile Include="Tests\Mem.cs" />
     <Compile Include="Tests\QueueFamilyIndices.cs" />
     <Compile Include="Tests\SU.cs" />
-    <Compile Include="Tests\TextureData.cs" />
-    <Compile Include="Tests\tutorial2.cs" />
     <Compile Include="Tests\Vertex.cs" />
     <Compile Include="Tests\VkBuffer.cs" />
     <Compile Include="Tests\VkBufferView.cs" />
     <Compile Include="Tests\VkCommandBuffer.cs" />
     <Compile Include="Tests\VkCommandBuffers.cs" />
-    <Compile Include="Tests\VkDescriptorSet.cs" />
-    <Compile Include="Tests\VkDescriptorSets.cs" />
     <Compile Include="Tests\VkDeviceMemory.cs" />
     <Compile Include="TextWriter.cs" />
     <Compile Include="Vulkan\SilkVulkanDebug.cs" />

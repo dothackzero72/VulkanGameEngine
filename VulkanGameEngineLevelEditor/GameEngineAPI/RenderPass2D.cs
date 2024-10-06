@@ -20,8 +20,8 @@
 //    {
 //        public RenderedTexture texture { get; set; }
 
-//        public RenderPass2D() : base() 
-//        { 
+//        public RenderPass2D() : base()
+//        {
 //        }
 
 //        public void BuildRenderPass(Mesh2D mesh)
@@ -78,9 +78,9 @@
 //                sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
 //                pNext = IntPtr.Zero,
 //                flags = 0,
-//                logicOpEnable = VulkanConsts.VK_FALSE, 
+//                logicOpEnable = VulkanConsts.VK_FALSE,
 //                logicOp = VkLogicOp.VK_LOGIC_OP_COPY,
-//                attachmentCount = 1, 
+//                attachmentCount = 1,
 //                pAttachments = &blendAttachment,
 //            };
 //            blending.blendConstants[0] = 0.0f;
@@ -88,7 +88,7 @@
 //            blending.blendConstants[2] = 0.0f;
 //            blending.blendConstants[3] = 0.0f;
 
-          
+
 //            fixed (VkPipelineShaderStageCreateInfo* shaderlist = shaderList.ToArray())
 //            {
 //                var pipelineInfo = new VkGraphicsPipelineCreateInfo
@@ -96,7 +96,7 @@
 //                    sType = VkStructureType.VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 //                    pNext = IntPtr.Zero,
 //                    flags = 0,
-//                    stageCount = 1, 
+//                    stageCount = 1,
 //                    pStages = shaderlist,
 //                    pVertexInputState = &vertexInput,
 //                    pInputAssemblyState = &inputAssembly,
@@ -111,10 +111,10 @@
 //                    basePipelineHandle = IntPtr.Zero,
 //                };
 
-//                    VkPipeline pipeline;
-//                    VulkanAPI.vkCreateGraphicsPipelines(VulkanRenderer.Device, IntPtr.Zero, 1, &pipelineInfo, null, &pipeline);
+//                VkPipeline pipeline;
+//                VulkanAPI.vkCreateGraphicsPipelines(VulkanRenderer.Device, IntPtr.Zero, 1, &pipelineInfo, null, &pipeline);
 //                ShaderPipeline = pipeline;
-                
+
 //            }
 
 
@@ -185,7 +185,7 @@
 //                    }
 //                },
 //                clearValueCount = (uint)clearValues.Count,
-//              //  pClearValues = clearValues.ToPointer()
+//                //  pClearValues = clearValues.ToPointer()
 //            };
 
 //            VkCommandBufferBeginInfo CommandBufferBeginInfo = new VkCommandBufferBeginInfo()
@@ -425,32 +425,32 @@
 
 //            List<VkWriteDescriptorSet> descriptorSetList = new List<VkWriteDescriptorSet>();
 
-    
-//                descriptorSetList.Add(new VkWriteDescriptorSet
-//                {
-//                    sType = VkStructureType.VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-//                    dstSet = DescriptorSet,
-//                    dstBinding = 0,
-//                    dstArrayElement = 0,
-//                    descriptorCount = 1,
-//                    descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-//                    pBufferInfo = meshBufferPtr,
-//                    pTexelBufferView = null
-//                });
-//                descriptorSetList.Add(new VkWriteDescriptorSet
-//                {
-//                    sType = VkStructureType.VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-//                    dstSet = DescriptorSet,
-//                    dstBinding = 1,
-//                    dstArrayElement = 0,
-//                    descriptorCount = 1,
-//                    descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-//                    pImageInfo = &textureBuffer, // Use imageInfoPtr to access the right image info
-//                    pBufferInfo = null,
-//                    pTexelBufferView = null
-//                });
-            
-            
+
+//            descriptorSetList.Add(new VkWriteDescriptorSet
+//            {
+//                sType = VkStructureType.VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+//                dstSet = DescriptorSet,
+//                dstBinding = 0,
+//                dstArrayElement = 0,
+//                descriptorCount = 1,
+//                descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+//                pBufferInfo = meshBufferPtr,
+//                pTexelBufferView = null
+//            });
+//            descriptorSetList.Add(new VkWriteDescriptorSet
+//            {
+//                sType = VkStructureType.VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+//                dstSet = DescriptorSet,
+//                dstBinding = 1,
+//                dstArrayElement = 0,
+//                descriptorCount = 1,
+//                descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+//                pImageInfo = &textureBuffer, // Use imageInfoPtr to access the right image info
+//                pBufferInfo = null,
+//                pTexelBufferView = null
+//            });
+
+
 
 //            fixed (VkWriteDescriptorSet* ptr = descriptorSetList.ToArray())
 //            {
@@ -464,7 +464,7 @@
 
 //            VkPushConstantRange pushConstantRange = new VkPushConstantRange()
 //            {
-//                stageFlags =  VkShaderStageFlags.VK_SHADER_STAGE_VERTEX_BIT |  VkShaderStageFlags.VK_SHADER_STAGE_FRAGMENT_BIT,
+//                stageFlags = VkShaderStageFlags.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlags.VK_SHADER_STAGE_FRAGMENT_BIT,
 //                offset = 0,
 //                size = (uint)sizeof(SceneDataBuffer)
 //            };

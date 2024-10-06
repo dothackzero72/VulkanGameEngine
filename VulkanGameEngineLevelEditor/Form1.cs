@@ -34,7 +34,7 @@ namespace VulkanGameEngineLevelEditor
         private Bitmap[] bitmapBuffer = new Bitmap[3];
         private uint NextTexture = 0;
         private LevelEditorDisplaySwapChain levelEditorSwapChain;
-        private VulkanTutorial vulkanTutorial;
+
         IWindow window;
         public Form1()
         {
@@ -147,21 +147,20 @@ namespace VulkanGameEngineLevelEditor
             window = Silk.NET.Windowing.Window.Create(opts);
             window.Initialize();
             window.FramebufferResize += OnFramebufferResize;
+            //vulkanTutorial = new VulkanTutorial();
+            //vulkanTutorial.Run(window);
 
-            vulkanTutorial = new VulkanTutorial();
-            vulkanTutorial.Run(window, richTextBox1);
-
-            //   SilkVulkanRenderer.CreateVulkanRenderer(window, richTextBox1);
+          //  SilkVulkanRenderer.CreateVulkanRenderer(window, richTextBox1);
 
             scene = new Scene();
-            scene.StartUp();
+            scene.StartUp(window, richTextBox1);
             while (running)
             {
                 //scene.Update(0);
-                //scene.Draw();
-                vulkanTutorial.DrawFrame();
-                // byte[] textureData = BakeColorTexture(vulkanTutorial.texture);
-                // dataCollection.TryAdd(textureData);
+                scene.DrawFrame();
+               // vulkanTutorial.DrawFrame();
+               // byte[] textureData = BakeColorTexture(vulkanTutorial.texture);
+               // dataCollection.TryAdd(textureData);
             }
         }
 

@@ -15,9 +15,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public SampleCountFlags sampleCount;
         public RenderPass renderPass { get; protected set; }
         public CommandBuffer[] commandBufferList { get; protected set; }
-        public List<Framebuffer> FrameBufferList { get; protected set; }
+        public Framebuffer[] FrameBufferList { get; protected set; }
         public DescriptorPool descriptorpool { get; protected set; }
-        public DescriptorSetLayout descriptorsetLayout { get; protected set; }
+        public DescriptorSetLayout descriptorSetLayout { get; protected set; }
         public DescriptorSet descriptorset { get; protected set; }
         public Pipeline shaderpipeline { get; protected set; }
         public PipelineLayout shaderpipelineLayout { get; protected set; }
@@ -32,12 +32,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
             sampleCount = SampleCountFlags.Count1Bit;
 
-            FrameBufferList = new List<Framebuffer>();
-            for (int x = 0; x < SilkVulkanRenderer.swapChain.ImageCount; x++)
-            {
-                FrameBufferList.Add(new Framebuffer());
-            }
-
+            FrameBufferList = new Framebuffer[SilkVulkanRenderer.MAX_FRAMES_IN_FLIGHT];
             commandBufferList = new CommandBuffer[SilkVulkanRenderer.MAX_FRAMES_IN_FLIGHT];
             SilkVulkanRenderer.CreateCommandBuffers(commandBufferList);
         }

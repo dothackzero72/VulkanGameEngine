@@ -77,7 +77,24 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     _logTextBox.Invoke(new Action(() => LogMessage(formattedMessage, severity)));
                 }
             }
-
+            switch (severity)
+            {
+                case DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt:
+                    Console.WriteLine($"VERBOSE: {formattedMessage}");
+                    break;
+                case DebugUtilsMessageSeverityFlagsEXT.InfoBitExt:
+                    Console.WriteLine($"INFO: {formattedMessage}");
+                    break;
+                case DebugUtilsMessageSeverityFlagsEXT.WarningBitExt:
+                    Console.WriteLine($"WARNING: {formattedMessage}");
+                    break;
+                case DebugUtilsMessageSeverityFlagsEXT.ErrorBitExt:
+                    Console.WriteLine($"ERROR: {formattedMessage}");
+                    break;
+                default:
+                    Console.WriteLine($"UNKNOWN SEVERITY: {formattedMessage}");
+                    break;
+            }
             return Vk.False;
         }
 
@@ -102,7 +119,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     break;
             }
 
-            _logTextBox.ScrollToCaret(); // Scroll to the bottom if new text is added
+            _logTextBox.ScrollToCaret(); 
         }
     }
 }
