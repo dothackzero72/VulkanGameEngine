@@ -16,7 +16,7 @@ using GlmSharp;
 using Silk.NET.SDL;
 using VulkanGameEngineLevelEditor.Vulkan;
 using Window = Silk.NET.Windowing.Window;
-using VulkanGameEngineLevelEditor.Tests;
+
 namespace VulkanGameEngineLevelEditor
 {
     public class Program

@@ -4,7 +4,6 @@ using Silk.NET.Vulkan;
 using System;
 using System.Runtime.InteropServices;
 using VulkanGameEngineLevelEditor.Vulkan;
-using VulkanGameEngineLevelEditor.Tests;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {

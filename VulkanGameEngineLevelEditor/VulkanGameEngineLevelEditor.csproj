@@ -322,9 +322,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RichTextBoxWriter.cs" />
-    <Compile Include="Tests\Mem.cs" />
-    <Compile Include="Tests\Vertex.cs" />
-    <Compile Include="Tests\VkDeviceMemory.cs" />
     <Compile Include="TextWriter.cs" />
     <Compile Include="Vulkan\SilkVulkanDebug.cs" />
     <Compile Include="Vulkan\SilkVulkanRenderer.cs" />

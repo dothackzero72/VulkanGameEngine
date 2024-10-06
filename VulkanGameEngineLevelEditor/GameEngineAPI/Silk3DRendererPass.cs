@@ -11,9 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using VulkanGameEngineLevelEditor.Tests;
 using VulkanGameEngineLevelEditor.Vulkan;
-using Vertex = VulkanGameEngineLevelEditor.Tests.Vertex;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -22,30 +20,24 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         Vk vk = Vk.GetApi();
         public DepthTexture depthTexture;
         public Texture texture;
-        public VulkanBuffer<Vertex> vertexBuffer;
+        public VulkanBuffer<Vertex3D> vertexBuffer;
         public VulkanBuffer<ushort> indexBuffer;
         public VulkanBuffer<UniformBufferObject> uniformBuffers;
 
         UniformBufferObject ubo;
-        public Silk.NET.Vulkan.Buffer ubobuffers;
-        public VkDeviceMemory bufferMemory;
-        public ulong ubosize;
-        public BufferUsageFlags ubousage;
-        public MemoryPropertyFlags ubopropertyFlags;
-        public bool ubodisposedValue;
 
-        readonly Vertex[] vertices = new Vertex[]
-     {
-            new Vertex(new (-0.5f, -0.5f, 0.0f), new (1.0f, 0.0f, 0.0f), new (1.0f, 0.0f)),
-            new Vertex(new (0.5f, -0.5f, 0.0f), new (0.0f, 1.0f, 0.0f), new (0.0f, 0.0f)),
-            new Vertex(new (0.5f, 0.5f, 0.0f), new (0.0f, 0.0f, 1.0f), new (0.0f, 1.0f)),
-            new Vertex(new (-0.5f, 0.5f, 0.0f), new (1.0f, 1.0f, 1.0f), new (1.0f, 1.0f)),
+        readonly Vertex3D[] vertices = new Vertex3D[]
+{
+            new Vertex3D(new (-0.5f, -0.5f, 0.0f), new (1.0f, 0.0f, 0.0f), new (1.0f, 0.0f)),
+            new Vertex3D(new (0.5f, -0.5f, 0.0f), new (0.0f, 1.0f, 0.0f), new (0.0f, 0.0f)),
+            new Vertex3D(new (0.5f, 0.5f, 0.0f), new (0.0f, 0.0f, 1.0f), new (0.0f, 1.0f)),
+            new Vertex3D(new (-0.5f, 0.5f, 0.0f), new (1.0f, 1.0f, 1.0f), new (1.0f, 1.0f)),
 
-            new Vertex(new (-0.5f, -0.5f, -0.5f), new (1.0f, 0.0f, 0.0f), new (1.0f, 0.0f)),
-            new Vertex(new (0.5f, -0.5f, -0.5f), new (0.0f, 1.0f, 0.0f), new (0.0f, 0.0f)),
-            new Vertex(new (0.5f, 0.5f, -0.5f), new (0.0f, 0.0f, 1.0f), new (0.0f, 1.0f)),
-            new Vertex(new (-0.5f, 0.5f, -0.5f), new (1.0f, 1.0f, 1.0f), new (1.0f, 1.0f))
-     };
+            new Vertex3D(new (-0.5f, -0.5f, -0.5f), new (1.0f, 0.0f, 0.0f), new (1.0f, 0.0f)),
+            new Vertex3D(new (0.5f, -0.5f, -0.5f), new (0.0f, 1.0f, 0.0f), new (0.0f, 0.0f)),
+            new Vertex3D(new (0.5f, 0.5f, -0.5f), new (0.0f, 0.0f, 1.0f), new (0.0f, 1.0f)),
+            new Vertex3D(new (-0.5f, 0.5f, -0.5f), new (1.0f, 1.0f, 1.0f), new (1.0f, 1.0f))
+};
 
         readonly ushort[] indices = new ushort[]
         {
@@ -76,7 +68,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle vhandle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
             IntPtr vpointer = vhandle.AddrOfPinnedObject();
-            vertexBuffer = new VulkanBuffer<Vertex>((void*)vpointer, (uint)vertices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
+            vertexBuffer = new VulkanBuffer<Vertex3D>((void*)vpointer, (uint)vertices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
 
             GCHandle fhandle = GCHandle.Alloc(indices, GCHandleType.Pinned);
             IntPtr fpointer = fhandle.AddrOfPinnedObject();
@@ -201,30 +193,19 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
             shaderpipelineLayout = CreatePipelineLayout();
 
-            PipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = new(flags: 0);
-            VertexInputBindingDescription vertexInputBindingDescription = new(0, Vertex.GetStride());
 
-            VertexInputAttributeDescription* vertexInputAttributeDescriptions = null;
+            PipelineVertexInputStateCreateInfo vertexInputInfo = new PipelineVertexInputStateCreateInfo();
+            List<VertexInputBindingDescription> bindingDescriptionList = Vertex3D.GetBindingDescriptions();
+            List<VertexInputAttributeDescription> AttributeDescriptions = Vertex3D.GetAttributeDescriptions();
 
-            if (Vertex.GetStride() > 0)
+            fixed (VertexInputBindingDescription* bindingDescription = bindingDescriptionList.ToArray())
+            fixed (VertexInputAttributeDescription* AttributeDescription = AttributeDescriptions.ToArray())
             {
-                vertexInputAttributeDescriptions = (VertexInputAttributeDescription*)Mem.AllocArray<VertexInputAttributeDescription>(Vertex.GetAttributeFormatsAndOffsets().Length);
-                for (uint i = 0; i < Vertex.GetAttributeFormatsAndOffsets().Length; i++)
-                {
-                    vertexInputAttributeDescriptions[i] = new
-                    (
-                        location: i,
-                        binding: 0,
-                        format: Vertex.GetAttributeFormatsAndOffsets()[i].Item1,
-                        offset: Vertex.GetAttributeFormatsAndOffsets()[i].Item2
-                    );
-                }
-
-                pipelineVertexInputStateCreateInfo.VertexBindingDescriptionCount = 1;
-                pipelineVertexInputStateCreateInfo.PVertexBindingDescriptions = &vertexInputBindingDescription;
-
-                pipelineVertexInputStateCreateInfo.VertexAttributeDescriptionCount = (uint)Vertex.GetAttributeFormatsAndOffsets().Length;
-                pipelineVertexInputStateCreateInfo.PVertexAttributeDescriptions = vertexInputAttributeDescriptions;
+                vertexInputInfo.SType = StructureType.PipelineVertexInputStateCreateInfo;
+                vertexInputInfo.VertexBindingDescriptionCount = (uint)bindingDescriptionList.Count;
+                vertexInputInfo.PVertexBindingDescriptions = bindingDescription;
+                vertexInputInfo.VertexAttributeDescriptionCount = (uint)AttributeDescriptions.Count;
+                vertexInputInfo.PVertexAttributeDescriptions = AttributeDescription;
             }
 
             PipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = new(topology: PrimitiveTopology.TriangleList);
@@ -307,7 +288,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             (
                 stageCount: 2,
                 pStages: shadermoduleList,
-                pVertexInputState: &pipelineVertexInputStateCreateInfo,
+                pVertexInputState: &vertexInputInfo,
                 pInputAssemblyState: &pipelineInputAssemblyStateCreateInfo,
                 pViewportState: &pipelineViewportStateCreateInfo,
                 pRasterizationState: &pipelineRasterizationStateCreateInfo,
@@ -325,7 +306,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             //SilkMarshal.Free((nint)pipelineShaderStageCreateInfos[0].PName);
             //SilkMarshal.Free((nint)pipelineShaderStageCreateInfos[1].PName);
 
-            Mem.FreeArray(vertexInputAttributeDescriptions);
+           // Mem.FreeArray(vertexInputAttributeDescriptions);
 
             //vertShaderModule.Dispose();
             // fragShaderModule.Dispose();
@@ -487,7 +468,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             DescriptorBufferInfo uniformBuffer = new DescriptorBufferInfo
             {
-                Buffer = ubobuffers,
+                Buffer = uniformBuffers.Buffer,
                 Offset = 0,
                 Range = Vk.WholeSize
             };
@@ -549,186 +530,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public Pipeline CreateGraphicsPipeline(PipelineLayout layout)
-        {
-            List<PipelineShaderStageCreateInfo> shadermoduleList  = new List<PipelineShaderStageCreateInfo>()
-            {
-                SilkVulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/vertex_shader.spv",  ShaderStageFlags.VertexBit),
-                SilkVulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/fragment_shader.spv", ShaderStageFlags.FragmentBit)
-            };
-
-            PipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = new(flags: 0);
-            VertexInputBindingDescription vertexInputBindingDescription = new(0, Vertex.GetStride());
-
-            VertexInputAttributeDescription* vertexInputAttributeDescriptions = null;
-
-            if (Vertex.GetStride() > 0)
-            {
-                vertexInputAttributeDescriptions = (VertexInputAttributeDescription*)Mem.AllocArray<VertexInputAttributeDescription>(Vertex.GetAttributeFormatsAndOffsets().Length);
-                for (uint i = 0; i < Vertex.GetAttributeFormatsAndOffsets().Length; i++)
-                {
-                    vertexInputAttributeDescriptions[i] = new
-                    (
-                        location: i,
-                        binding: 0,
-                        format: Vertex.GetAttributeFormatsAndOffsets()[i].Item1,
-                        offset: Vertex.GetAttributeFormatsAndOffsets()[i].Item2
-                    );
-                }
-
-                pipelineVertexInputStateCreateInfo.VertexBindingDescriptionCount = 1;
-                pipelineVertexInputStateCreateInfo.PVertexBindingDescriptions = &vertexInputBindingDescription;
-
-                pipelineVertexInputStateCreateInfo.VertexAttributeDescriptionCount = (uint)Vertex.GetAttributeFormatsAndOffsets().Length;
-                pipelineVertexInputStateCreateInfo.PVertexAttributeDescriptions = vertexInputAttributeDescriptions;
-            }
-
-            PipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = new(topology: PrimitiveTopology.TriangleList);
-
-            PipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = new
-            (
-                viewportCount: 1,
-                pViewports: null,
-                scissorCount: 1,
-                pScissors: null
-            );
-
-            PipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo = new
-            (
-                depthClampEnable: false,
-                rasterizerDiscardEnable: false,
-                polygonMode: PolygonMode.Fill,
-                cullMode: CullModeFlags.CullModeBackBit,
-                frontFace: FrontFace.CounterClockwise,
-                depthBiasEnable: false,
-                depthBiasConstantFactor: 0.0f,
-                depthBiasClamp: 0.0f,
-                depthBiasSlopeFactor: 0.0f,
-                lineWidth: 1.0f
-            );
-
-            PipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = new(rasterizationSamples: SampleCountFlags.SampleCount1Bit);
-
-            StencilOpState stencilOpState = new(StencilOp.Keep, StencilOp.Keep, StencilOp.Keep, CompareOp.Always);
-
-            PipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo = new
-            (
-                depthTestEnable: true,
-                depthWriteEnable: true,
-                depthCompareOp: CompareOp.LessOrEqual,
-                depthBoundsTestEnable: false,
-                stencilTestEnable: false,
-                front: stencilOpState,
-                back: stencilOpState
-            );
-
-            ColorComponentFlags colorComponentFlags =
-                ColorComponentFlags.ColorComponentRBit |
-                ColorComponentFlags.ColorComponentGBit |
-                ColorComponentFlags.ColorComponentBBit |
-                ColorComponentFlags.ColorComponentABit;
-
-            PipelineColorBlendAttachmentState pipelineColorBlendAttachmentState = new(
-                false,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                BlendOp.Add,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                BlendOp.Add,
-                colorComponentFlags);
-
-            PipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = new
-            (
-                logicOpEnable: false,
-                logicOp: LogicOp.NoOp,
-                attachmentCount: 1,
-                pAttachments: &pipelineColorBlendAttachmentState
-            );
-
-            pipelineColorBlendStateCreateInfo.BlendConstants[0] = 0.0f;
-            pipelineColorBlendStateCreateInfo.BlendConstants[1] = 0.0f;
-            pipelineColorBlendStateCreateInfo.BlendConstants[2] = 0.0f;
-            pipelineColorBlendStateCreateInfo.BlendConstants[3] = 0.0f;
-
-            DynamicState* dynamicStates = stackalloc[] { DynamicState.Viewport, DynamicState.Scissor };
-
-            PipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo = new
-            (
-                dynamicStateCount: 2,
-                pDynamicStates: dynamicStates
-            );
-
-            fixed (PipelineShaderStageCreateInfo* shaderlist = shadermoduleList.ToArray())
-            {
-                GraphicsPipelineCreateInfo graphicsPipelineCreateInfo = new
-                (
-                    stageCount: 2,
-                    pStages: shaderlist,
-                    pVertexInputState: &pipelineVertexInputStateCreateInfo,
-                    pInputAssemblyState: &pipelineInputAssemblyStateCreateInfo,
-                    pViewportState: &pipelineViewportStateCreateInfo,
-                    pRasterizationState: &pipelineRasterizationStateCreateInfo,
-                    pMultisampleState: &pipelineMultisampleStateCreateInfo,
-                    pDepthStencilState: &pipelineDepthStencilStateCreateInfo,
-                    pColorBlendState: &pipelineColorBlendStateCreateInfo,
-                    pDynamicState: &pipelineDynamicStateCreateInfo,
-                    layout: layout,
-                    renderPass: renderPass
-                );
-
-
-                vk.CreateGraphicsPipelines(SilkVulkanRenderer.device, new PipelineCache(null), 1, &graphicsPipelineCreateInfo, null, out Pipeline pipeline);
-                return pipeline;
-            }
-            //SilkMarshal.Free((nint)pipelineShaderStageCreateInfos[0].PName);
-            //SilkMarshal.Free((nint)pipelineShaderStageCreateInfos[1].PName);
-
-          //  Mem.FreeArray(vertexInputAttributeDescriptions);
-
-            //vertShaderModule.Dispose();
-            // fragShaderModule.Dispose();
-
-         
-        }
-
         void CreateUniformBuffers()
         {
-            uint bufferSize = (uint)sizeof(UniformBufferObject);
-
-            ubosize = (uint)sizeof(UniformBufferObject);
-            ubousage = BufferUsageFlags.BufferUsageUniformBufferBit;
-            ubopropertyFlags = MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit;
-
-
-            var bufferInfo = new BufferCreateInfo(size: ubosize, usage: ubousage);
-            vk.CreateBuffer(SilkVulkanRenderer.device, in bufferInfo, null, out Silk.NET.Vulkan.Buffer ubobufferss);
-            ubobuffers = ubobufferss;
-
-            vk.GetBufferMemoryRequirements(SilkVulkanRenderer.device, ubobuffers, out MemoryRequirements memoryRequirements);
-            uint memoryTypeIndex = SilkVulkanRenderer.GetMemoryType(memoryRequirements.MemoryTypeBits, ubopropertyFlags);
-
-            MemoryAllocateInfo allocInfo = new
-            (
-                allocationSize: memoryRequirements.Size,
-                memoryTypeIndex: memoryTypeIndex
-            );
-
-            bufferMemory = new VkDeviceMemory(SilkVulkanRenderer.device, allocInfo);
-            vk.BindBufferMemory(SilkVulkanRenderer.device, ubobuffers, bufferMemory, 0);
-
-
             GCHandle uhandle = GCHandle.Alloc(ubo, GCHandleType.Pinned);
             IntPtr upointer = uhandle.AddrOfPinnedObject();
             uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit , MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false);
-
         }
 
        public void UpdateUniformBuffer(long startTime)
         {
             float secondsPassed = (float)TimeSpan.FromTicks(DateTime.Now.Ticks - startTime).TotalSeconds;
-
-
 
             ubo.model = Matrix4X4.CreateFromAxisAngle(
                 new Vector3D<float>(0, 0, 1),
@@ -747,21 +558,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             ubo.proj.M11 *= -1;
             uint dataSize = (uint)Marshal.SizeOf(ubo);
-
-            Debug.Assert(ubopropertyFlags.HasFlag(MemoryPropertyFlags.MemoryPropertyHostCoherentBit | MemoryPropertyFlags.MemoryPropertyHostVisibleBit));
-            Debug.Assert(dataSize <= ubosize);
-
             void* dataPtr = Unsafe.AsPointer(ref ubo);
 
-            void* dstPtr = bufferMemory.MapMemory(0, dataSize);
-
-
-            System.Buffer.MemoryCopy(dataPtr, dstPtr, ubosize, dataSize);
-
-            bufferMemory.UnmapMemory();
-            GCHandle vhandle = GCHandle.Alloc(ubo, GCHandleType.Pinned);
-            IntPtr vpointer = vhandle.AddrOfPinnedObject();
-            uniformBuffers.UpdateBufferData(vpointer);
+            uniformBuffers.UpdateBufferData(dataPtr);
         }
 
         public CommandBuffer Draw()

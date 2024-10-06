@@ -8,7 +8,6 @@ using System.Drawing;
 using Silk.NET.Vulkan;
 using VulkanGameEngineLevelEditor.Vulkan;
 using Image = Silk.NET.Vulkan.Image;
-using VulkanGameEngineLevelEditor.Tests;
 using System.Collections.Generic;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
