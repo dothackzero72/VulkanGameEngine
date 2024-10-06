@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 namespace VulkanGameEngineLevelEditor.Tests
 {
     [StructLayout(LayoutKind.Sequential)]
-    unsafe struct Vertex
+    public unsafe struct Vertex
     {
         Vector3D<float> pos;
         Vector3D<float> color;
