@@ -63,9 +63,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         IWindow window;
 
         CommandPool commandPool;
-        PipelineLayout pipelineLayout;
-
-        DescriptorSet descriptorSets;
       
 
 
@@ -131,80 +128,22 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void InitializeVulkan(RichTextBox _richTextBox)
         {
-            SilkVulkanRenderer.CreateInstance(_richTextBox);
-            SilkVulkanRenderer.CreateSurface(window);
-            SilkVulkanRenderer.CreatePhysicalDevice(SilkVulkanRenderer.khrSurface);
-            SilkVulkanRenderer.CreateDevice();
-            SilkVulkanRenderer.CreateDeviceQueue();
-            SilkVulkanRenderer.swapChain.CreateSwapChain(window, SilkVulkanRenderer.khrSurface, SilkVulkanRenderer.surface);
-            commandPool = SilkVulkanRenderer.CreateCommandPool();
-            SilkVulkanRenderer.CreateSemaphores();
+            SilkVulkanRenderer.CreateVulkanRenderer(window,_richTextBox);
+
 
             silk3DRendererPass = new Silk3DRendererPass();
             silk3DRendererPass.Create3dRenderPass();
-
-          
-            descriptorSets = silk3DRendererPass.allocateDescriptorSets(silk3DRendererPass.descriptorpool);
-            silk3DRendererPass.UpdateDescriptorSet(descriptorSets);
-
-           
         }
 
-        public CommandBuffer Draw()
-        {
-            var commandIndex = SilkVulkanRenderer.CommandIndex;
-            var imageIndex = SilkVulkanRenderer.ImageIndex;
-            var commandBuffer = silk3DRendererPass.commandBufferList[commandIndex];
-            List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
-            ClearValue* clearValues = stackalloc[]
-{
-                new ClearValue(new ClearColorValue(1, 0, 0, 1)),
-                new ClearValue(null, new ClearDepthStencilValue(1.0f, 0))
-            };
-
-            RenderPassBeginInfo renderPassInfo = new
-            (
-                renderPass: silk3DRendererPass.renderPass,
-                framebuffer: silk3DRendererPass.FrameBufferList[imageIndex],
-                clearValueCount: 2,
-                pClearValues: clearValues,
-                renderArea: new(new Offset2D(0, 0), SilkVulkanRenderer.swapChain.swapchainExtent)
-            );
-
-            var viewport = new Viewport(0.0f, 0.0f, SilkVulkanRenderer.swapChain.swapchainExtent.Width, SilkVulkanRenderer.swapChain.swapchainExtent.Height, 0.0f, 1.0f);
-            var scissor = new Rect2D(new Offset2D(0, 0), SilkVulkanRenderer.swapChain.swapchainExtent);
-
-            var descSet = descriptorSets;
-            var vertexbuffer = silk3DRendererPass.vertexBuffer.Buffer;
-            var commandInfo = new CommandBufferBeginInfo(flags: 0);
-
-
-            VKConst.vulkan.BeginCommandBuffer(commandBuffer, &commandInfo);
-            VKConst.vulkan.CmdBeginRenderPass(commandBuffer, &renderPassInfo, SubpassContents.Inline);
-            VKConst.vulkan.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, silk3DRendererPass.shaderpipeline);
-            VKConst.vulkan.CmdBindVertexBuffers(commandBuffer, 0, 1, &vertexbuffer, 0);
-            VKConst.vulkan.CmdBindIndexBuffer(commandBuffer, silk3DRendererPass.indexBuffer.Buffer, 0, IndexType.Uint16);
-            VKConst.vulkan.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, silk3DRendererPass.shaderpipelineLayout, 0, 1, descSet, 0, null);
-            VKConst.vulkan.CmdSetViewport(commandBuffer, 0, 1, &viewport);
-            VKConst.vulkan.CmdSetScissor(commandBuffer, 0, 1, &scissor);
-            VKConst.vulkan.CmdDrawIndexed(commandBuffer, (uint)indices.Length, 1, 0, 0, 0);
-            VKConst.vulkan.CmdEndRenderPass(commandBuffer);
-            VKConst.vulkan.EndCommandBuffer(commandBuffer);
-
-            return commandBuffer;
-        }
         public void DrawFrame()
         {
             silk3DRendererPass.UpdateUniformBuffer(startTime);
 
             List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
             SilkVulkanRenderer.StartFrame();
-            commandBufferList.Add(Draw());
+            commandBufferList.Add(silk3DRendererPass.Draw());
             SilkVulkanRenderer.EndFrame(commandBufferList);
         }
-
-    
-
     }
 }
 

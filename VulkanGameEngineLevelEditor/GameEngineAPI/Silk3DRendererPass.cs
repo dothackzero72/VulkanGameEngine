@@ -89,7 +89,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             CreateFramebuffer();
             CreateUniformBuffers();
             CreateDescriptorPoolBinding();
-
+            allocateDescriptorSets(descriptorpool);
+            UpdateDescriptorSet(descriptorset);
         }
 
         public RenderPass CreateRenderPass()
@@ -454,7 +455,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         }
 
 
-        public DescriptorSet allocateDescriptorSets(DescriptorPool descriptorPool)
+        public DescriptorSet allocateDescriptorSets(DescriptorPool descriptorPool354)
         {
             DescriptorSetLayout* layouts = stackalloc DescriptorSetLayout[SilkVulkanRenderer.MAX_FRAMES_IN_FLIGHT];
 
@@ -465,11 +466,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             DescriptorSetAllocateInfo allocInfo = new
             (
-                descriptorPool: descriptorPool,
+                descriptorPool: descriptorpool,
                 descriptorSetCount: SilkVulkanRenderer.MAX_FRAMES_IN_FLIGHT,
                 pSetLayouts: layouts
             );
             SilkVulkanRenderer.vulkan.AllocateDescriptorSets(SilkVulkanRenderer.device, &allocInfo, out DescriptorSet descriptorSet);
+            descriptorset = descriptorSet;
             return descriptorSet;
         }
 
@@ -496,7 +498,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 WriteDescriptorSet descriptorSetWrite = new WriteDescriptorSet
                 {
                     SType = StructureType.WriteDescriptorSet,
-                    DstSet = descriptorSets,
+                    DstSet = descriptorset,
                     DstBinding = 0,
                     DstArrayElement = 0,
                     DescriptorCount = 1,
@@ -509,7 +511,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 WriteDescriptorSet descriptorSetWrite2 = new WriteDescriptorSet
                 {
                     SType = StructureType.WriteDescriptorSet,
-                    DstSet = descriptorSets,
+                    DstSet = descriptorset,
                     DstBinding = 1,
                     DstArrayElement = 0,
                     DescriptorCount = 1,
@@ -718,7 +720,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle uhandle = GCHandle.Alloc(ubo, GCHandleType.Pinned);
             IntPtr upointer = uhandle.AddrOfPinnedObject();
-            uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false);
+            uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit , MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false);
 
         }
 
