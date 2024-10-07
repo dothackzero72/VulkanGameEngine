@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Silk.NET.Vulkan;
 using StbImageSharp;
 using System;
 using System.Collections.Concurrent;
@@ -106,10 +107,10 @@ namespace VulkanGameEngineLevelEditor
         public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, void* data);
 
 
-        public unsafe byte[] BakeColorTexture(string filename, Texture texture)
+        public unsafe byte[] BakeColorTexture(string filename, BakeTexture texture)
         {
             var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
-            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
+            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), (Format)VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
 
             VkCommandBuffer commandBuffer = VulkanRenderer.BeginCommandBuffer();
 

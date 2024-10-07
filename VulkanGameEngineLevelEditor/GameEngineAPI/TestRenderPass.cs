@@ -1,4 +1,5 @@
-﻿using StbImageSharp;
+﻿using Silk.NET.Vulkan;
+using StbImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,7 +24,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void BuildRenderPass(Texture renderedTexture)
         {
-            texture = new RenderedTexture(new GlmSharp.ivec2(1280, 720), VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT, VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
+            texture = new RenderedTexture(new GlmSharp.ivec2(1280, 720), (SampleCountFlags)VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT, (Format)VkFormat.VK_FORMAT_R8G8B8A8_UNORM);
 
             var renderPass = CreateRenderPass();
             var frameBuffer = CreateFramebuffer();

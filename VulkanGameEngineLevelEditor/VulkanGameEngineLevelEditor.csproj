@@ -89,6 +89,9 @@
     <Reference Include="Silk.NET.GLFW, Version=2.21.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Silk.NET.GLFW.2.21.0\lib\netstandard2.0\Silk.NET.GLFW.dll</HintPath>
     </Reference>
+    <Reference Include="Silk.NET.Vulkan, Version=2.21.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Vulkan.2.21.0\lib\netstandard2.0\Silk.NET.Vulkan.dll</HintPath>
+    </Reference>
     <Reference Include="StbImageSharp, Version=2.27.14.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\StbImageSharp.2.27.14\lib\net471\StbImageSharp.dll</HintPath>
     </Reference>
