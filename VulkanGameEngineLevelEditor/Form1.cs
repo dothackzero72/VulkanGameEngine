@@ -51,6 +51,35 @@ namespace VulkanGameEngineLevelEditor
             //InitializeRenderTimer();
             levelEditorSwapChain = new LevelEditorDisplaySwapChain(new ivec2(pictureBox1.Width, pictureBox1.Height));
 
+
+            Pixel[] pixelArray = new Pixel[pictureBox1.Width * pictureBox1.Height];
+
+            // Fill the array with some pixel values
+            for (int y = 0; y < pictureBox1.Height; y++)
+            {
+                for (int x = 0; x < pictureBox1.Width; x++)
+                {
+                    // Just as an example, we'll fill the pixels with a gradient
+                    byte r = (byte)(x * 255 / (pictureBox1.Width - 1)); // Red gradient
+                    byte g = (byte)(y * 255 / (pictureBox1.Height - 1)); // Green gradient
+                    byte b = 128; // Constant Blue
+                    byte a = 255; // Full opacity
+
+                    pixelArray[y * pictureBox1.Width + x] = new Pixel(r, g, b, a);
+                }
+            }
+
+            fixed (Pixel* pixelPointer = pixelArray)
+            {
+                void* voidPointer = pixelPointer;
+                StbImageWriteSharp.ImageWriter asd = new StbImageWriteSharp.ImageWriter();
+                using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerender234.bmp", FileMode.Create, FileAccess.Write))
+                {
+                    asd.WriteBmp(voidPointer, pictureBox1.Width, pictureBox1.Height, StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha, fileStream);
+                }
+            }
+            
+
             StartLevelEditorRenderer();
             StartRenderer();
             InitializeRenderTimer();
@@ -141,7 +170,7 @@ namespace VulkanGameEngineLevelEditor
         {
             var opts = WindowOptions.DefaultVulkan;
             opts.Title = "Texture Demo";
-            opts.Size = new Vector2D<int>((int)800, (int)600);
+            opts.Size = new Vector2D<int>((int)1280, (int)720);
 
             window = Silk.NET.Windowing.Window.Create(opts);
             window.Initialize();
@@ -226,7 +255,10 @@ namespace VulkanGameEngineLevelEditor
 
         private void UpdateBitmap(object sender, EventArgs e)
         {
-            pictureBox1.Invoke(new Action(() => levelEditorSwapChain.PresentImage(pictureBox1)));
+            if (scene != null)
+            {
+                pictureBox1.Invoke(new Action(() => scene.PresentImage(pictureBox1)));
+            }
         }
 
         public void StopLevelRenderer()

@@ -23,6 +23,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public VulkanBuffer<Vertex3D> vertexBuffer;
         public VulkanBuffer<ushort> indexBuffer;
         public VulkanBuffer<UniformBufferObject> uniformBuffers;
+        public RenderedTexture renderedColorTexture;
+        private readonly Object BufferLock = new Object();
 
         UniformBufferObject ubo;
 
@@ -63,6 +65,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void Create3dRenderPass()
         {
+            renderedColorTexture = new RenderedTexture(RenderPassResolution);
             depthTexture = new DepthTexture(new ivec2((int)SilkVulkanRenderer.swapChain.swapchainExtent.Width, (int)SilkVulkanRenderer.swapChain.swapchainExtent.Height));
             texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Srgb, TextureTypeEnum.kType_DiffuseTextureMap);
 
@@ -376,7 +379,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             for (int x = 0; x < SilkVulkanRenderer.swapChain.ImageCount; x++)
             {
                 List<ImageView> TextureAttachmentList = new List<ImageView>();
-                TextureAttachmentList.Add(SilkVulkanRenderer.swapChain.imageViews[x]);
+                TextureAttachmentList.Add(renderedColorTexture.View);
                 TextureAttachmentList.Add(depthTexture.View);
 
                 fixed (ImageView* imageViewPtr = TextureAttachmentList.ToArray())

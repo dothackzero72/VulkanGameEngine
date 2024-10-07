@@ -14,6 +14,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class Texture
     {
+        public Vk vk = Vk.GetApi();
         public UInt64 TextureBufferIndex { get; protected set; }
         public int Width { get; protected set; }
         public int Height { get; protected set; }
@@ -131,7 +132,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     dataPtr,
                     (uint)size,
                      BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit,
-                    MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false
+                    MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit | MemoryPropertyFlags.DeviceLocalBit, false
                 );
 
                 // Initialize and transition the texture image
