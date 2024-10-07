@@ -57,8 +57,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class Scene
     {
         Vk vk = Vk.GetApi();
-        Silk3DRendererPass silk3DRendererPass;
-
+        public Silk3DRendererPass silk3DRendererPass;
+        public SilkFrameBufferRenderPass framebufferRenderPass;
         public ExtDebugUtils debugUtils;
         static readonly long startTime = DateTime.Now.Ticks;
         const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -145,6 +145,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             silk3DRendererPass = new Silk3DRendererPass();
             silk3DRendererPass.Create3dRenderPass();
+            framebufferRenderPass = new SilkFrameBufferRenderPass();
+            framebufferRenderPass.BuildRenderPass(silk3DRendererPass.texture);
         }
 
         public unsafe IntPtr ConvertByteArrayToVoidPointer(byte[] byteArray)
@@ -164,69 +166,70 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
             SilkVulkanRenderer.StartFrame();
             commandBufferList.Add(silk3DRendererPass.Draw());
+            commandBufferList.Add(framebufferRenderPass.Draw());
             SilkVulkanRenderer.EndFrame(commandBufferList);
 
-            BakeColorTexture(silk3DRendererPass.renderedColorTexture, out BakeTexture bakeTexture);
+            //BakeColorTexture(silk3DRendererPass.renderedColorTexture, out BakeTexture bakeTexture);
 
-            ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
-            SubresourceLayout subResourceLayout;
-            VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
+            //ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
+            //SubresourceLayout subResourceLayout;
+            //VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
 
-            int pixelCount = bakeTexture.Width * bakeTexture.Height;
-            byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
+            //int pixelCount = bakeTexture.Width * bakeTexture.Height;
+            //byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
 
-            IntPtr mappedMemory = IntPtr.Zero;
-            var result = VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
+            //IntPtr mappedMemory = IntPtr.Zero;
+            //var result = VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
 
-            if (result != Result.Success)
-            {
-                throw new Exception($"Failed to map memory: {result}");
-            }
-
-            try
-            {
-                Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
-            }
-            catch (Exception ex)
-            {
-                VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
-                throw new Exception("Error copying mapped memory: " + ex.Message);
-            }
-            VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
-
-            //using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerenderer.bmp", FileMode.Create))
+            //if (result != Result.Success)
             //{
-            //    WriteBitmapFile(bakeTexture, pixelData, fileStream);
+            //    throw new Exception($"Failed to map memory: {result}");
             //}
 
-            Pixel[] pixelArray = new Pixel[bakeTexture.Width * bakeTexture.Height];
+            //try
+            //{
+            //    Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
+            //}
+            //catch (Exception ex)
+            //{
+            //    VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
+            //    throw new Exception("Error copying mapped memory: " + ex.Message);
+            //}
+            //VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
 
-            // Fill the array with some pixel values
-            for (int y = 0; y < bakeTexture.Height; y++)
-            {
-                for (int x = 0; x < bakeTexture.Width; x++)
-                {
-                    // Just as an example, we'll fill the pixels with a gradient
-                    byte r = (byte)(x * 255 / (bakeTexture.Width - 1)); // Red gradient
-                    byte g = (byte)(y * 255 / (bakeTexture.Height - 1)); // Green gradient
-                    byte b = 128; // Constant Blue
-                    byte a = 255; // Full opacity
+            ////using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerenderer.bmp", FileMode.Create))
+            ////{
+            ////    WriteBitmapFile(bakeTexture, pixelData, fileStream);
+            ////}
 
-                    pixelArray[y * bakeTexture.Width + x] = new Pixel(r, g, b, a);
-                }
-            }
+            //Pixel[] pixelArray = new Pixel[bakeTexture.Width * bakeTexture.Height];
 
-            fixed (Pixel* pixelPointer = pixelArray)
-            {
-                //void* voidPointer = pixelPointer;
-                //StbImageWriteSharp.ImageWriter asd = new StbImageWriteSharp.ImageWriter();
-                //using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerender234.bmp", FileMode.Create, FileAccess.Write))
-                //{
-                //    asd.WriteBmp(voidPointer, bakeTexture.Width, bakeTexture.Height, StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha, fileStream);
-                //}
-                var ds = ConvertPixelsToByteArray(pixelArray);
-                UpdateBuffer(ds);
-            }
+            //// Fill the array with some pixel values
+            //for (int y = 0; y < bakeTexture.Height; y++)
+            //{
+            //    for (int x = 0; x < bakeTexture.Width; x++)
+            //    {
+            //        // Just as an example, we'll fill the pixels with a gradient
+            //        byte r = (byte)(x * 255 / (bakeTexture.Width - 1)); // Red gradient
+            //        byte g = (byte)(y * 255 / (bakeTexture.Height - 1)); // Green gradient
+            //        byte b = 128; // Constant Blue
+            //        byte a = 255; // Full opacity
+
+            //        pixelArray[y * bakeTexture.Width + x] = new Pixel(r, g, b, a);
+            //    }
+            //}
+
+            //fixed (Pixel* pixelPointer = pixelArray)
+            //{
+            //    //void* voidPointer = pixelPointer;
+            //    //StbImageWriteSharp.ImageWriter asd = new StbImageWriteSharp.ImageWriter();
+            //    //using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerender234.bmp", FileMode.Create, FileAccess.Write))
+            //    //{
+            //    //    asd.WriteBmp(voidPointer, bakeTexture.Width, bakeTexture.Height, StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha, fileStream);
+            //    //}
+            //    var ds = ConvertPixelsToByteArray(pixelArray);
+            //    UpdateBuffer(ds);
+            //}
         }
 
         public CommandBuffer BakeColorTexture(RenderedTexture texture, out BakeTexture bakeTexture)
@@ -273,11 +276,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             // Write BMP using StbImageWrite
-            StbImageWriteSharp.ImageWriter iw = new StbImageWriteSharp.ImageWriter();
-            fixed (byte* bmpDataPtr = bmpData) // Pin the data in memory
-            {
-                iw.WriteBmp((void*)bmpDataPtr, bakeTexture.Width, bakeTexture.Height, StbImageWriteSharp.ColorComponents.RedGreenBlue, fileStream);
-            }
+            //StbImageWriteSharp.ImageWriter iw = new StbImageWriteSharp.ImageWriter();
+            //fixed (byte* bmpDataPtr = bmpData) // Pin the data in memory
+            //{
+            //    iw.WriteBmp((void*)bmpDataPtr, bakeTexture.Width, bakeTexture.Height, StbImageWriteSharp.ColorComponents.RedGreenBlue, fileStream);
+            //}
         }
 
         public void UpdateBuffer(byte[] pixelData)

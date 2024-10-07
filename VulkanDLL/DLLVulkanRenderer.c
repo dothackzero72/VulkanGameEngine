@@ -110,7 +110,7 @@ void DLL_Renderer_UpdateDescriptorSet(VkDevice device, VkWriteDescriptorSet* wri
 VkResult DLL_Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* fenceList,
     VkSemaphore* acquireImageSemaphoreList, uint32_t* pImageIndex,
     uint32_t* pCommandIndex, bool* pRebuildRendererFlag) {
-    return Renderer_StartFrame(device, swapChain, fenceList, acquireImageSemaphoreList, pImageIndex, pCommandIndex, pRebuildRendererFlag);
+    return VK_SUCCESS;//Renderer_StartFrame(device, swapChain, fenceList, acquireImageSemaphoreList, pImageIndex, pCommandIndex, pRebuildRendererFlag);
 }
 
 VkResult DLL_Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList,

@@ -45,7 +45,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             ImageSubresourceRange ImageSubresourceRange = new ImageSubresourceRange();
             ImageSubresourceRange.AspectMask = ImageAspectFlags.ColorBit;
-            ImageSubresourceRange.LevelCount = 1;
+            ImageSubresourceRange.LevelCount = Vk.RemainingMipLevels;
             ImageSubresourceRange.LayerCount = 1;
 
             ImageMemoryBarrier barrier = new ImageMemoryBarrier();

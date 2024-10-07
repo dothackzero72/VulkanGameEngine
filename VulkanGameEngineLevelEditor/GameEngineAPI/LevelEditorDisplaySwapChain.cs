@@ -50,6 +50,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     BitMapBuffers[CurrentBufferIndex].SetPixel(x, y, pixelColor);
                 }
             }
+            currentBitmap.Save("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerenderer.png", System.Drawing.Imaging.ImageFormat.Png);
 
             lock (BufferLock)
             {

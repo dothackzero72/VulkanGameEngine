@@ -254,6 +254,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             TextureImageLayout = oldImageLayout;
         }
 
+        public void UpdateImageLayout(CommandBuffer cmdBuffer, ImageLayout oldImageLayout, ImageLayout newImageLayout)
+        {
+            CTexture.UpdateImageLayout(cmdBuffer, Image, ref oldImageLayout, newImageLayout, MipMapLevels);
+            TextureImageLayout = oldImageLayout;
+        }
+
         public DescriptorImageInfo GetTextureBuffer()
         {
             return new DescriptorImageInfo

@@ -20,6 +20,7 @@ namespace VulkanGameEngineLevelEditor
 {
     public unsafe partial class Form1 : Form
     {
+        Vk vk = Vk.GetApi();
         private SilkVulkanWindow windows;
         private Thread renderThread;
         private Thread levelEditerDisplayThread;
@@ -51,39 +52,9 @@ namespace VulkanGameEngineLevelEditor
             //InitializeRenderTimer();
             levelEditorSwapChain = new LevelEditorDisplaySwapChain(new ivec2(pictureBox1.Width, pictureBox1.Height));
 
-
-            Pixel[] pixelArray = new Pixel[pictureBox1.Width * pictureBox1.Height];
-
-            // Fill the array with some pixel values
-            for (int y = 0; y < pictureBox1.Height; y++)
-            {
-                for (int x = 0; x < pictureBox1.Width; x++)
-                {
-                    // Just as an example, we'll fill the pixels with a gradient
-                    byte r = (byte)(x * 255 / (pictureBox1.Width - 1)); // Red gradient
-                    byte g = (byte)(y * 255 / (pictureBox1.Height - 1)); // Green gradient
-                    byte b = 128; // Constant Blue
-                    byte a = 255; // Full opacity
-
-                    pixelArray[y * pictureBox1.Width + x] = new Pixel(r, g, b, a);
-                }
-            }
-
-            fixed (Pixel* pixelPointer = pixelArray)
-            {
-                void* voidPointer = pixelPointer;
-                StbImageWriteSharp.ImageWriter asd = new StbImageWriteSharp.ImageWriter();
-                using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerender234.bmp", FileMode.Create, FileAccess.Write))
-                {
-                    asd.WriteBmp(voidPointer, pictureBox1.Width, pictureBox1.Height, StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha, fileStream);
-                }
-            }
-            
-
             StartLevelEditorRenderer();
             StartRenderer();
             InitializeRenderTimer();
-
         }
 
         void LoadVulkan()
@@ -92,39 +63,6 @@ namespace VulkanGameEngineLevelEditor
             //vulkanTutorial.Run();
         }
 
-        //void Update(double deltaTime)
-        //{
-        //    scene.Update(0);
-        //}
-
-        //void Render(double deltaTime)
-        //{
-        //    scene.Draw();
-        //}
-
-
-        //void RecreateSwapChain()
-        //{
-        //    while (VulkanRenderer.window.Size.X == 0 || VulkanRenderer.window.Size.Y == 0)
-        //    {
-        //        VulkanRenderer.window.DoEvents();
-        //    }
-
-        //    device.WaitIdle();
-
-        //    CleanupSwapChain();
-
-        //    CreateSwapChain();
-        //    CreateRenderPass();
-        //    CreateGraphicsPipeline();
-        //    CreateDepthResources();
-        //    CreateFramebuffers();
-        //}
-
-        void OnFramebufferResize(Vector2D<int> obj)
-        {
-            isFramebufferResized = true;
-        }
         private void InitializeRenderTimer()
         {
             renderTimer = new System.Windows.Forms.Timer
@@ -143,6 +81,82 @@ namespace VulkanGameEngineLevelEditor
                 IsBackground = true
             };
             renderThread.Start();
+        }
+
+        private void RenderLoop()
+        {
+            var opts = WindowOptions.DefaultVulkan;
+            opts.Title = "Texture Demo";
+            opts.Size = new Vector2D<int>((int)1280, (int)720);
+
+            window = Silk.NET.Windowing.Window.Create(opts);
+            window.Initialize();
+           // window.FramebufferResize += OnFramebufferResize;
+            //vulkanTutorial = new VulkanTutorial();
+            //vulkanTutorial.Run(window);
+
+            //  SilkVulkanRenderer.CreateVulkanRenderer(window, richTextBox1);
+
+            scene = new Scene();
+            scene.StartUp(window, richTextBox1);
+            while (running)
+            {
+                //scene.Update(0);
+                scene.DrawFrame();
+                byte[] textureData = BakeColorTexture(scene.silk3DRendererPass.renderedColorTexture);
+                dataCollection.TryAdd(textureData);
+                // vulkanTutorial.DrawFrame();
+                // byte[] textureData = BakeColorTexture(vulkanTutorial.texture);
+                // dataCollection.TryAdd(textureData);
+            }
+        }
+
+        public unsafe byte[] BakeColorTexture(Texture texture)
+        {
+            var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
+            RenderedTexture bakeTexture = new RenderedTexture(new GlmSharp.ivec2(1280, 720));
+
+            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
+
+           
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal);
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.Undefined, Silk.NET.Vulkan.ImageLayout.General);
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal);
+
+            ImageCopy copyImage = new ImageCopy();
+            copyImage.SrcSubresource.AspectMask = ImageAspectFlags.ColorBit;
+            copyImage.SrcSubresource.LayerCount = 1;
+
+            copyImage.DstSubresource.AspectMask = ImageAspectFlags.ColorBit;
+            copyImage.DstSubresource.LayerCount = 1;
+
+            copyImage.DstOffset.X = 0;
+            copyImage.DstOffset.Y = 0;
+            copyImage.DstOffset.Z = 0;
+
+            copyImage.Extent.Width = (uint)texture.Width;
+            copyImage.Extent.Height = (uint)texture.Height;
+            copyImage.Extent.Depth = 1;
+
+            VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
+
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, Silk.NET.Vulkan.ImageLayout.General);
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr);
+            SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+
+            ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
+            SubresourceLayout subResourceLayout;
+            VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
+
+            int pixelCount = bakeTexture.Width * bakeTexture.Height;
+            byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
+
+            IntPtr mappedMemory;
+            VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
+            Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
+            VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
+
+            return pixelData;
         }
 
         public void StartLevelEditorRenderer()
@@ -166,80 +180,9 @@ namespace VulkanGameEngineLevelEditor
             }
         }
 
-        private void RenderLoop()
-        {
-            var opts = WindowOptions.DefaultVulkan;
-            opts.Title = "Texture Demo";
-            opts.Size = new Vector2D<int>((int)1280, (int)720);
-
-            window = Silk.NET.Windowing.Window.Create(opts);
-            window.Initialize();
-            window.FramebufferResize += OnFramebufferResize;
-            //vulkanTutorial = new VulkanTutorial();
-            //vulkanTutorial.Run(window);
-
-          //  SilkVulkanRenderer.CreateVulkanRenderer(window, richTextBox1);
-
-            scene = new Scene();
-            scene.StartUp(window, richTextBox1);
-            while (running)
-            {
-                //scene.Update(0);
-                scene.DrawFrame();
-               // vulkanTutorial.DrawFrame();
-               // byte[] textureData = BakeColorTexture(vulkanTutorial.texture);
-               // dataCollection.TryAdd(textureData);
-            }
-        }
-
-        public unsafe byte[] BakeColorTexture(Texture texture)
-        {
-            var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
-            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), Format.R8G8B8A8Unorm);
-
-            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
-
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal);
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal);
-
-            ImageCopy copyImage = new ImageCopy();
-            copyImage.SrcSubresource.AspectMask = ImageAspectFlags.ColorBit;
-            copyImage.SrcSubresource.LayerCount = 1;
-
-            copyImage.DstSubresource.AspectMask = ImageAspectFlags.ColorBit;
-            copyImage.DstSubresource.LayerCount = 1;
-
-            copyImage.DstOffset.X = 0;
-            copyImage.DstOffset.Y = 0;
-            copyImage.DstOffset.Z = 0;
-
-            copyImage.Extent.Width = (uint)texture.Width;
-            copyImage.Extent.Height = (uint)texture.Height;
-            copyImage.Extent.Depth = 1;
-
-            VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
-
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General);
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr);
-            SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
-
-            ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
-            SubresourceLayout subResourceLayout;
-            VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
-
-            int pixelCount = bakeTexture.Width * bakeTexture.Height;
-            byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
-
-            IntPtr mappedMemory;
-            VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
-            Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
-            VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
-
-            return pixelData;
-        }
-
         [DllImport("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanDLL.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, void* data);
+
         public static void WriteImage(string filePath, byte[] imageData, int width, int height, int channels)
         {
             int result = DLL_stbi_write_bmp(filePath, width, height, channels, (void*)imageData.ToArray()[0]);
@@ -255,28 +198,7 @@ namespace VulkanGameEngineLevelEditor
 
         private void UpdateBitmap(object sender, EventArgs e)
         {
-            if (scene != null)
-            {
-                pictureBox1.Invoke(new Action(() => scene.PresentImage(pictureBox1)));
-            }
-        }
-
-        public void StopLevelRenderer()
-        {
-            running = false;
-            if (renderThread != null && renderThread.IsAlive)
-            {
-                renderThread.Join();
-            }
-        }
-
-        public void StopRenderer()
-        {
-            running = false;
-            if (renderThread != null && renderThread.IsAlive)
-            {
-                renderThread.Join();
-            }
+            pictureBox1.Invoke(new Action(() => levelEditorSwapChain.PresentImage(pictureBox1)));
         }
     }
 }
