@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,12 +22,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public int CurrentBufferIndex { get; protected set; } = 0;
         private ivec2 SwapChainSize { get; set; } = new ivec2(0, 0);
         private readonly Object BufferLock = new Object();
-
+        private BlockingCollection<Bitmap> display = new BlockingCollection<Bitmap>(boundedCapacity: 10);
         public LevelEditorDisplaySwapChain(ivec2 imageSize)
         {
             BitMapBuffers = new List<Bitmap>();
             CurrentBufferIndex = 0;
             SwapChainSize = imageSize;
+            DisplayImage = new Bitmap(imageSize.x, imageSize.y, PixelFormat.Format32bppArgb);
             for (int x = 0; x < BufferCount; x++)
             {
                 BitMapBuffers.Add(new Bitmap(imageSize.x, imageSize.y, PixelFormat.Format32bppArgb));
@@ -40,40 +42,44 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 return;
             }
 
-            Bitmap currentBitmap = BitMapBuffers[CurrentBufferIndex];
-            for (int y = 0; y < BitMapBuffers[CurrentBufferIndex].Height; y++)
-            {
-                for (int x = 0; x < BitMapBuffers[CurrentBufferIndex].Width; x++)
-                {
-                    int index = (y * BitMapBuffers[CurrentBufferIndex].Width + x) * 4;
-                    Color pixelColor = ByteArrayToColor(pixelData, index);
-                    BitMapBuffers[CurrentBufferIndex].SetPixel(x, y, pixelColor);
-                }
-            }
-            currentBitmap.Save("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerenderer.png", System.Drawing.Imaging.ImageFormat.Png);
-
             lock (BufferLock)
             {
-                DisplayImage = currentBitmap;
+                Bitmap currentBitmap = BitMapBuffers[CurrentBufferIndex];
+                BitmapData bitmapData = currentBitmap.LockBits(new System.Drawing.Rectangle(0, 0, currentBitmap.Width, currentBitmap.Height),
+                                                                ImageLockMode.WriteOnly,
+                                                                currentBitmap.PixelFormat);
+
+                try
+                {
+                    Marshal.Copy(pixelData, 0, bitmapData.Scan0, pixelData.Length);
+                }
+                finally
+                {
+                    currentBitmap.UnlockBits(bitmapData);
+                }
+
+                currentBitmap.Save("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerenderer.png", System.Drawing.Imaging.ImageFormat.Png);
+
                 BitMapBuffers[CurrentBufferIndex] = currentBitmap;
+                display.TryAdd(currentBitmap);
             }
+
             CurrentBufferIndex = (CurrentBufferIndex + 1) % BufferCount;
         }
 
         public void PresentImage(PictureBox picture)
         {
-            if (DisplayImage == null)
+            if (display.TryTake(out Bitmap textureData))
             {
-                return;
-            }
+                // Lock not really needed for this operation as we're not modifying the shared resource.
+                if (picture.Image != null)
+                {
+                    picture.Image.Dispose();
+                }
 
-            if (picture.Image != null)
-            {
-                picture.Image.Dispose();
+                picture.Image = (Bitmap)textureData.Clone();
+                picture.Refresh();
             }
-
-            picture.Image = (Bitmap)DisplayImage.Clone();
-            picture.Refresh();
         }
 
         private Color ByteArrayToColor(byte[] data, int index)

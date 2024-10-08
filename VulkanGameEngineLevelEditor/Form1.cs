@@ -51,7 +51,8 @@ namespace VulkanGameEngineLevelEditor
             //VulkanRenderer.window.Render += GameLoop;
             //VulkanRenderer.window.Run();
             //InitializeRenderTimer();
-            levelEditorSwapChain = new LevelEditorDisplaySwapChain(new ivec2(pictureBox1.Width, pictureBox1.Height));
+
+            levelEditorSwapChain = new LevelEditorDisplaySwapChain(new ivec2(1280, 720));
 
             StartLevelEditorRenderer();
             StartRenderer();
@@ -88,7 +89,7 @@ namespace VulkanGameEngineLevelEditor
         {
             var opts = WindowOptions.DefaultVulkan;
             opts.Title = "Texture Demo";
-            opts.Size = new Vector2D<int>((int)1280, (int)720);
+            opts.Size = new Vector2D<int>(1280, 720);
 
             window = Silk.NET.Windowing.Window.Create(opts);
             window.Initialize();
@@ -119,25 +120,17 @@ namespace VulkanGameEngineLevelEditor
 
             CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
 
-
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal ,Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
             bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.Undefined, Silk.NET.Vulkan.ImageLayout.General, ImageAspectFlags.ColorBit);
             bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
 
-            ImageCopy copyImage = new ImageCopy();
-            copyImage.SrcSubresource.AspectMask = ImageAspectFlags.ColorBit;
-            copyImage.SrcSubresource.LayerCount = 1;
-
-            copyImage.DstSubresource.AspectMask = ImageAspectFlags.ColorBit;
-            copyImage.DstSubresource.LayerCount = 1;
-
-            copyImage.DstOffset.X = 0;
-            copyImage.DstOffset.Y = 0;
-            copyImage.DstOffset.Z = 0;
-
-            copyImage.Extent.Width = (uint)texture.Width;
-            copyImage.Extent.Height = (uint)texture.Height;
-            copyImage.Extent.Depth = 1;
+            ImageCopy copyImage = new ImageCopy
+            {
+                SrcSubresource = { AspectMask = ImageAspectFlags.ColorBit, LayerCount = 1 },
+                DstSubresource = { AspectMask = ImageAspectFlags.ColorBit, LayerCount = 1 },
+                DstOffset = { X = 0, Y = 0, Z = 0 },
+                Extent = { Width = (uint)texture.Width, Height = (uint)texture.Height, Depth = 1 }
+            };
 
             VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
 
@@ -154,20 +147,9 @@ namespace VulkanGameEngineLevelEditor
 
             IntPtr mappedMemory;
             VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
-            Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
+            Marshal.Copy(mappedMemory, pixelData, 0, pixelData.Length);
             VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
 
-            // Writing the pixel data correctly based on width, height, and channels
-            fixed (byte* pixelPointer = pixelData)
-            //{
-            //    void* voidPointer = pixelPointer;
-            //    StbImageWriteSharp.ImageWriter asd = new StbImageWriteSharp.ImageWriter();
-            //    using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerender234.bmp", FileMode.Create, FileAccess.Write))
-            //    {
-            //        asd.WriteBmp(voidPointer, Width, Height, StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha, fileStream);
-            //    }
-            //}
-            
             return pixelData;
         }
         public void StartLevelEditorRenderer()

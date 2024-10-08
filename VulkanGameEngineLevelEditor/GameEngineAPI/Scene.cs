@@ -169,98 +169,36 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             commandBufferList.Add(silk3DRendererPass.Draw());
             commandBufferList.Add(framebufferRenderPass.Draw());
             SilkVulkanRenderer.EndFrame(commandBufferList);
-
-            //BakeColorTexture(silk3DRendererPass.renderedColorTexture, out BakeTexture bakeTexture);
-
-            //ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
-            //SubresourceLayout subResourceLayout;
-            //VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
-
-            //int pixelCount = bakeTexture.Width * bakeTexture.Height;
-            //byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
-
-            //IntPtr mappedMemory = IntPtr.Zero;
-            //var result = VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
-
-            //if (result != Result.Success)
-            //{
-            //    throw new Exception($"Failed to map memory: {result}");
-            //}
-
-            //try
-            //{
-            //    Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
-            //}
-            //catch (Exception ex)
-            //{
-            //    VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
-            //    throw new Exception("Error copying mapped memory: " + ex.Message);
-            //}
-            //VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
-
-            ////using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerenderer.bmp", FileMode.Create))
-            ////{
-            ////    WriteBitmapFile(bakeTexture, pixelData, fileStream);
-            ////}
-
-            //Pixel[] pixelArray = new Pixel[bakeTexture.Width * bakeTexture.Height];
-
-            //// Fill the array with some pixel values
-            //for (int y = 0; y < bakeTexture.Height; y++)
-            //{
-            //    for (int x = 0; x < bakeTexture.Width; x++)
-            //    {
-            //        // Just as an example, we'll fill the pixels with a gradient
-            //        byte r = (byte)(x * 255 / (bakeTexture.Width - 1)); // Red gradient
-            //        byte g = (byte)(y * 255 / (bakeTexture.Height - 1)); // Green gradient
-            //        byte b = 128; // Constant Blue
-            //        byte a = 255; // Full opacity
-
-            //        pixelArray[y * bakeTexture.Width + x] = new Pixel(r, g, b, a);
-            //    }
-            //}
-
-            //fixed (Pixel* pixelPointer = pixelArray)
-            //{
-            //    //void* voidPointer = pixelPointer;
-            //    //StbImageWriteSharp.ImageWriter asd = new StbImageWriteSharp.ImageWriter();
-            //    //using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerender234.bmp", FileMode.Create, FileAccess.Write))
-            //    //{
-            //    //    asd.WriteBmp(voidPointer, bakeTexture.Width, bakeTexture.Height, StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha, fileStream);
-            //    //}
-            //    var ds = ConvertPixelsToByteArray(pixelArray);
-            //    UpdateBuffer(ds);
-            //}
         }
 
-        public CommandBuffer BakeColorTexture(Texture texture, out Texture bakeTexture)
-        {
-            var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
-            bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), Format.R8G8B8A8Unorm);
+        //public CommandBuffer BakeColorTexture(Texture texture, out Texture bakeTexture)
+        //{
+        //    var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
+        //    bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(pictureBox1.Width, pictureBox1.Height), Format.R8G8B8A8Unorm);
 
-            var commandInfo = new CommandBufferBeginInfo(flags: 0);
-            var commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
+        //    var commandInfo = new CommandBufferBeginInfo(flags: 0);
+        //    var commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
 
-            // Explicitly set the image layouts before copying
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
+        //    // Explicitly set the image layouts before copying
+        //    bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
+        //    texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
 
-            ImageCopy copyImage = new ImageCopy
-            {
-                SrcSubresource = { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, BaseArrayLayer = 0, LayerCount = 1 },
-                DstSubresource = { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, BaseArrayLayer = 0, LayerCount = 1 },
-                DstOffset = new Offset3D { X = 0, Y = 0, Z = 0 },
-                Extent = new Extent3D { Width = (uint)texture.Width, Height = (uint)texture.Height, Depth = 1 }
-            };
-            VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
+        //    ImageCopy copyImage = new ImageCopy
+        //    {
+        //        SrcSubresource = { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, BaseArrayLayer = 0, LayerCount = 1 },
+        //        DstSubresource = { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, BaseArrayLayer = 0, LayerCount = 1 },
+        //        DstOffset = new Offset3D { X = 0, Y = 0, Z = 0 },
+        //        Extent = new Extent3D { Width = (uint)texture.Width, Height = (uint)texture.Height, Depth = 1 }
+        //    };
+        //    VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
 
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General, ImageAspectFlags.ColorBit);
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, ImageAspectFlags.ColorBit);
+        //    bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General, ImageAspectFlags.ColorBit);
+        //    texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, ImageAspectFlags.ColorBit);
 
-            SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+        //    SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
-            return commandBuffer;
-        }
+        //    return commandBuffer;
+        //}
 
         private void WriteBitmapFile(BakeTexture bakeTexture, byte[] pixelData, FileStream fileStream)
         {
