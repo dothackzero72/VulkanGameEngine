@@ -30,59 +30,30 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             CreateTextureView();
             CreateTextureSampler();
         }
-
-        protected Result CreateTextureImage()
+        protected override void CreateImageTexture()
         {
-            Image textureImage;
-            DeviceMemory textureMemory;
-
-            var imageInfo = new ImageCreateInfo
+            ImageCreateInfo imageInfo = new ImageCreateInfo
             {
                 SType = StructureType.ImageCreateInfo,
                 ImageType = ImageType.ImageType2D,
                 Format = TextureByteFormat,
-                Extent = new Extent3D((uint)Width, (uint)Height, (uint)1),
+                Extent = new Extent3D { Width = (uint)Width, Height = (uint)Height, Depth = 1 },
                 MipLevels = MipMapLevels,
                 ArrayLayers = 1,
                 Samples = SampleCountFlags.Count1Bit,
                 Tiling = ImageTiling.Optimal,
                 Usage = ImageUsageFlags.ImageUsageTransferSrcBit |
-                        ImageUsageFlags.ImageUsageSampledBit |
-                        ImageUsageFlags.ImageUsageTransferDstBit |
-                        ImageUsageFlags.DepthStencilAttachmentBit,
+                        ImageUsageFlags.SampledBit |
+                        ImageUsageFlags.DepthStencilAttachmentBit |
+                        ImageUsageFlags.ImageUsageTransferDstBit,
                 SharingMode = SharingMode.Exclusive,
-                InitialLayout = ImageLayout.Undefined
+                InitialLayout = Silk.NET.Vulkan.ImageLayout.Undefined
             };
 
-            var result = VKConst.vulkan.CreateImage(SilkVulkanRenderer.device, &imageInfo, null, &textureImage);
-            if (result != Result.Success)
-            {
-            }
+            CTexture.CreateTextureImage(imageInfo, out Silk.NET.Vulkan.Image tempImage, out DeviceMemory memory, Width, Height, TextureByteFormat, MipMapLevels);
 
-            VKConst.vulkan.GetImageMemoryRequirements(SilkVulkanRenderer.device, textureImage, out MemoryRequirements memRequirements);
-
-            var allocInfo = new MemoryAllocateInfo
-            {
-                SType = StructureType.MemoryAllocateInfo,
-                AllocationSize = memRequirements.Size,
-                MemoryTypeIndex = SilkVulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits,
-                    MemoryPropertyFlags.MemoryPropertyDeviceLocalBit | MemoryPropertyFlags.MemoryPropertyHostVisibleBit)
-            };
-
-            result = VKConst.vulkan.AllocateMemory(SilkVulkanRenderer.device, &allocInfo, null, &textureMemory);
-            if (result != Result.Success)
-            {
-            }
-
-            result = VKConst.vulkan.BindImageMemory(SilkVulkanRenderer.device, textureImage, textureMemory, 0);
-            if (result != Result.Success)
-            {
-            }
-
-            Image = textureImage;
-            Memory = textureMemory;
-
-            return result;
+            Memory = memory;
+            Image = tempImage;
         }
 
         public override Result CreateTextureView()
@@ -140,7 +111,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Width = (int)textureResolution.x;
             Height = (int)textureResolution.y;
 
-            CreateTextureImage();
+            CreateImageTexture();
             CreateTextureView();
             CreateTextureSampler();
         }

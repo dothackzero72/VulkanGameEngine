@@ -20,6 +20,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         Vk vk = Vk.GetApi();
         public DepthTexture depthTexture;
         public Texture texture;
+        public Texture renderedTexture;
         public VulkanBuffer<Vertex3D> vertexBuffer;
         public VulkanBuffer<ushort> indexBuffer;
         public VulkanBuffer<UniformBufferObject> uniformBuffers;
@@ -65,14 +66,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             depthTexture = new DepthTexture(new ivec2((int)SilkVulkanRenderer.swapChain.swapchainExtent.Width, (int)SilkVulkanRenderer.swapChain.swapchainExtent.Height));
             texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Srgb, TextureTypeEnum.kType_DiffuseTextureMap);
+            renderedTexture = new Texture(RenderPassResolution);
 
             GCHandle vhandle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
             IntPtr vpointer = vhandle.AddrOfPinnedObject();
-            vertexBuffer = new VulkanBuffer<Vertex3D>((void*)vpointer, (uint)vertices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
+            vertexBuffer = new VulkanBuffer<Vertex3D>((void*)vpointer, (uint)vertices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
 
             GCHandle fhandle = GCHandle.Alloc(indices, GCHandleType.Pinned);
             IntPtr fpointer = fhandle.AddrOfPinnedObject();
-            indexBuffer = new VulkanBuffer<ushort>((void*)fpointer, (uint)indices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
+            indexBuffer = new VulkanBuffer<ushort>((void*)fpointer, (uint)indices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit | BufferUsageFlags.IndexBufferBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
 
 
             CreateRenderPass();
@@ -92,14 +94,25 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 new AttachmentDescription()
                 {
-                    Format = Format.B8G8R8A8Unorm,
+                    Format = Format.R8G8B8A8Unorm ,
                     Samples = SampleCountFlags.SampleCount1Bit,
                     LoadOp = AttachmentLoadOp.Load,
                     StoreOp = AttachmentStoreOp.Store,
                     StencilLoadOp = AttachmentLoadOp.DontCare,
                     StencilStoreOp = AttachmentStoreOp.DontCare,
-                    InitialLayout = ImageLayout.Undefined,
-                    FinalLayout = ImageLayout.PresentSrcKhr,
+                    InitialLayout = ImageLayout.ColorAttachmentOptimal,
+                    FinalLayout = ImageLayout.ColorAttachmentOptimal,
+                },
+                  new AttachmentDescription()
+                {
+                    Format = Format.R8G8B8A8Unorm,
+                    Samples = SampleCountFlags.SampleCount1Bit,
+                    LoadOp = AttachmentLoadOp.Load,
+                    StoreOp = AttachmentStoreOp.Store,
+                    StencilLoadOp = AttachmentLoadOp.DontCare,
+                    StencilStoreOp = AttachmentStoreOp.DontCare,
+                    InitialLayout = ImageLayout.ColorAttachmentOptimal,
+                    FinalLayout = ImageLayout.ColorAttachmentOptimal,
                 },
                  new AttachmentDescription()
                     {
@@ -120,13 +133,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         {
                             Attachment = 0,
                             Layout = ImageLayout.ColorAttachmentOptimal
+                        },
+                        new AttachmentReference
+                        {
+                            Attachment = 1,
+                            Layout = ImageLayout.ColorAttachmentOptimal
                         }
                     };
 
             var depthReference = new AttachmentReference
             {
-                Attachment = 1,
-                Layout = ImageLayout.DepthAttachmentOptimal
+                Attachment = 2,
+                Layout = ImageLayout.DepthStencilAttachmentOptimal
             };
 
 
@@ -253,56 +271,72 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 ColorComponentFlags.ColorComponentBBit |
                 ColorComponentFlags.ColorComponentABit;
 
-            PipelineColorBlendAttachmentState pipelineColorBlendAttachmentState = new(
-                false,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                BlendOp.Add,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                BlendOp.Add,
-                colorComponentFlags);
+            List<PipelineColorBlendAttachmentState> pipelineColorBlendAttachmentState = new List<PipelineColorBlendAttachmentState>()
+            {
+                new(
+                    blendEnable: true,
+                    srcColorBlendFactor: Silk.NET.Vulkan.BlendFactor.SrcAlpha,
+                    dstColorBlendFactor: Silk.NET.Vulkan.BlendFactor.OneMinusSrcAlpha,
+                    colorBlendOp: BlendOp.Add,
+                    srcAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.One,
+                    dstAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.Zero,
+                    alphaBlendOp: BlendOp.Add,
+                    colorWriteMask: ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit
+                ),
+                new(
+                    blendEnable: true,
+                    srcColorBlendFactor: Silk.NET.Vulkan.BlendFactor.SrcAlpha,
+                    dstColorBlendFactor: Silk.NET.Vulkan.BlendFactor.OneMinusSrcAlpha,
+                    colorBlendOp: BlendOp.Add,
+                    srcAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.One,
+                    dstAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.Zero,
+                    alphaBlendOp: BlendOp.Add,
+                    colorWriteMask: ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit
+                )
+            };
 
-            PipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = new
-            (
-                logicOpEnable: false,
-                logicOp: LogicOp.NoOp,
-                attachmentCount: 1,
-                pAttachments: &pipelineColorBlendAttachmentState
-            );
+            fixed (PipelineColorBlendAttachmentState* attachments = pipelineColorBlendAttachmentState.ToArray())
+            {
+                PipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = new
+       (
+           logicOpEnable: false,
+           logicOp: LogicOp.NoOp,
+           attachmentCount: 2,  // Match this to the render pass
+           pAttachments: attachments
+       );
 
-            pipelineColorBlendStateCreateInfo.BlendConstants[0] = 0.0f;
-            pipelineColorBlendStateCreateInfo.BlendConstants[1] = 0.0f;
-            pipelineColorBlendStateCreateInfo.BlendConstants[2] = 0.0f;
-            pipelineColorBlendStateCreateInfo.BlendConstants[3] = 0.0f;
+                pipelineColorBlendStateCreateInfo.BlendConstants[0] = 0.0f;
+                pipelineColorBlendStateCreateInfo.BlendConstants[1] = 0.0f;
+                pipelineColorBlendStateCreateInfo.BlendConstants[2] = 0.0f;
+                pipelineColorBlendStateCreateInfo.BlendConstants[3] = 0.0f;
 
-            DynamicState* dynamicStates = stackalloc[] { DynamicState.Viewport, DynamicState.Scissor };
+                DynamicState* dynamicStates = stackalloc[] { DynamicState.Viewport, DynamicState.Scissor };
 
-            PipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo = new
-            (
-                dynamicStateCount: 2,
-                pDynamicStates: dynamicStates
-            );
+                PipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo = new
+                (
+                    dynamicStateCount: 2,
+                    pDynamicStates: dynamicStates
+                );
 
-            GraphicsPipelineCreateInfo graphicsPipelineCreateInfo = new
-            (
-                stageCount: 2,
-                pStages: shadermoduleList,
-                pVertexInputState: &vertexInputInfo,
-                pInputAssemblyState: &pipelineInputAssemblyStateCreateInfo,
-                pViewportState: &pipelineViewportStateCreateInfo,
-                pRasterizationState: &pipelineRasterizationStateCreateInfo,
-                pMultisampleState: &pipelineMultisampleStateCreateInfo,
-                pDepthStencilState: &pipelineDepthStencilStateCreateInfo,
-                pColorBlendState: &pipelineColorBlendStateCreateInfo,
-                pDynamicState: &pipelineDynamicStateCreateInfo,
-                layout: shaderpipelineLayout,
-                renderPass: renderPass
-            );
+                GraphicsPipelineCreateInfo graphicsPipelineCreateInfo = new
+                (
+                    stageCount: 2,
+                    pStages: shadermoduleList,
+                    pVertexInputState: &vertexInputInfo,
+                    pInputAssemblyState: &pipelineInputAssemblyStateCreateInfo,
+                    pViewportState: &pipelineViewportStateCreateInfo,
+                    pRasterizationState: &pipelineRasterizationStateCreateInfo,
+                    pMultisampleState: &pipelineMultisampleStateCreateInfo,
+                    pDepthStencilState: &pipelineDepthStencilStateCreateInfo,
+                    pColorBlendState: &pipelineColorBlendStateCreateInfo,
+                    pDynamicState: &pipelineDynamicStateCreateInfo,
+                    layout: shaderpipelineLayout,
+                    renderPass: renderPass
+                );
 
-            vk.CreateGraphicsPipelines(SilkVulkanRenderer.device, new PipelineCache(null), 1, &graphicsPipelineCreateInfo, null, out Pipeline pipeline);
-            shaderpipeline = pipeline;
-
+                vk.CreateGraphicsPipelines(SilkVulkanRenderer.device, new PipelineCache(null), 1, &graphicsPipelineCreateInfo, null, out Pipeline pipeline);
+                shaderpipeline = pipeline;
+            }
             //SilkMarshal.Free((nint)pipelineShaderStageCreateInfos[0].PName);
             //SilkMarshal.Free((nint)pipelineShaderStageCreateInfos[1].PName);
 
@@ -377,6 +411,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 List<ImageView> TextureAttachmentList = new List<ImageView>();
                 TextureAttachmentList.Add(SilkVulkanRenderer.swapChain.imageViews[x]);
+                TextureAttachmentList.Add(renderedTexture.View);
                 TextureAttachmentList.Add(depthTexture.View);
 
                 fixed (ImageView* imageViewPtr = TextureAttachmentList.ToArray())
@@ -534,7 +569,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             GCHandle uhandle = GCHandle.Alloc(ubo, GCHandleType.Pinned);
             IntPtr upointer = uhandle.AddrOfPinnedObject();
-            uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit , MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false);
+            uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.UniformBufferBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
         }
 
        public void UpdateUniformBuffer(long startTime)
@@ -571,6 +606,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ClearValue* clearValues = stackalloc[]
 {
                 new ClearValue(new ClearColorValue(1, 0, 0, 1)),
+                new ClearValue(new ClearColorValue(0, 0, 1, 1)),
                 new ClearValue(null, new ClearDepthStencilValue(1.0f, 0))
             };
 
@@ -578,7 +614,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             (
                 renderPass: renderPass,
                 framebuffer: FrameBufferList[imageIndex],
-                clearValueCount: 2,
+                clearValueCount: 3,
                 pClearValues: clearValues,
                 renderArea: new(new Offset2D(0, 0), SilkVulkanRenderer.swapChain.swapchainExtent)
             );

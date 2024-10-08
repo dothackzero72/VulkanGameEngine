@@ -165,35 +165,39 @@ namespace VulkanGameEngineLevelEditor
 
         public unsafe byte[] BakeColorTexture(Texture texture)
         {
-            var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
-            BakeTexture bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), Format.R8G8B8A8Unorm);
+            BakeTexture bakeTexture = new BakeTexture(new GlmSharp.ivec2(1280, 720));
 
+            // Begin command buffer for the operation
             CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
 
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal);
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal);
+            // Transition the texture to the Transfer Source layout
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
 
-            ImageCopy copyImage = new ImageCopy();
-            copyImage.SrcSubresource.AspectMask = ImageAspectFlags.ColorBit;
-            copyImage.SrcSubresource.LayerCount = 1;
+            // Prepare the bakeTexture for copying:
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.Undefined, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
 
-            copyImage.DstSubresource.AspectMask = ImageAspectFlags.ColorBit;
-            copyImage.DstSubresource.LayerCount = 1;
+            // Perform the image copy operation
+            ImageCopy copyImage = new ImageCopy
+            {
+                SrcSubresource = { AspectMask = ImageAspectFlags.ColorBit, LayerCount = 1, MipLevel = 0 },
+                DstSubresource = { AspectMask = ImageAspectFlags.ColorBit, LayerCount = 1, MipLevel = 0 },
+                DstOffset = { X = 0, Y = 0, Z = 0 },
+                Extent = { Width = (uint)texture.Width, Height = (uint)texture.Height, Depth = 1 }
+            };
 
-            copyImage.DstOffset.X = 0;
-            copyImage.DstOffset.Y = 0;
-            copyImage.DstOffset.Z = 0;
+            // Execute copy command
+            VKConst.vulkan.CmdCopyImage(commandBuffer,
+                texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal,
+                bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal,
+                1, &copyImage);
 
-            copyImage.Extent.Width = (uint)texture.Width;
-            copyImage.Extent.Height = (uint)texture.Height;
-            copyImage.Extent.Depth = 1;
+            // Transition bakeTexture to ReadOnly for shader access
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal, ImageAspectFlags.ColorBit);
 
-            VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
-
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General);
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr);
+            // End command buffer
             SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
+            // Access and retrieve pixel data if needed
             ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
             SubresourceLayout subResourceLayout;
             VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
@@ -201,13 +205,15 @@ namespace VulkanGameEngineLevelEditor
             int pixelCount = bakeTexture.Width * bakeTexture.Height;
             byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
 
+            // Map the texture memory and copy data
             IntPtr mappedMemory;
             VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
-            Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
+            Marshal.Copy(mappedMemory, pixelData, 0, pixelData.Length);
             VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
 
             return pixelData;
         }
+
 
         [DllImport("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanDLL.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, void* data);
