@@ -200,7 +200,7 @@
 
 //            var attachmentDescription = new VkAttachmentDescription
 //            {
-//                format = VkFormat.VK_FORMAT_B8G8R8A8_UNORM,
+//                format = VkFormat.VK_FORMAT_R8G8B8A8Unorm_UNORM,
 //                samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
 //                loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
 //                storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_STORE,

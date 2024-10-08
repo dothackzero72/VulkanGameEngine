@@ -11,6 +11,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
@@ -113,52 +114,45 @@ namespace VulkanGameEngineLevelEditor
 
         public unsafe byte[] BakeColorTexture(Texture texture)
         {
-            var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
-            RenderedTexture bakeTexture = new RenderedTexture(new GlmSharp.ivec2(1280, 720));
-
-            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
-
-           
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal);
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.Undefined, Silk.NET.Vulkan.ImageLayout.General);
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal);
-
-            ImageCopy copyImage = new ImageCopy();
-            copyImage.SrcSubresource.AspectMask = ImageAspectFlags.ColorBit;
-            copyImage.SrcSubresource.LayerCount = 1;
-
-            copyImage.DstSubresource.AspectMask = ImageAspectFlags.ColorBit;
-            copyImage.DstSubresource.LayerCount = 1;
-
-            copyImage.DstOffset.X = 0;
-            copyImage.DstOffset.Y = 0;
-            copyImage.DstOffset.Z = 0;
-
-            copyImage.Extent.Width = (uint)texture.Width;
-            copyImage.Extent.Height = (uint)texture.Height;
-            copyImage.Extent.Depth = 1;
-
-            VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
-
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, Silk.NET.Vulkan.ImageLayout.General);
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr);
-            SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
-
-            ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
-            SubresourceLayout subResourceLayout;
-            VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
-
-            int pixelCount = bakeTexture.Width * bakeTexture.Height;
-            byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
+            // Assuming RGBA format, 4 bytes per pixel
+            int pixelSize = 4;
+            int pixelCount = texture.Width * texture.Height;
+            byte[] pixelData = new byte[pixelCount * pixelSize];
 
             IntPtr mappedMemory;
-            VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
-            Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
-            VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
 
+            // Map the Vulkan texture memory
+            var result = vk.MapMemory(SilkVulkanRenderer.device, texture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
+            if (result != Result.Success)
+            {
+                Console.WriteLine("Failed to map memory.");
+                return pixelData; // Early exit
+            }
+
+            // Copy the memory into the pixelData array
+            Marshal.Copy(mappedMemory, pixelData, 0, pixelData.Length);
+            // Unmap the Vulkan texture memory
+            vk.UnmapMemory(SilkVulkanRenderer.device, texture.Memory);
+
+            // Debugging output
+            Console.WriteLine($"Pixel Data Length: {pixelData.Length}");
+            Console.WriteLine($"First Pixel (RGBA): {pixelData[0]}, {pixelData[1]}, {pixelData[2]}, {pixelData[3]}");
+
+
+
+            // Writing the pixel data correctly based on width, height, and channels
+            fixed (byte* pixelPointer = pixelData)
+            {
+                void* voidPointer = pixelPointer;
+                StbImageWriteSharp.ImageWriter asd = new StbImageWriteSharp.ImageWriter();
+                using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerender234.bmp", FileMode.Create, FileAccess.Write))
+                {
+                    asd.WriteBmp(voidPointer, Width, Height, StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha, fileStream);
+                }
+            }
+            
             return pixelData;
         }
-
         public void StartLevelEditorRenderer()
         {
             running = true;

@@ -168,7 +168,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 new AttachmentDescription
                 {
-                    Format = Format.B8G8R8A8Srgb,
+                    Format = Format.R8G8B8A8Unorm,
                     Samples = SampleCountFlags.Count1Bit,
                     LoadOp = AttachmentLoadOp.Clear,
                     StoreOp = AttachmentStoreOp.Store,

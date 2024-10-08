@@ -68,7 +68,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         private readonly Object BufferLock = new Object();
         CommandPool commandPool;
         CommandBuffer commandBuffer;
-
+        public Texture texture;
 
           [StructLayout(LayoutKind.Sequential)]
         struct UniformBufferObject
@@ -116,6 +116,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 CommandBufferCount = 1
             };
             vk.AllocateCommandBuffers(SilkVulkanRenderer.device, in commandBufferAllocateInfo, out commandBuffer);
+            texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
         }
 
 
@@ -232,7 +233,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             //}
         }
 
-        public CommandBuffer BakeColorTexture(RenderedTexture texture, out BakeTexture bakeTexture)
+        public CommandBuffer BakeColorTexture(Texture texture, out Texture bakeTexture)
         {
             var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
             bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(1280, 720), Format.R8G8B8A8Unorm);
@@ -241,8 +242,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
 
             // Explicitly set the image layouts before copying
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal);
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal);
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
 
             ImageCopy copyImage = new ImageCopy
             {
@@ -253,8 +254,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
             VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
 
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General);
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr);
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General, ImageAspectFlags.ColorBit);
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, ImageAspectFlags.ColorBit);
 
             SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
@@ -301,7 +302,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             }
 
-            currentBitmap.Save("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerenderer.bmp", System.Drawing.Imaging.ImageFormat.Png);
+            currentBitmap.Save("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerenderer.png", System.Drawing.Imaging.ImageFormat.Png);
             lock (BufferLock)
             {
                 DisplayImage = currentBitmap;

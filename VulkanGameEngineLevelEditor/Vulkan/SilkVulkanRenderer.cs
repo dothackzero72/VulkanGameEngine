@@ -418,7 +418,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             PhysicalDeviceFeatures deviceFeatures = new PhysicalDeviceFeatures()
             {
-                SamplerAnisotropy = true
+                SamplerAnisotropy = true,
+
+                DepthBiasClamp = true,
+                DepthBounds = true,
+                DepthClamp = true
             };
 
             DeviceCreateInfo createInfo = new DeviceCreateInfo

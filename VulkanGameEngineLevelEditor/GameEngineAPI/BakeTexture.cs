@@ -3,18 +3,54 @@ using StbImageSharp;
 using Silk.NET.Vulkan;
 using System;
 using System.Runtime.InteropServices;
+using Silk.NET.Core.Native;
+using System.Runtime.CompilerServices;
+using System.Windows.Forms;
+using ImageLayout = Silk.NET.Vulkan.ImageLayout;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class BakeTexture : Texture
     {
+        Vk vk = Vk.GetApi();
         public BakeTexture() : base()
         {
         }
 
-        public BakeTexture(string filePath, Format textureByteFormat, TextureTypeEnum textureType) : base()
+        public BakeTexture(ivec2 TextureResolution) : base()
         {
+            Width = TextureResolution.x;
+            Height = TextureResolution.y;
+            Depth = 1;
+            TextureByteFormat = Format.R8G8B8A8Unorm;
+            TextureImageLayout = Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal;
+            SampleCount = SampleCountFlags.SampleCount1Bit;
+
+
+            CreateImageTexture();
+            CreateTextureView();
+            CreateTextureSampler();
+
+        }
+
+        public BakeTexture(string filePath, Format textureByteFormat, TextureTypeEnum textureType)
+        {
+            TextureBufferIndex = 0;
+            Width = 1;
+            Height = 1;
+            Depth = 1;
+            MipMapLevels = 1;
+
+            TextureUsage = TextureUsageEnum.kUse_Undefined;
+            TextureType = textureType;
+            TextureByteFormat = textureByteFormat;
+            TextureImageLayout = ImageLayout.Undefined;
+            SampleCount = SampleCountFlags.Count1Bit;
+
+            CreateImageTexture(filePath);
+            CreateTextureView();
+            CreateTextureSampler();
         }
 
         public BakeTexture(Pixel clearColor, ivec2 textureResolution, Format textureFormat) : base()
@@ -40,7 +76,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 SType = StructureType.ImageCreateInfo,
                 ImageType = ImageType.ImageType2D,
-                Format = TextureByteFormat,
+                Format = (Format)TextureByteFormat,
                 Extent = new Extent3D((uint)Width, (uint)Height, (uint)1),
                 MipLevels = MipMapLevels,
                 ArrayLayers = 1,
@@ -53,12 +89,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 InitialLayout = ImageLayout.Undefined
             };
 
-            var result = VKConst.vulkan.CreateImage(SilkVulkanRenderer.device, &imageInfo, null, &textureImage);
+            var result = vk.CreateImage(SilkVulkanRenderer.device, &imageInfo, null, &textureImage);
             if (result != Result.Success)
             {
             }
 
-            VKConst.vulkan.GetImageMemoryRequirements(SilkVulkanRenderer.device, textureImage, out MemoryRequirements memRequirements);
+            vk.GetImageMemoryRequirements(SilkVulkanRenderer.device, textureImage, out MemoryRequirements memRequirements);
 
             var allocInfo = new MemoryAllocateInfo
             {
@@ -67,12 +103,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 MemoryTypeIndex = SilkVulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.DeviceLocalBit)
             };
 
-            result = VKConst.vulkan.AllocateMemory(SilkVulkanRenderer.device, &allocInfo, null, &textureMemory);
+            result = vk.AllocateMemory(SilkVulkanRenderer.device, &allocInfo, null, &textureMemory);
             if (result != Result.Success)
             {
             }
 
-            result = VKConst.vulkan.BindImageMemory(SilkVulkanRenderer.device, textureImage, textureMemory, 0);
+            result = vk.BindImageMemory(SilkVulkanRenderer.device, textureImage, textureMemory, 0);
             if (result != Result.Success)
             {
             }
@@ -88,7 +124,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 SType = StructureType.ImageViewCreateInfo,
                 ViewType = ImageViewType.ImageViewType2D,
                 Image = Image,
-                Format = TextureByteFormat,
+                Format = (Format)TextureByteFormat,
                 SubresourceRange = new ImageSubresourceRange
                 {
                     BaseMipLevel = 0,
@@ -99,7 +135,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
 
-            Result result = VKConst.vulkan.CreateImageView(SilkVulkanRenderer.device, &textureImageViewInfo, null, out var view);
+            Result result = vk.CreateImageView(SilkVulkanRenderer.device, &textureImageViewInfo, null, out var view);
             if (result != Result.Success)
             {
             }
@@ -127,7 +163,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 BorderColor = BorderColor.FloatOpaqueWhite,
             };
 
-            VKConst.vulkan.CreateSampler(SilkVulkanRenderer.device, &textureImageSamplerInfo, null, out var sampler);
+            vk.CreateSampler(SilkVulkanRenderer.device, &textureImageSamplerInfo, null, out var sampler);
             Sampler = sampler;
         }
 

@@ -83,7 +83,11 @@ public unsafe class VulkanBuffer<T> : IDisposable where T : unmanaged
 
     protected Result CreateBuffer(void* bufferData)
     {
-        return DLL_Buffer_CreateBuffer(_device, _physicalDevice, ref Buffer, ref BufferMemory, (IntPtr)bufferData, BufferSize, BufferUsage, BufferProperties);
+         CBuffer.CreateBuffer(out Silk.NET.Vulkan.Buffer buffer, out DeviceMemory bufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
+        Buffer = buffer;
+        BufferMemory = bufferMemory;
+        
+        return Result.Success;
     }
 
     private DeviceMemory AllocateBufferMemory(Silk.NET.Vulkan.Buffer bufferHandle)
