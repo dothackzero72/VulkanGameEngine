@@ -114,31 +114,48 @@ namespace VulkanGameEngineLevelEditor
 
         public unsafe byte[] BakeColorTexture(Texture texture)
         {
-            // Assuming RGBA format, 4 bytes per pixel
-            int pixelSize = 4;
-            int pixelCount = texture.Width * texture.Height;
-            byte[] pixelData = new byte[pixelCount * pixelSize];
+            var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
+            RenderedTexture bakeTexture = new RenderedTexture(new GlmSharp.ivec2(1280, 720));
+
+            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
+
+
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.Undefined, Silk.NET.Vulkan.ImageLayout.General, ImageAspectFlags.ColorBit);
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
+
+            ImageCopy copyImage = new ImageCopy();
+            copyImage.SrcSubresource.AspectMask = ImageAspectFlags.ColorBit;
+            copyImage.SrcSubresource.LayerCount = 1;
+
+            copyImage.DstSubresource.AspectMask = ImageAspectFlags.ColorBit;
+            copyImage.DstSubresource.LayerCount = 1;
+
+            copyImage.DstOffset.X = 0;
+            copyImage.DstOffset.Y = 0;
+            copyImage.DstOffset.Z = 0;
+
+            copyImage.Extent.Width = (uint)texture.Width;
+            copyImage.Extent.Height = (uint)texture.Height;
+            copyImage.Extent.Depth = 1;
+
+            VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
+
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, Silk.NET.Vulkan.ImageLayout.General, ImageAspectFlags.ColorBit);
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, ImageAspectFlags.ColorBit);
+            SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+
+            ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
+            SubresourceLayout subResourceLayout;
+            VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
+
+            int pixelCount = bakeTexture.Width * bakeTexture.Height;
+            byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
 
             IntPtr mappedMemory;
-
-            // Map the Vulkan texture memory
-            var result = vk.MapMemory(SilkVulkanRenderer.device, texture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
-            if (result != Result.Success)
-            {
-                Console.WriteLine("Failed to map memory.");
-                return pixelData; // Early exit
-            }
-
-            // Copy the memory into the pixelData array
-            Marshal.Copy(mappedMemory, pixelData, 0, pixelData.Length);
-            // Unmap the Vulkan texture memory
-            vk.UnmapMemory(SilkVulkanRenderer.device, texture.Memory);
-
-            // Debugging output
-            Console.WriteLine($"Pixel Data Length: {pixelData.Length}");
-            Console.WriteLine($"First Pixel (RGBA): {pixelData[0]}, {pixelData[1]}, {pixelData[2]}, {pixelData[3]}");
-
-
+            VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
+            Marshal.Copy(mappedMemory, pixelData, 0, pixelCount * (int)bakeTexture.ColorChannels);
+            VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
 
             // Writing the pixel data correctly based on width, height, and channels
             fixed (byte* pixelPointer = pixelData)
