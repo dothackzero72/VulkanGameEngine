@@ -58,45 +58,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     {
         Vk vk = Vk.GetApi();
         public Silk3DRendererPass silk3DRendererPass;
-        public SilkFrameBufferRenderPass framebufferRenderPass;
-        public ExtDebugUtils debugUtils;
         static readonly long startTime = DateTime.Now.Ticks;
-        const int MAX_FRAMES_IN_FLIGHT = 2;
         bool isFramebufferResized = false;
         IWindow window;
-        public Bitmap DisplayImage { get; protected set; }
-        private readonly Object BufferLock = new Object();
         CommandPool commandPool;
         CommandBuffer commandBuffer;
         public Texture texture;
-
-          [StructLayout(LayoutKind.Sequential)]
-        struct UniformBufferObject
-        {
-            public Matrix4X4<float> model;
-            public Matrix4X4<float> view;
-            public Matrix4X4<float> proj;
-
-        }
-
-        readonly Vertex3D[] vertices = new Vertex3D[]
-        {
-            new Vertex3D(new (-0.5f, -0.5f, 0.0f), new (1.0f, 0.0f, 0.0f), new (1.0f, 0.0f)),
-            new Vertex3D(new (0.5f, -0.5f, 0.0f), new (0.0f, 1.0f, 0.0f), new (0.0f, 0.0f)),
-            new Vertex3D(new (0.5f, 0.5f, 0.0f), new (0.0f, 0.0f, 1.0f), new (0.0f, 1.0f)),
-            new Vertex3D(new (-0.5f, 0.5f, 0.0f), new (1.0f, 1.0f, 1.0f), new (1.0f, 1.0f)),
-
-            new Vertex3D(new (-0.5f, -0.5f, -0.5f), new (1.0f, 0.0f, 0.0f), new (1.0f, 0.0f)),
-            new Vertex3D(new (0.5f, -0.5f, -0.5f), new (0.0f, 1.0f, 0.0f), new (0.0f, 0.0f)),
-            new Vertex3D(new (0.5f, 0.5f, -0.5f), new (0.0f, 0.0f, 1.0f), new (0.0f, 1.0f)),
-            new Vertex3D(new (-0.5f, 0.5f, -0.5f), new (1.0f, 1.0f, 1.0f), new (1.0f, 1.0f))
-        };
-
-        readonly ushort[] indices = new ushort[]
-        {
-            0, 1, 2, 2, 3, 0,
-            4, 5, 6, 6, 7, 4
-        };
 
         public Scene()
         {
@@ -119,7 +86,21 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
         }
 
-
+        public void StartUp(IWindow windows)
+        {
+            window = windows;
+            InitWindow(windows);
+            InitializeVulkan();
+            CommandBufferAllocateInfo commandBufferAllocateInfo = new CommandBufferAllocateInfo()
+            {
+                SType = StructureType.CommandBufferAllocateInfo,
+                CommandPool = SilkVulkanRenderer.commandPool,
+                Level = CommandBufferLevel.Primary,
+                CommandBufferCount = 1
+            };
+            vk.AllocateCommandBuffers(SilkVulkanRenderer.device, in commandBufferAllocateInfo, out commandBuffer);
+            texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
+        }
 
         void InitWindow(IWindow windows)
         {
@@ -132,34 +113,20 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             isFramebufferResized = true;
         }
 
-        public void Run(IWindow windows, RichTextBox _richTextBox)
-        {
-            InitWindow(windows);
-            InitializeVulkan(_richTextBox);
-        }
-
-
         public void InitializeVulkan(RichTextBox _richTextBox)
         {
             SilkVulkanRenderer.CreateVulkanRenderer(window,_richTextBox);
 
+            silk3DRendererPass = new Silk3DRendererPass();
+            silk3DRendererPass.Create3dRenderPass();
+        }
+        public void InitializeVulkan()
+        {
+            SilkVulkanRenderer.CreateVulkanRenderer(window);
 
             silk3DRendererPass = new Silk3DRendererPass();
             silk3DRendererPass.Create3dRenderPass();
-            framebufferRenderPass = new SilkFrameBufferRenderPass();
-            framebufferRenderPass.BuildRenderPass(silk3DRendererPass.texture);
         }
-
-        public unsafe IntPtr ConvertByteArrayToVoidPointer(byte[] byteArray)
-        {
-            // Pin the byte array in memory to prevent the garbage collector from moving it
-            fixed (byte* bytePtr = byteArray)
-            {
-                return (IntPtr)bytePtr; // Cast to IntPtr to return as void*
-            }
-        }
-
-
         public void DrawFrame()
         {
             silk3DRendererPass.UpdateUniformBuffer(startTime);
@@ -167,143 +134,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
             SilkVulkanRenderer.StartFrame();
             commandBufferList.Add(silk3DRendererPass.Draw());
-            commandBufferList.Add(framebufferRenderPass.Draw());
             SilkVulkanRenderer.EndFrame(commandBufferList);
         }
 
-        //public CommandBuffer BakeColorTexture(Texture texture, out Texture bakeTexture)
-        //{
-        //    var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
-        //    bakeTexture = new BakeTexture(pixel, new GlmSharp.ivec2(pictureBox1.Width, pictureBox1.Height), Format.R8G8B8A8Unorm);
-
-        //    var commandInfo = new CommandBufferBeginInfo(flags: 0);
-        //    var commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
-
-        //    // Explicitly set the image layouts before copying
-        //    bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
-        //    texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
-
-        //    ImageCopy copyImage = new ImageCopy
-        //    {
-        //        SrcSubresource = { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, BaseArrayLayer = 0, LayerCount = 1 },
-        //        DstSubresource = { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, BaseArrayLayer = 0, LayerCount = 1 },
-        //        DstOffset = new Offset3D { X = 0, Y = 0, Z = 0 },
-        //        Extent = new Extent3D { Width = (uint)texture.Width, Height = (uint)texture.Height, Depth = 1 }
-        //    };
-        //    VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
-
-        //    bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General, ImageAspectFlags.ColorBit);
-        //    texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, ImageAspectFlags.ColorBit);
-
-        //    SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
-
-        //    return commandBuffer;
-        //}
-
-        private void WriteBitmapFile(BakeTexture bakeTexture, byte[] pixelData, FileStream fileStream)
-        {
-            // Ensure the pixel data is in RGB format:
-            int bitmapSize = bakeTexture.Width * bakeTexture.Height;
-            byte[] bmpData = new byte[bitmapSize * 3]; // For RGB
-
-            // Convert from RGBA to RGB
-            for (int i = 0; i < bitmapSize; i++)
-            {
-                bmpData[i * 3] = pixelData[i * 4];     // R
-                bmpData[i * 3 + 1] = pixelData[i * 4 + 1]; // G
-                bmpData[i * 3 + 2] = pixelData[i * 4 + 2]; // B
-            }
-
-            // Write BMP using StbImageWrite
-            //StbImageWriteSharp.ImageWriter iw = new StbImageWriteSharp.ImageWriter();
-            //fixed (byte* bmpDataPtr = bmpData) // Pin the data in memory
-            //{
-            //    iw.WriteBmp((void*)bmpDataPtr, bakeTexture.Width, bakeTexture.Height, StbImageWriteSharp.ColorComponents.RedGreenBlue, fileStream);
-            //}
-        }
-
-        public void UpdateBuffer(byte[] pixelData)
-        {
-            if (pixelData == null)
-            {
-                return;
-            }
-
-            Bitmap currentBitmap = new Bitmap((int)SilkVulkanRenderer.swapChain.swapchainExtent.Width, (int)SilkVulkanRenderer.swapChain.swapchainExtent.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            for (int y = 0; y < currentBitmap.Height; y++)
-            {
-                for (int x = 0; x < currentBitmap.Width; x++)
-                {
-                    int index = (y * currentBitmap.Width + x) * 4;
-                    System.Drawing.Color pixelColor = ByteArrayToColor(pixelData, index);
-                    currentBitmap.SetPixel(x, y, pixelColor);
-                }
-            }
-
-            currentBitmap.Save("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerenderer.png", System.Drawing.Imaging.ImageFormat.Png);
-            lock (BufferLock)
-            {
-                DisplayImage = currentBitmap;
-            }
-        }
-
-        public void PresentImage(PictureBox picture)
-        {
-            if (DisplayImage == null)
-            {
-                return;
-            }
-
-            if (picture.Image != null)
-            {
-                picture.Image.Dispose();
-            }
-
-            picture.Image = (Bitmap)DisplayImage.Clone();
-            picture.Refresh();
-        }
-
-        [DllImport("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanDLL.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int DLL_stbi_write_bmp(string filename, int w, int h, int comp, void* data);
-        public static void WriteImage(string filePath, byte[] imageData, int width, int height, int channels)
-        {
-            int result = DLL_stbi_write_bmp(filePath, width, height, channels, (void*)imageData.ToArray()[0]);
-            if (result == 0)
-            {
-                Console.WriteLine("Failed to write image.");
-            }
-            else
-            {
-                Console.WriteLine("Image written successfully.");
-            }
-        }
-
-        private System.Drawing.Color ByteArrayToColor(byte[] data, int index)
-        {
-            byte a = data[index + 3];
-            byte r = data[index + 0];
-            byte g = data[index + 1];
-            byte b = data[index + 2];
-            return System.Drawing.Color.FromArgb(a, r, g, b);
-        }
-
-        public  byte[] ConvertPixelsToByteArray(Pixel[] pixels)
-        {
-            // Each pixel has 4 components (RGBA)
-            int byteCount = pixels.Length * 4; // 4 bytes per pixel
-            byte[] byteArray = new byte[byteCount];
-
-            // Populate the byte array
-            for (int i = 0; i < pixels.Length; i++)
-            {
-                byteArray[i * 4] = pixels[i].Red;     // R
-                byteArray[i * 4 + 1] = pixels[i].Green; // G
-                byteArray[i * 4 + 2] = pixels[i].Blue; // B
-                byteArray[i * 4 + 3] = pixels[i].Alpha; // A
-            }
-
-            return byteArray;
-        }
     }
 }
 

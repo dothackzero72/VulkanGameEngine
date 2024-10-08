@@ -86,15 +86,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             CreateDescriptorPoolBinding();
             allocateDescriptorSets(descriptorpool);
             UpdateDescriptorSet(descriptorset);
-
-            for (int x = 0; x < SilkVulkanRenderer.swapChain.ImageCount; x++)
-            {
-                var commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
-                TransitionImageLayout(renderedColorTexture.Image, ImageLayout.Undefined, ImageLayout.ColorAttachmentOptimal, commandBuffer);
-                TransitionImageLayout(renderedColorTexture.Image, ImageLayout.ColorAttachmentOptimal, ImageLayout.PresentSrcKhr, commandBuffer);
-                SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
-            }
-
         }
 
         public RenderPass CreateRenderPass()

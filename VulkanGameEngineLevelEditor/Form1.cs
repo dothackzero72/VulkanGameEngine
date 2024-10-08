@@ -115,29 +115,39 @@ namespace VulkanGameEngineLevelEditor
 
         public unsafe byte[] BakeColorTexture(Texture texture)
         {
-            var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
             BakeTexture bakeTexture = new BakeTexture(new GlmSharp.ivec2(1280, 720));
 
+            // Begin command buffer for the operation
             CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
 
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.Undefined, Silk.NET.Vulkan.ImageLayout.General, ImageAspectFlags.ColorBit);
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
+            // Transition the texture to the Transfer Source layout
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
 
+            // Prepare the bakeTexture for copying:
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.Undefined, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
+
+            // Perform the image copy operation
             ImageCopy copyImage = new ImageCopy
             {
-                SrcSubresource = { AspectMask = ImageAspectFlags.ColorBit, LayerCount = 1 },
-                DstSubresource = { AspectMask = ImageAspectFlags.ColorBit, LayerCount = 1 },
+                SrcSubresource = { AspectMask = ImageAspectFlags.ColorBit, LayerCount = 1, MipLevel = 0 },
+                DstSubresource = { AspectMask = ImageAspectFlags.ColorBit, LayerCount = 1, MipLevel = 0 },
                 DstOffset = { X = 0, Y = 0, Z = 0 },
                 Extent = { Width = (uint)texture.Width, Height = (uint)texture.Height, Depth = 1 }
             };
 
-            VKConst.vulkan.CmdCopyImage(commandBuffer, texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &copyImage);
+            // Execute copy command
+            VKConst.vulkan.CmdCopyImage(commandBuffer,
+                texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal,
+                bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal,
+                1, &copyImage);
 
-            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, Silk.NET.Vulkan.ImageLayout.General, ImageAspectFlags.ColorBit);
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, ImageAspectFlags.ColorBit);
+            // Transition bakeTexture to ReadOnly for shader access
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal, ImageAspectFlags.ColorBit);
+
+            // End command buffer
             SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
+            // Access and retrieve pixel data if needed
             ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
             SubresourceLayout subResourceLayout;
             VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
@@ -145,6 +155,7 @@ namespace VulkanGameEngineLevelEditor
             int pixelCount = bakeTexture.Width * bakeTexture.Height;
             byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
 
+            // Map the texture memory and copy data
             IntPtr mappedMemory;
             VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
             Marshal.Copy(mappedMemory, pixelData, 0, pixelData.Length);

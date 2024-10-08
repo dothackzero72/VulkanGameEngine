@@ -48,6 +48,25 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return createInfo;
         }
 
+        public static DebugUtilsMessengerCreateInfoEXT MakeDebugUtilsMessengerCreateInfoEXT()
+        {
+            DebugUtilsMessengerCreateInfoEXT createInfo = new
+            (
+                messageSeverity:
+                    DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt |
+                    DebugUtilsMessageSeverityFlagsEXT.InfoBitExt |
+                    DebugUtilsMessageSeverityFlagsEXT.WarningBitExt |
+                    DebugUtilsMessageSeverityFlagsEXT.ErrorBitExt,
+                messageType:
+                    DebugUtilsMessageTypeFlagsEXT.GeneralBitExt |
+                    DebugUtilsMessageTypeFlagsEXT.ValidationBitExt |
+                    DebugUtilsMessageTypeFlagsEXT.PerformanceBitExt,
+                pfnUserCallback: new PfnDebugUtilsMessengerCallbackEXT(MessageCallback)
+            );
+
+            return createInfo;
+        }
+
         //public uint MessageCallback(DebugUtilsMessageSeverityFlagsEXT severity, DebugUtilsMessageTypeFlagsEXT messageType, DebugUtilsMessengerCallbackDataEXT* callbackData, void* userData)
         //{
         //    string message = GetMessageFromPointer(callbackData->PMessage);

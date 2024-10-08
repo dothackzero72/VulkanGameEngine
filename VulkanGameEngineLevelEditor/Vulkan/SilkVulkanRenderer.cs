@@ -75,6 +75,20 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             CreateCommandPool();
         }
 
+        public static void CreateVulkanRenderer(IWindow windows)
+        {
+            window = windows;
+            CreateWindow(window);
+            CreateInstance();
+            CreateSurface(window);
+            CreatePhysicalDevice(khrSurface);
+            CreateDevice();
+            CreateDeviceQueue();
+            CreateSemaphores();
+            swapChain.CreateSwapChain(window, khrSurface, surface);
+            CreateCommandPool();
+        }
+
         public static void CreateVulkanRenderer(IWindow windows, SurfaceKHR surfacekhrt)
         {
             window = windows;
@@ -242,6 +256,79 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static void CreateWindow(IWindow tempWindow)
         {
             window = tempWindow;
+        }
+        public static Instance CreateInstance()
+        {
+
+            validationLayers = CheckAvailableValidationLayers(validationLayers);
+            if (validationLayers is null)
+            {
+                throw new NotSupportedException("Validation layers requested, but not available!");
+            }
+
+            var vulkanRequiredExtensions = window.VkSurface.GetRequiredExtensions(out uint extensions);
+            requiredExtensions = new string[extensions];
+            for (var x = 0; x < extensions; x++)
+            {
+                requiredExtensions[x] = Marshal.PtrToStringAnsi((IntPtr)vulkanRequiredExtensions[x]);
+            }
+            var extensionsArray = requiredExtensions.Concat(instanceExtensions).ToArray();
+
+            ApplicationInfo applicationInfo = new
+          (
+              pApplicationName: (byte*)Marshal.StringToHGlobalAnsi("Level Editor Play Test"),
+              applicationVersion: new Version32(1, 0, 0),
+              pEngineName: (byte*)Marshal.StringToHGlobalAnsi(""),
+              engineVersion: new Version32(1, 0, 0),
+              apiVersion: Vk.Version13
+          );
+
+            InstanceCreateInfo createInfo = new
+            (
+                pApplicationInfo: &applicationInfo
+            );
+
+            createInfo.EnabledExtensionCount = (uint)extensionsArray.Length;
+            createInfo.PpEnabledExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(extensionsArray);
+
+            if (validationLayers != null)
+            {
+                createInfo.EnabledLayerCount = (uint)validationLayers.Length;
+                createInfo.PpEnabledLayerNames = (byte**)SilkMarshal.StringArrayToPtr(validationLayers);
+            }
+
+            DebugUtilsMessengerCreateInfoEXT debugCreateInfo = SilkVulkanDebug.MakeDebugUtilsMessengerCreateInfoEXT();
+            createInfo.PNext = &debugCreateInfo;
+
+
+            Result result = vulkan.CreateInstance(in createInfo, null, out Instance vkInstance);
+            instance = vkInstance;
+            if (result != Result.Success)
+            {
+                throw new Exception("Failed to create instance!");
+            }
+
+            ExtDebugUtils debugUtils;
+            if (!vulkan.TryGetInstanceExtension(instance, out debugUtils))
+            {
+                throw new Exception("Failed to create debug messenger.");
+            }
+
+            if (debugUtils.CreateDebugUtilsMessenger(instance, &debugCreateInfo, null,
+                out DebugUtilsMessengerEXT DebugMessenger) != Result.Success)
+            {
+                throw new Exception("Failed to create debug messenger.");
+            }
+
+            debugMessenger = DebugMessenger;
+
+            SilkMarshal.Free((nint)createInfo.PpEnabledLayerNames);
+            SilkMarshal.Free((nint)createInfo.PpEnabledExtensionNames);
+
+            Marshal.FreeHGlobal((nint)applicationInfo.PApplicationName);
+            Marshal.FreeHGlobal((nint)applicationInfo.PEngineName);
+
+            return instance;
         }
 
         public static Instance CreateInstance(RichTextBox logTextBox)
