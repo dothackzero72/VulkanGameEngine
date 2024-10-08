@@ -582,7 +582,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var commandBuffer = commandBufferList[commandIndex];
             ClearValue* clearValues = stackalloc[]
 {
-                new ClearValue(new ClearColorValue(1, 0, 0, 1)),
+                new ClearValue(new ClearColorValue(0, 0, 0, 1)),
                 new ClearValue(null, new ClearDepthStencilValue(1.0f, 0))
             };
 

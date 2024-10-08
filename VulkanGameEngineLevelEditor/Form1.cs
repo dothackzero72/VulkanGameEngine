@@ -115,12 +115,12 @@ namespace VulkanGameEngineLevelEditor
         public unsafe byte[] BakeColorTexture(Texture texture)
         {
             var pixel = new Pixel(0xFF, 0x00, 0x00, 0xFF);
-            RenderedTexture bakeTexture = new RenderedTexture(new GlmSharp.ivec2(1280, 720));
+            BakeTexture bakeTexture = new BakeTexture(new GlmSharp.ivec2(1280, 720));
 
             CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
 
 
-            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal ,Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
             bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.Undefined, Silk.NET.Vulkan.ImageLayout.General, ImageAspectFlags.ColorBit);
             bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.General, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
 
@@ -159,14 +159,14 @@ namespace VulkanGameEngineLevelEditor
 
             // Writing the pixel data correctly based on width, height, and channels
             fixed (byte* pixelPointer = pixelData)
-            {
-                void* voidPointer = pixelPointer;
-                StbImageWriteSharp.ImageWriter asd = new StbImageWriteSharp.ImageWriter();
-                using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerender234.bmp", FileMode.Create, FileAccess.Write))
-                {
-                    asd.WriteBmp(voidPointer, Width, Height, StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha, fileStream);
-                }
-            }
+            //{
+            //    void* voidPointer = pixelPointer;
+            //    StbImageWriteSharp.ImageWriter asd = new StbImageWriteSharp.ImageWriter();
+            //    using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerender234.bmp", FileMode.Create, FileAccess.Write))
+            //    {
+            //        asd.WriteBmp(voidPointer, Width, Height, StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha, fileStream);
+            //    }
+            //}
             
             return pixelData;
         }

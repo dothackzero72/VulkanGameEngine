@@ -120,7 +120,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 SType = StructureType.MemoryAllocateInfo,
                 AllocationSize = memRequirements.Size,
-                MemoryTypeIndex = SilkVulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.MemoryPropertyHostVisibleBit)
+                MemoryTypeIndex = SilkVulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.DeviceLocalBit)
             };
 
             DeviceMemory textureMemoryPtr = new DeviceMemory();
