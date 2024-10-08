@@ -24,32 +24,32 @@ namespace VulkanGameEngineLevelEditor
         static IWindow window;
       //  static private Scene scene = new Scene();
         static private bool isInitialized = false;
-      
-        //[STAThread]
-        //static void Main()
-        //{
-        //    Application.EnableVisualStyles();
-        //    Application.SetCompatibleTextRenderingDefault(false);
-        //    Application.Run(new Form1());
-        //}
 
-      
+        [STAThread]
         static void Main()
         {
-            var opts = WindowOptions.DefaultVulkan;
-            opts.Title = "Texture Demo";
-            opts.Size = new Vector2D<int>(1280, 720);
-
-            window = Silk.NET.Windowing.Window.Create(opts);
-            window.Initialize();
-
-            Scene scene = new Scene();
-            scene.StartUp(window);
-            while (true)
-            {
-                scene.DrawFrame();
-            }
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
         }
+
+
+        //static void Main()
+        //{
+        //    var opts = WindowOptions.DefaultVulkan;
+        //    opts.Title = "Texture Demo";
+        //    opts.Size = new Vector2D<int>(1280, 720);
+
+        //    window = Silk.NET.Windowing.Window.Create(opts);
+        //    window.Initialize();
+
+        //    Scene scene = new Scene();
+        //    scene.StartUp(window);
+        //    while (true)
+        //    {
+        //        scene.DrawFrame();
+        //    }
+        //}
     }
 
 }

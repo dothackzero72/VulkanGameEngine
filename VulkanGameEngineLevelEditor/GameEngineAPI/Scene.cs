@@ -136,7 +136,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             commandBufferList.Add(silk3DRendererPass.Draw());
             SilkVulkanRenderer.EndFrame(commandBufferList);
         }
-
     }
 }
 

@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
@@ -105,7 +106,7 @@ namespace VulkanGameEngineLevelEditor
             {
                 //scene.Update(0);
                 scene.DrawFrame();
-                byte[] textureData = BakeColorTexture(scene.silk3DRendererPass.renderedColorTexture);
+                byte[] textureData = BakeColorTexture(scene.silk3DRendererPass.renderedTexture);
                 dataCollection.TryAdd(textureData);
                 // vulkanTutorial.DrawFrame();
                 // byte[] textureData = BakeColorTexture(vulkanTutorial.texture);
@@ -117,16 +118,10 @@ namespace VulkanGameEngineLevelEditor
         {
             BakeTexture bakeTexture = new BakeTexture(new GlmSharp.ivec2(1280, 720));
 
-            // Begin command buffer for the operation
             CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
-
-            // Transition the texture to the Transfer Source layout
             texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
-
-            // Prepare the bakeTexture for copying:
             bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.Undefined, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
 
-            // Perform the image copy operation
             ImageCopy copyImage = new ImageCopy
             {
                 SrcSubresource = { AspectMask = ImageAspectFlags.ColorBit, LayerCount = 1, MipLevel = 0 },
@@ -135,34 +130,52 @@ namespace VulkanGameEngineLevelEditor
                 Extent = { Width = (uint)texture.Width, Height = (uint)texture.Height, Depth = 1 }
             };
 
-            // Execute copy command
             VKConst.vulkan.CmdCopyImage(commandBuffer,
                 texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal,
                 bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal,
                 1, &copyImage);
-
-            // Transition bakeTexture to ReadOnly for shader access
             bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal, ImageAspectFlags.ColorBit);
 
-            // End command buffer
             SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
-
-            // Access and retrieve pixel data if needed
             ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
             SubresourceLayout subResourceLayout;
             VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
 
             int pixelCount = bakeTexture.Width * bakeTexture.Height;
-            byte[] pixelData = new byte[pixelCount * (int)bakeTexture.ColorChannels];
+            byte[] pixelData = new byte[pixelCount * 4]; // R8G8B8A8 has 4 channels
 
-            // Map the texture memory and copy data
             IntPtr mappedMemory;
             VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
             Marshal.Copy(mappedMemory, pixelData, 0, pixelData.Length);
             VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
 
-            return pixelData;
+            // Create an array for the Format32bppRgb format
+            byte[] convertedPixelData = new byte[pixelCount * 4]; // 4 bytes per pixel for Format32bppRgb
+
+            // Convert from R8G8B8A8 to Format32bppRgb
+            for (int i = 0; i < pixelCount; i++)
+            {
+                int srcIndex = i * 4; // R8G8B8A8 (4 bytes per pixel)
+                int dstIndex = i * 4;  // Format32bppRgb (4 bytes per pixel)
+
+                // Read pixel data in R8G8B8A8 format
+                byte r = pixelData[srcIndex + 0]; // Red
+                byte g = pixelData[srcIndex + 1]; // Green
+                byte b = pixelData[srcIndex + 2]; // Blue
+                                                  // byte a = pixelData[srcIndex + 3]; // Alpha (ignored)
+
+                // Store in Format32bppRgb
+                convertedPixelData[dstIndex + 0] = r; // Red
+                convertedPixelData[dstIndex + 1] = g; // Green
+                convertedPixelData[dstIndex + 2] = b; // Blue
+
+                // The last byte (dstIndex + 3) is unused; we can set it to 0 or another value
+                convertedPixelData[dstIndex + 3] = 0; // Unused byte
+            }
+
+            return convertedPixelData;
         }
+
         public void StartLevelEditorRenderer()
         {
             running = true;
@@ -179,7 +192,7 @@ namespace VulkanGameEngineLevelEditor
             {
                 if (dataCollection.TryTake(out byte[] textureData))
                 {
-                    levelEditorSwapChain.UpdateBuffer(textureData);
+                    levelEditorSwapChain.UpdateBuffer(textureData, SilkVulkanRenderer.swapChain.swapchainExtent);
                 }
             }
         }
@@ -203,6 +216,15 @@ namespace VulkanGameEngineLevelEditor
         private void UpdateBitmap(object sender, EventArgs e)
         {
             pictureBox1.Invoke(new Action(() => levelEditorSwapChain.PresentImage(pictureBox1)));
+        }
+
+        private Pixel ByteArrayToColor(byte[] data, int index)
+        {
+            byte a = data[index + 3];
+            byte r = data[index + 0];
+            byte g = data[index + 1];
+            byte b = data[index + 2];
+            return new Pixel(r, g, b, a);
         }
     }
 }

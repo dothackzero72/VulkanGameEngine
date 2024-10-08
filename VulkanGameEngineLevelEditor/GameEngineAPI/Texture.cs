@@ -221,9 +221,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     InitialLayout = Silk.NET.Vulkan.ImageLayout.Undefined
                 };
 
-                CTexture.CreateTextureImage(imageInfo,out Silk.NET.Vulkan.Image tempImage, out DeviceMemory memory, Width, Height, TextureByteFormat, MipMapLevels);
+                CTexture.CreateTextureImage(imageInfo, out Silk.NET.Vulkan.Image tempImage, out DeviceMemory memory, Width, Height, TextureByteFormat, MipMapLevels);
                 CTexture.QuickTransitionImageLayout(tempImage, TextureImageLayout, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, MipMapLevels, ImageAspectFlags.ColorBit);
-                CTexture.CopyBufferToTexture(ref tempBuffer, tempImage, new Extent3D { Width = (uint)Width, Height = (uint)Height, Depth = 1}, TextureUsage, ImageAspectFlags.ColorBit);
+                CTexture.CopyBufferToTexture(ref tempBuffer, tempImage, new Extent3D { Width = (uint)Width, Height = (uint)Height, Depth = 1 }, TextureUsage, ImageAspectFlags.ColorBit);
 
                 Memory = memory;
                 Image = tempImage;

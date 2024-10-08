@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Silk.NET.Vulkan;
 using StbImageSharp;
 using System;
 using System.Collections.Concurrent;
@@ -35,7 +36,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        public void UpdateBuffer(byte[] pixelData)
+        public void UpdateBuffer(byte[] pixelData, Extent2D imageSize)
         {
             if (pixelData == null)
             {
@@ -44,7 +45,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             lock (BufferLock)
             {
-                Bitmap currentBitmap = BitMapBuffers[CurrentBufferIndex];
+                Bitmap currentBitmap = new Bitmap((int)imageSize.Width, (int)imageSize.Height, PixelFormat.Format32bppRgb);
                 BitmapData bitmapData = currentBitmap.LockBits(new System.Drawing.Rectangle(0, 0, currentBitmap.Width, currentBitmap.Height),
                                                                 ImageLockMode.WriteOnly,
                                                                 currentBitmap.PixelFormat);

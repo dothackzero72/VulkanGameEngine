@@ -61,7 +61,7 @@ public unsafe class VulkanBuffer<T> : IDisposable where T : unmanaged
         }
         else
         {
-           Result result = CreateBuffer(bufferData);
+            Result result = DLLCreateBuffer(bufferData);
         }
     }
 
@@ -81,12 +81,15 @@ public unsafe class VulkanBuffer<T> : IDisposable where T : unmanaged
         DestroyBuffer();
     }
 
+    protected Result DLLCreateBuffer(void* bufferData)
+    {
+        return DLL_Buffer_CreateBuffer(_device, _physicalDevice, ref Buffer, ref BufferMemory, (IntPtr)bufferData, BufferSize, BufferUsage, BufferProperties);
+    }
     protected Result CreateBuffer(void* bufferData)
     {
-         CBuffer.CreateBuffer(out Silk.NET.Vulkan.Buffer buffer, out DeviceMemory bufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
+        CBuffer.CreateBuffer(out Silk.NET.Vulkan.Buffer buffer, out DeviceMemory bufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
         Buffer = buffer;
         BufferMemory = bufferMemory;
-        
         return Result.Success;
     }
 

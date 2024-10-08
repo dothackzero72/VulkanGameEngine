@@ -20,11 +20,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         Vk vk = Vk.GetApi();
         public DepthTexture depthTexture;
         public Texture texture;
+        public Texture renderedTexture;
         public VulkanBuffer<Vertex3D> vertexBuffer;
         public VulkanBuffer<ushort> indexBuffer;
         public VulkanBuffer<UniformBufferObject> uniformBuffers;
-        public Texture renderedColorTexture;
-        private readonly Object BufferLock = new Object();
 
         UniformBufferObject ubo;
 
@@ -56,7 +55,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public Silk3DRendererPass()  : base()
+        public Silk3DRendererPass() : base()
         {
 
             //(DescriptorType.UniformBuffer, 1, ShaderStageFlags.ShaderStageVertexBit),
@@ -65,9 +64,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void Create3dRenderPass()
         {
-            renderedColorTexture = new Texture(RenderPassResolution);
             depthTexture = new DepthTexture(new ivec2((int)SilkVulkanRenderer.swapChain.swapchainExtent.Width, (int)SilkVulkanRenderer.swapChain.swapchainExtent.Height));
             texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Srgb, TextureTypeEnum.kType_DiffuseTextureMap);
+            renderedTexture = new Texture(RenderPassResolution);
 
             GCHandle vhandle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
             IntPtr vpointer = vhandle.AddrOfPinnedObject();
@@ -95,26 +94,37 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 new AttachmentDescription()
                 {
-                    Format = Format.R8G8B8A8Unorm,
+                    Format = Format.R8G8B8A8Unorm ,
                     Samples = SampleCountFlags.SampleCount1Bit,
-                    LoadOp = AttachmentLoadOp.Clear,
+                    LoadOp = AttachmentLoadOp.Load,
                     StoreOp = AttachmentStoreOp.Store,
                     StencilLoadOp = AttachmentLoadOp.DontCare,
                     StencilStoreOp = AttachmentStoreOp.DontCare,
-                    InitialLayout = ImageLayout.Undefined,
-                    FinalLayout = ImageLayout.PresentSrcKhr,
+                    InitialLayout = ImageLayout.ColorAttachmentOptimal,
+                    FinalLayout = ImageLayout.ColorAttachmentOptimal,
                 },
-                new AttachmentDescription()
+                  new AttachmentDescription()
                 {
+                    Format = Format.R8G8B8A8Unorm,
+                    Samples = SampleCountFlags.SampleCount1Bit,
+                    LoadOp = AttachmentLoadOp.Load,
+                    StoreOp = AttachmentStoreOp.Store,
+                    StencilLoadOp = AttachmentLoadOp.DontCare,
+                    StencilStoreOp = AttachmentStoreOp.DontCare,
+                    InitialLayout = ImageLayout.ColorAttachmentOptimal,
+                    FinalLayout = ImageLayout.ColorAttachmentOptimal,
+                },
+                 new AttachmentDescription()
+                    {
                         Format = Format.D32Sfloat,
                         Samples = SampleCountFlags.SampleCount1Bit,
                         LoadOp = AttachmentLoadOp.Clear,
-                        StoreOp = AttachmentStoreOp.Store,
+                        StoreOp = AttachmentStoreOp.DontCare,
                         StencilLoadOp = AttachmentLoadOp.DontCare,
                         StencilStoreOp = AttachmentStoreOp.DontCare,
                         InitialLayout = ImageLayout.Undefined,
                         FinalLayout = ImageLayout.DepthStencilAttachmentOptimal,
-                }
+                 }
             };
 
             List<AttachmentReference> colorRefsList = new List<AttachmentReference>()
@@ -123,18 +133,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         {
                             Attachment = 0,
                             Layout = ImageLayout.ColorAttachmentOptimal
+                        },
+                        new AttachmentReference
+                        {
+                            Attachment = 1,
+                            Layout = ImageLayout.ColorAttachmentOptimal
                         }
                     };
 
             var depthReference = new AttachmentReference
             {
-                Attachment = 1,
-                Layout = ImageLayout.DepthAttachmentOptimal
+                Attachment = 2,
+                Layout = ImageLayout.DepthStencilAttachmentOptimal
             };
 
 
             List<SubpassDependency> subpassDependencyList = new List<SubpassDependency>
-            {
+                        {
                             new SubpassDependency
                             {
                                 SrcSubpass = uint.MaxValue,
@@ -144,7 +159,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 SrcAccessMask = 0,
                                 DstAccessMask = AccessFlags.ColorAttachmentWriteBit, // Ensure this access mask is relevant to the chosen stage mask
                             }
-            };
+                        };
 
 
             List<SubpassDescription> subpassDescriptionList = new List<SubpassDescription>();
@@ -256,60 +271,76 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 ColorComponentFlags.ColorComponentBBit |
                 ColorComponentFlags.ColorComponentABit;
 
-            PipelineColorBlendAttachmentState pipelineColorBlendAttachmentState = new(
-                false,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                BlendOp.Add,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                Silk.NET.Vulkan.BlendFactor.Zero,
-                BlendOp.Add,
-                colorComponentFlags);
+            List<PipelineColorBlendAttachmentState> pipelineColorBlendAttachmentState = new List<PipelineColorBlendAttachmentState>()
+            {
+                new(
+                    blendEnable: true,
+                    srcColorBlendFactor: Silk.NET.Vulkan.BlendFactor.SrcAlpha,
+                    dstColorBlendFactor: Silk.NET.Vulkan.BlendFactor.OneMinusSrcAlpha,
+                    colorBlendOp: BlendOp.Add,
+                    srcAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.One,
+                    dstAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.Zero,
+                    alphaBlendOp: BlendOp.Add,
+                    colorWriteMask: ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit
+                ),
+                new(
+                    blendEnable: true,
+                    srcColorBlendFactor: Silk.NET.Vulkan.BlendFactor.SrcAlpha,
+                    dstColorBlendFactor: Silk.NET.Vulkan.BlendFactor.OneMinusSrcAlpha,
+                    colorBlendOp: BlendOp.Add,
+                    srcAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.One,
+                    dstAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.Zero,
+                    alphaBlendOp: BlendOp.Add,
+                    colorWriteMask: ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit
+                )
+            };
 
-            PipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = new
-            (
-                logicOpEnable: false,
-                logicOp: LogicOp.NoOp,
-                attachmentCount: 1,
-                pAttachments: &pipelineColorBlendAttachmentState
-            );
+            fixed (PipelineColorBlendAttachmentState* attachments = pipelineColorBlendAttachmentState.ToArray())
+            {
+                PipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = new
+       (
+           logicOpEnable: false,
+           logicOp: LogicOp.NoOp,
+           attachmentCount: 2,  // Match this to the render pass
+           pAttachments: attachments
+       );
 
-            pipelineColorBlendStateCreateInfo.BlendConstants[0] = 0.0f;
-            pipelineColorBlendStateCreateInfo.BlendConstants[1] = 0.0f;
-            pipelineColorBlendStateCreateInfo.BlendConstants[2] = 0.0f;
-            pipelineColorBlendStateCreateInfo.BlendConstants[3] = 0.0f;
+                pipelineColorBlendStateCreateInfo.BlendConstants[0] = 0.0f;
+                pipelineColorBlendStateCreateInfo.BlendConstants[1] = 0.0f;
+                pipelineColorBlendStateCreateInfo.BlendConstants[2] = 0.0f;
+                pipelineColorBlendStateCreateInfo.BlendConstants[3] = 0.0f;
 
-            DynamicState* dynamicStates = stackalloc[] { DynamicState.Viewport, DynamicState.Scissor };
+                DynamicState* dynamicStates = stackalloc[] { DynamicState.Viewport, DynamicState.Scissor };
 
-            PipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo = new
-            (
-                dynamicStateCount: 2,
-                pDynamicStates: dynamicStates
-            );
+                PipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo = new
+                (
+                    dynamicStateCount: 2,
+                    pDynamicStates: dynamicStates
+                );
 
-            GraphicsPipelineCreateInfo graphicsPipelineCreateInfo = new
-            (
-                stageCount: 2,
-                pStages: shadermoduleList,
-                pVertexInputState: &vertexInputInfo,
-                pInputAssemblyState: &pipelineInputAssemblyStateCreateInfo,
-                pViewportState: &pipelineViewportStateCreateInfo,
-                pRasterizationState: &pipelineRasterizationStateCreateInfo,
-                pMultisampleState: &pipelineMultisampleStateCreateInfo,
-                pDepthStencilState: &pipelineDepthStencilStateCreateInfo,
-                pColorBlendState: &pipelineColorBlendStateCreateInfo,
-                pDynamicState: &pipelineDynamicStateCreateInfo,
-                layout: shaderpipelineLayout,
-                renderPass: renderPass
-            );
+                GraphicsPipelineCreateInfo graphicsPipelineCreateInfo = new
+                (
+                    stageCount: 2,
+                    pStages: shadermoduleList,
+                    pVertexInputState: &vertexInputInfo,
+                    pInputAssemblyState: &pipelineInputAssemblyStateCreateInfo,
+                    pViewportState: &pipelineViewportStateCreateInfo,
+                    pRasterizationState: &pipelineRasterizationStateCreateInfo,
+                    pMultisampleState: &pipelineMultisampleStateCreateInfo,
+                    pDepthStencilState: &pipelineDepthStencilStateCreateInfo,
+                    pColorBlendState: &pipelineColorBlendStateCreateInfo,
+                    pDynamicState: &pipelineDynamicStateCreateInfo,
+                    layout: shaderpipelineLayout,
+                    renderPass: renderPass
+                );
 
-            vk.CreateGraphicsPipelines(SilkVulkanRenderer.device, new PipelineCache(null), 1, &graphicsPipelineCreateInfo, null, out Pipeline pipeline);
-            shaderpipeline = pipeline;
-
+                vk.CreateGraphicsPipelines(SilkVulkanRenderer.device, new PipelineCache(null), 1, &graphicsPipelineCreateInfo, null, out Pipeline pipeline);
+                shaderpipeline = pipeline;
+            }
             //SilkMarshal.Free((nint)pipelineShaderStageCreateInfos[0].PName);
             //SilkMarshal.Free((nint)pipelineShaderStageCreateInfos[1].PName);
 
-           // Mem.FreeArray(vertexInputAttributeDescriptions);
+            // Mem.FreeArray(vertexInputAttributeDescriptions);
 
             //vertShaderModule.Dispose();
             // fragShaderModule.Dispose();
@@ -379,7 +410,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             for (int x = 0; x < SilkVulkanRenderer.swapChain.ImageCount; x++)
             {
                 List<ImageView> TextureAttachmentList = new List<ImageView>();
-                TextureAttachmentList.Add(renderedColorTexture.View);
+                TextureAttachmentList.Add(SilkVulkanRenderer.swapChain.imageViews[x]);
+                TextureAttachmentList.Add(renderedTexture.View);
                 TextureAttachmentList.Add(depthTexture.View);
 
                 fixed (ImageView* imageViewPtr = TextureAttachmentList.ToArray())
@@ -537,10 +569,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             GCHandle uhandle = GCHandle.Alloc(ubo, GCHandleType.Pinned);
             IntPtr upointer = uhandle.AddrOfPinnedObject();
-            uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit | BufferUsageFlags.BufferUsageUniformBufferBit , MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, false);
+            uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.UniformBufferBit | BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
         }
 
-       public void UpdateUniformBuffer(long startTime)
+        public void UpdateUniformBuffer(long startTime)
         {
             float secondsPassed = (float)TimeSpan.FromTicks(DateTime.Now.Ticks - startTime).TotalSeconds;
 
@@ -573,7 +605,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var commandBuffer = commandBufferList[commandIndex];
             ClearValue* clearValues = stackalloc[]
 {
-                new ClearValue(new ClearColorValue(0, 0, 0, 1)),
+                new ClearValue(new ClearColorValue(1, 0, 0, 1)),
+                new ClearValue(new ClearColorValue(0, 0, 1, 1)),
                 new ClearValue(null, new ClearDepthStencilValue(1.0f, 0))
             };
 
@@ -581,7 +614,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             (
                 renderPass: renderPass,
                 framebuffer: FrameBufferList[imageIndex],
-                clearValueCount: 2,
+                clearValueCount: 3,
                 pClearValues: clearValues,
                 renderArea: new(new Offset2D(0, 0), SilkVulkanRenderer.swapChain.swapchainExtent)
             );
@@ -599,7 +632,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VKConst.vulkan.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, shaderpipeline);
             VKConst.vulkan.CmdBindVertexBuffers(commandBuffer, 0, 1, &vertexbuffer, 0);
             VKConst.vulkan.CmdBindIndexBuffer(commandBuffer, indexBuffer.Buffer, 0, IndexType.Uint16);
-            VKConst.vulkan.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, shaderpipelineLayout, 0, 1, &descSet, 0, null);
+            VKConst.vulkan.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, shaderpipelineLayout, 0, 1, descSet, 0, null);
             VKConst.vulkan.CmdSetViewport(commandBuffer, 0, 1, &viewport);
             VKConst.vulkan.CmdSetScissor(commandBuffer, 0, 1, &scissor);
             VKConst.vulkan.CmdDrawIndexed(commandBuffer, (uint)indices.Length, 1, 0, 0, 0);
@@ -607,53 +640,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VKConst.vulkan.EndCommandBuffer(commandBuffer);
 
             return commandBuffer;
-        }
-
-        private void TransitionImageLayout(Image image,
-                                  ImageLayout oldLayout,
-                                  ImageLayout newLayout,
-                                  CommandBuffer commandBuffer)
-        {
-            var barrier = new ImageMemoryBarrier
-            {
-                SType = StructureType.ImageMemoryBarrier,
-                OldLayout = oldLayout,
-                NewLayout = newLayout,
-                SrcQueueFamilyIndex = Vk.QueueFamilyIgnored,
-                DstQueueFamilyIndex = Vk.QueueFamilyIgnored,
-                Image = image,
-                SubresourceRange = new ImageSubresourceRange
-                {
-
-                    AspectMask = ImageAspectFlags.ColorBit,
-                    BaseMipLevel = 0,
-                    LevelCount = 1,
-                    BaseArrayLayer = 0,
-                    LayerCount = 1
-                }
-            };
-
-            PipelineStageFlags sourceStage = PipelineStageFlags.AllGraphicsBit;
-            PipelineStageFlags destinationStage = PipelineStageFlags.AllGraphicsBit;
-
-            if (oldLayout == ImageLayout.Undefined && newLayout == ImageLayout.AttachmentOptimal)
-            {
-                barrier.SrcAccessMask = 0;
-                barrier.DstAccessMask = AccessFlags.ColorAttachmentWriteBit;
-
-                sourceStage = PipelineStageFlags.TopOfPipeBit;
-                destinationStage = PipelineStageFlags.ColorAttachmentOutputBit;
-            }
-            else if (oldLayout == ImageLayout.AttachmentOptimal && newLayout == ImageLayout.PresentSrcKhr)
-            {
-                barrier.SrcAccessMask = AccessFlags.ColorAttachmentWriteBit;
-                barrier.DstAccessMask = 0;
-
-                sourceStage = PipelineStageFlags.ColorAttachmentOutputBit;
-                destinationStage = PipelineStageFlags.BottomOfPipeBit;
-            }
-
-            VKConst.vulkan.CmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, null, 0, null, 1, &barrier);
         }
     }
 }
