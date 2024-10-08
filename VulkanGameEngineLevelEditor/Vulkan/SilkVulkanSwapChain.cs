@@ -179,21 +179,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public SurfaceFormatKHR GetSurfaceFormat(SurfaceFormatKHR[] formats)
         {
-            SurfaceFormatKHR format = formats[0];
-            Format[] requestedFormats = new Format[] { Format.B8G8R8A8Srgb, Format.R8G8B8A8Srgb, Format.B8G8R8Unorm, Format.R8G8B8Unorm };
-            ColorSpaceKHR requestedColorSpace = ColorSpaceKHR.SpaceSrgbNonlinearKhr;
-            for (int i = 0; i < requestedFormats.Length; i++)
-            {
-                Format requestedFormat = requestedFormats[i];
-
-                if (formats.Any(f => f.Format == requestedFormat && f.ColorSpace == requestedColorSpace))
-                {
-                    format.Format = requestedFormat;
-                    format.ColorSpace = requestedColorSpace;
-                    break;
-                }
-
-            }
+            SurfaceFormatKHR format = formats[2];
             return format;
         }
     }

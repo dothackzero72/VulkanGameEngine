@@ -15,5 +15,5 @@ void main()
 {
     vec3 Color = texture(FrameBufferTexture, TexCoords).rgb;
     vec3 result = Color;
-    outColor = vec4(result, 1.0f);
+    outColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);
 }

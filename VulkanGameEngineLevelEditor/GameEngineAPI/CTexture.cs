@@ -9,11 +9,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.Vulkan;
+using Image = Silk.NET.Vulkan.Image;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public static unsafe class CTexture
     {
+        static Vk vk = Vk.GetApi();
         public static void CreateBuffer(uint size, BufferUsageFlags usage, MemoryPropertyFlags properties, Silk.NET.Vulkan.Buffer* buffer, DeviceMemory* bufferMemory)
         {
             BufferCreateInfo bufferInfo = new BufferCreateInfo
@@ -41,11 +43,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         }
 
 
-        public static void UpdateImageLayout(CommandBuffer commandBuffer, Silk.NET.Vulkan.Image image, ref Silk.NET.Vulkan.ImageLayout oldImageLayout, Silk.NET.Vulkan.ImageLayout newImageLayout, uint MipLevel)
+        public static void UpdateImageLayout(CommandBuffer commandBuffer, Silk.NET.Vulkan.Image image, ref Silk.NET.Vulkan.ImageLayout oldImageLayout, Silk.NET.Vulkan.ImageLayout newImageLayout, uint MipLevel, ImageAspectFlags imageAspectFlags)
         {
             ImageSubresourceRange ImageSubresourceRange = new ImageSubresourceRange();
-            ImageSubresourceRange.AspectMask = ImageAspectFlags.ColorBit;
-            ImageSubresourceRange.LevelCount = 1;
+            ImageSubresourceRange.AspectMask = imageAspectFlags;
+            ImageSubresourceRange.LevelCount = Vk.RemainingMipLevels;
             ImageSubresourceRange.LayerCount = 1;
 
             ImageMemoryBarrier barrier = new ImageMemoryBarrier();
@@ -101,31 +103,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return data;
         }
 
-        public static Result CreateTextureImage(out Silk.NET.Vulkan.Image image, out DeviceMemory textureMemory, int Width, int Height, Format format, uint MipLevels)
+        public static Result CreateTextureImage(ImageCreateInfo createInfo, out Silk.NET.Vulkan.Image image, out DeviceMemory textureMemory, int Width, int Height, Format format, uint MipLevels)
         {
             image = new Silk.NET.Vulkan.Image();
             textureMemory = new DeviceMemory();
 
-            ImageCreateInfo imageInfo = new ImageCreateInfo
-            {
-                SType = StructureType.ImageCreateInfo,
-                ImageType = ImageType.ImageType2D,
-                Format = format,
-                Extent = new Extent3D { Width = (uint)Width, Height = (uint)Height, Depth = 1 },
-                MipLevels = MipLevels,
-                ArrayLayers = 1,
-                Samples = SampleCountFlags.Count1Bit,
-                Tiling = ImageTiling.Optimal,
-                Usage = ImageUsageFlags.ImageUsageTransferSrcBit |
-                        ImageUsageFlags.SampledBit |
-                        ImageUsageFlags.ImageUsageTransferDstBit,
-                SharingMode = SharingMode.Exclusive,
-                InitialLayout = Silk.NET.Vulkan.ImageLayout.Undefined
-            };
 
             Silk.NET.Vulkan.Image tempImagePtr = new Silk.NET.Vulkan.Image();
-            Result result = VKConst.vulkan.CreateImage(SilkVulkanRenderer.device, &imageInfo, null, &tempImagePtr);
-          
+            Result result = VKConst.vulkan.CreateImage(SilkVulkanRenderer.device, &createInfo, null, &tempImagePtr);
+
 
             MemoryRequirements memRequirements;
             VKConst.vulkan.GetImageMemoryRequirements(SilkVulkanRenderer.device, tempImagePtr, &memRequirements);
@@ -150,10 +136,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
             }
 
+
+
             return result;
         }
 
-        public static Result TransitionImageLayout(CommandBuffer commandBuffer, Silk.NET.Vulkan.Image image, uint mipmapLevels, ref Silk.NET.Vulkan.ImageLayout oldLayout, Silk.NET.Vulkan.ImageLayout newLayout)
+        public static Result TransitionImageLayout(CommandBuffer commandBuffer, Silk.NET.Vulkan.Image image, uint mipmapLevels, ref Silk.NET.Vulkan.ImageLayout oldLayout, Silk.NET.Vulkan.ImageLayout newLayout, ImageAspectFlags colorFlags)
         {
             PipelineStageFlags sourceStage = PipelineStageFlags.AllCommandsBit;
             PipelineStageFlags destinationStage = PipelineStageFlags.AllCommandsBit;
@@ -168,7 +156,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
                 SubresourceRange = new ImageSubresourceRange()
                 {
-                    AspectMask = ImageAspectFlags.ColorBit,
+                    AspectMask = colorFlags,
                     LevelCount = mipmapLevels,
                     BaseArrayLayer = 0,
                     BaseMipLevel = 0,
@@ -200,7 +188,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return Result.Success;
         }
 
-        public static Result CopyBufferToTexture(ref Silk.NET.Vulkan.Buffer buffer, Silk.NET.Vulkan.Image image, Extent3D extent, TextureUsageEnum textureUsage)
+        public static Result CopyBufferToTexture(ref Silk.NET.Vulkan.Buffer buffer, Silk.NET.Vulkan.Image image, Extent3D extent, TextureUsageEnum textureUsage, ImageAspectFlags imageAspectFlags)
         {
             BufferImageCopy BufferImage = new BufferImageCopy()
             {
@@ -209,7 +197,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 BufferImageHeight = 0,
                 ImageSubresource = new ImageSubresourceLayers
                 {
-                    AspectMask = ImageAspectFlags.ColorBit,
+                    AspectMask = imageAspectFlags,
                     MipLevel = 0,
                     BaseArrayLayer = 0,
                     LayerCount = 1,
@@ -240,7 +228,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return Result.Success;
         }
 
-        public static Result CopyBufferToTexture(ref Silk.NET.Vulkan.Buffer buffer, Silk.NET.Vulkan.Image image, TextureUsageEnum textureType, vec3 textureSize, Extent3D extent)
+        public static Result QuickTransitionImageLayout(Image image, Silk.NET.Vulkan.ImageLayout oldLayout, Silk.NET.Vulkan.ImageLayout newLayout, uint MipMapLevels, ImageAspectFlags imageAspectFlags)
+        {
+            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
+            CTexture.TransitionImageLayout(commandBuffer, image, MipMapLevels, ref oldLayout, newLayout, imageAspectFlags);
+            Result result = SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+
+            return result;
+        }
+
+        public static Result CopyBufferToTexture(ref Silk.NET.Vulkan.Buffer buffer, Silk.NET.Vulkan.Image image, TextureUsageEnum textureType, vec3 textureSize, Extent3D extent, ImageAspectFlags imageAspectFlags)
         {
             BufferImageCopy BufferImage = new BufferImageCopy()
             {
@@ -261,7 +258,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 },
                 ImageSubresource = new ImageSubresourceLayers()
                 {
-                    AspectMask = ImageAspectFlags.ColorBit,
+                    AspectMask = imageAspectFlags,
                     MipLevel = 0,
                     BaseArrayLayer = 0,
                     LayerCount = 1,
@@ -277,7 +274,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
         }
 
-        public static Result GenerateMipmaps(Silk.NET.Vulkan.Image image, int Width, int Height, Format format, uint mipLevels)
+        public static Result GenerateMipmaps(Silk.NET.Vulkan.Image image, int Width, int Height, Format format, uint mipLevels, ImageAspectFlags imageAspectFlags)
         {
             uint mipWidth = (uint)Width;
             uint mipHeight = (uint)Height;
@@ -297,7 +294,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 DstQueueFamilyIndex = uint.MaxValue,
                 SubresourceRange = new ImageSubresourceRange
                 {
-                    AspectMask = ImageAspectFlags.ColorBit,
+                    AspectMask = imageAspectFlags,
                     BaseArrayLayer = 0,
                     LayerCount = 1,
                     LevelCount = 1
@@ -327,14 +324,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     },
                     SrcSubresource = new ImageSubresourceLayers
                     {
-                        AspectMask = ImageAspectFlags.ColorBit,
+                        AspectMask = imageAspectFlags,
                         MipLevel = x - 1,
                         BaseArrayLayer = 0,
                         LayerCount = 1
                     },
                     DstSubresource = new ImageSubresourceLayers
                     {
-                        AspectMask = ImageAspectFlags.ColorBit,
+                        AspectMask = imageAspectFlags,
                         MipLevel = x,
                         BaseArrayLayer = 0,
                         LayerCount = 1

@@ -55,13 +55,7 @@ VkResult VulkanRenderer::RebuildSwapChain()
 
 VkResult VulkanRenderer::StartFrame()
 {
-	return Renderer_StartFrame(cRenderer.Device, 
-                               cRenderer.SwapChain.Swapchain, 
-                               cRenderer.InFlightFences, 
-                               cRenderer.AcquireImageSemaphores, 
-                               &cRenderer.ImageIndex, 
-                               &cRenderer.CommandIndex,
-                               &cRenderer.RebuildRendererFlag);
+    return VkResult::VK_SUCCESS;
 }
 
 VkResult VulkanRenderer::EndFrame(List<VkCommandBuffer> commandBufferSubmitList)

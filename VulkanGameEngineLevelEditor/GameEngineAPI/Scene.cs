@@ -1,6 +1,7 @@
 ﻿using GlmSharp;
 using Silk.NET.Core.Native;
 using Silk.NET.Maths;
+using Silk.NET.SDL;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
@@ -8,6 +9,8 @@ using Silk.NET.Windowing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Imaging;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -18,6 +21,7 @@ using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Vulkan;
 using ImageLayout = Silk.NET.Vulkan.ImageLayout;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     [StructLayout(LayoutKind.Sequential)]
@@ -53,8 +57,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class Scene
     {
         Vk vk = Vk.GetApi();
-        Silk3DRendererPass silk3DRendererPass;
-
+        public SilkFrameBufferRenderPass frameBuffer;
+        public Silk3DRendererPass silk3DRendererPass;
+        public Texture texture;
         public ExtDebugUtils debugUtils;
         static readonly long startTime = DateTime.Now.Ticks;
         const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -103,6 +108,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             window = windows;
             InitWindow(windows);
             InitializeVulkan(_richTextBox);
+
         }
 
 
@@ -130,8 +136,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             SilkVulkanRenderer.CreateVulkanRenderer(window,_richTextBox);
 
 
+            texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
+
             silk3DRendererPass = new Silk3DRendererPass();
             silk3DRendererPass.Create3dRenderPass();
+
+            frameBuffer = new SilkFrameBufferRenderPass(SilkVulkanRenderer.device, silk3DRendererPass.renderedColorTexture);
         }
 
         public void DrawFrame()
@@ -141,6 +151,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
             SilkVulkanRenderer.StartFrame();
             commandBufferList.Add(silk3DRendererPass.Draw());
+            commandBufferList.Add(frameBuffer.Draw());
             SilkVulkanRenderer.EndFrame(commandBufferList);
         }
     }
