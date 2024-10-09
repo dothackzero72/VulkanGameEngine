@@ -65,7 +65,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public void Create3dRenderPass()
         {
             depthTexture = new DepthTexture(new ivec2((int)SilkVulkanRenderer.swapChain.swapchainExtent.Width, (int)SilkVulkanRenderer.swapChain.swapchainExtent.Height));
-            texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Srgb, TextureTypeEnum.kType_DiffuseTextureMap);
+            texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
             renderedTexture = new Texture(RenderPassResolution);
 
             GCHandle vhandle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
@@ -96,7 +96,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     Format = Format.R8G8B8A8Unorm ,
                     Samples = SampleCountFlags.SampleCount1Bit,
-                    LoadOp = AttachmentLoadOp.Load,
+                    LoadOp = AttachmentLoadOp.Clear,
                     StoreOp = AttachmentStoreOp.Store,
                     StencilLoadOp = AttachmentLoadOp.DontCare,
                     StencilStoreOp = AttachmentStoreOp.DontCare,
@@ -107,7 +107,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     Format = Format.R8G8B8A8Unorm,
                     Samples = SampleCountFlags.SampleCount1Bit,
-                    LoadOp = AttachmentLoadOp.Load,
+                    LoadOp = AttachmentLoadOp.Clear,
                     StoreOp = AttachmentStoreOp.Store,
                     StencilLoadOp = AttachmentLoadOp.DontCare,
                     StencilStoreOp = AttachmentStoreOp.DontCare,

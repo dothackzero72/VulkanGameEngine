@@ -3,6 +3,7 @@ using Silk.NET.Maths;
 using Silk.NET.Vulkan;
 using Silk.NET.Windowing;
 using StbImageSharp;
+using StbImageWriteSharp;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -116,7 +117,7 @@ namespace VulkanGameEngineLevelEditor
 
         public unsafe byte[] BakeColorTexture(Texture texture)
         {
-            BakeTexture bakeTexture = new BakeTexture(new GlmSharp.ivec2(1280, 720));
+            BakeTexture bakeTexture = new BakeTexture(new Pixel(0xFF, 0xFF, 0xFF, 0xFF), new GlmSharp.ivec2(1280, 720), Format.R8G8B8A8Unorm);
 
             CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
             texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
@@ -142,38 +143,44 @@ namespace VulkanGameEngineLevelEditor
             VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
 
             int pixelCount = bakeTexture.Width * bakeTexture.Height;
-            byte[] pixelData = new byte[pixelCount * 4]; // R8G8B8A8 has 4 channels
+            byte[] pixelData = new byte[pixelCount * 4];
 
             IntPtr mappedMemory;
             VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
             Marshal.Copy(mappedMemory, pixelData, 0, pixelData.Length);
             VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
 
-            // Create an array for the Format32bppRgb format
-            byte[] convertedPixelData = new byte[pixelCount * 4]; // 4 bytes per pixel for Format32bppRgb
-
-            // Convert from R8G8B8A8 to Format32bppRgb
-            for (int i = 0; i < pixelCount; i++)
+            using (FileStream fileStream = new FileStream("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerenderer.bmp", FileMode.Create, FileAccess.Write))
             {
-                int srcIndex = i * 4; // R8G8B8A8 (4 bytes per pixel)
-                int dstIndex = i * 4;  // Format32bppRgb (4 bytes per pixel)
-
-                // Read pixel data in R8G8B8A8 format
-                byte r = pixelData[srcIndex + 0]; // Red
-                byte g = pixelData[srcIndex + 1]; // Green
-                byte b = pixelData[srcIndex + 2]; // Blue
-                                                  // byte a = pixelData[srcIndex + 3]; // Alpha (ignored)
-
-                // Store in Format32bppRgb
-                convertedPixelData[dstIndex + 0] = r; // Red
-                convertedPixelData[dstIndex + 1] = g; // Green
-                convertedPixelData[dstIndex + 2] = b; // Blue
-
-                // The last byte (dstIndex + 3) is unused; we can set it to 0 or another value
-                convertedPixelData[dstIndex + 3] = 0; // Unused byte
+                StbImageWriteSharp.ImageWriter imageWriter = new ImageWriter();
+                imageWriter.WriteBmp(pixelData, bakeTexture.Width, bakeTexture.Height, StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha, fileStream);
             }
 
-            return convertedPixelData;
+            return ConvertB8G8R8A8ToARGB(pixelData);
+        }
+
+        private byte[] ConvertB8G8R8A8ToARGB(byte[] pixelData)
+        {
+            if (pixelData == null || pixelData.Length == 0 || pixelData.Length % 4 != 0)
+            {
+                throw new ArgumentException("Invalid pixel data array.");
+            }
+
+            int pixelCount = pixelData.Length / 4;
+            byte[] argbData = new byte[pixelCount * 4];
+
+            for (int i = 0; i < pixelCount; i++)
+            {
+                int srcIndex = i * 4;          // B8G8R8A8: 0(B) 1(G) 2(R) 3(A)
+                int destIndex = i * 4;         // ARGB: 0(A) 1(R) 2(G) 3(B)
+
+                argbData[destIndex + 0] = pixelData[srcIndex + 0]; // Alpha
+                argbData[destIndex + 1] = pixelData[srcIndex + 1]; // Red
+                argbData[destIndex + 2] = pixelData[srcIndex + 2]; // Green
+                argbData[destIndex + 3] = pixelData[srcIndex + 3]; // Blue
+            }
+
+            return argbData;
         }
 
         public void StartLevelEditorRenderer()
@@ -218,13 +225,16 @@ namespace VulkanGameEngineLevelEditor
             pictureBox1.Invoke(new Action(() => levelEditorSwapChain.PresentImage(pictureBox1)));
         }
 
-        private Pixel ByteArrayToColor(byte[] data, int index)
+        private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            byte a = data[index + 3];
-            byte r = data[index + 0];
-            byte g = data[index + 1];
-            byte b = data[index + 2];
-            return new Pixel(r, g, b, a);
+            using (RenderPassBuilder popup = new RenderPassBuilder())
+            {
+                DialogResult result = popup.ShowDialog(); // Open Modal
+                if (result == DialogResult.OK)
+                {
+                    MessageBox.Show("Popup closed.");
+                }
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using StbImageSharp;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -29,10 +30,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             BitMapBuffers = new List<Bitmap>();
             CurrentBufferIndex = 0;
             SwapChainSize = imageSize;
-            DisplayImage = new Bitmap(imageSize.x, imageSize.y, PixelFormat.Format32bppArgb);
+            DisplayImage = new Bitmap(imageSize.x, imageSize.y, PixelFormat.Format32bppRgb);
             for (int x = 0; x < BufferCount; x++)
             {
-                BitMapBuffers.Add(new Bitmap(imageSize.x, imageSize.y, PixelFormat.Format32bppArgb));
+                BitMapBuffers.Add(new Bitmap(imageSize.x, imageSize.y, PixelFormat.Format32bppRgb));
             }
         }
 
@@ -59,11 +60,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     currentBitmap.UnlockBits(bitmapData);
                 }
 
-                currentBitmap.Save("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\texturerenderer.png", System.Drawing.Imaging.ImageFormat.Png);
-
                 BitMapBuffers[CurrentBufferIndex] = currentBitmap;
                 display.TryAdd(currentBitmap);
             }
+           
 
             CurrentBufferIndex = (CurrentBufferIndex + 1) % BufferCount;
         }
@@ -72,7 +72,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             if (display.TryTake(out Bitmap textureData))
             {
-                // Lock not really needed for this operation as we're not modifying the shared resource.
                 if (picture.Image != null)
                 {
                     picture.Image.Dispose();

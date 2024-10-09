@@ -56,7 +56,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public Texture(ivec2 TextureResolution) : base()
         {
             Width = TextureResolution.x;
-            Height = TextureResolution.y;
+            Height = TextureResolution.y;   
             Depth = 1;
             TextureByteFormat = Format.R8G8B8A8Unorm;
             TextureImageLayout = Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal;
