@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Newtonsoft.Json;
 using Silk.NET.Maths;
 using Silk.NET.Vulkan;
 using Silk.NET.Windowing;
@@ -11,12 +12,16 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Security.Principal;
 using System.Threading;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.RenderPassWindows;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor
@@ -37,6 +42,7 @@ namespace VulkanGameEngineLevelEditor
         private Bitmap[] bitmapBuffer = new Bitmap[3];
         private uint NextTexture = 0;
         private LevelEditorDisplaySwapChain levelEditorSwapChain;
+        public RenderPassModel renderPass { get; private set; } = new RenderPassModel();
 
         IWindow window;
         public Form1()
@@ -107,8 +113,8 @@ namespace VulkanGameEngineLevelEditor
             {
                 //scene.Update(0);
                 scene.DrawFrame();
-                byte[] textureData = BakeColorTexture(scene.silk3DRendererPass.renderedTexture);
-                dataCollection.TryAdd(textureData);
+                //byte[] textureData = BakeColorTexture(scene.silk3DRendererPass.renderedTexture);
+                //dataCollection.TryAdd(textureData);
                 // vulkanTutorial.DrawFrame();
                 // byte[] textureData = BakeColorTexture(vulkanTutorial.texture);
                 // dataCollection.TryAdd(textureData);
@@ -227,14 +233,25 @@ namespace VulkanGameEngineLevelEditor
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            using (RenderPassBuilder popup = new RenderPassBuilder())
+            using (RenderPassBuilder renderPassBuilder = new RenderPassBuilder())
             {
-                DialogResult result = popup.ShowDialog(); // Open Modal
-                if (result == DialogResult.OK)
+                if (renderPassBuilder.ShowDialog() == DialogResult.OK)
                 {
-                    MessageBox.Show("Popup closed.");
+                    switch(renderPassBuilder.RenderedTexture.TextureType)
+                    {
+                        case RenderedTextureType.ColorRenderedTexture: renderPass.ColorAttachmentList.Add(renderPassBuilder.RenderedTexture); break;
+                        case RenderedTextureType.DepthRenderedTexture: renderPass.DepthAttachmentList.Add(renderPassBuilder.RenderedTexture); break;
+                        case RenderedTextureType.ResolveAttachmentTexture: renderPass.ResolveAttachmentList.Add(renderPassBuilder.RenderedTexture); break;
+                        case RenderedTextureType.InputAttachmentTexture: renderPass.InputAttachmentList.Add(renderPassBuilder.RenderedTexture); break;
+                    }
                 }
             }
+        }
+
+        private void SaveRenderPass_Click(object sender, EventArgs e)
+        {
+           var a = JsonConvert.SerializeObject(renderPass, Formatting.Indented);
+            var ab = 32;
         }
     }
 }

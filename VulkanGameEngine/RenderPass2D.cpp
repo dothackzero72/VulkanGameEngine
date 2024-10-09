@@ -49,7 +49,7 @@ void RenderPass2D::BuildRenderPass(std::shared_ptr<Mesh2D> mesh)
             .colorAttachmentCount = static_cast<uint32>(colorRefsList.size()),
             .pColorAttachments = colorRefsList.data(),
             .pResolveAttachments = multiSampleReferenceList.data(),
-            .pDepthStencilAttachment = depthReference.data()
+            .pDepthStencilAttachment = depthReference.data(),
         }
     };
 

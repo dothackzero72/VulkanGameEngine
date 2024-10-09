@@ -34,6 +34,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.SaveRenderPass = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -82,11 +83,22 @@
             this.toolStripButton1.Text = "toolStripButton1";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
+            // SaveRenderPass
+            // 
+            this.SaveRenderPass.Location = new System.Drawing.Point(2339, 973);
+            this.SaveRenderPass.Name = "SaveRenderPass";
+            this.SaveRenderPass.Size = new System.Drawing.Size(187, 38);
+            this.SaveRenderPass.TabIndex = 4;
+            this.SaveRenderPass.Text = "Save Render Pass";
+            this.SaveRenderPass.UseVisualStyleBackColor = true;
+            this.SaveRenderPass.Click += new System.EventHandler(this.SaveRenderPass_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(3190, 1517);
+            this.Controls.Add(this.SaveRenderPass);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.richTextBox1);
@@ -108,6 +120,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.Button SaveRenderPass;
     }
 }
 

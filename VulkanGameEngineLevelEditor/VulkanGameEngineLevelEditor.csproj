@@ -322,12 +322,17 @@
     <Compile Include="GameEngineAPI\Vertex.cs" />
     <Compile Include="GameEngineAPI\VulkanBuffer.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Models\Extent3DModel.cs" />
+    <Compile Include="Models\ImageCreateInfoModel.cs" />
+    <Compile Include="Models\RenderedTextureInfoModel.cs" />
+    <Compile Include="Models\RenderPassModel.cs" />
+    <Compile Include="Models\SamplerCreateInfoModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenderPassBuilder.cs">
+    <Compile Include="RenderPassWindows\RenderPassBuilder.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RenderPassBuilder.Designer.cs">
+    <Compile Include="RenderPassWindows\RenderPassBuilder.Designer.cs">
       <DependentUpon>RenderPassBuilder.cs</DependentUpon>
     </Compile>
     <Compile Include="RichTextBoxWriter.cs" />
@@ -349,7 +354,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="RenderPassBuilder.resx">
+    <EmbeddedResource Include="RenderPassWindows\RenderPassBuilder.resx">
       <DependentUpon>RenderPassBuilder.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
