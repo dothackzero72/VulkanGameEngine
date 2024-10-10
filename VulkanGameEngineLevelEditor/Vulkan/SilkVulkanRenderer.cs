@@ -119,6 +119,18 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
         }
 
+        public static void CreateCommandBuffers(CommandBuffer commandBuffer)
+        {
+            CommandBufferAllocateInfo commandBufferAllocateInfo = new CommandBufferAllocateInfo()
+            {
+                SType = StructureType.CommandBufferAllocateInfo,
+                CommandPool = commandPool,
+                Level = CommandBufferLevel.Primary,
+                CommandBufferCount = 1
+            };
+            vulkan.AllocateCommandBuffers(device, in commandBufferAllocateInfo, out commandBuffer);
+        }
+
         public static Result StartFrame()
         {
             CommandIndex = (CommandIndex + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -755,6 +767,5 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             vulkan.FreeCommandBuffers(device, commandPool, 1, &commandBuffer);
             return Result.Success;
         }
-
     }
 }

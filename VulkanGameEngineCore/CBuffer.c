@@ -84,12 +84,6 @@ VkResult Buffer_UnmapBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, 
 
 VkResult Buffer_CreateBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkMemoryPropertyFlags properties, VkBufferUsageFlags usage)
 {
-    if (buffer == NULL || bufferMemory == NULL)
-    {
-        RENDERER_ERROR("Buffer and BufferMemory cannot be NULL");
-        return VK_ERROR_INITIALIZATION_FAILED;
-    }
-
     VkBufferCreateInfo bufferCreateInfo =
     {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
@@ -99,40 +93,9 @@ VkResult Buffer_CreateBuffer(VkDevice device, VkPhysicalDevice physicalDevice, V
     };
 
     VkResult result = vkCreateBuffer(device, &bufferCreateInfo, NULL, buffer);
-    if (result != VK_SUCCESS)
-    {
-        RENDERER_ERROR("Failed to create buffer");
-        return result;
-    }
-
     result = Buffer_AllocateMemory(device, physicalDevice, buffer, bufferMemory, properties);
-    if (result != VK_SUCCESS)
-    {
-        RENDERER_ERROR("Failed to allocate buffer memory");
-        vkDestroyBuffer(device, *buffer, NULL);
-        return result;
-    }
-
     result = vkBindBufferMemory(device, *buffer, *bufferMemory, 0);
-    if (result != VK_SUCCESS)
-    {
-        RENDERER_ERROR("Failed to bind buffer memory");
-        vkDestroyBuffer(device, *buffer, NULL);
-        Renderer_FreeDeviceMemory(device, bufferMemory);
-        return result;
-    }
-
-    if (bufferData != NULL)
-    {
-        result = Buffer_UpdateBufferMemory(device, *bufferMemory, bufferData, bufferSize);
-        if (result != VK_SUCCESS)
-        {
-            RENDERER_ERROR("Failed to update buffer memory");
-            vkDestroyBuffer(device, *buffer, NULL);
-            Renderer_FreeDeviceMemory(device, bufferMemory);
-            return result;
-        }
-    }
+    result = Buffer_UpdateBufferMemory(device, *bufferMemory, bufferData, bufferSize);
 
     return VK_SUCCESS;
 }

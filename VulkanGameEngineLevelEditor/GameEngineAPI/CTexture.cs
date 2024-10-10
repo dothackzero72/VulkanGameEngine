@@ -190,7 +190,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public static Result CopyBufferToTexture(ref Silk.NET.Vulkan.Buffer buffer, Silk.NET.Vulkan.Image image, Extent3D extent, TextureUsageEnum textureUsage, ImageAspectFlags imageAspectFlags)
         {
-            BufferImageCopy BufferImage = new BufferImageCopy()
+            BufferImageCopy bufferImage = new BufferImageCopy()
             {
                 BufferOffset = 0,
                 BufferRowLength = 0,
@@ -200,31 +200,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     AspectMask = imageAspectFlags,
                     MipLevel = 0,
                     BaseArrayLayer = 0,
-                    LayerCount = 1,
+                    LayerCount = (uint)(textureUsage == TextureUsageEnum.kUse_CubeMapTexture ? 6 : 1),
                 },
-                ImageOffset = new Offset3D
-                {
-
-                    X = 0,
-                    Y = 0,
-                    Z = 0
-                },
-                ImageExtent = new Extent3D
-                {
-                    Width = (uint)extent.Width,
-                    Height = (uint)extent.Height,
-                    Depth = (uint)extent.Depth,
-                }
-
+                ImageOffset = new Offset3D { X = 0, Y = 0, Z = 0 },
+                ImageExtent = extent
             };
-            if (textureUsage == TextureUsageEnum.kUse_CubeMapTexture)
-            {
-                BufferImage.ImageSubresource.LayerCount = 6;
-            }
-            var bufferImage = BufferImage;
+
             CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
             VKConst.vulkan.CmdCopyBufferToImage(commandBuffer, buffer, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &bufferImage);
             SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+
             return Result.Success;
         }
 

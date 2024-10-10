@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,10 @@ namespace VulkanGameEngineLevelEditor.Models
     [Serializable]
     public class RenderPassModel
     {
-        ivec2 SwapChainResuloution = new ivec2();
+        public ivec2 SwapChainResuloution { get; set; } = new ivec2();
         public List<RenderPipeline> RenderPipelineList { get; set; } = new List<RenderPipeline>();
-        public List<RenderedTextureInfoModel> ColorAttachmentList { get; set; } = new List<RenderedTextureInfoModel>();
-        public List<RenderedTextureInfoModel> DepthAttachmentList { get; set; } = new List<RenderedTextureInfoModel>();
-        public List<RenderedTextureInfoModel> InputAttachmentList { get; set; } = new List<RenderedTextureInfoModel>();
-        public List<RenderedTextureInfoModel> ResolveAttachmentList { get; set; } = new List<RenderedTextureInfoModel>();
+        public List<RenderedTextureInfoModel> AttachmentList { get; set; } = new List<RenderedTextureInfoModel>();
+        public List<SubpassDependencyModel> SubpassDependencyList { get; set; } = new List<SubpassDependencyModel>();
 
         public RenderPassModel() 
         {

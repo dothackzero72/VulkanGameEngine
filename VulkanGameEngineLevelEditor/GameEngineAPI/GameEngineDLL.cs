@@ -1,4 +1,5 @@
-﻿using Silk.NET.Vulkan;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern Result DLL_Buffer_UpdateBufferSize(Device device, PhysicalDevice physicalDevice, Silk.NET.Vulkan.Buffer buffer, ref DeviceMemory bufferMemory, IntPtr bufferData, ref ulong oldBufferSize, ulong newBufferSize, BufferUsageFlags bufferUsageFlags, MemoryPropertyFlags propertyFlags);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Result DLL_Buffer_UpdateBufferMemory(Device device, DeviceMemory bufferMemory, IntPtr dataToCopy, ulong bufferSize);
+        public static extern Result Buffer_UpdateBufferMemory(Device device, DeviceMemory bufferMemory, IntPtr dataToCopy, ulong bufferSize);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern Result DLL_Buffer_UnmapBufferMemory(Device device, DeviceMemory bufferMemory, ref bool isMapped);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]

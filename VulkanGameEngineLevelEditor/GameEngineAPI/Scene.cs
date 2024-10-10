@@ -57,83 +57,33 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class Scene
     {
         Vk vk = Vk.GetApi();
-        public RendererPass3D silk3DRendererPass;
+        public RendererPass3D RendererPass3D;
         static readonly long startTime = DateTime.Now.Ticks;
-        bool isFramebufferResized = false;
-        IWindow window;
-        CommandPool commandPool;
-        CommandBuffer commandBuffer;
         public Texture texture;
-
+    
         public Scene()
         {
-
         }
 
-        public void StartUp(IWindow windows, RichTextBox _richTextBox)
+        public void StartUp()
         {
-            window = windows;
-            InitWindow(windows);
-            InitializeVulkan(_richTextBox);
-            CommandBufferAllocateInfo commandBufferAllocateInfo = new CommandBufferAllocateInfo()
-            {
-                SType = StructureType.CommandBufferAllocateInfo,
-                CommandPool = SilkVulkanRenderer.commandPool,
-                Level = CommandBufferLevel.Primary,
-                CommandBufferCount = 1
-            };
-            vk.AllocateCommandBuffers(SilkVulkanRenderer.device, in commandBufferAllocateInfo, out commandBuffer);
             texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
+
+            RendererPass3D = new RendererPass3D();
+            RendererPass3D.Create3dRenderPass();
         }
 
-        public void StartUp(IWindow windows)
+        public void Update()
         {
-            window = windows;
-            InitWindow(windows);
-            InitializeVulkan();
-            CommandBufferAllocateInfo commandBufferAllocateInfo = new CommandBufferAllocateInfo()
-            {
-                SType = StructureType.CommandBufferAllocateInfo,
-                CommandPool = SilkVulkanRenderer.commandPool,
-                Level = CommandBufferLevel.Primary,
-                CommandBufferCount = 1
-            };
-            vk.AllocateCommandBuffers(SilkVulkanRenderer.device, in commandBufferAllocateInfo, out commandBuffer);
-            texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
+            RendererPass3D.UpdateUniformBuffer(startTime);
+
         }
 
-        void InitWindow(IWindow windows)
-        {
-            window = windows;
-            SilkVulkanRenderer.CreateWindow(windows);
-        }
-
-        void OnFramebufferResize(Vector2D<int> obj)
-        {
-            isFramebufferResized = true;
-        }
-
-        public void InitializeVulkan(RichTextBox _richTextBox)
-        {
-            SilkVulkanRenderer.CreateVulkanRenderer(window,_richTextBox);
-
-            silk3DRendererPass = new RendererPass3D();
-            silk3DRendererPass.Create3dRenderPass();
-        }
-        public void InitializeVulkan()
-        {
-            SilkVulkanRenderer.CreateVulkanRenderer(window);
-
-            silk3DRendererPass = new RendererPass3D();
-            silk3DRendererPass.Create3dRenderPass();
-        }
         public void DrawFrame()
         {
-            silk3DRendererPass.UpdateUniformBuffer(startTime);
-
             List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
             SilkVulkanRenderer.StartFrame();
-            commandBufferList.Add(silk3DRendererPass.Draw());
+            commandBufferList.Add(RendererPass3D.Draw());
             SilkVulkanRenderer.EndFrame(commandBufferList);
         }
     }

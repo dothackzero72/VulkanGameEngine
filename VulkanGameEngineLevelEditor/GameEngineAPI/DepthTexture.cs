@@ -50,8 +50,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 InitialLayout = Silk.NET.Vulkan.ImageLayout.Undefined
             };
 
-            CTexture.CreateTextureImage(imageInfo,out Silk.NET.Vulkan.Image tempImage, out DeviceMemory memory, Width, Height, TextureByteFormat, MipMapLevels);
-
+            CTexture.CreateTextureImage(imageInfo,out var tempImage, out  var memory, Width, Height, TextureByteFormat, MipMapLevels);
             Memory = memory;
             Image = tempImage;
         }

@@ -30,6 +30,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -37,8 +38,13 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.RenderPassBuilderDebug = new System.Windows.Forms.RichTextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.BuildButton = new System.Windows.Forms.Button();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.AddRenderPassAttachment = new System.Windows.Forms.ToolStripMenuItem();
+            this.addSubpassDependency = new System.Windows.Forms.ToolStripMenuItem();
+            this.addGraphicsPipeline = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // listBox1
@@ -104,6 +110,37 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.BuildButton.UseVisualStyleBackColor = true;
             this.BuildButton.Click += new System.EventHandler(this.BuildButton_Click);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.AddRenderPassAttachment,
+            this.addSubpassDependency,
+            this.addGraphicsPipeline});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(315, 133);
+            // 
+            // AddRenderPassAttachment
+            // 
+            this.AddRenderPassAttachment.Name = "AddRenderPassAttachment";
+            this.AddRenderPassAttachment.Size = new System.Drawing.Size(314, 32);
+            this.AddRenderPassAttachment.Text = "Add Render Pass Attachment";
+            this.AddRenderPassAttachment.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
+            // 
+            // addSubpassDependency
+            // 
+            this.addSubpassDependency.Name = "addSubpassDependency";
+            this.addSubpassDependency.Size = new System.Drawing.Size(314, 32);
+            this.addSubpassDependency.Text = "Add Subpass Dependency";
+            this.addSubpassDependency.Click += new System.EventHandler(this.addSubpassDependency_Click);
+            // 
+            // addGraphicsPipeline
+            // 
+            this.addGraphicsPipeline.Name = "addGraphicsPipeline";
+            this.addGraphicsPipeline.Size = new System.Drawing.Size(314, 32);
+            this.addGraphicsPipeline.Text = "Add Graphics Pipeline";
+            this.addGraphicsPipeline.Click += new System.EventHandler(this.addGraphicsPipeline_Click);
+            // 
             // RenderPassBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -117,6 +154,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.Text = "RenderPassBuilder";
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -130,5 +168,9 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private RichTextBox RenderPassBuilderDebug;
         private Panel panel2;
         private Button BuildButton;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem AddRenderPassAttachment;
+        private ToolStripMenuItem addSubpassDependency;
+        private ToolStripMenuItem addGraphicsPipeline;
     }
 }

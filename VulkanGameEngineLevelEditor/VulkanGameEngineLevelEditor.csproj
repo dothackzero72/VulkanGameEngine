@@ -297,7 +297,6 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GameEngineAPI\BakeTexture.cs" />
-    <Compile Include="GameEngineAPI\BuildRenderPass.cs" />
     <Compile Include="GameEngineAPI\CBuffer.cs" />
     <Compile Include="GameEngineAPI\CTexture.cs" />
     <Compile Include="GameEngineAPI\DepthTexture.cs" />
@@ -308,6 +307,7 @@
     <Compile Include="GameEngineAPI\LevelEditorDisplaySwapChain.cs" />
     <Compile Include="GameEngineAPI\Pixel.cs" />
     <Compile Include="GameEngineAPI\RenderedTexture.cs" />
+    <Compile Include="GameEngineAPI\BuildRenderPass.cs" />
     <Compile Include="GameEngineAPI\Scene.cs" />
     <Compile Include="GameEngineAPI\RendererPass3D.cs" />
     <Compile Include="GameEngineAPI\SilkFrameBufferRenderPass.cs" />
@@ -326,6 +326,7 @@
     <Compile Include="Models\RenderPassModel.cs" />
     <Compile Include="Models\RenderPipeline.cs" />
     <Compile Include="Models\SamplerCreateInfoModel.cs" />
+    <Compile Include="Models\SubpassDependencyModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderPassWindows\RenderPassBuilder.cs">

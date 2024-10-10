@@ -60,24 +60,11 @@ namespace VulkanGameEngineLevelEditor
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //VulkanRenderer.CreateVulkanRenderer();
-            //VulkanRenderer.window.FramebufferResize += OnFramebufferResize;
-
-            //VulkanRenderer.window.Render += GameLoop;
-            //VulkanRenderer.window.Run();
-            //InitializeRenderTimer();
-
             levelEditorSwapChain = new LevelEditorDisplaySwapChain(new ivec2(1280, 720));
 
             StartLevelEditorRenderer();
             StartRenderer();
             InitializeRenderTimer();
-        }
-
-        void LoadVulkan()
-        {
-            //vulkanTutorial = new VulkanTutorial();
-            //vulkanTutorial.Run();
         }
 
         private void InitializeRenderTimer()
@@ -100,6 +87,17 @@ namespace VulkanGameEngineLevelEditor
             renderThread.Start();
         }
 
+        void InitWindow(IWindow windows)
+        {
+            window = windows;
+            SilkVulkanRenderer.CreateWindow(windows);
+        }
+
+        void OnFramebufferResize(Vector2D<int> obj)
+        {
+            isFramebufferResized = true;
+        }
+
         private void RenderLoop()
         {
             var opts = WindowOptions.DefaultVulkan;
@@ -108,14 +106,16 @@ namespace VulkanGameEngineLevelEditor
 
             window = Silk.NET.Windowing.Window.Create(opts);
             window.Initialize();
+            InitWindow(window);
+            SilkVulkanRenderer.CreateVulkanRenderer(window);
 
             scene = new Scene();
-            scene.StartUp(window, richTextBox1);
+            scene.StartUp();
             while (running)
             {
-                //scene.Update(0);
+                scene.Update();
                 scene.DrawFrame();
-                byte[] textureData = levelEditorSwapChain.BakeColorTexture(scene.silk3DRendererPass.renderedTexture);
+                byte[] textureData = levelEditorSwapChain.BakeColorTexture(scene.RendererPass3D.renderedTexture);
                 dataCollection.TryAdd(textureData);
             }
         }
@@ -153,13 +153,6 @@ namespace VulkanGameEngineLevelEditor
                 RenderPassMessager.IsActive = false;
                 if (renderPassBuilder.ShowDialog() == DialogResult.OK)
                 {
-                    switch(renderPassBuilder.RenderedTextureAttachments.TextureType)
-                    {
-                        case RenderedTextureType.ColorRenderedTexture: renderPass.ColorAttachmentList.Add(renderPassBuilder.RenderedTextureAttachments); break;
-                        case RenderedTextureType.DepthRenderedTexture: renderPass.DepthAttachmentList.Add(renderPassBuilder.RenderedTextureAttachments); break;
-                        case RenderedTextureType.ResolveAttachmentTexture: renderPass.ResolveAttachmentList.Add(renderPassBuilder.RenderedTextureAttachments); break;
-                        case RenderedTextureType.InputAttachmentTexture: renderPass.InputAttachmentList.Add(renderPassBuilder.RenderedTextureAttachments); break;
-                    }
                     RenderPassMessager.IsActive = false;
                 }
             }

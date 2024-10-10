@@ -148,12 +148,8 @@ VkResult Texture_CopyBufferToTexture(VkDevice device, VkCommandPool commandPool,
 		.imageExtent.width = width,
 		.imageExtent.height = height,
 		.imageExtent.depth = depth,
-		.imageSubresource.layerCount = 1,
+		.imageSubresource.layerCount = (textureType == kUse_CubeMapTexture ? 6 : 1),
 	};
-	if (textureType == kUse_CubeMapTexture)
-	{
-		BufferImage.imageSubresource.layerCount = 6;
-	}
 	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
 	vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &BufferImage);
 	return Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);

@@ -1,4 +1,5 @@
-﻿using Silk.NET.Core;
+﻿using GlmSharp;
+using Silk.NET.Core;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -16,8 +17,12 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 {
     public partial class RenderPassBuilder : Form
     {
+        public ivec2 SwapChainResuloution { get; set; } = new ivec2();
         public MessengerModel RenderPassMessager { get; set; }
-        public RenderedTextureInfoModel RenderedTextureAttachments { get; set; } = new RenderedTextureInfoModel();
+        public List<RenderPipeline> RenderPipelineList { get; set; } = new List<RenderPipeline>();
+        public List<RenderedTextureInfoModel> AttachmentList { get; set; } = new List<RenderedTextureInfoModel>();
+        public List<SubpassDependencyModel> SubpassDependencyList { get; set; } = new List<SubpassDependencyModel>();
+   
         public RenderPassBuilder()
         {
             InitializeComponent();
@@ -31,7 +36,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             };
 
             GlobalMessenger.AddMessenger(RenderPassMessager);
-            listBox1.Items.Add(RenderedTextureAttachments);
+            listBox1.Items.Add(SwapChainResuloution);
         }
 
         public void ShowRenderPassBuilder()
@@ -73,13 +78,32 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             var a = listBox1.SelectedIndex;
-            propertyGrid1.SelectedObject = RenderedTextureAttachments;
+            propertyGrid1.SelectedObject = AttachmentList;
      
         }
 
         private void BuildButton_Click(object sender, EventArgs e)
         {
+            RenderPassMessager.IsActive = true;
+            var otherMessangers = GlobalMessenger.messenger.Where(p => p.richTextBox != RenderPassMessager.richTextBox);
+            foreach(var messengers in otherMessangers)
+            {
+                messengers.IsActive = false;
+            }
 
+            RenderPassModel renderPass = new RenderPassModel()
+            {
+                AttachmentList = AttachmentList,
+                RenderPipelineList = RenderPipelineList,
+                SubpassDependencyList = SubpassDependencyList,
+                SwapChainResuloution = SwapChainResuloution
+            };
+
+            foreach (var messengers in otherMessangers)
+            {
+                messengers.IsActive = true;
+            }
+            RenderPassMessager.IsActive = false;
         }
 
         private void OnClose(object sender, FormClosingEventArgs e)
@@ -87,5 +111,30 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             GlobalMessenger.messenger.Remove(RenderPassMessager);
         }
 
+        private void addToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var attachment = new RenderedTextureInfoModel($"TextureAttachment{AttachmentList.Count}");
+            AttachmentList.Add(attachment);
+            listBox1.Items.Add(attachment);
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void addSubpassDependency_Click(object sender, EventArgs e)
+        {
+            var subpassDependency = new SubpassDependencyModel($"SubpassDependency{AttachmentList.Count}");
+            SubpassDependencyList.Add(subpassDependency);
+            listBox1.Items.Add(subpassDependency);
+        }
+
+        private void addGraphicsPipeline_Click(object sender, EventArgs e)
+        {
+            //var subpassDependency = new RenderPipeline($"SubpassDependency{AttachmentList.Count}");
+            //SubpassDependencyList.Add(subpassDependency);
+            //listBox1.Items.Add(subpassDependency);
+        }
     }
 }
