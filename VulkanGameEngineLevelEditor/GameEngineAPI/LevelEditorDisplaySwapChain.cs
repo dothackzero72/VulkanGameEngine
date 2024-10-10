@@ -1,12 +1,14 @@
 ﻿using GlmSharp;
 using Silk.NET.Vulkan;
 using StbImageSharp;
+using StbImageWriteSharp;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -35,6 +37,44 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 BitMapBuffers.Add(new Bitmap(imageSize.x, imageSize.y, PixelFormat.Format32bppRgb));
             }
+        }
+
+        public unsafe byte[] BakeColorTexture(Texture texture)
+        {
+            BakeTexture bakeTexture = new BakeTexture(new Pixel(0xFF, 0xFF, 0xFF, 0xFF), new GlmSharp.ivec2(1280, 720), Format.R8G8B8A8Unorm);
+
+            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
+            texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.Undefined, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, ImageAspectFlags.ColorBit);
+
+            ImageCopy copyImage = new ImageCopy
+            {
+                SrcSubresource = { AspectMask = ImageAspectFlags.ColorBit, LayerCount = 1, MipLevel = 0 },
+                DstSubresource = { AspectMask = ImageAspectFlags.ColorBit, LayerCount = 1, MipLevel = 0 },
+                DstOffset = { X = 0, Y = 0, Z = 0 },
+                Extent = { Width = (uint)texture.Width, Height = (uint)texture.Height, Depth = 1 }
+            };
+
+            VKConst.vulkan.CmdCopyImage(commandBuffer,
+                texture.Image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal,
+                bakeTexture.Image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal,
+                1, &copyImage);
+            bakeTexture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal, ImageAspectFlags.ColorBit);
+
+            SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+            ImageSubresource subResource = new ImageSubresource { AspectMask = ImageAspectFlags.ColorBit, MipLevel = 0, ArrayLayer = 0 };
+            SubresourceLayout subResourceLayout;
+            VKConst.vulkan.GetImageSubresourceLayout(SilkVulkanRenderer.device, bakeTexture.Image, &subResource, &subResourceLayout);
+
+            int pixelCount = bakeTexture.Width * bakeTexture.Height;
+            byte[] pixelData = new byte[pixelCount * 4];
+
+            IntPtr mappedMemory;
+            VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bakeTexture.Memory, 0, Vk.WholeSize, 0, (void**)&mappedMemory);
+            Marshal.Copy(mappedMemory, pixelData, 0, pixelData.Length);
+            VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bakeTexture.Memory);
+
+            return ConvertB8G8R8A8ToARGB(pixelData);
         }
 
         public void UpdateBuffer(byte[] pixelData, Extent2D imageSize)
@@ -82,13 +122,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        private Color ByteArrayToColor(byte[] data, int index)
+        private byte[] ConvertB8G8R8A8ToARGB(byte[] pixelData)
         {
-            byte a = data[index + 3];
-            byte r = data[index + 0];
-            byte g = data[index + 1];
-            byte b = data[index + 2];
-            return Color.FromArgb(a, r, g, b);
+            if (pixelData == null || pixelData.Length == 0 || pixelData.Length % 4 != 0)
+            {
+                throw new ArgumentException("Invalid pixel data array.");
+            }
+
+            int pixelCount = pixelData.Length / 4;
+            byte[] argbData = new byte[pixelCount * 4];
+
+            for (int i = 0; i < pixelCount; i++)
+            {
+                int srcIndex = i * 4;
+                int destIndex = i * 4;
+
+                argbData[destIndex + 0] = pixelData[srcIndex + 2];
+                argbData[destIndex + 1] = pixelData[srcIndex + 1];
+                argbData[destIndex + 2] = pixelData[srcIndex + 0];
+                argbData[destIndex + 3] = pixelData[srcIndex + 3];
+            }
+
+            return argbData;
         }
     }
 }

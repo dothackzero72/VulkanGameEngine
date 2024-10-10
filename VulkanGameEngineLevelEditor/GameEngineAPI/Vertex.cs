@@ -134,7 +134,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             attributeDescriptions.Add(new VertexInputAttributeDescription
             {
                 Binding = 0,
-                Location = 0, // Matches your shader's inPosition
+                Location = 0,
                 Format = Format.R32G32B32Sfloat,
                 Offset = (uint)Marshal.OffsetOf(typeof(Vertex3D), nameof(Position)).ToInt32()
             });
@@ -142,7 +142,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             attributeDescriptions.Add(new VertexInputAttributeDescription
             {
                 Binding = 0,
-                Location = 1, // Matches your shader's inColor
+                Location = 1,
                 Format = Format.R32G32B32Sfloat,
                 Offset = (uint)Marshal.OffsetOf(typeof(Vertex3D), nameof(Color)).ToInt32()
             });
@@ -150,7 +150,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             attributeDescriptions.Add(new VertexInputAttributeDescription
             {
                 Binding = 0,
-                Location = 2, // Matches your shader's inUV
+                Location = 2,
                 Format = Format.R32G32Sfloat,
                 Offset = (uint)Marshal.OffsetOf(typeof(Vertex3D), nameof(UV)).ToInt32()
             });

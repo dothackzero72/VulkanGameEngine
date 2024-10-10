@@ -19,7 +19,6 @@ public unsafe class VulkanBuffer<T> : IDisposable where T : unmanaged
     protected CommandPool _commandPool;
     protected Silk.NET.Vulkan.Queue _graphicsQueue;
 
-    // Vulkan buffer-related variables
     public Silk.NET.Vulkan.Buffer StagingBuffer;
     public DeviceMemory StagingBufferMemory;
     public DeviceMemory BufferMemory;
@@ -169,8 +168,6 @@ public unsafe class VulkanBuffer<T> : IDisposable where T : unmanaged
 
     public DescriptorBufferInfo* GetDescriptorBuffer()
     {
-        ulong offset = 0; // Your offset calculation
-        ulong alignment = 64;
         DescriptorBufferInfo = new DescriptorBufferInfo
         {
             Buffer = Buffer,

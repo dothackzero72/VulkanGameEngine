@@ -15,7 +15,7 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public unsafe class Silk3DRendererPass : SilkRenderPassBase
+    public unsafe class RendererPass3D : SilkRenderPassBase
     {
         Vk vk = Vk.GetApi();
         public DepthTexture depthTexture;
@@ -55,7 +55,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public Silk3DRendererPass() : base()
+        public RendererPass3D() : base()
         {
 
             //(DescriptorType.UniformBuffer, 1, ShaderStageFlags.ShaderStageVertexBit),

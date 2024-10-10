@@ -30,20 +30,43 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         /// </summary>
         private void InitializeComponent()
         {
+            this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.Accept = new System.Windows.Forms.Button();
-            this.cancelButton = new System.Windows.Forms.Button();
+            this.RenderPassBuilderDebug = new System.Windows.Forms.RichTextBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.BuildButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.ItemHeight = 20;
+            this.listBox1.Location = new System.Drawing.Point(13, 13);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(243, 864);
+            this.listBox1.TabIndex = 0;
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.richTextBox1);
             this.panel1.Controls.Add(this.propertyGrid1);
-            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Location = new System.Drawing.Point(1142, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(527, 1035);
-            this.panel1.TabIndex = 0;
+            this.panel1.Size = new System.Drawing.Size(527, 865);
+            this.panel1.TabIndex = 1;
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(-1038, 41);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(2304, 842);
+            this.richTextBox1.TabIndex = 2;
+            this.richTextBox1.Text = "";
             // 
             // propertyGrid1
             // 
@@ -51,49 +74,61 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.propertyGrid1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(527, 1035);
+            this.propertyGrid1.Size = new System.Drawing.Size(527, 865);
             this.propertyGrid1.TabIndex = 0;
             // 
-            // Accept
+            // RenderPassBuilderDebug
             // 
-            this.Accept.Location = new System.Drawing.Point(343, 1060);
-            this.Accept.Name = "Accept";
-            this.Accept.Size = new System.Drawing.Size(75, 23);
-            this.Accept.TabIndex = 1;
-            this.Accept.Text = "aceeptButton";
-            this.Accept.UseVisualStyleBackColor = true;
-            this.Accept.Click += new System.EventHandler(this.Accept_Click);
+            this.RenderPassBuilderDebug.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.RenderPassBuilderDebug.Location = new System.Drawing.Point(0, 0);
+            this.RenderPassBuilderDebug.Name = "RenderPassBuilderDebug";
+            this.RenderPassBuilderDebug.Size = new System.Drawing.Size(1657, 207);
+            this.RenderPassBuilderDebug.TabIndex = 2;
+            this.RenderPassBuilderDebug.Text = "";
             // 
-            // cancelButton
+            // panel2
             // 
-            this.cancelButton.Location = new System.Drawing.Point(147, 1060);
-            this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(75, 23);
-            this.cancelButton.TabIndex = 2;
-            this.cancelButton.Text = "Cancel";
-            this.cancelButton.UseVisualStyleBackColor = true;
-            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
+            this.panel2.Controls.Add(this.RenderPassBuilderDebug);
+            this.panel2.Location = new System.Drawing.Point(12, 902);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1657, 207);
+            this.panel2.TabIndex = 3;
+            // 
+            // BuildButton
+            // 
+            this.BuildButton.Location = new System.Drawing.Point(1061, 850);
+            this.BuildButton.Name = "BuildButton";
+            this.BuildButton.Size = new System.Drawing.Size(75, 27);
+            this.BuildButton.TabIndex = 3;
+            this.BuildButton.Text = "Build";
+            this.BuildButton.UseVisualStyleBackColor = true;
+            this.BuildButton.Click += new System.EventHandler(this.BuildButton_Click);
             // 
             // RenderPassBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(527, 1110);
-            this.Controls.Add(this.cancelButton);
-            this.Controls.Add(this.Accept);
+            this.ClientSize = new System.Drawing.Size(1681, 1110);
+            this.Controls.Add(this.BuildButton);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.listBox1);
             this.Name = "RenderPassBuilder";
             this.Text = "RenderPassBuilder";
             this.panel1.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
-        private Button Accept;
-        private Button cancelButton;
+        private ListBox listBox1;
+        private Panel panel1;
+        private PropertyGrid propertyGrid1;
+        private RichTextBox richTextBox1;
+        private RichTextBox RenderPassBuilderDebug;
+        private Panel panel2;
+        private Button BuildButton;
     }
 }

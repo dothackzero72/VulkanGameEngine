@@ -9,6 +9,7 @@ using Silk.NET.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
+    [Serializable]
     public unsafe class SamplerCreateInfoModel
     {
         public SamplerCreateFlags Flags;
@@ -27,6 +28,10 @@ namespace VulkanGameEngineLevelEditor.Models
         public float MaxLod;
         public BorderColor BorderColor;
         public Bool32 UnnormalizedCoordinates;
+
+        public SamplerCreateInfoModel() 
+        { 
+        }
 
         public SamplerCreateInfo ConvertToVulkan()
         {

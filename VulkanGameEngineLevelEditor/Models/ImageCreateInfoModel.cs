@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-
+    [Serializable]
     public unsafe class ImageCreateInfoModel
     {
 
@@ -51,6 +51,10 @@ namespace VulkanGameEngineLevelEditor.Models
 
         [Category("Image Layout")]
         public ImageLayout InitialLayout { get; set; }
+        public ImageCreateInfoModel()
+        {
+
+        }
 
         public ImageCreateInfo ConvertToVulkan()
         {

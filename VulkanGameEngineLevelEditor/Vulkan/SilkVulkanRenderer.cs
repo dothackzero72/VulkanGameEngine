@@ -371,7 +371,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 createInfo.PpEnabledLayerNames = (byte**)SilkMarshal.StringArrayToPtr(validationLayers);
             }
 
-            DebugUtilsMessengerCreateInfoEXT debugCreateInfo = SilkVulkanDebug.MakeDebugUtilsMessengerCreateInfoEXT(logTextBox);
+            DebugUtilsMessengerCreateInfoEXT debugCreateInfo = SilkVulkanDebug.MakeDebugUtilsMessengerCreateInfoEXT();
             createInfo.PNext = &debugCreateInfo;
 
 

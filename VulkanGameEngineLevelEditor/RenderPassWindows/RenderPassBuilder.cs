@@ -16,49 +16,22 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 {
     public partial class RenderPassBuilder : Form
     {
-        public RenderedTextureInfoModel RenderedTexture { get; set; } = new RenderedTextureInfoModel();
+        public MessengerModel RenderPassMessager { get; set; }
+        public RenderedTextureInfoModel RenderedTextureAttachments { get; set; } = new RenderedTextureInfoModel();
         public RenderPassBuilder()
         {
             InitializeComponent();
-            var imageCreateInfo = new RenderedTextureInfoModel
+            this.FormClosing += OnClose;
+
+            RenderPassMessager = new MessengerModel()
             {
-                TextureType = RenderedTextureType.ColorRenderedTexture,
-                ImageCreateInfo = new ImageCreateInfoModel()
-                {
-                    Flags = ImageCreateFlags.None,
-                    ImageType = Silk.NET.Vulkan.ImageType.Type2D,
-                    Format = Format.Undefined,
-                    Extent = new Extent3DModel { Width = 256, Height = 256, Depth = 1 },
-                    MipLevels = 1,
-                    ArrayLayers = 1,
-                    Samples = SampleCountFlags.SampleCount1Bit,
-                    Tiling = ImageTiling.Linear,
-                    Usage = ImageUsageFlags.None,
-                    SharingMode = SharingMode.Exclusive,
-                    InitialLayout = Silk.NET.Vulkan.ImageLayout.Undefined
-                },
-                SamplerCreateInfo = new SamplerCreateInfoModel()
-                {
-                    Flags = 0,
-                    MagFilter = Filter.Linear,
-                    MinFilter = Filter.Linear,
-                    MipmapMode = SamplerMipmapMode.Linear,
-                    AddressModeU = SamplerAddressMode.Repeat,
-                    AddressModeV = SamplerAddressMode.Repeat,
-                    AddressModeW = SamplerAddressMode.Repeat,
-                    MipLodBias = 0.0f,
-                    AnisotropyEnable = Vk.False,
-                    MaxAnisotropy = 1.0f,
-                    CompareEnable = Vk.False,
-                    CompareOp = CompareOp.Always,
-                    MinLod = 0.0f,
-                    MaxLod = float.MaxValue,
-                    BorderColor = BorderColor.FloatTransparentBlack,
-                    UnnormalizedCoordinates = Vk.False
-                }
+                IsActive = true,
+                richTextBox = RenderPassBuilderDebug,
+                TextBoxName = RenderPassBuilderDebug.Name
             };
-            propertyGrid1.SelectedObject = imageCreateInfo;
-            
+
+            GlobalMessenger.AddMessenger(RenderPassMessager);
+            listBox1.Items.Add(RenderedTextureAttachments);
         }
 
         public void ShowRenderPassBuilder()
@@ -69,7 +42,6 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                
                 if (result == DialogResult.OK)
                 {
-                    // Handle the close result if necessary
                     MessageBox.Show("Popup closed.");
                 }
             }
@@ -94,7 +66,26 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private void cancelButton_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
+            GlobalMessenger.messenger.Remove(RenderPassMessager);
             this.Close();
         }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var a = listBox1.SelectedIndex;
+            propertyGrid1.SelectedObject = RenderedTextureAttachments;
+     
+        }
+
+        private void BuildButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void OnClose(object sender, FormClosingEventArgs e)
+        {
+            GlobalMessenger.messenger.Remove(RenderPassMessager);
+        }
+
     }
 }
