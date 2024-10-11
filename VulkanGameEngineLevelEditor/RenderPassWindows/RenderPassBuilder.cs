@@ -37,6 +37,32 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 
             GlobalMessenger.AddMessenger(RenderPassMessager);
             listBox1.Items.Add(SwapChainResuloution);
+
+            AttachmentList.Add(new RenderedTextureInfoModel());
+            AttachmentList.Add(new RenderedTextureInfoModel());
+            SubpassDependencyList.Add(new SubpassDependencyModel());
+            SubpassDependencyList.Add(new SubpassDependencyModel());
+
+            //// Add columns to the ListView
+            //listView1.Columns.Add("Item Name", 100);
+            //listView1.Columns.Add("Quantity", 70);
+            //listView1.Columns.Add("Price", 70);
+
+            //// Add items to the ListView
+            //ListViewItem item1 = new ListViewItem("Apple");
+            //item1.SubItems.Add("10");
+            //item1.SubItems.Add("$1.00");
+            //listView1.Items.Add(item1);
+
+            //ListViewItem item2 = new ListViewItem("Banana");
+            //item2.SubItems.Add("5");
+            //item2.SubItems.Add("$0.50");
+            //listView1.Items.Add(item2);
+
+            //ListViewItem item3 = new ListViewItem("Orange");
+            //item3.SubItems.Add("20");
+            //item3.SubItems.Add("$0.75");
+            //listView1.Items.Add(item3);
         }
 
         public void ShowRenderPassBuilder()
@@ -135,6 +161,11 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             //var subpassDependency = new RenderPipeline($"SubpassDependency{AttachmentList.Count}");
             //SubpassDependencyList.Add(subpassDependency);
             //listBox1.Items.Add(subpassDependency);
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

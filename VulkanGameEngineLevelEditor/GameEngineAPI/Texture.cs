@@ -231,6 +231,30 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
+        virtual protected Result CreateTextureImage(ImageCreateInfo createInfo)
+        {
+            Image textureImage;
+            DeviceMemory textureMemory;
+
+            var info = createInfo;
+            var result = VKConst.vulkan.CreateImage(SilkVulkanRenderer.device, &info, null, &textureImage);
+            VKConst.vulkan.GetImageMemoryRequirements(SilkVulkanRenderer.device, textureImage, out MemoryRequirements memRequirements);
+
+            var allocInfo = new MemoryAllocateInfo
+            {
+                SType = StructureType.MemoryAllocateInfo,
+                AllocationSize = memRequirements.Size,
+                MemoryTypeIndex = SilkVulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.DeviceLocalBit)
+            };
+            result = VKConst.vulkan.AllocateMemory(SilkVulkanRenderer.device, &allocInfo, null, &textureMemory);
+            result = VKConst.vulkan.BindImageMemory(SilkVulkanRenderer.device, textureImage, textureMemory, 0);
+
+            Image = textureImage;
+            Memory = textureMemory;
+
+            return result;
+        }
+
         public virtual Result CreateTextureView()
         {
             ImageSubresourceRange imageSubresourceRange = new ImageSubresourceRange()
@@ -255,6 +279,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return result;
         }
 
+        protected void CreateTextureSampler(SamplerCreateInfo samplerInfo)
+        {
+            Sampler sampler = new Sampler();
+            SamplerCreateInfo info = samplerInfo;
+            Result result = VKConst.vulkan.CreateSampler(SilkVulkanRenderer.device, ref info, null, out sampler);
+            Sampler = sampler;
+        }
 
         virtual protected void CreateTextureSampler()
         {

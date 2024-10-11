@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using VulkanGameEngineLevelEditor;
+using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -64,6 +65,20 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             CreateTextureView();
             CreateTextureSampler();
 
+        }
+
+        public RenderedTexture(ImageCreateInfoModel createInfo, SamplerCreateInfoModel samplerCreateInfo) : base()
+        {
+            Width = (int)createInfo.Extent.Width;
+            Height = (int)createInfo.Extent.Height;
+            Depth = (int)createInfo.Extent.Depth;
+            TextureByteFormat = createInfo.Format;
+            TextureImageLayout = createInfo.InitialLayout;
+            SampleCount = createInfo.Samples;
+
+            CreateTextureImage(createInfo.ConvertToVulkan());
+            CreateTextureView();
+            CreateTextureSampler(samplerCreateInfo.ConvertToVulkan());
         }
 
         protected Result CreateTextureImage()

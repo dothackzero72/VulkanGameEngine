@@ -340,7 +340,6 @@
     <Compile Include="Vulkan\SilkVulkanDebug.cs" />
     <Compile Include="Vulkan\SilkVulkanRenderer.cs" />
     <Compile Include="Vulkan\SilkVulkanSwapChain.cs" />
-    <Compile Include="Vulkan\SilkVulkanWindow.cs" />
     <Compile Include="Vulkan\Vulkan.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

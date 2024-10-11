@@ -51,6 +51,8 @@ namespace VulkanGameEngineLevelEditor.Models
 
         [Category("Image Layout")]
         public ImageLayout InitialLayout { get; set; }
+
+        public RenderedTextureInfoModel RenderedTextureInfoModel { get; set; }
         public ImageCreateInfoModel()
         {
 

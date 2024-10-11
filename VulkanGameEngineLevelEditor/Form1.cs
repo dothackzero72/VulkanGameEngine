@@ -29,7 +29,7 @@ namespace VulkanGameEngineLevelEditor
     public unsafe partial class Form1 : Form
     {
         Vk vk = Vk.GetApi();
-        private SilkVulkanWindow windows;
+        private Extent2D VulkanSwapChainResolution { get; set; }
         private Thread renderThread;
         private Thread levelEditerDisplayThread;
         private volatile bool running;
@@ -49,6 +49,7 @@ namespace VulkanGameEngineLevelEditor
             InitializeComponent();
             this.Load += Form1_Load;
 
+            VulkanSwapChainResolution = new Extent2D() { Width = 1280, Height = 720 };
             RenderPassMessager = new MessengerModel()
             {
                 IsActive = true,
@@ -60,7 +61,7 @@ namespace VulkanGameEngineLevelEditor
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            levelEditorSwapChain = new LevelEditorDisplaySwapChain(new ivec2(1280, 720));
+            levelEditorSwapChain = new LevelEditorDisplaySwapChain(VulkanSwapChainResolution);
 
             StartLevelEditorRenderer();
             StartRenderer();
@@ -87,27 +88,12 @@ namespace VulkanGameEngineLevelEditor
             renderThread.Start();
         }
 
-        void InitWindow(IWindow windows)
-        {
-            window = windows;
-            SilkVulkanRenderer.CreateWindow(windows);
-        }
-
-        void OnFramebufferResize(Vector2D<int> obj)
-        {
-            isFramebufferResized = true;
-        }
-
         private void RenderLoop()
         {
-            var opts = WindowOptions.DefaultVulkan;
-            opts.Title = "Level Editor";
-            opts.Size = new Vector2D<int>(1280, 720);
-
-            window = Silk.NET.Windowing.Window.Create(opts);
-            window.Initialize();
-            InitWindow(window);
-            SilkVulkanRenderer.CreateVulkanRenderer(window);
+            this.Invoke(new Action(() =>
+            {
+                SilkVulkanRenderer.CreateVulkanRenderer(this.pictureBox1.Handle, VulkanSwapChainResolution);
+            }));
 
             scene = new Scene();
             scene.StartUp();

@@ -398,7 +398,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 descriptorSetCount: SilkVulkanRenderer.MAX_FRAMES_IN_FLIGHT,
                 pSetLayouts: layouts
             );
-            SilkVulkanRenderer.vulkan.AllocateDescriptorSets(SilkVulkanRenderer.device, &allocInfo, out DescriptorSet descriptorSet);
+            vk.AllocateDescriptorSets(SilkVulkanRenderer.device, &allocInfo, out DescriptorSet descriptorSet);
             descriptorSets = descriptorSet;
             return descriptorSets;
         }
@@ -428,7 +428,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     };
 
                     Framebuffer frameBuffer = FrameBufferList[x];
-                    SilkVulkanRenderer.vulkan.CreateFramebuffer(SilkVulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
+                    vk.CreateFramebuffer(SilkVulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
                     frameBufferList[x] = frameBuffer;
                 }
             }
@@ -463,7 +463,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     PoolSizeCount = (uint)DescriptorPoolBinding.Count,
                     PPoolSizes = ptr
                 };
-                SilkVulkanRenderer.vulkan.CreateDescriptorPool(SilkVulkanRenderer.device, in poolInfo, null, out descriptorPool);
+                vk.CreateDescriptorPool(SilkVulkanRenderer.device, in poolInfo, null, out descriptorPool);
             }
 
             descriptorpool = descriptorPool;
@@ -486,7 +486,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 descriptorSetCount: SilkVulkanRenderer.MAX_FRAMES_IN_FLIGHT,
                 pSetLayouts: layouts
             );
-            SilkVulkanRenderer.vulkan.AllocateDescriptorSets(SilkVulkanRenderer.device, &allocInfo, out DescriptorSet descriptorSet);
+            vk.AllocateDescriptorSets(SilkVulkanRenderer.device, &allocInfo, out DescriptorSet descriptorSet);
             descriptorset = descriptorSet;
             return descriptorSet;
         }
@@ -544,7 +544,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             fixed (WriteDescriptorSet* ptr = descriptorSetList.ToArray())
             {
-                SilkVulkanRenderer.vulkan.UpdateDescriptorSets(SilkVulkanRenderer.device, (uint)descriptorSetList.UCount(), ptr, 0, null);
+                vk.UpdateDescriptorSets(SilkVulkanRenderer.device, (uint)descriptorSetList.UCount(), ptr, 0, null);
             }
         }
 

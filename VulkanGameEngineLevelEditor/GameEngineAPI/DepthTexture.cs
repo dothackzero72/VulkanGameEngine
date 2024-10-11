@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -30,6 +31,21 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             CreateTextureView();
             CreateTextureSampler();
         }
+
+        public DepthTexture(ImageCreateInfoModel createInfo, SamplerCreateInfoModel samplerCreateInfo) : base()
+        {
+            Width = (int)createInfo.Extent.Width;
+            Height = (int)createInfo.Extent.Height;
+            Depth = (int)createInfo.Extent.Depth;
+            TextureByteFormat = createInfo.Format;
+            TextureImageLayout = createInfo.InitialLayout;
+            SampleCount = createInfo.Samples;
+
+            CreateTextureImage(createInfo.ConvertToVulkan());
+            CreateTextureView();
+            CreateTextureSampler(samplerCreateInfo.ConvertToVulkan());
+        }
+
         protected override void CreateImageTexture()
         {
             ImageCreateInfo imageInfo = new ImageCreateInfo

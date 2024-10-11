@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Configuration;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     {
         Vk vk = Vk.GetApi();
         public Device _device {  get; private set; }
-
+        public List<RenderedTexture> RenderedColorTextureList { get; private set; }= new List<RenderedTexture>();
+        public DepthTexture DepthTexture { get; private set; }
         public BuildRenderPass()
         {
         }
@@ -44,6 +46,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             }
 
+
             List<AttachmentReference> inputAttachmentReferenceList = new List<AttachmentReference>();
             List<AttachmentReference> colorAttachmentReferenceList = new List<AttachmentReference>();
             List<AttachmentReference> resolveAttachmentReferenceList = new List<AttachmentReference>();
@@ -51,16 +54,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             AttachmentReference depthAttachementReference = new AttachmentReference();
             for (int x = 0; x < colorAttachmentList.Count; x++)
             {
+                RenderedColorTextureList.Add(new RenderedTexture(colorAttachmentList[x].ImageCreateInfo, colorAttachmentList[x].SamplerCreateInfo));
                 colorAttachmentReferenceList.Add(new AttachmentReference
                 {
                     Attachment = colorAttachmentList.UCount(),
                     Layout = Silk.NET.Vulkan.ImageLayout.ColorAttachmentOptimal
                 });
-                resolveAttachmentReferenceList.Add(new AttachmentReference
+
+
+                if (resolveAttachmentReferenceList.Any())
                 {
-                    Attachment = (uint)(colorAttachmentList.UCount() + 1),
-                    Layout = Silk.NET.Vulkan.ImageLayout.ColorAttachmentOptimal
-                });
+                    RenderedColorTextureList.Add(new RenderedTexture(colorAttachmentList[x].ImageCreateInfo, colorAttachmentList[x].SamplerCreateInfo));
+                    resolveAttachmentReferenceList.Add(new AttachmentReference
+                    {
+                        Attachment = (uint)(colorAttachmentList.UCount() + 1),
+                        Layout = Silk.NET.Vulkan.ImageLayout.ColorAttachmentOptimal
+                    });
+                }
             }
             for (int x = 0; x < inputAttachmentList.Count; x++)
             {
@@ -72,6 +82,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
             if (depthAttachmentList.Any())
             {
+                DepthTexture = new DepthTexture(depthAttachmentList[0].ImageCreateInfo, depthAttachmentList[0].SamplerCreateInfo);
                 depthAttachementReference = new AttachmentReference
                 {
                     Attachment = (uint)(colorAttachmentReferenceList.Count + resolveAttachmentReferenceList.Count),

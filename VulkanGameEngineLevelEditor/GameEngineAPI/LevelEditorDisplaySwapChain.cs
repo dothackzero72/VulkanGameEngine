@@ -24,24 +24,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public List<Bitmap> BitMapBuffers { get; protected set; } = new List<Bitmap>();
         public Bitmap DisplayImage { get; protected set; }
         public int CurrentBufferIndex { get; protected set; } = 0;
-        private ivec2 SwapChainSize { get; set; } = new ivec2(0, 0);
+        private Extent2D VulkanSwapChainResolution { get;  set; }
         private readonly Object BufferLock = new Object();
         private BlockingCollection<Bitmap> display = new BlockingCollection<Bitmap>(boundedCapacity: 10);
-        public LevelEditorDisplaySwapChain(ivec2 imageSize)
+        BakeTexture bakeTexture;
+        public LevelEditorDisplaySwapChain(Extent2D vulkanSwapChainResolution)
         {
             BitMapBuffers = new List<Bitmap>();
             CurrentBufferIndex = 0;
-            SwapChainSize = imageSize;
-            DisplayImage = new Bitmap(imageSize.x, imageSize.y, PixelFormat.Format32bppRgb);
+            VulkanSwapChainResolution = vulkanSwapChainResolution;
+            DisplayImage = new Bitmap((int)VulkanSwapChainResolution.Width, (int)VulkanSwapChainResolution.Height, PixelFormat.Format32bppRgb);
             for (int x = 0; x < BufferCount; x++)
             {
-                BitMapBuffers.Add(new Bitmap(imageSize.x, imageSize.y, PixelFormat.Format32bppRgb));
+                BitMapBuffers.Add(new Bitmap((int)VulkanSwapChainResolution.Width, (int)VulkanSwapChainResolution.Height, PixelFormat.Format32bppRgb));
             }
         }
 
         public unsafe byte[] BakeColorTexture(Texture texture)
         {
-            BakeTexture bakeTexture = new BakeTexture(new Pixel(0xFF, 0xFF, 0xFF, 0xFF), new GlmSharp.ivec2(1280, 720), Format.R8G8B8A8Unorm);
+            if(bakeTexture == null)
+            {
+                bakeTexture = new BakeTexture(new Pixel(0xFF, 0xFF, 0xFF, 0xFF), new GlmSharp.ivec2((int)VulkanSwapChainResolution.Width, (int)VulkanSwapChainResolution.Height), Format.R8G8B8A8Unorm);
+            }
 
             CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
             texture.UpdateImageLayout(commandBuffer, Silk.NET.Vulkan.ImageLayout.PresentSrcKhr, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, ImageAspectFlags.ColorBit);

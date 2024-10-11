@@ -42,6 +42,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.AddRenderPassAttachment = new System.Windows.Forms.ToolStripMenuItem();
             this.addSubpassDependency = new System.Windows.Forms.ToolStripMenuItem();
             this.addGraphicsPipeline = new System.Windows.Forms.ToolStripMenuItem();
+            this.listView1 = new System.Windows.Forms.ListView();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -118,7 +119,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.addSubpassDependency,
             this.addGraphicsPipeline});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(315, 133);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(315, 100);
             // 
             // AddRenderPassAttachment
             // 
@@ -141,11 +142,22 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.addGraphicsPipeline.Text = "Add Graphics Pipeline";
             this.addGraphicsPipeline.Click += new System.EventHandler(this.addGraphicsPipeline_Click);
             // 
+            // listView1
+            // 
+            this.listView1.HideSelection = false;
+            this.listView1.Location = new System.Drawing.Point(340, 193);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(304, 631);
+            this.listView1.TabIndex = 5;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            // 
             // RenderPassBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1681, 1110);
+            this.Controls.Add(this.listView1);
             this.Controls.Add(this.BuildButton);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
@@ -172,5 +184,6 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private ToolStripMenuItem AddRenderPassAttachment;
         private ToolStripMenuItem addSubpassDependency;
         private ToolStripMenuItem addGraphicsPipeline;
+        private ListView listView1;
     }
 }

@@ -48,5 +48,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern void DLL_Buffer_UpdateBufferData(Device device, ref DeviceMemory stagingBufferMemory, ref DeviceMemory bufferMemory, void* dataToCopy, ulong bufferSize, bool IsStagingBuffer);
+        //Renderer
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern Result DLL_Renderer_GetSurfaceFormats(PhysicalDevice physicalDevice, SurfaceKHR surface, out SurfaceFormatKHR surfaceFormats, out uint surfaceFormatCount);
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern Result DLL_SwapChain_GetPhysicalDevicePresentModes(PhysicalDevice physicalDevice, SurfaceKHR surface, out PresentModeKHR compatiblePresentModesList, out uint presentModeCount);
+
     }
 }

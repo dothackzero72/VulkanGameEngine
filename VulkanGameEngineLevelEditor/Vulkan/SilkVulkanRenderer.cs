@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,9 +29,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
     public unsafe static class SilkVulkanRenderer
     {
-        public static Vk vulkan = Vk.GetApi();
+        public static Vk vk = Vk.GetApi();
         public const int MAX_FRAMES_IN_FLIGHT = 2;
-        public static IWindow window { get; set; }
+        public static IntPtr windowPtr { get; set; }
         public static Instance instance { get; private set; }
         public static DebugUtilsMessengerEXT debugMessenger { get; private set; }
         public static SurfaceKHR surface { get; private set; }
@@ -60,46 +61,16 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             public SurfaceKHR Surface { get; set; } = new SurfaceKHR();
             public KhrSurface KhrSurface { get; set; }
         }
-
-        public static void CreateVulkanRenderer(IWindow windows, RichTextBox logTextBox)
+        public static void CreateVulkanRenderer(IntPtr window, Extent2D swapChainResolution)
         {
-            window = windows;
-            CreateWindow(window);
-            CreateInstance(logTextBox);
-            CreateSurface(window);
-            CreatePhysicalDevice(khrSurface);
-            CreateDevice();
-            CreateDeviceQueue();
-            CreateSemaphores();
-            swapChain.CreateSwapChain(window, khrSurface, surface);
-            CreateCommandPool();
-        }
-
-        public static void CreateVulkanRenderer(IWindow windows)
-        {
-            window = windows;
-            CreateWindow(window);
+            windowPtr = window;
             CreateInstance();
-            CreateSurface(window);
-            CreatePhysicalDevice(khrSurface);
+            CreateSurface(windowPtr);
+            CreatePhysicalDevice();
             CreateDevice();
             CreateDeviceQueue();
             CreateSemaphores();
-            swapChain.CreateSwapChain(window, khrSurface, surface);
-            CreateCommandPool();
-        }
-
-        public static void CreateVulkanRenderer(IWindow windows, SurfaceKHR surfacekhrt)
-        {
-            window = windows;
-            CreateWindow(window);
-            CreateInstance(null);
-            CreateSurface(window);
-            CreatePhysicalDevice(khrSurface);
-            CreateDevice();
-            CreateDeviceQueue();
-            CreateSemaphores();
-            swapChain.CreateSwapChain(window, khrSurface, surfacekhrt);
+            swapChain.CreateSwapChain(windowPtr);
             CreateCommandPool();
         }
 
@@ -115,7 +86,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     CommandBufferCount = 1
                 };
 
-                vulkan.AllocateCommandBuffers(device, in commandBufferAllocateInfo, out commandBufferList[x]);
+                vk.AllocateCommandBuffers(device, in commandBufferAllocateInfo, out commandBufferList[x]);
             }
         }
 
@@ -128,7 +99,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 Level = CommandBufferLevel.Primary,
                 CommandBufferCount = 1
             };
-            vulkan.AllocateCommandBuffers(device, in commandBufferAllocateInfo, out commandBuffer);
+            vk.AllocateCommandBuffers(device, in commandBufferAllocateInfo, out commandBuffer);
         }
 
         public static Result StartFrame()
@@ -138,8 +109,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             var fence = InFlightFences[(int)CommandIndex];
             var imageSemaphore = AcquireImageSemaphores[(int)CommandIndex];
 
-            vulkan.WaitForFences(device, 1, &fence, Vk.True, ulong.MaxValue);
-            vulkan.ResetFences(device, 1, &fence);
+            vk.WaitForFences(device, 1, &fence, Vk.True, ulong.MaxValue);
+            vk.ResetFences(device, 1, &fence);
 
             var imageIndex = ImageIndex;
             Result result = swapChain.khrSwapchain.AcquireNextImage(device, swapChain.swapChain, ulong.MaxValue, imageSemaphore, fence, &imageIndex);
@@ -160,8 +131,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             var presentSemaphore = PresentImageSemaphores[(int)CommandIndex];
             var imageSemaphore = AcquireImageSemaphores[(int)CommandIndex];
 
-            vulkan.WaitForFences(device, 1, &fence, Vk.True, ulong.MaxValue);
-            vulkan.ResetFences(device, 1, &fence);
+            vk.WaitForFences(device, 1, &fence, Vk.True, ulong.MaxValue);
+            vk.ResetFences(device, 1, &fence);
             InFlightFences[(int)CommandIndex] = fence;
 
             PipelineStageFlags[] waitStages = new PipelineStageFlags[]
@@ -193,7 +164,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                         PSignalSemaphores = &presentSemaphore
                     };
 
-                    Result submitResult = vulkan.QueueSubmit(graphicsQueue, 1, &submitInfo, fence);
+                    Result submitResult = vk.QueueSubmit(graphicsQueue, 1, &submitInfo, fence);
                     if (submitResult != Result.Success)
                     {
                         return submitResult;
@@ -256,7 +227,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     PCode = (uint*)codePtr
                 };
 
-                Result result = vulkan.CreateShaderModule(device, &createInfo, null, &shaderModule);
+                Result result = vk.CreateShaderModule(device, &createInfo, null, &shaderModule);
                 if (result != Result.Success)
                 {
                     Console.WriteLine($"Failed to create shader module: {result}");
@@ -265,154 +236,62 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return shaderModule;
         }
 
-        public static void CreateWindow(IWindow tempWindow)
-        {
-            window = tempWindow;
-        }
         public static Instance CreateInstance()
         {
-
             validationLayers = CheckAvailableValidationLayers(validationLayers);
             if (validationLayers is null)
             {
                 throw new NotSupportedException("Validation layers requested, but not available!");
             }
 
-            var vulkanRequiredExtensions = window.VkSurface.GetRequiredExtensions(out uint extensions);
-            requiredExtensions = new string[extensions];
-            for (var x = 0; x < extensions; x++)
-            {
-                requiredExtensions[x] = Marshal.PtrToStringAnsi((IntPtr)vulkanRequiredExtensions[x]);
-            }
-            var extensionsArray = requiredExtensions.Concat(instanceExtensions).ToArray();
+            uint extensionCount = 0;
+            GetWin32Extensions(ref extensionCount, out string[] enabledExtensions);
 
             ApplicationInfo applicationInfo = new
-          (
-              pApplicationName: (byte*)Marshal.StringToHGlobalAnsi("Level Editor Play Test"),
-              applicationVersion: new Version32(1, 0, 0),
-              pEngineName: (byte*)Marshal.StringToHGlobalAnsi(""),
-              engineVersion: new Version32(1, 0, 0),
-              apiVersion: Vk.Version13
-          );
-
-            InstanceCreateInfo createInfo = new
             (
-                pApplicationInfo: &applicationInfo
+                pApplicationName: (byte*)Marshal.StringToHGlobalAnsi("Level Editor Play Test"),
+                applicationVersion: new Version32(1, 0, 0),
+                pEngineName: (byte*)Marshal.StringToHGlobalAnsi(""),
+                engineVersion: new Version32(1, 0, 0),
+                apiVersion: Vk.Version13
             );
 
-            createInfo.EnabledExtensionCount = (uint)extensionsArray.Length;
-            createInfo.PpEnabledExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(extensionsArray);
+            byte** validationLayersPtr = CreateStringPointerArray(validationLayers);
+            byte** extensionsPtr = CreateStringPointerArray(enabledExtensions);
 
-            if (validationLayers != null)
+            var debugInfo = new DebugUtilsMessengerCreateInfoEXT
+            (
+                messageSeverity: DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt |
+                                 DebugUtilsMessageSeverityFlagsEXT.InfoBitExt |
+                                 DebugUtilsMessageSeverityFlagsEXT.WarningBitExt |
+                                 DebugUtilsMessageSeverityFlagsEXT.ErrorBitExt,
+                messageType: DebugUtilsMessageTypeFlagsEXT.GeneralBitExt |
+                             DebugUtilsMessageTypeFlagsEXT.ValidationBitExt |
+                             DebugUtilsMessageTypeFlagsEXT.PerformanceBitExt,
+                pfnUserCallback: new PfnDebugUtilsMessengerCallbackEXT(SilkVulkanDebug.MessageCallback)
+            );
+
+            InstanceCreateInfo vulkanCreateInfo = new InstanceCreateInfo
             {
-                createInfo.EnabledLayerCount = (uint)validationLayers.Length;
-                createInfo.PpEnabledLayerNames = (byte**)SilkMarshal.StringArrayToPtr(validationLayers);
-            }
+                SType = StructureType.InstanceCreateInfo,
+                PApplicationInfo = &applicationInfo,
+                EnabledLayerCount = (uint)validationLayers.Length,
+                PpEnabledLayerNames = validationLayersPtr, 
+                EnabledExtensionCount = extensionCount,
+                PpEnabledExtensionNames = extensionsPtr, 
+                PNext = (void*)(&debugInfo) 
+            };
 
-            DebugUtilsMessengerCreateInfoEXT debugCreateInfo = SilkVulkanDebug.MakeDebugUtilsMessengerCreateInfoEXT();
-            createInfo.PNext = &debugCreateInfo;
-
-
-            Result result = vulkan.CreateInstance(in createInfo, null, out Instance vkInstance);
+            Result result = vk.CreateInstance(in vulkanCreateInfo, null, out Instance vkInstance);
             instance = vkInstance;
             if (result != Result.Success)
             {
                 throw new Exception("Failed to create instance!");
             }
 
-            ExtDebugUtils debugUtils;
-            if (!vulkan.TryGetInstanceExtension(instance, out debugUtils))
-            {
-                throw new Exception("Failed to create debug messenger.");
-            }
-
-            if (debugUtils.CreateDebugUtilsMessenger(instance, &debugCreateInfo, null,
-                out DebugUtilsMessengerEXT DebugMessenger) != Result.Success)
-            {
-                throw new Exception("Failed to create debug messenger.");
-            }
-
-            debugMessenger = DebugMessenger;
-
-            SilkMarshal.Free((nint)createInfo.PpEnabledLayerNames);
-            SilkMarshal.Free((nint)createInfo.PpEnabledExtensionNames);
-
             Marshal.FreeHGlobal((nint)applicationInfo.PApplicationName);
             Marshal.FreeHGlobal((nint)applicationInfo.PEngineName);
-
-            return instance;
-        }
-
-        public static Instance CreateInstance(RichTextBox logTextBox)
-        {
-
-            validationLayers = CheckAvailableValidationLayers(validationLayers);
-            if (validationLayers is null)
-            {
-                throw new NotSupportedException("Validation layers requested, but not available!");
-            }
-
-            var vulkanRequiredExtensions = window.VkSurface.GetRequiredExtensions(out uint extensions);
-            requiredExtensions = new string[extensions];
-            for (var x = 0; x < extensions; x++)
-            {
-                requiredExtensions[x] = Marshal.PtrToStringAnsi((IntPtr)vulkanRequiredExtensions[x]);
-            }
-            var extensionsArray = requiredExtensions.Concat(instanceExtensions).ToArray();
-
-            ApplicationInfo applicationInfo = new
-          (
-              pApplicationName: (byte*)Marshal.StringToHGlobalAnsi("Level Editor Play Test"),
-              applicationVersion: new Version32(1, 0, 0),
-              pEngineName: (byte*)Marshal.StringToHGlobalAnsi(""),
-              engineVersion: new Version32(1, 0, 0),
-              apiVersion: Vk.Version13
-          );
-
-            InstanceCreateInfo createInfo = new
-            (
-                pApplicationInfo: &applicationInfo
-            );
-
-            createInfo.EnabledExtensionCount = (uint)extensionsArray.Length;
-            createInfo.PpEnabledExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(extensionsArray);
-
-            if (validationLayers != null)
-            {
-                createInfo.EnabledLayerCount = (uint)validationLayers.Length;
-                createInfo.PpEnabledLayerNames = (byte**)SilkMarshal.StringArrayToPtr(validationLayers);
-            }
-
-            DebugUtilsMessengerCreateInfoEXT debugCreateInfo = SilkVulkanDebug.MakeDebugUtilsMessengerCreateInfoEXT();
-            createInfo.PNext = &debugCreateInfo;
-
-
-            Result result = vulkan.CreateInstance(in createInfo, null, out Instance vkInstance);
-            instance = vkInstance;
-            if (result != Result.Success)
-            {
-                throw new Exception("Failed to create instance!");
-            }
-
-            ExtDebugUtils debugUtils;
-            if (!vulkan.TryGetInstanceExtension(instance, out debugUtils))
-            {
-                throw new Exception("Failed to create debug messenger.");
-            }
-
-            if (debugUtils.CreateDebugUtilsMessenger(instance, &debugCreateInfo, null,
-                out DebugUtilsMessengerEXT DebugMessenger) != Result.Success)
-            {
-                throw new Exception("Failed to create debug messenger.");
-            }
-
-            debugMessenger = DebugMessenger;
-
-            SilkMarshal.Free((nint)createInfo.PpEnabledLayerNames);
-            SilkMarshal.Free((nint)createInfo.PpEnabledExtensionNames);
-
-            Marshal.FreeHGlobal((nint)applicationInfo.PApplicationName);
-            Marshal.FreeHGlobal((nint)applicationInfo.PEngineName);
+            FreeStringPointerArray(validationLayersPtr, validationLayers.Length);
 
             return instance;
         }
@@ -420,7 +299,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static uint GetMemoryType(uint typeFilter, MemoryPropertyFlags properties)
         {
             PhysicalDeviceMemoryProperties memProperties;
-            vulkan.GetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+            vk.GetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 
             for (uint x = 0; x < memProperties.MemoryTypeCount; x++)
             {
@@ -434,39 +313,33 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return uint.MaxValue;
         }
 
-        public static SurfaceResult CreateSurface(IWindow windowtemp)
+        [DllImport("vulkan-1.dll")]
+        public static extern int vkCreateWin32SurfaceKHR(Instance instance, ref Win32SurfaceCreateInfoKHR pCreateInfo, AllocationCallbacks* pAllocator, out SurfaceKHR pSurface);
+
+        public static void CreateSurface(IntPtr windowtemp)
         {
-            swapChain.swapchainExtent = new Extent2D((uint)windowtemp.FramebufferSize.X, (uint)windowtemp.FramebufferSize.Y);
-
-            surface = windowtemp.VkSurface.Create<AllocationCallbacks>(((Instance)instance).ToHandle(), null).ToSurface();
-
-            if (!VKConst.vulkan.TryGetInstanceExtension(instance, out KhrSurface khrSurface2))
+            var surfaceCreateInfo = new Win32SurfaceCreateInfoKHR
             {
-                throw new NotSupportedException("KHR_surface extension not found.");
-            }
-            khrSurface = khrSurface2;
-            //surface = windowtemp.VkSurface.Create<AllocationCallbacks>(((Instance)instance).ToHandle(), null).ToSurface();
-
-            //KhrSurface sufacekhr;
-            //if (!vulkan.TryGetInstanceExtension(instance, out sufacekhr))
-            //{
-            //    throw new NotSupportedException("KHR_surface extension not found.");
-            //}
-            //khrSurface = sufacekhr;
-
-            return new SurfaceResult
-            {
-                Surface = surface,
-                KhrSurface = khrSurface
+                SType = StructureType.Win32SurfaceCreateInfoKhr,
+                Hwnd = (IntPtr)windowtemp,
+                Hinstance = Marshal.GetHINSTANCE(typeof(Program).Module)
             };
+
+            if (vkCreateWin32SurfaceKHR(instance, ref surfaceCreateInfo, null, out SurfaceKHR surfacePtr) != 0)
+            {
+                MessageBox.Show("Failed to create Vulkan surface.");
+                return;
+            }
+
+            surface = surfacePtr;
         }
 
-        public static PhysicalDevice CreatePhysicalDevice(KhrSurface tempsurface)
+        public static PhysicalDevice CreatePhysicalDevice()
         {
             uint deviceCount = 0;
-            vulkan.EnumeratePhysicalDevices(instance, &deviceCount, null);
+            vk.EnumeratePhysicalDevices(instance, &deviceCount, null);
             PhysicalDevice[] physicalDevices = new PhysicalDevice[deviceCount];
-            vulkan.EnumeratePhysicalDevices(instance, &deviceCount, physicalDevices);
+            vk.EnumeratePhysicalDevices(instance, &deviceCount, physicalDevices);
 
             foreach (var tempPhysicalDevice in physicalDevices)
             {
@@ -478,12 +351,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 bool isSwapChainAdequate = false;
                 if (isExtensionsSupported)
                 {
-                    var formats = GetSurfaceFormatsKHR(tempPhysicalDevice, tempsurface);
-                    var presentModes = GetSurfacePresentModesKHR(tempPhysicalDevice, tempsurface);
-                    isSwapChainAdequate = (formats != null) && (presentModes != null);
+                    var surfaceFormats = GetSurfaceFormatsKHR(tempPhysicalDevice);
+                    var presentModes = GetSurfacePresentModesKHR(tempPhysicalDevice);
+                    isSwapChainAdequate = (surfaceFormats != null) && (presentModes != null);
                 }
 
-                vulkan.GetPhysicalDeviceFeatures(tempPhysicalDevice, out PhysicalDeviceFeatures supportedFeatures);
+                vk.GetPhysicalDeviceFeatures(tempPhysicalDevice, out PhysicalDeviceFeatures supportedFeatures);
                 if (isExtensionsSupported &&
                     isSwapChainAdequate &&
                     supportedFeatures.SamplerAnisotropy)
@@ -536,7 +409,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 PpEnabledLayerNames = (byte**)SilkMarshal.StringArrayToPtr(validationLayers)
             };
 
-            var result = vulkan.CreateDevice(physicalDevice, in createInfo, null, out Device devicePtr);
+            var result = vk.CreateDevice(physicalDevice, in createInfo, null, out Device devicePtr);
             if (result != Result.Success)
             {
                 // Handle the error accordingly
@@ -556,18 +429,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 Flags = CommandPoolCreateFlags.ResetCommandBufferBit,
                 QueueFamilyIndex = GraphicsFamily
             };
-            vulkan.CreateCommandPool(device, &CommandPoolCreateInfo, null, &commandpool);
+            vk.CreateCommandPool(device, &CommandPoolCreateInfo, null, &commandpool);
             commandPool = commandpool;
             return commandPool;
         }
 
-        public struct TimingThings
-        {
-            public Silk.NET.Vulkan.Semaphore[] acquire { get; set; }
-            public Silk.NET.Vulkan.Semaphore[] present { get; set; }
-            public Fence[] fences { get; set; }
-        }
-        public static TimingThings CreateSemaphores()
+        public static void CreateSemaphores()
         {
             AcquireImageSemaphores = new Silk.NET.Vulkan.Semaphore[MAX_FRAMES_IN_FLIGHT];
             PresentImageSemaphores = new Silk.NET.Vulkan.Semaphore[MAX_FRAMES_IN_FLIGHT];
@@ -595,47 +462,28 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             for (int x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
             {
-                vulkan.CreateSemaphore(device, in semaphoreCreateInfo, null, out AcquireImageSemaphores[x]);
-                vulkan.CreateSemaphore(device, in semaphoreCreateInfo, null, out PresentImageSemaphores[x]);
-                vulkan.CreateFence(device, in fenceInfo, null, out InFlightFences[x]);
+                vk.CreateSemaphore(device, in semaphoreCreateInfo, null, out AcquireImageSemaphores[x]);
+                vk.CreateSemaphore(device, in semaphoreCreateInfo, null, out PresentImageSemaphores[x]);
+                vk.CreateFence(device, in fenceInfo, null, out InFlightFences[x]);
             }
-
-            return new TimingThings
-            {
-                acquire = AcquireImageSemaphores,
-                present = PresentImageSemaphores,
-                fences = InFlightFences
-            };
         }
 
-        public struct getQueues
+        public static void CreateDeviceQueue()
         {
-            public Silk.NET.Vulkan.Queue graphics { get; set; }
-            public Silk.NET.Vulkan.Queue present { get; set; }
-        }
-
-        public static getQueues CreateDeviceQueue()
-        {
-            vulkan.GetDeviceQueue(device, GraphicsFamily, 0, out Silk.NET.Vulkan.Queue graphicsQueuePtr);
-            vulkan.GetDeviceQueue(device, PresentFamily, 0, out Silk.NET.Vulkan.Queue presentQueuePtr);
+            vk.GetDeviceQueue(device, GraphicsFamily, 0, out Silk.NET.Vulkan.Queue graphicsQueuePtr);
+            vk.GetDeviceQueue(device, PresentFamily, 0, out Silk.NET.Vulkan.Queue presentQueuePtr);
             graphicsQueue = graphicsQueuePtr;
             presentQueue = presentQueuePtr;
-
-            return new getQueues
-            {
-                graphics = graphicsQueue,
-                present = presentQueue,
-            };
         }
 
         public static string[] CheckAvailableValidationLayers(string[] layers)
         {
             uint nrLayers = 0;
-            vulkan.EnumerateInstanceLayerProperties(&nrLayers, null);
+            vk.EnumerateInstanceLayerProperties(&nrLayers, null);
 
             LayerProperties[] availableLayers = new LayerProperties[nrLayers];
 
-            vulkan.EnumerateInstanceLayerProperties(&nrLayers, availableLayers);
+            vk.EnumerateInstanceLayerProperties(&nrLayers, availableLayers);
 
             var availableLayerNames = availableLayers.Select(availableLayer => Marshal.PtrToStringAnsi((nint)availableLayer.LayerName)).ToArray();
 
@@ -650,9 +498,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static string[] GetExtensionProperteis(PhysicalDevice device)
         {
             uint extensionCount = 0;
-            vulkan.EnumerateDeviceExtensionProperties(device, (byte*)null, &extensionCount, null);
+            vk.EnumerateDeviceExtensionProperties(device, (byte*)null, &extensionCount, null);
             ExtensionProperties[] availableExtensions = new ExtensionProperties[extensionCount];
-            vulkan.EnumerateDeviceExtensionProperties(device, (byte*)null, &extensionCount, availableExtensions);
+            vk.EnumerateDeviceExtensionProperties(device, (byte*)null, &extensionCount, availableExtensions);
 
             var extensions = new string[extensionCount];
             for (int x = 0; x < extensionCount; x++)
@@ -667,9 +515,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static uint FindGraphicsQueueFamily(PhysicalDevice tempPhysicalDevice)
         {
             uint queueFamilyCount = 0;
-            vulkan.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, null);
+            vk.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, null);
             QueueFamilyProperties[] graphicsFamily = new QueueFamilyProperties[queueFamilyCount];
-            vulkan.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, graphicsFamily);
+            vk.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, graphicsFamily);
 
             uint tempGraphicsFamily = 0;
             for (uint x = 0; x < graphicsFamily.Length; x++)
@@ -687,9 +535,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static uint FindPresentQueueFamily(PhysicalDevice tempPhysicalDevice)
         {
             uint queueFamilyCount = 0;
-            vulkan.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, null);
+            vk.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, null);
             QueueFamilyProperties[] presentFamily = new QueueFamilyProperties[queueFamilyCount];
-            vulkan.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, presentFamily);
+            vk.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, presentFamily);
 
             uint tempPresentFamily = 0;
             for (uint x = 0; x < presentFamily.Length; x++)
@@ -705,29 +553,108 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return tempPresentFamily;
         }
 
-        public static SurfaceFormatKHR[] GetSurfaceFormatsKHR(PhysicalDevice tempPhysicalDevice, KhrSurface khrSurface2)
+        [DllImport("vulkan-1.dll")]
+        public static extern int vkGetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice physicalDevice, SurfaceKHR surface, ref uint pSurfaceFormatCount, IntPtr pSurfaceFormats);
+        public static SurfaceFormatKHR[] GetSurfaceFormatsKHR(PhysicalDevice physicalDevice)
         {
-            uint surfaceFormatCount = 0;
-            khrSurface2.GetPhysicalDeviceSurfaceFormats(tempPhysicalDevice, surface, &surfaceFormatCount, null);
-            SurfaceFormatKHR[] surfaceFormats = new SurfaceFormatKHR[surfaceFormatCount];
-            khrSurface2.GetPhysicalDeviceSurfaceFormats(tempPhysicalDevice, surface, &surfaceFormatCount, surfaceFormats);
-            return surfaceFormats;
+            uint formatCount = 0;
+            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, ref formatCount, IntPtr.Zero);
+
+            var formats = new SurfaceFormatKHR[formatCount];
+            int structureSize = Marshal.SizeOf<SurfaceFormatKHR>();
+            IntPtr formatPtr = Marshal.AllocHGlobal(structureSize * (int)formatCount);
+            try
+            {
+                vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, ref formatCount, formatPtr);
+                for (int x = 0; x < formatCount; x++)
+                {
+                    formats[x] = Marshal.PtrToStructure<SurfaceFormatKHR>(formatPtr + x * Marshal.SizeOf<SurfaceFormatKHR>());
+                    Console.WriteLine($"Format: {formats[x].Format}, Color Space: {formats[x].ColorSpace}");
+                }
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(formatPtr);
+            }
+            return formats;
         }
 
-        public static PresentModeKHR[] GetSurfacePresentModesKHR(PhysicalDevice tempPhysicalDevice, KhrSurface khrSurface2)
+
+        [DllImport("vulkan-1.dll")]
+        public static extern int vkGetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice physicalDevice, SurfaceKHR surface, ref uint pPresentModeCount, IntPtr pPresentModes);
+        public static PresentModeKHR[] GetSurfacePresentModesKHR(PhysicalDevice physicalDevice)
         {
-            uint surfaceFormatCount = 0;
-            khrSurface2.GetPhysicalDeviceSurfacePresentModes(tempPhysicalDevice, surface, &surfaceFormatCount, null);
-            PresentModeKHR[] surfaceFormats = new PresentModeKHR[surfaceFormatCount];
-            khrSurface2.GetPhysicalDeviceSurfacePresentModes(tempPhysicalDevice, surface, &surfaceFormatCount, surfaceFormats);
-            return surfaceFormats;
+            uint presentModeCount = 0;
+            vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, ref presentModeCount, IntPtr.Zero);
+
+            var presentModes = new PresentModeKHR[presentModeCount];
+            IntPtr presentModePtr = Marshal.AllocHGlobal((int)presentModeCount * sizeof(int));
+            try
+            {
+                vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, ref presentModeCount, presentModePtr);
+                for (int x = 0; x < presentModeCount; x++)
+                {
+                    presentModes[x] = (PresentModeKHR)Marshal.ReadInt32(presentModePtr + x * sizeof(int));
+                    Console.WriteLine($"Present Mode: {presentModes[x]}");
+                }
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(presentModePtr);
+            }
+            return presentModes;
         }
+
 
         public static bool GetSurfaceSupport(PhysicalDevice tempPhysicalDevice, uint presentFamilyIndex)
         {
             Bool32 bool32 = false;
             // khrSurface.GetPhysicalDeviceSurfaceSupport(tempPhysicalDevice, presentFamilyIndex, surface, out true);
             return true;
+        }
+
+        [DllImport("vulkan-1.dll")]
+        public static extern Result vkEnumerateInstanceExtensionProperties(IntPtr pLayerName, ref uint pPropertyCount, IntPtr pProperties);
+        public static void GetWin32Extensions(ref uint extensionCount, out string[] enabledExtensions)
+        {
+            enabledExtensions = null;
+            Result result = vkEnumerateInstanceExtensionProperties(IntPtr.Zero, ref extensionCount, IntPtr.Zero);
+            if (result != Result.Success)
+            {
+                MessageBox.Show($"Failed to enumerate instance extension properties. Error: {result}");
+                return;
+            }
+
+            IntPtr extensionsPtr = Marshal.AllocHGlobal(Marshal.SizeOf<ExtensionProperties>() * (int)extensionCount);
+            try
+            {
+                result = vkEnumerateInstanceExtensionProperties(IntPtr.Zero, ref extensionCount, extensionsPtr);
+                if (result != Result.Success)
+                {
+                    MessageBox.Show($"Failed to retrieve instance extension properties. Error: {result}");
+                    return;
+                }
+
+                string[] extensionNames = new string[extensionCount];
+                for (uint x = 0; x < extensionCount; x++)
+                {
+                    ExtensionProperties extProps = Marshal.PtrToStructure<ExtensionProperties>(
+                        IntPtr.Add(extensionsPtr, (int)(x * Marshal.SizeOf<ExtensionProperties>())));
+
+                    string name = BytePtrToString(extProps.ExtensionName);
+                    extensionNames[x] = name;
+
+                    byte[] nameBytes = Encoding.UTF8.GetBytes(name);
+                    IntPtr ptr = Marshal.AllocHGlobal(nameBytes.Length + 1);
+                    Marshal.Copy(nameBytes, 0, ptr, nameBytes.Length);
+                    Marshal.WriteByte(ptr, nameBytes.Length, 0);
+                }
+                enabledExtensions = extensionNames;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(extensionsPtr);
+            }
         }
 
         public static CommandBuffer BeginSingleUseCommandBuffer()
@@ -740,14 +667,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 CommandPool = commandPool,
                 CommandBufferCount = 1
             };
-            vulkan.AllocateCommandBuffers(device, &allocInfo, &commandBuffer);
+            vk.AllocateCommandBuffers(device, &allocInfo, &commandBuffer);
 
             CommandBufferBeginInfo beginInfo = new CommandBufferBeginInfo()
             {
                 SType = StructureType.CommandBufferBeginInfo,
                 Flags = CommandBufferUsageFlags.OneTimeSubmitBit
             };
-            vulkan.BeginCommandBuffer(commandBuffer, &beginInfo);
+            vk.BeginCommandBuffer(commandBuffer, &beginInfo);
             return commandBuffer;
         }
 
@@ -761,11 +688,80 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             };
 
             Fence fence = new Fence();
-            vulkan.EndCommandBuffer(commandBuffer);
-            vulkan.QueueSubmit(graphicsQueue, 1, &submitInfo, fence);
-            vulkan.QueueWaitIdle(graphicsQueue);
-            vulkan.FreeCommandBuffers(device, commandPool, 1, &commandBuffer);
+            vk.EndCommandBuffer(commandBuffer);
+            vk.QueueSubmit(graphicsQueue, 1, &submitInfo, fence);
+            vk.QueueWaitIdle(graphicsQueue);
+            vk.FreeCommandBuffers(device, commandPool, 1, &commandBuffer);
             return Result.Success;
         }
+
+        public static unsafe string BytePtrToString(byte* bytePtr)
+        {
+            if (bytePtr == null)
+            {
+                throw new ArgumentNullException(nameof(bytePtr));
+            }
+
+            int length = 0;
+            while (bytePtr[length] != 0)
+            {
+                length++;
+                if (length > 256)
+                    throw new InvalidOperationException("String length exceeds expected limit");
+            }
+
+            byte[] bytes = new byte[length];
+            for (int i = 0; i < length; i++)
+            {
+                bytes[i] = bytePtr[i];
+            }
+
+            return Encoding.UTF8.GetString(bytes);
+        }
+
+        private static unsafe byte** CreateStringPointerArray(string[] strings)
+        {
+            int count = strings.Length;
+            byte** pointerArray = (byte**)Marshal.AllocHGlobal(count * sizeof(byte*));
+
+            for (int i = 0; i < count; i++)
+            {
+                byte* stringPointer = CreateBytePointerForStrings(new[] { strings[i] });
+                pointerArray[i] = stringPointer;
+            }
+            return pointerArray;
+        }
+
+        private static unsafe byte* CreateBytePointerForStrings(string[] strings)
+        {
+            int totalLength = 0;
+            foreach (var str in strings)
+            {
+                totalLength += Encoding.UTF8.GetByteCount(str) + 1; // +1 for null terminator
+            }
+
+            byte* byteArray = (byte*)Marshal.AllocHGlobal(totalLength);
+            byte* currentPointer = byteArray;
+
+            foreach (var str in strings)
+            {
+                byte[] stringBytes = Encoding.UTF8.GetBytes(str);
+                Marshal.Copy(stringBytes, 0, new IntPtr(currentPointer), stringBytes.Length);
+                currentPointer[stringBytes.Length] = 0; // Null-terminate
+                currentPointer += stringBytes.Length + 1; // Move to the next position
+            }
+
+            return byteArray;
+        }
+
+        private static unsafe void FreeStringPointerArray(byte** pointerArray, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Marshal.FreeHGlobal((IntPtr)pointerArray[i]);
+            }
+            Marshal.FreeHGlobal((IntPtr)pointerArray);
+        }
+
     }
 }
