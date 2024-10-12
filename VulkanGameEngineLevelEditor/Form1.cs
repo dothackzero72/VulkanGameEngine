@@ -39,7 +39,6 @@ namespace VulkanGameEngineLevelEditor
         private System.Windows.Forms.Timer renderTimer;
         private static Scene scene;
         public bool isFramebufferResized = false;
-        private LevelEditorDisplaySwapChain levelEditorSwapChain;
         public RenderPassModel renderPass { get; private set; } = new RenderPassModel();
         public MessengerModel RenderPassMessager { get; set; }
 
@@ -61,21 +60,7 @@ namespace VulkanGameEngineLevelEditor
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            levelEditorSwapChain = new LevelEditorDisplaySwapChain(VulkanSwapChainResolution);
-
-            StartLevelEditorRenderer();
             StartRenderer();
-            InitializeRenderTimer();
-        }
-
-        private void InitializeRenderTimer()
-        {
-            renderTimer = new System.Windows.Forms.Timer
-            {
-                Interval = 100
-            };
-            renderTimer.Tick += UpdateBitmap;
-            renderTimer.Start();
         }
 
         public void StartRenderer()
@@ -92,7 +77,7 @@ namespace VulkanGameEngineLevelEditor
         {
             this.Invoke(new Action(() =>
             {
-                SilkVulkanRenderer.CreateVulkanRenderer(this.pictureBox1.Handle, VulkanSwapChainResolution);
+                VulkanRenderer.CreateVulkanRenderer(this.pictureBox1.Handle, VulkanSwapChainResolution);
             }));
 
             scene = new Scene();
@@ -101,35 +86,7 @@ namespace VulkanGameEngineLevelEditor
             {
                 scene.Update();
                 scene.DrawFrame();
-                byte[] textureData = levelEditorSwapChain.BakeColorTexture(scene.RendererPass3D.renderedTexture);
-                dataCollection.TryAdd(textureData);
             }
-        }
-
-        public void StartLevelEditorRenderer()
-        {
-            running = true;
-            levelEditerDisplayThread = new Thread(LevelEditorLoop)
-            {
-                IsBackground = true
-            };
-            levelEditerDisplayThread.Start();
-        }
-
-        private void LevelEditorLoop()
-        {
-            while (running)
-            {
-                if (dataCollection.TryTake(out byte[] textureData))
-                {
-                    levelEditorSwapChain.UpdateBuffer(textureData, SilkVulkanRenderer.swapChain.swapchainExtent);
-                }
-            }
-        }
-
-        private void UpdateBitmap(object sender, EventArgs e)
-        {
-            pictureBox1.Invoke(new Action(() => levelEditorSwapChain.PresentImage(pictureBox1)));
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e)

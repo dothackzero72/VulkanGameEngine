@@ -89,7 +89,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
 
-            Result result = VKConst.vulkan.CreateImageView(SilkVulkanRenderer.device, &textureImageViewInfo, null, out var view);
+            Result result = vk.CreateImageView(VulkanRenderer.device, &textureImageViewInfo, null, out var view);
             if (result != Result.Success)
             {
             }
@@ -117,7 +117,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 BorderColor = BorderColor.FloatOpaqueWhite,
             };
 
-            VKConst.vulkan.CreateSampler(SilkVulkanRenderer.device, &textureImageSamplerInfo, null, out var sampler);
+            vk.CreateSampler(VulkanRenderer.device, &textureImageSamplerInfo, null, out var sampler);
             Sampler = sampler;
         }
 

@@ -1,5 +1,6 @@
 ﻿using GlmSharp;
 using Silk.NET.Core;
+using Silk.NET.SDL;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         public List<RenderPipeline> RenderPipelineList { get; set; } = new List<RenderPipeline>();
         public List<RenderedTextureInfoModel> AttachmentList { get; set; } = new List<RenderedTextureInfoModel>();
         public List<SubpassDependencyModel> SubpassDependencyList { get; set; } = new List<SubpassDependencyModel>();
-   
+        public BuildRenderPass buildRenderPass { get; set; } = new BuildRenderPass();
         public RenderPassBuilder()
         {
             InitializeComponent();
@@ -38,10 +39,17 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             GlobalMessenger.AddMessenger(RenderPassMessager);
             listBox1.Items.Add(SwapChainResuloution);
 
-            AttachmentList.Add(new RenderedTextureInfoModel());
-            AttachmentList.Add(new RenderedTextureInfoModel());
-            SubpassDependencyList.Add(new SubpassDependencyModel());
-            SubpassDependencyList.Add(new SubpassDependencyModel());
+            AttachmentList.Add(new RenderedTextureInfoModel("a"));
+            AttachmentList.Add(new RenderedTextureInfoModel("b"));
+            SubpassDependencyList.Add(new SubpassDependencyModel("C"));
+            SubpassDependencyList.Add(new SubpassDependencyModel("D"));
+
+            listBox1.Items.Add(AttachmentList[0]);
+            listBox1.Items.Add(AttachmentList[1]);
+            listBox1.Items.Add(SubpassDependencyList[0]);
+            listBox1.Items.Add(SubpassDependencyList[1]);
+
+
 
             //// Add columns to the ListView
             //listView1.Columns.Add("Item Name", 100);
@@ -103,9 +111,13 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var a = listBox1.SelectedIndex;
-            propertyGrid1.SelectedObject = AttachmentList;
-     
+            if (listBox1.SelectedItem is RenderedTextureInfoModel selectedPerson)
+            {
+                // Get type information
+                Type type = selectedPerson.GetType();
+                var a = listBox1.SelectedIndex;
+                propertyGrid1.SelectedObject = selectedPerson;
+            }
         }
 
         private void BuildButton_Click(object sender, EventArgs e)
@@ -117,13 +129,13 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                 messengers.IsActive = false;
             }
 
-            RenderPassModel renderPass = new RenderPassModel()
+            buildRenderPass.CreateRenderPass(new RenderPassModel()
             {
                 AttachmentList = AttachmentList,
                 RenderPipelineList = RenderPipelineList,
                 SubpassDependencyList = SubpassDependencyList,
                 SwapChainResuloution = SwapChainResuloution
-            };
+            });
 
             foreach (var messengers in otherMessangers)
             {
@@ -164,6 +176,16 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void propertyGrid1_Click_1(object sender, EventArgs e)
         {
 
         }

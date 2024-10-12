@@ -33,7 +33,6 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.components = new System.ComponentModel.Container();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.RenderPassBuilderDebug = new System.Windows.Forms.RichTextBox();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -60,20 +59,11 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.richTextBox1);
             this.panel1.Controls.Add(this.propertyGrid1);
             this.panel1.Location = new System.Drawing.Point(1142, 12);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(527, 865);
             this.panel1.TabIndex = 1;
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.Location = new System.Drawing.Point(-1038, 41);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(2304, 842);
-            this.richTextBox1.TabIndex = 2;
-            this.richTextBox1.Text = "";
             // 
             // propertyGrid1
             // 
@@ -83,6 +73,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(527, 865);
             this.propertyGrid1.TabIndex = 0;
+            this.propertyGrid1.Click += new System.EventHandler(this.propertyGrid1_Click_1);
             // 
             // RenderPassBuilderDebug
             // 
@@ -176,7 +167,6 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private ListBox listBox1;
         private Panel panel1;
         private PropertyGrid propertyGrid1;
-        private RichTextBox richTextBox1;
         private RichTextBox RenderPassBuilderDebug;
         private Panel panel2;
         private Button BuildButton;

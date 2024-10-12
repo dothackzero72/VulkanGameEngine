@@ -57,9 +57,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class Scene
     {
         Vk vk = Vk.GetApi();
-        public RendererPass3D RendererPass3D;
+        public RendererPass3D RendererPass3D { get; set; }
         static readonly long startTime = DateTime.Now.Ticks;
-        public Texture texture;
+        public Texture texture { get; set; }
     
         public Scene()
         {
@@ -82,9 +82,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public void DrawFrame()
         {
             List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
-            SilkVulkanRenderer.StartFrame();
+            VulkanRenderer.StartFrame();
             commandBufferList.Add(RendererPass3D.Draw());
-            SilkVulkanRenderer.EndFrame(commandBufferList);
+            VulkanRenderer.EndFrame(commandBufferList);
         }
     }
 }

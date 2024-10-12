@@ -27,7 +27,7 @@ using static System.Net.Mime.MediaTypeNames;
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
 
-    public unsafe static class SilkVulkanRenderer
+    public unsafe static class VulkanRenderer
     {
         public static Vk vk = Vk.GetApi();
         public const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -45,7 +45,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static Fence[] InFlightFences { get; private set; }
         public static Silk.NET.Vulkan.Semaphore[] AcquireImageSemaphores { get; private set; }
         public static Silk.NET.Vulkan.Semaphore[] PresentImageSemaphores { get; private set; }
-        public static SilkVulkanSwapChain swapChain { get; private set; } = new SilkVulkanSwapChain();
+        public static VulkanSwapChain swapChain { get; private set; } = new VulkanSwapChain();
         public static UInt32 ImageIndex { get; private set; } = new UInt32();
         public static UInt32 CommandIndex { get; private set; } = new UInt32();
         public static KhrSurface khrSurface { get; private set; }
@@ -236,7 +236,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return shaderModule;
         }
 
-        public static Instance CreateInstance()
+        public static void CreateInstance()
         {
             validationLayers = CheckAvailableValidationLayers(validationLayers);
             if (validationLayers is null)
@@ -268,7 +268,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 messageType: DebugUtilsMessageTypeFlagsEXT.GeneralBitExt |
                              DebugUtilsMessageTypeFlagsEXT.ValidationBitExt |
                              DebugUtilsMessageTypeFlagsEXT.PerformanceBitExt,
-                pfnUserCallback: new PfnDebugUtilsMessengerCallbackEXT(SilkVulkanDebug.MessageCallback)
+                pfnUserCallback: new PfnDebugUtilsMessengerCallbackEXT(VulkanDebug.MessageCallback)
             );
 
             InstanceCreateInfo vulkanCreateInfo = new InstanceCreateInfo
@@ -292,8 +292,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             Marshal.FreeHGlobal((nint)applicationInfo.PApplicationName);
             Marshal.FreeHGlobal((nint)applicationInfo.PEngineName);
             FreeStringPointerArray(validationLayersPtr, validationLayers.Length);
-
-            return instance;
         }
 
         public static uint GetMemoryType(uint typeFilter, MemoryPropertyFlags properties)
@@ -334,7 +332,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             surface = surfacePtr;
         }
 
-        public static PhysicalDevice CreatePhysicalDevice()
+        public static void CreatePhysicalDevice()
         {
             uint deviceCount = 0;
             vk.EnumeratePhysicalDevices(instance, &deviceCount, null);
@@ -362,13 +360,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     supportedFeatures.SamplerAnisotropy)
                 {
                     physicalDevice = tempPhysicalDevice;
-                    return physicalDevice;
+                    break;
                 }
             }
-            return physicalDevice;
         }
 
-        public static Device CreateDevice()
+        public static void CreateDevice()
         {
             HashSet<uint> queueFamilyList = new() { GraphicsFamily, PresentFamily };
             using var memory = GlobalMemory.Allocate(queueFamilyList.Count * sizeof(DeviceQueueCreateInfo));
@@ -412,15 +409,13 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             var result = vk.CreateDevice(physicalDevice, in createInfo, null, out Device devicePtr);
             if (result != Result.Success)
             {
-                // Handle the error accordingly
                 throw new Exception("Failed to create Vulkan device");
             }
 
             device = devicePtr;
-            return device;
         }
 
-        public static CommandPool CreateCommandPool()
+        public static void CreateCommandPool()
         {
             CommandPool commandpool = new CommandPool();
             CommandPoolCreateInfo CommandPoolCreateInfo = new CommandPoolCreateInfo()
@@ -431,7 +426,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             };
             vk.CreateCommandPool(device, &CommandPoolCreateInfo, null, &commandpool);
             commandPool = commandpool;
-            return commandPool;
         }
 
         public static void CreateSemaphores()
@@ -737,7 +731,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             int totalLength = 0;
             foreach (var str in strings)
             {
-                totalLength += Encoding.UTF8.GetByteCount(str) + 1; // +1 for null terminator
+                totalLength += Encoding.UTF8.GetByteCount(str) + 1;
             }
 
             byte* byteArray = (byte*)Marshal.AllocHGlobal(totalLength);
@@ -747,8 +741,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             {
                 byte[] stringBytes = Encoding.UTF8.GetBytes(str);
                 Marshal.Copy(stringBytes, 0, new IntPtr(currentPointer), stringBytes.Length);
-                currentPointer[stringBytes.Length] = 0; // Null-terminate
-                currentPointer += stringBytes.Length + 1; // Move to the next position
+                currentPointer[stringBytes.Length] = 0;
+                currentPointer += stringBytes.Length + 1;
             }
 
             return byteArray;

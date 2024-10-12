@@ -297,27 +297,24 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GameEngineAPI\BakeTexture.cs" />
-    <Compile Include="GameEngineAPI\CBuffer.cs" />
+    <Compile Include="Vulkan\CBuffer.cs" />
     <Compile Include="GameEngineAPI\CTexture.cs" />
     <Compile Include="GameEngineAPI\DepthTexture.cs" />
-    <Compile Include="GameEngineAPI\FrameBufferRenderPass.cs" />
     <Compile Include="GameEngineAPI\GameEngineDLL.cs" />
     <Compile Include="GameEngineAPI\GameEngineEnums.cs" />
     <Compile Include="GameEngineAPI\GlobalMessenger.cs" />
-    <Compile Include="GameEngineAPI\LevelEditorDisplaySwapChain.cs" />
     <Compile Include="GameEngineAPI\Pixel.cs" />
     <Compile Include="GameEngineAPI\RenderedTexture.cs" />
     <Compile Include="GameEngineAPI\BuildRenderPass.cs" />
     <Compile Include="GameEngineAPI\Scene.cs" />
     <Compile Include="GameEngineAPI\RendererPass3D.cs" />
-    <Compile Include="GameEngineAPI\SilkFrameBufferRenderPass.cs" />
     <Compile Include="GameEngineAPI\RenderPass.cs" />
     <Compile Include="ListExtensions.cs" />
     <Compile Include="GameEngineAPI\Mesh.cs" />
     <Compile Include="GameEngineAPI\Mesh2D.cs" />
     <Compile Include="GameEngineAPI\Texture.cs" />
     <Compile Include="GameEngineAPI\Vertex.cs" />
-    <Compile Include="GameEngineAPI\VulkanBuffer.cs" />
+    <Compile Include="Vulkan\VulkanBuffer.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Models\Extent3DModel.cs" />
     <Compile Include="Models\ImageCreateInfoModel.cs" />
@@ -337,10 +334,9 @@
     </Compile>
     <Compile Include="RichTextBoxWriter.cs" />
     <Compile Include="TextWriter.cs" />
-    <Compile Include="Vulkan\SilkVulkanDebug.cs" />
-    <Compile Include="Vulkan\SilkVulkanRenderer.cs" />
-    <Compile Include="Vulkan\SilkVulkanSwapChain.cs" />
-    <Compile Include="Vulkan\Vulkan.cs" />
+    <Compile Include="Vulkan\VulkanDebug.cs" />
+    <Compile Include="Vulkan\VulkanRenderer.cs" />
+    <Compile Include="Vulkan\VulkanSwapChain.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

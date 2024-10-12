@@ -7,10 +7,10 @@ using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
-    public unsafe class SilkVulkanDebug
+    public unsafe class VulkanDebug
     {
    
-        public SilkVulkanDebug()
+        public VulkanDebug()
         {
         }
 
@@ -25,25 +25,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             byte[] messageBytes = new byte[length];
             Marshal.Copy(new IntPtr(messagePtr), messageBytes, 0, length);
             return System.Text.Encoding.ASCII.GetString(messageBytes);
-        }
-
-        public static DebugUtilsMessengerCreateInfoEXT MakeDebugUtilsMessengerCreateInfoEXT()
-        {
-            DebugUtilsMessengerCreateInfoEXT createInfo = new
-            (
-                messageSeverity:
-                    DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt |
-                    DebugUtilsMessageSeverityFlagsEXT.InfoBitExt |
-                    DebugUtilsMessageSeverityFlagsEXT.WarningBitExt |
-                    DebugUtilsMessageSeverityFlagsEXT.ErrorBitExt,
-                messageType:
-                    DebugUtilsMessageTypeFlagsEXT.GeneralBitExt |
-                    DebugUtilsMessageTypeFlagsEXT.ValidationBitExt |
-                    DebugUtilsMessageTypeFlagsEXT.PerformanceBitExt,
-                pfnUserCallback: new PfnDebugUtilsMessengerCallbackEXT(MessageCallback)
-            );
-
-            return createInfo;
         }
 
         public static uint MessageCallback(DebugUtilsMessageSeverityFlagsEXT severity, DebugUtilsMessageTypeFlagsEXT messageType, DebugUtilsMessengerCallbackDataEXT* callbackData, void* userData)

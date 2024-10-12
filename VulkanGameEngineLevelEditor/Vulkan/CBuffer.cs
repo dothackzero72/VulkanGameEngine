@@ -7,15 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.Vulkan;
 
-namespace VulkanGameEngineLevelEditor.GameEngineAPI
+namespace VulkanGameEngineLevelEditor.Vulkan
 {
     public static unsafe class CBuffer
     {
-
+        private static Vk vk = Vk.GetApi();
         public static Result AllocateMemory(Silk.NET.Vulkan.Buffer buffer, out DeviceMemory bufferMemory, MemoryPropertyFlags properties)
         {
             bufferMemory = new DeviceMemory();
-            VKConst.vulkan.GetBufferMemoryRequirements(SilkVulkanRenderer.device, buffer, out MemoryRequirements memRequirements);
+            vk.GetBufferMemoryRequirements(VulkanRenderer.device, buffer, out MemoryRequirements memRequirements);
 
             MemoryAllocateFlagsInfoKHR extendedAllocFlagsInfo = new MemoryAllocateFlagsInfoKHR
             {
@@ -26,12 +26,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 SType = StructureType.MemoryAllocateInfo,
                 AllocationSize = memRequirements.Size,
-                MemoryTypeIndex = SilkVulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, properties),
+                MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, properties),
                 PNext = &extendedAllocFlagsInfo
             };
 
 
-            VKConst.vulkan.AllocateMemory(SilkVulkanRenderer.device, &allocInfo, null, out bufferMemory);
+            vk.AllocateMemory(VulkanRenderer.device, &allocInfo, null, out bufferMemory);
 
             return Result.Success;
         }
@@ -44,7 +44,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             void* mappedData;
-            Result result = VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bufferMemory, 0, bufferSize, 0, &mappedData);
+            Result result = vk.MapMemory(VulkanRenderer.device, bufferMemory, 0, bufferSize, 0, &mappedData);
             if (result != Result.Success)
             {
                 return null;
@@ -58,7 +58,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             if (*isMapped)
             {
-                VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bufferMemory);
+                vk.UnmapMemory(VulkanRenderer.device, bufferMemory);
                 *isMapped = false;
             }
             return Result.Success;
@@ -80,7 +80,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Usage = bufferUsage,
                 SharingMode = SharingMode.Exclusive
             };
-            Result result = VKConst.vulkan.CreateBuffer(SilkVulkanRenderer.device, &bufferInfo, null, out Silk.NET.Vulkan.Buffer bufferPtr);
+            Result result = vk.CreateBuffer(VulkanRenderer.device, &bufferInfo, null, out Silk.NET.Vulkan.Buffer bufferPtr);
             buffer = bufferPtr;
 
             result = AllocateMemory(buffer, out bufferMemory, properties);
@@ -89,14 +89,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 return result;
             }
 
-            result = VKConst.vulkan.BindBufferMemory(SilkVulkanRenderer.device, buffer, bufferMemory, 0);
+            result = vk.BindBufferMemory(VulkanRenderer.device, buffer, bufferMemory, 0);
             if (result != Result.Success)
             {
                 return result;
             }
 
             void* mappedData;
-            result = VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bufferMemory, 0, bufferSize, 0, &mappedData);
+            result = vk.MapMemory(VulkanRenderer.device, bufferMemory, 0, bufferSize, 0, &mappedData);
             if (result != Result.Success)
             {
                 return result;
@@ -105,7 +105,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             int intCount = (int)bufferSize / 4;
             int[] mappedDataArray = new int[intCount];
             Marshal.Copy((IntPtr)bufferData, mappedDataArray, 0, intCount);
-            VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bufferMemory);
+            vk.UnmapMemory(VulkanRenderer.device, bufferMemory);
 
             return Result.Success;
         }
@@ -120,12 +120,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Usage = BufferUsageFlags.TransferSrcBit,
                 SharingMode = SharingMode.Exclusive
             };
-            VKConst.vulkan.CreateBuffer(SilkVulkanRenderer.device, &imageInfo, null, out stagingBuffer);
+            vk.CreateBuffer(VulkanRenderer.device, &imageInfo, null, out stagingBuffer);
 
-            VKConst.vulkan.GetBufferMemoryRequirements(SilkVulkanRenderer.device, stagingBuffer, out MemoryRequirements memRequirements);
+            vk.GetBufferMemoryRequirements(VulkanRenderer.device, stagingBuffer, out MemoryRequirements memRequirements);
 
             AllocateMemory(stagingBuffer, out stagingBufferMemory, properties);
-            return VKConst.vulkan.BindBufferMemory(SilkVulkanRenderer.device, stagingBuffer, stagingBufferMemory, 0);
+            return vk.BindBufferMemory(VulkanRenderer.device, stagingBuffer, stagingBufferMemory, 0);
         }
 
         public static Result CopyBuffer(Silk.NET.Vulkan.Buffer srcBuffer, Silk.NET.Vulkan.Buffer dstBuffer, ulong size)
@@ -137,9 +137,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Size = size
             };
 
-            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
-            VKConst.vulkan.CmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-            return SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            vk.CmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+            return VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
         }
 
         public static Result CopyStagingBuffer(CommandBuffer commandBuffer, Silk.NET.Vulkan.Buffer srcBuffer, Silk.NET.Vulkan.Buffer dstBuffer, ulong size)
@@ -151,7 +151,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Size = size
             };
 
-            VKConst.vulkan.CmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+            vk.CmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
             return Result.Success;
         }
 
@@ -173,7 +173,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             var tempbuffer = buffer;
-            Result result = VKConst.vulkan.CreateBuffer(SilkVulkanRenderer.device, &bufferCreateInfo, null, &tempbuffer);
+            Result result = vk.CreateBuffer(VulkanRenderer.device, &bufferCreateInfo, null, &tempbuffer);
             buffer = tempbuffer;
             if (result != Result.Success)
             {
@@ -186,13 +186,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 return result;
             }
 
-            result = VKConst.vulkan.BindBufferMemory(SilkVulkanRenderer.device, buffer, bufferMemory, 0);
+            result = vk.BindBufferMemory(VulkanRenderer.device, buffer, bufferMemory, 0);
             if (result != Result.Success)
             {
                 return result;
             }
 
-            return VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bufferMemory, 0, newBufferSize, 0, &bufferData);
+            return vk.MapMemory(VulkanRenderer.device, bufferMemory, 0, newBufferSize, 0, &bufferData);
         }
 
         public static Result UpdateBufferMemory(DeviceMemory bufferMemory, void* dataToCopy, ulong bufferSize)
@@ -203,7 +203,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             void* mappedData;
-            Result result = VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bufferMemory, 0, bufferSize, 0, &mappedData);
+            Result result = vk.MapMemory(VulkanRenderer.device, bufferMemory, 0, bufferSize, 0, &mappedData);
             if (result != Result.Success)
             {
                 return result;
@@ -212,7 +212,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             int intCount = (int)bufferSize / 4;
             int[] mappedDataArray = new int[intCount];
             Marshal.Copy((IntPtr)dataToCopy, mappedDataArray, 0, intCount);
-            VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bufferMemory);
+            vk.UnmapMemory(VulkanRenderer.device, bufferMemory);
             return Result.Success;
         }
 
@@ -225,7 +225,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             void* mappedData;
-            Result result = VKConst.vulkan.MapMemory(SilkVulkanRenderer.device, bufferMemory, 0, bufferSize, 0, &mappedData);
+            Result result = vk.MapMemory(VulkanRenderer.device, bufferMemory, 0, bufferSize, 0, &mappedData);
             if (result != Result.Success)
             {
                 return result;
@@ -234,7 +234,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             int intCount = (int)bufferSize / 4;
             int[] mappedDataArray = new int[intCount];
             Marshal.Copy((IntPtr)dataToCopy, mappedDataArray, 0, intCount);
-            VKConst.vulkan.UnmapMemory(SilkVulkanRenderer.device, bufferMemory);
+            vk.UnmapMemory(VulkanRenderer.device, bufferMemory);
             return Result.Success;
         }
     }

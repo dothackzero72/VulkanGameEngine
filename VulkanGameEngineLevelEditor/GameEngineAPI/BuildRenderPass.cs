@@ -15,7 +15,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     {
         Vk vk = Vk.GetApi();
         public Device _device {  get; private set; }
-        public List<RenderedTexture> RenderedColorTextureList { get; private set; }= new List<RenderedTexture>();
+        public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
         public DepthTexture DepthTexture { get; private set; }
         public BuildRenderPass()
         {
@@ -45,7 +45,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         }
                 }
             }
-
 
             List<AttachmentReference> inputAttachmentReferenceList = new List<AttachmentReference>();
             List<AttachmentReference> colorAttachmentReferenceList = new List<AttachmentReference>();

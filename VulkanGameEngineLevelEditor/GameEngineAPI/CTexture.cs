@@ -26,20 +26,20 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 SharingMode = SharingMode.Exclusive
             };
             var BufferInfo = bufferInfo;
-            VKConst.vulkan.CreateBuffer(SilkVulkanRenderer.device, &BufferInfo, null, buffer);
+            vk.CreateBuffer(VulkanRenderer.device, &BufferInfo, null, buffer);
 
             MemoryRequirements memRequirements;
-            VKConst.vulkan.GetBufferMemoryRequirements(SilkVulkanRenderer.device, *buffer, &memRequirements);
+            vk.GetBufferMemoryRequirements(VulkanRenderer.device, *buffer, &memRequirements);
 
             MemoryAllocateInfo allocInfo = new MemoryAllocateInfo
             {
                 SType = StructureType.MemoryAllocateInfo,
                 AllocationSize = memRequirements.Size,
-                MemoryTypeIndex = SilkVulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, properties)
+                MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, properties)
             };
 
-            VKConst.vulkan.AllocateMemory(SilkVulkanRenderer.device, &allocInfo, null, bufferMemory);
-            VKConst.vulkan.BindBufferMemory(SilkVulkanRenderer.device, *buffer, *bufferMemory, 0);
+            vk.AllocateMemory(VulkanRenderer.device, &allocInfo, null, bufferMemory);
+            vk.BindBufferMemory(VulkanRenderer.device, *buffer, *bufferMemory, 0);
         }
 
 
@@ -59,7 +59,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             barrier.SrcAccessMask = 0;
             barrier.DstAccessMask = AccessFlags.TransferWriteBit;
 
-            VKConst.vulkan.CmdPipelineBarrier(commandBuffer, PipelineStageFlags.AllCommandsBit, PipelineStageFlags.AllCommandsBit, 0, 0, null, 0, null, 1, &barrier);
+            vk.CmdPipelineBarrier(commandBuffer, PipelineStageFlags.AllCommandsBit, PipelineStageFlags.AllCommandsBit, 0, 0, null, 0, null, 1, &barrier);
             oldImageLayout = newImageLayout;
         }
 
@@ -110,28 +110,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
 
             Silk.NET.Vulkan.Image tempImagePtr = new Silk.NET.Vulkan.Image();
-            Result result = VKConst.vulkan.CreateImage(SilkVulkanRenderer.device, &createInfo, null, &tempImagePtr);
+            Result result = vk.CreateImage(VulkanRenderer.device, &createInfo, null, &tempImagePtr);
           
 
             MemoryRequirements memRequirements;
-            VKConst.vulkan.GetImageMemoryRequirements(SilkVulkanRenderer.device, tempImagePtr, &memRequirements);
+            vk.GetImageMemoryRequirements(VulkanRenderer.device, tempImagePtr, &memRequirements);
 
             MemoryAllocateInfo allocInfo = new MemoryAllocateInfo
             {
                 SType = StructureType.MemoryAllocateInfo,
                 AllocationSize = memRequirements.Size,
-                MemoryTypeIndex = SilkVulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.DeviceLocalBit)
+                MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.DeviceLocalBit)
             };
 
             DeviceMemory textureMemoryPtr = new DeviceMemory();
-            result = VKConst.vulkan.AllocateMemory(SilkVulkanRenderer.device, &allocInfo, null, &textureMemoryPtr);
+            result = vk.AllocateMemory(VulkanRenderer.device, &allocInfo, null, &textureMemoryPtr);
             if (result != Result.Success)
             {
             }
 
             image = tempImagePtr;
             textureMemory = textureMemoryPtr;
-            result = VKConst.vulkan.BindImageMemory(SilkVulkanRenderer.device, image, textureMemory, 0);
+            result = vk.BindImageMemory(VulkanRenderer.device, image, textureMemory, 0);
             if (result != Result.Success)
             {
             }
@@ -182,7 +182,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 destinationStage = PipelineStageFlags.FragmentShaderBit;
             }
 
-            VKConst.vulkan.CmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, null, 0, null, 1, &barrier);
+            vk.CmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, null, 0, null, 1, &barrier);
             oldLayout = newLayout;
 
             return Result.Success;
@@ -206,18 +206,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 ImageExtent = extent
             };
 
-            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
-            VKConst.vulkan.CmdCopyBufferToImage(commandBuffer, buffer, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &bufferImage);
-            SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            vk.CmdCopyBufferToImage(commandBuffer, buffer, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &bufferImage);
+            VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
             return Result.Success;
         }
 
         public static Result QuickTransitionImageLayout(Image image, Silk.NET.Vulkan.ImageLayout oldLayout, Silk.NET.Vulkan.ImageLayout newLayout, uint MipMapLevels, ImageAspectFlags imageAspectFlags)
         {
-            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
+            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             CTexture.TransitionImageLayout(commandBuffer, image, MipMapLevels, ref oldLayout, newLayout, imageAspectFlags);
-            Result result = SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+            Result result = VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
             return result;
         }
@@ -254,9 +254,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 BufferImage.ImageSubresource.LayerCount = 6;
             }
-            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
-            VKConst.vulkan.CmdCopyBufferToImage(commandBuffer, buffer, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &BufferImage);
-            return SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            vk.CmdCopyBufferToImage(commandBuffer, buffer, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &BufferImage);
+            return VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
         }
 
         public static Result GenerateMipmaps(Silk.NET.Vulkan.Image image, int Width, int Height, Format format, uint mipLevels, ImageAspectFlags imageAspectFlags)
@@ -264,13 +264,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             uint mipWidth = (uint)Width;
             uint mipHeight = (uint)Height;
 
-            vk.GetPhysicalDeviceFormatProperties(SilkVulkanRenderer.physicalDevice, format, out FormatProperties formatProperties);
+            vk.GetPhysicalDeviceFormatProperties(VulkanRenderer.physicalDevice, format, out FormatProperties formatProperties);
             if ((formatProperties.OptimalTilingFeatures & FormatFeatureFlags.SampledImageFilterLinearBit) == 0)
             {
                 // Handle error if needed
             }
 
-            CommandBuffer commandBuffer = SilkVulkanRenderer.BeginSingleUseCommandBuffer();
+            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             ImageMemoryBarrier imageMemoryBarrier = new ImageMemoryBarrier
             {
                 SType = StructureType.ImageMemoryBarrier,
@@ -348,7 +348,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             imageMemoryBarrier.DstAccessMask = AccessFlags.ShaderReadBit;
 
             vk.CmdPipelineBarrier(commandBuffer, PipelineStageFlags.TransferBit, PipelineStageFlags.FragmentShaderBit, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
-            return SilkVulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+            return VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
         }
     }
 }

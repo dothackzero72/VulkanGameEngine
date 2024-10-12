@@ -15,7 +15,7 @@ using Silk.NET.Core.Native;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
-    public unsafe class SilkVulkanSwapChain
+    public unsafe class VulkanSwapChain
     {
         Vk vk = Vk.GetApi();
         public Format colorFormat { get; private set; }
@@ -24,15 +24,15 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public Image[] images { get; private set; }
         public ImageView[] imageViews { get; private set; }
         public KhrSwapchain khrSwapchain { get; private set; }
-        public uint ImageCount { get; private set; } = SilkVulkanRenderer.MAX_FRAMES_IN_FLIGHT;
+        public uint ImageCount { get; private set; } = VulkanRenderer.MAX_FRAMES_IN_FLIGHT;
 
         [DllImport("vulkan-1.dll")]
         public static extern Result vkGetPhysicalDeviceSurfaceCapabilitiesKHR(PhysicalDevice physicalDevice, SurfaceKHR surface, out SurfaceCapabilitiesKHR pSurfaceCapabilities);
     public SwapchainKHR CreateSwapChain(IntPtr window)
         {
-            List<SurfaceFormatKHR> surfaceFormat = GetSurfaceFormatsKHR(SilkVulkanRenderer.physicalDevice).ToList();
-            List<PresentModeKHR> presentMode = GetSurfacePresentModesKHR(SilkVulkanRenderer.physicalDevice).ToList();
-            SurfaceCapabilitiesKHR surfaceCapabilities = GetSurfaceCapabilitiesKHR(SilkVulkanRenderer.physicalDevice);
+            List<SurfaceFormatKHR> surfaceFormat = GetSurfaceFormatsKHR(VulkanRenderer.physicalDevice).ToList();
+            List<PresentModeKHR> presentMode = GetSurfacePresentModesKHR(VulkanRenderer.physicalDevice).ToList();
+            SurfaceCapabilitiesKHR surfaceCapabilities = GetSurfaceCapabilitiesKHR(VulkanRenderer.physicalDevice);
 
             SurfaceTransformFlagsKHR preTransform = surfaceCapabilities.SupportedTransforms.HasFlag(SurfaceTransformFlagsKHR.IdentityBitKhr)
                                          ? SurfaceTransformFlagsKHR.IdentityBitKhr
@@ -44,7 +44,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 surfaceCapabilities.SupportedCompositeAlpha.HasFlag(CompositeAlphaFlagsKHR.InheritBitKhr) ? CompositeAlphaFlagsKHR.InheritBitKhr :
                 CompositeAlphaFlagsKHR.OpaqueBitKhr;
 
-            colorFormat = surfaceFormat[0].Format;
+            colorFormat = surfaceFormat[2].Format;
             swapchainExtent = new Extent2D();
             if (surfaceCapabilities.CurrentExtent.Width != uint.MaxValue)
             {
@@ -66,10 +66,10 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             SwapchainCreateInfoKHR createInfo = new SwapchainCreateInfoKHR
                 (
-                    surface: SilkVulkanRenderer.surface,
+                    surface: VulkanRenderer.surface,
                     minImageCount: surfaceCapabilities.MinImageCount,
                     imageFormat: colorFormat,
-                    imageColorSpace: surfaceFormat[0].ColorSpace,
+                    imageColorSpace: surfaceFormat[2].ColorSpace,
                     imageExtent: swapchainExtent,
                     imageArrayLayers: 1,
                     imageUsage: ImageUsageFlags.ColorAttachmentBit | ImageUsageFlags.TransferSrcBit,
@@ -81,22 +81,22 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     clipped: true
                 );
 
-            if (SilkVulkanRenderer.GraphicsFamily != SilkVulkanRenderer.PresentFamily)
+            if (VulkanRenderer.GraphicsFamily != VulkanRenderer.PresentFamily)
             {
-                uint* queueFamilyIndices = stackalloc uint[] { SilkVulkanRenderer.GraphicsFamily, SilkVulkanRenderer.PresentFamily };
+                uint* queueFamilyIndices = stackalloc uint[] { VulkanRenderer.GraphicsFamily, VulkanRenderer.PresentFamily };
                 createInfo.ImageSharingMode = SharingMode.Concurrent;
                 createInfo.QueueFamilyIndexCount = 2;
                 createInfo.PQueueFamilyIndices = queueFamilyIndices;
             }
 
-            if (!SilkVulkanRenderer.vk.TryGetDeviceExtension(SilkVulkanRenderer.instance, SilkVulkanRenderer.device, out KhrSwapchain khrSwapChain))
+            if (!VulkanRenderer.vk.TryGetDeviceExtension(VulkanRenderer.instance, VulkanRenderer.device, out KhrSwapchain khrSwapChain))
             {
                 throw new NotSupportedException("KHR_swapchain extension not found.");
             }
             khrSwapchain = khrSwapChain;
 
             var Swapchain = new SwapchainKHR();
-            var result = khrSwapchain.CreateSwapchain(SilkVulkanRenderer.device, &createInfo, null, out Swapchain);
+            var result = khrSwapchain.CreateSwapchain(VulkanRenderer.device, &createInfo, null, out Swapchain);
             if (result != Result.Success)
             {
                 throw new Exception("failed to create swap chain!");
@@ -115,7 +115,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 );
 
                 ImageView view = new ImageView();
-                SilkVulkanRenderer.vk.CreateImageView(SilkVulkanRenderer.device, &viewInfo, null, out view);
+                VulkanRenderer.vk.CreateImageView(VulkanRenderer.device, &viewInfo, null, out view);
                 imageViews[x] = view;
             }
 
@@ -125,15 +125,15 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public Image[] GetImagesKHR(SwapchainKHR swapchain2, KhrSwapchain swapC)
         {
             uint imageCount = 0;
-            swapC.GetSwapchainImages(SilkVulkanRenderer.device, swapchain2, &imageCount, null);
+            swapC.GetSwapchainImages(VulkanRenderer.device, swapchain2, &imageCount, null);
             Image[] swapChainImages = new Image[imageCount];
-            swapC.GetSwapchainImages(SilkVulkanRenderer.device, swapchain2, &imageCount, swapChainImages);
+            swapC.GetSwapchainImages(VulkanRenderer.device, swapchain2, &imageCount, swapChainImages);
             return swapChainImages;
         }
 
         public SurfaceCapabilitiesKHR GetSurfaceCapabilitiesKHR(PhysicalDevice physicalDevice)
         {
-            Result result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, SilkVulkanRenderer.surface, out SurfaceCapabilitiesKHR surfaceCapabilities);
+            Result result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, VulkanRenderer.surface, out SurfaceCapabilitiesKHR surfaceCapabilities);
             return surfaceCapabilities;
         }
 
@@ -142,14 +142,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static SurfaceFormatKHR[] GetSurfaceFormatsKHR(PhysicalDevice physicalDevice)
         {
             uint formatCount = 0;
-            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, SilkVulkanRenderer.surface, ref formatCount, IntPtr.Zero);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, VulkanRenderer.surface, ref formatCount, IntPtr.Zero);
 
             var formats = new SurfaceFormatKHR[formatCount];
             int structureSize = Marshal.SizeOf<SurfaceFormatKHR>();
             IntPtr formatPtr = Marshal.AllocHGlobal(structureSize * (int)formatCount);
             try
             {
-                vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, SilkVulkanRenderer.surface, ref formatCount, formatPtr);
+                vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, VulkanRenderer.surface, ref formatCount, formatPtr);
                 for (int x = 0; x < formatCount; x++)
                 {
                     formats[x] = Marshal.PtrToStructure<SurfaceFormatKHR>(formatPtr + x * Marshal.SizeOf<SurfaceFormatKHR>());
@@ -169,13 +169,13 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static PresentModeKHR[] GetSurfacePresentModesKHR(PhysicalDevice physicalDevice)
         {
             uint presentModeCount = 0;
-            vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, SilkVulkanRenderer.surface, ref presentModeCount, IntPtr.Zero);
+            vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, VulkanRenderer.surface, ref presentModeCount, IntPtr.Zero);
 
             var presentModes = new PresentModeKHR[presentModeCount];
             IntPtr presentModePtr = Marshal.AllocHGlobal((int)presentModeCount * sizeof(int));
             try
             {
-                vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, SilkVulkanRenderer.surface, ref presentModeCount, presentModePtr);
+                vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, VulkanRenderer.surface, ref presentModeCount, presentModePtr);
                 for (int x = 0; x < presentModeCount; x++)
                 {
                     presentModes[x] = (PresentModeKHR)Marshal.ReadInt32(presentModePtr + x * sizeof(int));

@@ -89,26 +89,26 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 InitialLayout = ImageLayout.Undefined
             };
 
-            var result = vk.CreateImage(SilkVulkanRenderer.device, &imageInfo, null, &textureImage);
+            var result = vk.CreateImage(VulkanRenderer.device, &imageInfo, null, &textureImage);
             if (result != Result.Success)
             {
             }
 
-            vk.GetImageMemoryRequirements(SilkVulkanRenderer.device, textureImage, out MemoryRequirements memRequirements);
+            vk.GetImageMemoryRequirements(VulkanRenderer.device, textureImage, out MemoryRequirements memRequirements);
 
             var allocInfo = new MemoryAllocateInfo
             {
                 SType = StructureType.MemoryAllocateInfo,
                 AllocationSize = memRequirements.Size,
-                MemoryTypeIndex = SilkVulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.DeviceLocalBit)
+                MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.DeviceLocalBit)
             };
 
-            result = vk.AllocateMemory(SilkVulkanRenderer.device, &allocInfo, null, &textureMemory);
+            result = vk.AllocateMemory(VulkanRenderer.device, &allocInfo, null, &textureMemory);
             if (result != Result.Success)
             {
             }
 
-            result = vk.BindImageMemory(SilkVulkanRenderer.device, textureImage, textureMemory, 0);
+            result = vk.BindImageMemory(VulkanRenderer.device, textureImage, textureMemory, 0);
             if (result != Result.Success)
             {
             }
@@ -135,7 +135,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
 
-            Result result = vk.CreateImageView(SilkVulkanRenderer.device, &textureImageViewInfo, null, out var view);
+            Result result = vk.CreateImageView(VulkanRenderer.device, &textureImageViewInfo, null, out var view);
             if (result != Result.Success)
             {
             }
@@ -163,7 +163,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 BorderColor = BorderColor.FloatOpaqueWhite,
             };
 
-            vk.CreateSampler(SilkVulkanRenderer.device, &textureImageSamplerInfo, null, out var sampler);
+            vk.CreateSampler(VulkanRenderer.device, &textureImageSamplerInfo, null, out var sampler);
             Sampler = sampler;
         }
 

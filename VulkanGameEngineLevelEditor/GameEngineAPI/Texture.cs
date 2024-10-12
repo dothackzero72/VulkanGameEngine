@@ -31,7 +31,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public ImageView View { get; protected set; }
         public Sampler Sampler { get; protected set; }
         public DescriptorImageInfo textureBuffer { get; protected set; }
-        public byte[] Data { get; set; }
 
         public Texture()
         {
@@ -194,7 +193,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Width = image.Width;
                 Height = image.Height;
                 ColorChannels = image.Comp;
-                Data = image.Data.ToArray();
 
                 var size = (ulong)(Width * Height * (uint)ColorChannels);
 
@@ -237,17 +235,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             DeviceMemory textureMemory;
 
             var info = createInfo;
-            var result = VKConst.vulkan.CreateImage(SilkVulkanRenderer.device, &info, null, &textureImage);
-            VKConst.vulkan.GetImageMemoryRequirements(SilkVulkanRenderer.device, textureImage, out MemoryRequirements memRequirements);
+            var result = vk.CreateImage(VulkanRenderer.device, &info, null, &textureImage);
+            vk.GetImageMemoryRequirements(VulkanRenderer.device, textureImage, out MemoryRequirements memRequirements);
 
             var allocInfo = new MemoryAllocateInfo
             {
                 SType = StructureType.MemoryAllocateInfo,
                 AllocationSize = memRequirements.Size,
-                MemoryTypeIndex = SilkVulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.DeviceLocalBit)
+                MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.DeviceLocalBit)
             };
-            result = VKConst.vulkan.AllocateMemory(SilkVulkanRenderer.device, &allocInfo, null, &textureMemory);
-            result = VKConst.vulkan.BindImageMemory(SilkVulkanRenderer.device, textureImage, textureMemory, 0);
+            result = vk.AllocateMemory(VulkanRenderer.device, &allocInfo, null, &textureMemory);
+            result = vk.BindImageMemory(VulkanRenderer.device, textureImage, textureMemory, 0);
 
             Image = textureImage;
             Memory = textureMemory;
@@ -274,7 +272,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Format = TextureByteFormat,
                 SubresourceRange = imageSubresourceRange
             };
-            Result result = VKConst.vulkan.CreateImageView(SilkVulkanRenderer.device, &TextureImageViewInfo, null, out ImageView textureView);
+            Result result = vk.CreateImageView(VulkanRenderer.device, &TextureImageViewInfo, null, out ImageView textureView);
             View = textureView;
             return result;
         }
@@ -283,7 +281,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             Sampler sampler = new Sampler();
             SamplerCreateInfo info = samplerInfo;
-            Result result = VKConst.vulkan.CreateSampler(SilkVulkanRenderer.device, ref info, null, out sampler);
+            Result result = vk.CreateSampler(VulkanRenderer.device, ref info, null, out sampler);
             Sampler = sampler;
         }
 
@@ -310,7 +308,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             Sampler sampler = new Sampler();
-            Result result = VKConst.vulkan.CreateSampler(SilkVulkanRenderer.device, ref textureImageSamplerInfo, null, out sampler);
+            Result result = vk.CreateSampler(VulkanRenderer.device, ref textureImageSamplerInfo, null, out sampler);
             Sampler = sampler;
         }
 
