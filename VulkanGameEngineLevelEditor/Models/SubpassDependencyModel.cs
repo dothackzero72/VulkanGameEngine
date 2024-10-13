@@ -2,26 +2,131 @@
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public class SubpassDependencyModel
+    [Serializable]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class SubpassDependencyModel : RenderPassEditorBaseModel
     {
-        public string Name { get; set; }
-        public uint SrcSubpass { get; set; }
-        public uint DstSubpass { get; set; }
-        public PipelineStageFlags SrcStageMask { get; set; }
-        public PipelineStageFlags DstStageMask { get; set; }
-        public AccessFlags SrcAccessMask { get; set; }
-        public AccessFlags DstAccessMask { get; set; }
-        public DependencyFlags DependencyFlags { get; set; }
+        private uint _srcSubpass;
+        private uint _dstSubpass;
+        private PipelineStageFlags _srcStageMask;
+        private PipelineStageFlags _dstStageMask;
+        private AccessFlags _srcAccessMask;
+        private AccessFlags _dstAccessMask;
+        private DependencyFlags _dependencyFlags;
 
-        public SubpassDependencyModel(string name) 
-        { 
-            Name = name;
+
+        [Category("Subpass Dependency")]
+        public uint SrcSubpass
+        {
+            get => _srcSubpass;
+            set
+            {
+                if (_srcSubpass != value)
+                {
+                    _srcSubpass = value;
+                    OnPropertyChanged(nameof(SrcSubpass));
+                }
+            }
+        }
+
+        [Category("Subpass Dependency")]
+        public uint DstSubpass
+        {
+            get => _dstSubpass;
+            set
+            {
+                if (_dstSubpass != value)
+                {
+                    _dstSubpass = value;
+                    OnPropertyChanged(nameof(DstSubpass));
+                }
+            }
+        }
+
+        [Category("Pipeline Stages")]
+        public PipelineStageFlags SrcStageMask
+        {
+            get => _srcStageMask;
+            set
+            {
+                if (_srcStageMask != value)
+                {
+                    _srcStageMask = value;
+                    OnPropertyChanged(nameof(SrcStageMask));
+                }
+            }
+        }
+
+        [Category("Pipeline Stages")]
+        public PipelineStageFlags DstStageMask
+        {
+            get => _dstStageMask;
+            set
+            {
+                if (_dstStageMask != value)
+                {
+                    _dstStageMask = value;
+                    OnPropertyChanged(nameof(DstStageMask));
+                }
+            }
+        }
+
+        [Category("Access Masks")]
+        public AccessFlags SrcAccessMask
+        {
+            get => _srcAccessMask;
+            set
+            {
+                if (_srcAccessMask != value)
+                {
+                    _srcAccessMask = value;
+                    OnPropertyChanged(nameof(SrcAccessMask));
+                }
+            }
+        }
+
+        [Category("Access Masks")]
+        public AccessFlags DstAccessMask
+        {
+            get => _dstAccessMask;
+            set
+            {
+                if (_dstAccessMask != value)
+                {
+                    _dstAccessMask = value;
+                    OnPropertyChanged(nameof(DstAccessMask));
+                }
+            }
+        }
+
+        [Category("Subpass Dependency")]
+        public DependencyFlags DependencyFlags
+        {
+            get => _dependencyFlags;
+            set
+            {
+                if (_dependencyFlags != value)
+                {
+                    _dependencyFlags = value;
+                    OnPropertyChanged(nameof(DependencyFlags));
+                }
+            }
+        }
+
+        public SubpassDependencyModel() : base()
+        {
+
+        }
+
+        public SubpassDependencyModel(string name) : base(name)
+        {
         }
 
         public SubpassDependencyModel(uint? srcSubpass = null, uint? dstSubpass = null, PipelineStageFlags? srcStageMask = null, PipelineStageFlags? dstStageMask = null, AccessFlags? srcAccessMask = null, AccessFlags? dstAccessMask = null, DependencyFlags? dependencyFlags = null)
@@ -75,5 +180,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 SrcSubpass = SrcSubpass
             };
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
     }
 }

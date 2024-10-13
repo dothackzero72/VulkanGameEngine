@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public class RenderPipeline
+    public class RenderPipeline : RenderPassEditorBaseModel
     {
+        public RenderPipeline()
+        {
+        }
+
+        public RenderPipeline(string name) : base(name)
+        {
+        }
     }
 }

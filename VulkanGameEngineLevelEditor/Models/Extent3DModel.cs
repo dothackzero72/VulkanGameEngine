@@ -12,19 +12,63 @@ using System.Threading.Tasks;
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    public class Extent3DModel
+    [TypeConverter(typeof(Extent3DConverter))]
+    public class Extent3DModel : RenderPassEditorBaseModel
     {
-        [RefreshProperties(RefreshProperties.Repaint)]
-        [Category("Image Size")]
-        public uint Width { get; set; }
-        [RefreshProperties(RefreshProperties.Repaint)]
-        [Category("Image Size")]
-        public uint Height { get; set; }
-        [RefreshProperties(RefreshProperties.Repaint)]
-        [Category("Image Size")]
-        public uint Depth { get; set; }
+        private uint _width;
+        private uint _height;
+        private uint _depth;
 
-        public Extent3DModel()
+        [RefreshProperties(RefreshProperties.Repaint)]
+        [Category("Image Size")]
+        public uint Width
+        {
+            get => _width;
+            set
+            {
+                if (_width != value)
+                {
+                    _width = value;
+                    OnPropertyChanged(nameof(Width));
+                }
+            }
+        }
+
+        [RefreshProperties(RefreshProperties.Repaint)]
+        [Category("Image Size")]
+        public uint Height
+        {
+            get => _height;
+            set
+            {
+                if (_height != value)
+                {
+                    _height = value;
+                    OnPropertyChanged(nameof(Height));
+                }
+            }
+        }
+
+        [RefreshProperties(RefreshProperties.Repaint)]
+        [Category("Image Size")]
+        public uint Depth
+        {
+            get => _depth;
+            set
+            {
+                if (_depth != value)
+                {
+                    _depth = value;
+                    OnPropertyChanged(nameof(Depth));
+                }
+            }
+        }
+
+        public Extent3DModel() : base()
+        {
+        }
+
+        public Extent3DModel(string name) : base(name)
         {
 
         }
@@ -49,12 +93,12 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public override string ToString()
         {
-            return String.Format("{0}, {1}, {2}", Width, Height, Depth);
+            return $"{Width}, {Height}, {Depth}";
         }
 
         public Extent3D ConvertToVulkan()
         {
-            return new Extent3D()
+            return new Extent3D
             {
                 Width = Width,
                 Height = Height,
@@ -65,6 +109,8 @@ namespace VulkanGameEngineLevelEditor.Models
 
     public class Extent3DConverter : ExpandableObjectConverter
     {
+        private static readonly Regex _regex = new Regex(@"^\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*$", RegexOptions.Compiled);
+
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
             return sourceType == typeof(string);
@@ -72,17 +118,21 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            const string regex = @"^\s*[\d]+(\s*,\s*[\d]+)*\s*$";
-            var match = Regex.Match(value.ToString(), regex);
-            if (match.Success)
+            if (value is string str)
             {
-                Extent3D extent3D = new Extent3D();
-                extent3D.Width = uint.Parse(match.Groups["Width"].Value);
-                extent3D.Width = uint.Parse(match.Groups["Height"].Value);
-                extent3D.Width = uint.Parse(match.Groups["Depth"].Value);
+                var match = _regex.Match(str);
+                if (match.Success)
+                {
+                    return new Extent3DModel
+                    {
+                        Width = uint.Parse(match.Groups[1].Value),
+                        Height = uint.Parse(match.Groups[2].Value),
+                        Depth = uint.Parse(match.Groups[3].Value)
+                    };
+                }
             }
+
             return base.ConvertFrom(context, culture, value);
         }
     }
-
 }

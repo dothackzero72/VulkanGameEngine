@@ -41,7 +41,8 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.AddRenderPassAttachment = new System.Windows.Forms.ToolStripMenuItem();
             this.addSubpassDependency = new System.Windows.Forms.ToolStripMenuItem();
             this.addGraphicsPipeline = new System.Windows.Forms.ToolStripMenuItem();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.SaveTemplete = new System.Windows.Forms.Button();
+            this.SaveComponents = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -62,7 +63,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.panel1.Controls.Add(this.propertyGrid1);
             this.panel1.Location = new System.Drawing.Point(1142, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(527, 865);
+            this.panel1.Size = new System.Drawing.Size(527, 821);
             this.panel1.TabIndex = 1;
             // 
             // propertyGrid1
@@ -71,7 +72,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.propertyGrid1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(527, 865);
+            this.propertyGrid1.Size = new System.Drawing.Size(527, 821);
             this.propertyGrid1.TabIndex = 0;
             this.propertyGrid1.Click += new System.EventHandler(this.propertyGrid1_Click_1);
             // 
@@ -94,7 +95,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             // 
             // BuildButton
             // 
-            this.BuildButton.Location = new System.Drawing.Point(1061, 850);
+            this.BuildButton.Location = new System.Drawing.Point(1585, 850);
             this.BuildButton.Name = "BuildButton";
             this.BuildButton.Size = new System.Drawing.Size(75, 27);
             this.BuildButton.TabIndex = 3;
@@ -133,22 +134,33 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.addGraphicsPipeline.Text = "Add Graphics Pipeline";
             this.addGraphicsPipeline.Click += new System.EventHandler(this.addGraphicsPipeline_Click);
             // 
-            // listView1
+            // SaveTemplete
             // 
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(340, 193);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(304, 631);
-            this.listView1.TabIndex = 5;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            this.SaveTemplete.Location = new System.Drawing.Point(1430, 850);
+            this.SaveTemplete.Name = "SaveTemplete";
+            this.SaveTemplete.Size = new System.Drawing.Size(123, 27);
+            this.SaveTemplete.TabIndex = 4;
+            this.SaveTemplete.Text = "Save Templete";
+            this.SaveTemplete.UseVisualStyleBackColor = true;
+            this.SaveTemplete.Click += new System.EventHandler(this.SaveTemplete_Click);
+            // 
+            // SaveComponents
+            // 
+            this.SaveComponents.Location = new System.Drawing.Point(1228, 850);
+            this.SaveComponents.Name = "SaveComponents";
+            this.SaveComponents.Size = new System.Drawing.Size(172, 27);
+            this.SaveComponents.TabIndex = 5;
+            this.SaveComponents.Text = "Save Components";
+            this.SaveComponents.UseVisualStyleBackColor = true;
+            this.SaveComponents.Click += new System.EventHandler(this.SaveComponents_Click);
             // 
             // RenderPassBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1681, 1110);
-            this.Controls.Add(this.listView1);
+            this.Controls.Add(this.SaveComponents);
+            this.Controls.Add(this.SaveTemplete);
             this.Controls.Add(this.BuildButton);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
@@ -174,6 +186,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private ToolStripMenuItem AddRenderPassAttachment;
         private ToolStripMenuItem addSubpassDependency;
         private ToolStripMenuItem addGraphicsPipeline;
-        private ListView listView1;
+        private Button SaveTemplete;
+        private Button SaveComponents;
     }
 }

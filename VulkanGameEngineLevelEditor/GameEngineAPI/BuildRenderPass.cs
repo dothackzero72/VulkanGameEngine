@@ -31,7 +31,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             foreach (var attachment in model.AttachmentList)
             {
-                AttachmentList.Add(attachment.AttachmentDescription);
+                AttachmentList.Add(attachment.AttachmentDescription.ConvertToVulkan());
                 switch (attachment.TextureType)
                 {
                     case RenderedTextureType.ColorRenderedTexture: colorAttachmentList.Add(attachment); break;

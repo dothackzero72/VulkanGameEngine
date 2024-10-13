@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    public class RenderPassModel
+    public class RenderPassModel : RenderPassEditorBaseModel
     {
         public ivec2 SwapChainResuloution { get; set; } = new ivec2();
         public List<ImageCreateInfoModel> ImageCreateInfoModelList = new List<ImageCreateInfoModel>();
@@ -20,6 +20,16 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public RenderPassModel() 
         {
+        }
+
+        public RenderPassModel(string name) : base(name)
+        {
+        }
+
+
+        public void ConvertToVulkan()
+        {
+            throw new NotImplementedException();
         }
     }
 }

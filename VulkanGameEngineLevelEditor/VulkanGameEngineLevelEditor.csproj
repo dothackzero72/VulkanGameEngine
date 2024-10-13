@@ -297,6 +297,8 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GameEngineAPI\BakeTexture.cs" />
+    <Compile Include="Models\AttachmentDescriptionModel.cs" />
+    <Compile Include="Models\RenderPassEditorBaseModel.cs" />
     <Compile Include="Vulkan\CBuffer.cs" />
     <Compile Include="GameEngineAPI\CTexture.cs" />
     <Compile Include="GameEngineAPI\DepthTexture.cs" />

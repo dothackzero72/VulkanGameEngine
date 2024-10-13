@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Newtonsoft.Json;
 using Silk.NET.Core;
 using Silk.NET.SDL;
 using Silk.NET.Vulkan;
@@ -7,10 +8,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 
@@ -18,6 +24,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 {
     public partial class RenderPassBuilder : Form
     {
+        private const string filePath = "..\\..\\..\\RenderPass\\";
         public ivec2 SwapChainResuloution { get; set; } = new ivec2();
         public MessengerModel RenderPassMessager { get; set; }
         public List<RenderPipeline> RenderPipelineList { get; set; } = new List<RenderPipeline>();
@@ -48,29 +55,6 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             listBox1.Items.Add(AttachmentList[1]);
             listBox1.Items.Add(SubpassDependencyList[0]);
             listBox1.Items.Add(SubpassDependencyList[1]);
-
-
-
-            //// Add columns to the ListView
-            //listView1.Columns.Add("Item Name", 100);
-            //listView1.Columns.Add("Quantity", 70);
-            //listView1.Columns.Add("Price", 70);
-
-            //// Add items to the ListView
-            //ListViewItem item1 = new ListViewItem("Apple");
-            //item1.SubItems.Add("10");
-            //item1.SubItems.Add("$1.00");
-            //listView1.Items.Add(item1);
-
-            //ListViewItem item2 = new ListViewItem("Banana");
-            //item2.SubItems.Add("5");
-            //item2.SubItems.Add("$0.50");
-            //listView1.Items.Add(item2);
-
-            //ListViewItem item3 = new ListViewItem("Orange");
-            //item3.SubItems.Add("20");
-            //item3.SubItems.Add("$0.75");
-            //listView1.Items.Add(item3);
         }
 
         public void ShowRenderPassBuilder()
@@ -170,9 +154,6 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 
         private void addGraphicsPipeline_Click(object sender, EventArgs e)
         {
-            //var subpassDependency = new RenderPipeline($"SubpassDependency{AttachmentList.Count}");
-            //SubpassDependencyList.Add(subpassDependency);
-            //listBox1.Items.Add(subpassDependency);
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -188,6 +169,42 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private void propertyGrid1_Click_1(object sender, EventArgs e)
         {
 
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (listBox1.SelectedItem is RenderedTextureInfoModel selectedPerson)
+            {
+                // Get type information
+                Type type = selectedPerson.GetType();
+                var a = listBox1.SelectedIndex;
+                propertyGrid1.SelectedObject = selectedPerson;
+            }
+
+
+        }
+
+        private void SaveTemplete_Click(object sender, EventArgs e)
+        {
+            RenderPassEditorBaseModel obj = (RenderPassEditorBaseModel)propertyGrid1.SelectedObject;
+            //if (listBox1.SelectedItem is RenderedTextureInfoModel selectedPerson)
+            //{
+            //    string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderedTextureInfoModel\aaaaa.json";
+            //    string jsonString = JsonConvert.SerializeObject(AttachmentList[0].AttachmentDescription.ConvertToVulkan(), Formatting.Indented);
+            //    File.WriteAllText(finalfilePath, jsonString);
+            //}
+        
+        }
+
+        private void SaveComponents_Click(object sender, EventArgs e)
+        {
+            RenderPassEditorBaseModel obj = (RenderPassEditorBaseModel)propertyGrid1.SelectedObject;
+            if (listBox1.SelectedItem is RenderedTextureInfoModel selectedPerson)
+            {
+                string finalfilePath = @$"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderedTextureInfoModel\{selectedPerson.ImageCreateInfo._name}.json";
+                string jsonString = JsonConvert.SerializeObject(selectedPerson.AttachmentDescription.ConvertToVulkan(), Formatting.Indented);
+                File.WriteAllText(finalfilePath, jsonString);
+            }
         }
     }
 }
