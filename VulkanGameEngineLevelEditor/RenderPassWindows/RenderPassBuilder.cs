@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.RenderPassWindows
 {
@@ -28,7 +29,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         public ivec2 SwapChainResuloution { get; set; } = new ivec2();
         public MessengerModel RenderPassMessager { get; set; }
         public List<RenderPipeline> RenderPipelineList { get; set; } = new List<RenderPipeline>();
-        public List<RenderedTextureInfoModel> AttachmentList { get; set; } = new List<RenderedTextureInfoModel>();
+        public List<ImageCreateInfoModel> AttachmentList { get; set; } = new List<ImageCreateInfoModel>();
         public List<SubpassDependencyModel> SubpassDependencyList { get; set; } = new List<SubpassDependencyModel>();
         public BuildRenderPass buildRenderPass { get; set; } = new BuildRenderPass();
         public RenderPassBuilder()
@@ -43,11 +44,13 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                 TextBoxName = RenderPassBuilderDebug.Name
             };
 
+            SwapChainResuloution = new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height);
+
             GlobalMessenger.AddMessenger(RenderPassMessager);
             listBox1.Items.Add(SwapChainResuloution);
 
-            AttachmentList.Add(new RenderedTextureInfoModel("a"));
-            AttachmentList.Add(new RenderedTextureInfoModel("b"));
+            AttachmentList.Add(new ImageCreateInfoModel("a", SwapChainResuloution, Format.R8G8B8A8Unorm));
+            AttachmentList.Add(new ImageCreateInfoModel("b", SwapChainResuloution, Format.R8G8B8A8Unorm));
             SubpassDependencyList.Add(new SubpassDependencyModel("C"));
             SubpassDependencyList.Add(new SubpassDependencyModel("D"));
 
@@ -102,6 +105,18 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                 var a = listBox1.SelectedIndex;
                 propertyGrid1.SelectedObject = selectedPerson;
             }
+            if (listBox1.SelectedItem is ImageCreateInfoModel selectedPerson2)
+            {
+                Type type = selectedPerson2.GetType();
+                var a = listBox1.SelectedIndex;
+                propertyGrid1.SelectedObject = selectedPerson2;
+            }
+            if (listBox1.SelectedItem is SubpassDependencyModel subpass)
+            {
+                Type type = subpass.GetType();
+                var a = listBox1.SelectedIndex;
+                propertyGrid1.SelectedObject = subpass;
+            }
         }
 
         private void BuildButton_Click(object sender, EventArgs e)
@@ -113,13 +128,13 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                 messengers.IsActive = false;
             }
 
-            buildRenderPass.CreateRenderPass(new RenderPassModel()
-            {
-                AttachmentList = AttachmentList,
-                RenderPipelineList = RenderPipelineList,
-                SubpassDependencyList = SubpassDependencyList,
-                SwapChainResuloution = SwapChainResuloution
-            });
+            //buildRenderPass.CreateRenderPass(new RenderPassModel()
+            //{
+            //    AttachmentList = AttachmentList,
+            //    RenderPipelineList = RenderPipelineList,
+            //    SubpassDependencyList = SubpassDependencyList,
+            //    SwapChainResuloution = SwapChainResuloution
+            //});
 
             foreach (var messengers in otherMessangers)
             {
@@ -135,7 +150,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var attachment = new RenderedTextureInfoModel($"TextureAttachment{AttachmentList.Count}");
+            var attachment = new ImageCreateInfoModel($"TextureAttachment{AttachmentList.Count}", SwapChainResuloution, Format.R8G8B8A8Unorm);
             AttachmentList.Add(attachment);
             listBox1.Items.Add(attachment);
         }
@@ -198,13 +213,30 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 
         private void SaveComponents_Click(object sender, EventArgs e)
         {
-            RenderPassEditorBaseModel obj = (RenderPassEditorBaseModel)propertyGrid1.SelectedObject;
-            if (listBox1.SelectedItem is RenderedTextureInfoModel selectedPerson)
+            object obj = propertyGrid1.SelectedObject;
+            if (listBox1.SelectedItem is RenderedTextureInfoModel renderedTextureInfo)
             {
-                string finalfilePath = @$"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderedTextureInfoModel\{selectedPerson.ImageCreateInfo._name}.json";
-                string jsonString = JsonConvert.SerializeObject(selectedPerson.AttachmentDescription.ConvertToVulkan(), Formatting.Indented);
+                string finalfilePath = @$"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderedTextureInfoModel\{renderedTextureInfo.ImageCreateInfo._name}.json";
+                string jsonString = JsonConvert.SerializeObject(renderedTextureInfo.ImageCreateInfo, Formatting.Indented);
                 File.WriteAllText(finalfilePath, jsonString);
             }
+            if (listBox1.SelectedItem is ImageCreateInfoModel imageCreateInfo)
+            {
+                string finalfilePath = @$"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderedTextureInfoModel\{imageCreateInfo._name}.json";
+                string jsonString = JsonConvert.SerializeObject(imageCreateInfo, Formatting.Indented);
+                File.WriteAllText(finalfilePath, jsonString);
+            }
+            if (listBox1.SelectedItem is SubpassDependencyModel subpass)
+            {
+                string finalfilePath = @$"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderedTextureInfoModel\{subpass._name}.json";
+                string jsonString = JsonConvert.SerializeObject(subpass, Formatting.Indented);
+                File.WriteAllText(finalfilePath, jsonString);
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

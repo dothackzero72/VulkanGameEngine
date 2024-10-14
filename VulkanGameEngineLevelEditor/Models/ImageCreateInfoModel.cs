@@ -1,11 +1,15 @@
-﻿using Silk.NET.Core.Attributes;
+﻿using GlmSharp;
+using Silk.NET.Core.Attributes;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.EditorEnhancements;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -13,8 +17,8 @@ namespace VulkanGameEngineLevelEditor.Models
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class ImageCreateInfoModel : RenderPassEditorBaseModel
     {
-        [Browsable(false)]
-        public bool CanAddAttachment { get; set; }
+        [Category("Image Properties")]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         private ImageCreateFlags _flags;
         private ImageType _imageType;
         private Format _format;
@@ -29,7 +33,9 @@ namespace VulkanGameEngineLevelEditor.Models
         private unsafe uint* _pQueueFamilyIndices;
         private ImageLayout _initialLayout;
 
+        [Browsable(true)]
         [Category("Image Properties")]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ImageCreateFlags Flags
         {
             get => _flags;
@@ -142,6 +148,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Image Properties")]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ImageUsageFlags Usage
         {
             get => _usage;
@@ -215,9 +222,16 @@ namespace VulkanGameEngineLevelEditor.Models
         {
         }
 
-        public ImageCreateInfoModel(string name) : base(name)
+        public ImageCreateInfoModel(ivec2 swapChainResoultion, Format format) : base()
         {
+            _extent = new Extent3DModel((uint)swapChainResoultion.x, (uint)swapChainResoultion.y, 1);
+            _format = format;
+        }
 
+        public ImageCreateInfoModel(string name, ivec2 swapChainResoultion, Format format) : base(name)
+        {
+            _extent = new Extent3DModel((uint)swapChainResoultion.x, (uint)swapChainResoultion.y, 1);
+            _format = format;
         }
 
         public ImageCreateInfo ConvertToVulkan()

@@ -43,9 +43,12 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.addGraphicsPipeline = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveTemplete = new System.Windows.Forms.Button();
             this.SaveComponents = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // listBox1
@@ -154,11 +157,27 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.SaveComponents.UseVisualStyleBackColor = true;
             this.SaveComponents.Click += new System.EventHandler(this.SaveComponents_Click);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(483, 232);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(533, 449);
+            this.pictureBox1.TabIndex = 6;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            // 
+            // imageList1
+            // 
+            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            // 
             // RenderPassBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1681, 1110);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.SaveComponents);
             this.Controls.Add(this.SaveTemplete);
             this.Controls.Add(this.BuildButton);
@@ -170,6 +189,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -188,5 +208,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private ToolStripMenuItem addGraphicsPipeline;
         private Button SaveTemplete;
         private Button SaveComponents;
+        private PictureBox pictureBox1;
+        private ImageList imageList1;
     }
 }
