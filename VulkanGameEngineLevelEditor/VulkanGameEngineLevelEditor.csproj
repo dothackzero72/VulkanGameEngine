@@ -299,7 +299,9 @@
     </Compile>
     <Compile Include="GameEngineAPI\BakeTexture.cs" />
     <Compile Include="Models\AttachmentDescriptionModel.cs" />
+    <Compile Include="Models\RenderedTextureInfoModel.cs" />
     <Compile Include="Models\RenderPassEditorBaseModel.cs" />
+    <Compile Include="RenderPassEditor\RenderPassEditorConsts.cs" />
     <Compile Include="Vulkan\CBuffer.cs" />
     <Compile Include="GameEngineAPI\CTexture.cs" />
     <Compile Include="GameEngineAPI\DepthTexture.cs" />
@@ -317,12 +319,12 @@
     <Compile Include="GameEngineAPI\Mesh2D.cs" />
     <Compile Include="GameEngineAPI\Texture.cs" />
     <Compile Include="GameEngineAPI\Vertex.cs" />
+    <Compile Include="Vulkan\Enums.cs" />
     <Compile Include="Vulkan\VulkanBuffer.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Models\Extent3DModel.cs" />
     <Compile Include="Models\ImageCreateInfoModel.cs" />
     <Compile Include="Models\MessengerModel.cs" />
-    <Compile Include="Models\RenderedTextureInfoModel.cs" />
     <Compile Include="Models\RenderPassModel.cs" />
     <Compile Include="Models\RenderPipeline.cs" />
     <Compile Include="Models\SamplerCreateInfoModel.cs" />

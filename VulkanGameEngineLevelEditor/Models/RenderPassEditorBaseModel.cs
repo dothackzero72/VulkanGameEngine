@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Silk.NET.SDL;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,6 +21,12 @@ namespace VulkanGameEngineLevelEditor.Models
         public RenderPassEditorBaseModel(string name)
         {
             _name = name;
+        }
+
+        protected virtual T LoadJsonComponent<T>(string jsonPath)
+        {
+            string jsonContent = File.ReadAllText(jsonPath);
+            return JsonConvert.DeserializeObject<T>(jsonContent);
         }
 
         protected virtual void OnPropertyChanged(string propertyName)

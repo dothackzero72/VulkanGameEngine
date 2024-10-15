@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,6 @@ namespace VulkanGameEngineLevelEditor.Models
     };
 
     [Serializable]
-    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class RenderedTextureInfoModel : RenderPassEditorBaseModel
     {
         private string _renderedTextureInfoName = string.Empty;
@@ -100,11 +100,27 @@ namespace VulkanGameEngineLevelEditor.Models
         {
         }
 
-        public RenderedTextureInfoModel(string name) : base(name)
+        public RenderedTextureInfoModel(string jsonFilePath) : base()
         {
-
+            //LoadJsonComponent(jsonFilePath);
         }
 
-     
+        public RenderedTextureInfoModel(string name, string jsonFilePath) : base(name)
+        {
+          //  LoadJsonComponent(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderedTextureInfo\DefaultSubpassDependency.json");
+        }
+
+        public void LoadJsonComponent(string jsonPath)
+        {
+            var obj = base.LoadJsonComponent<RenderedTextureInfoModel>(jsonPath);
+            foreach (PropertyInfo property in typeof(RenderedTextureInfoModel).GetProperties())
+            {
+                if (property.CanWrite)
+                {
+                    property.SetValue(this, property.GetValue(obj));
+                }
+            }
+        }
+
     }
 }

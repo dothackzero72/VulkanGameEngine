@@ -7,11 +7,11 @@ using Silk.NET.Core.Attributes;
 using Silk.NET.Core;
 using Silk.NET.Vulkan;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class SamplerCreateInfoModel : RenderPassEditorBaseModel
     {
         private SamplerCreateFlags _flags;
@@ -255,12 +255,18 @@ namespace VulkanGameEngineLevelEditor.Models
             }
         }
 
-        public SamplerCreateInfoModel() : base() 
+        public SamplerCreateInfoModel() : base()
         {
         }
 
-        public SamplerCreateInfoModel(string name) : base(name)
+        public SamplerCreateInfoModel(string jsonFilePath) : base()
         {
+            LoadJsonComponent(jsonFilePath);
+        }
+
+        public SamplerCreateInfoModel(string name, string jsonFilePath) : base(name)
+        {
+           // LoadJsonComponent(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\  \DefaultSubpassDependency.json");
         }
 
         public SamplerCreateInfo ConvertToVulkan()
@@ -288,13 +294,17 @@ namespace VulkanGameEngineLevelEditor.Models
             };
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
+        public void LoadJsonComponent(string jsonPath)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            var obj = base.LoadJsonComponent<SamplerCreateInfoModel>(jsonPath);
+            foreach (PropertyInfo property in typeof(SamplerCreateInfoModel).GetProperties())
+            {
+                if (property.CanWrite)
+                {
+                    property.SetValue(this, property.GetValue(obj));
+                }
+            }
         }
-
     }
 }
 

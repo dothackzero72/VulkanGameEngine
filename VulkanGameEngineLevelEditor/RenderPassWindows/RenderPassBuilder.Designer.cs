@@ -44,7 +44,6 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.SaveTemplete = new System.Windows.Forms.Button();
             this.SaveComponents = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -166,12 +165,6 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
-            // imageList1
-            // 
-            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            // 
             // RenderPassBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -209,6 +202,5 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private Button SaveTemplete;
         private Button SaveComponents;
         private PictureBox pictureBox1;
-        private ImageList imageList1;
     }
 }

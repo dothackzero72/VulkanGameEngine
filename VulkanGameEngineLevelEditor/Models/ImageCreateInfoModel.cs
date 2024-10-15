@@ -6,19 +6,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.EditorEnhancements;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.RenderPassEditor;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class ImageCreateInfoModel : RenderPassEditorBaseModel
     {
-        [Category("Image Properties")]
-        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         private ImageCreateFlags _flags;
         private ImageType _imageType;
         private Format _format;
@@ -33,7 +32,6 @@ namespace VulkanGameEngineLevelEditor.Models
         private unsafe uint* _pQueueFamilyIndices;
         private ImageLayout _initialLayout;
 
-        [Browsable(true)]
         [Category("Image Properties")]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ImageCreateFlags Flags
@@ -222,14 +220,16 @@ namespace VulkanGameEngineLevelEditor.Models
         {
         }
 
-        public ImageCreateInfoModel(ivec2 swapChainResoultion, Format format) : base()
+        public ImageCreateInfoModel(string jsonPath, ivec2 swapChainResoultion, Format format) : base()
         {
+            LoadJsonComponent(jsonPath);
             _extent = new Extent3DModel((uint)swapChainResoultion.x, (uint)swapChainResoultion.y, 1);
             _format = format;
         }
 
-        public ImageCreateInfoModel(string name, ivec2 swapChainResoultion, Format format) : base(name)
+        public ImageCreateInfoModel(ivec2 swapChainResoultion, Format format) : base()
         {
+            LoadJsonComponent(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel);
             _extent = new Extent3DModel((uint)swapChainResoultion.x, (uint)swapChainResoultion.y, 1);
             _format = format;
         }
@@ -256,5 +256,16 @@ namespace VulkanGameEngineLevelEditor.Models
             };
         }
 
+        public void LoadJsonComponent(string jsonPath)
+        {
+            var obj = base.LoadJsonComponent<ImageCreateInfoModel>(jsonPath);
+            foreach (PropertyInfo property in typeof(ImageCreateInfoModel).GetProperties())
+            {
+                if (property.CanWrite)
+                {
+                    property.SetValue(this, property.GetValue(obj));
+                }
+            }
+        }
     }
 }

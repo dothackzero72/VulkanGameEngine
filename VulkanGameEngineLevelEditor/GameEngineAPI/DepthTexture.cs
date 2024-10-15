@@ -104,16 +104,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var textureImageSamplerInfo = new SamplerCreateInfo
             {
                 SType = StructureType.SamplerCreateInfo,
-                MagFilter = Filter.Linear,
-                MinFilter = Filter.Linear,
-                MipmapMode = SamplerMipmapMode.Linear,
+                MagFilter = Filter.Nearest,              
+                MinFilter = Filter.Nearest,              
+                MipmapMode = SamplerMipmapMode.Nearest, 
                 AddressModeU = SamplerAddressMode.ClampToEdge,
                 AddressModeV = SamplerAddressMode.ClampToEdge,
                 AddressModeW = SamplerAddressMode.ClampToEdge,
                 MipLodBias = 0.0f,
-                MaxAnisotropy = 1.0f,
+                MaxAnisotropy = 1.0f,                     
                 MinLod = 0.0f,
-                MaxLod = 1.0f,
+                MaxLod = 0.0f,                           
                 BorderColor = BorderColor.FloatOpaqueWhite,
             };
 

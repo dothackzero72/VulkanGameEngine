@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.RenderPassEditor;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class AttachmentDescriptionModel : RenderPassEditorBaseModel
     {
         private AttachmentDescriptionFlags _flags;
@@ -152,9 +153,14 @@ namespace VulkanGameEngineLevelEditor.Models
         {
         }
 
-        public AttachmentDescriptionModel(string name) : base(name)
+        public AttachmentDescriptionModel(string jsonFilePath) : base()
         {
+            LoadJsonComponent(jsonFilePath);
+        }
 
+        public AttachmentDescriptionModel(string name, string jsonFilePath) : base(name)
+        {
+            LoadJsonComponent(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel);
         }
 
         public AttachmentDescription ConvertToVulkan()
@@ -173,5 +179,16 @@ namespace VulkanGameEngineLevelEditor.Models
             };
         }
 
+        public void LoadJsonComponent(string jsonPath)
+        {
+            var obj = base.LoadJsonComponent<AttachmentDescriptionModel>(jsonPath);
+            foreach (PropertyInfo property in typeof(AttachmentDescriptionModel).GetProperties())
+            {
+                if (property.CanWrite)
+                {
+                    property.SetValue(this, property.GetValue(obj));
+                }
+            }
+        }
     }
 }

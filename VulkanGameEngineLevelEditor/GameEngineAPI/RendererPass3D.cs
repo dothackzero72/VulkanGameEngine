@@ -271,7 +271,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
        (
            logicOpEnable: false,
            logicOp: LogicOp.NoOp,
-           attachmentCount: 2,  // Match this to the render pass
+           attachmentCount: 2, 
            pAttachments: attachments
        );
 

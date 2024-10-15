@@ -21,23 +21,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
         }
 
+        public BuildRenderPass(Device device)
+        {
+            _device = device;
+        }
+
         public void CreateRenderPass(RenderPassModel model)
         {
-            List<AttachmentDescription> AttachmentList = new List<AttachmentDescription>();
+            List<AttachmentDescription> attachmentDescriptionModelList = new List<AttachmentDescription>();
             List<RenderedTextureInfoModel> colorAttachmentList = new List<RenderedTextureInfoModel>();
             List<RenderedTextureInfoModel> depthAttachmentList = new List<RenderedTextureInfoModel>();
             List<RenderedTextureInfoModel> inputAttachmentList = new List<RenderedTextureInfoModel>();
             List<RenderedTextureInfoModel> resolveAttachmentList = new List<RenderedTextureInfoModel>();
 
-            foreach (var attachment in model.AttachmentList)
+            foreach(RenderedTextureInfoModel renderedTextureInfoModel in model.RenderedTextureInfoModelList)
             {
-                AttachmentList.Add(attachment.AttachmentDescription.ConvertToVulkan());
-                switch (attachment.TextureType)
+                attachmentDescriptionModelList.Add(renderedTextureInfoModel.AttachmentDescription.ConvertToVulkan());
+                switch (renderedTextureInfoModel.TextureType)
                 {
-                    case RenderedTextureType.ColorRenderedTexture: colorAttachmentList.Add(attachment); break;
-                    case RenderedTextureType.DepthRenderedTexture: depthAttachmentList.Add(attachment); break;
-                    case RenderedTextureType.InputAttachmentTexture: inputAttachmentList.Add(attachment); break;
-                    case RenderedTextureType.ResolveAttachmentTexture: resolveAttachmentList.Add(attachment); break;
+                    case RenderedTextureType.ColorRenderedTexture: colorAttachmentList.Add(renderedTextureInfoModel); break;
+                    case RenderedTextureType.DepthRenderedTexture: depthAttachmentList.Add(renderedTextureInfoModel); break;
+                    case RenderedTextureType.InputAttachmentTexture: inputAttachmentList.Add(renderedTextureInfoModel); break;
+                    case RenderedTextureType.ResolveAttachmentTexture: resolveAttachmentList.Add(renderedTextureInfoModel); break;
                     default:
                         {
                             MessageBox.Show("Something went wrong building render pass: Attachment Problems.");
@@ -114,16 +119,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             List<SubpassDependency> subPassList = new List<SubpassDependency>();
             foreach (SubpassDependencyModel subpass in model.SubpassDependencyList )
             {
-                //subPassList.Add(subpass.);
+                subPassList.Add(subpass.ConvertToVulkan());
             }
 
-            fixed (AttachmentDescription* attchments = AttachmentList.ToArray())
+            fixed (AttachmentDescription* attchments = attachmentDescriptionModelList.ToArray())
             fixed (SubpassDependency* subpasses = subPassList.ToArray())
             {
                 RenderPassCreateInfo renderPassInfo = new RenderPassCreateInfo
                 {
                     SType = StructureType.RenderPassCreateInfo,
-                    AttachmentCount = AttachmentList.UCount(),
+                    AttachmentCount = attachmentDescriptionModelList.UCount(),
                     PAttachments = attchments,
                     SubpassCount = subPassList.UCount(),
                     PSubpasses = &subpassDescription,
