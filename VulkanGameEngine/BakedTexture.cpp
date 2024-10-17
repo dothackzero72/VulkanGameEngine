@@ -181,7 +181,7 @@ void BakedTexture::CreateTextureImage()
 	vkBindImageMemory(cRenderer.Device, Image, Memory, 0);
 }
 
-void BakedTexture::CreateTextureView()
+VkResult BakedTexture::CreateTextureView()
 {
 	VkImageViewCreateInfo TextureImageViewInfo = {};
 	TextureImageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;

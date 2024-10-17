@@ -310,7 +310,7 @@
     <Compile Include="GameEngineAPI\GlobalMessenger.cs" />
     <Compile Include="GameEngineAPI\Pixel.cs" />
     <Compile Include="GameEngineAPI\RenderedTexture.cs" />
-    <Compile Include="GameEngineAPI\BuildRenderPass.cs" />
+    <Compile Include="GameEngineAPI\JsonRenderPass.cs" />
     <Compile Include="GameEngineAPI\Scene.cs" />
     <Compile Include="GameEngineAPI\RendererPass3D.cs" />
     <Compile Include="GameEngineAPI\RenderPass.cs" />
@@ -325,7 +325,7 @@
     <Compile Include="Models\Extent3DModel.cs" />
     <Compile Include="Models\ImageCreateInfoModel.cs" />
     <Compile Include="Models\MessengerModel.cs" />
-    <Compile Include="Models\RenderPassModel.cs" />
+    <Compile Include="Models\RenderPassBuildInfoModel.cs" />
     <Compile Include="Models\RenderPipeline.cs" />
     <Compile Include="Models\SamplerCreateInfoModel.cs" />
     <Compile Include="Models\SubpassDependencyModel.cs" />

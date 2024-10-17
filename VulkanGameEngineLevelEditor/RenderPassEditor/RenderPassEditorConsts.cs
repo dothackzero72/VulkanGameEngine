@@ -11,7 +11,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassEditor
     {
         public const string BasePath = $@"..\..\..\RenderPass\";
         public const string DefaultColorAttachmentDescriptionModel = $@"{BasePath}AttachmentDescription\DefaultColorAttachment.json";
-        public const string DefaultDepthAttachmentDescriptionModel = $@"{BasePath}AttachmentDescription\DefaultColorAttachment.json";
+        public const string DefaultDepthAttachmentDescriptionModel = $@"{BasePath}AttachmentDescription\DefaultDepthAttachment.json";
         public const string DefaultCreateColorImageInfo = $@"{BasePath}CreateImageInfo\DefaultColorTextureCreateInfo.json";
         public const string DefaultCreateDepthImageInfo = $@"{BasePath}CreateImageInfo\DefaultDepthTextureCreateInfo.json";
         public const string DefaultColorSamplerCreateInfo = $@"{BasePath}CreateSamplerInfo\DefaultColorSampleCreateInfo.json";

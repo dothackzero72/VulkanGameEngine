@@ -52,15 +52,10 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static bool RebuildRendererFlag { get; private set; }
 
         public static string[] requiredExtensions;
-
         private static string[] instanceExtensions = { ExtDebugUtils.ExtensionName };
         private static string[] deviceExtensions = { KhrSwapchain.ExtensionName };
         private static string[] validationLayers = { "VK_LAYER_KHRONOS_validation" };
-        public class SurfaceResult
-        {
-            public SurfaceKHR Surface { get; set; } = new SurfaceKHR();
-            public KhrSurface KhrSurface { get; set; }
-        }
+
         public static void CreateVulkanRenderer(IntPtr window, Extent2D swapChainResolution)
         {
             windowPtr = window;
@@ -288,6 +283,20 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             {
                 throw new Exception("Failed to create instance!");
             }
+
+            ExtDebugUtils debugUtils;
+            if (!vk.TryGetInstanceExtension(instance, out debugUtils))
+            {
+                throw new Exception("Failed to create debug messenger.");
+            }
+
+            if (debugUtils.CreateDebugUtilsMessenger(instance, &debugInfo, null,
+                out DebugUtilsMessengerEXT DebugMessenger) != Result.Success)
+            {
+                throw new Exception("Failed to create debug messenger.");
+            }
+
+            debugMessenger = DebugMessenger;
 
             Marshal.FreeHGlobal((nint)applicationInfo.PApplicationName);
             Marshal.FreeHGlobal((nint)applicationInfo.PEngineName);

@@ -190,5 +190,10 @@ namespace VulkanGameEngineLevelEditor.Models
                 }
             }
         }
+
+        public void SaveJsonComponent()
+        {
+            base.SaveJsonComponent($@"{RenderPassEditorConsts.AttachmentDescriptionModelPath}{this._name}.json", this);
+        }
     }
 }

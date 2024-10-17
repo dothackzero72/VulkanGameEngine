@@ -267,5 +267,10 @@ namespace VulkanGameEngineLevelEditor.Models
                 }
             }
         }
+
+        public void SaveJsonComponent()
+        {
+            base.SaveJsonComponent($@"{RenderPassEditorConsts.CreateImageInfoPath}{this._name}.json", this);
+        }
     }
 }

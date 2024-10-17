@@ -111,7 +111,7 @@ void Scene::Draw()
 	VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
 
 	//BakeCubeTextureAtlus("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa43.bmp", texture);
-	ExportColorTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa.bmp", renderPass2D.GetRenderedTexture(), Bake_BMP, 4);
+	//ExportColorTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa.bmp", renderPass2D.GetRenderedTexture(), Bake_BMP, 4);
 }
 
 void Scene::BakeCubeTextureAtlus(const std::string& FilePath, std::shared_ptr<BakedTexture> texture)

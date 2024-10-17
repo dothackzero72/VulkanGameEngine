@@ -9,7 +9,7 @@ private:
     void CreateTexture(Pixel ClearPixel, VkFormat textureFormat);
     void CreateTexture(Pixel32 ClearPixel, VkFormat textureFormat);
     void CreateTextureImage();
-    void CreateTextureView();
+    VkResult CreateTextureView();
     void CreateTextureSampler();
 public:
     BakedTexture();

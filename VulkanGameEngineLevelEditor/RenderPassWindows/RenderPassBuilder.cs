@@ -29,72 +29,59 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private const string filePath = "..\\..\\..\\RenderPass\\";
         public ivec2 SwapChainResuloution { get; set; } = new ivec2();
         public MessengerModel RenderPassMessager { get; set; }
-        public List<RenderPipeline> RenderPipelineList { get; set; } = new List<RenderPipeline>();
-        public List<SamplerCreateInfoModel> SamplerCreateInfoList { get; set; } = new List<SamplerCreateInfoModel>();
-        public List<AttachmentDescriptionModel> AttachmentList { get; set; } = new List<AttachmentDescriptionModel>();
-        public List<ImageCreateInfoModel> ImageCreateInfoList { get; set; } = new List<ImageCreateInfoModel>();
-        public List<SubpassDependencyModel> SubpassDependencyList { get; set; } = new List<SubpassDependencyModel>();
-        public List<RenderedTextureInfoModel> renderedTextureInfoModelList { get; set; } = new List<RenderedTextureInfoModel> { };
-        public RenderPassModel RenderPassModels { get; set; } = new RenderPassModel();
-        public BuildRenderPass buildRenderPass { get; set; } = new BuildRenderPass();
+        public RenderPassBuildInfoModel RenderPassModels { get; set; } = new RenderPassBuildInfoModel();
+        public JsonRenderPass buildRenderPass { get; set; }
         public RenderPassBuilder()
         {
             InitializeComponent();
             this.FormClosing += OnClose;
 
+            SwapChainResuloution = new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height);
+
             RenderPassMessager = new MessengerModel()
             {
                 IsActive = true,
                 richTextBox = RenderPassBuilderDebug,
-                TextBoxName = RenderPassBuilderDebug.Name
+                TextBoxName = RenderPassBuilderDebug.Name,
+                ThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId,
             };
-
-            SwapChainResuloution = new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height);
-
             GlobalMessenger.AddMessenger(RenderPassMessager);
-            listBox1.Items.Add(SwapChainResuloution);
 
-            AttachmentList.Add(new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel));
-            AttachmentList.Add(new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultDepthAttachmentDescriptionModel));
-            ImageCreateInfoList.Add(new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm));
-            ImageCreateInfoList.Add(new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateDepthImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm));
-            SamplerCreateInfoList.Add(new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultColorSamplerCreateInfo));
-            SamplerCreateInfoList.Add(new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultDepthSamplerCreateInfo));
-            SubpassDependencyList.Add(new SubpassDependencyModel(RenderPassEditorConsts.DefaultSubpassDependencyModel));
-
-            listBox1.Items.Add(AttachmentList[0]);
-            listBox1.Items.Add(AttachmentList[1]);
-            listBox1.Items.Add(SamplerCreateInfoList[0]);
-            listBox1.Items.Add(SamplerCreateInfoList[1]);
-            listBox1.Items.Add(SubpassDependencyList[0]);
-
-            renderedTextureInfoModelList = new List<RenderedTextureInfoModel>
-            {
-                new RenderedTextureInfoModel()
-                {
-                    RenderedTextureInfoName = "ColorRenderTexture",
-                    AttachmentDescription = new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel),
-                    ImageCreateInfo = new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm),
-                    SamplerCreateInfo = new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultColorSamplerCreateInfo),
-                    TextureType = RenderedTextureType.ColorRenderedTexture
-                },
-                new RenderedTextureInfoModel()
-                {
-                    RenderedTextureInfoName = "DepthRenderedTexture",
-                    AttachmentDescription = new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel),
-                    ImageCreateInfo = new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm),
-                    SamplerCreateInfo = new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultColorSamplerCreateInfo),
-                    TextureType = RenderedTextureType.DepthRenderedTexture
-                } 
-            };
-
-            RenderPassModels = new RenderPassModel
+            RenderPassModels = new RenderPassBuildInfoModel
             {
                 _name = "BasicRenderPass",
-                RenderedTextureInfoModelList = { renderedTextureInfoModelList[0], renderedTextureInfoModelList[1] },
-                SubpassDependencyList = SubpassDependencyList,
+                RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>
+                {
+                    new RenderedTextureInfoModel()
+                    {
+                        IsRenderedToSwapchain = true,
+                        RenderedTextureInfoName = "ColorRenderTexture",
+                        AttachmentDescription = new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel),
+                        ImageCreateInfo = new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm),
+                        SamplerCreateInfo = new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultColorSamplerCreateInfo),
+                        TextureType = RenderedTextureType.ColorRenderedTexture
+                    },
+                    new RenderedTextureInfoModel()
+                    {
+                        IsRenderedToSwapchain = false,
+                        RenderedTextureInfoName = "DepthRenderedTexture",
+                        AttachmentDescription = new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultDepthAttachmentDescriptionModel),
+                        ImageCreateInfo = new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateDepthImageInfo, SwapChainResuloution, Format.D32Sfloat),
+                        SamplerCreateInfo = new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultDepthSamplerCreateInfo),
+                        TextureType = RenderedTextureType.DepthRenderedTexture
+                    }
+                },
+                SubpassDependencyList = new List<SubpassDependencyModel>() { new SubpassDependencyModel(RenderPassEditorConsts.DefaultSubpassDependencyModel) },
                 SwapChainResuloution = SwapChainResuloution
             };
+
+            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].AttachmentDescription);
+            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].AttachmentDescription);
+            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].ImageCreateInfo);
+            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].ImageCreateInfo);
+            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].SamplerCreateInfo);
+            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].SamplerCreateInfo);
+            listBox1.Items.Add(RenderPassModels.SubpassDependencyList[0]);
         }
 
         public void ShowRenderPassBuilder()
@@ -147,24 +134,16 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             {
                 propertyGrid1.SelectedObject = samplerCreateInfo;
             }
+            if (listBox1.SelectedItem is AttachmentDescriptionModel attachmentDescription)
+            {
+                propertyGrid1.SelectedObject = attachmentDescription;
+            }
         }
 
         private void BuildButton_Click(object sender, EventArgs e)
         {
-            RenderPassMessager.IsActive = true;
-            var otherMessangers = GlobalMessenger.messenger.Where(p => p.richTextBox != RenderPassMessager.richTextBox);
-            foreach(var messengers in otherMessangers)
-            {
-                messengers.IsActive = false;
-            }
-
+            buildRenderPass = new JsonRenderPass();
             buildRenderPass.CreateRenderPass(RenderPassModels);
-
-            foreach (var messengers in otherMessangers)
-            {
-                messengers.IsActive = true;
-            }
-            RenderPassMessager.IsActive = false;
         }
 
         private void OnClose(object sender, FormClosingEventArgs e)
@@ -186,9 +165,9 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 
         private void addSubpassDependency_Click(object sender, EventArgs e)
         {
-            var subpassDependency = new SubpassDependencyModel();
-            SubpassDependencyList.Add(subpassDependency);
-            listBox1.Items.Add(subpassDependency);
+            //var subpassDependency = new SubpassDependencyModel();
+            //SubpassDependencyList.Add(subpassDependency);
+            //listBox1.Items.Add(subpassDependency);
         }
 
         private void addGraphicsPipeline_Click(object sender, EventArgs e)
@@ -231,21 +210,19 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             object obj = propertyGrid1.SelectedObject;
             if (listBox1.SelectedItem is SubpassDependencyModel subpass)
             {
-                string finalfilePath = @$"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderedTextureInfoModel\{subpass._name}.json";
-                string jsonString = JsonConvert.SerializeObject(subpass, Formatting.Indented);
-                File.WriteAllText(finalfilePath, jsonString);
+                subpass.SaveJsonComponent();
             }
             if (listBox1.SelectedItem is ImageCreateInfoModel imageCreateInfo)
             {
-                string finalfilePath = @$"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderedTextureInfoModel\{imageCreateInfo._name}.json";
-                string jsonString = JsonConvert.SerializeObject(imageCreateInfo, Formatting.Indented);
-                File.WriteAllText(finalfilePath, jsonString);
+                imageCreateInfo.SaveJsonComponent();
             }
             if (listBox1.SelectedItem is SamplerCreateInfoModel samplerCreateInfo)
             {
-                string finalfilePath = @$"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderedTextureInfoModel\{samplerCreateInfo._name}.json";
-                string jsonString = JsonConvert.SerializeObject(samplerCreateInfo, Formatting.Indented);
-                File.WriteAllText(finalfilePath, jsonString);
+                samplerCreateInfo.SaveJsonComponent();
+            }
+            if (listBox1.SelectedItem is AttachmentDescriptionModel attachment)
+            {
+                attachment.SaveJsonComponent();
             }
         }
 

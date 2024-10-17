@@ -8,6 +8,7 @@ using Silk.NET.Core;
 using Silk.NET.Vulkan;
 using System.ComponentModel;
 using System.Reflection;
+using VulkanGameEngineLevelEditor.RenderPassEditor;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -304,6 +305,11 @@ namespace VulkanGameEngineLevelEditor.Models
                     property.SetValue(this, property.GetValue(obj));
                 }
             }
+        }
+
+        public void SaveJsonComponent()
+        {
+            base.SaveJsonComponent($@"{RenderPassEditorConsts.SamplerCreateInfoPath}{this._name}.json", this);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 
@@ -29,8 +30,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static uint MessageCallback(DebugUtilsMessageSeverityFlagsEXT severity, DebugUtilsMessageTypeFlagsEXT messageType, DebugUtilsMessengerCallbackDataEXT* callbackData, void* userData)
         {
+            Thread currentThread = Thread.CurrentThread;
+            string currentThreadInfo = $"Thread ID: {currentThread.ManagedThreadId}, Name: {currentThread.Name}";
+
             string message = GetMessageFromPointer(callbackData->PMessage);
-            string formattedMessage = $"Vulkan Message [Severity: {severity}, Type: {messageType}]: {message}";
+            string formattedMessage = $"Vulkan Message [Severity: {severity}, Type: {messageType}] [Thread: {currentThreadInfo}]: {message}";
 
             foreach (var messager in GlobalMessenger.messenger)
             {
@@ -38,12 +42,18 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     messager.IsActive)
 
                 {
-                    if (messager.richTextBox.InvokeRequired)
+                    if (messager.ThreadId == currentThread.ManagedThreadId)
                     {
-                        messager.richTextBox.Invoke(new Action(() => messager.LogMessage(formattedMessage, severity)));
+                        if (messager.richTextBox.InvokeRequired)
+                        {
+                            messager.richTextBox.Invoke(new Action(() => messager.LogMessage(formattedMessage, severity)));
+                        }
                     }
                 }
             }
+
+
+            Console.WriteLine(currentThreadInfo);
             switch (severity)
             {
                 case DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt:

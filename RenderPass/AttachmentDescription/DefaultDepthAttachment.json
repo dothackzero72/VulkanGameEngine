@@ -5,7 +5,8 @@
   "LoadOp": 1,
   "StoreOp": 1,
   "StencilLoadOp": 2,
-  "StencilStoreOp": 1,
+  "StencilStoreOp": 0,
   "InitialLayout": 0,
-  "FinalLayout": 3
+  "FinalLayout": 3,
+  "_name": "DefaultDepthAttachment"
 }

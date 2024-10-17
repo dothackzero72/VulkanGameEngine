@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -164,11 +164,13 @@
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
     <ClCompile Include="BakedTexture.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DepthTexture.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameBufferRenderPass.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="HLSLShaderCompiler.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
+    <ClCompile Include="JsonRenderPass.cpp" />
     <ClCompile Include="LogBuilder.cpp" />
     <ClCompile Include="LogChannel.cpp" />
     <ClCompile Include="LogDriver.cpp" />
@@ -208,12 +210,15 @@
     <ClInclude Include="..\External\ImPlot\implot_internal.h" />
     <ClInclude Include="BakedTexture.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DepthTexture.h" />
     <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="FrameBufferRenderPass.h" />
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="HLSLShaderCompiler.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
     <ClInclude Include="json.h" />
+    <ClInclude Include="JsonRenderPass.h" />
+    <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="LogBuilder.h" />
     <ClInclude Include="LogChannel.h" />
     <ClInclude Include="LogDriver.h" />

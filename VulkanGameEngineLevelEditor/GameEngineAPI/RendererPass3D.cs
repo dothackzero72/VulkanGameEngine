@@ -7,10 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -24,6 +28,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public VulkanBuffer<Vertex3D> vertexBuffer { get; set; }
         public VulkanBuffer<ushort> indexBuffer { get; set; }
         public VulkanBuffer<UniformBufferObject> uniformBuffers { get; set; }
+        public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
+        public JsonRenderPass buildRenderPass { get; set; } = new JsonRenderPass();
 
         UniformBufferObject ubo;
 
@@ -73,7 +79,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             indexBuffer = new VulkanBuffer<ushort>((void*)fpointer, (uint)indices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit | BufferUsageFlags.IndexBufferBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
 
 
-            CreateRenderPass();
+            JsonCreateRenderPass(@$"{RenderPassEditorConsts.BasePath}DefaultRenderPass.json");
             CreateDescriptorSetLayout();
             CreateGraphicsPipeline();
             CreateFramebuffer();
@@ -83,98 +89,150 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             UpdateDescriptorSet(descriptorset);
         }
 
-        public RenderPass CreateRenderPass()
+        public void JsonCreateRenderPass(string jsonPath)
         {
-            RenderPass tempRenderPass = new RenderPass();
-            List<AttachmentDescription> attachmentDescriptionList = new List<AttachmentDescription>()
+            CreateRenderPass(new RenderPassBuildInfoModel(jsonPath));
+        }
+
+        public RenderPass CreateRenderPass(RenderPassBuildInfoModel model)
+        {
+            var SwapChainResuloution = new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height);
+            var a = new RenderPassBuildInfoModel
             {
-                new AttachmentDescription()
+                _name = "BasicRenderPass",
+                RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>
                 {
-                    Format = Format.R8G8B8A8Unorm ,
-                    Samples = SampleCountFlags.SampleCount1Bit,
-                    LoadOp = AttachmentLoadOp.Clear,
-                    StoreOp = AttachmentStoreOp.Store,
-                    StencilLoadOp = AttachmentLoadOp.DontCare,
-                    StencilStoreOp = AttachmentStoreOp.DontCare,
-                    InitialLayout = ImageLayout.ColorAttachmentOptimal,
-                    FinalLayout = ImageLayout.ColorAttachmentOptimal,
+                    new RenderedTextureInfoModel()
+                    {
+                        IsRenderedToSwapchain = true,
+                        RenderedTextureInfoName = "ColorRenderTexture",
+                        AttachmentDescription = new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel),
+                        ImageCreateInfo = new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm),
+                        SamplerCreateInfo = new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultColorSamplerCreateInfo),
+                        TextureType = RenderedTextureType.ColorRenderedTexture
+                    },
+                    new RenderedTextureInfoModel()
+                    {
+                        IsRenderedToSwapchain = false,
+                        RenderedTextureInfoName = "DepthRenderedTexture",
+                        AttachmentDescription = new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultDepthAttachmentDescriptionModel),
+                        ImageCreateInfo = new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateDepthImageInfo, SwapChainResuloution, Format.D32Sfloat),
+                        SamplerCreateInfo = new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultDepthSamplerCreateInfo),
+                        TextureType = RenderedTextureType.DepthRenderedTexture
+                    }
                 },
-                 new AttachmentDescription()
-                    {
-                        Format = Format.D32Sfloat,
-                        Samples = SampleCountFlags.SampleCount1Bit,
-                        LoadOp = AttachmentLoadOp.Clear,
-                        StoreOp = AttachmentStoreOp.DontCare,
-                        StencilLoadOp = AttachmentLoadOp.DontCare,
-                        StencilStoreOp = AttachmentStoreOp.DontCare,
-                        InitialLayout = ImageLayout.Undefined,
-                        FinalLayout = ImageLayout.DepthStencilAttachmentOptimal,
-                 }
+                SubpassDependencyList = new List<SubpassDependencyModel>() { new SubpassDependencyModel(RenderPassEditorConsts.DefaultSubpassDependencyModel) },
+                SwapChainResuloution = SwapChainResuloution
             };
 
-            List<AttachmentReference> colorRefsList = new List<AttachmentReference>()
-                    {
-                        new AttachmentReference
-                        {
-                            Attachment = 0,
-                            Layout = ImageLayout.ColorAttachmentOptimal
-                        }
-                    };
-
-            var depthReference = new AttachmentReference
+            List<AttachmentDescription> attachmentDescriptionList = new List<AttachmentDescription>();
+            List<AttachmentReference> inputAttachmentReferenceList = new List<AttachmentReference>();
+            List<AttachmentReference> colorAttachmentReferenceList = new List<AttachmentReference>();
+            List<AttachmentReference> resolveAttachmentReferenceList = new List<AttachmentReference>();
+            List<SubpassDescription> preserveAttachmentReferenceList = new List<SubpassDescription>();
+            AttachmentReference depthReference = new AttachmentReference();
+            foreach (RenderedTextureInfoModel renderedTextureInfoModel in a.RenderedTextureInfoModelList)
             {
-                Attachment = 1,
-                Layout = ImageLayout.DepthStencilAttachmentOptimal
-            };
-
-
-            List<SubpassDependency> subpassDependencyList = new List<SubpassDependency>
+                attachmentDescriptionList.Add(renderedTextureInfoModel.AttachmentDescription.ConvertToVulkan());
+                switch (renderedTextureInfoModel.TextureType)
+                {
+                    case RenderedTextureType.ColorRenderedTexture:
                         {
-                            new SubpassDependency
+                            if (!renderedTextureInfoModel.IsRenderedToSwapchain)
                             {
-                                SrcSubpass = uint.MaxValue,
-                                DstSubpass = 0,
-                                SrcStageMask = PipelineStageFlags.ColorAttachmentOutputBit,
-                                DstStageMask = PipelineStageFlags.ColorAttachmentOutputBit, // Changed to Early Fragment Tests
-                                SrcAccessMask = 0,
-                                DstAccessMask = AccessFlags.ColorAttachmentWriteBit, // Ensure this access mask is relevant to the chosen stage mask
+                                RenderedColorTextureList.Add(new RenderedTexture());
                             }
-                        };
-
+                            colorAttachmentReferenceList.Add(new AttachmentReference
+                            {
+                                Attachment = colorAttachmentReferenceList.UCount(),
+                                Layout = Silk.NET.Vulkan.ImageLayout.ColorAttachmentOptimal
+                            });
+                            break;
+                        }
+                    case RenderedTextureType.DepthRenderedTexture:
+                        {
+                            depthTexture = new DepthTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo);
+                            depthReference = new AttachmentReference
+                            {
+                                Attachment = (uint)(colorAttachmentReferenceList.Count + resolveAttachmentReferenceList.Count),
+                                Layout = Silk.NET.Vulkan.ImageLayout.DepthAttachmentOptimal
+                            };
+                            break;
+                        }
+                    case RenderedTextureType.InputAttachmentTexture:
+                        {
+                            inputAttachmentReferenceList.Add(new AttachmentReference
+                            {
+                                Attachment = (uint)(inputAttachmentReferenceList.Count()),
+                                Layout = Silk.NET.Vulkan.ImageLayout.ColorAttachmentOptimal
+                            });
+                            break;
+                        }
+                    case RenderedTextureType.ResolveAttachmentTexture:
+                        { 
+                            RenderedColorTextureList.Add(new RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
+                            resolveAttachmentReferenceList.Add(new AttachmentReference
+                            {
+                                Attachment = (uint)(colorAttachmentReferenceList.UCount() + 1),
+                                Layout = Silk.NET.Vulkan.ImageLayout.ColorAttachmentOptimal
+                            });
+                            break; 
+                        }
+                    default:
+                        {
+                            MessageBox.Show("Something went wrong building render pass: Attachment Problems.");
+                            break;
+                        }
+                }
+            }
 
             List<SubpassDescription> subpassDescriptionList = new List<SubpassDescription>();
-            fixed (AttachmentReference* colorRefs = colorRefsList.ToArray())
+            var depthAttachment = &depthReference;
+            fixed (AttachmentReference* colorAttachments = colorAttachmentReferenceList.ToArray())
+            fixed (AttachmentReference* inputAttachments = inputAttachmentReferenceList.ToArray())
+            fixed (AttachmentReference* resolveAttachments = resolveAttachmentReferenceList.ToArray())
+            fixed (SubpassDescription* preserveAttachments = preserveAttachmentReferenceList.ToArray())
             {
-                subpassDescriptionList = new List<SubpassDescription>
-                        {
-                            new SubpassDescription
-                            {
-                                PipelineBindPoint = PipelineBindPoint.Graphics,
-                                ColorAttachmentCount = (uint)colorRefsList.Count,
-                                PColorAttachments = colorRefs,
-                                PResolveAttachments = null,
-                                PDepthStencilAttachment = &depthReference
-                            }
-                        };
+                subpassDescriptionList.Add(new SubpassDescription
+                {
+                    PipelineBindPoint = PipelineBindPoint.Graphics,
+                    ColorAttachmentCount = colorAttachmentReferenceList.UCount(),
+                    PColorAttachments = colorAttachments,
+                    PDepthStencilAttachment = depthAttachment,
+                    PResolveAttachments = resolveAttachments,
+                    InputAttachmentCount = inputAttachmentReferenceList.UCount(),
+                    PInputAttachments = inputAttachments,
+                    PreserveAttachmentCount = preserveAttachmentReferenceList.UCount(),
+                    Flags = SubpassDescriptionFlags.None,
+                    PPreserveAttachments = null
+                });
+            }
+
+            List<SubpassDependency> subPassList = new List<SubpassDependency>();
+            foreach (SubpassDependencyModel subpass in a.SubpassDependencyList)
+            {
+                subPassList.Add(subpass.ConvertToVulkan());
             }
 
             fixed (AttachmentDescription* attachments = attachmentDescriptionList.ToArray())
             fixed (SubpassDescription* description = subpassDescriptionList.ToArray())
-            fixed (SubpassDependency* dependency = subpassDependencyList.ToArray())
+            fixed (SubpassDependency* dependency = subPassList.ToArray())
             {
                 var renderPassCreateInfo = new RenderPassCreateInfo()
                 {
                     SType = StructureType.RenderPassCreateInfo,
                     PNext = null,
-                    Flags = 0,
+                    Flags = RenderPassCreateFlags.None,
                     AttachmentCount = (uint)attachmentDescriptionList.Count(),
                     PAttachments = attachments,
                     SubpassCount = (uint)subpassDescriptionList.Count(),
                     PSubpasses = description,
-                    DependencyCount = (uint)subpassDependencyList.Count(),
-                    PDependencies = dependency
+                    DependencyCount = (uint)subPassList.Count(),
+                    PDependencies = dependency,
+                   
                 };
 
+                var tempRenderPass = new RenderPass();
                 vk.CreateRenderPass(VulkanRenderer.device, &renderPassCreateInfo, null, &tempRenderPass);
                 renderPass = tempRenderPass;
             }

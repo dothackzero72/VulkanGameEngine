@@ -29,6 +29,12 @@ namespace VulkanGameEngineLevelEditor.Models
             return JsonConvert.DeserializeObject<T>(jsonContent);
         }
 
+        protected virtual void SaveJsonComponent(string jsonPath, object obj)
+        {
+            string jsonString = JsonConvert.SerializeObject(obj, Formatting.Indented);
+            File.WriteAllText(jsonPath, jsonString);
+        }
+
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

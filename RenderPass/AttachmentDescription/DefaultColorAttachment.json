@@ -7,5 +7,6 @@
   "StencilLoadOp": 2,
   "StencilStoreOp": 1,
   "InitialLayout": 2,
-  "FinalLayout": 2
+  "FinalLayout": 2,
+  "_name": "DefaultColorAttachment"
 }

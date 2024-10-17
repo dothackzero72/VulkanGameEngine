@@ -42,6 +42,23 @@ VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* i
 	return VK_SUCCESS;
 }
 
+VkResult Texture_BaseCreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, VkImageCreateInfo imageCreateInfo)
+{
+	VULKAN_RESULT(vkCreateImage(cRenderer.Device, &imageCreateInfo, NULL, image));
+
+	VkMemoryRequirements memRequirements;
+	vkGetImageMemoryRequirements(cRenderer.Device, *image, &memRequirements);
+
+	VkMemoryAllocateInfo allocInfo =
+	{
+		.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+		.allocationSize = memRequirements.size,
+		.memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
+	};
+	VULKAN_RESULT(vkAllocateMemory(device, &allocInfo, NULL, memory));
+	return vkBindImageMemory(cRenderer.Device, *image, *memory, 0);
+}
+
 VkResult Texture_NewTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat)
 {
 	VkImageCreateInfo ImageCreateInfo =

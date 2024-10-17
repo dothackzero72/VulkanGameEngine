@@ -28,34 +28,24 @@ namespace VulkanGameEngineLevelEditor
 {
     public unsafe partial class Form1 : Form
     {
-        Vk vk = Vk.GetApi();
-        private Extent2D VulkanSwapChainResolution { get; set; }
-        private Thread renderThread;
-        private Thread levelEditerDisplayThread;
+        private Vk vk = Vk.GetApi();
+        private static Scene scene;
         private volatile bool running;
         private volatile bool levelEditorRunning;
-        private BlockingCollection<byte[]> dataCollection = new BlockingCollection<byte[]>(boundedCapacity: 10);
-        private BlockingCollection<Bitmap> levelEditorImage = new BlockingCollection<Bitmap>(boundedCapacity: 10);
-        private System.Windows.Forms.Timer renderTimer;
-        private static Scene scene;
-        public bool isFramebufferResized = false;
-        public RenderPassModel renderPass { get; private set; } = new RenderPassModel();
+
+        private Extent2D VulkanSwapChainResolution { get; set; }
+        private Thread renderThread { get; set; }
+        private System.Windows.Forms.Timer renderTimer { get; set; }
+        public RenderPassBuildInfoModel renderPass { get; private set; } = new RenderPassBuildInfoModel();
         public MessengerModel RenderPassMessager { get; set; }
 
-        IWindow window;
         public Form1()
         {
             InitializeComponent();
             this.Load += Form1_Load;
 
             VulkanSwapChainResolution = new Extent2D() { Width = 1280, Height = 720 };
-            RenderPassMessager = new MessengerModel()
-            {
-                IsActive = true,
-                richTextBox = richTextBox1,
-                TextBoxName = richTextBox1.Name
-            };
-            GlobalMessenger.AddMessenger(RenderPassMessager);
+            Thread.CurrentThread.Name = "LevelEditor";
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -68,13 +58,23 @@ namespace VulkanGameEngineLevelEditor
             running = true;
             renderThread = new Thread(RenderLoop)
             {
-                IsBackground = true
+                IsBackground = true,
+                Name = "VulkanRenderer"
             };
             renderThread.Start();
         }
 
         private void RenderLoop()
         {
+            RenderPassMessager = new MessengerModel()
+            {
+                IsActive = true,
+                richTextBox = richTextBox1,
+                TextBoxName = richTextBox1.Name,
+                ThreadId = Thread.CurrentThread.ManagedThreadId,
+            };
+            GlobalMessenger.AddMessenger(RenderPassMessager);
+
             this.Invoke(new Action(() =>
             {
                 VulkanRenderer.CreateVulkanRenderer(this.pictureBox1.Handle, VulkanSwapChainResolution);

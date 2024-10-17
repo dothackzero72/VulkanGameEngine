@@ -9,7 +9,7 @@ class Renderpass
 		ivec2 RenderPassResolution;
 		VkSampleCountFlagBits SampleCount;
 
-		VkRenderPass RenderPass;
+		VkRenderPass RenderPass = VK_NULL_HANDLE;
 		std::vector<VkCommandBuffer> CommandBufferList;
 		std::vector<VkFramebuffer> FrameBufferList;
 

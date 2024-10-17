@@ -21,6 +21,7 @@ namespace VulkanGameEngineLevelEditor.Models
     [Serializable]
     public class RenderedTextureInfoModel : RenderPassEditorBaseModel
     {
+        public bool IsRenderedToSwapchain { get; set; } = false;
         private string _renderedTextureInfoName = string.Empty;
         private ImageCreateInfoModel _imageCreateInfo = new ImageCreateInfoModel();
         private SamplerCreateInfoModel _samplerCreateInfo = new SamplerCreateInfoModel();
@@ -100,14 +101,16 @@ namespace VulkanGameEngineLevelEditor.Models
         {
         }
 
-        public RenderedTextureInfoModel(string jsonFilePath) : base()
+        public RenderedTextureInfoModel(string jsonFilePath, bool isRenderedToSwapChain) : base()
         {
-            //LoadJsonComponent(jsonFilePath);
+            IsRenderedToSwapchain = isRenderedToSwapChain;
+            LoadJsonComponent(jsonFilePath);
         }
 
-        public RenderedTextureInfoModel(string name, string jsonFilePath) : base(name)
+        public RenderedTextureInfoModel(string name, string jsonFilePath, bool isRenderedToSwapChain) : base(name)
         {
-          //  LoadJsonComponent(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderedTextureInfo\DefaultSubpassDependency.json");
+            IsRenderedToSwapchain = isRenderedToSwapChain;
+            LoadJsonComponent(jsonFilePath);
         }
 
         public void LoadJsonComponent(string jsonPath)

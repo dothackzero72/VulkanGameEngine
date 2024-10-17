@@ -41,6 +41,22 @@ Texture::Texture(const std::string& filePath, VkFormat textureByteFormat, Textur
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
+Texture::Texture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
+{
+	TextureSetUp();
+	Width = (int)createImageInfo.extent.width;
+	Height = (int)createImageInfo.extent.height;
+	Depth = (int)createImageInfo.extent.depth;
+	TextureByteFormat = createImageInfo.format;
+	TextureImageLayout = createImageInfo.initialLayout;
+	SampleCount = createImageInfo.samples;
+
+	CreateTextureImage(createImageInfo);
+	CreateTextureView();
+	CreateTextureSampler(samplerCreateInfo);
+	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+}
+
 Texture::~Texture()
 {
 
@@ -300,6 +316,10 @@ VkResult Texture::NewTextureImage()
 	return Texture_NewTextureImage(cRenderer.Device, cRenderer.PhysicalDevice, &Image, &Memory, Width, Height, 1, TextureByteFormat);
 }
 
+VkResult Texture::CreateTextureImage(VkImageCreateInfo& imageCreateInfo)
+{
+	return Texture_BaseCreateTextureImage(cRenderer.Device, cRenderer.PhysicalDevice, &Image, &Memory, imageCreateInfo);
+}
 
 VkResult Texture::CreateTextureImage()
 {
