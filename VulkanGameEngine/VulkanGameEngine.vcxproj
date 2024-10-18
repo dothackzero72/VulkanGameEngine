@@ -168,6 +168,7 @@
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameBufferRenderPass.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="HLSLShaderCompiler.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
     <ClCompile Include="JsonRenderPass.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="FrameBufferRenderPass.h" />
     <ClInclude Include="FrameTimer.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="HLSLShaderCompiler.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
     <ClInclude Include="json.h" />

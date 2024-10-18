@@ -94,4 +94,31 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         VK_DEPENDENCY_DEVICE_GROUP_BIT_KHR = VK_DEPENDENCY_DEVICE_GROUP_BIT,
         VK_DEPENDENCY_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
     }
+
+    public enum DescriptorBindingPropertiesEnum
+    {
+        kModelTransformDescriptor,
+        kMeshPropertiesDescriptor,
+        kTextureDescriptor,
+        kMaterialDescriptor,
+        kBRDFMapDescriptor,
+        kIrradianceMapDescriptor,
+        kPrefilterMapDescriptor,
+        kCubeMapDescriptor,
+        kEnvironmentDescriptor,
+        kSunLightDescriptor,
+        kDirectionalLightDescriptor,
+        kPointLightDescriptor,
+        kSpotLightDescriptor,
+        kReflectionViewDescriptor,
+        kDirectionalShadowDescriptor,
+        kPointShadowDescriptor,
+        kSpotShadowDescriptor,
+        kViewTextureDescriptor,
+        kViewDepthTextureDescriptor,
+        kCubeMapSamplerDescriptor,
+        kRotatingPaletteTextureDescriptor,
+        kMathOpperation1Descriptor,
+        kMathOpperation2Descriptor,
+    };
 }

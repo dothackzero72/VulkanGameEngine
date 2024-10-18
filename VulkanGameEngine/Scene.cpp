@@ -88,6 +88,7 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 void Scene::BuildRenderPasses()
 {
 	renderPass2D.BuildRenderPass(mesh);
+	renderPass3D.JsonCreateRenderPass("C://Users//dotha//Documents//GitHub//VulkanGameEngine//RenderPass//DefaultRenderPass.json");
 	frameRenderPass.BuildRenderPass(renderPass2D.GetRenderedTexture());
 }
 

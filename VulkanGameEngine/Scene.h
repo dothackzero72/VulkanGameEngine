@@ -6,7 +6,7 @@
 #include "RenderPass2D.h"
 #include "OrthographicCamera.h"
 #include "FrameTimer.h"
-
+#include "JsonRenderPass.h"
 
 class Scene
 {
@@ -20,7 +20,7 @@ class Scene
 		std::shared_ptr<OrthographicCamera> orthographicCamera;
 		FrameBufferRenderPass frameRenderPass;
 		RenderPass2D		  renderPass2D;
-	
+		JsonRenderPass        renderPass3D;
 	public:
 		void StartUp();
 		void Update(const float& deltaTime);
