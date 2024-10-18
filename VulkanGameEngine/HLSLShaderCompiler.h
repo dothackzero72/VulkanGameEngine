@@ -18,9 +18,9 @@
 //	static Microsoft::WRL::ComPtr<IDxcCompiler3> dxc_compiler;
 //	static Microsoft::WRL::ComPtr<IDxcIncludeHandler> DefaultIncludeHandler;
 //
-//	static std::string ConvertLPCWSTRToString(LPCWSTR lpcwszStr);
-//	static void uint32ToUnsignedCharString(uint32_t value, std::string& string);
+//	static String ConvertLPCWSTRToString(LPCWSTR lpcwszStr);
+//	static void uint32ToUnsignedCharString(uint32_t value, String& string);
 //public:
 //	static void SetUpCompiler();
-//	static Microsoft::WRL::ComPtr<IDxcBlob> BuildShader(const std::string filename, VkShaderStageFlagBits stage);
+//	static Microsoft::WRL::ComPtr<IDxcBlob> BuildShader(const String filename, VkShaderStageFlagBits stage);
 //};

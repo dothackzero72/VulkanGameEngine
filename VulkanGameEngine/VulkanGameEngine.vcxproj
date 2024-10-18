@@ -164,6 +164,7 @@
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
     <ClCompile Include="BakedTexture.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="GameObjectComponent.cpp" />
     <ClCompile Include="DepthTexture.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameBufferRenderPass.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="..\External\ImPlot\implot_internal.h" />
     <ClInclude Include="BakedTexture.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="GameObjectComponent.h" />
     <ClInclude Include="DepthTexture.h" />
     <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="FrameBufferRenderPass.h" />
@@ -241,6 +243,7 @@
     <ClInclude Include="SceneDataBuffer.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="SystemClock.h" />
+    <ClInclude Include="TestComponent.h" />
     <ClInclude Include="TextFormatter.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />

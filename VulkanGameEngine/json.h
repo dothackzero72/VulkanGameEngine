@@ -1,22 +1,23 @@
 #pragma once
 #include <nlohmann/json.hpp>
 #include <glm/glm.hpp>
+#include "Typedef.h"
 
 class Json : public nlohmann::json
 {
-	static void to_json(nlohmann::json& json, std::string& string)
+	static void to_json(nlohmann::json& json, String& string)
 	{
 		json = string;
 	}
-	static void from_json(nlohmann::json& json, std::string& string)
+	static void from_json(nlohmann::json& json, String& string)
 	{
 		json.get_to(string);
 	}
-	static void to_json(nlohmann::json& json, std::vector<std::string>& string)
+	static void to_json(nlohmann::json& json, std::vector<String>& string)
 	{
 		json = string;
 	}
-	static void from_json(nlohmann::json& json, std::vector<std::string>& string)
+	static void from_json(nlohmann::json& json, std::vector<String>& string)
 	{
 		/*	for (auto& vec2 : numberList)
 			{

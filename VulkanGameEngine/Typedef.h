@@ -22,7 +22,8 @@ typedef glm::ivec4 ivec4;
 typedef glm::mat2 mat2;
 typedef glm::mat3 mat3;
 typedef glm::mat4 mat4;
-typedef std::string string;
+typedef std::string String;
 
 template <typename T>
 using List = std::vector<T>;
+

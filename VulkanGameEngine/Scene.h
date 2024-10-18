@@ -7,6 +7,8 @@
 #include "OrthographicCamera.h"
 #include "FrameTimer.h"
 #include "JsonRenderPass.h"
+#include "GameObject.h"
+#include "TestComponent.h"
 
 class Scene
 {
@@ -21,6 +23,8 @@ class Scene
 		FrameBufferRenderPass frameRenderPass;
 		RenderPass2D		  renderPass2D;
 		JsonRenderPass        renderPass3D;
+		GameObject			  gameObject;
+
 	public:
 		void StartUp();
 		void Update(const float& deltaTime);
@@ -28,7 +32,7 @@ class Scene
 		void BuildRenderPasses();
 		void UpdateRenderPasses();
 		void Draw();
-		void BakeCubeTextureAtlus(const std::string& FilePath, std::shared_ptr<BakedTexture> texture);
+		void BakeCubeTextureAtlus(const String& FilePath, std::shared_ptr<BakedTexture> texture);
 		void Destroy();
 };
 

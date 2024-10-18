@@ -20,7 +20,9 @@ void Scene::StartUp()
 	texture = std::make_shared<BakedTexture>(BakedTexture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 	mesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList));
 	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
+	
 
+	gameObject = GameObject();
 	BuildRenderPasses();
 }
 
@@ -115,7 +117,7 @@ void Scene::Draw()
 	//ExportColorTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa.bmp", renderPass2D.GetRenderedTexture(), Bake_BMP, 4);
 }
 
-void Scene::BakeCubeTextureAtlus(const std::string& FilePath, std::shared_ptr<BakedTexture> texture)
+void Scene::BakeCubeTextureAtlus(const String& FilePath, std::shared_ptr<BakedTexture> texture)
 {
 	
 	auto	bakeTexture = std::make_shared<BakedTexture>(BakedTexture(Pixel(255, 0, 0, 255), ivec2(texture->Width, texture->Height), VkFormat::VK_FORMAT_B8G8R8A8_UNORM));
@@ -164,7 +166,7 @@ void Scene::BakeCubeTextureAtlus(const std::string& FilePath, std::shared_ptr<Ba
 		const char* data;
 		vkMapMemory(cRenderer.Device, bakeTexture->Memory, 0, VK_WHOLE_SIZE, 0, (void**)&data);
 
-		std::string textureloc = FilePath;
+		String textureloc = FilePath;
 		textureloc.append("asdfasd.bmp");
 		stbi_write_bmp(textureloc.c_str(), bakeTexture->Width, bakeTexture->Height, STBI_rgb_alpha, data);
 
@@ -172,7 +174,7 @@ void Scene::BakeCubeTextureAtlus(const std::string& FilePath, std::shared_ptr<Ba
 	
 }
 
-//void Scene::WriteTextureToFile(const std::string& filePath, std::shared_ptr<Texture> texture)
+//void Scene::WriteTextureToFile(const String& filePath, std::shared_ptr<Texture> texture)
 //{
 //	Pixel pixel = Pixel(0xFF, 0x00, 0x00, 0xFF);
 //	BakedTexture newTexture(pixel, glm::ivec2(texture->Width, texture->Height), VK_FORMAT_R8G8B8A8_UNORM);
@@ -232,7 +234,7 @@ void Scene::BakeCubeTextureAtlus(const std::string& FilePath, std::shared_ptr<Ba
 //	VULKAN_RESULT(vkMapMemory(cRenderer.Device, newTexture.Memory, 0, VK_WHOLE_SIZE, 0, &mappedData));
 //
 //	// Prepare BMP data
-//	std::string textureFilePath = filePath + "/texture.bmp";
+//	String textureFilePath = filePath + "/texture.bmp";
 //	size_t rowSize = 4 * newTexture.Width; // 4 bytes for RGBA
 //	size_t alignedRowSize = (rowSize + 3) & ~3; // Align row size to multiple of 4
 //

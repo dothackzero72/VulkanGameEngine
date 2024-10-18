@@ -8,7 +8,7 @@ JsonRenderPass::~JsonRenderPass()
 {
 }
 
-void JsonRenderPass::JsonCreateRenderPass(std::string JsonPath)
+void JsonRenderPass::JsonCreateRenderPass(String JsonPath)
 {
     nlohmann::json jsonLoader;
     RenderPassBuildInfoModel renderPassBuildInfo = JsonToRenderPassBuildInfoModel(jsonLoader);

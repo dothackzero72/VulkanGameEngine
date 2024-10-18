@@ -6,7 +6,7 @@ RenderedColorTexture::RenderedColorTexture() : Texture()
 {
 }
 
-RenderedColorTexture::RenderedColorTexture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType) : Texture()
+RenderedColorTexture::RenderedColorTexture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType) : Texture()
 {
 	//MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
 	TextureType = textureType;
@@ -37,7 +37,7 @@ RenderedColorTexture::~RenderedColorTexture()
 {
 }
 
-void RenderedColorTexture::CreateImageTexture(const std::string& FilePath)
+void RenderedColorTexture::CreateImageTexture(const String& FilePath)
 {
 	int* width = &Width;
 	int* height = &Height;

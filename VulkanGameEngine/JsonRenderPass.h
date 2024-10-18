@@ -25,6 +25,6 @@ private:
 public:
 	JsonRenderPass();
 	virtual ~JsonRenderPass();
-	void JsonCreateRenderPass(std::string JsonPath);
+	void JsonCreateRenderPass(String JsonPath);
 };
 

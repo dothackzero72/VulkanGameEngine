@@ -27,9 +27,6 @@
     <ClCompile Include="CVulkanRenderer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DLLMain.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VulkanError.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,6 +69,12 @@
     <ClCompile Include="GraphicsDevice.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Memory.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameObject.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CVulkanRenderer.h">
@@ -81,9 +84,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CTypedef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DLLMain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VulkanError.h">
@@ -132,6 +132,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

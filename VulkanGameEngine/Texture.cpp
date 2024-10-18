@@ -28,7 +28,7 @@ Texture::Texture(const Pixel& clearColor, int width, int height, VkFormat textur
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-Texture::Texture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType)
+Texture::Texture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType)
 {
 	TextureSetUp();
 	MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
@@ -127,7 +127,7 @@ void Texture::CreateImageTexture(const Pixel& clearColor)
 
 }
 
-void Texture::CreateImageTexture(const std::string& FilePath)
+void Texture::CreateImageTexture(const String& FilePath)
 {
 	int* width = &Width;
 	int* height = &Height;

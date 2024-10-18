@@ -218,7 +218,7 @@ std::vector<byte> ExportColorTexture(VkDevice device, VkCommandPool commandPool,
 	memcpy(pixelData.data(), data, dataSize);
 	vkUnmapMemory(device, bakeTexture->Memory);
 
-	std::string outputFilename = std::string(filename);
+	String outputFilename = String(filename);
 	switch (textureFormat)
 	{
 	case BakeTextureFormat::Bake_BMP:

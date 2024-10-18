@@ -1,5 +1,4 @@
 #pragma once
-#include "DLLMain.h"
 #include <windows.h>
 #include <stdbool.h>
 

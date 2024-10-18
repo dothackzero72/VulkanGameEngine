@@ -33,7 +33,7 @@ protected:
 	VkResult CreateTextureImage();
 	VkResult CreateTextureImage(VkImageCreateInfo& imageCreateInfo);
 	virtual void CreateImageTexture(const Pixel& clearColor);
-	virtual void CreateImageTexture(const std::string& FilePath);
+	virtual void CreateImageTexture(const String& FilePath);
 	virtual void CreateTextureSampler();
 	VkResult CopyBufferToTexture(VkBuffer buffer);
 	virtual VkResult CreateTextureView();
@@ -61,7 +61,7 @@ public:
 
 	Texture();
 	Texture(const Pixel& clearColor, int width, int height, VkFormat textureByteFormat, TextureTypeEnum textureType);
-	Texture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
+	Texture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
 	Texture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
 	virtual ~Texture();
 	virtual void UpdateTextureSize(vec2 TextureResolution);

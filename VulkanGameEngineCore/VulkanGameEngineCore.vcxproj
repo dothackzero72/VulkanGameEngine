@@ -153,16 +153,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CBuffer.c" />
+    <ClCompile Include="CGameObject.c" />
     <ClCompile Include="CShaderCompiler.c" />
     <ClCompile Include="CTexture.c" />
     <ClCompile Include="CTimer.c" />
-    <ClCompile Include="DLLMain.c" />
     <ClCompile Include="FrameTime.c" />
     <ClCompile Include="GameController.c" />
     <ClCompile Include="GLFWWindow.c" />
     <ClCompile Include="GraphicsDevice.c" />
     <ClCompile Include="io.c" />
     <ClCompile Include="Keyboard.c" />
+    <ClCompile Include="Memory.c" />
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="SDLWindow.c" />
     <ClCompile Include="VulkanError.c" />
@@ -172,11 +173,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CBuffer.h" />
+    <ClInclude Include="CGameObject.h" />
     <ClInclude Include="CShaderCompiler.h" />
     <ClInclude Include="CTexture.h" />
     <ClInclude Include="CTimer.h" />
     <ClInclude Include="CTypedef.h" />
-    <ClInclude Include="DLLMain.h" />
     <ClInclude Include="FrameTime.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="GLFWWindow.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="io.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />
+    <ClInclude Include="Memory.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="pixel.h" />
     <ClInclude Include="SDLWindow.h" />

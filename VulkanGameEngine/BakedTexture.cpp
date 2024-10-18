@@ -7,7 +7,7 @@ BakedTexture::BakedTexture()
 
 }
 
-BakedTexture::BakedTexture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType) : Texture()
+BakedTexture::BakedTexture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType) : Texture()
 {
 	//MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
 	TextureType = textureType;
@@ -64,7 +64,7 @@ BakedTexture::~BakedTexture()
 {
 }
 
-void BakedTexture::CreateTexture(const std::string& filePath)
+void BakedTexture::CreateTexture(const String& filePath)
 {
 	int* width = &Width;
 	int* height = &Height;

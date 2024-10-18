@@ -12,13 +12,13 @@ enum RenderedTextureType
 
 struct RenderPassEditorBaseModel
 {
-    std::string Name;
+    String Name;
 };
 
 struct RenderedTextureInfoModel : RenderPassEditorBaseModel
 {
      bool IsRenderedToSwapchain = false;
-     std::string RenderedTextureInfoName;
+     String RenderedTextureInfoName;
      VkImageCreateInfo ImageCreateInfo;
      VkSamplerCreateInfo SamplerCreateInfo;
      VkAttachmentDescription AttachmentDescription;

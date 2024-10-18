@@ -7,15 +7,15 @@
 //Microsoft::WRL::ComPtr<IDxcCompiler3> ShaderCompiler::dxc_compiler;
 //Microsoft::WRL::ComPtr<IDxcIncludeHandler> ShaderCompiler::DefaultIncludeHandler;
 
-//std::string ShaderCompiler::ConvertLPCWSTRToString(LPCWSTR lpcwszStr)
+//String ShaderCompiler::ConvertLPCWSTRToString(LPCWSTR lpcwszStr)
 //{
 //    int strLength = WideCharToMultiByte(CP_UTF8, 0, lpcwszStr, -1, nullptr, 0, nullptr, nullptr);
-//    std::string str(strLength, 0);
+//    String str(strLength, 0);
 //    WideCharToMultiByte(CP_UTF8, 0, lpcwszStr, -1, &str[0], strLength, nullptr, nullptr);
 //    return str;
 //}
 //
-//void ShaderCompiler::uint32ToUnsignedCharString(uint32 value, std::string& string)
+//void ShaderCompiler::uint32ToUnsignedCharString(uint32 value, String& string)
 //{
 //    string += static_cast<unsigned char>((value >> 24) & 0xFF);
 //    string += static_cast<unsigned char>((value >> 16) & 0xFF);
@@ -35,10 +35,10 @@ VkShaderModule ShaderCompiler::BuildGLSLShader(const char* path)
 	return Shader_BuildGLSLShaderFile(cRenderer.Device, path);
 }
 
-//Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::BuildHLSLShader(const std::string& filename, VkShaderStageFlagBits stage)
+//Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::BuildHLSLShader(const String& filename, VkShaderStageFlagBits stage)
 //{
 //    FileState cShaderCode = File_Read(filename.c_str());
-//    std::string shaderCode(cShaderCode.Data);
+//    String shaderCode(cShaderCode.Data);
 //
 //    Microsoft::WRL::ComPtr<IDxcUtils> dxc_utils{};
 //    Microsoft::WRL::ComPtr<IDxcCompiler3> dxc_compiler{};
@@ -80,7 +80,7 @@ VkShaderModule ShaderCompiler::BuildGLSLShader(const char* path)
 //    result->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&error_message), nullptr);
 //    if (error_message && error_message->GetStringLength() > 0)
 //    {
-//        auto string = std::string();
+//        auto string = String();
 //        string.resize(error_message->GetBufferSize());
 //        for (size_t x = 0; x < string.size(); x++)
 //        {
@@ -93,13 +93,13 @@ VkShaderModule ShaderCompiler::BuildGLSLShader(const char* path)
 //        GameEngine_DestroyWindow();
 //    }
 //
-//    std::string outPutFileName = std::string(File_GetFileNameFromPath(filename.c_str())) + ".spv";
+//    String outPutFileName = String(File_GetFileNameFromPath(filename.c_str())) + ".spv";
 //    File_Write(static_cast<void*>(&outPutFileName), shaderCode.size(), filename.c_str());
 //
 //    return shader_obj;
 //}
 
-VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(const std::string& filename, VkShaderStageFlagBits shaderStages)
+VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(const String& filename, VkShaderStageFlagBits shaderStages)
 {
     VkShaderModule shaderModule = VK_NULL_HANDLE;
     if (filename.c_str() == ".spv")
@@ -113,7 +113,7 @@ VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(const std::string& 
 	return Shader_CreateShader(shaderModule, shaderStages);
 }
 
-//VkShaderModule ShaderCompiler::CompileHLSLShader(const std::string& filename, VkShaderStageFlagBits stage)
+//VkShaderModule ShaderCompiler::CompileHLSLShader(const String& filename, VkShaderStageFlagBits stage)
 //{
 // /*   if (File_Exists(File_RemoveFileExtention(File_Read(filename.c_str()).Data) + ".spv"))
 //    {

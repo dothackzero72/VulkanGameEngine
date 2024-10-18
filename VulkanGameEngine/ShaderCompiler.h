@@ -11,6 +11,7 @@ extern "C"
 #include <Windows.h>
 #include <dxcapi.h>
 #include <wrl/client.h>
+#include "Typedef.h"
 
 class ShaderCompiler
 {
@@ -19,13 +20,13 @@ private:
 	//static Microsoft::WRL::ComPtr<IDxcCompiler3> dxc_compiler;
 	//static Microsoft::WRL::ComPtr<IDxcIncludeHandler> DefaultIncludeHandler;
 
-	//static std::string ConvertLPCWSTRToString(LPCWSTR lpcwszStr);
-	//static void uint32ToUnsignedCharString(uint32 value, std::string& string);
-	//static VkShaderModule CompileHLSLShader(const std::string& path, VkShaderStageFlagBits stage);
+	//static String ConvertLPCWSTRToString(LPCWSTR lpcwszStr);
+	//static void uint32ToUnsignedCharString(uint32 value, String& string);
+	//static VkShaderModule CompileHLSLShader(const String& path, VkShaderStageFlagBits stage);
 	static VkShaderModule BuildGLSLShader(const char* path);
-	//static Microsoft::WRL::ComPtr<IDxcBlob> BuildHLSLShader(const std::string& path, VkShaderStageFlagBits stage);
+	//static Microsoft::WRL::ComPtr<IDxcBlob> BuildHLSLShader(const String& path, VkShaderStageFlagBits stage);
 public:
 	static void SetUpCompiler();
-	static VkPipelineShaderStageCreateInfo CreateShader(const std::string& path, VkShaderStageFlagBits shaderStages);
+	static VkPipelineShaderStageCreateInfo CreateShader(const String& path, VkShaderStageFlagBits shaderStages);
 };
 

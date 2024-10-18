@@ -6,15 +6,15 @@
 //Microsoft::WRL::ComPtr<IDxcCompiler3> HLSLShaderCompiler::dxc_compiler;
 //Microsoft::WRL::ComPtr<IDxcIncludeHandler> HLSLShaderCompiler::DefaultIncludeHandler;
 //
-//std::string HLSLShaderCompiler::ConvertLPCWSTRToString(LPCWSTR lpcwszStr)
+//String HLSLShaderCompiler::ConvertLPCWSTRToString(LPCWSTR lpcwszStr)
 //{
 //    int strLength = WideCharToMultiByte(CP_UTF8, 0, lpcwszStr, -1, nullptr, 0, nullptr, nullptr);
-//    std::string str(strLength, 0);
+//    String str(strLength, 0);
 //    WideCharToMultiByte(CP_UTF8, 0, lpcwszStr, -1, &str[0], strLength, nullptr, nullptr);
 //    return str;
 //}
 //
-//void HLSLShaderCompiler::uint32ToUnsignedCharString(uint32_t value, std::string& string)
+//void HLSLShaderCompiler::uint32ToUnsignedCharString(uint32_t value, String& string)
 //{
 //    string += static_cast<unsigned char>((value >> 24) & 0xFF);
 //    string += static_cast<unsigned char>((value >> 16) & 0xFF);
@@ -29,10 +29,10 @@
 //    dxc_utils->CreateDefaultIncludeHandler(&DefaultIncludeHandler);
 //}
 //
-//Microsoft::WRL::ComPtr<IDxcBlob> HLSLShaderCompiler::BuildShader(const std::string filename, VkShaderStageFlagBits stage)
+//Microsoft::WRL::ComPtr<IDxcBlob> HLSLShaderCompiler::BuildShader(const String filename, VkShaderStageFlagBits stage)
 //{
 //    FileState cShaderCode = File_Read(filename.c_str());
-//    std::string shaderCode(cShaderCode.Data);
+//    String shaderCode(cShaderCode.Data);
 //
 //    Microsoft::WRL::ComPtr<IDxcUtils> dxc_utils{};
 //    Microsoft::WRL::ComPtr<IDxcCompiler3> dxc_compiler{};
@@ -74,7 +74,7 @@
 //    result->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&error_message), nullptr);
 //    if (error_message && error_message->GetStringLength() > 0)
 //    {
-//        auto string = std::string();
+//        auto string = String();
 //        string.resize(error_message->GetBufferSize());
 //        for (size_t x = 0; x < string.size(); x++)
 //        {
@@ -87,7 +87,7 @@
 //        //GameEngine_DestroyWindow();
 //    }
 //
-//    std::string outPutFileName = std::string(File_GetFileNameFromPath(filename.c_str())) + ".spv";
+//    String outPutFileName = String(File_GetFileNameFromPath(filename.c_str())) + ".spv";
 //    File_Write(static_cast<void*>(&outPutFileName), shaderCode.size(), filename.c_str());
 //
 //    return shader_obj;
