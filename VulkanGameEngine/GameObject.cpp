@@ -1,20 +1,14 @@
 #include "GameObject.h"
+#include <Macro.h>
 
 GameObject::GameObject()
 {
-	GameObjectComponentList.emplace_back(std::make_shared<TestComponent>(TestComponent("test")));
-	GameObjectComponentList.emplace_back(std::make_shared<TestComponent>(TestComponent("test2")));
-	GameObjectComponentList.emplace_back(std::make_shared<TestComponent>(TestComponent("test3")));
-	AllocateComponentMemory();
 }
 
 GameObject::GameObject(String name)
 {
 	Name = name;
-	//auto a = List<std::unique_ptr<TestComponent>>();
 	GameObjectComponentList.emplace_back(std::make_shared<TestComponent>(TestComponent("test")));
-	GameObjectComponentList.emplace_back(std::make_shared<TestComponent>(TestComponent("test2")));
-	GameObjectComponentList.emplace_back(std::make_shared<TestComponent>(TestComponent("test3")));
 	AllocateComponentMemory();
 }
 
@@ -34,5 +28,41 @@ void GameObject::AllocateComponentMemory()
 	}
 	ObjectComponentMemorySize = totalComponentMemorySize;
 
+	void* memoryBlock = malloc(ObjectComponentMemorySize);
 
+	void* ptr = memoryBlock;
+	std::vector<GameObjectComponent*> components;
+    for (size_t x = 0; x < GameObjectComponentList.size(); x++)
+    {
+        if (GameObjectComponentList[x] == nullptr)
+        {
+            continue;
+        }
+
+        std::shared_ptr<GameObjectComponent> clonedComponent = GameObjectComponentList[x]->Clone();
+        if (!clonedComponent)
+        {
+            continue;
+        }
+        size_t componentSize = clonedComponent->GetMemorySize();
+
+        std::memcpy(ptr, clonedComponent.get(), componentSize);
+        GameObjectComponentList[x] = std::shared_ptr<GameObjectComponent>(static_cast<GameObjectComponent*>(ptr), [](GameObjectComponent* p) { delete p; } );
+        ptr = static_cast<void*>(static_cast<byte*>(ptr) + componentSize);
+    }
+}
+
+void GameObject::AddComponent(std::shared_ptr<GameObjectComponent> newComponent) 
+{
+    if (newComponent) 
+	{
+        GameObjectComponentList.emplace_back(newComponent);
+        AllocateComponentMemory();
+    }
+}
+
+void GameObject::RemoveComponent(size_t index)
+{
+	GameObjectComponentList.erase(GameObjectComponentList.begin() + index);
+	AllocateComponentMemory();
 }

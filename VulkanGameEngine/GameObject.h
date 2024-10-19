@@ -32,5 +32,8 @@ public:
 	{
 
 	}
+
+	void AddComponent(std::shared_ptr<GameObjectComponent> newComponent);
+	void RemoveComponent(size_t index);
 };
 

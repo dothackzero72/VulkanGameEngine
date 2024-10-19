@@ -22,7 +22,9 @@ void Scene::StartUp()
 	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
 	
 
-	gameObject = GameObject();
+	gameObject = GameObject("asdf");
+	gameObject.AddComponent(std::make_shared<TestComponent>(TestComponent("test2")));
+
 	BuildRenderPasses();
 }
 

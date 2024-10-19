@@ -20,11 +20,19 @@ public:
 		MemorySize = GetMemorySize();
 	}
 
-	virtual ~GameObjectComponent() = default;
+	virtual ~GameObjectComponent()
+	{
+
+	}
 
 	virtual void Update(float deltaTime)
 	{
 
+	}
+
+	virtual std::shared_ptr<GameObjectComponent> Clone()
+	{
+		return std::make_shared<GameObjectComponent>(*this);
 	}
 
 	virtual size_t GetMemorySize() const
