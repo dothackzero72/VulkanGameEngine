@@ -187,6 +187,7 @@
     <ClCompile Include="MSVCDriver.cpp" />
     <ClCompile Include="OrthographicCamera.cpp" />
     <ClCompile Include="ProgramStats.cpp" />
+    <ClCompile Include="RenderMesh2DComponent.cpp" />
     <ClCompile Include="RenderedColorTexture.cpp" />
     <ClCompile Include="RenderedTexture.cpp" />
     <ClCompile Include="RenderPass.cpp" />
@@ -235,6 +236,7 @@
     <ClInclude Include="MSVCDriver.h" />
     <ClInclude Include="OrthographicCamera.h" />
     <ClInclude Include="ProgramStats.h" />
+    <ClInclude Include="RenderMesh2DComponent.h" />
     <ClInclude Include="RenderedColorTexture.h" />
     <ClInclude Include="RenderedTexture.h" />
     <ClInclude Include="RenderPass.h" />
@@ -243,7 +245,6 @@
     <ClInclude Include="SceneDataBuffer.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="SystemClock.h" />
-    <ClInclude Include="TestComponent.h" />
     <ClInclude Include="TextFormatter.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />

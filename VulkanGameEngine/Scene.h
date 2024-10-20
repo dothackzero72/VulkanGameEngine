@@ -8,7 +8,7 @@
 #include "FrameTimer.h"
 #include "JsonRenderPass.h"
 #include "GameObject.h"
-#include "TestComponent.h"
+#include "RenderMesh2DComponent.h"
 
 class Scene
 {
@@ -18,12 +18,11 @@ class Scene
 		FrameTimer timer;
 		SceneDataBuffer sceneProperties;
 		std::shared_ptr<BakedTexture> texture;
-		std::shared_ptr<Mesh2D> mesh;
 		std::shared_ptr<OrthographicCamera> orthographicCamera;
 		FrameBufferRenderPass frameRenderPass;
 		RenderPass2D		  renderPass2D;
 		JsonRenderPass        renderPass3D;
-		GameObject			  gameObject;
+		std::shared_ptr<GameObject>	gameObject;
 
 	public:
 		void StartUp();

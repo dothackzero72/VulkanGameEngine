@@ -9,21 +9,15 @@
 
 void Scene::StartUp()
 {
-	std::vector<uint32> SpriteIndexList = {
-	   0, 1, 3,
-	   1, 2, 3
-	};
-
 	//Timer timer;
 	//timer.Time = 0.0f;
 
 	texture = std::make_shared<BakedTexture>(BakedTexture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
-	mesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList));
 	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
 	
 
-	gameObject = GameObject("asdf");
-	gameObject.AddComponent(std::make_shared<TestComponent>(TestComponent("test2")));
+	gameObject = std::make_shared<GameObject>(GameObject("asdf"));
+	gameObject->AddComponent(std::make_shared<RenderMesh2DComponent>(RenderMesh2DComponent("test2")));
 
 	BuildRenderPasses();
 }
@@ -35,7 +29,7 @@ void Scene::Update(const float& deltaTime)
 		UpdateRenderPasses();
 	}
 	VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-	mesh->BufferUpdate(commandBuffer, deltaTime);
+	gameObject->BufferUpdate(commandBuffer, deltaTime);
 	renderer.EndSingleTimeCommands(commandBuffer);
 
 	orthographicCamera->Update(sceneProperties);
@@ -91,7 +85,7 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 
 void Scene::BuildRenderPasses()
 {
-	renderPass2D.BuildRenderPass(mesh);
+	renderPass2D.BuildRenderPass(gameObject);
 	renderPass3D.JsonCreateRenderPass("C://Users//dotha//Documents//GitHub//VulkanGameEngine//RenderPass//DefaultRenderPass.json");
 	frameRenderPass.BuildRenderPass(renderPass2D.GetRenderedTexture());
 }
@@ -99,7 +93,7 @@ void Scene::BuildRenderPasses()
 void Scene::UpdateRenderPasses()
 {
 	renderer.RebuildSwapChain();
-	renderPass2D.UpdateRenderPass(mesh);
+	renderPass2D.UpdateRenderPass(gameObject);
 	frameRenderPass.UpdateRenderPass(renderPass2D.GetRenderedTexture());
 	InterfaceRenderPass::RebuildSwapChain();
 	cRenderer.RebuildRendererFlag = false;
@@ -110,7 +104,7 @@ void Scene::Draw()
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 
 	VULKAN_RESULT(renderer.StartFrame());
-	CommandBufferSubmitList.emplace_back(renderPass2D.Draw(mesh, sceneProperties));
+	CommandBufferSubmitList.emplace_back(renderPass2D.Draw(gameObject, sceneProperties));
 	CommandBufferSubmitList.emplace_back(frameRenderPass.Draw());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
 	VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
@@ -260,7 +254,7 @@ void Scene::BakeCubeTextureAtlus(const String& FilePath, std::shared_ptr<BakedTe
 void Scene::Destroy()
 {
 
-	mesh->Destroy();
+	gameObject->Destroy();
 	texture->Destroy();
 	renderPass2D.Destroy();
 	frameRenderPass.Destroy();

@@ -6,6 +6,7 @@
 #include "vertex.h"
 #include "SceneDataBuffer.h"
 #include "RenderedTexture.h"
+#include "GameObject.h"
 
 class RenderPass2D : public Renderpass
 {
@@ -16,10 +17,10 @@ public:
 	RenderPass2D();
 	virtual ~RenderPass2D();
 
-	void BuildRenderPass(std::shared_ptr<Mesh2D> mesh);
-	void BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh);
-	void UpdateRenderPass(std::shared_ptr<Mesh2D> mesh);
-	VkCommandBuffer Draw(std::shared_ptr<Mesh2D> mesh, SceneDataBuffer& sceneProperties);
+	void BuildRenderPass(std::shared_ptr<GameObject> mesh);
+	void BuildRenderPipeline(std::shared_ptr<GameObject> mesh);
+	void UpdateRenderPass(std::shared_ptr<GameObject> mesh);
+	VkCommandBuffer Draw(std::shared_ptr<GameObject> mesh, SceneDataBuffer& sceneProperties);
 	void Destroy() override;
 
 	std::shared_ptr<RenderedTexture> GetRenderedTexture() { return renderedTexture; }

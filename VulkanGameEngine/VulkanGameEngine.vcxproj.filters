@@ -19,6 +19,12 @@
     <Filter Include="Source Files\ImGui">
       <UniqueIdentifier>{5d53e863-320d-4e63-a911-af856a980cb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{21851f16-7e8d-43ad-935e-f43182ed6a5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{37e2016a-2a85-487c-bd6b-bbe03b957639}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -157,7 +163,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectComponent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderMesh2DComponent.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -312,10 +321,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameObjectComponent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="TestComponent.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="RenderMesh2DComponent.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,13 +1,16 @@
 #pragma once
+#include <vulkan/vulkan_core.h>
 #include "Typedef.h"
+#include "SceneDataBuffer.h"
 
 class GameObjectComponent
 {
 private:
 protected:
+
+public:
 	String Name;
 	size_t MemorySize = 0;
-public:
 
 	GameObjectComponent()
 	{
@@ -27,14 +30,17 @@ public:
 
 	virtual void Update(float deltaTime)
 	{
-
 	}
-
-	virtual std::shared_ptr<GameObjectComponent> Clone()
+	virtual void Update(VkCommandBuffer& commandBuffer, float deltaTime)
+	{}
+	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
+	{}
+	virtual void Destroy()
+	{}
+	virtual std::shared_ptr<GameObjectComponent> Clone() const
 	{
-		return std::make_shared<GameObjectComponent>(*this);
+		return nullptr;
 	}
-
 	virtual size_t GetMemorySize() const
 	{
 		return sizeof(*this);

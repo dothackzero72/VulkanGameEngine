@@ -3,6 +3,7 @@ extern "C"
 {
 #include "CVulkanRenderer.h"
 #include <VulkanError.h>
+#include "RenderMesh2DComponent.h"
 }
 
 Renderpass::Renderpass()
@@ -45,12 +46,12 @@ VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Text
     return textureBuffer;
 }
 
-VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(std::shared_ptr<Mesh> mesh, uint32 bindingSlot)
+VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(std::shared_ptr<GameObject> mesh, uint32 bindingSlot)
 {
    return CreateStorageDescriptorSet(mesh, bindingSlot, 0);
 }
 
-VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(std::shared_ptr<Mesh> mesh, uint32 bindingSlot, uint32 arrayElement)
+VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(std::shared_ptr<GameObject> mesh, uint32 bindingSlot, uint32 arrayElement)
 {
     VkWriteDescriptorSet buffer
     {
@@ -60,7 +61,7 @@ VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(std::shared_ptr<Mesh
         .dstArrayElement = 0,
         .descriptorCount = 1,
         .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-        .pBufferInfo = mesh->PropertiesBuffer.GetDescriptorbuffer(),
+        .pBufferInfo = static_cast<RenderMesh2DComponent*>(mesh->GameObjectComponentList[0].get())->GetMeshPropertiesBuffer()->GetDescriptorbuffer(),
     };
     return buffer;
 }
