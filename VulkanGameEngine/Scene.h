@@ -9,6 +9,7 @@
 #include "JsonRenderPass.h"
 #include "GameObject.h"
 #include "RenderMesh2DComponent.h"
+#include "EngineManager.h"
 
 class Scene
 {
@@ -22,7 +23,7 @@ class Scene
 		FrameBufferRenderPass frameRenderPass;
 		RenderPass2D		  renderPass2D;
 		JsonRenderPass        renderPass3D;
-		std::shared_ptr<GameObject>	gameObject;
+		List<std::shared_ptr<GameObject>> gameObjectList;
 
 	public:
 		void StartUp();

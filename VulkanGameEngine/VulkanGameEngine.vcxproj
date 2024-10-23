@@ -164,6 +164,7 @@
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
     <ClCompile Include="BakedTexture.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="EngineManager.cpp" />
     <ClCompile Include="GameObjectComponent.cpp" />
     <ClCompile Include="DepthTexture.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
@@ -181,12 +182,14 @@
     <ClCompile Include="LogLevel.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MemoryPoolManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mesh2D.cpp" />
     <ClCompile Include="MSVCDebugDriver.cpp" />
     <ClCompile Include="MSVCDriver.cpp" />
     <ClCompile Include="OrthographicCamera.cpp" />
     <ClCompile Include="ProgramStats.cpp" />
+    <ClCompile Include="RenderComponent.cpp" />
     <ClCompile Include="RenderMesh2DComponent.cpp" />
     <ClCompile Include="RenderedColorTexture.cpp" />
     <ClCompile Include="RenderedTexture.cpp" />
@@ -213,6 +216,7 @@
     <ClInclude Include="..\External\ImPlot\implot_internal.h" />
     <ClInclude Include="BakedTexture.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="EngineManager.h" />
     <ClInclude Include="GameObjectComponent.h" />
     <ClInclude Include="DepthTexture.h" />
     <ClInclude Include="FPSGraph.h" />
@@ -231,11 +235,14 @@
     <ClInclude Include="LoggerLog.h" />
     <ClInclude Include="LogLevel.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="MemoryPool.h" />
+    <ClInclude Include="MemoryPoolManager.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Mesh2D.h" />
     <ClInclude Include="MSVCDriver.h" />
     <ClInclude Include="OrthographicCamera.h" />
     <ClInclude Include="ProgramStats.h" />
+    <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderMesh2DComponent.h" />
     <ClInclude Include="RenderedColorTexture.h" />
     <ClInclude Include="RenderedTexture.h" />

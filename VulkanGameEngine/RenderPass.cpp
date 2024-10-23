@@ -4,6 +4,7 @@ extern "C"
 #include "CVulkanRenderer.h"
 #include <VulkanError.h>
 #include "RenderMesh2DComponent.h"
+#include "MemoryPoolManager.h"
 }
 
 Renderpass::Renderpass()
@@ -33,7 +34,7 @@ VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Text
 
 VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount, uint32 arrayElement)
 {
-    VkWriteDescriptorSet textureBuffer
+    return VkWriteDescriptorSet
     {
         .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
         .dstSet = DescriptorSet,
@@ -43,27 +44,25 @@ VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Text
         .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
         .pImageInfo = texture->GetTextureBuffer()
     };
-    return textureBuffer;
 }
 
-VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(std::shared_ptr<GameObject> mesh, uint32 bindingSlot)
+VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(List<std::shared_ptr<GameObject>>& mesh, uint32 bindingSlot)
 {
    return CreateStorageDescriptorSet(mesh, bindingSlot, 0);
 }
 
-VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(std::shared_ptr<GameObject> mesh, uint32 bindingSlot, uint32 arrayElement)
+VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(List<std::shared_ptr<GameObject>>& mesh, uint32 bindingSlot, uint32 arrayElement)
 {
-    VkWriteDescriptorSet buffer
+    return VkWriteDescriptorSet
     {
         .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
         .dstSet = DescriptorSet,
         .dstBinding = 0,
         .dstArrayElement = 0,
-        .descriptorCount = 1,
+        .descriptorCount = static_cast<uint32>(MemoryPoolManager::GetGameObjectPropertiesBuffer().size()),
         .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-        .pBufferInfo = static_cast<RenderMesh2DComponent*>(mesh->GameObjectComponentList[0].get())->GetMeshPropertiesBuffer()->GetDescriptorbuffer(),
+        .pBufferInfo = MemoryPoolManager::GetGameObjectPropertiesBuffer().data()
     };
-    return buffer;
 }
 //
 //VkWriteDescriptorSet RenderPass::CreateUnimformDescriptorSet()

@@ -75,6 +75,9 @@
     <ClCompile Include="CGameObject.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CMemoryPool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CVulkanRenderer.h">
@@ -138,6 +141,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CGameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CMemoryPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

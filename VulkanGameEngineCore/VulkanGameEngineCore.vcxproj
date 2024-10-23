@@ -164,6 +164,7 @@
     <ClCompile Include="io.c" />
     <ClCompile Include="Keyboard.c" />
     <ClCompile Include="Memory.c" />
+    <ClCompile Include="CMemoryPool.c" />
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="SDLWindow.c" />
     <ClCompile Include="VulkanError.c" />
@@ -186,6 +187,7 @@
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Memory.h" />
+    <ClInclude Include="CMemoryPool.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="pixel.h" />
     <ClInclude Include="SDLWindow.h" />

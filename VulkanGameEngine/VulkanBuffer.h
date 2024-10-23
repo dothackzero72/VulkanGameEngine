@@ -10,18 +10,6 @@ extern "C"
 #include "Vertex.h"
 #include "Typedef.h"
 
-#pragma once
-extern "C"
-{
-#include <CBuffer.h>
-}
-#include "VulkanRenderer.h"
-#include <iostream>
-#include <memory>
-#include <vector>
-#include "Vertex.h"
-#include "Typedef.h"
-
 template <class T>
 class VulkanBuffer
 {

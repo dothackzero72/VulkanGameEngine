@@ -24,8 +24,8 @@ class Renderpass
 		VkWriteDescriptorSet CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot);
 		VkWriteDescriptorSet CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount);
 		VkWriteDescriptorSet CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount, uint32 arrayElement);
-		VkWriteDescriptorSet CreateStorageDescriptorSet(std::shared_ptr<GameObject> mesh, uint32 bindingSlot);
-		VkWriteDescriptorSet CreateStorageDescriptorSet(std::shared_ptr<GameObject> mesh, uint32 bindingSlot, uint32 arrayElement);
+		VkWriteDescriptorSet CreateStorageDescriptorSet(List<std::shared_ptr<GameObject>>& mesh, uint32 bindingSlot);
+		VkWriteDescriptorSet CreateStorageDescriptorSet(List<std::shared_ptr<GameObject>>& mesh, uint32 bindingSlot, uint32 arrayElement);
 		//VkWriteDescriptorSet CreateUnimformDescriptorSet();
 
 	public:

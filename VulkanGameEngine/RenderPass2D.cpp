@@ -2,6 +2,7 @@
 #include <CVulkanRenderer.h>
 #include "ShaderCompiler.h"
 #include "RenderMesh2DComponent.h"
+#include "MemoryPoolManager.h"
 
 RenderPass2D::RenderPass2D() : Renderpass()
 {
@@ -11,7 +12,7 @@ RenderPass2D::~RenderPass2D()
 {
 }
 
-void RenderPass2D::BuildRenderPass(std::shared_ptr<GameObject> mesh)
+void RenderPass2D::BuildRenderPass(List<std::shared_ptr<GameObject>>& mesh)
 {
     renderedTexture = std::make_shared<RenderedTexture>(RenderedTexture(RenderPassResolution, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_B8G8R8A8_UNORM));
 
@@ -100,14 +101,14 @@ void RenderPass2D::BuildRenderPass(std::shared_ptr<GameObject> mesh)
     BuildRenderPipeline(mesh);
 }
 
-void RenderPass2D::BuildRenderPipeline(std::shared_ptr<GameObject> mesh)
+void RenderPass2D::BuildRenderPipeline(List<std::shared_ptr<GameObject>>& mesh)
 {
     std::vector<VkDescriptorPoolSize> DescriptorPoolBinding =
     {
         VkDescriptorPoolSize
         {
             .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-            .descriptorCount = 1
+            .descriptorCount = static_cast<uint32>(MemoryPoolManager::GetGameObjectPropertiesBuffer().size())
         }
     };
     VkDescriptorPoolCreateInfo poolInfo =
@@ -125,8 +126,8 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<GameObject> mesh)
         {
             0,
             VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-            1,
-            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            static_cast<uint32>(MemoryPoolManager::GetGameObjectPropertiesBuffer().size()),
+            VK_SHADER_STAGE_ALL,
             nullptr
         },
         VkDescriptorSetLayoutBinding
@@ -327,7 +328,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<GameObject> mesh)
     }
 }
 
-void RenderPass2D::UpdateRenderPass(std::shared_ptr<GameObject> mesh)
+void RenderPass2D::UpdateRenderPass(List<std::shared_ptr<GameObject>>& mesh)
 {
     renderer.DestroyFrameBuffers(FrameBufferList);
     renderer.DestroyRenderPass(RenderPass);
@@ -342,7 +343,7 @@ void RenderPass2D::UpdateRenderPass(std::shared_ptr<GameObject> mesh)
     BuildRenderPass(mesh);
 }
 
-VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<GameObject> mesh, SceneDataBuffer& sceneProperties)
+VkCommandBuffer RenderPass2D::Draw(List<std::shared_ptr<GameObject>>& meshList, SceneDataBuffer& sceneProperties)
 {
     std::vector<VkClearValue> clearValues
     {
@@ -375,7 +376,10 @@ VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<GameObject> mesh, SceneDataBu
 
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[cRenderer.CommandIndex], &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBufferList[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    mesh->Draw(CommandBufferList[cRenderer.CommandIndex], ShaderPipeline, ShaderPipelineLayout, DescriptorSet, sceneProperties);
+    for (auto mesh : meshList)
+    {
+        mesh->Draw(CommandBufferList[cRenderer.CommandIndex], ShaderPipeline, ShaderPipelineLayout, DescriptorSet, sceneProperties);
+    }
     vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
     vkEndCommandBuffer(CommandBufferList[cRenderer.CommandIndex]);
     return CommandBufferList[cRenderer.CommandIndex];
