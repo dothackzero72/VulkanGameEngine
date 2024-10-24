@@ -13,7 +13,7 @@ void Scene::StartUp()
 	//Timer timer;
 	//timer.Time = 0.0f;
 
-	texture = std::make_shared<BakedTexture>(BakedTexture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
+	texture = std::make_shared<BakedTexture>(BakedTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\Textures\\awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
 	gameObjectList.emplace_back(GameObject::CreateGameObject("adsfda", List<ComponentTypeEnum> { kRenderMesh2DComponent }));
 	gameObjectList.emplace_back(GameObject::CreateGameObject("adsfda1", List<ComponentTypeEnum> { kRenderMesh2DComponent }));

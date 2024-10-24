@@ -23,7 +23,6 @@ int main()
     vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);
     renderer.RendererSetUp();
     MemoryPoolManager::SetUpMemoryPoolManager(30);
-    std::cout << "Memory Pool Setup" << std::endl;
     InterfaceRenderPass::StartUp();
     ImPlot::CreateContext();
 
@@ -48,3 +47,4 @@ int main()
     vulkanWindow->DestroyWindow(vulkanWindow); 
     return 0;
 }
+
