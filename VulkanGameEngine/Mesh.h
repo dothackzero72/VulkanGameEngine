@@ -10,9 +10,11 @@ extern "C"
 
 struct MeshProperitiesStruct
 {
-	uint32 MeshIndex = 0;
-	uint32 MaterialIndex = 0;
-	mat4   MeshTransform = mat4(1.0f);
+	alignas(4)  uint32 MeshIndex = 0;
+	alignas(4)  uint32 MaterialIndex = 0;
+	alignas(16) mat4   MeshTransform = mat4(1.0f);
+	alignas(4)  uint32 Buffer1 = 0;
+	alignas(4)  uint32 Buffer2 = 0;
 };
 
 typedef VulkanBuffer<Vertex2D> VertexBuffer;

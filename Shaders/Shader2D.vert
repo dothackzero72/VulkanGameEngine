@@ -37,5 +37,6 @@ void main()
     UV = aUV;
     gl_Position = sceneData.Projection * 
                   sceneData.View *   
+                  MeshTransform *
                   vec4(inPosition, 0.0f, 1.0f);
 }

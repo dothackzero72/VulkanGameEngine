@@ -5,6 +5,7 @@ extern "C"
 #include <VulkanError.h>
 #include "RenderMesh2DComponent.h"
 }
+#include "MemoryPoolManager.h"
 
 Renderpass::Renderpass()
 {
@@ -37,8 +38,8 @@ VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Text
     {
         .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
         .dstSet = DescriptorSet,
-        .dstBinding = 1,
-        .dstArrayElement = 0,
+        .dstBinding = bindingSlot,
+        .dstArrayElement = arrayElement,
         .descriptorCount = 1,
         .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
         .pImageInfo = texture->GetTextureBuffer()
@@ -46,22 +47,35 @@ VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Text
     return textureBuffer;
 }
 
-VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(std::shared_ptr<GameObject> mesh, uint32 bindingSlot)
+VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(uint32 bindingSlot)
 {
-   return CreateStorageDescriptorSet(mesh, bindingSlot, 0);
+   return CreateStorageDescriptorSet(bindingSlot, 0);
 }
 
-VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(std::shared_ptr<GameObject> mesh, uint32 bindingSlot, uint32 arrayElement)
+VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(uint32 bindingSlot, uint32 arrayElement)
 {
+	std::vector<VkDescriptorBufferInfo>	MeshPropertiesBuffer;
+
+		for (auto& mesh : MemoryPoolManager::RenderMesh2DComponentList)
+		{
+			auto asdf = mesh->GetMeshPropertiesBuffer()->CheckBufferContents();
+			VkDescriptorBufferInfo MeshProperitesBufferInfo = {};
+			MeshProperitesBufferInfo.buffer = mesh->GetMeshPropertiesBuffer()->Buffer;
+			MeshProperitesBufferInfo.offset = 0;
+			MeshProperitesBufferInfo.range = mesh->GetMeshPropertiesBuffer()->GetBufferSize();
+			MeshPropertiesBuffer.emplace_back(MeshProperitesBufferInfo);
+		}
+	
+
     VkWriteDescriptorSet buffer
     {
         .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
         .dstSet = DescriptorSet,
-        .dstBinding = 0,
-        .dstArrayElement = 0,
-        .descriptorCount = 1,
+        .dstBinding = bindingSlot,
+        .dstArrayElement = arrayElement,
+        .descriptorCount = static_cast<uint32>(MeshPropertiesBuffer.size()),
         .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-        .pBufferInfo = static_cast<RenderMesh2DComponent*>(mesh->GameObjectComponentList[0].get())->GetMeshPropertiesBuffer()->GetDescriptorbuffer(),
+        .pBufferInfo = MeshPropertiesBuffer.data()
     };
     return buffer;
 }

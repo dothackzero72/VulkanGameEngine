@@ -5,10 +5,12 @@ class RenderMesh2DComponent : public GameObjectComponent
 {
 private:
 	std::shared_ptr<Mesh2D> mesh;
+	RenderMesh2DComponent(String name);
 public:
 	RenderMesh2DComponent();
-	RenderMesh2DComponent(String name);
 	virtual ~RenderMesh2DComponent() override;
+
+	static std::shared_ptr<RenderMesh2DComponent> CreateRenderMesh2DComponent(String name);
 
 	virtual void Update(float deltaTime) override;
 	virtual void Update(VkCommandBuffer& commandBuffer, float deltaTime) override;
@@ -18,5 +20,5 @@ public:
 	virtual size_t GetMemorySize() const override;
 
 	MeshPropertiesBuffer* GetMeshPropertiesBuffer() { return mesh->GetMeshPropertiesBuffer(); }
+	const std::shared_ptr<Mesh2D> GetMesh2D() { return mesh; }
 };
-

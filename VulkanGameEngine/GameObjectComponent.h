@@ -3,47 +3,48 @@
 #include "Typedef.h"
 #include "SceneDataBuffer.h"
 
+enum ComponentTypeEnum
+{
+	kUndefined,
+	kRenderMesh2DComponent
+};
+
 class GameObjectComponent
 {
 private:
 protected:
+	GameObjectComponent(ComponentTypeEnum componentType)
+	{
+		Name = "unnamed";
+		ComponentType = componentType;
+	}
+
+	GameObjectComponent(String name, ComponentTypeEnum componentType)
+	{
+		Name = name;
+		ComponentType = componentType;
+	}
 
 public:
 	String Name;
 	size_t MemorySize = 0;
+	ComponentTypeEnum ComponentType;
 
 	GameObjectComponent()
 	{
-		MemorySize = GetMemorySize();
-	}
-
-	GameObjectComponent(String name)
-	{
-		Name = name;
-		MemorySize = GetMemorySize();
+		Name = "Unnamed";
 	}
 
 	virtual ~GameObjectComponent()
 	{
 
 	}
-
-	virtual void Update(float deltaTime)
-	{
-	}
-	virtual void Update(VkCommandBuffer& commandBuffer, float deltaTime)
-	{}
-	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
-	{}
-	virtual void Destroy()
-	{}
-	virtual std::shared_ptr<GameObjectComponent> Clone() const
-	{
-		return nullptr;
-	}
-	virtual size_t GetMemorySize() const
-	{
-		return sizeof(*this);
-	}
+	
+	
+	virtual void Update(float deltaTime) = 0;
+	virtual void Update(VkCommandBuffer& commandBuffer, float deltaTime) = 0;
+	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties) = 0;
+	virtual void Destroy() = 0;
+	virtual std::shared_ptr<GameObjectComponent> Clone() const = 0;
+	virtual size_t GetMemorySize() const = 0;
 };
-

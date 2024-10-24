@@ -14,6 +14,7 @@ extern "C"
 #include "SystemClock.h"
 #include "FrameTime.h"
 #include <iostream>
+#include "MemoryPoolManager.h"
 
 int main()
 {
@@ -21,6 +22,8 @@ int main()
     FrameTimer deltaTime = FrameTimer();
     vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);
     renderer.RendererSetUp();
+    MemoryPoolManager::SetUpMemoryPoolManager(30);
+    std::cout << "Memory Pool Setup" << std::endl;
     InterfaceRenderPass::StartUp();
     ImPlot::CreateContext();
 

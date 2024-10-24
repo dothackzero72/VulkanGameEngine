@@ -17,10 +17,10 @@ public:
 	RenderPass2D();
 	virtual ~RenderPass2D();
 
-	void BuildRenderPass(std::shared_ptr<GameObject> mesh);
-	void BuildRenderPipeline(std::shared_ptr<GameObject> mesh);
-	void UpdateRenderPass(std::shared_ptr<GameObject> mesh);
-	VkCommandBuffer Draw(std::shared_ptr<GameObject> mesh, SceneDataBuffer& sceneProperties);
+	void BuildRenderPass();
+	void BuildRenderPipeline();
+	void UpdateRenderPass();
+	VkCommandBuffer Draw(List<std::shared_ptr<GameObject>> meshList, SceneDataBuffer& sceneProperties);
 	void Destroy() override;
 
 	std::shared_ptr<RenderedTexture> GetRenderedTexture() { return renderedTexture; }

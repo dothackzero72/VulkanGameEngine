@@ -172,7 +172,7 @@ public:
 		std::vector<T> DataList;
 		size_t dataListSize = BufferSize / sizeof(T);
 
-		void* data = Buffer_MapBufferMemory(_device.get(), BufferMemory, BufferSize, *IsMapped);
+		void* data = Buffer_MapBufferMemory(*_device.get(), BufferMemory, BufferSize, &IsMapped);
 		if (data == nullptr) {
 			std::cerr << "Failed to map buffer memory\n";
 			return DataList;
@@ -184,7 +184,7 @@ public:
 			DataList.emplace_back(*reinterpret_cast<T*>(newPtr));
 			newPtr += sizeof(T);
 		}
-		Buffer_UnmapBufferMemory(_device.get(), BufferMemory, *IsMapped);
+		Buffer_UnmapBufferMemory(*_device.get(), BufferMemory, &IsMapped);
 
 		return DataList;
 	}
