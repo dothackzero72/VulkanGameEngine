@@ -5,7 +5,7 @@ extern "C"
 #include <VulkanError.h>
 #include "RenderMesh2DComponent.h"
 }
-#include "MemoryPoolManager.h"
+#include "MemoryManager.h"
 
 Renderpass::Renderpass()
 {
@@ -56,7 +56,7 @@ VkWriteDescriptorSet Renderpass::CreateStorageDescriptorSet(uint32 bindingSlot, 
 {
 	std::vector<VkDescriptorBufferInfo>	MeshPropertiesBuffer;
 
-		for (auto& mesh : MemoryPoolManager::RenderMesh2DComponentList)
+		for (auto& mesh : MemoryManager::RenderMesh2DComponentList)
 		{
 			auto asdf = mesh->GetMeshPropertiesBuffer()->CheckBufferContents();
 			VkDescriptorBufferInfo MeshProperitesBufferInfo = {};

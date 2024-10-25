@@ -30,9 +30,8 @@ void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 	MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.z), vec3(0.0f, 0.0f, 1.0f));
 	MeshMatrix = glm::scale(MeshMatrix, MeshScale);
 
-	MeshProperties.MeshIndex++;
-	MeshProperties.MaterialIndex++;
-	MeshProperties.MeshTransform = MeshTransform;
+	MeshProperties.MaterialIndex = MeshBufferIndex;
+	MeshProperties.MeshTransform = MeshMatrix;
 	//auto b = PropertiesBuffer.CheckStagingBufferContents();
 	//auto c = PropertiesBuffer.CheckBufferContents();
 	PropertiesBuffer.UpdateBufferData(static_cast<void*>(&MeshProperties));

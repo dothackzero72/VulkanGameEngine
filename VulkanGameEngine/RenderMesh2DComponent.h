@@ -5,12 +5,12 @@ class RenderMesh2DComponent : public GameObjectComponent
 {
 private:
 	std::shared_ptr<Mesh2D> mesh;
-	RenderMesh2DComponent(String name);
+	RenderMesh2DComponent(String name, uint32 meshBufferIndex);
 public:
 	RenderMesh2DComponent();
 	virtual ~RenderMesh2DComponent() override;
 
-	static std::shared_ptr<RenderMesh2DComponent> CreateRenderMesh2DComponent(String name);
+	static std::shared_ptr<RenderMesh2DComponent> CreateRenderMesh2DComponent(String name, uint32 meshBufferIndex);
 
 	virtual void Update(float deltaTime) override;
 	virtual void Update(VkCommandBuffer& commandBuffer, float deltaTime) override;

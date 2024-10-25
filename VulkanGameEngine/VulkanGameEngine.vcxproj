@@ -181,7 +181,7 @@
     <ClCompile Include="LogLevel.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="MemoryPoolManager.cpp" />
+    <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mesh2D.cpp" />
     <ClCompile Include="MSVCDebugDriver.cpp" />
@@ -233,7 +233,7 @@
     <ClInclude Include="LogLevel.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MemoryPool.h" />
-    <ClInclude Include="MemoryPoolManager.h" />
+    <ClInclude Include="MemoryManager.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Mesh2D.h" />
     <ClInclude Include="MSVCDriver.h" />

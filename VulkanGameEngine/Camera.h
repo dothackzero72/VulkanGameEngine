@@ -9,7 +9,6 @@ protected:
 	float Width;
 	float Height;
 	float AspectRatio;
-	float Zoom;
 
 	vec2 ViewScreenSize;
 	mat4 ProjectionMatrix;
@@ -17,6 +16,7 @@ protected:
 
 public:
 	vec3 Position;
+	float Zoom;
 
 	Camera();
 	virtual ~Camera();

@@ -10,11 +10,8 @@ extern "C"
 
 struct MeshProperitiesStruct
 {
-	alignas(4)  uint32 MeshIndex = 0;
-	alignas(4)  uint32 MaterialIndex = 0;
+	alignas(4)  uint32 MaterialIndex = -1;
 	alignas(16) mat4   MeshTransform = mat4(1.0f);
-	alignas(4)  uint32 Buffer1 = 0;
-	alignas(4)  uint32 Buffer2 = 0;
 };
 
 typedef VulkanBuffer<Vertex2D> VertexBuffer;
@@ -46,13 +43,14 @@ public:
 	vec3 MeshRotation;
 	vec3 MeshScale;
 
-	VertexBuffer MeshVertexBuffer;
+	VulkanBuffer<Vertex2D> MeshVertexBuffer;
 	IndexBuffer MeshIndexBuffer;
 	MeshPropertiesBuffer PropertiesBuffer;
 
 	template<class T>
-	void MeshStartUp(List<T>& vertexList, List<uint32>& indexList)
+	void MeshStartUp(List<T>& vertexList, List<uint32>& indexList, uint32 meshBufferIndex)
 	{
+		MeshBufferIndex = meshBufferIndex;
 		VertexCount = vertexList.size();
 		IndexCount = indexList.size();
 

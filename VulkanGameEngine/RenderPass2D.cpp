@@ -2,7 +2,7 @@
 #include <CVulkanRenderer.h>
 #include "ShaderCompiler.h"
 #include "RenderMesh2DComponent.h"
-#include "MemoryPoolManager.h"
+#include "MemoryManager.h"
 
 RenderPass2D::RenderPass2D() : Renderpass()
 {
@@ -12,7 +12,7 @@ RenderPass2D::~RenderPass2D()
 {
 }
 
-void RenderPass2D::BuildRenderPass()
+void RenderPass2D::BuildRenderPass(std::shared_ptr<Texture> texture)
 {
     renderedTexture = std::make_shared<RenderedTexture>(RenderedTexture(RenderPassResolution, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_B8G8R8A8_UNORM));
 
@@ -98,17 +98,17 @@ void RenderPass2D::BuildRenderPass()
         };
         VULKAN_RESULT(vkCreateFramebuffer(cRenderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]));
     }
-    BuildRenderPipeline();
+    BuildRenderPipeline(texture);
 }
 
-void RenderPass2D::BuildRenderPipeline()
+void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Texture> texture)
 {
     std::vector<VkDescriptorPoolSize> DescriptorPoolBinding =
     {
          VkDescriptorPoolSize
         {
             .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-            .descriptorCount = static_cast<uint32>(MemoryPoolManager::GetGameObjectPropertiesBuffer().size())
+            .descriptorCount = static_cast<uint32>(MemoryManager::GetGameObjectPropertiesBuffer().size())
         },
         VkDescriptorPoolSize
         {
@@ -131,7 +131,7 @@ void RenderPass2D::BuildRenderPipeline()
         {
             0,
             VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-            static_cast<uint32>(MemoryPoolManager::GetGameObjectPropertiesBuffer().size()),
+           static_cast<uint32>(MemoryManager::GetGameObjectPropertiesBuffer().size()),
             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             nullptr
         },
@@ -162,14 +162,14 @@ void RenderPass2D::BuildRenderPipeline()
     };
     VULKAN_RESULT(renderer.AllocateDescriptorSets(DescriptorSet, allocInfo));
 
+
     std::vector<VkDescriptorBufferInfo>	MeshPropertiesBuffer;
-    for (auto& mesh : MemoryPoolManager::RenderMesh2DComponentList)
+    for (auto& mesh : MemoryManager::RenderMesh2DComponentList)
     {
-        auto asdf = mesh->GetMeshPropertiesBuffer()->CheckBufferContents();
         VkDescriptorBufferInfo MeshProperitesBufferInfo = {};
         MeshProperitesBufferInfo.buffer = mesh->GetMeshPropertiesBuffer()->Buffer;
         MeshProperitesBufferInfo.offset = 0;
-        MeshProperitesBufferInfo.range = mesh->GetMeshPropertiesBuffer()->GetBufferSize();
+        MeshProperitesBufferInfo.range = VK_WHOLE_SIZE;
         MeshPropertiesBuffer.emplace_back(MeshProperitesBufferInfo);
     }
 
@@ -184,13 +184,69 @@ void RenderPass2D::BuildRenderPipeline()
         .pBufferInfo = MeshPropertiesBuffer.data()
     };
 
+ /*   List<VkDescriptorImageInfo> textureProperties;
+ 
+        if (MemoryManager::TextureList.size() == 0)
+        {
+            VkSamplerCreateInfo NullSamplerInfo = {};
+            NullSamplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+            NullSamplerInfo.magFilter = VK_FILTER_NEAREST;
+            NullSamplerInfo.minFilter = VK_FILTER_NEAREST;
+            NullSamplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            NullSamplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            NullSamplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            NullSamplerInfo.anisotropyEnable = VK_TRUE;
+            NullSamplerInfo.maxAnisotropy = 16.0f;
+            NullSamplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+            NullSamplerInfo.unnormalizedCoordinates = VK_FALSE;
+            NullSamplerInfo.compareEnable = VK_FALSE;
+            NullSamplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+            NullSamplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+            NullSamplerInfo.minLod = 0;
+            NullSamplerInfo.maxLod = 0;
+            NullSamplerInfo.mipLodBias = 0;
+
+            VkSampler nullSampler = VK_NULL_HANDLE;
+            if (vkCreateSampler(cRenderer.Device, &NullSamplerInfo, nullptr, &nullSampler))
+            {
+                throw std::runtime_error("Failed to create Sampler.");
+            }
+
+            VkDescriptorImageInfo nullBuffer;
+            nullBuffer.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            nullBuffer.imageView = VK_NULL_HANDLE;
+            nullBuffer.sampler = nullSampler;
+            textureProperties.emplace_back(nullBuffer);
+        }
+        else
+        {
+            for (auto& texture : MemoryManager::TextureList)
+            {
+                VkDescriptorImageInfo textureDescriptor;
+                textureDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                textureDescriptor.imageView = texture->View;
+                textureDescriptor.sampler = texture->Sampler;
+                textureProperties.emplace_back(textureDescriptor);
+            }
+        }
+
+    VkWriteDescriptorSet textureBuffer
+    {
+        .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+        .dstSet = DescriptorSet,
+        .dstBinding = 1,
+        .dstArrayElement = 0,
+        .descriptorCount = static_cast<uint32>(textureProperties.size()),
+        .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+        .pImageInfo = textureProperties.data()
+    };*/
 
     for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
     {
         std::vector<VkWriteDescriptorSet> descriptorSets
         {
             buffer,
-            CreateTextureDescriptorSet(renderedTexture, 1)
+            CreateTextureDescriptorSet(texture, 1)
         };
         renderer.UpdateDescriptorSet(descriptorSets);
     }
@@ -325,8 +381,8 @@ void RenderPass2D::BuildRenderPipeline()
 
     std::vector<VkPipelineShaderStageCreateInfo> PipelineShaderStageList
     {
-        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/Shader2DVert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/Shader2DFrag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/Shader2DVert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/Shader2DFrag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
     };
     std::vector<VkGraphicsPipelineCreateInfo> pipelineInfo
     {
@@ -356,7 +412,7 @@ void RenderPass2D::BuildRenderPipeline()
     }
 }
 
-void RenderPass2D::UpdateRenderPass()
+void RenderPass2D::UpdateRenderPass(std::shared_ptr<Texture> texture)
 {
     renderer.DestroyFrameBuffers(FrameBufferList);
     renderer.DestroyRenderPass(RenderPass);
@@ -368,7 +424,7 @@ void RenderPass2D::UpdateRenderPass()
 
     RenderPassResolution = glm::ivec2((int)cRenderer.SwapChain.SwapChainResolution.width, (int)cRenderer.SwapChain.SwapChainResolution.height);
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
-    BuildRenderPass();
+    BuildRenderPass(texture);
 }
 
 VkCommandBuffer RenderPass2D::Draw(List<std::shared_ptr<GameObject>> meshList, SceneDataBuffer& sceneProperties)

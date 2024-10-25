@@ -25,6 +25,8 @@ class Texture
 private:
 	uint64 TextureBufferIndex;
 
+
+
 	void	 TextureSetUp();
 	VkResult GenerateMipmaps();
 
@@ -40,6 +42,7 @@ protected:
 	VkResult CreateTextureSampler(VkSamplerCreateInfo samplerCreateInfo);
 
 public:
+	String Name;
 	int Width;
 	int Height;
 	int Depth;
@@ -60,10 +63,15 @@ public:
 	VkDescriptorImageInfo textureBuffer;
 
 	Texture();
+	virtual ~Texture();
 	Texture(const Pixel& clearColor, int width, int height, VkFormat textureByteFormat, TextureTypeEnum textureType);
 	Texture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
 	Texture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
-	virtual ~Texture();
+
+	//static std::shared_ptr<Texture> CreateTexture(const Pixel& clearColor, int width, int height, VkFormat textureByteFormat, TextureTypeEnum textureType);
+	//static std::shared_ptr<Texture> CreateTexture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
+	//static std::shared_ptr<Texture> CreateTexture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
+
 	virtual void UpdateTextureSize(vec2 TextureResolution);
 	virtual void Destroy();
 

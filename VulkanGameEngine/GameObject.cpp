@@ -1,7 +1,7 @@
 #include "GameObject.h"
 #include <Macro.h>
 #include <iostream>
-#include "MemoryPoolManager.h"
+#include "MemoryManager.h"
 #include "RenderMesh2DComponent.h"
 
 GameObject::GameObject()
@@ -21,17 +21,17 @@ GameObject::GameObject(String name, List<std::shared_ptr<GameObjectComponent>> g
 
 std::shared_ptr<GameObject> GameObject::CreateGameObject(String name)
 {
-	std::shared_ptr<GameObject> gameObject = MemoryPoolManager::AllocateNewGameObject();
+	std::shared_ptr<GameObject> gameObject = MemoryManager::AllocateNewGameObject();
 	new (gameObject.get()) GameObject(name);
 	return gameObject;
 }
 
 std::shared_ptr<GameObject> GameObject::CreateGameObject(String name, List<ComponentTypeEnum> gameObjectComponentList)
 {
-	std::shared_ptr<GameObject> gameObject = MemoryPoolManager::AllocateNewGameObject();
+	std::shared_ptr<GameObject> gameObject = MemoryManager::AllocateNewGameObject();
 
 	List<std::shared_ptr<GameObjectComponent>> conponentList;
-	conponentList.emplace_back(RenderMesh2DComponent::CreateRenderMesh2DComponent("Mesh Renderer"));
+	conponentList.emplace_back(RenderMesh2DComponent::CreateRenderMesh2DComponent("Mesh Renderer", static_cast<uint32>(MemoryManager::RenderMesh2DComponentList.size())));
 	
 	new (gameObject.get()) GameObject(name, conponentList);
 	return gameObject;

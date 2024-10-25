@@ -12,6 +12,7 @@ layout(location = 0) out vec4 outColor;
 
 layout(push_constant) uniform SceneDataBuffer
 {
+	int	 MeshIndex;
 	mat4 Projection;
 	mat4 View;
 	vec3 CameraPosition;
@@ -19,7 +20,6 @@ layout(push_constant) uniform SceneDataBuffer
 
 struct MeshProperitiesBuffer
 {
-	int	   MeshIndex;
 	int	   MaterialIndex;
 	mat4   MeshTransform;
 };
@@ -42,5 +42,5 @@ void main()
 //   vec3 finalResult = vec3(1.0) - exp(-result * 1.0f);
 //		finalResult = pow(finalResult, vec3(1.0 / 2.2f));
 
-   outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+   outColor = texture(TextureMap, UV).rgba;
 }

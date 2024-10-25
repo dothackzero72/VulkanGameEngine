@@ -8,6 +8,7 @@
 #ifdef max 
 #undef max
 #endif
+#include "MemoryManager.h"
 
 Texture::Texture()
 {
@@ -62,8 +63,30 @@ Texture::~Texture()
 
 }
 
+//std::shared_ptr<Texture> Texture::CreateTexture(const Pixel& clearColor, int width, int height, VkFormat textureByteFormat, TextureTypeEnum textureType)
+//{
+//	std::shared_ptr<Texture> texture = MemoryManager::AllocateNewTexture();
+//	new (texture.get()) Texture(clearColor, width, height, textureByteFormat, textureType);
+//	return texture;
+//}
+//
+//std::shared_ptr<Texture> Texture::CreateTexture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType)
+//{
+//	std::shared_ptr<Texture> texture = MemoryManager::AllocateNewTexture();
+//	new (texture.get()) Texture(filePath, textureByteFormat, TextureType);
+//	return texture;
+//}
+//
+//std::shared_ptr<Texture> Texture::CreateTexture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
+//{
+//	std::shared_ptr<Texture> texture = MemoryManager::AllocateNewTexture();
+//	new (texture.get()) Texture(createImageInfo, samplerCreateInfo);
+//	return texture;
+//}
+
 void Texture::TextureSetUp()
 {
+	Name = "Texture";
 	TextureBufferIndex = 0;
 	Width = 1;
 	Height = 1;

@@ -213,8 +213,8 @@ List<VkPipelineShaderStageCreateInfo> FrameBufferRenderPass::CreateShaders()
 {
     return List<VkPipelineShaderStageCreateInfo>
     {
-        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderVert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderFrag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/FrameBufferShaderVert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/FrameBufferShaderFrag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
     };
 }
 
