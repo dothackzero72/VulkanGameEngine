@@ -17,7 +17,8 @@ private:
 
 	FrameTimer timer;
 	SceneDataBuffer sceneProperties;
-	std::shared_ptr<Texture> texture;
+	List<std::shared_ptr<Texture>> texture;
+	std::shared_ptr<Texture> texture2;
 	std::shared_ptr<OrthographicCamera> orthographicCamera;
 	FrameBufferRenderPass frameRenderPass;
 	RenderPass2D		  renderPass2D;

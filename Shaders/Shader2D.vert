@@ -27,11 +27,12 @@ struct MeshProperitiesBuffer
 };
 
 layout(binding = 0) readonly buffer MeshProperities { MeshProperitiesBuffer meshProperties; } meshBuffer[];
-layout(binding = 1) uniform sampler2D TextureMap;
+layout(binding = 1) uniform sampler2D TextureMap[];
 
 void main() 
 {
-    int meshIndex = sceneData.MeshBufferIndex;
+    const int meshIndex = sceneData.MeshBufferIndex;
+
     mat4 meshTransform = meshBuffer[meshIndex].meshProperties.MeshTransform;
     FragPos = vec2(inPosition.xy);    
     Color = aColor;

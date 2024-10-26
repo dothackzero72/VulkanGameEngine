@@ -12,12 +12,14 @@ void Scene::StartUp()
 {
 	//Timer timer;
 	//timer.Time = 0.0f;
-	texture = std::make_shared<Texture>(Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\Textures\\awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
+	texture2 = std::make_shared<Texture>(Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\Textures\\awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
+	//texture.emplace_back(std::make_shared<Texture>(Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\Textures\\awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap)));
+	//texture.emplace_back(std::make_shared<Texture>(Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\Textures\\texture.jpg", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap)));
 	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
 	gameObjectList.emplace_back(GameObject::CreateGameObject("adsfda", List<ComponentTypeEnum> { kRenderMesh2DComponent }));
 	gameObjectList.emplace_back(GameObject::CreateGameObject("adsfda1", List<ComponentTypeEnum> { kRenderMesh2DComponent }));
-	/*TextureList.emplace_back(Texture::CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\Textures\\awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
-	TextureList.emplace_back(Texture::CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\Textures\\texture.jpg", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));*/
+	TextureList.emplace_back(Texture::CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\Textures\\awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
+	TextureList.emplace_back(Texture::CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\Textures\\container2.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 
 	//const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
 	//const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
@@ -91,7 +93,7 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 	ImGui::NewFrame();
 	ImGui::Begin("Button Window");
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	texture.get()->ImGuiShowTexture(ImVec2(256, 128));
+	texture2.get()->ImGuiShowTexture(ImVec2(256, 128));
 	ImGui::End();
 
 
@@ -117,7 +119,7 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 
 void Scene::BuildRenderPasses()
 {
-	renderPass2D.BuildRenderPass(texture);
+	renderPass2D.BuildRenderPass(texture, texture2);
 	//renderPass3D.JsonCreateRenderPass("C://Users//dotha//Documents//GitHub//VulkanGameEngine//RenderPass//DefaultRenderPass.json");
 	frameRenderPass.BuildRenderPass(renderPass2D.GetRenderedTexture());
 }
@@ -125,7 +127,7 @@ void Scene::BuildRenderPasses()
 void Scene::UpdateRenderPasses()
 {
 	renderer.RebuildSwapChain();
-	renderPass2D.UpdateRenderPass(texture);
+	renderPass2D.UpdateRenderPass(texture, texture2);
 	frameRenderPass.UpdateRenderPass(renderPass2D.GetRenderedTexture());
 	InterfaceRenderPass::RebuildSwapChain();
 	cRenderer.RebuildRendererFlag = false;

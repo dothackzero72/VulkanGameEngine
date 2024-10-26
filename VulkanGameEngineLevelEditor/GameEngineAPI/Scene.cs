@@ -27,9 +27,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     [StructLayout(LayoutKind.Sequential)]
     public struct MeshProperitiesStruct
     {
-        uint MeshIndex = 0;
-        uint MaterialIndex = 0;
-        mat4 MeshTransform;
+        public uint MaterialIndex = 0;
+        public mat4 MeshTransform;
 
         public MeshProperitiesStruct()
         {
@@ -40,26 +39,27 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     [StructLayout(LayoutKind.Sequential)]
     public struct SceneDataBuffer
     {
+        public uint MeshIndex = 0;
         public mat4 Projection;
         public mat4 View;
         public vec3 CameraPosition;
 
         public SceneDataBuffer()
         {
+            MeshIndex = 0;
             Projection = new mat4();
             View = new mat4();
             CameraPosition = new vec3(0.0f);
         }
     };
 
-
-
     public unsafe class Scene
     {
         Vk vk = Vk.GetApi();
         public RendererPass3D RendererPass3D { get; set; }
         static readonly long startTime = DateTime.Now.Ticks;
-        public Texture texture { get; set; }
+        public List<Texture> textureList { get; set; }
+        public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
     
         public Scene()
         {
@@ -67,7 +67,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void StartUp()
         {
-            texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
+            MemoryManager.StartUp(30);
+
+            textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
+            GameObjectList.Add(GameObject.CreateGameObject("gameObject"));
+
+            MemoryManager.ViewMemoryMap();
 
             RendererPass3D = new RendererPass3D();
             RendererPass3D.Create3dRenderPass();

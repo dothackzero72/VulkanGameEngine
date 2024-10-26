@@ -12,7 +12,7 @@ layout(location = 0) out vec4 outColor;
 
 layout(push_constant) uniform SceneDataBuffer
 {
-	int	 MeshIndex;
+	int	 MeshBufferIndex;
 	mat4 Projection;
 	mat4 View;
 	vec3 CameraPosition;
@@ -24,8 +24,8 @@ struct MeshProperitiesBuffer
 	mat4   MeshTransform;
 };
 
-layout(binding = 0) buffer MeshProperities { MeshProperitiesBuffer meshProperties; } meshBuffer;
-layout(binding = 1) uniform sampler2D TextureMap;
+layout(binding = 0) buffer MeshProperities { MeshProperitiesBuffer meshProperties; } meshBuffer[];
+layout(binding = 1) uniform sampler2D TextureMap[];
 
 void main() 
 {
@@ -42,5 +42,7 @@ void main()
 //   vec3 finalResult = vec3(1.0) - exp(-result * 1.0f);
 //		finalResult = pow(finalResult, vec3(1.0 / 2.2f));
 
-   outColor = texture(TextureMap, UV).rgba;
+   const int meshIndex = sceneData.MeshBufferIndex;
+   const int textureIndex = meshBuffer[meshIndex].meshProperties.MaterialIndex;
+   outColor = texture(TextureMap[textureIndex], UV).rgba;
 }

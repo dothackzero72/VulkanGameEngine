@@ -68,9 +68,9 @@ public:
 	Texture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
 	Texture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
 
-	//static std::shared_ptr<Texture> CreateTexture(const Pixel& clearColor, int width, int height, VkFormat textureByteFormat, TextureTypeEnum textureType);
-	//static std::shared_ptr<Texture> CreateTexture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
-	//static std::shared_ptr<Texture> CreateTexture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
+	static std::shared_ptr<Texture> CreateTexture(const Pixel& clearColor, int width, int height, VkFormat textureByteFormat, TextureTypeEnum textureType);
+	static std::shared_ptr<Texture> CreateTexture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
+	static std::shared_ptr<Texture> CreateTexture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
 
 	virtual void UpdateTextureSize(vec2 TextureResolution);
 	virtual void Destroy();

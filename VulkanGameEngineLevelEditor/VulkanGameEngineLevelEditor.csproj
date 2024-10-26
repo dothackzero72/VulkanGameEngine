@@ -298,6 +298,11 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GameEngineAPI\BakeTexture.cs" />
+    <Compile Include="GameEngineAPI\GameObject.cs" />
+    <Compile Include="GameEngineAPI\GameObjectComponent.cs" />
+    <Compile Include="GameEngineAPI\MemoryManager.cs" />
+    <Compile Include="GameEngineAPI\MemoryPool.cs" />
+    <Compile Include="GameEngineAPI\RenderMesh2DComponent.cs" />
     <Compile Include="Models\AttachmentDescriptionModel.cs" />
     <Compile Include="Models\RenderedTextureInfoModel.cs" />
     <Compile Include="Models\RenderPassEditorBaseModel.cs" />

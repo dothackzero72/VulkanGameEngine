@@ -553,63 +553,62 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
         };
     }
 
-    VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
-        .bufferDeviceAddress = VK_TRUE,
-    };
-
-    VkPhysicalDeviceDescriptorIndexingFeatures physicalDeviceDescriptorIndexingFeatures =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
-        .runtimeDescriptorArray = VK_TRUE,
-        .shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
-        .descriptorBindingVariableDescriptorCount = VK_TRUE,
-    };
-
-    VkPhysicalDeviceRobustness2FeaturesEXT PhysicalDeviceRobustness2Features =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
-        .nullDescriptor = VK_TRUE,
-        .pNext = &physicalDeviceDescriptorIndexingFeatures,
-    };
+    VkPhysicalDeviceBufferDeviceAddressFeatures BufferDeviceAddressFeatures = {0};
+    BufferDeviceAddressFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
+    BufferDeviceAddressFeatures.bufferDeviceAddress = VK_TRUE;
 
     if (Renderer_GetRayTracingSupport())
     {
-        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
-            .accelerationStructure = VK_TRUE,
-        };
+        VkPhysicalDeviceRayTracingPipelineFeaturesKHR RayTracingPipelineFeatures = {0};
+        RayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+        RayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
 
-        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
-            .rayTracingPipeline = VK_TRUE,
-            .pNext = &accelerationStructureFeatures,
-        };
+        VkPhysicalDeviceAccelerationStructureFeaturesKHR AccelerationStructureFeatures = {0};
+        AccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+        AccelerationStructureFeatures.accelerationStructure = VK_TRUE;
 
-        bufferDeviceAddressFeatures.pNext = &rayTracingPipelineFeatures;
+        AccelerationStructureFeatures.pNext = &RayTracingPipelineFeatures;
+        BufferDeviceAddressFeatures.pNext = &AccelerationStructureFeatures;
     }
-    PhysicalDeviceRobustness2Features.pNext = &bufferDeviceAddressFeatures;
-
-    VkPhysicalDeviceFeatures deviceFeatures =
+    else
     {
-        .samplerAnisotropy = VK_TRUE,
-        .fillModeNonSolid = VK_TRUE,
-    };
+        BufferDeviceAddressFeatures.pNext = NULL;
+    }
 
-    VkPhysicalDeviceFeatures2 deviceFeatures2 =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-        .features = deviceFeatures,
-        .pNext = &PhysicalDeviceRobustness2Features,
-    };
+    VkPhysicalDeviceDescriptorIndexingFeatures DescriptorIndexingFeatures = {0};
+    DescriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+    DescriptorIndexingFeatures.runtimeDescriptorArray = VK_TRUE;
+    DescriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+    DescriptorIndexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
+    DescriptorIndexingFeatures.pNext = &BufferDeviceAddressFeatures;
 
-    VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features = { 0 };
-    physicalDeviceVulkan11Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
-    physicalDeviceVulkan11Features.multiview = VK_TRUE;
-    physicalDeviceVulkan11Features.pNext = &deviceFeatures2;
+    VkPhysicalDeviceRobustness2FeaturesEXT Robustness2Features = {0};
+    Robustness2Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT;
+    Robustness2Features.nullDescriptor = VK_TRUE;
+    Robustness2Features.pNext = &DescriptorIndexingFeatures;
+
+    VkPhysicalDeviceFeatures DeviceFeatures = {0};
+    DeviceFeatures.samplerAnisotropy = VK_TRUE;
+    DeviceFeatures.fillModeNonSolid = VK_TRUE;
+    DeviceFeatures.wideLines = VK_TRUE;
+    DeviceFeatures.fragmentStoresAndAtomics = VK_TRUE;
+    DeviceFeatures.vertexPipelineStoresAndAtomics = VK_TRUE;
+    DeviceFeatures.sampleRateShading = VK_TRUE;
+
+    VkPhysicalDeviceVulkan13Features Vulkan13Features = {0};
+    Vulkan13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+    Vulkan13Features.shaderDemoteToHelperInvocation = VK_TRUE;
+    Vulkan13Features.pNext = &Robustness2Features;
+
+    VkPhysicalDeviceFeatures2 Features2 = {0};
+    Features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+    Features2.features = DeviceFeatures;
+    Features2.pNext = &Vulkan13Features;
+
+    VkPhysicalDeviceVulkan11Features Vulkan11Features = {0};
+    Vulkan11Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+    Vulkan11Features.multiview = VK_TRUE;
+    Vulkan11Features.pNext = &Features2;
 
     VkDeviceCreateInfo deviceCreateInfo =
     {
@@ -619,7 +618,7 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
         .pEnabledFeatures = NULL,
         .enabledExtensionCount = ARRAY_SIZE(DeviceExtensionList),
         .ppEnabledExtensionNames = DeviceExtensionList,
-        .pNext = &physicalDeviceVulkan11Features
+        .pNext = &Vulkan11Features
     };
 
 #ifdef NDEBUG
