@@ -1,12 +1,17 @@
 ﻿using Newtonsoft.Json.Linq;
+using Silk.NET.SDL;
+using Silk.NET.Vulkan;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using VulkanGameEngineLevelEditor.RenderPassEditor;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class MemoryManager
     {
+        public static Vk vk = Vk.GetApi();
         public static MemoryPool<GameObject> GameObjectMemoryPool = new MemoryPool<GameObject>();
         public static MemoryPool<RenderMesh2DComponent> RenderMesh2DComponentMemoryPool = new MemoryPool<RenderMesh2DComponent>();
         public static MemoryPool<Texture> TextureMemoryPool = new MemoryPool<Texture>();
@@ -32,6 +37,84 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             return TextureMemoryPool.AllocateMemoryLocation();
         }
+
+        public static List<DescriptorBufferInfo> GetGameObjectPropertiesBuffer()
+        {
+            var renderMesh2DMemory = RenderMesh2DComponentMemoryPool.ViewMemoryPool();
+
+            List<DescriptorBufferInfo> MeshPropertiesBuffer = new List<DescriptorBufferInfo>();
+            if (renderMesh2DMemory.Count == 0)
+            {
+                DescriptorBufferInfo nullBuffer = new DescriptorBufferInfo();
+                nullBuffer.Buffer = new Silk.NET.Vulkan.Buffer();
+                nullBuffer.Offset = 0;
+                nullBuffer.Range = Vk.WholeSize;
+                MeshPropertiesBuffer.Add(nullBuffer);
+            }
+            else
+            {
+                foreach (var mesh in renderMesh2DMemory)
+                {
+                    DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
+                    MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
+                    MeshProperitesBufferInfo.Offset = 0;
+                    MeshProperitesBufferInfo.Range = mesh.GetMeshPropertiesBuffer().BufferSize;
+                    MeshPropertiesBuffer.Add(MeshProperitesBufferInfo);
+                }
+            }
+
+            return MeshPropertiesBuffer;
+        }
+
+        public static List<DescriptorImageInfo> GetTexturePropertiesBuffer()
+        {
+            List<DescriptorImageInfo> TexturePropertiesBuffer = new List<DescriptorImageInfo>();
+            var textureMemoryList = TextureMemoryPool.ViewMemoryPool();
+            if (textureMemoryList.Count == 0)
+            {
+                SamplerCreateInfo NullSamplerInfo = new SamplerCreateInfo();
+                NullSamplerInfo.SType = StructureType.SamplerCreateInfo;
+                NullSamplerInfo.MagFilter = Filter.Nearest;
+                NullSamplerInfo.MinFilter = Filter.Nearest;
+                NullSamplerInfo.AddressModeU = SamplerAddressMode.Repeat;
+                NullSamplerInfo.AddressModeV = SamplerAddressMode.Repeat;
+                NullSamplerInfo.AddressModeW = SamplerAddressMode.Repeat;
+                NullSamplerInfo.AnisotropyEnable = Vk.True;
+                NullSamplerInfo.MaxAnisotropy = 16.0f;
+                NullSamplerInfo.BorderColor = BorderColor.FloatOpaqueBlack;
+                NullSamplerInfo.UnnormalizedCoordinates = Vk.False;
+                NullSamplerInfo.CompareEnable = Vk.False;
+                NullSamplerInfo.CompareOp = CompareOp.Always;
+                NullSamplerInfo.MipmapMode = SamplerMipmapMode.Linear;
+                NullSamplerInfo.MinLod = 0;
+                NullSamplerInfo.MaxLod = 0;
+                NullSamplerInfo.MipLodBias = 0;
+
+                Sampler nullSampler = new Sampler();
+                var result = vk.CreateSampler(VulkanRenderer.device, &NullSamplerInfo, null, &nullSampler);
+
+
+                DescriptorImageInfo nullBuffer = new DescriptorImageInfo();
+                nullBuffer.ImageLayout = ImageLayout.ShaderReadOnlyOptimal;
+                nullBuffer.ImageView = new ImageView();
+                nullBuffer.Sampler = nullSampler;
+                TexturePropertiesBuffer.Add(nullBuffer);
+            }
+            else
+            {
+                foreach (var texture in textureMemoryList)
+                {
+                    DescriptorImageInfo textureDescriptor = new DescriptorImageInfo();
+                    textureDescriptor.ImageLayout = ImageLayout.ShaderReadOnlyOptimal;
+                    textureDescriptor.ImageView = texture.View;
+                    textureDescriptor.Sampler = texture.Sampler;
+                    TexturePropertiesBuffer.Add(textureDescriptor);
+                }
+            }
+
+            return TexturePropertiesBuffer;
+        }
+
 
         public static void ViewMemoryMap()
         {

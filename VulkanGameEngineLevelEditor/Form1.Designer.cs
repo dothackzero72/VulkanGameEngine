@@ -33,8 +33,9 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.SaveRenderPass = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -65,7 +66,7 @@
             this.toolStripButton1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(3190, 33);
+            this.toolStrip1.Size = new System.Drawing.Size(2798, 33);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -79,16 +80,6 @@
             this.toolStripButton1.Text = "toolStripButton1";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
-            // SaveRenderPass
-            // 
-            this.SaveRenderPass.Location = new System.Drawing.Point(2502, 1034);
-            this.SaveRenderPass.Name = "SaveRenderPass";
-            this.SaveRenderPass.Size = new System.Drawing.Size(187, 38);
-            this.SaveRenderPass.TabIndex = 4;
-            this.SaveRenderPass.Text = "Save Render Pass";
-            this.SaveRenderPass.UseVisualStyleBackColor = true;
-            this.SaveRenderPass.Click += new System.EventHandler(this.SaveRenderPass_Click);
-            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.pictureBox1);
@@ -97,13 +88,28 @@
             this.panel1.Size = new System.Drawing.Size(2223, 996);
             this.panel1.TabIndex = 5;
             // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.Location = new System.Drawing.Point(2487, 32);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(311, 1075);
+            this.propertyGrid1.TabIndex = 8;
+            // 
+            // treeView1
+            // 
+            this.treeView1.Location = new System.Drawing.Point(0, 36);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(252, 1071);
+            this.treeView1.TabIndex = 7;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(3190, 1517);
+            this.ClientSize = new System.Drawing.Size(2798, 1517);
+            this.Controls.Add(this.propertyGrid1);
+            this.Controls.Add(this.treeView1);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.SaveRenderPass);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.richTextBox1);
             this.Name = "Form1";
@@ -122,8 +128,9 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
-        private System.Windows.Forms.Button SaveRenderPass;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.PropertyGrid propertyGrid1;
     }
 }
 

@@ -154,7 +154,6 @@ std::vector<VkDescriptorBufferInfo> MemoryManager::GetGameObjectPropertiesBuffer
 	{
 		for (auto& mesh : RenderMesh2DComponentList)
 		{
-			auto asdf = mesh->GetMeshPropertiesBuffer()->CheckBufferContents();
 			VkDescriptorBufferInfo MeshProperitesBufferInfo = {};
 			MeshProperitesBufferInfo.buffer = mesh->GetMeshPropertiesBuffer()->Buffer;
 			MeshProperitesBufferInfo.offset = 0;

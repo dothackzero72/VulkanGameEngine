@@ -25,12 +25,12 @@ using ImageLayout = Silk.NET.Vulkan.ImageLayout;
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct MeshProperitiesStruct
+    public struct MeshProperitiesBuffer
     {
         public uint MaterialIndex = 0;
         public mat4 MeshTransform;
 
-        public MeshProperitiesStruct()
+        public MeshProperitiesBuffer()
         {
             MeshTransform = new mat4();
         }
@@ -56,9 +56,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class Scene
     {
         Vk vk = Vk.GetApi();
+        SceneDataBuffer sceneProperties;
+        OrthographicCamera orthographicCamera;
         public RendererPass3D RendererPass3D { get; set; }
         static readonly long startTime = DateTime.Now.Ticks;
-        public List<Texture> textureList { get; set; }
+        public List<Texture> textureList { get; set; } = new List<Texture>();
         public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
     
         public Scene()
@@ -71,6 +73,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
             GameObjectList.Add(GameObject.CreateGameObject("gameObject"));
+            var meshRenderer = RenderMesh2DComponent.CreateRenderMesh2DComponent("asdfads", 0);
+            GameObjectList.First().AddComponent(meshRenderer);
 
             MemoryManager.ViewMemoryMap();
 
@@ -78,17 +82,32 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             RendererPass3D.Create3dRenderPass();
         }
 
-        public void Update()
+        public void Update(float deltaTime)
         {
+            if(VulkanRenderer.RebuildRendererFlag)
+            {
+                UpdateRenderPasses();
+            }
+
+            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            foreach(var gameObject in GameObjectList)
+            {
+                gameObject.BufferUpdate(commandBuffer, deltaTime);
+            }
             RendererPass3D.UpdateUniformBuffer(startTime);
 
+            orthographicCamera.Update(sceneProperties);
+        }
+
+        public void UpdateRenderPasses()
+        {
         }
 
         public void DrawFrame()
         {
             List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
             VulkanRenderer.StartFrame();
-            commandBufferList.Add(RendererPass3D.Draw());
+            commandBufferList.Add(RendererPass3D.Draw(GameObjectList, sceneProperties));
             VulkanRenderer.EndFrame(commandBufferList);
         }
     }

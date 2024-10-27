@@ -41,7 +41,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public int VertexCount { get; protected set; }
         public int IndexCount { get; protected set; }
 
-        public MeshProperitiesStruct MeshProperties { get; set; }
+        public MeshProperitiesBuffer MeshProperties { get; set; }
         public mat4 MeshTransform { get; protected set; }
         public vec3 MeshPosition { get; protected set; }
         public vec3 MeshRotation { get; protected set; }
@@ -49,7 +49,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public VulkanBuffer<Vertex2D> MeshVertexBuffer { get; protected set; }
         public VulkanBuffer<UInt32> MeshIndexBuffer { get; protected set; }
-        public VulkanBuffer<MeshProperitiesStruct> PropertiesBuffer { get; protected set; }
+        public VulkanBuffer<MeshProperitiesBuffer> PropertiesBuffer { get; protected set; }
 
         public Mesh()
         {
@@ -79,7 +79,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle uhandle = GCHandle.Alloc(MeshProperties, GCHandleType.Pinned);
             IntPtr upointer = uhandle.AddrOfPinnedObject();
-            PropertiesBuffer = new VulkanBuffer<MeshProperitiesStruct>((void*)upointer, 1, BufferUsageFlags.UniformBufferBit | BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
+            PropertiesBuffer = new VulkanBuffer<MeshProperitiesBuffer>((void*)upointer, 1, BufferUsageFlags.UniformBufferBit | BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
         }
 
         virtual public void Destroy()
@@ -126,6 +126,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             vk.CmdBindVertexBuffers(commandBuffer, 0, 1, &meshBuffer, &offsets);
             vk.CmdBindIndexBuffer(commandBuffer, MeshIndexBuffer.Buffer, 0, IndexType.Uint32);
             vk.CmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+        }
+
+        public VulkanBuffer<MeshProperitiesBuffer> GetMeshPropertiesBuffer() 
+        { 
+            return PropertiesBuffer; 
         }
     }
 }
