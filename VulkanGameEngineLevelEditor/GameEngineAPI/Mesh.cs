@@ -105,9 +105,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             meshMatrix = mat4.Scale(MeshScale) * meshMatrix;
 
             var properties = MeshProperties;
-            properties.MaterialIndex = MeshBufferIndex;
+            properties.MaterialIndex = 32;
             properties.MeshTransform = meshMatrix;
-
+            PropertiesBuffer.UpdateBufferData(&properties);
             MeshProperties = properties;
         }
 

@@ -32,7 +32,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public MeshProperitiesBuffer()
         {
-            MeshTransform = new mat4();
+            MeshTransform = mat4.Identity;
         }
     };
 
@@ -47,8 +47,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public SceneDataBuffer()
         {
             MeshIndex = 0;
-            Projection = new mat4();
-            View = new mat4();
+            Projection = mat4.Identity;
+            View = mat4.Identity;
             CameraPosition = new vec3(0.0f);
         }
     };
