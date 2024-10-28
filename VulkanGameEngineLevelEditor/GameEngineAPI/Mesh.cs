@@ -66,14 +66,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void MeshStartUp(List<Vertex2D> vertexList, List<uint> indexList)
         {
+            var vertexListArray = vertexList.ToArray();
+            var indexListArray = indexList.ToArray();
+
             VertexCount = vertexList.Count;
             IndexCount = indexList.Count;
 
-            GCHandle vhandle = GCHandle.Alloc(vertexList, GCHandleType.Pinned);
+            GCHandle vhandle = GCHandle.Alloc(vertexListArray, GCHandleType.Pinned);
             IntPtr vpointer = vhandle.AddrOfPinnedObject();
             MeshVertexBuffer = new VulkanBuffer<Vertex2D>((void*)vpointer, (uint)vertexList.Count(), BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
 
-            GCHandle fhandle = GCHandle.Alloc(indexList, GCHandleType.Pinned);
+            GCHandle fhandle = GCHandle.Alloc(indexListArray, GCHandleType.Pinned);
             IntPtr fpointer = fhandle.AddrOfPinnedObject();
             MeshIndexBuffer = new VulkanBuffer<UInt32>((void*)fpointer, (uint)indexList.Count(), BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit | BufferUsageFlags.IndexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
 

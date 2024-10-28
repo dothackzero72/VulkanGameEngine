@@ -78,6 +78,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             MemoryManager.ViewMemoryMap();
 
+            var a = new vec2((float)VulkanRenderer.swapChain.swapchainExtent.Width, (float)VulkanRenderer.swapChain.swapchainExtent.Height);
+            var b = new vec3(0.0f, 0.0f, 5.0f);
+            orthographicCamera = new OrthographicCamera(a, b);
             RendererPass3D = new RendererPass3D();
             RendererPass3D.Create3dRenderPass();
         }

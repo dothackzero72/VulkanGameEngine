@@ -55,11 +55,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 foreach (var mesh in renderMesh2DMemory)
                 {
-                    DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
-                    MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
-                    MeshProperitesBufferInfo.Offset = 0;
-                    MeshProperitesBufferInfo.Range = mesh.GetMeshPropertiesBuffer().BufferSize;
-                    MeshPropertiesBuffer.Add(MeshProperitesBufferInfo);
+                    if (mesh != null)
+                    {
+                        DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
+                        MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
+                        MeshProperitesBufferInfo.Offset = 0;
+                        MeshProperitesBufferInfo.Range = mesh.GetMeshPropertiesBuffer().BufferSize;
+                        MeshPropertiesBuffer.Add(MeshProperitesBufferInfo);
+                    }
                 }
             }
 
@@ -104,11 +107,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 foreach (var texture in textureMemoryList)
                 {
-                    DescriptorImageInfo textureDescriptor = new DescriptorImageInfo();
-                    textureDescriptor.ImageLayout = ImageLayout.ShaderReadOnlyOptimal;
-                    textureDescriptor.ImageView = texture.View;
-                    textureDescriptor.Sampler = texture.Sampler;
-                    TexturePropertiesBuffer.Add(textureDescriptor);
+                    if (texture != null)
+                    {
+                        DescriptorImageInfo textureDescriptor = new DescriptorImageInfo();
+                        textureDescriptor.ImageLayout = ImageLayout.ShaderReadOnlyOptimal;
+                        textureDescriptor.ImageView = texture.View;
+                        textureDescriptor.Sampler = texture.Sampler;
+                        TexturePropertiesBuffer.Add(textureDescriptor);
+                    }
                 }
             }
 

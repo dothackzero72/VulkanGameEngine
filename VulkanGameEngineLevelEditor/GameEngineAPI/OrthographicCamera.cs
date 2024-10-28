@@ -1,5 +1,6 @@
 ﻿using GlmSharp;
 using System.Numerics;
+using System.Runtime.InteropServices.ComTypes;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 public class OrthographicCamera : Camera
@@ -7,63 +8,64 @@ public class OrthographicCamera : Camera
 
     public OrthographicCamera()
     {
-        // Default constructor
     }
 
     public OrthographicCamera(float width, float height)
     {
-        Initialize(width, height, new Vector2(0.0f));
+        Initialize(width, height, new vec3(0.0f));
     }
 
-    public OrthographicCamera(Vector2 viewScreenSize)
+    public OrthographicCamera(vec2 viewScreenSize)
     {
-        Initialize(viewScreenSize.X, viewScreenSize.Y, new Vector2(0.0f));
+        Initialize(viewScreenSize.x, viewScreenSize.y, new vec3(0.0f));
     }
 
-    public OrthographicCamera(Vector2 viewScreenSize, Vector2 position)
+    public OrthographicCamera(vec2 viewScreenSize, vec3 position)
     {
-        Initialize(viewScreenSize.X, viewScreenSize.Y, position);
+        Initialize(viewScreenSize.x, viewScreenSize.y, position);
     }
 
-    private void Initialize(float width, float height, Vector2 position)
+    private void Initialize(float width, float height, vec3 position)
     {
         Width = width;
         Height = height;
         AspectRatio = width / height;
         Zoom = 1.0f;
 
-        Position = new Vector3(position, 0.0f);
-        ViewScreenSize = new Vector2(width, height);
-        UpdateProjectionMatrix();
-        ViewMatrix = Matrix4x4.Identity;
+        Position = new vec3(position);
+        ViewScreenSize = new vec2(width, height);
+        ProjectionMatrix = mat4.Ortho(
+        -AspectRatio * Zoom, AspectRatio * Zoom,
+                  -1.0f * Zoom, 1.0f * Zoom,
+                  -10.0f, 10.0f
+              );
+        ViewMatrix = mat4.Identity;
     }
 
     public override void Update(SceneDataBuffer sceneProperties)
     {
-        var transform = Matrix4x4.CreateTranslation(Position) * Matrix4x4.CreateRotationZ(0.0f);
-        Matrix4x4.Invert(transform, out Matrix4x4 inverseTransform);
-        ViewMatrix = inverseTransform;
+        mat4 transform = mat4.Translate(Position)
+                          * mat4.Rotate(glm.Radians(0.0f), new vec3(0, 0, 1));
 
-        UpdateProjectionMatrix();
+        Matrix4x4.Invert(MatrixConverter.ToSystemNumerics(transform), out Matrix4x4 inverseTransform);
+        ViewMatrix = MatrixConverter.ToGLM(inverseTransform);
 
-        sceneProperties.CameraPosition = new vec3(Position.X, Position.Y, Position.Z);
-        sceneProperties.View = MatrixConverter.ToGLM(ViewMatrix);
-        sceneProperties.Projection = MatrixConverter.ToGLM(ProjectionMatrix);
-    }
+        float aspect = Width / Height;
+        ProjectionMatrix = mat4.Ortho(
+            -aspect * Zoom, aspect * Zoom,
+            -1.0f * Zoom, 1.0f * Zoom,
+            -10.0f, 10.0f
+        );
 
-    private void UpdateProjectionMatrix()
-    {
-        var projectionMatrix = Matrix4x4.CreateOrthographicOffCenter(
-                   -AspectRatio * Zoom,
-                   AspectRatio * Zoom,
-                   -1.0f * Zoom,
-                   1.0f * Zoom,
-                   -10.0f,
-                   10.0f);
+        var tempMatrix = ProjectionMatrix;
+        tempMatrix[1, 1] *= -1;
+        ProjectionMatrix = tempMatrix;
 
-        projectionMatrix.M21 *= -1;
-        ProjectionMatrix = projectionMatrix;
-        ViewScreenSize = new Vector2((AspectRatio * Zoom) * 2, (1.0f * Zoom) * 2);
+        ViewScreenSize = new vec2((aspect * Zoom) * 2, (1.0f * Zoom) * 2);
+
+        sceneProperties.CameraPosition = new vec3(Position.x, Position.y, Position.z);
+        sceneProperties.View = ViewMatrix;
+        sceneProperties.Projection = ProjectionMatrix;
     }
 
     public override void UpdateKeyboard(float deltaTime)
@@ -101,6 +103,18 @@ public class OrthographicCamera : Camera
             glmMatrix[3, 3] = systemMatrix.M44;
 
             return glmMatrix;
+        }
+
+        public static Matrix4x4 ToSystemNumerics(mat4 glmMatrix)
+        {
+            Matrix4x4 systemMatrix = new Matrix4x4(
+                glmMatrix[0, 0], glmMatrix[1, 0], glmMatrix[2, 0], glmMatrix[3, 0],
+                glmMatrix[0, 1], glmMatrix[1, 1], glmMatrix[2, 1], glmMatrix[3, 1],
+                glmMatrix[0, 2], glmMatrix[1, 2], glmMatrix[2, 2], glmMatrix[3, 2],
+                glmMatrix[0, 3], glmMatrix[1, 3], glmMatrix[2, 3], glmMatrix[3, 3]
+            );
+
+            return systemMatrix;
         }
     }
 }

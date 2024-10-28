@@ -13,11 +13,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public float Width { get; protected set; }
         public float Height { get; protected set; }
         public float AspectRatio { get; protected set; }
-        public Vector3 Position { get; protected set; }
+        public vec3 Position { get; protected set; }
         public float Zoom { get; protected set; }
-        public Vector2 ViewScreenSize { get; protected set; }
-        public Matrix4x4 ProjectionMatrix { get; protected set; }
-        public Matrix4x4 ViewMatrix { get; protected set; }
+        public vec2 ViewScreenSize { get; protected set; }
+        public mat4 ProjectionMatrix { get; protected set; }
+        public mat4 ViewMatrix { get; protected set; }
 
         public Camera()
         { 
