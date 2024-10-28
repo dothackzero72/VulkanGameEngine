@@ -25,13 +25,12 @@ using ImageLayout = Silk.NET.Vulkan.ImageLayout;
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct MeshProperitiesStruct
+    public struct MeshProperitiesBuffer
     {
-        uint MeshIndex = 0;
-        uint MaterialIndex = 0;
-        mat4 MeshTransform;
+        public uint MaterialIndex = 0;
+        public mat4 MeshTransform;
 
-        public MeshProperitiesStruct()
+        public MeshProperitiesBuffer()
         {
             MeshTransform = new mat4();
         }
@@ -40,12 +39,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     [StructLayout(LayoutKind.Sequential)]
     public struct SceneDataBuffer
     {
+        public uint MeshIndex = 0;
         public mat4 Projection;
         public mat4 View;
         public vec3 CameraPosition;
 
         public SceneDataBuffer()
         {
+            MeshIndex = 0;
             Projection = new mat4();
             View = new mat4();
             CameraPosition = new vec3(0.0f);
@@ -57,7 +58,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class Scene
     {
         Vk vk = Vk.GetApi();
-        public RendererPass3D RendererPass3D { get; set; }
+        public RenderPass3D RendererPass3D { get; set; }
         static readonly long startTime = DateTime.Now.Ticks;
         public Texture texture { get; set; }
     
@@ -69,7 +70,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
 
-            RendererPass3D = new RendererPass3D();
+            RendererPass3D = new RenderPass3D();
             RendererPass3D.Create3dRenderPass();
         }
 

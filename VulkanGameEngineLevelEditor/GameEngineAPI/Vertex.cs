@@ -1,5 +1,4 @@
-﻿using GlmSharp;
-using Silk.NET.Vulkan;
+﻿using Silk.NET.Vulkan;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using VulkanGameEngineLevelEditor;
@@ -7,43 +6,58 @@ using VulkanGameEngineLevelEditor;
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct vec2
+    public struct VertexVec2
     {
-        public float x;
-        public float y;
+        public float X;
+        public float Y;
 
-        public vec2(float x = 0.0f, float y = 0.0f)
+        public VertexVec2(float x, float y)
         {
-            this.x = x;
-            this.y = y;
+            X = x;
+            Y = y;
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct vec4
+    public struct VertexVec3
     {
-        public float r;
-        public float g;
-        public float b;
-        public float a;
+        public float X;
+        public float Y;
+        public float Z;
 
-        public vec4(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f)
+        public VertexVec3(float x, float y, float z)
         {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
+            X = x;
+            Y = y;
+            Z = z;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VertexVec4
+    {
+        public float X;
+        public float Y;
+        public float Z;
+        public float W;
+
+        public VertexVec4(float x, float y, float z, float w)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            W = w;
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct Vertex2D
     {
-        public vec2 Position;
-        public vec2 UV;
-        public vec4 Color;
+        public VertexVec2 Position;
+        public VertexVec2 UV;
+        public VertexVec4 Color;
 
-        public Vertex2D(vec2 position, vec2 uv, vec4 color)
+        public Vertex2D(VertexVec2 position, VertexVec2 uv, VertexVec4 color)
         {
             Position = position;
             UV = uv;
@@ -100,11 +114,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     [StructLayout(LayoutKind.Sequential)]
     public struct Vertex3D
     {
-        public vec3 Position;
-        public vec3 Color;
-        public vec2 UV;
+        public VertexVec3 Position;
+        public VertexVec3 Color;
+        public VertexVec2 UV;
 
-        public Vertex3D(vec3 position, vec3 color, vec2 uv)
+        public Vertex3D(VertexVec3 position, VertexVec3 color, VertexVec2 uv)
         {
             Position = position;
             Color = color;

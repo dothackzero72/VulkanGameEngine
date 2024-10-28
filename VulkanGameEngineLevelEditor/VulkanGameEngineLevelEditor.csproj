@@ -298,6 +298,14 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GameEngineAPI\BakeTexture.cs" />
+    <Compile Include="GameEngineAPI\Camera.cs" />
+    <Compile Include="GameEngineAPI\GameObject.cs" />
+    <Compile Include="GameEngineAPI\GameObjectComponent.cs" />
+    <Compile Include="GameEngineAPI\MemoryManager.cs" />
+    <Compile Include="GameEngineAPI\MemoryPool.cs" />
+    <Compile Include="GameEngineAPI\OrthographicCamera.cs" />
+    <Compile Include="GameEngineAPI\RenderMesh2DComponent.cs" />
+    <Compile Include="GameEngineAPI\RenderPass2D.cs" />
     <Compile Include="Models\AttachmentDescriptionModel.cs" />
     <Compile Include="Models\RenderedTextureInfoModel.cs" />
     <Compile Include="Models\RenderPassEditorBaseModel.cs" />
@@ -312,7 +320,7 @@
     <Compile Include="GameEngineAPI\RenderedTexture.cs" />
     <Compile Include="GameEngineAPI\JsonRenderPass.cs" />
     <Compile Include="GameEngineAPI\Scene.cs" />
-    <Compile Include="GameEngineAPI\RendererPass3D.cs" />
+    <Compile Include="GameEngineAPI\RenderPass3D.cs" />
     <Compile Include="GameEngineAPI\RenderPass.cs" />
     <Compile Include="ListExtensions.cs" />
     <Compile Include="GameEngineAPI\Mesh.cs" />
