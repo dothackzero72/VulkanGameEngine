@@ -84,7 +84,7 @@ namespace VulkanGameEngineLevelEditor
             scene.StartUp();
             while (running)
             {
-                scene.Update();
+                scene.Update(0);
                 scene.DrawFrame();
             }
         }

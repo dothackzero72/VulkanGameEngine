@@ -68,22 +68,22 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public void Create3dRenderPass()
         {
             depthTexture = new DepthTexture(new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
-            texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
+            //texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
 
-            GCHandle vhandle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
-            IntPtr vpointer = vhandle.AddrOfPinnedObject();
-            vertexBuffer = new VulkanBuffer<Vertex3D>((void*)vpointer, (uint)vertices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
+            //GCHandle vhandle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
+            //IntPtr vpointer = vhandle.AddrOfPinnedObject();
+            //vertexBuffer = new VulkanBuffer<Vertex3D>((void*)vpointer, (uint)vertices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
 
-            GCHandle fhandle = GCHandle.Alloc(indices, GCHandleType.Pinned);
-            IntPtr fpointer = fhandle.AddrOfPinnedObject();
-            indexBuffer = new VulkanBuffer<ushort>((void*)fpointer, (uint)indices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit | BufferUsageFlags.IndexBufferBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
+            //GCHandle fhandle = GCHandle.Alloc(indices, GCHandleType.Pinned);
+            //IntPtr fpointer = fhandle.AddrOfPinnedObject();
+            //indexBuffer = new VulkanBuffer<ushort>((void*)fpointer, (uint)indices.Count(), BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit | BufferUsageFlags.IndexBufferBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
 
 
             JsonCreateRenderPass(@$"{RenderPassEditorConsts.BasePath}DefaultRenderPass.json");
             CreateDescriptorSetLayout();
             CreateGraphicsPipeline();
             CreateFramebuffer();
-            CreateUniformBuffers();
+          //  CreateUniformBuffers();
             CreateDescriptorPoolBinding();
             allocateDescriptorSets(descriptorpool);
             UpdateDescriptorSet(descriptorset);
@@ -382,7 +382,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     {
                         Binding = 0,
                         DescriptorType = DescriptorType.UniformBuffer,
-                        DescriptorCount = 1,
+                        DescriptorCount = MemoryManager.GameObjectMemoryPool.ObjectCount,
                         StageFlags = ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit,
                         PImmutableSamplers = null
                     },
@@ -390,7 +390,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     {
                         Binding = 1,
                         DescriptorType = DescriptorType.CombinedImageSampler,
-                        DescriptorCount = 1,
+                        DescriptorCount = MemoryManager.TextureMemoryPool.ObjectCount,
                         StageFlags = ShaderStageFlags.FragmentBit,
                         PImmutableSamplers = null
                     }
@@ -472,12 +472,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 new DescriptorPoolSize
                 {
                     Type = DescriptorType.UniformBuffer,
-                    DescriptorCount = VulkanRenderer.MAX_FRAMES_IN_FLIGHT
+                    DescriptorCount = MemoryManager.GameObjectMemoryPool.ObjectCount
                 };
                 new DescriptorPoolSize
                 {
                     Type = DescriptorType.CombinedImageSampler,
-                    DescriptorCount = VulkanRenderer.MAX_FRAMES_IN_FLIGHT
+                    DescriptorCount = MemoryManager.TextureMemoryPool.ObjectCount
                 };
             };
 
@@ -520,58 +520,47 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void UpdateDescriptorSet(DescriptorSet descriptorSets)
         {
-            var colorDescriptorImage = new DescriptorImageInfo
-            {
-                Sampler = texture.Sampler,
-                ImageView = texture.View,
-                ImageLayout = Silk.NET.Vulkan.ImageLayout.ReadOnlyOptimal
-            };
-
-
-            DescriptorBufferInfo uniformBuffer = new DescriptorBufferInfo
-            {
-                Buffer = uniformBuffers.Buffer,
-                Offset = 0,
-                Range = Vk.WholeSize
-            };
-
             List<WriteDescriptorSet> descriptorSetList = new List<WriteDescriptorSet>();
-            for (uint x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
+            fixed (DescriptorBufferInfo* gameObjectProperties = MemoryManager.GetGameObjectPropertiesBuffer().ToArray())
+            fixed (DescriptorImageInfo* textureProperties = MemoryManager.GetTexturePropertiesBuffer().ToArray())
             {
-                WriteDescriptorSet descriptorSetWrite = new WriteDescriptorSet
+                for (uint x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
                 {
-                    SType = StructureType.WriteDescriptorSet,
-                    DstSet = descriptorset,
-                    DstBinding = 0,
-                    DstArrayElement = 0,
-                    DescriptorCount = 1,
-                    DescriptorType = DescriptorType.UniformBuffer,
-                    PImageInfo = null,
-                    PBufferInfo = &uniformBuffer,
-                    PTexelBufferView = null
-                };
+                    WriteDescriptorSet descriptorSetWrite = new WriteDescriptorSet
+                    {
+                        SType = StructureType.WriteDescriptorSet,
+                        DstSet = descriptorset,
+                        DstBinding = 0,
+                        DstArrayElement = 0,
+                        DescriptorCount = (uint)MemoryManager.GetGameObjectPropertiesBuffer().ToArray().Length,
+                        DescriptorType = DescriptorType.UniformBuffer,
+                        PImageInfo = null,
+                        PBufferInfo = gameObjectProperties,
+                        PTexelBufferView = null
+                    };
 
-                WriteDescriptorSet descriptorSetWrite2 = new WriteDescriptorSet
+                    WriteDescriptorSet descriptorSetWrite2 = new WriteDescriptorSet
+                    {
+                        SType = StructureType.WriteDescriptorSet,
+                        DstSet = descriptorset,
+                        DstBinding = 1,
+                        DstArrayElement = 0,
+                        DescriptorCount = (uint)MemoryManager.GetTexturePropertiesBuffer().ToArray().Length,
+                        DescriptorType = DescriptorType.CombinedImageSampler,
+                        PImageInfo = textureProperties,
+                        PBufferInfo = null,
+                        PTexelBufferView = null
+                    };
+
+                    descriptorSetList.Add(descriptorSetWrite);
+                    descriptorSetList.Add(descriptorSetWrite2);
+                }
+
+
+                fixed (WriteDescriptorSet* ptr = descriptorSetList.ToArray())
                 {
-                    SType = StructureType.WriteDescriptorSet,
-                    DstSet = descriptorset,
-                    DstBinding = 1,
-                    DstArrayElement = 0,
-                    DescriptorCount = 1,
-                    DescriptorType = DescriptorType.CombinedImageSampler,
-                    PImageInfo = &colorDescriptorImage,
-                    PBufferInfo = null,
-                    PTexelBufferView = null
-                };
-
-                descriptorSetList.Add(descriptorSetWrite);
-                descriptorSetList.Add(descriptorSetWrite2);
-            }
-
-
-            fixed (WriteDescriptorSet* ptr = descriptorSetList.ToArray())
-            {
-                vk.UpdateDescriptorSets(VulkanRenderer.device, (uint)descriptorSetList.UCount(), ptr, 0, null);
+                    vk.UpdateDescriptorSets(VulkanRenderer.device, (uint)descriptorSetList.UCount(), ptr, 0, null);
+                }
             }
         }
 
@@ -579,53 +568,60 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             PipelineLayout pipelineLayout = new PipelineLayout();
 
+            PushConstantRange pushConstantRange = new PushConstantRange()
+            {
+                StageFlags = ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit,
+                Offset = 0,
+                Size = (uint)sizeof(SceneDataBuffer)
+            };
+
             DescriptorSetLayout descriptorSetLayoutPtr = descriptorSetLayout;
             PipelineLayoutCreateInfo pipelineLayoutInfo = new
             (
                 setLayoutCount: 1,
                 pSetLayouts: &descriptorSetLayoutPtr,
-                pushConstantRangeCount: 0,
-                pPushConstantRanges: null
+                pushConstantRangeCount: 1,
+                pPushConstantRanges: &pushConstantRange
             );
             vk.CreatePipelineLayout(VulkanRenderer.device, &pipelineLayoutInfo, null, out PipelineLayout pipelinelayout);
             return pipelinelayout;
 
         }
 
-        void CreateUniformBuffers()
-        {
-            GCHandle uhandle = GCHandle.Alloc(ubo, GCHandleType.Pinned);
-            IntPtr upointer = uhandle.AddrOfPinnedObject();
-            uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.UniformBufferBit | BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
-        }
+        //void CreateUniformBuffers()
+        //{
+        //    GCHandle uhandle = GCHandle.Alloc(ubo, GCHandleType.Pinned);
+        //    IntPtr upointer = uhandle.AddrOfPinnedObject();
+        //    uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.UniformBufferBit | BufferUsageFlags.BufferUsageTransferSrcBit | BufferUsageFlags.BufferUsageTransferDstBit, MemoryPropertyFlags.MemoryPropertyHostVisibleBit | MemoryPropertyFlags.MemoryPropertyHostCoherentBit, true);
+        //}
 
-        public void UpdateUniformBuffer(long startTime)
-        {
-            float secondsPassed = (float)TimeSpan.FromTicks(DateTime.Now.Ticks - startTime).TotalSeconds;
+        //public void UpdateUniformBuffer(long startTime)
+        //{
+        //    float secondsPassed = (float)TimeSpan.FromTicks(DateTime.Now.Ticks - startTime).TotalSeconds;
 
-            ubo.model = Matrix4X4.CreateFromAxisAngle(
-                new Vector3D<float>(0, 0, 1),
-                secondsPassed * Scalar.DegreesToRadians(90.0f));
+        //    ubo.model = Matrix4X4.CreateFromAxisAngle(
+        //        new Vector3D<float>(0, 0, 1),
+        //        secondsPassed * Scalar.DegreesToRadians(90.0f));
 
-            ubo.view = Matrix4X4.CreateLookAt(
-                new Vector3D<float>(2.0f, 2.0f, 2.0f),
-                new Vector3D<float>(0.0f, 0.0f, 0.0f),
-                new Vector3D<float>(0.0f, 0.0f, -0.1f));
+        //    ubo.view = Matrix4X4.CreateLookAt(
+        //        new Vector3D<float>(2.0f, 2.0f, 2.0f),
+        //        new Vector3D<float>(0.0f, 0.0f, 0.0f),
+        //        new Vector3D<float>(0.0f, 0.0f, -0.1f));
 
-            ubo.proj = Matrix4X4.CreatePerspectiveFieldOfView(
-                Scalar.DegreesToRadians(45.0f),
-                VulkanRenderer.swapChain.swapchainExtent.Width / (float)VulkanRenderer.swapChain.swapchainExtent.Height,
-                0.1f,
-                10.0f);
+        //    ubo.proj = Matrix4X4.CreatePerspectiveFieldOfView(
+        //        Scalar.DegreesToRadians(45.0f),
+        //        VulkanRenderer.swapChain.swapchainExtent.Width / (float)VulkanRenderer.swapChain.swapchainExtent.Height,
+        //        0.1f,
+        //        10.0f);
 
-            ubo.proj.M11 *= -1;
-            uint dataSize = (uint)Marshal.SizeOf(ubo);
-            void* dataPtr = Unsafe.AsPointer(ref ubo);
+        //    ubo.proj.M11 *= -1;
+        //    uint dataSize = (uint)Marshal.SizeOf(ubo);
+        //    void* dataPtr = Unsafe.AsPointer(ref ubo);
 
-            uniformBuffers.UpdateBufferData(dataPtr);
-        }
+        //    uniformBuffers.UpdateBufferData(dataPtr);
+        //}
 
-        public CommandBuffer Draw()
+        public CommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
@@ -649,19 +645,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var scissor = new Rect2D(new Offset2D(0, 0), VulkanRenderer.swapChain.swapchainExtent);
 
             var descSet = descriptorset;
-            var vertexbuffer = vertexBuffer.Buffer;
             var commandInfo = new CommandBufferBeginInfo(flags: 0);
 
 
             vk.BeginCommandBuffer(commandBuffer, &commandInfo);
             vk.CmdBeginRenderPass(commandBuffer, &renderPassInfo, SubpassContents.Inline);
-            vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, shaderpipeline);
-            vk.CmdBindVertexBuffers(commandBuffer, 0, 1, &vertexbuffer, 0);
-            vk.CmdBindIndexBuffer(commandBuffer, indexBuffer.Buffer, 0, IndexType.Uint16);
-            vk.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, shaderpipelineLayout, 0, 1, descSet, 0, null);
             vk.CmdSetViewport(commandBuffer, 0, 1, &viewport);
             vk.CmdSetScissor(commandBuffer, 0, 1, &scissor);
-            vk.CmdDrawIndexed(commandBuffer, (uint)indices.Length, 1, 0, 0, 0);
+            foreach (var obj in gameObjectList)
+            {
+                obj.Draw(commandBuffer, shaderpipeline, shaderpipelineLayout, descSet, sceneDataBuffer);
+            }
             vk.CmdEndRenderPass(commandBuffer);
             vk.EndCommandBuffer(commandBuffer);
 

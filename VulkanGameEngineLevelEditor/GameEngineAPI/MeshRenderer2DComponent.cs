@@ -9,10 +9,10 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public unsafe class RenderMesh2DComponent : GameObjectComponent
+    public unsafe class MeshRenderer2DComponent : GameObjectComponent
     {
         public Mesh2D mesh { get; protected set; } = new Mesh2D();
-        public RenderMesh2DComponent()
+        public MeshRenderer2DComponent()
         {
 
         }
@@ -32,7 +32,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             mesh = new Mesh2D(meshBufferIndex);
         }
 
-        public static RenderMesh2DComponent CreateRenderMesh2DComponent(String name, uint meshBufferIndex)
+        public static MeshRenderer2DComponent CreateRenderMesh2DComponent(String name, uint meshBufferIndex) 
         {
             List<Vertex2D> spriteVertexList = new List<Vertex2D>
             {
@@ -44,7 +44,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             List<uint> spriteIndexList = new List<uint> { 0, 1, 3, 1, 2, 3 };
 
-            RenderMesh2DComponent gameObject = MemoryManager.AllocateGameRenderMesh2DComponent();
+            MeshRenderer2DComponent gameObject = MemoryManager.AllocateGameRenderMesh2DComponent();
             gameObject.Initialize(name, meshBufferIndex);
             return gameObject;
         }
@@ -72,7 +72,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public override int GetMemorySize()
         {
-            return sizeof(RenderMesh2DComponent);
+            return sizeof(MeshRenderer2DComponent);
         }
 
         public VulkanBuffer<MeshProperitiesBuffer> GetMeshPropertiesBuffer()

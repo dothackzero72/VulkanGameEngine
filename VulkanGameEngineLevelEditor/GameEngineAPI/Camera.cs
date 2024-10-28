@@ -24,7 +24,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public abstract void Update(SceneDataBuffer sceneProperties);
+        public abstract SceneDataBuffer Update(SceneDataBuffer sceneProperties);
         public abstract void UpdateKeyboard(float deltaTime);
         public abstract void UpdateMouse();
     }

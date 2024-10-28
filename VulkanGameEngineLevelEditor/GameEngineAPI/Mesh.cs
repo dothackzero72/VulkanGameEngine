@@ -47,7 +47,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public vec3 MeshRotation { get; protected set; }
         public vec3 MeshScale { get; protected set; }
 
-        public VulkanBuffer<Vertex2D> MeshVertexBuffer { get; protected set; }
+        public VulkanBuffer<Vertex3D> MeshVertexBuffer { get; protected set; }
         public VulkanBuffer<UInt32> MeshIndexBuffer { get; protected set; }
         public VulkanBuffer<MeshProperitiesBuffer> PropertiesBuffer { get; protected set; }
 
@@ -63,18 +63,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             IndexCount = 0;
         }
 
-
-        public void MeshStartUp(List<Vertex2D> vertexList, List<uint> indexList)
+        public void MeshStartUp(Vertex3D[] vertexList, uint[] indexList)
         {
-            var vertexListArray = vertexList.ToArray();
-            var indexListArray = indexList.ToArray();
+            var vertexListArray = vertexList;
+            var indexListArray = indexList;
 
-            VertexCount = vertexList.Count;
-            IndexCount = indexList.Count;
+            VertexCount = vertexList.Length;
+            IndexCount = indexList.Length;
 
             GCHandle vhandle = GCHandle.Alloc(vertexListArray, GCHandleType.Pinned);
             IntPtr vpointer = vhandle.AddrOfPinnedObject();
-            MeshVertexBuffer = new VulkanBuffer<Vertex2D>((void*)vpointer, (uint)vertexList.Count(), BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
+            MeshVertexBuffer = new VulkanBuffer<Vertex3D>((void*)vpointer, (uint)vertexList.Count(), BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
 
             GCHandle fhandle = GCHandle.Alloc(indexListArray, GCHandleType.Pinned);
             IntPtr fpointer = fhandle.AddrOfPinnedObject();
@@ -114,16 +113,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public virtual void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
-            SceneDataBuffer SceneProperties = new SceneDataBuffer();
-            SceneProperties.Projection = new mat4();
-            SceneProperties.View = new mat4();
-            SceneProperties.CameraPosition = new vec3(0.0f);
-
             ulong offsets = 0;
             uint sceneDataSize = (uint)sizeof(SceneDataBuffer);
 
             var meshBuffer = MeshVertexBuffer.Buffer;
-            vk.CmdPushConstants(commandBuffer, shaderPipelineLayout, ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, sceneDataSize, &SceneProperties);
+            vk.CmdPushConstants(commandBuffer, shaderPipelineLayout, ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, sceneDataSize, &sceneProperties);
             vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, pipeline);
             vk.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, shaderPipelineLayout, 0, 1, &descriptorSet, 0, null);
             vk.CmdBindVertexBuffers(commandBuffer, 0, 1, &meshBuffer, &offsets);

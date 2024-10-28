@@ -20,7 +20,7 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public unsafe class RendererPass2D : SilkRenderPassBase
+    public unsafe class RenderPass2D : SilkRenderPassBase
     {
         Vk vk = Vk.GetApi();
         public DepthTexture depthTexture { get; set; }
@@ -62,11 +62,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public RendererPass2D() : base()
+        public RenderPass2D() : base()
         {
         }
 
-        public void Create3dRenderPass()
+        public void Create2dRenderPass()
         {
             depthTexture = new DepthTexture(new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
             texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);

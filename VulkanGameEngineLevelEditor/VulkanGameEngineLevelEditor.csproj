@@ -303,8 +303,10 @@
     <Compile Include="GameEngineAPI\GameObjectComponent.cs" />
     <Compile Include="GameEngineAPI\MemoryManager.cs" />
     <Compile Include="GameEngineAPI\MemoryPool.cs" />
+    <Compile Include="GameEngineAPI\Mesh3D.cs" />
+    <Compile Include="GameEngineAPI\MeshRenderer3DComponent.cs" />
     <Compile Include="GameEngineAPI\OrthographicCamera.cs" />
-    <Compile Include="GameEngineAPI\RenderMesh2DComponent.cs" />
+    <Compile Include="GameEngineAPI\MeshRenderer2DComponent.cs" />
     <Compile Include="GameEngineAPI\RenderPass2D.cs" />
     <Compile Include="Models\AttachmentDescriptionModel.cs" />
     <Compile Include="Models\RenderedTextureInfoModel.cs" />
