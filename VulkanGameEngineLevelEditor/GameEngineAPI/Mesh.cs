@@ -1,9 +1,11 @@
 ﻿using GlmSharp;
+using Silk.NET.Maths;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,7 +83,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle uhandle = GCHandle.Alloc(MeshProperties, GCHandleType.Pinned);
             IntPtr upointer = uhandle.AddrOfPinnedObject();
-            PropertiesBuffer = new VulkanBuffer<MeshProperitiesBuffer>((void*)upointer, 1, BufferUsageFlags.UniformBufferBit | BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
+            PropertiesBuffer = new VulkanBuffer<MeshProperitiesBuffer>((void*)upointer, 1, BufferUsageFlags.StorageBufferBit | BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
         }
 
         virtual public void Destroy()
@@ -97,18 +99,42 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public virtual void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
         {
-            mat4 meshMatrix = mat4.Identity;
-            meshMatrix = mat4.Translate(MeshPosition) * meshMatrix;
-            meshMatrix = mat4.RotateX(MathHelper.ToRadians(MeshRotation.x)) * meshMatrix;
-            meshMatrix = mat4.RotateY(MathHelper.ToRadians(MeshRotation.y)) * meshMatrix;
-            meshMatrix = mat4.RotateZ(MathHelper.ToRadians(MeshRotation.z)) * meshMatrix;
-            meshMatrix = mat4.Scale(MeshScale) * meshMatrix;
+            //mat4 meshMatrix = mat4.Identity;
+            //meshMatrix = mat4.Translate(MeshPosition) * meshMatrix;
+            //meshMatrix = mat4.RotateX(MathHelper.ToRadians(MeshRotation.x)) * meshMatrix;
+            //meshMatrix = mat4.RotateY(MathHelper.ToRadians(MeshRotation.y)) * meshMatrix;
+            //meshMatrix = mat4.RotateZ(MathHelper.ToRadians(MeshRotation.z)) * meshMatrix;
+            //meshMatrix = mat4.Scale(MeshScale) * meshMatrix;
 
-            var properties = MeshProperties;
-            properties.MaterialIndex = 32;
-            properties.MeshTransform = meshMatrix;
-            PropertiesBuffer.UpdateBufferData(&properties);
-            MeshProperties = properties;
+            //var properties = MeshProperties;
+            //properties.MaterialIndex = 32;
+            //properties.MeshTransform = meshMatrix;
+            float secondsPassed = (float)TimeSpan.FromTicks(DateTime.Now.Ticks).TotalSeconds;
+
+            var adf = new MeshProperitiesBuffer();
+
+            adf.model = Matrix4X4.CreateFromAxisAngle(
+                new Vector3D<float>(0, 0, 1),
+                secondsPassed * Scalar.DegreesToRadians(90.0f));
+
+            adf.view = Matrix4X4.CreateLookAt(
+                new Vector3D<float>(2.0f, 2.0f, 2.0f),
+                new Vector3D<float>(0.0f, 0.0f, 0.0f),
+                new Vector3D<float>(0.0f, 0.0f, -0.1f));
+
+            adf.proj = Matrix4X4.CreatePerspectiveFieldOfView(
+                Scalar.DegreesToRadians(45.0f),
+                VulkanRenderer.swapChain.swapchainExtent.Width / (float)VulkanRenderer.swapChain.swapchainExtent.Height,
+                0.1f,
+                10.0f);
+
+            adf.proj.M11 *= -1;
+            uint dataSize = (uint)Marshal.SizeOf(adf);
+            void* dataPtr = Unsafe.AsPointer(ref adf);
+
+            PropertiesBuffer.UpdateBufferData(&adf);
+
+            MeshProperties = adf;
         }
 
         public virtual void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
@@ -122,7 +148,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             vk.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, shaderPipelineLayout, 0, 1, &descriptorSet, 0, null);
             vk.CmdBindVertexBuffers(commandBuffer, 0, 1, &meshBuffer, &offsets);
             vk.CmdBindIndexBuffer(commandBuffer, MeshIndexBuffer.Buffer, 0, IndexType.Uint32);
-            vk.CmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+            vk.CmdDrawIndexed(commandBuffer, (uint)IndexCount, 1, 0, 0, 0);
         }
 
         public VulkanBuffer<MeshProperitiesBuffer> GetMeshPropertiesBuffer()

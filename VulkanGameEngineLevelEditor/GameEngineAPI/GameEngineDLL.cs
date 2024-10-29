@@ -41,7 +41,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern Result DLL_Buffer_UnmapBufferMemory(Device device, DeviceMemory bufferMemory, ref bool isMapped);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern IntPtr DLL_Buffer_MapBufferMemory(Device device, DeviceMemory bufferMemory, ulong bufferSize, ref bool isMapped);
+        public static extern void* DLL_Buffer_MapBufferMemory(Device device, DeviceMemory bufferMemory, ulong bufferSize, ref bool isMapped);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern void DLL_Buffer_DestroyBuffer(Device device, ref Silk.NET.Vulkan.Buffer buffer, ref Silk.NET.Vulkan.Buffer stagingBuffer, ref DeviceMemory bufferMemory, ref DeviceMemory stagingBufferMemory, IntPtr bufferData, ref ulong bufferSize, ref BufferUsageFlags bufferUsageFlags, ref MemoryPropertyFlags propertyFlags);

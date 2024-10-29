@@ -147,22 +147,31 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public List<T> CheckBufferContents()
         {
             List<T> dataList = new List<T>();
-            //uint dataListSize = (uint)BufferSize / (uint)sizeof(T);
+            uint dataListSize = (uint)((uint)BufferSize / sizeof(T));
 
-            //void* data = DLL_Buffer_MapBufferMemory(_device, BufferMemory, (uint)BufferSize, ref IsMapped);
-            //if (data == null)
-            //{
-            //    Console.WriteLine("Failed to map buffer memory");
-            //    return dataList;
-            //}
+            var mapped = IsMapped;
+            void* data = DLL_Buffer_MapBufferMemory(_device, BufferMemory, BufferSize, ref mapped);
+            if (data == null)
+            {
+                Console.WriteLine("Failed to map buffer memory");
+                return dataList;
+            }
 
-            //for (uint x = 0; x < dataListSize; ++x)
-            //{
-            //    dataList.Add(Marshal.PtrToStructure<T>((IntPtr)bufferData));
-            //    data += sizeof(T);
-            //}
+            // Assuming data is now a pointer to the mapped buffer
+            for (uint x = 0; x < dataListSize; ++x)
+            {
+                // Calculate the offset for each element correctly
+                IntPtr currentElementPtr = IntPtr.Add((IntPtr)data, (int)(x * (uint)sizeof(T)));
+                T element = Marshal.PtrToStructure<T>(currentElementPtr);
+                dataList.Add(element);
+            }
 
-            //DLL_Buffer_UnmapBufferMemory(_device, BufferMemory, out IsMapped);
+            // Unmap the buffer memory
+            if (IsMapped)
+            {
+                DLL_Buffer_UnmapBufferMemory(_device, BufferMemory, ref mapped);
+            }
+
             return dataList;
         }
 

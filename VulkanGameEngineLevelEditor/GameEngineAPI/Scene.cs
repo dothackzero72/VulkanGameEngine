@@ -27,30 +27,26 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     [StructLayout(LayoutKind.Sequential)]
     public struct MeshProperitiesBuffer
     {
-        public uint MaterialIndex = 0;
-        public mat4 MeshTransform;
-
-        public MeshProperitiesBuffer()
-        {
-            MeshTransform = mat4.Identity;
-        }
+        public Matrix4X4<float> model;
+        public Matrix4X4<float> view;
+        public Matrix4X4<float> proj;
     };
 
     [StructLayout(LayoutKind.Sequential)]
     public struct SceneDataBuffer
     {
-        public uint MeshIndex = 0;
+        public int MeshBufferIndex;
         public mat4 Projection;
         public mat4 View;
         public vec3 CameraPosition;
 
-        public SceneDataBuffer()
-        {
-            MeshIndex = 0;
-            Projection = mat4.Identity;
-            View = mat4.Identity;
-            CameraPosition = new vec3(0.0f);
-        }
+        //public SceneDataBuffer()
+        //{
+        //    MeshBufferIndex = 0;
+        //    Projection = mat4.Identity;
+        //    View = mat4.Identity;
+        //    CameraPosition = new vec3(0.0f);
+        //}
     };
 
     public unsafe class Scene
