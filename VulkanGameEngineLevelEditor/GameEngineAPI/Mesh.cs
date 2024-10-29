@@ -14,6 +14,16 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct UniformBufferObject
+    {
+        public Matrix4X4<float> model;
+        public Matrix4X4<float> view;
+        public Matrix4X4<float> proj;
+
+    }
+
     public static class MathHelper
     {
         public static float ToRadians(float degrees)
@@ -51,7 +61,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public VulkanBuffer<Vertex3D> MeshVertexBuffer { get; protected set; }
         public VulkanBuffer<UInt32> MeshIndexBuffer { get; protected set; }
-
         public VulkanBuffer<UniformBufferObject> uniformBuffers { get; set; }
 
         UniformBufferObject ubo;
@@ -74,15 +83,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             0, 1, 2, 2, 3, 0,
             4, 5, 6, 6, 7, 4
         };
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct UniformBufferObject
-        {
-            public Matrix4X4<float> model;
-            public Matrix4X4<float> view;
-            public Matrix4X4<float> proj;
-
-        }
 
         public Mesh()
         {

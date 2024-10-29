@@ -53,19 +53,19 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Name = name;
         }
 
-        public virtual void Update(float deltaTime)
+        public virtual void Update(long startTime)
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
-                component.Update(deltaTime);
+                component.Update(startTime);
             }
         }
 
-        public virtual void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
+        public virtual void BufferUpdate(CommandBuffer commandBuffer, long startTime)
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
-                component.Update(commandBuffer, deltaTime);
+                component.Update(commandBuffer, startTime);
             }
         }
 

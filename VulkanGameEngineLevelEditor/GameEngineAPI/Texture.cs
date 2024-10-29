@@ -52,10 +52,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             SampleCount = SampleCountFlags.Count1Bit;
         }
 
-        public Texture(ivec2 TextureResolution) : base()
+        public Texture(ivec2 TextureResolution)
         {
             Width = TextureResolution.x;
-            Height = TextureResolution.y;   
+            Height = TextureResolution.y;
             Depth = 1;
             TextureByteFormat = Format.R8G8B8A8Unorm;
             TextureImageLayout = Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal;
@@ -130,6 +130,113 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             CreateTextureSampler();
         }
 
+        public static Texture CreateTexture(ivec2 TextureResolution)
+        {
+            Texture texture = MemoryManager.AllocateTexture();
+            texture.Initialize(TextureResolution);
+            return texture;
+
+        }
+
+        public static Texture CreateTexture(Pixel ClearColor, ivec2 TextureResolution, Format TextureFormat)
+        {
+            Texture texture = MemoryManager.AllocateTexture();
+            texture.Initialize(ClearColor, TextureResolution, TextureFormat);
+            return texture;
+        }
+
+        public static Texture CreateTexture(ivec2 textureSize, Format textureFormat)
+        {
+            Texture texture = MemoryManager.AllocateTexture();
+            texture.Initialize(textureSize, textureFormat);
+            return texture;
+        }
+
+        public static Texture CreateTexture(string filePath, Format textureByteFormat, TextureTypeEnum textureType)
+        {
+            Texture texture = MemoryManager.AllocateTexture();
+            texture.Initialize(filePath, textureByteFormat, textureType);
+            return texture;
+        }
+
+        public void Initialize(ivec2 TextureResolution)
+        {
+            Width = TextureResolution.x;
+            Height = TextureResolution.y;
+            Depth = 1;
+            TextureByteFormat = Format.R8G8B8A8Unorm;
+            TextureImageLayout = Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal;
+            SampleCount = SampleCountFlags.SampleCount1Bit;
+            MipMapLevels = 1;
+
+            CreateImageTexture();
+            CreateTextureView();
+            CreateTextureSampler();
+
+        }
+
+        public void Initialize(Pixel ClearColor, ivec2 TextureResolution, Format TextureFormat)
+        {
+            TextureBufferIndex = 0;
+            Width = TextureResolution.x;
+            Height = TextureResolution.y;
+            Depth = 1;
+            MipMapLevels = 1;
+
+            TextureUsage = TextureUsageEnum.kUse_Undefined;
+            TextureType = TextureTypeEnum.kType_UndefinedTexture;
+            TextureByteFormat = TextureFormat;
+            TextureImageLayout = Silk.NET.Vulkan.ImageLayout.Undefined;
+            SampleCount = SampleCountFlags.Count1Bit;
+
+            CreateImageTexture();
+            CreateTextureView();
+            CreateTextureSampler();
+        }
+
+        public void Initialize(ivec2 textureSize, Format textureFormat)
+        {
+            TextureBufferIndex = 0;
+            Width = textureSize.x;
+            Height = textureSize.y;
+            Depth = 1;
+            MipMapLevels = 1;
+
+            //Image = VulkanConsts.VK_NULL_HANDLE;
+            //Memory = VulkanConsts.VK_NULL_HANDLE;
+            //View = VulkanConsts.VK_NULL_HANDLE;
+            //Sampler = VulkanConsts.VK_NULL_HANDLE;
+
+            TextureUsage = TextureUsageEnum.kUse_Undefined;
+            TextureType = TextureTypeEnum.kType_UndefinedTexture;
+            TextureByteFormat = textureFormat;
+            TextureImageLayout = Silk.NET.Vulkan.ImageLayout.Undefined;
+            SampleCount = SampleCountFlags.Count1Bit;
+
+            CreateImageTexture();
+            CreateTextureView();
+            CreateTextureSampler();
+        }
+
+        public void Initialize(string filePath, Format textureByteFormat, TextureTypeEnum textureType)
+        {
+            TextureBufferIndex = 0;
+            Width = 1;
+            Height = 1;
+            Depth = 1;
+            MipMapLevels = 1;
+
+            TextureUsage = TextureUsageEnum.kUse_Undefined;
+            TextureType = textureType;
+            TextureByteFormat = textureByteFormat;
+            TextureImageLayout = Silk.NET.Vulkan.ImageLayout.Undefined;
+            SampleCount = SampleCountFlags.Count1Bit;
+
+            CreateImageTexture(filePath);
+            CreateTextureView();
+            CreateTextureSampler();
+        }
+
         protected virtual void CreateImageTexture()
         {
             ColorChannels = ColorComponents.RedGreenBlueAlpha;
@@ -141,10 +248,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 for (int i = 0; i < pixels.Length; i += 4)
                 {
-                    pixels[i] = 255;   // R
-                    pixels[i + 1] = 0; // G
-                    pixels[i + 2] = 0; // B
-                    pixels[i + 3] = 255; // A
+                    pixels[i] = 255;
+                    pixels[i + 1] = 0;
+                    pixels[i + 2] = 0;
+                    pixels[i + 3] = 255;
                 }
 
                 GCHandle handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);

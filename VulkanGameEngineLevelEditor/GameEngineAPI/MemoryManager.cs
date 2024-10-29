@@ -60,17 +60,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
             else
             {
-                //foreach (var mesh in renderMesh3DMemory)
-                //{
-                //    if (mesh != null)
-                //    {
-                //        DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
-                //        MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
-                //        MeshProperitesBufferInfo.Offset = 0;
-                //        MeshProperitesBufferInfo.Range = mesh.GetMeshPropertiesBuffer().BufferSize;
-                //        MeshPropertiesBuffer.Add(MeshProperitesBufferInfo);
-                //    }
-                //}
+                foreach (var mesh in renderMesh3DMemory)
+                {
+                    if (mesh != null)
+                    {
+                        DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
+                        MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
+                        MeshProperitesBufferInfo.Offset = 0;
+                        MeshProperitesBufferInfo.Range = mesh.GetMeshPropertiesBuffer().BufferSize;
+                        MeshPropertiesBuffer.Add(MeshProperitesBufferInfo);
+                    }
+                }
             }
 
             return MeshPropertiesBuffer;

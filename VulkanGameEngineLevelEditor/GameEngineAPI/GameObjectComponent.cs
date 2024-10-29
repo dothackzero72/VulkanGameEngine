@@ -37,8 +37,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ComponentType = componentType;
         }
 
-        public abstract void Update(float deltaTime);
-        public abstract void Update(CommandBuffer commandBuffer, float deltaTime);
+        public abstract void Update(long startTime);
+        public abstract void Update(CommandBuffer commandBuffer, long startTime);
         public abstract void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties);
         public abstract void Destroy();
         public abstract int GetMemorySize();

@@ -30,15 +30,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return gameObject;
         }
 
-        public override void Update(float deltaTime)
+        public override void Update(long startTime)
         {
-            mesh.Update(deltaTime);
+            mesh.Update(startTime);
         }
 
-        public override void Update(CommandBuffer commandBuffer, float deltaTime)
+        public override void Update(CommandBuffer commandBuffer, long startTime)
         {
-            //mesh.BufferUpdate(commandBuffer, deltaTime);
-           // mesh.Update(deltaTime);
+            mesh.BufferUpdate(commandBuffer, startTime);
+            mesh.Update(startTime);
         }
 
         public override void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
@@ -56,9 +56,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return sizeof(MeshRenderer3DComponent);
         }
 
-        //public VulkanBuffer<MeshProperitiesBuffer> GetMeshPropertiesBuffer()
-        //{
-        //    return mesh.GetMeshPropertiesBuffer();
-        //}
+        public VulkanBuffer<UniformBufferObject> GetMeshPropertiesBuffer()
+        {
+            return mesh.GetMeshPropertiesBuffer();
+        }
     }
 }

@@ -57,28 +57,61 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class Scene
     {
         Vk vk = Vk.GetApi();
-        public RendererPass3D RendererPass3D { get; set; }
+        SceneDataBuffer sceneProperties;
+        OrthographicCamera orthographicCamera;
+        public RenderPass3D renderPass3D { get; set; } = new RenderPass3D();
         static readonly long startTime = DateTime.Now.Ticks;
-        public Texture texture { get; set; }
-        public Mesh mesh { get; set; } = new Mesh();
+        public List<Texture> textureList { get; set; } = new List<Texture>();
+        public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
+
+        public readonly Vertex3D[] vertices = new Vertex3D[]
+{
+            new Vertex3D(new (-0.5f, -0.5f, 0.0f), new (1.0f, 0.0f, 0.0f), new (1.0f, 0.0f)),
+            new Vertex3D(new (0.5f, -0.5f, 0.0f), new (0.0f, 1.0f, 0.0f), new (0.0f, 0.0f)),
+            new Vertex3D(new (0.5f, 0.5f, 0.0f), new (0.0f, 0.0f, 1.0f), new (0.0f, 1.0f)),
+            new Vertex3D(new (-0.5f, 0.5f, 0.0f), new (1.0f, 1.0f, 1.0f), new (1.0f, 1.0f)),
+
+            new Vertex3D(new (-0.5f, -0.5f, -0.5f), new (1.0f, 0.0f, 0.0f), new (1.0f, 0.0f)),
+            new Vertex3D(new (0.5f, -0.5f, -0.5f), new (0.0f, 1.0f, 0.0f), new (0.0f, 0.0f)),
+            new Vertex3D(new (0.5f, 0.5f, -0.5f), new (0.0f, 0.0f, 1.0f), new (0.0f, 1.0f)),
+            new Vertex3D(new (-0.5f, 0.5f, -0.5f), new (1.0f, 1.0f, 1.0f), new (1.0f, 1.0f))
+};
+
+        public readonly uint[] indices = new uint[]
+        {
+            0, 1, 2, 2, 3, 0,
+            4, 5, 6, 6, 7, 4
+        };
         public Scene()
         {
         }
 
         public void StartUp()
         {
-            
-            texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
-            mesh.MeshStartUp();
-            RendererPass3D = new RendererPass3D();
-            RendererPass3D.Create3dRenderPass(mesh);
+            MemoryManager.StartUp(30);
+
+            textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
+            GameObjectList.Add(GameObject.CreateGameObject("gameObject"));
+            var meshRenderer = MeshRenderer3DComponent.CreateRenderMesh3DComponent("asdfads", vertices, indices, 0);
+            GameObjectList.First().AddComponent(meshRenderer);
+
+            MemoryManager.ViewMemoryMap();
+
+            var a = new GlmSharp.vec2((float)VulkanRenderer.swapChain.swapchainExtent.Width, (float)VulkanRenderer.swapChain.swapchainExtent.Height);
+            var b = new vec3(0.0f, 0.0f, 5.0f);
+           // orthographicCamera = new OrthographicCamera(a, b);
+            renderPass3D.Create3dRenderPass();
         }
 
         public void Update()
         {
-            RendererPass3D.UpdateUniformBuffer(startTime);
+            renderPass3D.UpdateUniformBuffer(startTime);
+           // orthographicCamera.Update(sceneProperties);
             CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
-            mesh.BufferUpdate(commandBuffer, startTime);
+            foreach (var gameObject in GameObjectList)
+            {
+                gameObject.BufferUpdate(commandBuffer, startTime);
+            }
             VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
         }
 
@@ -86,7 +119,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
             VulkanRenderer.StartFrame();
-            commandBufferList.Add(RendererPass3D.Draw(mesh));
+            commandBufferList.Add(renderPass3D.Draw(GameObjectList, sceneProperties));
             VulkanRenderer.EndFrame(commandBufferList);
         }
     }
