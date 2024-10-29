@@ -60,30 +60,33 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public RendererPass3D RendererPass3D { get; set; }
         static readonly long startTime = DateTime.Now.Ticks;
         public Texture texture { get; set; }
-    
+        public Mesh mesh { get; set; } = new Mesh();
         public Scene()
         {
         }
 
         public void StartUp()
         {
+            
             texture = new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
-
+            mesh.MeshStartUp();
             RendererPass3D = new RendererPass3D();
-            RendererPass3D.Create3dRenderPass();
+            RendererPass3D.Create3dRenderPass(mesh);
         }
 
         public void Update()
         {
             RendererPass3D.UpdateUniformBuffer(startTime);
-
+            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            mesh.BufferUpdate(commandBuffer, startTime);
+            VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
         }
 
         public void DrawFrame()
         {
             List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
             VulkanRenderer.StartFrame();
-            commandBufferList.Add(RendererPass3D.Draw());
+            commandBufferList.Add(RendererPass3D.Draw(mesh));
             VulkanRenderer.EndFrame(commandBufferList);
         }
     }

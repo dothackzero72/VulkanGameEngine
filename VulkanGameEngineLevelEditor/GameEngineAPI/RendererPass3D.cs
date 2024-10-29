@@ -65,7 +65,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
         }
 
-        public void Create3dRenderPass()
+        public void Create3dRenderPass(Mesh mesh)
         {
             depthTexture = new DepthTexture(new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
             texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
@@ -86,7 +86,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             CreateUniformBuffers();
             CreateDescriptorPoolBinding();
             allocateDescriptorSets(descriptorpool);
-            UpdateDescriptorSet(descriptorset);
+            UpdateDescriptorSet(descriptorset, mesh);
         }
 
         public void JsonCreateRenderPass(string jsonPath)
@@ -518,7 +518,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return descriptorSet;
         }
 
-        public void UpdateDescriptorSet(DescriptorSet descriptorSets)
+        public void UpdateDescriptorSet(DescriptorSet descriptorSets, Mesh mesh)
         {
             var colorDescriptorImage = new DescriptorImageInfo
             {
@@ -538,6 +538,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             List<WriteDescriptorSet> descriptorSetList = new List<WriteDescriptorSet>();
             for (uint x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
             {
+                DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
+                MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
+                MeshProperitesBufferInfo.Offset = 0;
+                MeshProperitesBufferInfo.Range = mesh.GetMeshPropertiesBuffer().BufferSize;
+
                 WriteDescriptorSet descriptorSetWrite = new WriteDescriptorSet
                 {
                     SType = StructureType.WriteDescriptorSet,
@@ -547,7 +552,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     DescriptorCount = 1,
                     DescriptorType = DescriptorType.UniformBuffer,
                     PImageInfo = null,
-                    PBufferInfo = &uniformBuffer,
+                    PBufferInfo = &MeshProperitesBufferInfo,
                     PTexelBufferView = null
                 };
 
@@ -625,7 +630,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             uniformBuffers.UpdateBufferData(dataPtr);
         }
 
-        public CommandBuffer Draw()
+        public CommandBuffer Draw(Mesh mesh)
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
@@ -655,13 +660,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             vk.BeginCommandBuffer(commandBuffer, &commandInfo);
             vk.CmdBeginRenderPass(commandBuffer, &renderPassInfo, SubpassContents.Inline);
-            vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, shaderpipeline);
-            vk.CmdBindVertexBuffers(commandBuffer, 0, 1, &vertexbuffer, 0);
-            vk.CmdBindIndexBuffer(commandBuffer, indexBuffer.Buffer, 0, IndexType.Uint16);
-            vk.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, shaderpipelineLayout, 0, 1, descSet, 0, null);
             vk.CmdSetViewport(commandBuffer, 0, 1, &viewport);
             vk.CmdSetScissor(commandBuffer, 0, 1, &scissor);
-            vk.CmdDrawIndexed(commandBuffer, (uint)indices.Length, 1, 0, 0, 0);
+            vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, shaderpipeline);
+            mesh.Draw(commandBuffer, shaderpipeline, shaderpipelineLayout, descSet);
             vk.CmdEndRenderPass(commandBuffer);
             vk.EndCommandBuffer(commandBuffer);
 
