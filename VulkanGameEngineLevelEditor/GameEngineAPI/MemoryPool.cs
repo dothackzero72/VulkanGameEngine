@@ -18,7 +18,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public MemoryPool()
         {
-            
+
         }
 
         public void CreateMemoryPool(uint objectCount)
@@ -58,7 +58,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 T* objectPtr = (T*)(MemoryBlock + (x * ObjectSize));
                 if ((byte*)objectPtr >= (byte*)MemoryBlock &&
                     (byte*)objectPtr < (byte*)MemoryBlock + (ObjectCount * ObjectSize) &&
-                    MemoryBlockInUse[x] == MemoryBlockUsed) 
+                    MemoryBlockInUse[x] == MemoryBlockUsed)
                 {
                     memoryList.Add(*objectPtr);
                 }
@@ -100,7 +100,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 if (MemoryBlockInUse[x] == MemoryBlockUsed)
                 {
                     T* objectPtr = (T*)(MemoryBlock + x * ObjectSize);
-                    *objectPtr = default; 
+                    *objectPtr = default;
                     MemoryBlockInUse[x] = FreeMemoryBlock;
                 }
             }

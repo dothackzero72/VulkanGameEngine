@@ -13,13 +13,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     {
         public static Vk vk = Vk.GetApi();
         public static MemoryPool<GameObject> GameObjectMemoryPool = new MemoryPool<GameObject>();
-        public static MemoryPool<RenderMesh2DComponent> RenderMesh2DComponentMemoryPool = new MemoryPool<RenderMesh2DComponent>();
+        public static MemoryPool<MeshRenderer2DComponent> RenderMesh2DComponentMemoryPool = new MemoryPool<MeshRenderer2DComponent>();
+        public static MemoryPool<MeshRenderer3DComponent> RenderMesh3DComponentMemoryPool = new MemoryPool<MeshRenderer3DComponent>();
         public static MemoryPool<Texture> TextureMemoryPool = new MemoryPool<Texture>();
 
         public static void StartUp(uint estObjectCount)
         {
             GameObjectMemoryPool.CreateMemoryPool(estObjectCount);
             RenderMesh2DComponentMemoryPool.CreateMemoryPool(estObjectCount);
+            RenderMesh3DComponentMemoryPool.CreateMemoryPool(estObjectCount);
             TextureMemoryPool.CreateMemoryPool(estObjectCount);
         }
 
@@ -28,9 +30,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return GameObjectMemoryPool.AllocateMemoryLocation();
         }
 
-        public static RenderMesh2DComponent AllocateGameRenderMesh2DComponent()
+        public static MeshRenderer2DComponent AllocateGameRenderMesh2DComponent()
         {
             return RenderMesh2DComponentMemoryPool.AllocateMemoryLocation();
+        }
+
+        public static MeshRenderer3DComponent AllocateGameRenderMesh3DComponent()
+        {
+            return RenderMesh3DComponentMemoryPool.AllocateMemoryLocation();
         }
 
         public static Texture AllocateTexture()
@@ -40,10 +47,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public static List<DescriptorBufferInfo> GetGameObjectPropertiesBuffer()
         {
-            var renderMesh2DMemory = RenderMesh2DComponentMemoryPool.ViewMemoryPool();
+            var renderMesh3DMemory = RenderMesh3DComponentMemoryPool.ViewMemoryPool();
 
             List<DescriptorBufferInfo> MeshPropertiesBuffer = new List<DescriptorBufferInfo>();
-            if (renderMesh2DMemory.Count == 0)
+            if (renderMesh3DMemory.Count == 0)
             {
                 DescriptorBufferInfo nullBuffer = new DescriptorBufferInfo();
                 nullBuffer.Buffer = new Silk.NET.Vulkan.Buffer();
@@ -53,14 +60,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
             else
             {
-                foreach (var mesh in renderMesh2DMemory)
-                {
-                    DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
-                    MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
-                    MeshProperitesBufferInfo.Offset = 0;
-                    MeshProperitesBufferInfo.Range = mesh.GetMeshPropertiesBuffer().BufferSize;
-                    MeshPropertiesBuffer.Add(MeshProperitesBufferInfo);
-                }
+                //foreach (var mesh in renderMesh3DMemory)
+                //{
+                //    if (mesh != null)
+                //    {
+                //        DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
+                //        MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
+                //        MeshProperitesBufferInfo.Offset = 0;
+                //        MeshProperitesBufferInfo.Range = mesh.GetMeshPropertiesBuffer().BufferSize;
+                //        MeshPropertiesBuffer.Add(MeshProperitesBufferInfo);
+                //    }
+                //}
             }
 
             return MeshPropertiesBuffer;
@@ -104,11 +114,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 foreach (var texture in textureMemoryList)
                 {
-                    DescriptorImageInfo textureDescriptor = new DescriptorImageInfo();
-                    textureDescriptor.ImageLayout = ImageLayout.ShaderReadOnlyOptimal;
-                    textureDescriptor.ImageView = texture.View;
-                    textureDescriptor.Sampler = texture.Sampler;
-                    TexturePropertiesBuffer.Add(textureDescriptor);
+                    if (texture != null)
+                    {
+                        DescriptorImageInfo textureDescriptor = new DescriptorImageInfo();
+                        textureDescriptor.ImageLayout = ImageLayout.ShaderReadOnlyOptimal;
+                        textureDescriptor.ImageView = texture.View;
+                        textureDescriptor.Sampler = texture.Sampler;
+                        TexturePropertiesBuffer.Add(textureDescriptor);
+                    }
                 }
             }
 
@@ -119,7 +132,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static void ViewMemoryMap()
         {
             var gameObjectMemoryList = GameObjectMemoryPool.ViewMemoryPool();
-            var renderMeshMemoryList = RenderMesh2DComponentMemoryPool.ViewMemoryPool();
+            var renderMesh2DMemoryList = RenderMesh2DComponentMemoryPool.ViewMemoryPool();
+            var renderMesh3DMemoryList = RenderMesh3DComponentMemoryPool.ViewMemoryPool();
             var textureMemoryList = TextureMemoryPool.ViewMemoryPool();
 
             Console.WriteLine($"Memory Map of Game Objects:");
@@ -140,12 +154,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Console.WriteLine("{0,20} {1,15}", "Index", "Value");
             for (int x = 0; x < RenderMesh2DComponentMemoryPool.ObjectCount; x++)
             {
-                var render2DMemoryListRef = renderMeshMemoryList[x];
-                RenderMesh2DComponent* render2DPtr = &render2DMemoryListRef;
+                var render2DMemoryListRef = renderMesh2DMemoryList[x];
+                MeshRenderer2DComponent* render2DPtr = &render2DMemoryListRef;
 
-                IntPtr address = (IntPtr)render2DPtr + (sizeof(RenderMesh2DComponent) * x);
+                IntPtr address = (IntPtr)render2DPtr + (sizeof(MeshRenderer2DComponent) * x);
 
-                string value = renderMeshMemoryList[x]?.ToString() ?? "null";
+                string value = renderMesh2DMemoryList[x]?.ToString() ?? "null";
                 Console.WriteLine($"{x,10} : {address.ToString("X12")} : {value}");
             }
 
@@ -155,12 +169,25 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Console.WriteLine("{0,20} {1,15}", "Index", "Value");
             for (int x = 0; x < RenderMesh2DComponentMemoryPool.ObjectCount; x++)
             {
-                var render2DMemoryListRef = renderMeshMemoryList[x];
-                RenderMesh2DComponent* render2DPtr = &render2DMemoryListRef;
+                var render2DMemoryListRef = renderMesh2DMemoryList[x];
+                MeshRenderer2DComponent* render2DPtr = &render2DMemoryListRef;
 
-                IntPtr address = (IntPtr)render2DPtr + (sizeof(RenderMesh2DComponent) * x);
+                IntPtr address = (IntPtr)render2DPtr + (sizeof(MeshRenderer2DComponent) * x);
 
-                string value = renderMeshMemoryList[x]?.ToString() ?? "null";
+                string value = renderMesh2DMemoryList[x]?.ToString() ?? "null";
+                Console.WriteLine($"{x,10} : {address.ToString("X12")} : {value}");
+            }
+
+            Console.WriteLine($"Memory Map of RenderMesh3DComponent:");
+            Console.WriteLine("{0,20} {1,15}", "Index", "Value");
+            for (int x = 0; x < RenderMesh3DComponentMemoryPool.ObjectCount; x++)
+            {
+                var render3DMemoryListRef = renderMesh3DMemoryList[x];
+                MeshRenderer3DComponent* render3DPtr = &render3DMemoryListRef;
+
+                IntPtr address = (IntPtr)render3DPtr + (sizeof(MeshRenderer3DComponent) * x);
+
+                string value = renderMesh3DMemoryList[x]?.ToString() ?? "null";
                 Console.WriteLine($"{x,10} : {address.ToString("X12")} : {value}");
             }
 

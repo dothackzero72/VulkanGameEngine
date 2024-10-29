@@ -65,7 +65,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
         }
 
-        public void Create3dRenderPass()
+        public void Create3dRenderPass(Mesh mesh)
         {
             depthTexture = new DepthTexture(new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
             texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
@@ -86,7 +86,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             CreateUniformBuffers();
             CreateDescriptorPoolBinding();
             allocateDescriptorSets(descriptorpool);
-            UpdateDescriptorSet(descriptorset);
+            UpdateDescriptorSet(descriptorset, mesh);
         }
 
         public void JsonCreateRenderPass(string jsonPath)
@@ -244,8 +244,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             PipelineShaderStageCreateInfo* shadermoduleList = stackalloc[]
             {
-                VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/Shader2DVert.spv",  ShaderStageFlags.VertexBit),
-                VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/Shader2DFrag.spv", ShaderStageFlags.FragmentBit)
+                VulkanRenderer.CreateShader("vertshader.spv",  ShaderStageFlags.VertexBit),
+                VulkanRenderer.CreateShader("fragshader.spv", ShaderStageFlags.FragmentBit)
             };
             shaderpipelineLayout = CreatePipelineLayout();
 
@@ -472,12 +472,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 new DescriptorPoolSize
                 {
                     Type = DescriptorType.UniformBuffer,
-                    DescriptorCount = MemoryManager.GameObjectMemoryPool.ObjectCount
+                    DescriptorCount = VulkanRenderer.MAX_FRAMES_IN_FLIGHT
                 };
                 new DescriptorPoolSize
                 {
                     Type = DescriptorType.CombinedImageSampler,
-                    DescriptorCount = MemoryManager.TextureMemoryPool.ObjectCount
+                    DescriptorCount = VulkanRenderer.MAX_FRAMES_IN_FLIGHT
                 };
             };
 
@@ -518,7 +518,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return descriptorSet;
         }
 
-        public void UpdateDescriptorSet(DescriptorSet descriptorSets)
+        public void UpdateDescriptorSet(DescriptorSet descriptorSets, Mesh mesh)
         {
             var colorDescriptorImage = new DescriptorImageInfo
             {
@@ -536,69 +536,61 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             List<WriteDescriptorSet> descriptorSetList = new List<WriteDescriptorSet>();
-            fixed (DescriptorBufferInfo* gameObjectProperties = MemoryManager.GetGameObjectPropertiesBuffer().ToArray())
-            fixed (DescriptorImageInfo* textureProperties = MemoryManager.GetTexturePropertiesBuffer().ToArray())
+            for (uint x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
             {
-                for (uint x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
+                DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
+                MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
+                MeshProperitesBufferInfo.Offset = 0;
+                MeshProperitesBufferInfo.Range = mesh.GetMeshPropertiesBuffer().BufferSize;
+
+                WriteDescriptorSet descriptorSetWrite = new WriteDescriptorSet
                 {
-                    WriteDescriptorSet descriptorSetWrite = new WriteDescriptorSet
-                    {
-                        SType = StructureType.WriteDescriptorSet,
-                        DstSet = descriptorset,
-                        DstBinding = 0,
-                        DstArrayElement = 0,
-                        DescriptorCount = MemoryManager.GameObjectMemoryPool.ObjectCount,
-                        DescriptorType = DescriptorType.UniformBuffer,
-                        PImageInfo = null,
-                        PBufferInfo = gameObjectProperties,
-                        PTexelBufferView = null
-                    };
+                    SType = StructureType.WriteDescriptorSet,
+                    DstSet = descriptorset,
+                    DstBinding = 0,
+                    DstArrayElement = 0,
+                    DescriptorCount = 1,
+                    DescriptorType = DescriptorType.UniformBuffer,
+                    PImageInfo = null,
+                    PBufferInfo = &MeshProperitesBufferInfo,
+                    PTexelBufferView = null
+                };
 
-                    WriteDescriptorSet descriptorSetWrite2 = new WriteDescriptorSet
-                    {
-                        SType = StructureType.WriteDescriptorSet,
-                        DstSet = descriptorset,
-                        DstBinding = 1,
-                        DstArrayElement = 0,
-                        DescriptorCount = MemoryManager.TextureMemoryPool.ObjectCount,
-                        DescriptorType = DescriptorType.CombinedImageSampler,
-                        PImageInfo = textureProperties,
-                        PBufferInfo = null,
-                        PTexelBufferView = null
-                    };
-
-                    descriptorSetList.Add(descriptorSetWrite);
-                    descriptorSetList.Add(descriptorSetWrite2);
-                }
-
-
-                fixed (WriteDescriptorSet* ptr = descriptorSetList.ToArray())
+                WriteDescriptorSet descriptorSetWrite2 = new WriteDescriptorSet
                 {
-                    vk.UpdateDescriptorSets(VulkanRenderer.device, (uint)descriptorSetList.UCount(), ptr, 0, null);
-                }
+                    SType = StructureType.WriteDescriptorSet,
+                    DstSet = descriptorset,
+                    DstBinding = 1,
+                    DstArrayElement = 0,
+                    DescriptorCount = 1,
+                    DescriptorType = DescriptorType.CombinedImageSampler,
+                    PImageInfo = &colorDescriptorImage,
+                    PBufferInfo = null,
+                    PTexelBufferView = null
+                };
+
+                descriptorSetList.Add(descriptorSetWrite);
+                descriptorSetList.Add(descriptorSetWrite2);
+            }
+
+
+            fixed (WriteDescriptorSet* ptr = descriptorSetList.ToArray())
+            {
+                vk.UpdateDescriptorSets(VulkanRenderer.device, (uint)descriptorSetList.UCount(), ptr, 0, null);
             }
         }
-
-
 
         public PipelineLayout CreatePipelineLayout()
         {
             PipelineLayout pipelineLayout = new PipelineLayout();
-
-            PushConstantRange pushConstantRange = new PushConstantRange()
-            {
-                StageFlags = ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit,
-                Offset = 0,
-                Size = (uint)sizeof(SceneDataBuffer)
-            };
 
             DescriptorSetLayout descriptorSetLayoutPtr = descriptorSetLayout;
             PipelineLayoutCreateInfo pipelineLayoutInfo = new
             (
                 setLayoutCount: 1,
                 pSetLayouts: &descriptorSetLayoutPtr,
-                pushConstantRangeCount: 1,
-                pPushConstantRanges: &pushConstantRange
+                pushConstantRangeCount: 0,
+                pPushConstantRanges: null
             );
             vk.CreatePipelineLayout(VulkanRenderer.device, &pipelineLayoutInfo, null, out PipelineLayout pipelinelayout);
             return pipelinelayout;
@@ -638,7 +630,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             uniformBuffers.UpdateBufferData(dataPtr);
         }
 
-        public CommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneProperties)
+        public CommandBuffer Draw(Mesh mesh)
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
@@ -665,14 +657,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var vertexbuffer = vertexBuffer.Buffer;
             var commandInfo = new CommandBufferBeginInfo(flags: 0);
 
+
             vk.BeginCommandBuffer(commandBuffer, &commandInfo);
             vk.CmdBeginRenderPass(commandBuffer, &renderPassInfo, SubpassContents.Inline);
             vk.CmdSetViewport(commandBuffer, 0, 1, &viewport);
             vk.CmdSetScissor(commandBuffer, 0, 1, &scissor);
-            foreach(var obj in gameObjectList)
-            {
-                obj.Draw(commandBuffer, shaderpipeline, shaderpipelineLayout, descSet, sceneProperties);
-            }
+            vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, shaderpipeline);
+            mesh.Draw(commandBuffer, shaderpipeline, shaderpipelineLayout, descSet);
             vk.CmdEndRenderPass(commandBuffer);
             vk.EndCommandBuffer(commandBuffer);
 

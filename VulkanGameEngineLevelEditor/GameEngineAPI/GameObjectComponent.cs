@@ -20,9 +20,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public ulong MemorySize { get; protected set; }
         public ComponentTypeEnum ComponentType { get; protected set; }
 
-        public GameObjectComponent() 
-        { 
-        
+        public GameObjectComponent()
+        {
+
         }
 
         public GameObjectComponent(ComponentTypeEnum componentType)
@@ -39,8 +39,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public abstract void Update(float deltaTime);
         public abstract void Update(CommandBuffer commandBuffer, float deltaTime);
-	    public abstract void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties);
-	    public abstract void Destroy();
+        public abstract void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties);
+        public abstract void Destroy();
         public abstract int GetMemorySize();
     }
 }

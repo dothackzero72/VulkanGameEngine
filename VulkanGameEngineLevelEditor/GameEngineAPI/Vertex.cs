@@ -1,5 +1,6 @@
 ﻿using GlmSharp;
 using Silk.NET.Vulkan;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using VulkanGameEngineLevelEditor;
@@ -16,6 +17,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             this.x = x;
             this.y = y;
+        }
+
+        public static implicit operator vec2(GlmSharp.vec2 v)
+        {
+            throw new NotImplementedException();
         }
     }
 

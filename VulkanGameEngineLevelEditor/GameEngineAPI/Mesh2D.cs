@@ -26,7 +26,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             List<uint> spriteIndexList = new List<uint> { 0, 1, 3, 1, 2, 3 };
 
-            base.MeshStartUp(spriteVertexList, spriteIndexList);
+            //  base.MeshStartUp(spriteVertexList, spriteIndexList);
         }
     }
 }
