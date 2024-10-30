@@ -308,6 +308,8 @@
     <Compile Include="GameEngineAPI\MeshRenderer3DComponent.cs" />
     <Compile Include="GameEngineAPI\OrthographicCamera.cs" />
     <Compile Include="Models\AttachmentDescriptionModel.cs" />
+    <Compile Include="GameEngineAPI\JsonPipeline.cs" />
+    <Compile Include="Models\PipelineInputAssemblyStateCreateInfoModel.cs" />
     <Compile Include="Models\RenderedTextureInfoModel.cs" />
     <Compile Include="Models\RenderPassEditorBaseModel.cs" />
     <Compile Include="RenderPassEditor\RenderPassEditorConsts.cs" />

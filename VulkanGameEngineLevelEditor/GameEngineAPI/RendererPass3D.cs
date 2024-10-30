@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Newtonsoft.Json;
 using Silk.NET.Core.Native;
 using Silk.NET.Maths;
 using Silk.NET.SDL;
@@ -6,6 +7,7 @@ using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -242,12 +244,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         void CreateGraphicsPipeline()
         {
+      
             PipelineShaderStageCreateInfo* shadermoduleList = stackalloc[]
             {
                 VulkanRenderer.CreateShader("vertshader.spv",  ShaderStageFlags.VertexBit),
                 VulkanRenderer.CreateShader("fragshader.spv", ShaderStageFlags.FragmentBit)
             };
-            shaderpipelineLayout = CreatePipelineLayout();
+            PipelineLayout pipelineLayout = new PipelineLayout();
+
+            DescriptorSetLayout descriptorSetLayoutPtr = descriptorSetLayout;
+            PipelineLayoutCreateInfo pipelineLayoutInfo = new
+            (
+                setLayoutCount: 1,
+                pSetLayouts: &descriptorSetLayoutPtr,
+                pushConstantRangeCount: 0,
+                pPushConstantRanges: null
+            );
+            vk.CreatePipelineLayout(VulkanRenderer.device, &pipelineLayoutInfo, null, out PipelineLayout pipelinelayout);
 
 
             PipelineVertexInputStateCreateInfo vertexInputInfo = new PipelineVertexInputStateCreateInfo();
@@ -265,6 +278,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             PipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = new(topology: PrimitiveTopology.TriangleList);
+
+  
+
 
             PipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = new
             (
@@ -323,13 +339,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 )
             };
 
+
+
             fixed (PipelineColorBlendAttachmentState* attachments = pipelineColorBlendAttachmentState.ToArray())
             {
                 PipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = new
        (
            logicOpEnable: false,
            logicOp: LogicOp.NoOp,
-           attachmentCount: 2, 
+           attachmentCount: 2,
            pAttachments: attachments
        );
 
@@ -361,6 +379,76 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     layout: shaderpipelineLayout,
                     renderPass: renderPass
                 );
+
+                var jsonObj = new
+                {
+                    VertexShader = "vertshader.spv",
+                    FragmentShader = "fragshader.spv",
+                    PipelineLayoutCreateInfo = new
+                    {
+                        setLayoutCount = 1,
+                        pushConstantRangeCount = 0
+                    },
+                    PipelineInputAssemblyStateCreateInfo = new
+                    {
+                        topology = PrimitiveTopology.TriangleList
+                    },
+                    PipelineRasterizationStateCreateInfo = new
+                    {
+                        depthClampEnable = false,
+                        rasterizerDiscardEnable = false,
+                        polygonMode = PolygonMode.Fill,
+                        cullMode = CullModeFlags.CullModeBackBit,
+                        frontFace = FrontFace.CounterClockwise,
+                        depthBiasEnable = false,
+                        depthBiasConstantFactor = 0.0f,
+                        depthBiasClamp = 0.0f,
+                        depthBiasSlopeFactor = 0.0f,
+                        lineWidth = 1.0f
+                    },
+                    PipelineMultisampleStateCreateInfo = new { rasterizationSamples = SampleCountFlags.SampleCount1Bit },
+                    StencilOpState = new StencilOpState ( StencilOp.Keep, StencilOp.Keep, StencilOp.Keep, CompareOp.Always ),
+
+                    PipelineDepthStencilStateCreateInfo = new
+                    {
+                        depthTestEnable = true,
+                        depthWriteEnable = true,
+                        depthCompareOp = CompareOp.LessOrEqual,
+                        depthBoundsTestEnable = false,
+                        stencilTestEnable = false,
+                        front = stencilOpState,
+                        back = stencilOpState
+                    },
+                    ColorComponentFlags =
+                        ColorComponentFlags.ColorComponentRBit |
+                        ColorComponentFlags.ColorComponentGBit |
+                        ColorComponentFlags.ColorComponentBBit |
+                        ColorComponentFlags.ColorComponentABit,
+
+                    PipelineColorBlendAttachmentState = new List<PipelineColorBlendAttachmentState>()
+                    {
+                        new(
+                            blendEnable: true,
+                            srcColorBlendFactor: Silk.NET.Vulkan.BlendFactor.SrcAlpha,
+                            dstColorBlendFactor: Silk.NET.Vulkan.BlendFactor.OneMinusSrcAlpha,
+                            colorBlendOp: BlendOp.Add,
+                            srcAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.One,
+                            dstAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.Zero,
+                            alphaBlendOp: BlendOp.Add,
+                            colorWriteMask: ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit
+                        )
+                    },
+                    PipelineColorBlendStateCreateInfo = new
+                    {
+                       logicOpEnable = false,
+                       logicOp = LogicOp.NoOp,
+                       attachmentCount = 2,
+                    }
+            };
+
+                string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\Pipelines\DefaultPipeline.json";
+                string jsonString = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+                File.WriteAllText(finalfilePath, jsonString);
 
                 vk.CreateGraphicsPipelines(VulkanRenderer.device, new PipelineCache(null), 1, &graphicsPipelineCreateInfo, null, out Pipeline pipeline);
                 shaderpipeline = pipeline;

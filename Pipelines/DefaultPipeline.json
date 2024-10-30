@@ -1,0 +1,80 @@
+{
+  "VertexShader": "vertshader.spv",
+  "FragmentShader": "fragshader.spv",
+  "PipelineLayoutCreateInfo": {
+    "setLayoutCount": 1,
+    "pushConstantRangeCount": 0
+  },
+  "PipelineInputAssemblyStateCreateInfo": {
+    "topology": 3
+  },
+  "PipelineRasterizationStateCreateInfo": {
+    "depthClampEnable": false,
+    "rasterizerDiscardEnable": false,
+    "polygonMode": 0,
+    "cullMode": 2,
+    "frontFace": 0,
+    "depthBiasEnable": false,
+    "depthBiasConstantFactor": 0.0,
+    "depthBiasClamp": 0.0,
+    "depthBiasSlopeFactor": 0.0,
+    "lineWidth": 1.0
+  },
+  "PipelineMultisampleStateCreateInfo": {
+    "rasterizationSamples": 1
+  },
+  "StencilOpState": {
+    "FailOp": 0,
+    "PassOp": 0,
+    "DepthFailOp": 0,
+    "CompareOp": 7,
+    "CompareMask": 0,
+    "WriteMask": 0,
+    "Reference": 0
+  },
+  "PipelineDepthStencilStateCreateInfo": {
+    "depthTestEnable": true,
+    "depthWriteEnable": true,
+    "depthCompareOp": 3,
+    "depthBoundsTestEnable": false,
+    "stencilTestEnable": false,
+    "front": {
+      "FailOp": 0,
+      "PassOp": 0,
+      "DepthFailOp": 0,
+      "CompareOp": 7,
+      "CompareMask": 0,
+      "WriteMask": 0,
+      "Reference": 0
+    },
+    "back": {
+      "FailOp": 0,
+      "PassOp": 0,
+      "DepthFailOp": 0,
+      "CompareOp": 7,
+      "CompareMask": 0,
+      "WriteMask": 0,
+      "Reference": 0
+    }
+  },
+  "ColorComponentFlags": 15,
+  "PipelineColorBlendAttachmentState": [
+    {
+      "BlendEnable": {
+        "Value": 1
+      },
+      "SrcColorBlendFactor": 6,
+      "DstColorBlendFactor": 7,
+      "ColorBlendOp": 0,
+      "SrcAlphaBlendFactor": 1,
+      "DstAlphaBlendFactor": 0,
+      "AlphaBlendOp": 0,
+      "ColorWriteMask": 15
+    }
+  ],
+  "PipelineColorBlendStateCreateInfo": {
+    "logicOpEnable": false,
+    "logicOp": 5,
+    "attachmentCount": 2
+  }
+}

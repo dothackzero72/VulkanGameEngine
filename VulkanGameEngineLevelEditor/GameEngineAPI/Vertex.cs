@@ -7,6 +7,12 @@ using VulkanGameEngineLevelEditor;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
+    enum VertexType
+    {
+        kVertex2D,
+        kVertex3D
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct vec2
     {
