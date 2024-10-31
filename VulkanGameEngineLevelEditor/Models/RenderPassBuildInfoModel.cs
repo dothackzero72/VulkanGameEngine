@@ -13,7 +13,7 @@ namespace VulkanGameEngineLevelEditor.Models
     public class RenderPassBuildInfoModel : RenderPassEditorBaseModel
     {
         public ivec2 SwapChainResuloution { get; set; } = new ivec2();
-        public List<RenderPipeline> RenderPipelineList { get; set; } = new List<RenderPipeline>();
+        public List<RenderPipelineModel> RenderPipelineList { get; set; } = new List<RenderPipelineModel>();
 
         public List<RenderedTextureInfoModel> RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>();
         public List<SubpassDependencyModel> SubpassDependencyList { get; set; } = new List<SubpassDependencyModel>();

@@ -284,9 +284,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             PipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = new
             (
-                viewportCount: 1,
+                viewportCount: 0,
                 pViewports: null,
-                scissorCount: 1,
+                scissorCount: 0,
                 pScissors: null
             );
 
@@ -380,71 +380,44 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     renderPass: renderPass
                 );
 
-                var jsonObj = new
+                var jsonObj = new RenderPipelineModel
                 {
+                    _name = "DefaultPipeline",
                     VertexShader = "vertshader.spv",
                     FragmentShader = "fragshader.spv",
-                    PipelineLayoutCreateInfo = new
+                    PipelineColorBlendAttachmentStateList = pipelineColorBlendAttachmentState,
+                    PipelineDepthStencilStateCreateInfo = pipelineDepthStencilStateCreateInfo,
+                    PipelineMultisampleStateCreateInfo = pipelineMultisampleStateCreateInfo,
+                    PipelineRasterizationStateCreateInfo = pipelineRasterizationStateCreateInfo,
+                    ScissorList = null,
+                    ViewportList = null,
+                    PipelineColorBlendStateCreateInfoModel = new PipelineColorBlendStateCreateInfoModel()
                     {
-                        setLayoutCount = 1,
-                        pushConstantRangeCount = 0
+                        LogicOpEnable = false,
+                        LogicOp = LogicOp.NoOp,
+                        BlendConstants = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f}
                     },
-                    PipelineInputAssemblyStateCreateInfo = new
+                    PipelineInputAssemblyStateCreateInfo = new PipelineInputAssemblyStateCreateInfoModel()
                     {
-                        topology = PrimitiveTopology.TriangleList
+                        PrimitiveRestartEnable = false,
+                        Topology = PrimitiveTopology.TriangleList
                     },
-                    PipelineRasterizationStateCreateInfo = new
+                    PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
                     {
-                        depthClampEnable = false,
-                        rasterizerDiscardEnable = false,
-                        polygonMode = PolygonMode.Fill,
-                        cullMode = CullModeFlags.CullModeBackBit,
-                        frontFace = FrontFace.CounterClockwise,
-                        depthBiasEnable = false,
-                        depthBiasConstantFactor = 0.0f,
-                        depthBiasClamp = 0.0f,
-                        depthBiasSlopeFactor = 0.0f,
-                        lineWidth = 1.0f
-                    },
-                    PipelineMultisampleStateCreateInfo = new { rasterizationSamples = SampleCountFlags.SampleCount1Bit },
-                    StencilOpState = new StencilOpState ( StencilOp.Keep, StencilOp.Keep, StencilOp.Keep, CompareOp.Always ),
-
-                    PipelineDepthStencilStateCreateInfo = new
-                    {
-                        depthTestEnable = true,
-                        depthWriteEnable = true,
-                        depthCompareOp = CompareOp.LessOrEqual,
-                        depthBoundsTestEnable = false,
-                        stencilTestEnable = false,
-                        front = stencilOpState,
-                        back = stencilOpState
-                    },
-                    ColorComponentFlags =
-                        ColorComponentFlags.ColorComponentRBit |
-                        ColorComponentFlags.ColorComponentGBit |
-                        ColorComponentFlags.ColorComponentBBit |
-                        ColorComponentFlags.ColorComponentABit,
-
-                    PipelineColorBlendAttachmentState = new List<PipelineColorBlendAttachmentState>()
-                    {
-                        new(
-                            blendEnable: true,
-                            srcColorBlendFactor: Silk.NET.Vulkan.BlendFactor.SrcAlpha,
-                            dstColorBlendFactor: Silk.NET.Vulkan.BlendFactor.OneMinusSrcAlpha,
-                            colorBlendOp: BlendOp.Add,
-                            srcAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.One,
-                            dstAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.Zero,
-                            alphaBlendOp: BlendOp.Add,
-                            colorWriteMask: ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit
-                        )
-                    },
-                    PipelineColorBlendStateCreateInfo = new
-                    {
-                       logicOpEnable = false,
-                       logicOp = LogicOp.NoOp,
-                       attachmentCount = 2,
+                        new PipelineDescriptorModel
+                        {
+                            BindingNumber = 0,
+                            BindingPropertiesList = DescriptorBindingPropertiesEnum.kMeshPropertiesDescriptor,
+                            descriptorType = DescriptorType.StorageBuffer
+                        },
+                        new PipelineDescriptorModel
+                        {
+                            BindingNumber = 1,
+                            BindingPropertiesList = DescriptorBindingPropertiesEnum.kTextureDescriptor,
+                            descriptorType = DescriptorType.SampledImage
+                        }
                     }
-            };
+                };
 
                 string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\Pipelines\DefaultPipeline.json";
                 string jsonString = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
@@ -539,7 +512,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         PAttachments = imageViewPtr,
                         Width = VulkanRenderer.swapChain.swapchainExtent.Width,
                         Height = VulkanRenderer.swapChain.swapchainExtent.Height,
-                        Layers = 1
+                        Layers = 1,
+                        Flags = 0,
+                        PNext = null
                     };
 
                     Framebuffer frameBuffer = FrameBufferList[x];
@@ -638,7 +613,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     DescriptorType = DescriptorType.UniformBuffer,
                     PImageInfo = null,
                     PBufferInfo = &meshBuffer,
-                    PTexelBufferView = null
+                    PTexelBufferView = null,
                 };
 
                 WriteDescriptorSet descriptorSetWrite2 = new WriteDescriptorSet

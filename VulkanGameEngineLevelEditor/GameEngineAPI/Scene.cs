@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 using ImageLayout = Silk.NET.Vulkan.ImageLayout;
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -59,10 +60,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         Vk vk = Vk.GetApi();
         SceneDataBuffer sceneProperties;
         OrthographicCamera orthographicCamera;
-        public RenderPass3D renderPass3D { get; set; } = new RenderPass3D();
+       
         static readonly long startTime = DateTime.Now.Ticks;
         public List<Texture> textureList { get; set; } = new List<Texture>();
         public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
+        JsonRenderPass renderPass3D { get; set; } = new JsonRenderPass();
 
         public readonly Vertex3D[] vertices = new Vertex3D[]
 {
@@ -99,14 +101,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             var a = new GlmSharp.vec2((float)VulkanRenderer.swapChain.swapchainExtent.Width, (float)VulkanRenderer.swapChain.swapchainExtent.Height);
             var b = new vec3(0.0f, 0.0f, 5.0f);
-           // orthographicCamera = new OrthographicCamera(a, b);
-            renderPass3D.Create3dRenderPass();
+            // orthographicCamera = new OrthographicCamera(a, b);
+            renderPass3D.JsonCreateRenderPass(@$"{RenderPassEditorConsts.BasePath}DefaultRenderPass.json", new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
         }
 
         public void Update()
         {
-            renderPass3D.UpdateUniformBuffer(startTime);
-           // orthographicCamera.Update(sceneProperties);
             CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             foreach (var gameObject in GameObjectList)
             {

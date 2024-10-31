@@ -1,64 +1,9 @@
 {
   "VertexShader": "vertshader.spv",
   "FragmentShader": "fragshader.spv",
-  "PipelineLayoutCreateInfo": {
-    "setLayoutCount": 1,
-    "pushConstantRangeCount": 0
-  },
-  "PipelineInputAssemblyStateCreateInfo": {
-    "topology": 3
-  },
-  "PipelineRasterizationStateCreateInfo": {
-    "depthClampEnable": false,
-    "rasterizerDiscardEnable": false,
-    "polygonMode": 0,
-    "cullMode": 2,
-    "frontFace": 0,
-    "depthBiasEnable": false,
-    "depthBiasConstantFactor": 0.0,
-    "depthBiasClamp": 0.0,
-    "depthBiasSlopeFactor": 0.0,
-    "lineWidth": 1.0
-  },
-  "PipelineMultisampleStateCreateInfo": {
-    "rasterizationSamples": 1
-  },
-  "StencilOpState": {
-    "FailOp": 0,
-    "PassOp": 0,
-    "DepthFailOp": 0,
-    "CompareOp": 7,
-    "CompareMask": 0,
-    "WriteMask": 0,
-    "Reference": 0
-  },
-  "PipelineDepthStencilStateCreateInfo": {
-    "depthTestEnable": true,
-    "depthWriteEnable": true,
-    "depthCompareOp": 3,
-    "depthBoundsTestEnable": false,
-    "stencilTestEnable": false,
-    "front": {
-      "FailOp": 0,
-      "PassOp": 0,
-      "DepthFailOp": 0,
-      "CompareOp": 7,
-      "CompareMask": 0,
-      "WriteMask": 0,
-      "Reference": 0
-    },
-    "back": {
-      "FailOp": 0,
-      "PassOp": 0,
-      "DepthFailOp": 0,
-      "CompareOp": 7,
-      "CompareMask": 0,
-      "WriteMask": 0,
-      "Reference": 0
-    }
-  },
-  "ColorComponentFlags": 15,
-  "PipelineColorBlendAttachmentState": [
+  "ViewportList": null,
+  "ScissorList": null,
+  "PipelineColorBlendAttachmentStateList": [
     {
       "BlendEnable": {
         "Value": 1
@@ -72,9 +17,113 @@
       "ColorWriteMask": 15
     }
   ],
-  "PipelineColorBlendStateCreateInfo": {
-    "logicOpEnable": false,
-    "logicOp": 5,
-    "attachmentCount": 2
-  }
+  "PipelineColorBlendStateCreateInfoModel": {
+    "LogicOpEnable": {
+      "Value": 0
+    },
+    "LogicOp": 5,
+    "BlendConstants": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "PipelineRasterizationStateCreateInfo": {
+    "SType": 23,
+    "PNext": null,
+    "Flags": 0,
+    "DepthClampEnable": {
+      "Value": 0
+    },
+    "RasterizerDiscardEnable": {
+      "Value": 0
+    },
+    "PolygonMode": 0,
+    "CullMode": 2,
+    "FrontFace": 0,
+    "DepthBiasEnable": {
+      "Value": 0
+    },
+    "DepthBiasConstantFactor": 0.0,
+    "DepthBiasClamp": 0.0,
+    "DepthBiasSlopeFactor": 0.0,
+    "LineWidth": 1.0
+  },
+  "PipelineMultisampleStateCreateInfo": {
+    "SType": 24,
+    "PNext": null,
+    "Flags": 0,
+    "RasterizationSamples": 1,
+    "SampleShadingEnable": {
+      "Value": 0
+    },
+    "MinSampleShading": 0.0,
+    "PSampleMask": null,
+    "AlphaToCoverageEnable": {
+      "Value": 0
+    },
+    "AlphaToOneEnable": {
+      "Value": 0
+    }
+  },
+  "PipelineDepthStencilStateCreateInfo": {
+    "SType": 25,
+    "PNext": null,
+    "Flags": 0,
+    "DepthTestEnable": {
+      "Value": 1
+    },
+    "DepthWriteEnable": {
+      "Value": 1
+    },
+    "DepthCompareOp": 3,
+    "DepthBoundsTestEnable": {
+      "Value": 0
+    },
+    "StencilTestEnable": {
+      "Value": 0
+    },
+    "Front": {
+      "FailOp": 0,
+      "PassOp": 0,
+      "DepthFailOp": 0,
+      "CompareOp": 7,
+      "CompareMask": 0,
+      "WriteMask": 0,
+      "Reference": 0
+    },
+    "Back": {
+      "FailOp": 0,
+      "PassOp": 0,
+      "DepthFailOp": 0,
+      "CompareOp": 7,
+      "CompareMask": 0,
+      "WriteMask": 0,
+      "Reference": 0
+    },
+    "MinDepthBounds": 0.0,
+    "MaxDepthBounds": 0.0
+  },
+  "PipelineInputAssemblyStateCreateInfo": {
+    "Topology": 3,
+    "PrimitiveRestartEnable": {
+      "Value": 0
+    }
+  },
+  "LayoutBindingList": [],
+  "TextureAttachmentList": [],
+  "PipelineDescriptorModelsList": [
+    {
+      "BindingNumber": 0,
+      "BindingPropertiesList": 0,
+      "descriptorType": 7
+    },
+    {
+      "BindingNumber": 1,
+      "BindingPropertiesList": 1,
+      "descriptorType": 2
+    }
+  ],
+  "_name": "DefaultPipeline"
 }
