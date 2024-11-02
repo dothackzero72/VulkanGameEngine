@@ -217,8 +217,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             PipelineShaderStageCreateInfo* shadermoduleList = stackalloc[]
             {
-                VulkanRenderer.CreateShader("vertshader.spv",  ShaderStageFlags.VertexBit),
-                VulkanRenderer.CreateShader("fragshader.spv", ShaderStageFlags.FragmentBit)
+                VulkanRenderer.CreateShader("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\vertshader.spv",  ShaderStageFlags.VertexBit),
+                VulkanRenderer.CreateShader("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\fragshader.spv", ShaderStageFlags.FragmentBit)
             };
 
             DescriptorSetLayout descriptorSetLayoutPtr = descriptorSetLayout;
@@ -349,67 +349,67 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     renderPass: renderPass
                 );
 
-                //var jsonObj = new RenderPipelineModel
-                //{
-                //    _name = "DefaultPipeline",
-                //    VertexShader = "vertshader.spv",
-                //    FragmentShader = "fragshader.spv",
-                //    PipelineColorBlendAttachmentStateList = pipelineColorBlendAttachmentState,
-                //    PipelineDepthStencilStateCreateInfo = pipelineDepthStencilStateCreateInfo,
-                //    PipelineMultisampleStateCreateInfo = pipelineMultisampleStateCreateInfo,
-                //    PipelineRasterizationStateCreateInfo = pipelineRasterizationStateCreateInfo,
-                //    ScissorList = new List<Rect2D>(),
-                //    ViewportList = new List<Viewport>(),
-                //    PipelineColorBlendStateCreateInfoModel = new PipelineColorBlendStateCreateInfoModel()
-                //    {
-                //        LogicOpEnable = false,
-                //        LogicOp = LogicOp.NoOp,
-                //        BlendConstants = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f }
-                //    },
-                //    PipelineInputAssemblyStateCreateInfo = new PipelineInputAssemblyStateCreateInfoModel()
-                //    {
-                //        PrimitiveRestartEnable = false,
-                //        Topology = PrimitiveTopology.TriangleList
-                //    },
-                //    PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
-                //    {
-                //        new PipelineDescriptorModel
-                //        {
-                //            BindingNumber = 0,
-                //            BindingPropertiesList = DescriptorBindingPropertiesEnum.kMeshPropertiesDescriptor,
-                //            descriptorType = DescriptorType.StorageBuffer
-                //        },
-                //        new PipelineDescriptorModel
-                //        {
-                //            BindingNumber = 1,
-                //            BindingPropertiesList = DescriptorBindingPropertiesEnum.kTextureDescriptor,
-                //            descriptorType = DescriptorType.CombinedImageSampler
-                //        }
-                //    },
-                //    LayoutBindingList = new List<DescriptorSetLayoutBinding>()
-                //    {
-                //        new DescriptorSetLayoutBinding()
-                //        {
-                //            Binding = 0,
-                //            DescriptorType = DescriptorType.StorageBuffer,
-                //            DescriptorCount = 1,
-                //            StageFlags = ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit,
-                //            PImmutableSamplers = null
-                //        },
-                //        new DescriptorSetLayoutBinding()
-                //        {
-                //            Binding = 1,
-                //            DescriptorType = DescriptorType.CombinedImageSampler,
-                //            DescriptorCount = 1,
-                //            StageFlags = ShaderStageFlags.FragmentBit,
-                //            PImmutableSamplers = null
-                //        }
-                //    }
-                //};
+                var jsonObj = new RenderPipelineModel
+                {
+                    _name = "DefaultPipeline",
+                    VertexShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\vertshader.spv",
+                    FragmentShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\fragshader.spv",
+                    PipelineColorBlendAttachmentStateList = pipelineColorBlendAttachmentState,
+                    PipelineDepthStencilStateCreateInfo = pipelineDepthStencilStateCreateInfo,
+                    PipelineMultisampleStateCreateInfo = pipelineMultisampleStateCreateInfo,
+                    PipelineRasterizationStateCreateInfo = pipelineRasterizationStateCreateInfo,
+                    ScissorList = new List<Rect2D>(),
+                    ViewportList = new List<Viewport>(),
+                    PipelineColorBlendStateCreateInfoModel = new PipelineColorBlendStateCreateInfoModel()
+                    {
+                        LogicOpEnable = false,
+                        LogicOp = LogicOp.NoOp,
+                        BlendConstants = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f }
+                    },
+                    PipelineInputAssemblyStateCreateInfo = new PipelineInputAssemblyStateCreateInfoModel()
+                    {
+                        PrimitiveRestartEnable = false,
+                        Topology = PrimitiveTopology.TriangleList
+                    },
+                    PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
+                    {
+                        new PipelineDescriptorModel
+                        {
+                            BindingNumber = 0,
+                            BindingPropertiesList = DescriptorBindingPropertiesEnum.kMeshPropertiesDescriptor,
+                            descriptorType = DescriptorType.StorageBuffer
+                        },
+                        new PipelineDescriptorModel
+                        {
+                            BindingNumber = 1,
+                            BindingPropertiesList = DescriptorBindingPropertiesEnum.kTextureDescriptor,
+                            descriptorType = DescriptorType.CombinedImageSampler
+                        }
+                    },
+                    LayoutBindingList = new List<DescriptorSetLayoutBinding>()
+                    {
+                        new DescriptorSetLayoutBinding()
+                        {
+                            Binding = 0,
+                            DescriptorType = DescriptorType.StorageBuffer,
+                            DescriptorCount = 1,
+                            StageFlags = ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit,
+                            PImmutableSamplers = null
+                        },
+                        new DescriptorSetLayoutBinding()
+                        {
+                            Binding = 1,
+                            DescriptorType = DescriptorType.CombinedImageSampler,
+                            DescriptorCount = 1,
+                            StageFlags = ShaderStageFlags.FragmentBit,
+                            PImmutableSamplers = null
+                        }
+                    }
+                };
 
-                //string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\Pipelines\DefaultPipeline.json";
-                //string jsonString = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
-                //File.WriteAllText(finalfilePath, jsonString);
+                string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\Pipelines\DefaultPipeline.json";
+                string jsonString = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+                File.WriteAllText(finalfilePath, jsonString);
 
                 vk.CreateGraphicsPipelines(VulkanRenderer.device, new PipelineCache(null), 1, &graphicsPipelineCreateInfo, null, out Pipeline pipeline);
                 shaderpipeline = pipeline;

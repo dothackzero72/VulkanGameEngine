@@ -1,6 +1,6 @@
 {
-  "VertexShader": "vertshader.spv",
-  "FragmentShader": "fragshader.spv",
+  "VertexShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\vertshader.spv",
+  "FragmentShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\fragshader.spv",
   "ViewportList": [],
   "ScissorList": [],
   "PipelineColorBlendAttachmentStateList": [
