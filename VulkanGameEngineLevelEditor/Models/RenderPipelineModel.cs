@@ -20,7 +20,6 @@ namespace VulkanGameEngineLevelEditor.Models
         public PipelineDepthStencilStateCreateInfo PipelineDepthStencilStateCreateInfo { get; set; } = new PipelineDepthStencilStateCreateInfo();
         public PipelineInputAssemblyStateCreateInfoModel PipelineInputAssemblyStateCreateInfo { get; set; } = new PipelineInputAssemblyStateCreateInfoModel();
         public List<DescriptorSetLayoutBinding> LayoutBindingList { get; set; } = new List<DescriptorSetLayoutBinding>();
-        public List<ImageView> TextureAttachmentList { get; set; } = new List<ImageView>();
         public List<PipelineDescriptorModel> PipelineDescriptorModelsList { get; set; } = new List<PipelineDescriptorModel>();
 
         public RenderPipelineModel()

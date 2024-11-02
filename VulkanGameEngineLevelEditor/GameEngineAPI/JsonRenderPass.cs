@@ -39,8 +39,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             RenderPassResolution = renderPassResolution;
             SampleCount = sampleCount;
             CreateRenderPass(new RenderPassBuildInfoModel(jsonPath));
-            CreateFramebuffer();
-            pipelineList.Add(new JsonPipeline("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines", renderPass, (uint)sizeof(SceneDataBuffer)));
+            //CreateFramebuffer();
+            //pipelineList.Add(new JsonPipeline("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines", renderPass, (uint)sizeof(SceneDataBuffer)));
         }
 
         public void CreateRenderPass(RenderPassBuildInfoModel model)

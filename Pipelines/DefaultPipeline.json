@@ -1,8 +1,8 @@
 {
   "VertexShader": "vertshader.spv",
   "FragmentShader": "fragshader.spv",
-  "ViewportList": null,
-  "ScissorList": null,
+  "ViewportList": [],
+  "ScissorList": [],
   "PipelineColorBlendAttachmentStateList": [
     {
       "BlendEnable": {
@@ -111,8 +111,22 @@
       "Value": 0
     }
   },
-  "LayoutBindingList": [],
-  "TextureAttachmentList": [],
+  "LayoutBindingList": [
+    {
+      "Binding": 0,
+      "DescriptorType": 7,
+      "DescriptorCount": 1,
+      "StageFlags": 17,
+      "PImmutableSamplers": null
+    },
+    {
+      "Binding": 1,
+      "DescriptorType": 1,
+      "DescriptorCount": 1,
+      "StageFlags": 16,
+      "PImmutableSamplers": null
+    }
+  ],
   "PipelineDescriptorModelsList": [
     {
       "BindingNumber": 0,
@@ -122,7 +136,7 @@
     {
       "BindingNumber": 1,
       "BindingPropertiesList": 1,
-      "descriptorType": 2
+      "descriptorType": 1
     }
   ],
   "_name": "DefaultPipeline"

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using GlmSharp;
+using Newtonsoft.Json;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         Vk vk = Vk.GetApi();
         Device _device { get; set; }
         public DescriptorPool descriptorPool { get; protected set; }
-        public List<DescriptorSetLayout> descriptorSetLayoutList { get; protected set; }
+        public List<DescriptorSetLayout> descriptorSetLayoutList { get; protected set; } = new List<DescriptorSetLayout>();
         public DescriptorSet descriptorSet { get; protected set; }
         public Pipeline pipeline { get; protected set; }
         public PipelineLayout pipelineLayout { get; protected set; }
@@ -61,8 +62,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             string jsonContent = File.ReadAllText(jsonPipelineFilePath);
             RenderPipelineModel model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent);
 
-            LoadPipeline(model, renderPass, ConstBufferSize);
             LoadDescriptorSets(model);
+            LoadPipeline(model, renderPass, ConstBufferSize);
         }
 
         private void LoadDescriptorSets(RenderPipelineModel model)
@@ -77,8 +78,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     switch (binding.BindingPropertiesList)
                     {
-                        case DescriptorBindingPropertiesEnum.kMeshPropertiesDescriptor: descriptorPoolSizeList.Add(new DescriptorPoolSize() { Type = binding.descriptorType, DescriptorCount = meshProperties.UCount() }); break;
-                        case DescriptorBindingPropertiesEnum.kTextureDescriptor: descriptorPoolSizeList.Add(new DescriptorPoolSize() { Type = binding.descriptorType, DescriptorCount = textures.UCount() }); break;
+                        case DescriptorBindingPropertiesEnum.kMeshPropertiesDescriptor: descriptorPoolSizeList.Add(new DescriptorPoolSize() { Type = DescriptorType.StorageBuffer, DescriptorCount = meshProperties.UCount() }); break;
+                        case DescriptorBindingPropertiesEnum.kTextureDescriptor: descriptorPoolSizeList.Add(new DescriptorPoolSize() { Type = DescriptorType.CombinedImageSampler, DescriptorCount = textures.UCount() }); break;
                         default:
                             {
                                 throw new Exception($"{binding} case hasn't been handled yet");
@@ -115,7 +116,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 {
                                     Binding = binding.BindingNumber,
                                     DescriptorCount = meshProperties.UCount(),
-                                    DescriptorType = binding.descriptorType,
+                                    DescriptorType = DescriptorType.StorageBuffer,
                                     PImmutableSamplers = null,
                                     StageFlags = ShaderStageFlags.All
                                 });
@@ -127,7 +128,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 {
                                     Binding = binding.BindingNumber,
                                     DescriptorCount = textures.UCount(),
-                                    DescriptorType = binding.descriptorType,
+                                    DescriptorType = DescriptorType.CombinedImageSampler,
                                     PImmutableSamplers = null,
                                     StageFlags = ShaderStageFlags.All
                                 });
@@ -191,7 +192,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                         {
                                             SType = StructureType.WriteDescriptorSet,
                                             DescriptorCount = meshProperties.UCount(),
-                                            DescriptorType = binding.descriptorType,
+                                            DescriptorType = DescriptorType.StorageBuffer,
                                             DstBinding = binding.BindingNumber,
                                             DstArrayElement = 0,
                                             DstSet = descriptorSet,
@@ -211,7 +212,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                         {
                                             SType = StructureType.WriteDescriptorSet,
                                             DescriptorCount = meshProperties.UCount(),
-                                            DescriptorType = binding.descriptorType,
+                                            DescriptorType = DescriptorType.CombinedImageSampler,
                                             DstBinding = binding.BindingNumber,
                                             DstArrayElement = 0,
                                             DstSet = descriptorSet,
@@ -264,7 +265,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         Flags = PipelineLayoutCreateFlags.None,
                         PNext = null,
                     };
-                    vk.CreatePipelineLayout(VulkanRenderer.device, &pipelineLayoutInfo, null, out PipelineLayout pipelinelayout);
+                    vk.CreatePipelineLayout(VulkanRenderer.device, &pipelineLayoutInfo, null, out PipelineLayout pipelinelayoutPtr);
+                    pipelineLayout = pipelinelayoutPtr;
                 }
             }
 
@@ -300,9 +302,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 pipelineViewportStateCreateInfo = new PipelineViewportStateCreateInfo
                 {
                     SType = StructureType.PipelineViewportStateCreateInfo,
-                    ViewportCount = model.ViewportList.UCount(),
+                    ViewportCount = model.ViewportList.UCount() + 1,
                     PViewports = viewportPtr,
-                    ScissorCount = model.ScissorList.UCount(),
+                    ScissorCount = model.ScissorList.UCount() + 1,
                     PScissors = scissorPtr,
                     Flags = 0,
                     PNext = null
@@ -385,9 +387,136 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             pipeline = tempPipelinePtr;
         }
 
-        public void SavePipeline(String jsonPipeline)
+        public void SavePipeline(RenderPipelineModel jsonPipeline)
         {
+            //var jsonObj = new RenderPipelineModel
+            //{
+            //    _name = "DefaultPipeline",
+            //    VertexShader = "vertshader.spv",
+            //    FragmentShader = "fragshader.spv",
+            //    PipelineColorBlendAttachmentStateList = pipelineColorBlendAttachmentState,
+            //    PipelineDepthStencilStateCreateInfo = pipelineDepthStencilStateCreateInfo,
+            //    PipelineMultisampleStateCreateInfo = pipelineMultisampleStateCreateInfo,
+            //    PipelineRasterizationStateCreateInfo = pipelineRasterizationStateCreateInfo,
+            //    ScissorList = new List<Rect2D>(),
+            //    ViewportList = new List<Viewport>(),
+            //    PipelineColorBlendStateCreateInfoModel = new PipelineColorBlendStateCreateInfoModel()
+            //    {
+            //        LogicOpEnable = false,
+            //        LogicOp = LogicOp.NoOp,
+            //        BlendConstants = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f }
+            //    },
+            //    PipelineInputAssemblyStateCreateInfo = new PipelineInputAssemblyStateCreateInfoModel()
+            //    {
+            //        PrimitiveRestartEnable = false,
+            //        Topology = PrimitiveTopology.TriangleList
+            //    },
+            //    PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
+            //        {
+            //            new PipelineDescriptorModel
+            //            {
+            //                BindingNumber = 0,
+            //                BindingPropertiesList = DescriptorBindingPropertiesEnum.kMeshPropertiesDescriptor,
+            //                descriptorType = DescriptorType.StorageBuffer
+            //            },
+            //            new PipelineDescriptorModel
+            //            {
+            //                BindingNumber = 1,
+            //                BindingPropertiesList = DescriptorBindingPropertiesEnum.kTextureDescriptor,
+            //                descriptorType = DescriptorType.CombinedImageSampler
+            //            }
+            //        },
+            //    LayoutBindingList = new List<DescriptorSetLayoutBinding>()
+            //        {
+            //            new DescriptorSetLayoutBinding()
+            //            {
+            //                Binding = 0,
+            //                DescriptorType = DescriptorType.StorageBuffer,
+            //                DescriptorCount = 1,
+            //                StageFlags = ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit,
+            //                PImmutableSamplers = null
+            //            },
+            //            new DescriptorSetLayoutBinding()
+            //            {
+            //                Binding = 1,
+            //                DescriptorType = DescriptorType.CombinedImageSampler,
+            //                DescriptorCount = 1,
+            //                StageFlags = ShaderStageFlags.FragmentBit,
+            //                PImmutableSamplers = null
+            //            }
+            //        }
+            //};
+        }
 
+        public CommandBuffer Draw(CommandBuffer[] commandBufferList, RenderPass renderPass, Framebuffer[] frameBufferList, ivec2 renderPassResolution, List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
+        {
+            var commandIndex = (int)VulkanRenderer.CommandIndex;
+            var imageIndex = (int)VulkanRenderer.ImageIndex;
+            var commandBuffer = commandBufferList[commandIndex];
+
+            List<ClearValue> clearValueList = new List<ClearValue>()
+            {
+                new ClearValue(new ClearColorValue(1, 0, 0, 1)),
+                new ClearValue(null, new ClearDepthStencilValue(1.0f, 0))
+            };
+
+            RenderPassBeginInfo renderPassInfo = new RenderPassBeginInfo();
+            fixed (ClearValue* clearValuePtr = clearValueList.ToArray())
+            {
+                renderPassInfo = new RenderPassBeginInfo()
+                {
+                    RenderPass = renderPass,
+                    Framebuffer = frameBufferList[imageIndex],
+                    ClearValueCount = clearValueList.UCount(),
+                    PClearValues = clearValuePtr,
+                    RenderArea = new Rect2D
+                    {
+                        Offset = new Offset2D(0, 0),
+                        Extent = new Extent2D()
+                        {
+                            Width = (uint)renderPassResolution.x,
+                            Height = (uint)renderPassResolution.y
+                        }
+                    }
+                };
+            }
+
+            var viewport = new Viewport
+            {
+                X = 0.0f,
+                Y = 0.0f,
+                Width = (uint)renderPassResolution.x,
+                Height = (uint)renderPassResolution.y,
+                MinDepth = 0.0f,
+                MaxDepth = 1.0f
+            };
+
+            var scissor = new Rect2D
+            {
+                Offset = new Offset2D(0, 0),
+                Extent = new Extent2D()
+                {
+                    Width = (uint)renderPassResolution.x,
+                    Height = (uint)renderPassResolution.y
+                }
+            };
+
+            var descSet = descriptorSet;
+            var commandInfo = new CommandBufferBeginInfo(flags: 0);
+
+            vk.BeginCommandBuffer(commandBuffer, &commandInfo);
+            vk.CmdBeginRenderPass(commandBuffer, &renderPassInfo, SubpassContents.Inline);
+            vk.CmdSetViewport(commandBuffer, 0, 1, &viewport);
+            vk.CmdSetScissor(commandBuffer, 0, 1, &scissor);
+            vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, pipeline);
+            foreach (var obj in gameObjectList)
+            {
+                obj.Draw(commandBuffer, pipeline, pipelineLayout, descSet, sceneDataBuffer);
+            }
+            vk.CmdEndRenderPass(commandBuffer);
+            vk.EndCommandBuffer(commandBuffer);
+
+            return commandBuffer;
         }
     }
 }

@@ -4,6 +4,7 @@ using Silk.NET.Vulkan;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Linq;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -12,6 +13,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class MemoryManager
     {
         public static Vk vk = Vk.GetApi();
+        public static List<GameObject> GameObjectList = new List<GameObject>();
+        public static List<MeshRenderer2DComponent> RenderMesh2DComponentList = new List<MeshRenderer2DComponent>();
+        public static List<MeshRenderer3DComponent> RenderMesh3DComponentList = new List<MeshRenderer3DComponent>();
+        public static List<Texture> TextureList = new List<Texture>();
         public static MemoryPool<GameObject> GameObjectMemoryPool = new MemoryPool<GameObject>();
         public static MemoryPool<MeshRenderer2DComponent> RenderMesh2DComponentMemoryPool = new MemoryPool<MeshRenderer2DComponent>();
         public static MemoryPool<MeshRenderer3DComponent> RenderMesh3DComponentMemoryPool = new MemoryPool<MeshRenderer3DComponent>();
@@ -27,30 +32,32 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public static GameObject AllocateGameObject()
         {
-            return GameObjectMemoryPool.AllocateMemoryLocation();
+            GameObjectList.Add(GameObjectMemoryPool.AllocateMemoryLocation());
+            return GameObjectList.Last();
         }
 
         public static MeshRenderer2DComponent AllocateGameRenderMesh2DComponent()
         {
-            return RenderMesh2DComponentMemoryPool.AllocateMemoryLocation();
+            RenderMesh2DComponentList.Add(RenderMesh2DComponentMemoryPool.AllocateMemoryLocation());
+            return RenderMesh2DComponentList.Last();
         }
 
         public static MeshRenderer3DComponent AllocateGameRenderMesh3DComponent()
         {
-            return RenderMesh3DComponentMemoryPool.AllocateMemoryLocation();
+            RenderMesh3DComponentList.Add(RenderMesh3DComponentMemoryPool.AllocateMemoryLocation());
+            return RenderMesh3DComponentList.Last();
         }
 
         public static Texture AllocateTexture()
         {
-            return TextureMemoryPool.AllocateMemoryLocation();
+            TextureList.Add(TextureMemoryPool.AllocateMemoryLocation());
+            return TextureList.Last();
         }
 
         public static List<DescriptorBufferInfo> GetGameObjectPropertiesBuffer()
         {
-            var renderMesh3DMemory = RenderMesh3DComponentMemoryPool.ViewMemoryPool();
-
             List<DescriptorBufferInfo> MeshPropertiesBuffer = new List<DescriptorBufferInfo>();
-            if (renderMesh3DMemory.Count == 0)
+            if (RenderMesh3DComponentList.Count == 0)
             {
                 DescriptorBufferInfo nullBuffer = new DescriptorBufferInfo();
                 nullBuffer.Buffer = new Silk.NET.Vulkan.Buffer();
@@ -60,7 +67,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
             else
             {
-                foreach (var mesh in renderMesh3DMemory)
+                foreach (var mesh in RenderMesh3DComponentList)
                 {
                     if (mesh != null)
                     {
@@ -79,8 +86,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static List<DescriptorImageInfo> GetTexturePropertiesBuffer()
         {
             List<DescriptorImageInfo> TexturePropertiesBuffer = new List<DescriptorImageInfo>();
-            var textureMemoryList = TextureMemoryPool.ViewMemoryPool();
-            if (textureMemoryList.Count == 0)
+            if (TextureList.Count == 0)
             {
                 SamplerCreateInfo NullSamplerInfo = new SamplerCreateInfo();
                 NullSamplerInfo.SType = StructureType.SamplerCreateInfo;
@@ -112,7 +118,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
             else
             {
-                foreach (var texture in textureMemoryList)
+                foreach (var texture in TextureList)
                 {
                     if (texture != null)
                     {
