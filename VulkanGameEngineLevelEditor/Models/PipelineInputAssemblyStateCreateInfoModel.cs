@@ -12,6 +12,6 @@ namespace VulkanGameEngineLevelEditor.Models
     public class PipelineInputAssemblyStateCreateInfoModel
     {
         public PrimitiveTopology Topology { get; set; }
-        public Bool32 PrimitiveRestartEnable { get; set; }
+        public bool PrimitiveRestartEnable { get; set; }
     }
 }

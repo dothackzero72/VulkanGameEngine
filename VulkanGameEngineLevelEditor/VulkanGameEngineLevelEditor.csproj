@@ -310,8 +310,11 @@
     <Compile Include="Models\AttachmentDescriptionModel.cs" />
     <Compile Include="GameEngineAPI\JsonPipeline.cs" />
     <Compile Include="Models\PipelineColorBlendStateCreateInfoModel.cs" />
+    <Compile Include="Models\PipelineDepthStencilStateCreateInfoModel.cs" />
     <Compile Include="Models\PipelineDescriptorModel.cs" />
     <Compile Include="Models\PipelineInputAssemblyStateCreateInfoModel.cs" />
+    <Compile Include="Models\PipelineMultisampleStateCreateInfoModel.cs" />
+    <Compile Include="Models\PipelineRasterizationStateCreateInfoModel.cs" />
     <Compile Include="Models\RenderedTextureInfoModel.cs" />
     <Compile Include="Models\RenderPassEditorBaseModel.cs" />
     <Compile Include="RenderPassEditor\RenderPassEditorConsts.cs" />

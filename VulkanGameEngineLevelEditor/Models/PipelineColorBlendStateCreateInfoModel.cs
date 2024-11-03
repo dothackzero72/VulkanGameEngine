@@ -11,7 +11,7 @@ namespace VulkanGameEngineLevelEditor.Models
 {
     public unsafe struct PipelineColorBlendStateCreateInfoModel
     {
-        public Bool32 LogicOpEnable;
+        public bool LogicOpEnable;
         public LogicOp LogicOp;
         public float[] BlendConstants = new float[4];
 
