@@ -192,7 +192,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                         {
                                             SType = StructureType.WriteDescriptorSet,
                                             DescriptorCount = meshProperties.UCount(),
-                                            DescriptorType = DescriptorType.StorageBuffer,
+                                            DescriptorType = DescriptorType.UniformBuffer,
                                             DstBinding = binding.BindingNumber,
                                             DstArrayElement = 0,
                                             DstSet = descriptorSet,
@@ -456,7 +456,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             List<ClearValue> clearValueList = new List<ClearValue>()
             {
-                new ClearValue(new ClearColorValue(1, 0, 0, 1)),
+                new ClearValue(new ClearColorValue(0, 0, 0, 1)),
                 new ClearValue(null, new ClearDepthStencilValue(1.0f, 0))
             };
 
