@@ -6,13 +6,21 @@
 #include "RenderPass.h"
 #include "RenderedTexture.h"
 #include "DepthTexture.h"
+#include "JsonPipeline.h"
 
 class JsonRenderPass
 {
+	friend class JsonPipeline;
 private:
+	ivec2 RenderPassResolution;
+	VkSampleCountFlagBits SampleCount;
+
 	VkRenderPass RenderPass = VK_NULL_HANDLE;
-	List<RenderedTexture> RenderedColorTextureList = List<RenderedTexture>();
-	DepthTexture depthTexture = DepthTexture();
+	std::vector<VkCommandBuffer> CommandBufferList;
+	std::vector<VkFramebuffer> FrameBufferList;
+
+	void BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInfo);
+	void BuildFrameBuffer();
 
 	VkAttachmentDescription JsonToVulkanAttachmentDescription(nlohmann::json& json);
 	VkImageCreateInfo JsonToVulkanImageCreateInfo(nlohmann::json& json);
@@ -22,9 +30,18 @@ private:
 	RenderedTextureInfoModel JsonToRenderedTextureInfoModel(nlohmann::json& json);
 	RenderPassBuildInfoModel JsonToRenderPassBuildInfoModel(nlohmann::json& json);
 
+	std::shared_ptr<JsonPipeline> jsonPipeline;
+
 public:
+	
+	List<std::shared_ptr<RenderedTexture>> RenderedColorTextureList = List<std::shared_ptr<RenderedTexture>>();
+	DepthTexture depthTexture = DepthTexture();
+
 	JsonRenderPass();
 	virtual ~JsonRenderPass();
-	void JsonCreateRenderPass(String JsonPath);
+	void JsonCreateRenderPass(String JsonPath, ivec2 RenderPassResolution);
+	VkCommandBuffer Draw(List<std::shared_ptr<GameObject>> meshList, SceneDataBuffer& sceneProperties);
+
+	void Destroy();
 };
 

@@ -119,16 +119,15 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 
 void Scene::BuildRenderPasses()
 {
-	renderPass2D.BuildRenderPass(texture, texture2);
-	//renderPass3D.JsonCreateRenderPass("C://Users//dotha//Documents//GitHub//VulkanGameEngine//RenderPass//DefaultRenderPass.json");
-	frameRenderPass.BuildRenderPass(renderPass2D.GetRenderedTexture());
+	//renderPass2D.BuildRenderPass(texture, texture2);
+	renderPass2D.JsonCreateRenderPass("C://Users//dotha//Documents//GitHub//VulkanGameEngine//RenderPass//DefaultRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
+	frameRenderPass.BuildRenderPass(renderPass2D.RenderedColorTextureList[0]);
 }
 
 void Scene::UpdateRenderPasses()
 {
 	renderer.RebuildSwapChain();
-	renderPass2D.UpdateRenderPass(texture, texture2);
-	frameRenderPass.UpdateRenderPass(renderPass2D.GetRenderedTexture());
+	frameRenderPass.UpdateRenderPass(renderPass2D.RenderedColorTextureList[0]);
 	InterfaceRenderPass::RebuildSwapChain();
 	cRenderer.RebuildRendererFlag = false;
 }
@@ -142,9 +141,6 @@ void Scene::Draw()
 	CommandBufferSubmitList.emplace_back(frameRenderPass.Draw());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
 	VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
-
-	//BakeCubeTextureAtlus("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa43.bmp", texture);
-	//ExportColorTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/asdfa.bmp", renderPass2D.GetRenderedTexture(), Bake_BMP, 4);
 }
 
 void Scene::Destroy()

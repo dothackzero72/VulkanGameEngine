@@ -21,8 +21,8 @@ private:
 	std::shared_ptr<Texture> texture2;
 	std::shared_ptr<OrthographicCamera> orthographicCamera;
 	FrameBufferRenderPass frameRenderPass;
-	RenderPass2D		  renderPass2D;
-	//JsonRenderPass        renderPass3D;
+	//RenderPass2D		  renderPass2D;
+	JsonRenderPass        renderPass2D;
 
 	List<std::shared_ptr<GameObject>> gameObjectList;
 	List<std::shared_ptr<Texture>> TextureList;

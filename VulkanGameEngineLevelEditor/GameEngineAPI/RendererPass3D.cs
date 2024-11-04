@@ -26,15 +26,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         Vk vk = Vk.GetApi();
         public DepthTexture depthTexture { get; set; }
         public Texture texture { get; set; }
-        public Texture renderedTexture { get; set; }
-        public VulkanBuffer<Vertex3D> vertexBuffer { get; set; }
-        public VulkanBuffer<ushort> indexBuffer { get; set; }
-        public VulkanBuffer<UniformBufferObject> uniformBuffers { get; set; }
         public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
-        public JsonRenderPass buildRenderPass { get; set; } = new JsonRenderPass();
         public JsonPipeline Renderer3D { get; set; } = new JsonPipeline();
 
-  
         public RenderPass3D() : base()
         {
         }
@@ -205,7 +199,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         }
 
       
-        public Framebuffer[] CreateFramebuffer()
+        public void CreateFramebuffer()
         {
             Framebuffer[] frameBufferList = new Framebuffer[VulkanRenderer.swapChain.ImageCount];
             for (int x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
@@ -222,8 +216,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         RenderPass = renderPass,
                         AttachmentCount = TextureAttachmentList.UCount(),
                         PAttachments = imageViewPtr,
-                        Width = VulkanRenderer.swapChain.swapchainExtent.Width,
-                        Height = VulkanRenderer.swapChain.swapchainExtent.Height,
+                        Width = (uint)RenderPassResolution.x,
+                        Height = (uint)RenderPassResolution.y,
                         Layers = 1,
                         Flags = 0,
                         PNext = null
@@ -236,7 +230,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             FrameBufferList = frameBufferList;
-            return frameBufferList;
         }
 
         public CommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
