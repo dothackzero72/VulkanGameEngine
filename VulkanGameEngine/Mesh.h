@@ -7,6 +7,7 @@ extern "C"
 #include "VulkanBuffer.h"
 #include "SceneDataBuffer.h"
 #include "FrameTimer.h"
+#include "JsonPipeline.h"
 
 struct MeshProperitiesStruct
 {
@@ -20,6 +21,8 @@ typedef VulkanBuffer<MeshProperitiesStruct> MeshPropertiesBuffer;
 
 class Mesh
 {
+
+	friend class JsonPipeline;
 private:
 	const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
 		VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
@@ -31,6 +34,7 @@ private:
 		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 protected:
+	//std::shared_ptr<JsonPipeline> MeshRenderPipeline;
 
 public:
 	uint64 MeshBufferIndex;

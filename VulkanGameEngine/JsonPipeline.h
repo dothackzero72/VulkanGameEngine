@@ -1,10 +1,12 @@
 #pragma once
 #include <vulkan/vulkan_core.h>
-#include "Typedef.h" // Ensure these files define necessary types
-#include "JsonRenderPass.h" // Forward declaration may be used here if needed
+#include "Typedef.h"
+#include "JsonRenderPass.h"
 
-class JsonPipeline {
-    friend class JsonRenderPass; // Ensure both classes know about each other
+class JsonPipeline 
+{
+    friend class JsonRenderPass;
+    friend class Mesh;
 
 private:
     VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
@@ -14,10 +16,14 @@ private:
     VkPipelineLayout PipelineLayout = VK_NULL_HANDLE;
     VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 
+    //std::shared_ptr<JsonRenderPass> ParentRenderPass;
+
+    JsonPipeline(String jsonPath);
 public:
+    String PipelineName;
+
     JsonPipeline();
     ~JsonPipeline();
-
-    void CreateJsonPipeline(String JsonPath);
+    static std::shared_ptr<JsonPipeline> CreateJsonRenderPass(String jsonPath);
     void Destroy();
 };

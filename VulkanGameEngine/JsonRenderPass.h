@@ -3,10 +3,10 @@
 #include "json.h"
 #include "Typedef.h"
 #include "JsonStructs.h"
-#include "RenderPass.h"
 #include "RenderedTexture.h"
 #include "DepthTexture.h"
 #include "JsonPipeline.h"
+#include "GameObject.h"
 
 class JsonRenderPass
 {
@@ -30,16 +30,19 @@ private:
 	RenderedTextureInfoModel JsonToRenderedTextureInfoModel(nlohmann::json& json);
 	RenderPassBuildInfoModel JsonToRenderPassBuildInfoModel(nlohmann::json& json);
 
-	std::shared_ptr<JsonPipeline> jsonPipeline;
+	List<std::shared_ptr<JsonPipeline>> JsonPipelineList;
+
+	JsonRenderPass(String jsonPath, ivec2 renderPassResolution);
 
 public:
-	
+	String RenderPassName;
 	List<std::shared_ptr<RenderedTexture>> RenderedColorTextureList = List<std::shared_ptr<RenderedTexture>>();
-	DepthTexture depthTexture = DepthTexture();
+	std::shared_ptr<DepthTexture> depthTexture;
 
 	JsonRenderPass();
+	JsonRenderPass(const JsonRenderPass& df);
 	virtual ~JsonRenderPass();
-	void JsonCreateRenderPass(String JsonPath, ivec2 RenderPassResolution);
+	static std::shared_ptr<JsonRenderPass> JsonCreateRenderPass(String JsonPath, ivec2 RenderPassResolution);
 	VkCommandBuffer Draw(List<std::shared_ptr<GameObject>> meshList, SceneDataBuffer& sceneProperties);
 
 	void Destroy();

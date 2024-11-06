@@ -4,16 +4,22 @@
 List<std::shared_ptr<GameObject>> MemoryManager::GameObjectList;
 List<std::shared_ptr<RenderMesh2DComponent>> MemoryManager::RenderMesh2DComponentList;
 List<std::shared_ptr<Texture>> MemoryManager::TextureList;
+List<std::shared_ptr<JsonRenderPass>> MemoryManager::JsonRenderPassList;
+List<std::shared_ptr<JsonPipeline>> MemoryManager::JsonPipelineList;
 
 MemoryPool<GameObject> MemoryManager::GameObjectMemoryPool;
 MemoryPool<RenderMesh2DComponent> MemoryManager::RenderMesh2DComponentMemoryPool;
 MemoryPool<Texture> MemoryManager::TextureMemoryPool;
+MemoryPool<JsonRenderPass> MemoryManager::JsonRenderPassMemoryPool;
+MemoryPool<JsonPipeline> MemoryManager::JsonPipelineMemoryPool;
 
 void MemoryManager::SetUpMemoryManager(uint32_t EstObjectCount)
 {
 	GameObjectMemoryPool.CreateMemoryPool(EstObjectCount);
 	RenderMesh2DComponentMemoryPool.CreateMemoryPool(EstObjectCount);
 	TextureMemoryPool.CreateMemoryPool(EstObjectCount);
+	JsonRenderPassMemoryPool.CreateMemoryPool(EstObjectCount);
+	JsonPipelineMemoryPool.CreateMemoryPool(EstObjectCount);
 }
 
 std::shared_ptr<GameObject> MemoryManager::AllocateNewGameObject()
@@ -34,57 +40,26 @@ std::shared_ptr<RenderMesh2DComponent> MemoryManager::AllocateRenderMesh2DCompon
 	return RenderMesh2DComponentList.back();
 }
 
+std::shared_ptr<JsonRenderPass> MemoryManager::AllocateJsonRenderPass()
+{
+	JsonRenderPassList.emplace_back(JsonRenderPassMemoryPool.AllocateMemoryLocation());
+	return JsonRenderPassList.back();
+}
+
+std::shared_ptr<JsonPipeline> MemoryManager::AllocateJsonPipeline()
+{
+	JsonPipelineList.emplace_back(JsonPipelineMemoryPool.AllocateMemoryLocation());
+	return JsonPipelineList.back();
+}
+
+
 void MemoryManager::ViewMemoryMap()
 {
-	const auto gameObjectMemoryPool = GameObjectMemoryPool.ViewMemoryPool();
-	const auto renderMesh2DComponentMemoryPool = RenderMesh2DComponentMemoryPool.ViewMemoryPool();
-	const auto textureMemoryPool = TextureMemoryPool.ViewMemoryPool();
-	
-
-	std::cout << "Memory Map of the Game Object Pool(" << sizeof(GameObject) << " bytes each," << std::to_string(sizeof(GameObject) * renderMesh2DComponentMemoryPool.size()) << " bytes total): " << std::endl;
-	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
-	for (size_t x = 0; x < gameObjectMemoryPool.size(); x++)
-	{
-		if (GameObjectMemoryPool.ViewMemoryBlockUsage()[x] == 1)
-		{
-			std::cout << std::setw(10) << std::hex << "0x" << &gameObjectMemoryPool[x] << ": " << std::setw(15) << gameObjectMemoryPool[x]->Name << std::endl;
-		}
-		else
-		{
-			std::cout << std::hex << "0x" << &gameObjectMemoryPool[x] << ": " << "nullptr" << std::endl;
-		}
-	}
-	std::cout << "" << std::endl << std::endl;
-
-	std::cout << "Memory Map of the Texture Memory Pool(" << sizeof(Texture) << " bytes each," << std::to_string(sizeof(Texture) * TextureList.size()) << " bytes total): " << std::endl;
-	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
-	for (size_t x = 0; x < textureMemoryPool.size(); x++)
-	{
-		if (TextureMemoryPool.ViewMemoryBlockUsage()[x] == 1)
-		{
-			std::cout << std::setw(10) << std::hex << "0x" << &textureMemoryPool[x] << ": " << std::setw(15) << textureMemoryPool[x]->Name << std::endl;
-		}
-		else
-		{
-			std::cout << std::hex << "0x" << &textureMemoryPool[x] << ": " << "nullptr" << std::endl;
-		}
-	}
-	std::cout << "" << std::endl << std::endl;
-
-	std::cout << "Memory Map of the RenderComponent Memory Pool(" << sizeof(RenderMesh2DComponent) << " bytes each," << std::to_string(sizeof(RenderMesh2DComponent) * renderMesh2DComponentMemoryPool.size()) << " bytes total): " << std::endl;
-	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
-	for (size_t x = 0; x < renderMesh2DComponentMemoryPool.size(); x++)
-	{
-		if (RenderMesh2DComponentMemoryPool.ViewMemoryBlockUsage()[x] == 1)
-		{
-			std::cout << std::setw(10) << std::hex << "0x" << &renderMesh2DComponentMemoryPool[x] << ": " << std::setw(15) << renderMesh2DComponentMemoryPool[x]->Name << std::endl;
-		}
-		else
-		{
-			std::cout << std::hex << "0x" << &renderMesh2DComponentMemoryPool[x] << ": " << "nullptr" << std::endl;
-		}
-	}
-	std::cout << "" << std::endl << std::endl;
+	ViewGameObjectMemoryMap();
+	ViewTextureMemoryMap();
+	ViewRenderMesh2DComponentMemoryMap();
+	ViewJsonRenderPassMemoryMap();
+	ViewJsonPipelineMemoryMap();
 }
 
 // std::vector<VkDescriptorBufferInfo>  MemoryPoolManager::GetVertexPropertiesBuffer()
@@ -172,6 +147,106 @@ void MemoryManager::Destroy()
 
 	GameObjectList.clear();
 	RenderMesh2DComponentList.clear();
+}
+
+void MemoryManager::ViewGameObjectMemoryMap()
+{
+	const auto memory = GameObjectMemoryPool.ViewMemoryPool();
+
+	std::cout << "Memory Map of the Game Object Pool(" << sizeof(GameObject) << " bytes each," << std::to_string(sizeof(GameObject) * memory.size()) << " bytes total): " << std::endl;
+	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
+	for (size_t x = 0; x < memory.size(); x++)
+	{
+		if (GameObjectMemoryPool.ViewMemoryBlockUsage()[x] == 1)
+		{
+			std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
+		}
+		else
+		{
+			std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
+		}
+	}
+	std::cout << "" << std::endl << std::endl;
+}
+
+void MemoryManager::ViewTextureMemoryMap()
+{
+	const auto memory = TextureMemoryPool.ViewMemoryPool();
+
+	std::cout << "Memory Map of the Texture Memory Pool(" << sizeof(Texture) << " bytes each," << std::to_string(sizeof(Texture) * memory.size()) << " bytes total): " << std::endl;
+	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
+	for (size_t x = 0; x < memory.size(); x++)
+	{
+		if (TextureMemoryPool.ViewMemoryBlockUsage()[x] == 1)
+		{
+			std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
+		}
+		else
+		{
+			std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
+		}
+	}
+	std::cout << "" << std::endl << std::endl;
+}
+
+void MemoryManager::ViewRenderMesh2DComponentMemoryMap()
+{
+	const auto memory = RenderMesh2DComponentMemoryPool.ViewMemoryPool();
+
+	std::cout << "Memory Map of the RenderComponent Memory Pool(" << sizeof(RenderMesh2DComponent) << " bytes each," << std::to_string(sizeof(RenderMesh2DComponent) * memory.size()) << " bytes total): " << std::endl;
+	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
+	for (size_t x = 0; x < memory.size(); x++)
+	{
+		if (RenderMesh2DComponentMemoryPool.ViewMemoryBlockUsage()[x] == 1)
+		{
+			std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
+		}
+		else
+		{
+			std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
+		}
+	}
+	std::cout << "" << std::endl << std::endl;
+}
+
+void MemoryManager::ViewJsonRenderPassMemoryMap()
+{
+	const auto memory = JsonRenderPassMemoryPool.ViewMemoryPool();
+
+	std::cout << "Memory Map of the RenderComponent Memory Pool(" << sizeof(RenderMesh2DComponent) << " bytes each," << std::to_string(sizeof(RenderMesh2DComponent) * memory.size()) << " bytes total): " << std::endl;
+	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
+	for (size_t x = 0; x < memory.size(); x++)
+	{
+		if (JsonRenderPassMemoryPool.ViewMemoryBlockUsage()[x] == 1)
+		{
+			//std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
+		}
+		else
+		{
+			std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
+		}
+	}
+	std::cout << "" << std::endl << std::endl;
+}
+
+void MemoryManager::ViewJsonPipelineMemoryMap()
+{
+	const auto memory = JsonPipelineMemoryPool.ViewMemoryPool();
+
+	std::cout << "Memory Map of the RenderComponent Memory Pool(" << sizeof(RenderMesh2DComponent) << " bytes each," << std::to_string(sizeof(RenderMesh2DComponent) * memory.size()) << " bytes total): " << std::endl;
+	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
+	for (size_t x = 0; x < memory.size(); x++)
+	{
+		if (JsonPipelineMemoryPool.ViewMemoryBlockUsage()[x] == 1)
+		{
+			//std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
+		}
+		else
+		{
+			std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
+		}
+	}
+	std::cout << "" << std::endl << std::endl;
 }
 
 std::vector<VkDescriptorImageInfo> MemoryManager::GetTexturePropertiesBuffer()

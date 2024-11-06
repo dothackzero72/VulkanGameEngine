@@ -1,15 +1,25 @@
 #include "JsonPipeline.h"
+#include "MemoryManager.h"
 
 JsonPipeline::JsonPipeline()
 {
+}
+
+JsonPipeline::JsonPipeline(String jsonPath)
+{
+    //ParentRenderPass = parentRenderPass;
+
 }
 
 JsonPipeline::~JsonPipeline()
 {
 }
 
-void JsonPipeline::CreateJsonPipeline(String JsonPath)
+std::shared_ptr<JsonPipeline> JsonPipeline::CreateJsonRenderPass(String jsonPath)
 {
+    std::shared_ptr<JsonPipeline> pipeline = MemoryManager::AllocateJsonPipeline();
+    new (pipeline.get()) JsonPipeline(jsonPath);
+    return pipeline;
 }
 
 void JsonPipeline::Destroy()

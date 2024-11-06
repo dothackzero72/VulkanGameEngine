@@ -31,7 +31,7 @@ std::shared_ptr<GameObject> GameObject::CreateGameObject(String name, List<Compo
 	std::shared_ptr<GameObject> gameObject = MemoryManager::AllocateNewGameObject();
 
 	List<std::shared_ptr<GameObjectComponent>> conponentList;
-	conponentList.emplace_back(RenderMesh2DComponent::CreateRenderMesh2DComponent("Mesh Renderer", static_cast<uint32>(MemoryManager::RenderMesh2DComponentList.size())));
+	conponentList.emplace_back(RenderMesh2DComponent::CreateRenderMesh2DComponent("Mesh Renderer", static_cast<uint32>(MemoryManager::GetRenderMesh2DComponentList().size())));
 	
 	new (gameObject.get()) GameObject(name, conponentList);
 	return gameObject;

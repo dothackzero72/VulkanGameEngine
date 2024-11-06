@@ -164,7 +164,7 @@ void RenderPass2D::BuildRenderPipeline(List<std::shared_ptr<Texture>> texture, s
 
 
     std::vector<VkDescriptorBufferInfo>	MeshPropertiesBuffer;
-    for (auto& mesh : MemoryManager::RenderMesh2DComponentList)
+    for (auto& mesh : MemoryManager::GetRenderMesh2DComponentList())
     {
         VkDescriptorBufferInfo MeshProperitesBufferInfo = {};
         MeshProperitesBufferInfo.buffer = mesh->GetMeshPropertiesBuffer()->Buffer;
@@ -186,7 +186,7 @@ void RenderPass2D::BuildRenderPipeline(List<std::shared_ptr<Texture>> texture, s
 
     List<VkDescriptorImageInfo> textureProperties;
 
-    if (MemoryManager::TextureList.size() == 0)
+    if (MemoryManager::GetTextureList().size() == 0)
     {
         VkSamplerCreateInfo NullSamplerInfo = {};
         NullSamplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -220,7 +220,7 @@ void RenderPass2D::BuildRenderPipeline(List<std::shared_ptr<Texture>> texture, s
     }
     else
     {
-        for (auto& texture : MemoryManager::TextureList)
+        for (auto& texture : MemoryManager::GetTextureList())
         {
             VkDescriptorImageInfo textureDescriptor;
             textureDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

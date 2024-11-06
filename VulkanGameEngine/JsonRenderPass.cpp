@@ -1,14 +1,15 @@
 #include "JsonRenderPass.h"
+#include "MemoryManager.h"
 
 JsonRenderPass::JsonRenderPass()
 {
 }
 
-JsonRenderPass::~JsonRenderPass()
+JsonRenderPass::JsonRenderPass(const JsonRenderPass& df)
 {
 }
 
-void JsonRenderPass::JsonCreateRenderPass(String JsonPath, ivec2 renderPassResolution)
+JsonRenderPass::JsonRenderPass(String jsonPath, ivec2 renderPassResolution)
 {
     RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -23,8 +24,18 @@ void JsonRenderPass::JsonCreateRenderPass(String JsonPath, ivec2 renderPassResol
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer();
 
-    jsonPipeline = std::make_shared<JsonPipeline>(JsonPipeline());
-    jsonPipeline->CreateJsonPipeline("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\DefaultPipeline.json");
+    JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\DefaultPipeline.json"));
+}
+
+JsonRenderPass::~JsonRenderPass()
+{
+}
+
+std::shared_ptr<JsonRenderPass> JsonRenderPass::JsonCreateRenderPass(String jsonPath, ivec2 renderPassResolution)
+{
+    std::shared_ptr<JsonRenderPass> renderPass = MemoryManager::AllocateJsonRenderPass();
+    new (renderPass.get()) JsonRenderPass(jsonPath, renderPassResolution);
+    return renderPass;
 }
 
 VkCommandBuffer JsonRenderPass::Draw(List<std::shared_ptr<GameObject>> meshList, SceneDataBuffer& sceneProperties)
@@ -62,7 +73,7 @@ VkCommandBuffer JsonRenderPass::Draw(List<std::shared_ptr<GameObject>> meshList,
     vkCmdBeginRenderPass(CommandBufferList[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     for (auto mesh : meshList)
     {
-        mesh->Draw(CommandBufferList[cRenderer.CommandIndex], jsonPipeline->Pipeline, jsonPipeline->PipelineLayout, jsonPipeline->DescriptorSet, sceneProperties);
+        mesh->Draw(CommandBufferList[cRenderer.CommandIndex], JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSet, sceneProperties);
     }
     vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
     vkEndCommandBuffer(CommandBufferList[cRenderer.CommandIndex]);
@@ -97,7 +108,7 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
             }
             case RenderedTextureType::DepthRenderedTexture:
             {
-                depthTexture = DepthTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo);
+               // depthTexture = std::make_shared<DepthTexture>(DepthTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
                 depthReference = VkAttachmentReference
                 {
                     .attachment = (uint)(colorAttachmentReferenceList.size() + resolveAttachmentReferenceList.size()),
@@ -116,7 +127,7 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
             }
             case RenderedTextureType::ResolveAttachmentTexture:
             {
-                RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
+              //  RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
                 resolveAttachmentReferenceList.emplace_back(VkAttachmentReference
                     {
                         .attachment = static_cast<uint32>(colorAttachmentReferenceList.size() + 1),
@@ -148,10 +159,10 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
         };
 
         List<VkSubpassDependency> subPassList = List<VkSubpassDependency>();
-        for (VkSubpassDependency subpass : renderPassBuildInfo.SubpassDependencyList)
+      /*  for (VkSubpassDependency subpass : renderPassBuildInfo.SubpassDependencyList)
         {
             subPassList.emplace_back(subpass);
-        }
+        }*/
 
         VkRenderPassCreateInfo renderPassInfo =
         {
@@ -198,11 +209,11 @@ void JsonRenderPass::Destroy()
     {
         renderedTexture->Destroy();
     }
-    //for (auto pipeline : JsonPipelineList)
-    //{
-    //    pipeline->Destroy();
-    //}
-    //depthTexture->Destroy();
+    for (auto pipeline : JsonPipelineList)
+    {
+        pipeline->Destroy();
+    }
+    depthTexture->Destroy();
     renderer.DestroyRenderPass(RenderPass);
     renderer.DestroyCommandBuffers(CommandBufferList);
     renderer.DestroyFrameBuffers(FrameBufferList);
@@ -305,5 +316,15 @@ RenderedTextureInfoModel JsonRenderPass::JsonToRenderedTextureInfoModel(nlohmann
 
 RenderPassBuildInfoModel JsonRenderPass::JsonToRenderPassBuildInfoModel(nlohmann::json& json)
 {
-    return RenderPassBuildInfoModel();
+    RenderPassBuildInfoModel asdf = RenderPassBuildInfoModel();
+    asdf.Name = json["RenderedTextureInfoName"];
+
+    return  RenderPassBuildInfoModel
+    {
+       /*     .RenderedTextureInfoModelList = JsonToRenderedTextureInfoModel(json["RenderedTextureInfoModelList"]),
+            .RenderPipelineList
+         .SamplerCreateInfo = json["SamplerCreateInfo"],
+         .AttachmentDescription = json["AttachmentDescription"],
+         .TextureType = json["TextureType"]*/
+    };
 }
