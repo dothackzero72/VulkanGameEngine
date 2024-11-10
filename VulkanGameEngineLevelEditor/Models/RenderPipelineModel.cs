@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -11,15 +12,15 @@ namespace VulkanGameEngineLevelEditor.Models
     {
         public String VertexShader { get; set; }
         public String FragmentShader { get; set; }
-        public List<Viewport> ViewportList { get; set; } = new List<Viewport>();
-        public List<Rect2D> ScissorList { get; set; } = new List<Rect2D>();
-        public List<PipelineColorBlendAttachmentState> PipelineColorBlendAttachmentStateList { get; set; } = new List<PipelineColorBlendAttachmentState>();
+        public List<VkViewport> ViewportList { get; set; } = new List<VkViewport>();
+        public List<VkRect2D> ScissorList { get; set; } = new List<VkRect2D>();
+        public List<VkPipelineColorBlendAttachmentState> PipelineColorBlendAttachmentStateList { get; set; } = new List<VkPipelineColorBlendAttachmentState>();
         public PipelineColorBlendStateCreateInfoModel PipelineColorBlendStateCreateInfoModel { get; set; } = new PipelineColorBlendStateCreateInfoModel();
         public PipelineRasterizationStateCreateInfoModel PipelineRasterizationStateCreateInfo { get; set; } = new PipelineRasterizationStateCreateInfoModel();
         public PipelineMultisampleStateCreateInfoModel PipelineMultisampleStateCreateInfo { get; set; } = new PipelineMultisampleStateCreateInfoModel();
         public PipelineDepthStencilStateCreateInfoModel PipelineDepthStencilStateCreateInfo { get; set; }
         public PipelineInputAssemblyStateCreateInfoModel PipelineInputAssemblyStateCreateInfo { get; set; } = new PipelineInputAssemblyStateCreateInfoModel();
-        public List<DescriptorSetLayoutBinding> LayoutBindingList { get; set; } = new List<DescriptorSetLayoutBinding>();
+        public List<VkDescriptorSetLayoutBinding> LayoutBindingList { get; set; } = new List<VkDescriptorSetLayoutBinding>();
         public List<PipelineDescriptorModel> PipelineDescriptorModelsList { get; set; } = new List<PipelineDescriptorModel>();
 
         public RenderPipelineModel()

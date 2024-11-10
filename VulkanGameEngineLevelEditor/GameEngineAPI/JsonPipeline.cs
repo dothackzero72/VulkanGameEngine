@@ -59,6 +59,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             _device = VulkanRenderer.device;
 
+            //SavePipeline();
+
             string jsonContent = File.ReadAllText(jsonPipelineFilePath);
             RenderPipelineModel model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent);
 
@@ -296,23 +298,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             PipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = new PipelineViewportStateCreateInfo();
-            fixed (Viewport* viewportPtr = model.ViewportList.ToArray())
-            fixed (Rect2D* scissorPtr = model.ScissorList.ToArray())
+            fixed (VkViewport* viewportPtr = model.ViewportList.ToArray())
+            fixed (VkRect2D* scissorPtr = model.ScissorList.ToArray())
             {
                 pipelineViewportStateCreateInfo = new PipelineViewportStateCreateInfo
                 {
                     SType = StructureType.PipelineViewportStateCreateInfo,
                     ViewportCount = model.ViewportList.UCount() + 1,
-                    PViewports = viewportPtr,
+                    PViewports = (Viewport*)viewportPtr,
                     ScissorCount = model.ScissorList.UCount() + 1,
-                    PScissors = scissorPtr,
+                    PScissors = (Rect2D*)scissorPtr,
                     Flags = 0,
                     PNext = null
                 };
             }
 
             PipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = new PipelineColorBlendStateCreateInfo();
-            fixed (PipelineColorBlendAttachmentState* attachments = model.PipelineColorBlendAttachmentStateList.ToArray())
+            fixed (PipelineColorBlendAttachmentState* attachments = VkPipelineColorBlendAttachmentState.ConvertPtrArray(model.PipelineColorBlendAttachmentStateList))
             {
                 pipelineColorBlendStateCreateInfo = new PipelineColorBlendStateCreateInfo()
                 {
@@ -324,10 +326,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     Flags = 0,
                     PNext = null
                 };
-                pipelineColorBlendStateCreateInfo.BlendConstants[0] = model.PipelineColorBlendStateCreateInfoModel.BlendConstants[0];
-                pipelineColorBlendStateCreateInfo.BlendConstants[1] = model.PipelineColorBlendStateCreateInfoModel.BlendConstants[1];
-                pipelineColorBlendStateCreateInfo.BlendConstants[2] = model.PipelineColorBlendStateCreateInfoModel.BlendConstants[2];
-                pipelineColorBlendStateCreateInfo.BlendConstants[3] = model.PipelineColorBlendStateCreateInfoModel.BlendConstants[3];
+                pipelineColorBlendStateCreateInfo.BlendConstants[0] = 0.0f;
+                pipelineColorBlendStateCreateInfo.BlendConstants[1] = 0.0f;
+                pipelineColorBlendStateCreateInfo.BlendConstants[2] = 0.0f;
+                pipelineColorBlendStateCreateInfo.BlendConstants[3] = 0.0f;
             }
 
             List<DynamicState> dynamicStateList = new List<DynamicState>()
@@ -430,21 +432,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             pipeline = tempPipelinePtr;
         }
 
-        public void SavePipeline(RenderPipelineModel jsonPipeline)
+        public void SavePipeline()
         {
-            List<PipelineColorBlendAttachmentState> pipelineColorBlendAttachmentState = new List<PipelineColorBlendAttachmentState>()
+            List<VkPipelineColorBlendAttachmentState> pipelineColorBlendAttachmentState = new List<VkPipelineColorBlendAttachmentState>()
             {
-                new(
-                    blendEnable: true,
-                    srcColorBlendFactor: Silk.NET.Vulkan.BlendFactor.SrcAlpha,
-                    dstColorBlendFactor: Silk.NET.Vulkan.BlendFactor.OneMinusSrcAlpha,
-                    colorBlendOp: BlendOp.Add,
-                    srcAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.One,
-                    dstAlphaBlendFactor: Silk.NET.Vulkan.BlendFactor.Zero,
-                    alphaBlendOp: BlendOp.Add,
-                    colorWriteMask: ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit
-                )
+                new VkPipelineColorBlendAttachmentState()
+                {
+                    blendEnable = true,
+                    srcColorBlendFactor = Silk.NET.Vulkan.BlendFactor.SrcAlpha,
+                    dstColorBlendFactor = Silk.NET.Vulkan.BlendFactor.OneMinusSrcAlpha,
+                    colorBlendOp = BlendOp.Add,
+                    srcAlphaBlendFactor = Silk.NET.Vulkan.BlendFactor.One,
+                    dstAlphaBlendFactor = Silk.NET.Vulkan.BlendFactor.Zero,
+                    alphaBlendOp = BlendOp.Add,
+                    colorWriteMask = ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit
+                }
             };
+
 
             var jsonObj = new RenderPipelineModel
             {
@@ -479,8 +483,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     DepthBiasSlopeFactor = 0.0f,
                     LineWidth = 1.0f
                 },
-                ScissorList = new List<Rect2D>(),
-                ViewportList = new List<Viewport>(),
+                ScissorList = new List<VkRect2D>(),
+                ViewportList = new List<VkViewport>(),
                 PipelineColorBlendStateCreateInfoModel = new PipelineColorBlendStateCreateInfoModel()
                 {
                     LogicOpEnable = false,
@@ -507,23 +511,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             descriptorType = DescriptorType.CombinedImageSampler
                         }
                     },
-                LayoutBindingList = new List<DescriptorSetLayoutBinding>()
+                LayoutBindingList = new List<VkDescriptorSetLayoutBinding>()
                     {
-                        new DescriptorSetLayoutBinding()
+                        new VkDescriptorSetLayoutBinding()
                         {
-                            Binding = 0,
-                            DescriptorType = DescriptorType.StorageBuffer,
-                            DescriptorCount = 1,
-                            StageFlags = ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit,
-                            PImmutableSamplers = null
+                            binding = 0,
+                            descriptorType = DescriptorType.StorageBuffer,
+                            descriptorCount = 1,
+                            stageFlags = ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit,
+                            pImmutableSamplers = null
                         },
-                        new DescriptorSetLayoutBinding()
+                        new VkDescriptorSetLayoutBinding()
                         {
-                            Binding = 1,
-                            DescriptorType = DescriptorType.CombinedImageSampler,
-                            DescriptorCount = 1,
-                            StageFlags = ShaderStageFlags.FragmentBit,
-                            PImmutableSamplers = null
+                            binding = 1,
+                            descriptorType = DescriptorType.CombinedImageSampler,
+                            descriptorCount = 1,
+                            stageFlags = ShaderStageFlags.FragmentBit,
+                            pImmutableSamplers = null
                         }
                     }
             };

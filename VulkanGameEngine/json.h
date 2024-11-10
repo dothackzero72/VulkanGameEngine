@@ -1,10 +1,18 @@
 #pragma once
+#include <vulkan/vulkan_core.h>
 #include <nlohmann/json.hpp>
 #include <glm/glm.hpp>
 #include "Typedef.h"
+#include "File.h"
 
 class Json : public nlohmann::json
 {
+public:
+	static nlohmann::json ReadJson(const String filePath)
+	{
+		return File::ReadJsonFile(filePath);
+	}
+
 	static void to_json(nlohmann::json& json, String& string)
 	{
 		json = string;
@@ -397,5 +405,86 @@ class Json : public nlohmann::json
 			json[14].get_to(mat4[3][2]);
 			json[15].get_to(mat4[3][3]);
 		}
+	}
+
+	static VkAttachmentDescription LoadAttachmentDescription(nlohmann::json json)
+	{
+		return VkAttachmentDescription
+		{
+			.flags = json["flags"],
+			.format = json["format"],
+			.samples = json["samples"],
+			.loadOp = json["loadOp"],
+			.storeOp = json["storeOp"],
+			.stencilLoadOp = json["stencilLoadOp"],
+			.stencilStoreOp = json["stencilStoreOp"],
+			.initialLayout = json["initialLayout"],
+			.finalLayout = json["finalLayout"]
+		};
+	}
+
+	static VkImageCreateInfo LoadImageCreateInfo(nlohmann::json json)
+	{
+		return VkImageCreateInfo
+		{
+			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = json["Flags"],
+			.imageType = json["ImageType"],
+			.format = json["Format"],
+			.extent = VkExtent3D{
+				json["extent"]["width"],
+				json["extent"]["height"],
+				json["extent"]["depth"]
+			},
+			.mipLevels = json["mipLevels"],
+			.arrayLayers = json["arrayLayers"], 
+			.samples = json["samples"],
+			.tiling = json["tiling"],
+			.usage = json["usage"],
+			.sharingMode = json["sharingMode"],
+			.queueFamilyIndexCount = json["queueFamilyIndexCount"],
+			.pQueueFamilyIndices = json["pQueueFamilyIndices"].get<std::vector<uint32_t>>().data(),
+			.initialLayout = json["initialLayout"]
+		};
+	}
+
+	static VkSamplerCreateInfo LoadVulkanSamplerCreateInfo(nlohmann::json json)
+	{
+		return VkSamplerCreateInfo
+		{
+			.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = json["flags"],
+			.magFilter = json["magFilter"],
+			.minFilter = json["minFilter"],
+			.mipmapMode = json["mipmapMode"],
+			.addressModeU = json["addressModeU"],
+			.addressModeV = json["addressModeV"],
+			.addressModeW = json["addressModeW"],
+			.mipLodBias = json["mipLodBias"],
+			.anisotropyEnable = json["anisotropyEnable"],
+			.maxAnisotropy = json["maxAnisotropy"],
+			.compareEnable = json["compareEnable"],
+			.compareOp = json["compareOp"],
+			.minLod = json["minLod"],
+			.maxLod = json["maxLod"],
+			.borderColor = json["borderColor"],
+			.unnormalizedCoordinates = json["unnormalizedCoordinates"]
+		};
+	}
+
+	static VkSubpassDependency LoadSubpassDependency(nlohmann::json json)
+	{
+		return VkSubpassDependency
+		{
+			.srcSubpass = json["srcSubpass"],
+			.dstSubpass = json["dstSubpass"],
+			.srcStageMask = json["srcStageMask"],
+			.dstStageMask = json["dstStageMask"],
+			.srcAccessMask = json["srcAccessMask"],
+			.dstAccessMask = json["dstAccessMask"],
+			.dependencyFlags = json["dependencyFlags"]
+		};
 	}
 };

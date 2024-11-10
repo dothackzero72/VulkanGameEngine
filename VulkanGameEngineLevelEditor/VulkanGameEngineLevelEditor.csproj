@@ -317,6 +317,16 @@
     <Compile Include="Models\PipelineRasterizationStateCreateInfoModel.cs" />
     <Compile Include="Models\RenderedTextureInfoModel.cs" />
     <Compile Include="Models\RenderPassEditorBaseModel.cs" />
+    <Compile Include="Models\VkAttachmentDescription.cs" />
+    <Compile Include="Models\VkAttachmentReference.cs" />
+    <Compile Include="Models\VkDescriptorSetLayoutBinding.cs" />
+    <Compile Include="Models\VkExtent2D.cs" />
+    <Compile Include="Models\VkOffset2D.cs" />
+    <Compile Include="Models\VkPipelineColorBlendAttachmentState.cs" />
+    <Compile Include="Models\VkPipelineColorBlendStateCreateInfo.cs" />
+    <Compile Include="Models\VkRect2D.cs" />
+    <Compile Include="Models\VkSubpassDescription.cs" />
+    <Compile Include="Models\VkViewport.cs" />
     <Compile Include="RenderPassEditor\RenderPassEditorConsts.cs" />
     <Compile Include="Vulkan\CBuffer.cs" />
     <Compile Include="GameEngineAPI\CTexture.cs" />

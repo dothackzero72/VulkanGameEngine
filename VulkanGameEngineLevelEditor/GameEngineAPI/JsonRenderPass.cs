@@ -47,12 +47,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
 
 
-            List<AttachmentDescription> attachmentDescriptionList = new List<AttachmentDescription>();
-            List<AttachmentReference> inputAttachmentReferenceList = new List<AttachmentReference>();
-            List<AttachmentReference> colorAttachmentReferenceList = new List<AttachmentReference>();
-            List<AttachmentReference> resolveAttachmentReferenceList = new List<AttachmentReference>();
-            List<SubpassDescription> preserveAttachmentReferenceList = new List<SubpassDescription>();
-            AttachmentReference depthReference = new AttachmentReference();
+            List<VkAttachmentDescription> attachmentDescriptionList = new List<VkAttachmentDescription>();
+            List<VkAttachmentReference> inputAttachmentReferenceList = new List<VkAttachmentReference>();
+            List<VkAttachmentReference> colorAttachmentReferenceList = new List<VkAttachmentReference>();
+            List<VkAttachmentReference> resolveAttachmentReferenceList = new List<VkAttachmentReference>();
+            List<VkSubpassDescription> preserveAttachmentReferenceList = new List<VkSubpassDescription>();
+            VkAttachmentReference depthReference = new VkAttachmentReference();
             foreach (RenderedTextureInfoModel renderedTextureInfoModel in model.RenderedTextureInfoModelList)
             {
                 attachmentDescriptionList.Add(renderedTextureInfoModel.AttachmentDescription.ConvertToVulkan());
@@ -64,10 +64,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             {
                                 RenderedColorTextureList.Add(new RenderedTexture());
                             }
-                            colorAttachmentReferenceList.Add(new AttachmentReference
+                            colorAttachmentReferenceList.Add(new VkAttachmentReference
                             {
-                                Attachment = colorAttachmentReferenceList.UCount(),
-                                Layout = Silk.NET.Vulkan.ImageLayout.ColorAttachmentOptimal
+                                attachment = colorAttachmentReferenceList.UCount(),
+                                layout = Silk.NET.Vulkan.ImageLayout.ColorAttachmentOptimal
                             });
                             break;
                         }
@@ -110,20 +110,20 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             List<SubpassDescription> subpassDescriptionList = new List<SubpassDescription>();
             var depthAttachment = &depthReference;
-            fixed (AttachmentReference* colorAttachments = colorAttachmentReferenceList.ToArray())
-            fixed (AttachmentReference* inputAttachments = inputAttachmentReferenceList.ToArray())
-            fixed (AttachmentReference* resolveAttachments = resolveAttachmentReferenceList.ToArray())
-            fixed (SubpassDescription* preserveAttachments = preserveAttachmentReferenceList.ToArray())
+            fixed (VkAttachmentReference* colorAttachments = colorAttachmentReferenceList.ToArray())
+            fixed (VkAttachmentReference* inputAttachments = inputAttachmentReferenceList.ToArray())
+            fixed (VkAttachmentReference* resolveAttachments = resolveAttachmentReferenceList.ToArray())
+            fixed (VkSubpassDescription* preserveAttachments = preserveAttachmentReferenceList.ToArray())
             {
                 subpassDescriptionList.Add(new SubpassDescription
                 {
                     PipelineBindPoint = PipelineBindPoint.Graphics,
                     ColorAttachmentCount = colorAttachmentReferenceList.UCount(),
-                    PColorAttachments = colorAttachments,
-                    PDepthStencilAttachment = depthAttachment,
-                    PResolveAttachments = resolveAttachments,
+                    PColorAttachments = colorAttachments->ConvertPtr(),
+                    PDepthStencilAttachment = depthAttachment->ConvertPtr(),
+                    PResolveAttachments = resolveAttachments->ConvertPtr(),
                     InputAttachmentCount = inputAttachmentReferenceList.UCount(),
-                    PInputAttachments = inputAttachments,
+                    PInputAttachments = inputAttachments->ConvertPtr(),
                     PreserveAttachmentCount = preserveAttachmentReferenceList.UCount(),
                     Flags = SubpassDescriptionFlags.None,
                     PPreserveAttachments = null
@@ -136,7 +136,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 subPassList.Add(subpass.ConvertToVulkan());
             }
 
-            fixed (AttachmentDescription* attachments = attachmentDescriptionList.ToArray())
+            fixed (VkAttachmentDescription* attachments = attachmentDescriptionList.ToArray())
             fixed (SubpassDescription* description = subpassDescriptionList.ToArray())
             fixed (SubpassDependency* dependency = subPassList.ToArray())
             {
@@ -146,7 +146,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     PNext = null,
                     Flags = RenderPassCreateFlags.None,
                     AttachmentCount = (uint)attachmentDescriptionList.Count(),
-                    PAttachments = attachments,
+                    PAttachments = attachments->ConvertPtr(),
                     SubpassCount = (uint)subpassDescriptionList.Count(),
                     PSubpasses = description,
                     DependencyCount = (uint)subPassList.Count(),
