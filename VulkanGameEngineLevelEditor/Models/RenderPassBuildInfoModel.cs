@@ -16,7 +16,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public List<RenderPipelineModel> RenderPipelineList { get; set; } = new List<RenderPipelineModel>();
 
         public List<RenderedTextureInfoModel> RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>();
-        public List<SubpassDependencyModel> SubpassDependencyList { get; set; } = new List<SubpassDependencyModel>();
+        public List<VkSubpassDependency> SubpassDependencyList { get; set; } = new List<VkSubpassDependency>();
 
         public RenderPassBuildInfoModel() 
         {

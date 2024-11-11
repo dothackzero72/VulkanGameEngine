@@ -45,7 +45,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                 TextBoxName = RenderPassBuilderDebug.Name,
                 ThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId,
             };
-            GlobalMessenger.AddMessenger(RenderPassMessager);
+           // GlobalMessenger.AddMessenger(RenderPassMessager);
 
             RenderPassModels = new RenderPassBuildInfoModel
             {
@@ -56,22 +56,22 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                     {
                         IsRenderedToSwapchain = true,
                         RenderedTextureInfoName = "ColorRenderTexture",
-                        AttachmentDescription = new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel),
-                        ImageCreateInfo = new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm),
-                        SamplerCreateInfo = new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultColorSamplerCreateInfo),
+                        AttachmentDescription = new VkAttachmentDescription(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel),
+                        ImageCreateInfo = new VkImageCreateInfo(RenderPassEditorConsts.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm),
+                        SamplerCreateInfo = new VkSamplerCreateInfo(RenderPassEditorConsts.DefaultColorSamplerCreateInfo),
                         TextureType = RenderedTextureType.ColorRenderedTexture
                     },
                     new RenderedTextureInfoModel()
                     {
                         IsRenderedToSwapchain = false,
                         RenderedTextureInfoName = "DepthRenderedTexture",
-                        AttachmentDescription = new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultDepthAttachmentDescriptionModel),
-                        ImageCreateInfo = new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateDepthImageInfo, SwapChainResuloution, Format.D32Sfloat),
-                        SamplerCreateInfo = new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultDepthSamplerCreateInfo),
+                        AttachmentDescription = new VkAttachmentDescription(RenderPassEditorConsts.DefaultDepthAttachmentDescriptionModel),
+                        ImageCreateInfo = new VkImageCreateInfo(RenderPassEditorConsts.DefaultCreateDepthImageInfo, SwapChainResuloution, Format.D32Sfloat),
+                        SamplerCreateInfo = new VkSamplerCreateInfo(RenderPassEditorConsts.DefaultDepthSamplerCreateInfo),
                         TextureType = RenderedTextureType.DepthRenderedTexture
                     }
                 },
-                SubpassDependencyList = new List<SubpassDependencyModel>() { new SubpassDependencyModel(RenderPassEditorConsts.DefaultSubpassDependencyModel) },
+                SubpassDependencyList = new List<VkSubpassDependency>() { new VkSubpassDependency(RenderPassEditorConsts.DefaultSubpassDependencyModel) },
                 SwapChainResuloution = SwapChainResuloution
             };
 
@@ -126,7 +126,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             {
                 propertyGrid1.SelectedObject = selectedPerson2;
             }
-            if (listBox1.SelectedItem is SubpassDependencyModel subpass)
+            if (listBox1.SelectedItem is VkSubpassDependency subpass)
             {
                 propertyGrid1.SelectedObject = subpass;
             }
@@ -134,7 +134,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             {
                 propertyGrid1.SelectedObject = samplerCreateInfo;
             }
-            if (listBox1.SelectedItem is AttachmentDescriptionModel attachmentDescription)
+            if (listBox1.SelectedItem is VkAttachmentDescription attachmentDescription)
             {
                 propertyGrid1.SelectedObject = attachmentDescription;
             }
@@ -208,7 +208,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private void SaveComponents_Click(object sender, EventArgs e)
         {
             object obj = propertyGrid1.SelectedObject;
-            if (listBox1.SelectedItem is SubpassDependencyModel subpass)
+            if (listBox1.SelectedItem is VkSubpassDependency subpass)
             {
                 subpass.SaveJsonComponent();
             }
@@ -220,7 +220,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             {
                 samplerCreateInfo.SaveJsonComponent();
             }
-            if (listBox1.SelectedItem is AttachmentDescriptionModel attachment)
+            if (listBox1.SelectedItem is VkAttachmentDescription attachment)
             {
                 attachment.SaveJsonComponent();
             }

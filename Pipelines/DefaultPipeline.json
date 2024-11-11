@@ -18,14 +18,18 @@
     }
   ],
   "PipelineColorBlendStateCreateInfoModel": {
-    "LogicOpEnable": false,
-    "LogicOp": 5,
-    "BlendConstants": [
-      0.0,
-      0.0,
-      0.0,
-      0.0
-    ]
+    "blendConstants": {
+      "FixedElementField": 0.0
+    },
+    "sType": 26,
+    "pNext": null,
+    "flags": 0,
+    "logicOpEnable": {
+      "Value": 0
+    },
+    "logicOp": 5,
+    "attachmentCount": 0,
+    "pAttachments": null
   },
   "PipelineRasterizationStateCreateInfo": {
     "DepthClampEnable": false,

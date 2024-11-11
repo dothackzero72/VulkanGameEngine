@@ -17,7 +17,7 @@ using VulkanGameEngineLevelEditor.Vulkan;
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    public class SubpassDependencyModel : RenderPassEditorBaseModel
+    public class VkSubpassDependency : RenderPassEditorBaseModel
     {
         private uint _srcSubpass;
         private uint _dstSubpass;
@@ -135,20 +135,20 @@ namespace VulkanGameEngineLevelEditor.Models
             }
         }
 
-        public SubpassDependencyModel() : base()
+        public VkSubpassDependency() : base()
         {
         }
-        public SubpassDependencyModel(string jsonFilePath) : base()
+        public VkSubpassDependency(string jsonFilePath) : base()
         {
-            LoadJsonComponent (jsonFilePath);
+            LoadJsonComponent(jsonFilePath);
         }
 
-        public SubpassDependencyModel(string name, string jsonFilePath) : base(name)
+        public VkSubpassDependency(string name, string jsonFilePath) : base(name)
         {
             LoadJsonComponent(RenderPassEditorConsts.DefaultSubpassDependencyModel);
         }
 
-        public SubpassDependencyModel(uint? srcSubpass = null, uint? dstSubpass = null, VkPipelineStageFlags? srcStageMask = null, VkPipelineStageFlags? dstStageMask = null, VkAccessFlags? srcAccessMask = null, VkAccessFlags? dstAccessMask = null, VkDependencyFlags? dependencyFlags = null)
+        public VkSubpassDependency(uint? srcSubpass = null, uint? dstSubpass = null, VkPipelineStageFlags? srcStageMask = null, VkPipelineStageFlags? dstStageMask = null, VkAccessFlags? srcAccessMask = null, VkAccessFlags? dstAccessMask = null, VkDependencyFlags? dependencyFlags = null)
         {
             if (srcSubpass.HasValue)
             {
@@ -202,8 +202,8 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public void LoadJsonComponent(string jsonPath)
         {
-            var obj = base.LoadJsonComponent<SubpassDependencyModel>(jsonPath);
-            foreach (PropertyInfo property in typeof(SubpassDependencyModel).GetProperties())
+            var obj = base.LoadJsonComponent<VkSubpassDependency>(jsonPath);
+            foreach (PropertyInfo property in typeof(VkSubpassDependency).GetProperties())
             {
                 if (property.CanWrite)
                 {

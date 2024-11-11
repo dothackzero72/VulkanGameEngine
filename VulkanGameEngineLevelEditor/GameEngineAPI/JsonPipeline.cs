@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -288,15 +289,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 };
             }
 
-            PipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = new PipelineInputAssemblyStateCreateInfo()
-            {
-                SType = StructureType.PipelineInputAssemblyStateCreateInfo,
-                Topology = model.PipelineInputAssemblyStateCreateInfo.Topology,
-                PrimitiveRestartEnable = model.PipelineInputAssemblyStateCreateInfo.PrimitiveRestartEnable,
-                Flags = 0,
-                PNext = null,
-            };
-
             PipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = new PipelineViewportStateCreateInfo();
             fixed (VkViewport* viewportPtr = model.ViewportList.ToArray())
             fixed (VkRect2D* scissorPtr = model.ScissorList.ToArray())
@@ -313,23 +305,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 };
             }
 
-            PipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = new PipelineColorBlendStateCreateInfo();
+            VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = new VkPipelineColorBlendStateCreateInfo();
             fixed (PipelineColorBlendAttachmentState* attachments = VkPipelineColorBlendAttachmentState.ConvertPtrArray(model.PipelineColorBlendAttachmentStateList))
             {
-                pipelineColorBlendStateCreateInfo = new PipelineColorBlendStateCreateInfo()
-                {
-                    SType = StructureType.PipelineColorBlendStateCreateInfo,
-                    LogicOpEnable = model.PipelineColorBlendStateCreateInfoModel.LogicOpEnable,
-                    LogicOp = model.PipelineColorBlendStateCreateInfoModel.LogicOp,
-                    AttachmentCount = model.PipelineColorBlendAttachmentStateList.UCount(),
-                    PAttachments = attachments,
-                    Flags = 0,
-                    PNext = null
-                };
-                pipelineColorBlendStateCreateInfo.BlendConstants[0] = 0.0f;
-                pipelineColorBlendStateCreateInfo.BlendConstants[1] = 0.0f;
-                pipelineColorBlendStateCreateInfo.BlendConstants[2] = 0.0f;
-                pipelineColorBlendStateCreateInfo.BlendConstants[3] = 0.0f;
+                pipelineColorBlendStateCreateInfo = model.PipelineColorBlendStateCreateInfoModel;
+                pipelineColorBlendStateCreateInfo.attachmentCount = model.PipelineColorBlendAttachmentStateList.UCount();
+                pipelineColorBlendStateCreateInfo.pAttachments = attachments;
             }
 
             List<DynamicState> dynamicStateList = new List<DynamicState>()
@@ -355,51 +336,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VulkanRenderer.CreateShader(model.FragmentShader, ShaderStageFlags.FragmentBit)
             };
 
-            PipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfoRef = new PipelineRasterizationStateCreateInfo()
-            {
-                SType = StructureType.PipelineRasterizationStateCreateInfo,
-                CullMode = model.PipelineRasterizationStateCreateInfo.CullMode,
-                DepthBiasClamp = model.PipelineRasterizationStateCreateInfo.DepthBiasClamp,
-                DepthBiasConstantFactor = model.PipelineRasterizationStateCreateInfo.DepthBiasConstantFactor,
-                DepthBiasEnable = model.PipelineRasterizationStateCreateInfo.DepthBiasEnable,
-                DepthBiasSlopeFactor = model.PipelineRasterizationStateCreateInfo.DepthBiasSlopeFactor,
-                DepthClampEnable = model.PipelineRasterizationStateCreateInfo.DepthBiasEnable,
-                RasterizerDiscardEnable = model.PipelineRasterizationStateCreateInfo.RasterizerDiscardEnable,
-                FrontFace = model.PipelineRasterizationStateCreateInfo.FrontFace,
-                LineWidth = model.PipelineRasterizationStateCreateInfo.LineWidth,
-                PolygonMode = model.PipelineRasterizationStateCreateInfo.PolygonMode,
-                Flags = 0,
-                PNext = null
-            };
-
-            PipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = new PipelineMultisampleStateCreateInfo()
-            {
-                SType = StructureType.PipelineMultisampleStateCreateInfo,
-                AlphaToCoverageEnable = model.PipelineMultisampleStateCreateInfo.AlphaToCoverageEnable,
-                AlphaToOneEnable = model.PipelineMultisampleStateCreateInfo.AlphaToOneEnable,
-                MinSampleShading = model.PipelineMultisampleStateCreateInfo.MinSampleShading,
-                PSampleMask = model.PipelineMultisampleStateCreateInfo.PSampleMask,
-                RasterizationSamples = model.PipelineMultisampleStateCreateInfo.RasterizationSamples,
-                SampleShadingEnable = model.PipelineMultisampleStateCreateInfo.SampleShadingEnable,
-                Flags = 0,
-                PNext = null
-            };
-
-            PipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo = new PipelineDepthStencilStateCreateInfo()
-            {
-                SType = StructureType.PipelineDepthStencilStateCreateInfo,
-                Back = model.PipelineDepthStencilStateCreateInfo.Back,
-                DepthBoundsTestEnable = model.PipelineDepthStencilStateCreateInfo.DepthBoundsTestEnable,
-                DepthCompareOp = model.PipelineDepthStencilStateCreateInfo.DepthCompareOp,
-                DepthTestEnable = model.PipelineDepthStencilStateCreateInfo.DepthTestEnable,
-                DepthWriteEnable = model.PipelineDepthStencilStateCreateInfo.DepthWriteEnable,
-                MaxDepthBounds = model.PipelineDepthStencilStateCreateInfo.MaxDepthBounds,
-                Front = model.PipelineDepthStencilStateCreateInfo.Front,
-                MinDepthBounds = model.PipelineDepthStencilStateCreateInfo.MinDepthBounds,
-                StencilTestEnable = model.PipelineDepthStencilStateCreateInfo.DepthTestEnable,
-                Flags = 0,
-                PNext = null,
-            };
+            VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = model.PipelineMultisampleStateCreateInfo;
+            pipelineMultisampleStateCreateInfo.pSampleMask = null;
 
             GraphicsPipelineCreateInfo graphicsPipelineCreateInfo = new GraphicsPipelineCreateInfo();
             fixed (PipelineShaderStageCreateInfo* pipelineShaderStageCreateInfo = pipelineShaderStageCreateInfoList.ToArray())
@@ -409,12 +347,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     SType = StructureType.GraphicsPipelineCreateInfo,
                     PStages = pipelineShaderStageCreateInfo,
                     PVertexInputState = &vertexInputInfo,
-                    PInputAssemblyState = &pipelineInputAssemblyStateCreateInfo,
+                    PInputAssemblyState = model.PipelineInputAssemblyStateCreateInfo.ConvertPtr(),
                     PViewportState = &pipelineViewportStateCreateInfo,
-                    PRasterizationState = &pipelineRasterizationStateCreateInfoRef,
-                    PMultisampleState = &pipelineMultisampleStateCreateInfo,
-                    PDepthStencilState = &pipelineDepthStencilStateCreateInfo,
-                    PColorBlendState = &pipelineColorBlendStateCreateInfo,
+                    PRasterizationState = model.PipelineRasterizationStateCreateInfo.ConvertPtr(),
+                    PMultisampleState = pipelineMultisampleStateCreateInfo.ConvertPtr(),
+                    PDepthStencilState = model.PipelineDepthStencilStateCreateInfo.ConvertPtr(),
+                    PColorBlendState = pipelineColorBlendStateCreateInfo.ConvertPtr(),
                     PDynamicState = &pipelineDynamicStateCreateInfo,
                     PTessellationState = null,
                     Layout = pipelineLayout,
@@ -449,52 +387,62 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
 
+            var pipelineColorBlendStateCreateInfo2 = new VkPipelineColorBlendStateCreateInfo()
+                {
+                    sType = StructureType.PipelineColorBlendStateCreateInfo,
+                    logicOpEnable = false,
+                    logicOp = LogicOp.NoOp,
+                    attachmentCount = 0,
+                    pAttachments = null,
+                    flags = 0,
+                    pNext = null
+                };
+                pipelineColorBlendStateCreateInfo2.blendConstants[0] = 0.0f;
+                pipelineColorBlendStateCreateInfo2.blendConstants[1] = 0.0f;
+                pipelineColorBlendStateCreateInfo2.blendConstants[2] = 0.0f;
+                pipelineColorBlendStateCreateInfo2.blendConstants[3] = 0.0f;
+
 
             var jsonObj = new RenderPipelineModel
             {
                 _name = "DefaultPipeline",
-                VertexShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\vertshader.spv",
-                FragmentShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\fragshader.spv",
+                VertexShader = "vertshader.spv",
+                FragmentShader = "fragshader.spv",
                 PipelineColorBlendAttachmentStateList = pipelineColorBlendAttachmentState,
-                PipelineDepthStencilStateCreateInfo = new PipelineDepthStencilStateCreateInfoModel()
+                PipelineDepthStencilStateCreateInfo = new VkPipelineDepthStencilStateCreateInfo()
                 {
-                    DepthTestEnable = true,
-                    DepthWriteEnable = true,
-                    DepthCompareOp = CompareOp.LessOrEqual,
-                    DepthBoundsTestEnable = false,
-                    StencilTestEnable = false,
-                    Front = new(StencilOp.Keep, StencilOp.Keep, StencilOp.Keep, CompareOp.Always),
-                    Back = new(StencilOp.Keep, StencilOp.Keep, StencilOp.Keep, CompareOp.Always)
+                    depthTestEnable = true,
+                    depthWriteEnable = true,
+                    depthCompareOp = CompareOp.LessOrEqual,
+                    depthBoundsTestEnable = false,
+                    stencilTestEnable = false,
+                    front = new(StencilOp.Keep, StencilOp.Keep, StencilOp.Keep, CompareOp.Always),
+                    back = new(StencilOp.Keep, StencilOp.Keep, StencilOp.Keep, CompareOp.Always)
                 },
-                PipelineMultisampleStateCreateInfo = new PipelineMultisampleStateCreateInfoModel()
+                PipelineMultisampleStateCreateInfo = new VkPipelineMultisampleStateCreateInfo()
                 {
-                    RasterizationSamples = SampleCountFlags.SampleCount1Bit
+                    rasterizationSamples = SampleCountFlags.SampleCount1Bit
                 },
-                PipelineRasterizationStateCreateInfo = new PipelineRasterizationStateCreateInfoModel()
+                PipelineRasterizationStateCreateInfo = new VkPipelineRasterizationStateCreateInfo()
                 {
-                    DepthClampEnable = false,
-                    RasterizerDiscardEnable = false,
-                    PolygonMode = PolygonMode.Fill,
-                    CullMode = CullModeFlags.CullModeBackBit,
-                    FrontFace = FrontFace.CounterClockwise,
-                    DepthBiasEnable = false,
-                    DepthBiasConstantFactor = 0.0f,
-                    DepthBiasClamp = 0.0f,
-                    DepthBiasSlopeFactor = 0.0f,
-                    LineWidth = 1.0f
+                    depthClampEnable = false,
+                    rasterizerDiscardEnable = false,
+                    polygonMode = PolygonMode.Fill,
+                    cullMode = CullModeFlags.CullModeBackBit,
+                    frontFace = FrontFace.CounterClockwise,
+                    depthBiasEnable = false,
+                    depthBiasConstantFactor = 0.0f,
+                    depthBiasClamp = 0.0f,
+                    depthBiasSlopeFactor = 0.0f,
+                    lineWidth = 1.0f
                 },
                 ScissorList = new List<VkRect2D>(),
                 ViewportList = new List<VkViewport>(),
-                PipelineColorBlendStateCreateInfoModel = new PipelineColorBlendStateCreateInfoModel()
+                PipelineColorBlendStateCreateInfoModel = pipelineColorBlendStateCreateInfo2,
+                PipelineInputAssemblyStateCreateInfo = new VkPipelineInputAssemblyStateCreateInfo()
                 {
-                    LogicOpEnable = false,
-                    LogicOp = LogicOp.NoOp,
-                    BlendConstants = new float[4] { 0.0f, 0.0f, 0.0f, 0.0f }
-                },
-                PipelineInputAssemblyStateCreateInfo = new PipelineInputAssemblyStateCreateInfoModel()
-                {
-                    PrimitiveRestartEnable = false,
-                    Topology = PrimitiveTopology.TriangleList
+                    primitiveRestartEnable = false,
+                    topology = PrimitiveTopology.TriangleList
                 },
                 PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
                     {

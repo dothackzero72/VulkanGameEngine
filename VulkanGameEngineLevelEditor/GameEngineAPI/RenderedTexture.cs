@@ -67,18 +67,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public RenderedTexture(ImageCreateInfoModel createInfo, SamplerCreateInfoModel samplerCreateInfo) : base()
+        public RenderedTexture(VkImageCreateInfo createInfo, VkSamplerCreateInfo samplerCreateInfo) : base()
         {
-            Width = (int)createInfo.Extent.Width;
-            Height = (int)createInfo.Extent.Height;
-            Depth = (int)createInfo.Extent.Depth;
-            TextureByteFormat = createInfo.Format;
-            TextureImageLayout = createInfo.InitialLayout;
-            SampleCount = createInfo.Samples;
+            Width = (int)createInfo.extent.width;
+            Height = (int)createInfo.extent.height;
+            Depth = (int)createInfo.extent.depth;
+            TextureByteFormat = createInfo.format;
+            TextureImageLayout = createInfo.initialLayout;
+            SampleCount = createInfo.samples;
 
-            CreateTextureImage(createInfo.ConvertToVulkan());
+            CreateTextureImage(createInfo.Convert());
             CreateTextureView();
-            CreateTextureSampler(samplerCreateInfo.ConvertToVulkan());
+            CreateTextureSampler(samplerCreateInfo.Convert());
         }
 
         protected Result CreateTextureImage()

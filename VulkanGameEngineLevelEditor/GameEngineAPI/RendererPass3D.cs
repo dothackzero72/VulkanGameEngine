@@ -64,22 +64,22 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     {
                         IsRenderedToSwapchain = true,
                         RenderedTextureInfoName = "ColorRenderTexture",
-                        AttachmentDescription = new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel),
-                        ImageCreateInfo = new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm),
-                        SamplerCreateInfo = new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultColorSamplerCreateInfo),
+                        AttachmentDescription = new VkAttachmentDescription(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel),
+                        ImageCreateInfo = new VkImageCreateInfo(RenderPassEditorConsts.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm),
+                        SamplerCreateInfo = new VkSamplerCreateInfo(RenderPassEditorConsts.DefaultColorSamplerCreateInfo),
                         TextureType = RenderedTextureType.ColorRenderedTexture
                     },
                     new RenderedTextureInfoModel()
                     {
                         IsRenderedToSwapchain = false,
                         RenderedTextureInfoName = "DepthRenderedTexture",
-                        AttachmentDescription = new AttachmentDescriptionModel(RenderPassEditorConsts.DefaultDepthAttachmentDescriptionModel),
-                        ImageCreateInfo = new ImageCreateInfoModel(RenderPassEditorConsts.DefaultCreateDepthImageInfo, SwapChainResuloution, Format.D32Sfloat),
-                        SamplerCreateInfo = new SamplerCreateInfoModel(RenderPassEditorConsts.DefaultDepthSamplerCreateInfo),
+                        AttachmentDescription = new VkAttachmentDescription(RenderPassEditorConsts.DefaultDepthAttachmentDescriptionModel),
+                        ImageCreateInfo = new VkImageCreateInfo(RenderPassEditorConsts.DefaultCreateDepthImageInfo, SwapChainResuloution, Format.D32Sfloat),
+                        SamplerCreateInfo = new VkSamplerCreateInfo(RenderPassEditorConsts.DefaultDepthSamplerCreateInfo),
                         TextureType = RenderedTextureType.DepthRenderedTexture
                     }
                 },
-                SubpassDependencyList = new List<SubpassDependencyModel>() { new SubpassDependencyModel(RenderPassEditorConsts.DefaultSubpassDependencyModel) },
+                SubpassDependencyList = new List<VkSubpassDependency>() { new VkSubpassDependency(RenderPassEditorConsts.DefaultSubpassDependencyModel) },
                 SwapChainResuloution = SwapChainResuloution
             };
 
@@ -91,7 +91,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             AttachmentReference depthReference = new AttachmentReference();
             foreach (RenderedTextureInfoModel renderedTextureInfoModel in a.RenderedTextureInfoModelList)
             {
-                attachmentDescriptionList.Add(renderedTextureInfoModel.AttachmentDescription.ConvertToVulkan());
+                attachmentDescriptionList.Add(renderedTextureInfoModel.AttachmentDescription.Convert());
                 switch (renderedTextureInfoModel.TextureType)
                 {
                     case RenderedTextureType.ColorRenderedTexture:
@@ -167,7 +167,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             List<SubpassDependency> subPassList = new List<SubpassDependency>();
-            foreach (SubpassDependencyModel subpass in a.SubpassDependencyList)
+            foreach (VkSubpassDependency subpass in a.SubpassDependencyList)
             {
                 subPassList.Add(subpass.ConvertToVulkan());
             }
