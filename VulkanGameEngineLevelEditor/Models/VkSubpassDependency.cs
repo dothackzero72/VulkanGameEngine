@@ -29,7 +29,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
 
         [Category("Subpass Dependency")]
-        public uint SrcSubpass
+        public uint srcSubpass
         {
             get => _srcSubpass;
             set
@@ -37,13 +37,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_srcSubpass != value)
                 {
                     _srcSubpass = value;
-                    OnPropertyChanged(nameof(SrcSubpass));
+                    OnPropertyChanged(nameof(srcSubpass));
                 }
             }
         }
 
         [Category("Subpass Dependency")]
-        public uint DstSubpass
+        public uint dstSubpass
         {
             get => _dstSubpass;
             set
@@ -51,7 +51,7 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_dstSubpass != value)
                 {
                     _dstSubpass = value;
-                    OnPropertyChanged(nameof(DstSubpass));
+                    OnPropertyChanged(nameof(dstSubpass));
                 }
             }
         }
@@ -59,7 +59,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [Category("Pipeline Stages")]
         [Browsable(true)]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkPipelineStageFlags SrcStageMask
+        public VkPipelineStageFlags srcStageMask
         {
             get => _srcStageMask;
             set
@@ -67,7 +67,7 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_srcStageMask != value)
                 {
                     _srcStageMask = value;
-                    OnPropertyChanged(nameof(SrcStageMask));
+                    OnPropertyChanged(nameof(srcStageMask));
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [Category("Pipeline Stages")]
         [Browsable(true)]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkPipelineStageFlags DstStageMask
+        public VkPipelineStageFlags dstStageMask
         {
             get => _dstStageMask;
             set
@@ -83,7 +83,7 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_dstStageMask != value)
                 {
                     _dstStageMask = value;
-                    OnPropertyChanged(nameof(DstStageMask));
+                    OnPropertyChanged(nameof(dstStageMask));
                 }
             }
         }
@@ -91,7 +91,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [Category("Access Masks")]
         [Browsable(true)]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkAccessFlags SrcAccessMask
+        public VkAccessFlags srcAccessMask
         {
             get => _srcAccessMask;
             set
@@ -99,7 +99,7 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_srcAccessMask != value)
                 {
                     _srcAccessMask = value;
-                    OnPropertyChanged(nameof(SrcAccessMask));
+                    OnPropertyChanged(nameof(srcAccessMask));
                 }
             }
         }
@@ -107,7 +107,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [Category("Access Masks")]
         [Browsable(true)]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkAccessFlags DstAccessMask
+        public VkAccessFlags dstAccessMask
         {
             get => _dstAccessMask;
             set
@@ -115,14 +115,14 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_dstAccessMask != value)
                 {
                     _dstAccessMask = value;
-                    OnPropertyChanged(nameof(DstAccessMask));
+                    OnPropertyChanged(nameof(dstAccessMask));
                 }
             }
         }
 
         [Category("Subpass Dependency")]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkDependencyFlags DependencyFlags
+        public VkDependencyFlags dependencyFlags
         {
             get => _dependencyFlags;
             set
@@ -130,7 +130,7 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_dependencyFlags != value)
                 {
                     _dependencyFlags = value;
-                    OnPropertyChanged(nameof(DependencyFlags));
+                    OnPropertyChanged(nameof(dependencyFlags));
                 }
             }
         }
@@ -152,37 +152,37 @@ namespace VulkanGameEngineLevelEditor.Models
         {
             if (srcSubpass.HasValue)
             {
-                SrcSubpass = srcSubpass.Value;
+                this.srcSubpass = srcSubpass.Value;
             }
 
             if (dstSubpass.HasValue)
             {
-                DstSubpass = dstSubpass.Value;
+                this.dstSubpass = dstSubpass.Value;
             }
 
             if (srcStageMask.HasValue)
             {
-                SrcStageMask = srcStageMask.Value;
+                this.srcStageMask = srcStageMask.Value;
             }
 
             if (dstStageMask.HasValue)
             {
-                DstStageMask = dstStageMask.Value;
+                this.dstStageMask = dstStageMask.Value;
             }
 
             if (srcAccessMask.HasValue)
             {
-                SrcAccessMask = srcAccessMask.Value;
+                this.srcAccessMask = srcAccessMask.Value;
             }
 
             if (dstAccessMask.HasValue)
             {
-                DstAccessMask = dstAccessMask.Value;
+                this.dstAccessMask = dstAccessMask.Value;
             }
 
             if (dependencyFlags.HasValue)
             {
-                DependencyFlags = dependencyFlags.Value;
+                this.dependencyFlags = dependencyFlags.Value;
             }
         }
 
@@ -190,13 +190,13 @@ namespace VulkanGameEngineLevelEditor.Models
         {
             return new SubpassDependency()
             {
-                DstAccessMask = (AccessFlags)DstAccessMask,
-                SrcAccessMask = (AccessFlags)SrcAccessMask,
-                SrcStageMask = (PipelineStageFlags)SrcStageMask,
-                DstStageMask = (PipelineStageFlags)DstStageMask,
-                DependencyFlags = (DependencyFlags)DependencyFlags,
-                DstSubpass = DstSubpass,
-                SrcSubpass = SrcSubpass
+                DstAccessMask = (AccessFlags)dstAccessMask,
+                SrcAccessMask = (AccessFlags)srcAccessMask,
+                SrcStageMask = (PipelineStageFlags)srcStageMask,
+                DstStageMask = (PipelineStageFlags)dstStageMask,
+                DependencyFlags = (DependencyFlags)dependencyFlags,
+                DstSubpass = dstSubpass,
+                SrcSubpass = srcSubpass
             };
         }
 

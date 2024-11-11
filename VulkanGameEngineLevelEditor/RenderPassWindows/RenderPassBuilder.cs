@@ -122,7 +122,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listBox1.SelectedItem is ImageCreateInfoModel selectedPerson2)
+            if (listBox1.SelectedItem is VkImageCreateInfo selectedPerson2)
             {
                 propertyGrid1.SelectedObject = selectedPerson2;
             }
@@ -130,7 +130,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             {
                 propertyGrid1.SelectedObject = subpass;
             }
-            if (listBox1.SelectedItem is SamplerCreateInfoModel samplerCreateInfo)
+            if (listBox1.SelectedItem is VkSamplerCreateInfo samplerCreateInfo)
             {
                 propertyGrid1.SelectedObject = samplerCreateInfo;
             }
@@ -212,11 +212,11 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             {
                 subpass.SaveJsonComponent();
             }
-            if (listBox1.SelectedItem is ImageCreateInfoModel imageCreateInfo)
+            if (listBox1.SelectedItem is VkImageCreateInfo imageCreateInfo)
             {
                 imageCreateInfo.SaveJsonComponent();
             }
-            if (listBox1.SelectedItem is SamplerCreateInfoModel samplerCreateInfo)
+            if (listBox1.SelectedItem is VkSamplerCreateInfo samplerCreateInfo)
             {
                 samplerCreateInfo.SaveJsonComponent();
             }

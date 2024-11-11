@@ -8,6 +8,7 @@ using System.Drawing.Design;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.EditorEnhancements;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
@@ -18,8 +19,8 @@ namespace VulkanGameEngineLevelEditor.Models
     [Serializable]
     public unsafe class VkImageCreateInfo : RenderPassEditorBaseModel
     {
-        private StructureType _sType;
-        private ImageCreateFlags _flags;
+        private StructureType _sType = StructureType.ImageCreateInfo;
+        private ImageCreateFlags _flags = 0;
         private void* _pNext;
         private ImageType _imageType;
         private Format _format;
@@ -34,6 +35,8 @@ namespace VulkanGameEngineLevelEditor.Models
         private unsafe uint* _pQueueFamilyIndices;
         private ImageLayout _initialLayout;
 
+
+        [Browsable(false)]
         public StructureType sType
         {
             get => _sType;
@@ -48,6 +51,8 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Image Properties")]
+        [Browsable(false)]
+        [JsonIgnore]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ImageCreateFlags flags
         {
@@ -58,6 +63,22 @@ namespace VulkanGameEngineLevelEditor.Models
                 {
                     _flags = value;
                     OnPropertyChanged(nameof(flags));
+                }
+            }
+        }
+
+        [Browsable(false)]
+        [JsonIgnore]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public void* pNext
+        {
+            get => _pNext;
+            set
+            {
+                if (_pNext != value)
+                {
+                    _pNext = value;
+                    OnPropertyChanged(nameof(pNext));
                 }
             }
         }
@@ -91,6 +112,8 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Image Properties")]
+        [Browsable(false)]
+        [JsonIgnore]
         public VkExtent3D extent
         {
             get => _extent;

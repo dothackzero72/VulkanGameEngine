@@ -309,13 +309,7 @@
     <Compile Include="GameEngineAPI\OrthographicCamera.cs" />
     <Compile Include="Models\VkAttachmentDescription.cs" />
     <Compile Include="GameEngineAPI\JsonPipeline.cs" />
-    <Compile Include="Models\Extent3DModel.cs" />
-    <Compile Include="Models\ImageCreateInfoModel.cs" />
-    <Compile Include="Models\PipelineColorBlendStateCreateInfoModel.cs" />
-    <Compile Include="Models\PipelineDepthStencilStateCreateInfoModel.cs" />
-    <Compile Include="Models\PipelineInputAssemblyStateCreateInfoModel.cs" />
     <Compile Include="Models\PipelineLayoutModel.cs" />
-    <Compile Include="Models\SamplerCreateInfoModel.cs" />
     <Compile Include="Models\VkExtent3D.cs" />
     <Compile Include="Models\VkPipelineDepthStencilStateCreateInfo.cs" />
     <Compile Include="Models\PipelineDescriptorModel.cs" />

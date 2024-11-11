@@ -35,7 +35,7 @@ namespace VulkanGameEngineLevelEditor.Models
         private bool _unnormalizedCoordinates;
 
         [Category("Sampler Properties")]
-        public SamplerCreateFlags Flags
+        public SamplerCreateFlags flags
         {
             get => _flags;
             set
@@ -43,13 +43,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_flags != value)
                 {
                     _flags = value;
-                    OnPropertyChanged(nameof(Flags));
+                    OnPropertyChanged(nameof(flags));
                 }
             }
         }
 
         [Category("Sampler Properties")]
-        public Filter MagFilter
+        public Filter magFilter
         {
             get => _magFilter;
             set
@@ -57,13 +57,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_magFilter != value)
                 {
                     _magFilter = value;
-                    OnPropertyChanged(nameof(MagFilter));
+                    OnPropertyChanged(nameof(magFilter));
                 }
             }
         }
 
         [Category("Sampler Properties")]
-        public Filter MinFilter
+        public Filter minFilter
         {
             get => _minFilter;
             set
@@ -71,13 +71,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_minFilter != value)
                 {
                     _minFilter = value;
-                    OnPropertyChanged(nameof(MinFilter));
+                    OnPropertyChanged(nameof(minFilter));
                 }
             }
         }
 
         [Category("Sampler Properties")]
-        public SamplerMipmapMode MipmapMode
+        public SamplerMipmapMode mipmapMode
         {
             get => _mipmapMode;
             set
@@ -85,13 +85,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_mipmapMode != value)
                 {
                     _mipmapMode = value;
-                    OnPropertyChanged(nameof(MipmapMode));
+                    OnPropertyChanged(nameof(mipmapMode));
                 }
             }
         }
 
         [Category("Address Modes")]
-        public SamplerAddressMode AddressModeU
+        public SamplerAddressMode addressModeU
         {
             get => _addressModeU;
             set
@@ -99,13 +99,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_addressModeU != value)
                 {
                     _addressModeU = value;
-                    OnPropertyChanged(nameof(AddressModeU));
+                    OnPropertyChanged(nameof(addressModeU));
                 }
             }
         }
 
         [Category("Address Modes")]
-        public SamplerAddressMode AddressModeV
+        public SamplerAddressMode addressModeV
         {
             get => _addressModeV;
             set
@@ -113,13 +113,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_addressModeV != value)
                 {
                     _addressModeV = value;
-                    OnPropertyChanged(nameof(AddressModeV));
+                    OnPropertyChanged(nameof(addressModeV));
                 }
             }
         }
 
         [Category("Address Modes")]
-        public SamplerAddressMode AddressModeW
+        public SamplerAddressMode addressModeW
         {
             get => _addressModeW;
             set
@@ -127,13 +127,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_addressModeW != value)
                 {
                     _addressModeW = value;
-                    OnPropertyChanged(nameof(AddressModeW));
+                    OnPropertyChanged(nameof(addressModeW));
                 }
             }
         }
 
         [Category("Sampler Properties")]
-        public float MipLodBias
+        public float mipLodBias
         {
             get => _mipLodBias;
             set
@@ -141,13 +141,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_mipLodBias != value)
                 {
                     _mipLodBias = value;
-                    OnPropertyChanged(nameof(MipLodBias));
+                    OnPropertyChanged(nameof(mipLodBias));
                 }
             }
         }
 
         [Category("Anisotropy")]
-        public bool AnisotropyEnable
+        public bool anisotropyEnable
         {
             get => _anisotropyEnable;
             set
@@ -155,13 +155,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_anisotropyEnable != value)
                 {
                     _anisotropyEnable = value;
-                    OnPropertyChanged(nameof(AnisotropyEnable));
+                    OnPropertyChanged(nameof(anisotropyEnable));
                 }
             }
         }
 
         [Category("Anisotropy")]
-        public float MaxAnisotropy
+        public float maxAnisotropy
         {
             get => _maxAnisotropy;
             set
@@ -169,13 +169,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_maxAnisotropy != value)
                 {
                     _maxAnisotropy = value;
-                    OnPropertyChanged(nameof(MaxAnisotropy));
+                    OnPropertyChanged(nameof(maxAnisotropy));
                 }
             }
         }
 
         [Category("Comparison")]
-        public bool CompareEnable
+        public bool compareEnable
         {
             get => _compareEnable;
             set
@@ -183,13 +183,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_compareEnable != value)
                 {
                     _compareEnable = value;
-                    OnPropertyChanged(nameof(CompareEnable));
+                    OnPropertyChanged(nameof(compareEnable));
                 }
             }
         }
 
         [Category("Comparison")]
-        public CompareOp CompareOp
+        public CompareOp compareOp
         {
             get => _compareOp;
             set
@@ -197,13 +197,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_compareOp != value)
                 {
                     _compareOp = value;
-                    OnPropertyChanged(nameof(CompareOp));
+                    OnPropertyChanged(nameof(compareOp));
                 }
             }
         }
 
         [Category("LOD")]
-        public float MinLod
+        public float minLod
         {
             get => _minLod;
             set
@@ -211,13 +211,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_minLod != value)
                 {
                     _minLod = value;
-                    OnPropertyChanged(nameof(MinLod));
+                    OnPropertyChanged(nameof(minLod));
                 }
             }
         }
 
         [Category("LOD")]
-        public float MaxLod
+        public float maxLod
         {
             get => _maxLod;
             set
@@ -225,13 +225,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_maxLod != value)
                 {
                     _maxLod = value;
-                    OnPropertyChanged(nameof(MaxLod));
+                    OnPropertyChanged(nameof(maxLod));
                 }
             }
         }
 
         [Category("Border Color")]
-        public BorderColor BorderColor
+        public BorderColor borderColor
         {
             get => _borderColor;
             set
@@ -239,13 +239,13 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_borderColor != value)
                 {
                     _borderColor = value;
-                    OnPropertyChanged(nameof(BorderColor));
+                    OnPropertyChanged(nameof(borderColor));
                 }
             }
         }
 
         [Category("Sampler Properties")]
-        public bool UnnormalizedCoordinates
+        public bool unnormalizedCoordinates
         {
             get => _unnormalizedCoordinates;
             set
@@ -253,7 +253,7 @@ namespace VulkanGameEngineLevelEditor.Models
                 if (_unnormalizedCoordinates != value)
                 {
                     _unnormalizedCoordinates = value;
-                    OnPropertyChanged(nameof(UnnormalizedCoordinates));
+                    OnPropertyChanged(nameof(unnormalizedCoordinates));
                 }
             }
         }
@@ -276,22 +276,22 @@ namespace VulkanGameEngineLevelEditor.Models
             return new SamplerCreateInfo
             {
                 SType = StructureType.SamplerCreateInfo,
-                AddressModeU = AddressModeU,
-                AddressModeV = AddressModeV,
-                AddressModeW = AddressModeW,
+                AddressModeU = addressModeU,
+                AddressModeV = addressModeV,
+                AddressModeW = addressModeW,
                 AnisotropyEnable = (uint)(_anisotropyEnable ? 1 : 0),
-                MaxAnisotropy = MaxAnisotropy,
+                MaxAnisotropy = maxAnisotropy,
                 CompareEnable = (uint)(_compareEnable ? 1 : 0),
-                MinLod = MinLod,
-                MaxLod = MaxLod,
-                BorderColor = BorderColor,
+                MinLod = minLod,
+                MaxLod = maxLod,
+                BorderColor = borderColor,
                 UnnormalizedCoordinates = (uint)(_unnormalizedCoordinates ? 1 : 0),
-                CompareOp = CompareOp,
-                Flags = Flags,
-                MagFilter = MagFilter,
-                MinFilter = MinFilter,
-                MipLodBias = MipLodBias,
-                MipmapMode = MipmapMode,
+                CompareOp = compareOp,
+                Flags = flags,
+                MagFilter = magFilter,
+                MinFilter = minFilter,
+                MipLodBias = mipLodBias,
+                MipmapMode = mipmapMode,
                 PNext = null
             };
         }
