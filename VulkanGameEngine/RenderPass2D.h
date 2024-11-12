@@ -17,6 +17,7 @@ public:
 	RenderPass2D();
 	virtual ~RenderPass2D();
 
+	//JsonRenderPass renderPasss;
 	void BuildRenderPass(List<std::shared_ptr<Texture>> texture, std::shared_ptr<Texture> texture2);
 	void BuildRenderPipeline(List<std::shared_ptr<Texture>> texture, std::shared_ptr<Texture> texture2);
 	void UpdateRenderPass(List<std::shared_ptr<Texture>> texture, std::shared_ptr<Texture> texture2);

@@ -9,15 +9,16 @@ using Silk.NET.Vulkan;
 using System.ComponentModel;
 using System.Reflection;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
+using VulkanGameEngineLevelEditor.EditorEnhancements;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
     public unsafe class VkSamplerCreateInfo : RenderPassEditorBaseModel
     {
-        private StructureType _structureType;
-        private SamplerCreateFlags _flags;
-        private void* pNext;
+        private StructureType _structureType = StructureType.SamplerCreateInfo;
+        private SamplerCreateFlags _flags = 0;
+        private void* _pNext = null;
         private Filter _magFilter;
         private Filter _minFilter;
         private SamplerMipmapMode _mipmapMode;
@@ -34,7 +35,24 @@ namespace VulkanGameEngineLevelEditor.Models
         private BorderColor _borderColor;
         private bool _unnormalizedCoordinates;
 
+        [Browsable(false)]
+        [Newtonsoft.Json.JsonIgnore]
+        public StructureType structureType
+        {
+            get => _structureType;
+            set
+            {
+                if (_structureType != value)
+                {
+                    _structureType = value;
+                    OnPropertyChanged(nameof(structureType));
+                }
+            }
+        }
+
         [Category("Sampler Properties")]
+        [Browsable(false)]
+        [Newtonsoft.Json.JsonIgnore]
         public SamplerCreateFlags flags
         {
             get => _flags;
@@ -44,6 +62,22 @@ namespace VulkanGameEngineLevelEditor.Models
                 {
                     _flags = value;
                     OnPropertyChanged(nameof(flags));
+                }
+            }
+        }
+
+        [Browsable(false)]
+        [Newtonsoft.Json.JsonIgnore]
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public void* pNext
+        {
+            get => _pNext;
+            set
+            {
+                if (_pNext != value)
+                {
+                    _pNext = value;
+                    OnPropertyChanged(nameof(pNext));
                 }
             }
         }

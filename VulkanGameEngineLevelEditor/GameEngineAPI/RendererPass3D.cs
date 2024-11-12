@@ -80,7 +80,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     }
                 },
                 SubpassDependencyList = new List<VkSubpassDependency>() { new VkSubpassDependency(RenderPassEditorConsts.DefaultSubpassDependencyModel) },
-                SwapChainResuloution = SwapChainResuloution
             };
 
             List<AttachmentDescription> attachmentDescriptionList = new List<AttachmentDescription>();

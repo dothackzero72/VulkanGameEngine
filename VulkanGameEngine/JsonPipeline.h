@@ -18,12 +18,16 @@ private:
 
     //std::shared_ptr<JsonRenderPass> ParentRenderPass;
 
-    JsonPipeline(String jsonPath);
+    JsonPipeline(String jsonPath, VkRenderPass renderPass, uint constBufferSize);
+
+   //void LoadDescriptorSets(RenderPipelineModel model);
+   // void LoadPipeline(RenderPipelineModel model, VkRenderPass renderPass, uint ConstBufferSize);
+
 public:
     String PipelineName;
 
     JsonPipeline();
     ~JsonPipeline();
-    static std::shared_ptr<JsonPipeline> CreateJsonRenderPass(String jsonPath);
+    static std::shared_ptr<JsonPipeline> CreateJsonRenderPass(String jsonPath, VkRenderPass renderPass, uint constBufferSize);
     void Destroy();
 };

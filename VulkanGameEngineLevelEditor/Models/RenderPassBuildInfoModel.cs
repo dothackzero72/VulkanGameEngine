@@ -12,7 +12,6 @@ namespace VulkanGameEngineLevelEditor.Models
     [Serializable]
     public class RenderPassBuildInfoModel : RenderPassEditorBaseModel
     {
-        public ivec2 SwapChainResuloution { get; set; } = new ivec2();
         public List<RenderPipelineModel> RenderPipelineList { get; set; } = new List<RenderPipelineModel>();
 
         public List<RenderedTextureInfoModel> RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>();

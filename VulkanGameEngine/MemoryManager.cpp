@@ -62,7 +62,7 @@ void MemoryManager::ViewMemoryMap()
 	ViewJsonPipelineMemoryMap();
 }
 
-// std::vector<VkDescriptorBufferInfo>  MemoryPoolManager::GetVertexPropertiesBuffer()
+// std::vector<VkDescriptorBufferInfo>  MemoryManager::GetVertexPropertiesBuffer()
 //{
 //	std::vector<VkDescriptorBufferInfo>	VertexPropertiesBuffer;
 //	if (GameObjectList.size() == 0)
@@ -89,7 +89,7 @@ void MemoryManager::ViewMemoryMap()
 //	return VertexPropertiesBuffer;
 //}
 
-// std::vector<VkDescriptorBufferInfo>  MemoryPoolManager::GetIndexPropertiesBuffer()
+// std::vector<VkDescriptorBufferInfo>  MemoryManager::GetIndexPropertiesBuffer()
 //{
 //	std::vector<VkDescriptorBufferInfo>	IndexPropertiesBuffer;
 //	if (GameObjectList.size() == 0)
@@ -299,7 +299,7 @@ std::vector<VkDescriptorImageInfo> MemoryManager::GetTexturePropertiesBuffer()
 	return TexturePropertiesBuffer;
 }
 
-// std::vector<VkDescriptorBufferInfo>  MemoryPoolManager::GetGameObjectTransformBuffer()
+// std::vector<VkDescriptorBufferInfo>  MemoryManager::GetGameObjectTransformBuffer()
 //{
 //	std::vector<VkDescriptorBufferInfo>	TransformPropertiesBuffer;
 //	if (GameObjectList.size() == 0)

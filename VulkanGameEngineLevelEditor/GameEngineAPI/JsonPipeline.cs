@@ -450,13 +450,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         {
                             BindingNumber = 0,
                             BindingPropertiesList = DescriptorBindingPropertiesEnum.kMeshPropertiesDescriptor,
-                            descriptorType = DescriptorType.StorageBuffer
+                            DescriptorType = DescriptorType.StorageBuffer
                         },
                         new PipelineDescriptorModel
                         {
                             BindingNumber = 1,
                             BindingPropertiesList = DescriptorBindingPropertiesEnum.kTextureDescriptor,
-                            descriptorType = DescriptorType.CombinedImageSampler
+                            DescriptorType = DescriptorType.CombinedImageSampler
                         }
                     },
                 LayoutBindingList = new List<VkDescriptorSetLayoutBinding>()

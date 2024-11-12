@@ -326,7 +326,6 @@
     <Compile Include="Models\VkPipelineColorBlendStateCreateInfo.cs" />
     <Compile Include="Models\VkRect2D.cs" />
     <Compile Include="Models\VkSubpassDependency.cs" />
-    <Compile Include="Models\VkSubpassDescription.cs" />
     <Compile Include="Models\VkViewport.cs" />
     <Compile Include="RenderPassEditor\RenderPassEditorConsts.cs" />
     <Compile Include="Vulkan\CBuffer.cs" />

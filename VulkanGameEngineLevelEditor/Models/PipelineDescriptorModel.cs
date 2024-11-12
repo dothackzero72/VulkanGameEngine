@@ -12,6 +12,6 @@ namespace VulkanGameEngineLevelEditor.Models
     {
         public uint BindingNumber { get; set; }
         public DescriptorBindingPropertiesEnum BindingPropertiesList { get; set; }
-        public DescriptorType descriptorType { get; set; }
+        public DescriptorType DescriptorType { get; set; }
     }
 }

@@ -53,7 +53,7 @@ VkResult Texture_BaseCreateTextureImage(VkDevice device, VkPhysicalDevice physic
 	{
 		.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 		.allocationSize = memRequirements.size,
-		.memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
+		.memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 	};
 	VULKAN_RESULT(vkAllocateMemory(device, &allocInfo, NULL, memory));
 	return vkBindImageMemory(cRenderer.Device, *image, *memory, 0);

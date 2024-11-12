@@ -2,6 +2,8 @@
 #include <string>
 #include <vulkan/vulkan_core.h>
 #include <nlohmann/json.hpp>
+#include "Typedef.h"
+#include "json.h"
 
 enum RenderedTextureType
 {
@@ -9,6 +11,32 @@ enum RenderedTextureType
     DepthRenderedTexture,
     InputAttachmentTexture,
     ResolveAttachmentTexture
+};
+
+enum DescriptorBindingPropertiesEnum
+{
+    kMeshPropertiesDescriptor,
+    kTextureDescriptor,
+    kMaterialDescriptor,
+    kBRDFMapDescriptor,
+    kIrradianceMapDescriptor,
+    kPrefilterMapDescriptor,
+    kCubeMapDescriptor,
+    kEnvironmentDescriptor,
+    kSunLightDescriptor,
+    kDirectionalLightDescriptor,
+    kPointLightDescriptor,
+    kSpotLightDescriptor,
+    kReflectionViewDescriptor,
+    kDirectionalShadowDescriptor,
+    kPointShadowDescriptor,
+    kSpotShadowDescriptor,
+    kViewTextureDescriptor,
+    kViewDepthTextureDescriptor,
+    kCubeMapSamplerDescriptor,
+    kRotatingPaletteTextureDescriptor,
+    kMathOpperation1Descriptor,
+    kMathOpperation2Descriptor,
 };
 
 struct RenderPassEditorBaseModel
@@ -30,44 +58,34 @@ public:
     RenderedTextureInfoModel()
     {}
 
-    static RenderedTextureInfoModel from_json(const nlohmann::json& json)
+    static RenderedTextureInfoModel from_json(const nlohmann::json& json, ivec2 textureResolution)
     {
         RenderedTextureInfoModel model;
         model.RenderedTextureInfoName = json["RenderedTextureInfoName"];
-        model.ImageCreateInfo = Json::LoadImageCreateInfo(json["ImageCreateInfo"]);
+        model.TextureType = json["TextureType"];
+        model.ImageCreateInfo = Json::LoadImageCreateInfo(json["ImageCreateInfo"], textureResolution);
         model.SamplerCreateInfo = Json::LoadVulkanSamplerCreateInfo(json["SamplerCreateInfo"]);
         model.AttachmentDescription = Json::LoadAttachmentDescription(json["AttachmentDescription"]);
         return model;
     }
 };
 
-struct SubpassDependencyModel : public RenderPassEditorBaseModel
+struct PipelineDescriptorModel
 {
-public:
-    uint32 _srcSubpass;
-    uint32 _dstSubpass;
-    VkPipelineStageFlags _srcStageMask;
-    VkPipelineStageFlags _dstStageMask;
-    VkAccessFlags _srcAccessMask;
-    VkAccessFlags _dstAccessMask;
-    VkDependencyFlags _dependencyFlags;
+    uint BindingNumber;
+    DescriptorBindingPropertiesEnum BindingPropertiesList;
+    VkDescriptorType descriptorType;
 
-    SubpassDependencyModel()
+    PipelineDescriptorModel()
     {
 
     }
 
-    static SubpassDependencyModel from_json(const nlohmann::json& json)
+    static PipelineDescriptorModel from_json(const nlohmann::json& json)
     {
-        SubpassDependencyModel model;
-        model._srcSubpass = json["_srcSubpass"];
-        model._dstSubpass = json["_dstSubpass"];
-        model._srcStageMask = json["_srcStageMask"];
-        model._dstStageMask = json["_dstStageMask"];
-        model._srcAccessMask = json["_srcAccessMask"];
-        model._dstAccessMask = json["_dstAccessMask"];
-        model._dependencyFlags = json["_dependencyFlags"];
-        model._name = json["_name"];
+        PipelineDescriptorModel model;
+        model.BindingNumber = json["BindingNumber"];
+       // model.
 
         return model;
     }
@@ -76,38 +94,75 @@ public:
 struct RenderPassBuildInfoModel : public RenderPassEditorBaseModel 
 {
 public:
-    ivec2 SwapChainResolution;
+    bool IsRenderedToSwapchain;
     std::vector<std::string> RenderPipelineList;
     std::vector<RenderedTextureInfoModel> RenderedTextureInfoModelList;
-    List<SubpassDependencyModel> SubpassDependencyModelList;
+    List<VkSubpassDependency> SubpassDependencyModelList;
 
     RenderPassBuildInfoModel()
     {
 
     }
 
-    static RenderPassBuildInfoModel from_json(const nlohmann::json& json)
+    static RenderPassBuildInfoModel from_json(const nlohmann::json& json, ivec2 textureResolution)
     {
         RenderPassBuildInfoModel model;
         model._name = json["_name"];
-        model.SwapChainResolution.x = json["SwapChainResuloution"][0];
-        model.SwapChainResolution.y  = json["SwapChainResuloution"][1];
-        for (int x = 0; x < json.at("RenderedTextureInfoModelList"); x++)
+        for (int x = 0; x < json["RenderedTextureInfoModelList"].size(); x++)
         {
-            model.RenderedTextureInfoModelList.emplace_back(RenderedTextureInfoModel::from_json(json["RenderedTextureInfoModelList"][x]));
+            model.RenderedTextureInfoModelList.emplace_back(RenderedTextureInfoModel::from_json(json["RenderedTextureInfoModelList"][x], textureResolution));
         }
-        //for (int x = 0; x < json.at("RenderedTextureInfoModelList"); x++)
-        //{
-        //    nlohmann::json b = json["RenderedTextureInfoModelList"][x];
-        //    auto a = Json::LoadImageCreateInfo(b);
-        //    model.RenderedTextureInfoModelList.emplace_back(a);
-        //}
-        //for (int x = 0; x < json.at("SubpassDependencyModelList"); x++)
-        //{
-        //    nlohmann::json b = json["SubpassDependencyModelList"][x];
-        //    auto a = Json::LoadImageCreateInfo(b);
-        //    model.RenderedTextureInfoModelList.emplace_back(a);
-        //}
+        for (int x = 0; x < json["SubpassDependencyList"].size(); x++)
+        {
+            model.SubpassDependencyModelList.emplace_back(Json::LoadSubpassDependency(json["SubpassDependencyList"][x]));
+        }
         return model;
     }
 };
+
+//struct RenderPipelineModel : RenderPassEditorBaseModel
+//{
+//    String VertexShaderPath;
+//    String FragmentShaderPath;
+//    List<VkViewport> ViewportList;
+//    List<VkRect2D> ScissorList;
+//    VkPipelineColorBlendAttachmentState PipelineColorBlendAttachmentStateList;
+//    List<VkPipelineColorBlendStateCreateInfo> PipelineColorBlendStateCreateInfoModelList;
+//    VkPipelineRasterizationStateCreateInfo PipelineRasterizationStateCreateInfo;
+//    VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo;
+//    VkPipelineDepthStencilStateCreateInfo PipelineDepthStencilStateCreateInfo;
+//    VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo;
+//    List<VkDescriptorSetLayoutBinding> LayoutBindingList;
+//    List<PipelineDescriptorModel> PipelineDescriptorModelsList;
+//
+//    RenderPipelineModel()
+//    {
+//
+//    }
+//
+//    static RenderPipelineModel from_json(const nlohmann::json& json, ivec2 textureResolution)
+//    {
+//        RenderPipelineModel model;
+//        model._name = json["_name"];
+//        model.VertexShaderPath = json["VertexShader"];
+//        model.FragmentShaderPath = json["FragmentShaderPath"];
+//
+//        for (int x = 0; x < json["ViewportList"].size(); x++)
+//        {
+//            model.ViewportList.emplace_back(Json::LoadViewPort(json["ViewportList"][x]));
+//        }
+//        for (int x = 0; x < json["ScissorList"].size(); x++)
+//        {
+//            model.ViewportList.emplace_back(Json::LoadRect2D(json["ScissorList"][x]));
+//        }
+//
+//        for (int x = 0; x < json["PipelineColorBlendAttachmentStateList"].size(); x++)
+//        {
+//            model.PipelineColorBlendStateCreateInfoModelList.emplace_back(Json::LoadRect2D(json["PipelineColorBlendAttachmentStateList"][x]));
+//        }
+//        model.PipelineColorBlendAttachmentStateList = Json::LoadPipelineColorBlendAttachmentState(json["PipelineColorBlendStateCreateInfoModel"]);
+//
+//
+//        return model;
+//    }
+//};

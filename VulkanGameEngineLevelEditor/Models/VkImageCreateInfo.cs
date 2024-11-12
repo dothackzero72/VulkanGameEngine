@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.EditorEnhancements;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
+using Newtonsoft.Json;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -37,6 +38,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
 
         [Browsable(false)]
+        [Newtonsoft.Json.JsonIgnore]
         public StructureType sType
         {
             get => _sType;
@@ -52,7 +54,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         [Category("Image Properties")]
         [Browsable(false)]
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ImageCreateFlags flags
         {
@@ -68,7 +70,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Browsable(false)]
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public void* pNext
         {
@@ -113,7 +115,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         [Category("Image Properties")]
         [Browsable(false)]
-        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         public VkExtent3D extent
         {
             get => _extent;
@@ -213,6 +215,8 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Queue Family")]
+        [Browsable(false)]
+        [Newtonsoft.Json.JsonIgnore]
         public uint queueFamilyIndexCount
         {
             get => _queueFamilyIndexCount;
@@ -227,6 +231,8 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Queue Family")]
+        [Browsable(false)]
+        [Newtonsoft.Json.JsonIgnore]
         public unsafe uint* pQueueFamilyIndices
         {
             get => _pQueueFamilyIndices;

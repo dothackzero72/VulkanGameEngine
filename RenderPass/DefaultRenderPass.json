@@ -4,24 +4,18 @@
       "IsRenderedToSwapchain": true,
       "RenderedTextureInfoName": "ColorRenderTexture",
       "ImageCreateInfo": {
-        "sType": 0,
-        "flags": 0,
         "imageType": 1,
         "format": 37,
-        "extent": "1478, 643, 1",
         "mipLevels": 1,
         "arrayLayers": 1,
         "samples": 1,
         "tiling": 0,
         "usage": 23,
         "sharingMode": 0,
-        "queueFamilyIndexCount": 0,
-        "pQueueFamilyIndices": null,
         "initialLayout": 0,
         "_name": "DefaultColorTextureCreateInfo"
       },
       "SamplerCreateInfo": {
-        "flags": 0,
         "magFilter": 0,
         "minFilter": 0,
         "mipmapMode": 1,
@@ -58,24 +52,18 @@
       "IsRenderedToSwapchain": false,
       "RenderedTextureInfoName": "DepthRenderedTexture",
       "ImageCreateInfo": {
-        "sType": 0,
-        "flags": 0,
         "imageType": 1,
         "format": 126,
-        "extent": "1478, 643, 1",
         "mipLevels": 1,
         "arrayLayers": 1,
         "samples": 1,
         "tiling": 0,
         "usage": 39,
         "sharingMode": 0,
-        "queueFamilyIndexCount": 0,
-        "pQueueFamilyIndices": null,
         "initialLayout": 0,
         "_name": "DefaultDepthTextureCreateInfo"
       },
       "SamplerCreateInfo": {
-        "flags": 0,
         "magFilter": 0,
         "minFilter": 0,
         "mipmapMode": 1,
@@ -108,10 +96,6 @@
       "TextureType": 1,
       "_name": null
     }
-  ],
-  "SwapChainResuloution": [
-    1478,
-    643
   ],
   "RenderPipelineList": [],
   "SubpassDependencyList": [

@@ -72,7 +72,6 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                     }
                 },
                 SubpassDependencyList = new List<VkSubpassDependency>() { new VkSubpassDependency(RenderPassEditorConsts.DefaultSubpassDependencyModel) },
-                SwapChainResuloution = SwapChainResuloution
             };
 
             listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].AttachmentDescription);

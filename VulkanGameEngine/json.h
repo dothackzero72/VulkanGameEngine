@@ -423,28 +423,28 @@ public:
 		};
 	}
 
-	static VkImageCreateInfo LoadImageCreateInfo(nlohmann::json json)
+	static VkImageCreateInfo LoadImageCreateInfo(nlohmann::json json, ivec2 textureResolution)
 	{
 		return VkImageCreateInfo
 		{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
 			.pNext = nullptr,
-			.flags = json["Flags"],
-			.imageType = json["ImageType"],
-			.format = json["Format"],
+			.flags = 0,
+			.imageType = json["imageType"],
+			.format = json["format"],
 			.extent = VkExtent3D{
-				json["extent"]["width"],
-				json["extent"]["height"],
-				json["extent"]["depth"]
+				.width = static_cast<uint32>(textureResolution.x),
+				.height = static_cast<uint32>(textureResolution.y),
+				.depth = 1
 			},
 			.mipLevels = json["mipLevels"],
-			.arrayLayers = json["arrayLayers"], 
+			.arrayLayers = json["arrayLayers"],
 			.samples = json["samples"],
 			.tiling = json["tiling"],
 			.usage = json["usage"],
 			.sharingMode = json["sharingMode"],
-			.queueFamilyIndexCount = json["queueFamilyIndexCount"],
-			.pQueueFamilyIndices = json["pQueueFamilyIndices"].get<std::vector<uint32_t>>().data(),
+			.queueFamilyIndexCount = 0,
+			.pQueueFamilyIndices = nullptr,
 			.initialLayout = json["initialLayout"]
 		};
 	}
@@ -455,7 +455,7 @@ public:
 		{
 			.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
 			.pNext = nullptr,
-			.flags = json["flags"],
+			.flags = 0,
 			.magFilter = json["magFilter"],
 			.minFilter = json["minFilter"],
 			.mipmapMode = json["mipmapMode"],
@@ -485,6 +485,76 @@ public:
 			.srcAccessMask = json["srcAccessMask"],
 			.dstAccessMask = json["dstAccessMask"],
 			.dependencyFlags = json["dependencyFlags"]
+		};
+	}
+
+	static VkViewport LoadViewPort(nlohmann::json json)
+	{
+		return VkViewport
+		{
+			.x = json["x"],
+			.y = json["y"],
+			.width = json["width"],
+			.height = json["height"],
+			.minDepth = json["minDepth"],
+			.maxDepth = json["maxDepth"],
+		};
+	}
+
+	static VkOffset2D LoadOffset2D(nlohmann::json json)
+	{
+		return VkOffset2D
+		{
+			.x = json["x"],
+			.y = json["y"]
+		};
+	}
+
+	static VkExtent2D LoadExtent2D(nlohmann::json json)
+	{
+		return VkExtent2D
+		{
+			.width = json["width"],
+			.height = json["height"]
+		};
+	}
+
+	static VkRect2D LoadRect2D(nlohmann::json json)
+	{
+		return VkRect2D
+		{
+			.offset = Json::LoadOffset2D(json["offset"]),
+			.extent = Json::LoadExtent2D(json["extent"])
+		};
+	}
+
+	static VkPipelineColorBlendAttachmentState LoadPipelineColorBlendAttachmentState(nlohmann::json json)
+	{
+		return VkPipelineColorBlendAttachmentState
+		{
+			.blendEnable = json["blendEnable"]["value"],
+			.srcColorBlendFactor = json["srcColorBlendFactor"],
+			.dstColorBlendFactor = json["dstColorBlendFactor"],
+		    .colorBlendOp = json["colorBlendOp"],
+		    .srcAlphaBlendFactor = json["srcAlphaBlendFactor"],
+		    .dstAlphaBlendFactor = json["dstAlphaBlendFactor"],
+		    .alphaBlendOp = json["alphaBlendOp"],
+		    .colorWriteMask = json["colorWriteMask"]
+		};
+	}
+
+	static VkPipelineColorBlendStateCreateInfo LoadPipelineColorBlendStateCreateInfo(nlohmann::json json, List<VkPipelineColorBlendAttachmentState>& colorBlendAttachments)
+	{
+		return VkPipelineColorBlendStateCreateInfo
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.logicOpEnable = json["logicOpEnable"]["Value"],
+			.logicOp = json["logicOp"],
+			.attachmentCount = static_cast<uint32>(colorBlendAttachments.size()),
+			.pAttachments = colorBlendAttachments.data(),
+			.blendConstants = json["blendConstants"]["FixedElementField"],
 		};
 	}
 };
