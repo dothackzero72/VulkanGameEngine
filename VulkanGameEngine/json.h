@@ -532,7 +532,7 @@ public:
 	{
 		return VkPipelineColorBlendAttachmentState
 		{
-			.blendEnable = json["blendEnable"]["value"],
+			.blendEnable = json["blendEnable"]["Value"],
 			.srcColorBlendFactor = json["srcColorBlendFactor"],
 			.dstColorBlendFactor = json["dstColorBlendFactor"],
 		    .colorBlendOp = json["colorBlendOp"],
@@ -554,7 +554,110 @@ public:
 			.logicOp = json["logicOp"],
 			.attachmentCount = static_cast<uint32>(colorBlendAttachments.size()),
 			.pAttachments = colorBlendAttachments.data(),
-			.blendConstants = json["blendConstants"]["FixedElementField"],
+			.blendConstants = 
+			{
+				json["blendConstants"]["R"],
+				json["blendConstants"]["G"],
+				json["blendConstants"]["B"],
+				json["blendConstants"]["A"],
+			} 
+		};
+	}
+
+	static VkPipelineRasterizationStateCreateInfo LoadPipelineRasterizationStateCreateInfo(nlohmann::json json)
+	{
+		return VkPipelineRasterizationStateCreateInfo
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.depthClampEnable = json["depthClampEnable"],
+			.rasterizerDiscardEnable = json["rasterizerDiscardEnable"],
+			.polygonMode = json["polygonMode"],
+			.cullMode = json["cullMode"],
+			.frontFace = json["frontFace"],
+			.depthBiasEnable = json["depthBiasEnable"],
+			.depthBiasConstantFactor = json["depthBiasConstantFactor"],
+			.depthBiasClamp = json["depthBiasClamp"],
+			.depthBiasSlopeFactor = json["depthBiasSlopeFactor"],
+			.lineWidth = json["lineWidth"],
+		};
+	}
+
+	static VkPipelineMultisampleStateCreateInfo LoadPipelineMultisampleStateCreateInfo(nlohmann::json json)
+	{
+		return VkPipelineMultisampleStateCreateInfo
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.rasterizationSamples = json["rasterizationSamples"],
+			.sampleShadingEnable = json["sampleShadingEnable"],
+			.minSampleShading = json["minSampleShading"],
+			.pSampleMask = nullptr,
+			.alphaToCoverageEnable = json["alphaToCoverageEnable"],
+			.alphaToOneEnable = json["alphaToOneEnable"]
+		};
+	}
+
+	static VkPipelineDepthStencilStateCreateInfo LoadPipelineDepthStencilStateCreateInfo(nlohmann::json json)
+	{
+		return VkPipelineDepthStencilStateCreateInfo
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.depthTestEnable = json["depthTestEnable"],
+			.depthWriteEnable = json["depthWriteEnable"],
+			.depthCompareOp = json["depthCompareOp"],
+			.depthBoundsTestEnable = json["depthBoundsTestEnable"],
+			.stencilTestEnable = json["stencilTestEnable"],
+			.front = VkStencilOpState
+			{
+				.failOp = json["front"]["failOp"],
+				.passOp = json["front"]["passOp"],
+				.depthFailOp = json["front"]["depthFailOp"],
+				.compareOp = json["front"]["compareOp"],
+				.compareMask = json["front"]["compareMask"],
+				.writeMask = json["front"]["writeMask"],
+				.reference = json["front"]["reference"]
+			},
+			.back = VkStencilOpState
+			{
+				.failOp = json["back"]["failOp"],
+				.passOp = json["back"]["passOp"],
+				.depthFailOp = json["back"]["depthFailOp"],
+				.compareOp = json["back"]["compareOp"],
+				.compareMask = json["back"]["compareMask"],
+				.writeMask = json["back"]["writeMask"],
+				.reference = json["back"]["reference"]
+			},
+			.minDepthBounds = json["minDepthBounds"],
+			.maxDepthBounds = json["maxDepthBounds"],
+		};
+	}
+
+	static VkPipelineInputAssemblyStateCreateInfo LoadPipelineInputAssemblyStateCreateInfo(nlohmann::json json)
+	{
+		return VkPipelineInputAssemblyStateCreateInfo
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.topology = json["topology"],
+			.primitiveRestartEnable = json["primitiveRestartEnable"]
+		};
+	}
+	
+	static VkDescriptorSetLayoutBinding LoadLayoutBinding(nlohmann::json json)
+	{
+		return VkDescriptorSetLayoutBinding
+		{
+			.binding = json["binding"],
+			.descriptorType = json["descriptorType"],
+			.descriptorCount = json["descriptorCount"],
+			.stageFlags = json["stageFlags"],
+			.pImmutableSamplers = nullptr
 		};
 	}
 };

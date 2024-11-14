@@ -60,7 +60,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             _device = VulkanRenderer.device;
 
-            //SavePipeline();
+            SavePipeline();
 
             string jsonContent = File.ReadAllText(jsonPipelineFilePath);
             RenderPipelineModel model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent);
@@ -397,10 +397,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     flags = 0,
                     pNext = null
                 };
-                pipelineColorBlendStateCreateInfo2.blendConstants[0] = 0.0f;
-                pipelineColorBlendStateCreateInfo2.blendConstants[1] = 0.0f;
-                pipelineColorBlendStateCreateInfo2.blendConstants[2] = 0.0f;
-                pipelineColorBlendStateCreateInfo2.blendConstants[3] = 0.0f;
+                pipelineColorBlendStateCreateInfo2.blendConstants.R = 0.0f;
+                pipelineColorBlendStateCreateInfo2.blendConstants.G = 0.0f;
+                pipelineColorBlendStateCreateInfo2.blendConstants.B = 0.0f;
+                pipelineColorBlendStateCreateInfo2.blendConstants.A = 0.0f;
 
 
             var jsonObj = new RenderPipelineModel
@@ -416,8 +416,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     depthCompareOp = CompareOp.LessOrEqual,
                     depthBoundsTestEnable = false,
                     stencilTestEnable = false,
-                    front = new(StencilOp.Keep, StencilOp.Keep, StencilOp.Keep, CompareOp.Always),
-                    back = new(StencilOp.Keep, StencilOp.Keep, StencilOp.Keep, CompareOp.Always)
+                    back = new VkStencilOpState(),
+                    front = new VkStencilOpState(),
+                    flags = 0,
                 },
                 PipelineMultisampleStateCreateInfo = new VkPipelineMultisampleStateCreateInfo()
                 {

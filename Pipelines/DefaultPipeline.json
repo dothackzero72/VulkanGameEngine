@@ -19,7 +19,10 @@
   ],
   "PipelineColorBlendStateCreateInfoModel": {
     "blendConstants": {
-      "FixedElementField": 0.0
+      "R": 0.0,
+      "G": 0.0,
+      "B": 0.0,
+      "A": 0.0
     },
     "sType": 26,
     "pNext": null,
@@ -32,55 +35,67 @@
     "pAttachments": null
   },
   "PipelineRasterizationStateCreateInfo": {
-    "DepthClampEnable": false,
-    "RasterizerDiscardEnable": false,
-    "PolygonMode": 0,
-    "CullMode": 2,
-    "FrontFace": 0,
-    "DepthBiasEnable": false,
-    "DepthBiasConstantFactor": 0.0,
-    "DepthBiasClamp": 0.0,
-    "DepthBiasSlopeFactor": 0.0,
-    "LineWidth": 1.0
+    "stype": 1000101001,
+    "depthClampEnable": false,
+    "rasterizerDiscardEnable": false,
+    "polygonMode": 0,
+    "cullMode": 2,
+    "frontFace": 0,
+    "depthBiasEnable": false,
+    "depthBiasConstantFactor": 0.0,
+    "depthBiasClamp": 0.0,
+    "depthBiasSlopeFactor": 0.0,
+    "lineWidth": 1.0,
+    "flags": 0,
+    "pNext": null
   },
   "PipelineMultisampleStateCreateInfo": {
-    "RasterizationSamples": 1,
-    "SampleShadingEnable": false,
-    "MinSampleShading": 0.0,
-    "PSampleMask": null,
-    "AlphaToCoverageEnable": false,
-    "AlphaToOneEnable": false
+    "sType": 24,
+    "rasterizationSamples": 1,
+    "sampleShadingEnable": false,
+    "minSampleShading": 0.0,
+    "pSampleMask": null,
+    "alphaToCoverageEnable": false,
+    "alphaToOneEnable": false,
+    "flags": 0,
+    "pNext": null
   },
   "PipelineDepthStencilStateCreateInfo": {
-    "DepthTestEnable": true,
-    "DepthWriteEnable": true,
-    "DepthCompareOp": 3,
-    "DepthBoundsTestEnable": false,
-    "StencilTestEnable": false,
-    "Front": {
-      "FailOp": 0,
-      "PassOp": 0,
-      "DepthFailOp": 0,
-      "CompareOp": 7,
-      "CompareMask": 0,
-      "WriteMask": 0,
-      "Reference": 0
+    "sType": 25,
+    "depthTestEnable": true,
+    "depthWriteEnable": true,
+    "depthCompareOp": 3,
+    "depthBoundsTestEnable": false,
+    "stencilTestEnable": false,
+    "front": {
+      "failOp": 0,
+      "passOp": 0,
+      "depthFailOp": 0,
+      "compareOp": 0,
+      "compareMask": 0,
+      "writeMask": 0,
+      "reference": 0
     },
-    "Back": {
-      "FailOp": 0,
-      "PassOp": 0,
-      "DepthFailOp": 0,
-      "CompareOp": 7,
-      "CompareMask": 0,
-      "WriteMask": 0,
-      "Reference": 0
+    "back": {
+      "failOp": 0,
+      "passOp": 0,
+      "depthFailOp": 0,
+      "compareOp": 0,
+      "compareMask": 0,
+      "writeMask": 0,
+      "reference": 0
     },
-    "MinDepthBounds": 0.0,
-    "MaxDepthBounds": 0.0
+    "minDepthBounds": 0.0,
+    "maxDepthBounds": 0.0,
+    "flags": 0,
+    "pNext": null
   },
   "PipelineInputAssemblyStateCreateInfo": {
-    "Topology": 3,
-    "PrimitiveRestartEnable": false
+    "sType": 20,
+    "topology": 3,
+    "primitiveRestartEnable": false,
+    "flags": 0,
+    "pNext": null
   },
   "LayoutBindingList": [
     {
@@ -102,12 +117,12 @@
     {
       "BindingNumber": 0,
       "BindingPropertiesList": 0,
-      "descriptorType": 7
+      "DescriptorType": 7
     },
     {
       "BindingNumber": 1,
       "BindingPropertiesList": 1,
-      "descriptorType": 1
+      "DescriptorType": 1
     }
   ],
   "_name": "DefaultPipeline"

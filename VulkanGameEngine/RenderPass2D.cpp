@@ -253,11 +253,11 @@ void RenderPass2D::BuildRenderPipeline(List<std::shared_ptr<Texture>> texture, s
 
     std::vector<VkVertexInputBindingDescription> bindingDescriptionList
     {
-        Vertex2D::getBindingDescriptions()
+        Vertex2D::GetBindingDescriptions()
     };
     std::vector<VkVertexInputAttributeDescription> AttributeDescriptions
     {
-        Vertex2D::getAttributeDescriptions()
+        Vertex2D::GetAttributeDescriptions()
     };
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};

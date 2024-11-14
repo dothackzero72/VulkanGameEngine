@@ -7,11 +7,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using Silk.NET.Core.Native;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public unsafe struct VkPipelineColorBlendStateCreateInfo
+    public unsafe class VkPipelineColorBlendStateCreateInfo
     {
+        public struct Blender
+        {
+            public float R { get; set; } = 0.0f;
+            public float G { get; set; } = 0.0f;
+            public float B { get; set; } = 0.0f;
+            public float A { get; set; } = 0.0f;
+            public Blender()
+            {
+            }
+        }
+
         public StructureType sType { get; set; }
         public void* pNext { get; set; }
         public PipelineColorBlendStateCreateFlags flags { get; set; }
@@ -19,7 +31,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public LogicOp logicOp { get; set; }
         public uint attachmentCount { get; set; }
         public PipelineColorBlendAttachmentState* pAttachments { get; set; }
-        public fixed float blendConstants[4];
+        public Blender blendConstants;
 
         public VkPipelineColorBlendStateCreateInfo()
         {
@@ -30,10 +42,10 @@ namespace VulkanGameEngineLevelEditor.Models
             logicOp = LogicOp.Clear;
             attachmentCount = 0;
             pAttachments = null;
-            blendConstants[0] = 0.0f;
-            blendConstants[1] = 0.0f;
-            blendConstants[2] = 0.0f;
-            blendConstants[3] = 0.0f;
+            blendConstants.R = 0.0f;
+            blendConstants.G = 0.0f;
+            blendConstants.B = 0.0f;
+            blendConstants.A = 0.0f;
         }
 
         public VkPipelineColorBlendStateCreateInfo(PipelineColorBlendStateCreateInfo other)
@@ -45,10 +57,10 @@ namespace VulkanGameEngineLevelEditor.Models
             logicOp = other.LogicOp;
             attachmentCount = other.AttachmentCount;
             pAttachments = other.PAttachments;
-            for (int i = 0; i < 4; i++)
-            {
-                blendConstants[i] = other.BlendConstants[i];
-            }
+            blendConstants.R = 0.0f;
+            blendConstants.G = 0.0f;
+            blendConstants.B = 0.0f;
+            blendConstants.A = 0.0f;
         }
 
         public PipelineColorBlendStateCreateInfo Convert()
@@ -63,10 +75,10 @@ namespace VulkanGameEngineLevelEditor.Models
                 AttachmentCount = attachmentCount,
                 PAttachments = pAttachments
             };
-            for (int i = 0; i < 4; i++)
-            {
-                result.BlendConstants[i] = blendConstants[i];
-            }
+            result.BlendConstants[0] = blendConstants.R;
+            result.BlendConstants[2] = blendConstants.G;
+            result.BlendConstants[3] = blendConstants.B;
+            result.BlendConstants[4] = blendConstants.A;
             return result;
         }
 
@@ -80,10 +92,10 @@ namespace VulkanGameEngineLevelEditor.Models
             ptr->LogicOp = logicOp;
             ptr->AttachmentCount = attachmentCount;
             ptr->PAttachments = pAttachments;
-            for (int i = 0; i < 4; i++)
-            {
-                ptr->BlendConstants[i] = blendConstants[i];
-            }
+            ptr->BlendConstants[0] = blendConstants.R;
+            ptr->BlendConstants[2] = blendConstants.G;
+            ptr->BlendConstants[3] = blendConstants.B;
+            ptr->BlendConstants[4] = blendConstants.A;
             return ptr;
         }
 

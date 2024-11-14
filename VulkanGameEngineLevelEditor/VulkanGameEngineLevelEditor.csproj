@@ -325,6 +325,7 @@
     <Compile Include="Models\VkPipelineColorBlendAttachmentState.cs" />
     <Compile Include="Models\VkPipelineColorBlendStateCreateInfo.cs" />
     <Compile Include="Models\VkRect2D.cs" />
+    <Compile Include="Models\VkStencilOpState.cs" />
     <Compile Include="Models\VkSubpassDependency.cs" />
     <Compile Include="Models\VkViewport.cs" />
     <Compile Include="RenderPassEditor\RenderPassEditorConsts.cs" />

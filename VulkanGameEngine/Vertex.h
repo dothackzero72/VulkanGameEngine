@@ -21,7 +21,7 @@ struct Vertex2D
     {
     }
 
-    static std::vector<VkVertexInputBindingDescription> getBindingDescriptions()
+    static std::vector<VkVertexInputBindingDescription> GetBindingDescriptions()
     {
         std::vector<VkVertexInputBindingDescription> bindingDescriptionList{};
         VkVertexInputBindingDescription bindingDescription{};
@@ -34,7 +34,7 @@ struct Vertex2D
         return bindingDescriptionList;
     }
 
-    static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions()
+    static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions()
     {
         std::vector<VkVertexInputAttributeDescription> AttributeDescriptions = {};
         VkVertexInputAttributeDescription AttributeDescription;
