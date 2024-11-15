@@ -75,11 +75,11 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             };
 
             listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].AttachmentDescription);
-            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].AttachmentDescription);
+            //listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].AttachmentDescription);
             listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].ImageCreateInfo);
-            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].ImageCreateInfo);
+            //listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].ImageCreateInfo);
             listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].SamplerCreateInfo);
-            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].SamplerCreateInfo);
+            //listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].SamplerCreateInfo);
             listBox1.Items.Add(RenderPassModels.SubpassDependencyList[0]);
         }
 

@@ -1,7 +1,9 @@
 ﻿using GlmSharp;
+using Newtonsoft.Json;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Configuration;
 using System.Net.Mail;
@@ -43,10 +45,88 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             //pipelineList.Add(new JsonPipeline("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines", renderPass, (uint)sizeof(SceneDataBuffer)));
         }
 
+        public void SaveRenderPass()
+        {
+            RenderPassBuildInfoModel model = new RenderPassBuildInfoModel()
+            {
+                RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>()
+                {
+                    new RenderedTextureInfoModel()
+                    {
+                            _name = "Texture2DRenderpass",
+                            IsRenderedToSwapchain = false,
+                            TextureType = RenderedTextureType.ColorRenderedTexture,
+                            AttachmentDescription = new VkAttachmentDescription()
+                            {
+                                format = Format.B8G8R8A8Unorm,
+                                samples = SampleCountFlags.SampleCount1Bit,
+                                loadOp = AttachmentLoadOp.Clear,
+                                storeOp = AttachmentStoreOp.Store,
+                                stencilLoadOp = AttachmentLoadOp.DontCare,
+                                stencilStoreOp = AttachmentStoreOp.DontCare,
+                                initialLayout = Silk.NET.Vulkan.ImageLayout.Undefined,
+                                finalLayout = Silk.NET.Vulkan.ImageLayout.ReadOnlyOptimal
+                            },
+                            ImageCreateInfo = new VkImageCreateInfo()
+                            {
+                                sType = StructureType.ImageCreateInfo,
+                                imageType = ImageType.ImageType2D,
+                                format = Format.B8G8R8A8Unorm,
+                                extent = new VkExtent3D(1, 1, 1),
+                                mipLevels = 1,
+                                arrayLayers = 1,
+                                samples = SampleCountFlags.SampleCount1Bit,
+                                tiling = ImageTiling.Optimal,
+                                usage = ImageUsageFlags.ImageUsageTransferSrcBit |
+                                        ImageUsageFlags.ImageUsageTransferDstBit |
+                                        ImageUsageFlags.ImageUsageSampledBit |
+                                        ImageUsageFlags.ImageUsageColorAttachmentBit,
+                                sharingMode = SharingMode.Exclusive,
+                                initialLayout = Silk.NET.Vulkan.ImageLayout.Undefined,
+                            },
+                            SamplerCreateInfo = new VkSamplerCreateInfo()
+                            {
+                                structureType = StructureType.SamplerCreateInfo,
+                                magFilter = Filter.Nearest,
+                                minFilter = Filter.Nearest,
+                                mipmapMode = SamplerMipmapMode.Linear,
+                                addressModeU = SamplerAddressMode.Repeat,
+                                addressModeV = SamplerAddressMode.Repeat,
+                                addressModeW = SamplerAddressMode.Repeat,
+                                mipLodBias = 0.0f,
+                                anisotropyEnable = true,
+                                maxAnisotropy = 16.0f,
+                                compareEnable = false,
+                                compareOp = CompareOp.Always,
+                                minLod = 0.0f,
+                                maxLod = 1,
+                                borderColor = BorderColor.IntOpaqueBlack,
+                                unnormalizedCoordinates = false,
+                            },
+                            RenderedTextureInfoName = "Rendered2DTexture"
+                    }
+                },
+                SubpassDependencyList = new List<VkSubpassDependency>()
+                {
+                    new VkSubpassDependency()
+                    {
+                         srcSubpass = (~0U),
+                         dstSubpass = 0,
+                         srcStageMask = (VkPipelineStageFlags)PipelineStageFlags.ColorAttachmentOutputBit,
+                         dstStageMask = (VkPipelineStageFlags)PipelineStageFlags.ColorAttachmentOutputBit,
+                         srcAccessMask = 0,
+                         dstAccessMask = (VkAccessFlags)AccessFlags.ColorAttachmentWriteBit
+                    }
+                }
+            };
+
+            string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\Pipelines\Default2DPipeline.json";
+            string jsonString = JsonConvert.SerializeObject(model, Formatting.Indented);
+            File.WriteAllText(finalfilePath, jsonString);
+        }
+
         public void CreateRenderPass(RenderPassBuildInfoModel model)
         {
-
-
             List<AttachmentDescription> attachmentDescriptionList = new List<AttachmentDescription>();
             List<AttachmentReference> inputAttachmentReferenceList = new List<AttachmentReference>();
             List<AttachmentReference> colorAttachmentReferenceList = new List<AttachmentReference>();
@@ -63,6 +143,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             if (!renderedTextureInfoModel.IsRenderedToSwapchain)
                             {
                                 RenderedColorTextureList.Add(new RenderedTexture());
+                            }
+                            else
+                            {
+                                RenderedColorTextureList.Add(new RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
                             }
                             colorAttachmentReferenceList.Add(new AttachmentReference
                             {
@@ -83,6 +167,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         }
                     case RenderedTextureType.InputAttachmentTexture:
                         {
+                            RenderedColorTextureList.Add(new RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
                             inputAttachmentReferenceList.Add(new AttachmentReference
                             {
                                 Attachment = (uint)(inputAttachmentReferenceList.Count()),
@@ -162,7 +247,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         private void CreateFramebuffer()
         {
-
             Framebuffer[] frameBufferList = new Framebuffer[VulkanRenderer.swapChain.ImageCount];
             for (int x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
             {

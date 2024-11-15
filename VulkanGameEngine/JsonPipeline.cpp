@@ -38,28 +38,28 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
         {
             switch (binding.BindingPropertiesList)
             {
-                case kMeshPropertiesDescriptor:
-                {
-                    descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
-                        {
-                            .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                            .descriptorCount = static_cast<uint32>(meshProperties.size())
-                        });
-                    break;
-                }
-                case kTextureDescriptor:
-                {
-                    descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
-                        {
-                            .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                            .descriptorCount = static_cast<uint32>(TextureList.size())
-                        });
-                    break;
-                }
-                default:
-                {
-                    //throw new Exception($"{binding} case hasn't been handled yet");
-                }
+            case kMeshPropertiesDescriptor:
+            {
+                descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
+                    {
+                        .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+                        .descriptorCount = static_cast<uint32>(meshProperties.size())
+                    });
+                break;
+            }
+            case kTextureDescriptor:
+            {
+                descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
+                    {
+                        .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                        .descriptorCount = static_cast<uint32>(TextureList.size())
+                    });
+                break;
+            }
+            default:
+            {
+                //throw new Exception($"{binding} case hasn't been handled yet");
+            }
             }
         }
 
@@ -135,7 +135,7 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
         {
             VkDescriptorSetAllocateInfo allocInfo =
             {
-                .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+                .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
                 .pNext = nullptr,
                 .descriptorPool = DescriptorPool,
                 .descriptorSetCount = static_cast<uint32>(DescriptorSetLayoutList.size()),
@@ -147,58 +147,55 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
 
     //UpdateDescriptorSets
     {
-        List<List<VkWriteDescriptorSet>> writeDescriptorSet = List<List<VkWriteDescriptorSet>>();
-        for (uint x = 0; x < DescriptorSetList.size(); x++)
+        for (auto& descriptorSet : DescriptorSetList)
         {
-            for (uint y = 0; y < cRenderer.SwapChain.SwapChainImageCount; y++)
+            List<VkWriteDescriptorSet> writeDescriptorSet = List<VkWriteDescriptorSet>();
+            for (auto binding : model.PipelineDescriptorModelsList)
             {
-                for (auto binding : model.PipelineDescriptorModelsList)
+                switch (binding.BindingPropertiesList)
                 {
-                    switch (binding.BindingPropertiesList)
+                    case kMeshPropertiesDescriptor:
                     {
-                        case kMeshPropertiesDescriptor:
-                        {
-                            writeDescriptorSet.emplace_back(VkWriteDescriptorSet
-                                {
-                                    .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                                    .pNext = nullptr,
-                                    .dstSet = DescriptorSetList[x],
-                                    .dstBinding = binding.BindingNumber,
-                                    .dstArrayElement = 0,
-                                    .descriptorCount = static_cast<uint32>(meshProperties.size()),
-                                    .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                                    .pImageInfo = nullptr,
-                                    .pBufferInfo = meshProperties.data(),
-                                    .pTexelBufferView = nullptr
-                                });
-                            break;
-                        }
-                        case kTextureDescriptor:
-                        {
-                            writeDescriptorSet.emplace_back(VkWriteDescriptorSet
-                                {
-                                    .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                                    .pNext = nullptr,
-                                    .dstSet = DescriptorSetList[x],
-                                    .dstBinding = binding.BindingNumber,
-                                    .dstArrayElement = 0,
-                                    .descriptorCount = static_cast<uint32>(TextureList.size()),
-                                    .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                    .pImageInfo = TextureList.data(),
-                                    .pBufferInfo = nullptr,
-                                    .pTexelBufferView = nullptr
-                                });
+                        writeDescriptorSet.emplace_back(VkWriteDescriptorSet
+                            {
+                                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                                .pNext = nullptr,
+                                .dstSet = descriptorSet,
+                                .dstBinding = binding.BindingNumber,
+                                .dstArrayElement = 0,
+                                .descriptorCount = static_cast<uint32>(meshProperties.size()),
+                                .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+                                .pImageInfo = nullptr,
+                                .pBufferInfo = meshProperties.data(),
+                                .pTexelBufferView = nullptr
+                            });
+                        break;
+                    }
+                    case kTextureDescriptor:
+                    {
+                        writeDescriptorSet.emplace_back(VkWriteDescriptorSet
+                            {
+                                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                                .pNext = nullptr,
+                                .dstSet = descriptorSet,
+                                .dstBinding = binding.BindingNumber,
+                                .dstArrayElement = 0,
+                                .descriptorCount = static_cast<uint32>(TextureList.size()),
+                                .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                .pImageInfo = TextureList.data(),
+                                .pBufferInfo = nullptr,
+                                .pTexelBufferView = nullptr
+                            });
 
-                            break;
-                        }
-                        default:
-                        {
-                            //throw new Exception($"{binding} case hasn't been handled yet");
-                        }
+                        break;
+                    }
+                    default:
+                    {
+                        //throw new Exception($"{binding} case hasn't been handled yet");
                     }
                 }
-                vkUpdateDescriptorSets(cRenderer.Device, static_cast<uint32>(writeDescriptorSet[x].size()), writeDescriptorSet[x].data(), 0, nullptr);
             }
+            vkUpdateDescriptorSets(cRenderer.Device, static_cast<uint32>(writeDescriptorSet.size()), writeDescriptorSet.data(), 0, nullptr);
         }
     }
 }
@@ -228,33 +225,35 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
             .pushConstantRangeCount = static_cast<uint32>(pushConstantRangeList.size()),
             .pPushConstantRanges = pushConstantRangeList.data()
         };
-        vkCreatePipelineLayout(cRenderer.Device, &pipelineLayoutInfo, nullptr, &PipelineLayout);
+        VULKAN_RESULT(vkCreatePipelineLayout(cRenderer.Device, &pipelineLayoutInfo, nullptr, &PipelineLayout));
     }
 
     //pipeline
     {
+        auto vertexBinding = Vertex2D::GetBindingDescriptions();
+        auto vertexAttribute = Vertex2D::GetAttributeDescriptions();
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
             .pNext = nullptr,
             .flags = 0,
-            .vertexBindingDescriptionCount = static_cast<uint>(Vertex2D::GetBindingDescriptions().size()),
-            .pVertexBindingDescriptions = Vertex2D::GetBindingDescriptions().data(),
-            .vertexAttributeDescriptionCount = static_cast<uint>(Vertex2D::GetAttributeDescriptions().size()),
-            .pVertexAttributeDescriptions = Vertex2D::GetAttributeDescriptions().data()
+            .vertexBindingDescriptionCount = static_cast<uint>(vertexBinding.size()),
+            .pVertexBindingDescriptions = vertexBinding.data(),
+            .vertexAttributeDescriptionCount = static_cast<uint>(vertexAttribute.size()),
+            .pVertexAttributeDescriptions = vertexAttribute.data()
         };
 
         List<VkViewport> viewPortList = model.ViewportList;
         List<VkRect2D> scissorList = model.ScissorList;
         VkPipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo
         {
-                    .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-                    .pNext = nullptr,
-                    .flags = 0,
-                    .viewportCount = static_cast<uint32>(viewPortList.size() + 1),
-                    .pViewports = viewPortList.data(),
-                    .scissorCount = static_cast<uint32>(scissorList.size() + 1),
-                    .pScissors = scissorList.data()
+            .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+            .viewportCount = static_cast<uint32>(viewPortList.size() + 1),
+            .pViewports = viewPortList.data(),
+            .scissorCount = static_cast<uint32>(scissorList.size() + 1),
+            .pScissors = scissorList.data()
         };
 
         List<VkDynamicState> dynamicStateList = List<VkDynamicState>
@@ -262,6 +261,10 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
             VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT,
             VkDynamicState::VK_DYNAMIC_STATE_SCISSOR
         };
+
+        VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfoModel = model.PipelineColorBlendStateCreateInfoModel;
+        pipelineColorBlendStateCreateInfoModel.attachmentCount = model.PipelineColorBlendAttachmentStateList.size();
+        pipelineColorBlendStateCreateInfoModel.pAttachments = model.PipelineColorBlendAttachmentStateList.data();
 
         VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo = VkPipelineDynamicStateCreateInfo
         {
@@ -295,7 +298,7 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
             .pRasterizationState = &model.PipelineRasterizationStateCreateInfo,
             .pMultisampleState = &pipelineMultisampleStateCreateInfo,
             .pDepthStencilState = &model.PipelineDepthStencilStateCreateInfo,
-            .pColorBlendState = &model.PipelineColorBlendStateCreateInfoModel,
+            .pColorBlendState = &pipelineColorBlendStateCreateInfoModel,
             .pDynamicState = &pipelineDynamicStateCreateInfo,
             .layout = PipelineLayout,
             .renderPass = renderPass,
@@ -303,7 +306,7 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
             .basePipelineHandle = VK_NULL_HANDLE,
             .basePipelineIndex = 0,
         };
-        vkCreateGraphicsPipelines(cRenderer.Device, PipelineCache, 1, &graphicsPipelineCreateInfo, nullptr, &Pipeline);
+        VULKAN_RESULT(vkCreateGraphicsPipelines(cRenderer.Device, PipelineCache, 1, &graphicsPipelineCreateInfo, nullptr, &Pipeline));
     }
 }
 

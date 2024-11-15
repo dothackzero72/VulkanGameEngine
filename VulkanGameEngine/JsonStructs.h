@@ -126,6 +126,7 @@ struct RenderPipelineModel : RenderPassEditorBaseModel
     String FragmentShaderPath;
     List<VkViewport> ViewportList;
     List<VkRect2D> ScissorList;
+
     VkPipelineColorBlendStateCreateInfo PipelineColorBlendStateCreateInfoModel;
     VkPipelineRasterizationStateCreateInfo PipelineRasterizationStateCreateInfo;
     VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo;
@@ -133,6 +134,7 @@ struct RenderPipelineModel : RenderPassEditorBaseModel
     VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo;
     List<VkDescriptorSetLayoutBinding> LayoutBindingList;
     List<PipelineDescriptorModel> PipelineDescriptorModelsList;
+    List<VkPipelineColorBlendAttachmentState> PipelineColorBlendAttachmentStateList;
 
     RenderPipelineModel()
     {
@@ -151,13 +153,11 @@ struct RenderPipelineModel : RenderPassEditorBaseModel
         model.PipelineInputAssemblyStateCreateInfo = Json::LoadPipelineInputAssemblyStateCreateInfo(json["PipelineInputAssemblyStateCreateInfo"]);
         model.PipelineMultisampleStateCreateInfo = Json::LoadPipelineMultisampleStateCreateInfo(json["PipelineMultisampleStateCreateInfo"]);
 
-
-        List<VkPipelineColorBlendAttachmentState> pipelineColorBlendAttachmentStateList;
         for (int x = 0; x < json["PipelineColorBlendAttachmentStateList"].size(); x++)
         {
-            pipelineColorBlendAttachmentStateList.emplace_back(Json::LoadPipelineColorBlendAttachmentState(json["PipelineColorBlendAttachmentStateList"][x]));
+            model.PipelineColorBlendAttachmentStateList.emplace_back(Json::LoadPipelineColorBlendAttachmentState(json["PipelineColorBlendAttachmentStateList"][x]));
         }
-        model.PipelineColorBlendStateCreateInfoModel = Json::LoadPipelineColorBlendStateCreateInfo(json["PipelineColorBlendStateCreateInfoModel"], pipelineColorBlendAttachmentStateList);
+        model.PipelineColorBlendStateCreateInfoModel = Json::LoadPipelineColorBlendStateCreateInfo(json["PipelineColorBlendStateCreateInfoModel"]);
 
         for (int x = 0; x < json["LayoutBindingList"].size(); x++)
         {

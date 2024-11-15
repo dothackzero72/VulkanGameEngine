@@ -377,64 +377,55 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 new VkPipelineColorBlendAttachmentState()
                 {
                     blendEnable = true,
-                    srcColorBlendFactor = Silk.NET.Vulkan.BlendFactor.SrcAlpha,
-                    dstColorBlendFactor = Silk.NET.Vulkan.BlendFactor.OneMinusSrcAlpha,
+                    srcColorBlendFactor = BlendFactor.SrcAlpha,
+                    dstColorBlendFactor = BlendFactor.OneMinusSrcAlpha,
                     colorBlendOp = BlendOp.Add,
-                    srcAlphaBlendFactor = Silk.NET.Vulkan.BlendFactor.One,
-                    dstAlphaBlendFactor = Silk.NET.Vulkan.BlendFactor.Zero,
+                    srcAlphaBlendFactor = BlendFactor.One,
+                    dstAlphaBlendFactor = BlendFactor.OneMinusDstAlpha,
                     alphaBlendOp = BlendOp.Add,
-                    colorWriteMask = ColorComponentFlags.RBit | ColorComponentFlags.GBit | ColorComponentFlags.BBit | ColorComponentFlags.ABit
+                    colorWriteMask = ColorComponentFlags.RBit |
+                                     ColorComponentFlags.GBit |
+                                     ColorComponentFlags.BBit |
+                                     ColorComponentFlags.ABit
                 }
             };
 
             var pipelineColorBlendStateCreateInfo2 = new VkPipelineColorBlendStateCreateInfo()
-                {
-                    sType = StructureType.PipelineColorBlendStateCreateInfo,
-                    logicOpEnable = false,
-                    logicOp = LogicOp.NoOp,
-                    attachmentCount = 0,
-                    pAttachments = null,
-                    flags = 0,
-                    pNext = null
-                };
-                pipelineColorBlendStateCreateInfo2.blendConstants.R = 0.0f;
-                pipelineColorBlendStateCreateInfo2.blendConstants.G = 0.0f;
-                pipelineColorBlendStateCreateInfo2.blendConstants.B = 0.0f;
-                pipelineColorBlendStateCreateInfo2.blendConstants.A = 0.0f;
-
+            {
+                sType = StructureType.PipelineColorBlendStateCreateInfo,
+                attachmentCount = 0,
+                pAttachments = null
+            };
 
             var jsonObj = new RenderPipelineModel
             {
                 _name = "DefaultPipeline",
-                VertexShader = "vertshader.spv",
-                FragmentShader = "fragshader.spv",
+                VertexShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DVert.spv",
+                FragmentShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DFrag.spv",
                 PipelineColorBlendAttachmentStateList = pipelineColorBlendAttachmentState,
                 PipelineDepthStencilStateCreateInfo = new VkPipelineDepthStencilStateCreateInfo()
                 {
+                    sType = StructureType.PipelineDepthStencilStateCreateInfo,
                     depthTestEnable = true,
                     depthWriteEnable = true,
-                    depthCompareOp = CompareOp.LessOrEqual,
+                    depthCompareOp = CompareOp.Less,
                     depthBoundsTestEnable = false,
-                    stencilTestEnable = false,
-                    back = new VkStencilOpState(),
-                    front = new VkStencilOpState(),
-                    flags = 0,
+                    stencilTestEnable = false
                 },
                 PipelineMultisampleStateCreateInfo = new VkPipelineMultisampleStateCreateInfo()
                 {
+                    sType = StructureType.PipelineMultisampleStateCreateInfo,
                     rasterizationSamples = SampleCountFlags.SampleCount1Bit
                 },
                 PipelineRasterizationStateCreateInfo = new VkPipelineRasterizationStateCreateInfo()
                 {
+                    stype = StructureType.PipelineRasterizationStateCreateInfo,
                     depthClampEnable = false,
                     rasterizerDiscardEnable = false,
                     polygonMode = PolygonMode.Fill,
-                    cullMode = CullModeFlags.CullModeBackBit,
+                    cullMode = CullModeFlags.None,
                     frontFace = FrontFace.CounterClockwise,
                     depthBiasEnable = false,
-                    depthBiasConstantFactor = 0.0f,
-                    depthBiasClamp = 0.0f,
-                    depthBiasSlopeFactor = 0.0f,
                     lineWidth = 1.0f
                 },
                 ScissorList = new List<VkRect2D>(),
@@ -442,10 +433,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 PipelineColorBlendStateCreateInfoModel = pipelineColorBlendStateCreateInfo2,
                 PipelineInputAssemblyStateCreateInfo = new VkPipelineInputAssemblyStateCreateInfo()
                 {
-                    primitiveRestartEnable = false,
-                    topology = PrimitiveTopology.TriangleList
+                    sType = StructureType.PipelineInputAssemblyStateCreateInfo,
+                    topology = PrimitiveTopology.TriangleList,
+                    primitiveRestartEnable = false
                 },
-                PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
+            PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
                     {
                         new PipelineDescriptorModel
                         {
@@ -481,7 +473,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     }
             };
 
-            string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\Pipelines\DefaultPipeline.json";
+            string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\Pipelines\Default2DPipeline.json";
             string jsonString = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
             File.WriteAllText(finalfilePath, jsonString);
         }

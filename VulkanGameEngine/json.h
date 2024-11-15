@@ -543,24 +543,24 @@ public:
 		};
 	}
 
-	static VkPipelineColorBlendStateCreateInfo LoadPipelineColorBlendStateCreateInfo(nlohmann::json json, List<VkPipelineColorBlendAttachmentState>& colorBlendAttachments)
+	static VkPipelineColorBlendStateCreateInfo LoadPipelineColorBlendStateCreateInfo(nlohmann::json json)
 	{
 		return VkPipelineColorBlendStateCreateInfo
 		{
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
 			.pNext = nullptr,
 			.flags = 0,
-			.logicOpEnable = json["logicOpEnable"]["Value"],
-			.logicOp = json["logicOp"],
-			.attachmentCount = static_cast<uint32>(colorBlendAttachments.size()),
-			.pAttachments = colorBlendAttachments.data(),
-			.blendConstants = 
+			//.logicOpEnable = json["logicOpEnable"]["Value"],
+			//.logicOp = json["logicOp"],
+			.attachmentCount = 0,
+			.pAttachments = nullptr,
+		/*	.blendConstants =
 			{
 				json["blendConstants"]["R"],
 				json["blendConstants"]["G"],
 				json["blendConstants"]["B"],
 				json["blendConstants"]["A"],
-			} 
+			}*/
 		};
 	}
 
@@ -588,7 +588,7 @@ public:
 	{
 		return VkPipelineMultisampleStateCreateInfo
 		{
-			.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
 			.pNext = nullptr,
 			.flags = 0,
 			.rasterizationSamples = json["rasterizationSamples"],

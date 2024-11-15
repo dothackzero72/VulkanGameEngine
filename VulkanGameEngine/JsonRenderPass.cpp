@@ -20,12 +20,12 @@ JsonRenderPass::JsonRenderPass(String jsonPath, ivec2 renderPassResolution)
 
     VULKAN_RESULT(renderer.CreateCommandBuffers(CommandBufferList));
 
-    nlohmann::json json= Json::ReadJson("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\\RenderPass\\DefaultRenderPass.json");
-    //RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
-    //BuildRenderPass(renderPassBuildInfo);
-   // BuildFrameBuffer();
+    nlohmann::json json= Json::ReadJson("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\\RenderPass\\Default2DRenderPass.json");
+    RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
+    BuildRenderPass(renderPassBuildInfo);
+    BuildFrameBuffer();
 
-    JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\DefaultPipeline.json", RenderPass, sizeof(SceneDataBuffer)));
+    JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer)));
 }
 
 JsonRenderPass::~JsonRenderPass()
@@ -43,7 +43,8 @@ VkCommandBuffer JsonRenderPass::Draw(List<std::shared_ptr<GameObject>> meshList,
 {
     std::vector<VkClearValue> clearValues
     {
-        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } }
+        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
+         VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } }
     };
 
     VkRenderPassBeginInfo renderPassInfo
@@ -56,12 +57,32 @@ VkCommandBuffer JsonRenderPass::Draw(List<std::shared_ptr<GameObject>> meshList,
             .offset = {0, 0},
             .extent =
             {
-                static_cast<uint32>(cRenderer.SwapChain.SwapChainResolution.width),
-                static_cast<uint32>(cRenderer.SwapChain.SwapChainResolution.height)
+                static_cast<uint32>(RenderPassResolution.x),
+                static_cast<uint32>(RenderPassResolution.y)
             }
         },
         .clearValueCount = static_cast<uint32>(clearValues.size()),
         .pClearValues = clearValues.data()
+    };
+
+    VkViewport viewport = VkViewport
+    {
+        .x = 0.0f,
+        .y = 0.0f,
+        .width = (float)RenderPassResolution.x,
+        .height = (float)RenderPassResolution.y,
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f
+    };
+
+    VkRect2D scissor = VkRect2D
+    {
+        .offset =  VkOffset2D(0, 0),
+        .extent =  VkExtent2D
+        {
+            .width = (uint)RenderPassResolution.x,
+            .height = (uint)RenderPassResolution.y
+        }
     };
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo
@@ -72,6 +93,8 @@ VkCommandBuffer JsonRenderPass::Draw(List<std::shared_ptr<GameObject>> meshList,
 
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[cRenderer.CommandIndex], &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBufferList[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdSetViewport(CommandBufferList[cRenderer.CommandIndex], 0, 1, &viewport);
+    vkCmdSetScissor(CommandBufferList[cRenderer.CommandIndex], 0, 1, &scissor);
     for (auto mesh : meshList)
     {
         mesh->Draw(CommandBufferList[cRenderer.CommandIndex], JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0], sceneProperties);
@@ -94,52 +117,57 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
         attachmentDescriptionList.emplace_back(renderedTextureInfoModel.AttachmentDescription);
         switch (renderedTextureInfoModel.TextureType)
         {
-        case RenderedTextureType::ColorRenderedTexture:
-        {
-            if (!renderPassBuildInfo.IsRenderedToSwapchain)
+            case RenderedTextureType::ColorRenderedTexture:
             {
-                RenderedColorTextureList.emplace_back(nullptr);
+                if (!renderPassBuildInfo.IsRenderedToSwapchain)
+                {
+                    RenderedColorTextureList.emplace_back(nullptr);
+                }
+                else
+                {
+                    RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
+                }
+                colorAttachmentReferenceList.emplace_back(VkAttachmentReference
+                    {
+                        .attachment = static_cast<uint32>(colorAttachmentReferenceList.size()),
+                        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+                    });
+                break;
             }
-            colorAttachmentReferenceList.emplace_back(VkAttachmentReference
-                {
-                    .attachment = static_cast<uint32>(colorAttachmentReferenceList.size()),
-                    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                });
-            break;
-        }
-        case RenderedTextureType::DepthRenderedTexture:
-        {
-            depthTexture = std::make_shared<DepthTexture>(DepthTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
-            depthReference = VkAttachmentReference
+            case RenderedTextureType::DepthRenderedTexture:
             {
-                .attachment = (uint)(colorAttachmentReferenceList.size() + resolveAttachmentReferenceList.size()),
-                .layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
-            };
-            break;
-        }
-        case RenderedTextureType::InputAttachmentTexture:
-        {
-            inputAttachmentReferenceList.emplace_back(VkAttachmentReference
+                depthTexture = std::make_shared<DepthTexture>(DepthTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
+                depthReference = VkAttachmentReference
                 {
-                    .attachment = static_cast<uint32>(inputAttachmentReferenceList.size()),
-                    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                });
-            break;
-        }
-        case RenderedTextureType::ResolveAttachmentTexture:
-        {
-            RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
-            resolveAttachmentReferenceList.emplace_back(VkAttachmentReference
-                {
-                    .attachment = static_cast<uint32>(colorAttachmentReferenceList.size() + 1),
-                    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                });
-            break;
-        }
-        default:
-        {
-            throw std::runtime_error("Case doesn't exist: RenderedTextureType");
-        }
+                    .attachment = (uint)(colorAttachmentReferenceList.size() + resolveAttachmentReferenceList.size()),
+                    .layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
+                };
+                break;
+            }
+            case RenderedTextureType::InputAttachmentTexture:
+            {
+                RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
+                inputAttachmentReferenceList.emplace_back(VkAttachmentReference
+                    {
+                        .attachment = static_cast<uint32>(inputAttachmentReferenceList.size()),
+                        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+                    });
+                break;
+            }
+            case RenderedTextureType::ResolveAttachmentTexture:
+            {
+                RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
+                resolveAttachmentReferenceList.emplace_back(VkAttachmentReference
+                    {
+                        .attachment = static_cast<uint32>(colorAttachmentReferenceList.size() + 1),
+                        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+                    });
+                break;
+            }
+            default:
+            {
+                throw std::runtime_error("Case doesn't exist: RenderedTextureType");
+            }
         }
     }
     List<VkSubpassDescription> subpassDescriptionList =
@@ -185,7 +213,18 @@ void JsonRenderPass::BuildFrameBuffer()
         std::vector<VkImageView> TextureAttachmentList;
         for (auto texture : RenderedColorTextureList)
         {
-            TextureAttachmentList.emplace_back(texture->View);
+            if (texture == nullptr)
+            {
+                TextureAttachmentList.emplace_back(cRenderer.SwapChain.SwapChainImageViews[x]);
+            }
+            else
+            {
+                TextureAttachmentList.emplace_back(texture->View);
+            }
+        }
+        if (depthTexture != nullptr)
+        {
+            TextureAttachmentList.emplace_back(depthTexture->View);
         }
 
         VkFramebufferCreateInfo framebufferInfo

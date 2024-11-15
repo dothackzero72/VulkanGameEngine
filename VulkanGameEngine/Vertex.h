@@ -7,56 +7,62 @@
 
 struct Vertex2D
 {
-    vec2 Position; // Changed from initialization to direct declaration
+    vec2 Position;
     vec2 UV;
     vec4 Color;
 
     Vertex2D()
-        : Position(0.0f), UV(0.0f), Color(1.0f) // Use member initializer list for default constructor
     {
+        Position = vec2(0.0f);
+        UV = vec2(0.0f);
+        Color = vec4(0.0f);
     }
 
     Vertex2D(vec2 position, vec2 uv, vec4 color)
-        : Position(position), UV(uv), Color(color) // Same for parameterized constructor
     {
+        Position = position;
+        UV = uv;
+        Color = color;
     }
 
     static std::vector<VkVertexInputBindingDescription> GetBindingDescriptions()
     {
-        std::vector<VkVertexInputBindingDescription> bindingDescriptionList{};
-        VkVertexInputBindingDescription bindingDescription{};
-
-        bindingDescription.binding = 0;
-        bindingDescription.stride = sizeof(Vertex2D);
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-        bindingDescriptionList.emplace_back(bindingDescription);
-
-        return bindingDescriptionList;
+        return std::vector<VkVertexInputBindingDescription>
+        {
+            VkVertexInputBindingDescription
+            {
+                .binding = 0,
+                .stride = sizeof(Vertex2D),
+                .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
+            }
+        };
     }
 
     static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions()
     {
-        std::vector<VkVertexInputAttributeDescription> AttributeDescriptions = {};
-        VkVertexInputAttributeDescription AttributeDescription;
-
-        AttributeDescription.binding = 0;
-        AttributeDescription.location = 0;
-        AttributeDescription.format = VK_FORMAT_R32G32_SFLOAT;
-        AttributeDescription.offset = offsetof(Vertex2D, Position);
-        AttributeDescriptions.emplace_back(AttributeDescription);
-
-        AttributeDescription.binding = 0;
-        AttributeDescription.location = 1;
-        AttributeDescription.format = VK_FORMAT_R32G32_SFLOAT;
-        AttributeDescription.offset = offsetof(Vertex2D, UV);
-        AttributeDescriptions.emplace_back(AttributeDescription);
-
-        AttributeDescription.binding = 0;
-        AttributeDescription.location = 2;
-        AttributeDescription.format = VK_FORMAT_R32G32B32A32_SFLOAT;
-        AttributeDescription.offset = offsetof(Vertex2D, Color);
-        AttributeDescriptions.emplace_back(AttributeDescription);
-
-        return AttributeDescriptions;
+        return std::vector<VkVertexInputAttributeDescription>
+        {
+            VkVertexInputAttributeDescription
+            {
+                .location = 0,
+                .binding = 0,
+                .format = VK_FORMAT_R32G32_SFLOAT,
+                .offset = offsetof(Vertex2D, Position)
+            },
+            VkVertexInputAttributeDescription
+            {
+                .location = 1,
+                .binding = 0,
+                .format = VK_FORMAT_R32G32_SFLOAT,
+                .offset = offsetof(Vertex2D, UV)
+            },
+            VkVertexInputAttributeDescription
+            {
+                .location = 2,
+                .binding = 0,
+                .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                .offset = offsetof(Vertex2D, Color)
+            },
+        };
     }
 };

@@ -1,9 +1,7 @@
-
 extern "C"
 {
-#include <VulkanWindow.h>
-
-#include <GLFWWindow.h>
+    #include <VulkanWindow.h>
+    #include <GLFWWindow.h>
 }
 #include "VulkanRenderer.h"
 #include <stdio.h>
@@ -38,7 +36,6 @@ int main()
         deltaTime.EndFrameTime();
     }
 
-    
     vkDeviceWaitIdle(cRenderer.Device);
     scene.Destroy();
     ImPlot::DestroyContext();
