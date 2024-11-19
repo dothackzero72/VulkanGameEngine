@@ -9,12 +9,7 @@ class JsonPipeline
     friend class Mesh;
 
 private:
-    VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
-    List<VkDescriptorSetLayout> DescriptorSetLayoutList;
-    List<VkDescriptorSet> DescriptorSetList;
-    VkPipeline Pipeline = VK_NULL_HANDLE;
-    VkPipelineLayout PipelineLayout = VK_NULL_HANDLE;
-    VkPipelineCache PipelineCache = VK_NULL_HANDLE;
+
 
     std::shared_ptr<JsonRenderPass> ParentRenderPass;
 
@@ -25,6 +20,12 @@ private:
 
 public:
     String PipelineName;
+    VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
+    List<VkDescriptorSetLayout> DescriptorSetLayoutList;
+    List<VkDescriptorSet> DescriptorSetList;
+    VkPipeline Pipeline = VK_NULL_HANDLE;
+    VkPipelineLayout PipelineLayout = VK_NULL_HANDLE;
+    VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 
     JsonPipeline();
     ~JsonPipeline();

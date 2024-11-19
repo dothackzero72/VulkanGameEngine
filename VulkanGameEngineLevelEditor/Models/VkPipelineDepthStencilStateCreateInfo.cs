@@ -34,12 +34,19 @@ namespace VulkanGameEngineLevelEditor.Models
             ptr->DepthCompareOp = depthCompareOp;
             ptr->DepthBoundsTestEnable = depthBoundsTestEnable;
             ptr->StencilTestEnable = stencilTestEnable;
-            ptr->Front = front.Convert();
-            ptr->Back = back.Convert();
             ptr->MinDepthBounds = minDepthBounds;
             ptr->MaxDepthBounds = maxDepthBounds;
             ptr->Flags = 0;
             ptr->PNext = null;
+
+            if(front != null)
+            {
+                ptr->Front = front.Convert();
+            }
+            if(back != null)
+            {
+                ptr->Back = back.Convert();
+            }
             return ptr;
         }
     }

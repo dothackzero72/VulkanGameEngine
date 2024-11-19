@@ -3,7 +3,6 @@
 #include "Vertex.h"
 #include "SceneDataBuffer.h"
 #include "FrameBufferRenderPass.h"
-#include "RenderPass2D.h"
 #include "OrthographicCamera.h"
 #include "FrameTimer.h"
 #include "JsonRenderPass.h"
@@ -21,8 +20,8 @@ private:
 	std::shared_ptr<Texture> texture2;
 	std::shared_ptr<OrthographicCamera> orthographicCamera;
 	FrameBufferRenderPass frameRenderPass;
-	RenderPass2D		  renderPass2D;
-	//std::shared_ptr<JsonRenderPass>        renderPass2D;
+	//RenderPass2D		  renderPass2D;
+	std::shared_ptr<JsonRenderPass>        renderPass2D;
 
 	List<std::shared_ptr<GameObject>> gameObjectList;
 	List<std::shared_ptr<Texture>> TextureList;

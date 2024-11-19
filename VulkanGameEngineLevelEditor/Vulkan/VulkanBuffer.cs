@@ -184,13 +184,4 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             DLL_Buffer_DestroyBuffer(_device, ref Buffer, ref StagingBuffer, ref BufferMemory, ref StagingBufferMemory, BufferData, ref BufferSize, ref BufferUsage, ref BufferProperties);
         }
     }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct UniformBufferObject
-    {
-        public Matrix4X4<float> model;
-        public Matrix4X4<float> view;
-        public Matrix4X4<float> proj;
-
-    }
 }

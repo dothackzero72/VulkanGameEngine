@@ -186,7 +186,7 @@ namespace VulkanGameEngineLevelEditor.Models
             }
         }
 
-        public SubpassDependency ConvertToVulkan()
+        public SubpassDependency Convert()
         {
             return new SubpassDependency()
             {

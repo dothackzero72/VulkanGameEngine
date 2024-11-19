@@ -194,7 +194,6 @@
     <ClCompile Include="RenderedColorTexture.cpp" />
     <ClCompile Include="RenderedTexture.cpp" />
     <ClCompile Include="RenderPass.cpp" />
-    <ClCompile Include="RenderPass2D.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="SystemClock.cpp" />
@@ -247,7 +246,6 @@
     <ClInclude Include="RenderedColorTexture.h" />
     <ClInclude Include="RenderedTexture.h" />
     <ClInclude Include="RenderPass.h" />
-    <ClInclude Include="RenderPass2D.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneDataBuffer.h" />
     <ClInclude Include="ShaderCompiler.h" />

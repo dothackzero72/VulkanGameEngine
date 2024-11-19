@@ -35,11 +35,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GameObject gameObject = MemoryManager.AllocateGameObject();
 
             List<GameObjectComponent> componentList = new List<GameObjectComponent>();
-            // Example of creating a specific type of component
-            //componentList.Add(RenderMesh2DComponent.CreateRenderMesh2DComponent("Mesh Renderer",
-            //    (uint)MemoryManager.RenderMesh2DComponentList.Count));
+            componentList.Add(MeshRenderer2DComponent.CreateRenderMesh2DComponent("Mesh Renderer",
+                (uint)MemoryManager.RenderMesh2DComponentList.Count));
 
-            //gameObject.Initialize(name, componentList);
+            gameObject.Initialize(name, componentList);
             return gameObject;
         }
 
@@ -48,9 +47,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Name = name;
         }
 
-        private void Initialize(String name, List<ComponentTypeEnum> componentTypeList)
+        private void Initialize(String name, List<GameObjectComponent> componentTypeList)
         {
             Name = name;
+            GameObjectComponentList = componentTypeList;
         }
 
         public virtual void Update(long startTime)

@@ -62,7 +62,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public override void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
-          //  mesh.Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSet, sceneProperties);
+            mesh.Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSet, sceneProperties);
         }
 
         public override void Destroy()
@@ -75,9 +75,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return sizeof(MeshRenderer2DComponent);
         }
 
-        //public VulkanBuffer<MeshProperitiesBuffer> GetMeshPropertiesBuffer()
-        //{
-        //    return mesh.GetMeshPropertiesBuffer();
-        //}
+        public VulkanBuffer<MeshProperitiesStruct> GetMeshPropertiesBuffer()
+        {
+            return mesh.GetMeshPropertiesBuffer();
+        }
     }
 }

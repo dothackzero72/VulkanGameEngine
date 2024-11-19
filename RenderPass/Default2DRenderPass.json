@@ -1,11 +1,11 @@
 {
   "RenderedTextureInfoModelList": [
     {
-      "IsRenderedToSwapchain": true,
-      "RenderedTextureInfoName": "ColorRenderTexture",
+      "IsRenderedToSwapchain": false,
+      "RenderedTextureInfoName": "Rendered2DTexture",
       "ImageCreateInfo": {
         "imageType": 1,
-        "format": 37,
+        "format": 44,
         "mipLevels": 1,
         "arrayLayers": 1,
         "samples": 1,
@@ -13,7 +13,7 @@
         "usage": 23,
         "sharingMode": 0,
         "initialLayout": 0,
-        "_name": "DefaultColorTextureCreateInfo"
+        "_name": "bnvnb"
       },
       "SamplerCreateInfo": {
         "magFilter": 0,
@@ -29,72 +29,24 @@
         "compareOp": 7,
         "minLod": 0.0,
         "maxLod": 1.0,
-        "borderColor": 2,
+        "borderColor": 3,
         "unnormalizedCoordinates": false,
-        "_name": "DefaultColorSampleCreateInfo"
+        "_name": "tyuiy"
       },
       "AttachmentDescription": {
         "flags": 0,
-        "format": 37,
+        "format": 44,
         "samples": 1,
         "loadOp": 1,
         "storeOp": 0,
         "stencilLoadOp": 2,
         "stencilStoreOp": 1,
-        "initialLayout": 2,
-        "finalLayout": 2,
-        "_name": "DefaultColorAttachment"
+        "initialLayout": 0,
+        "finalLayout": 1000314000,
+        "_name": "wert"
       },
       "TextureType": 0,
-      "_name": null
-    },
-    {
-      "IsRenderedToSwapchain": false,
-      "RenderedTextureInfoName": "DepthRenderedTexture",
-      "ImageCreateInfo": {
-        "imageType": 1,
-        "format": 126,
-        "mipLevels": 1,
-        "arrayLayers": 1,
-        "samples": 1,
-        "tiling": 0,
-        "usage": 39,
-        "sharingMode": 0,
-        "initialLayout": 0,
-        "_name": "DefaultDepthTextureCreateInfo"
-      },
-      "SamplerCreateInfo": {
-        "magFilter": 0,
-        "minFilter": 0,
-        "mipmapMode": 1,
-        "addressModeU": 0,
-        "addressModeV": 0,
-        "addressModeW": 0,
-        "mipLodBias": 0.0,
-        "anisotropyEnable": true,
-        "maxAnisotropy": 16.0,
-        "compareEnable": false,
-        "compareOp": 7,
-        "minLod": 0.0,
-        "maxLod": 1.0,
-        "borderColor": 2,
-        "unnormalizedCoordinates": false,
-        "_name": "DefaultDepthSampleCreateInfo"
-      },
-      "AttachmentDescription": {
-        "flags": 0,
-        "format": 126,
-        "samples": 1,
-        "loadOp": 1,
-        "storeOp": 1,
-        "stencilLoadOp": 2,
-        "stencilStoreOp": 0,
-        "initialLayout": 0,
-        "finalLayout": 3,
-        "_name": "DefaultDepthAttachment"
-      },
-      "TextureType": 1,
-      "_name": null
+      "_name": "Texture2DRenderpass"
     }
   ],
   "RenderPipelineList": [],
@@ -107,8 +59,8 @@
       "srcAccessMask": 0,
       "dstAccessMask": 256,
       "dependencyFlags": 0,
-      "_name": "DefaultSubpassDependency"
+      "_name": "gfsd"
     }
   ],
-  "_name": "BasicRenderPass"
+  "_name": "sdfg"
 }

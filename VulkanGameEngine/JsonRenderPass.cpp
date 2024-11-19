@@ -20,7 +20,7 @@ JsonRenderPass::JsonRenderPass(String jsonPath, ivec2 renderPassResolution)
 
     VULKAN_RESULT(renderer.CreateCommandBuffers(CommandBufferList));
 
-    nlohmann::json json= Json::ReadJson("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\\RenderPass\\Default2DRenderPass.json");
+    nlohmann::json json= Json::ReadJson("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json");
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer();
@@ -43,8 +43,7 @@ VkCommandBuffer JsonRenderPass::Draw(List<std::shared_ptr<GameObject>> meshList,
 {
     std::vector<VkClearValue> clearValues
     {
-        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
-         VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } }
+        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } }
     };
 
     VkRenderPassBeginInfo renderPassInfo
@@ -111,7 +110,7 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
     List<VkAttachmentReference> colorAttachmentReferenceList = List<VkAttachmentReference>();
     List<VkAttachmentReference> resolveAttachmentReferenceList = List<VkAttachmentReference>();
     List<VkSubpassDescription> preserveAttachmentReferenceList = List<VkSubpassDescription>();
-    VkAttachmentReference depthReference = VkAttachmentReference();
+    List<VkAttachmentReference> depthReference = List<VkAttachmentReference>();
     for (RenderedTextureInfoModel renderedTextureInfoModel : renderPassBuildInfo.RenderedTextureInfoModelList)
     {
         attachmentDescriptionList.emplace_back(renderedTextureInfoModel.AttachmentDescription);
@@ -137,11 +136,11 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
             case RenderedTextureType::DepthRenderedTexture:
             {
                 depthTexture = std::make_shared<DepthTexture>(DepthTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
-                depthReference = VkAttachmentReference
+                depthReference.emplace_back(VkAttachmentReference
                 {
                     .attachment = (uint)(colorAttachmentReferenceList.size() + resolveAttachmentReferenceList.size()),
                     .layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
-                };
+                });
                 break;
             }
             case RenderedTextureType::InputAttachmentTexture:
@@ -181,11 +180,15 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
             .colorAttachmentCount = static_cast<uint32>(colorAttachmentReferenceList.size()),
             .pColorAttachments = colorAttachmentReferenceList.data(),
             .pResolveAttachments = resolveAttachmentReferenceList.data(),
-            .pDepthStencilAttachment = &depthReference,
+            .pDepthStencilAttachment = nullptr,
             .preserveAttachmentCount = static_cast<uint32>(inputAttachmentReferenceList.size()),
             .pPreserveAttachments = nullptr,
         }
     };
+    if (depthReference.size() > 0)
+    {
+        subpassDescriptionList[0].pDepthStencilAttachment = &depthReference[0];
+    }
 
     List<VkSubpassDependency> subPassList = List<VkSubpassDependency>();
     for (VkSubpassDependency subpass : renderPassBuildInfo.SubpassDependencyModelList)

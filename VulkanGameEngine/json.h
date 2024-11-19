@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include "Typedef.h"
 #include "File.h"
-
+#include <iostream>
 class Json : public nlohmann::json
 {
 public:
@@ -545,23 +545,31 @@ public:
 
 	static VkPipelineColorBlendStateCreateInfo LoadPipelineColorBlendStateCreateInfo(nlohmann::json json)
 	{
-		return VkPipelineColorBlendStateCreateInfo
+		VkPipelineColorBlendStateCreateInfo blendStateCreateInfo = VkPipelineColorBlendStateCreateInfo
 		{
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
 			.pNext = nullptr,
 			.flags = 0,
-			//.logicOpEnable = json["logicOpEnable"]["Value"],
-			//.logicOp = json["logicOp"],
 			.attachmentCount = 0,
 			.pAttachments = nullptr,
-		/*	.blendConstants =
+			.blendConstants =
 			{
-				json["blendConstants"]["R"],
-				json["blendConstants"]["G"],
-				json["blendConstants"]["B"],
-				json["blendConstants"]["A"],
-			}*/
+				json["blendConstants"]["R"].get<float>(),
+				json["blendConstants"]["G"].get<float>(),
+				json["blendConstants"]["B"].get<float>(),
+				json["blendConstants"]["A"].get<float>(),
+			}
 		};
+
+		std::cout << json << std::endl;
+		auto asdf = json["logicOpEnable"]["Value"];
+		if (json["logicOpEnable"]["Value"].get<bool>())
+		{
+			blendStateCreateInfo.logicOpEnable = VK_TRUE;
+			blendStateCreateInfo.logicOp = json["logicOp"].get<VkLogicOp>();
+		}
+
+		return blendStateCreateInfo;
 	}
 
 	static VkPipelineRasterizationStateCreateInfo LoadPipelineRasterizationStateCreateInfo(nlohmann::json json)
@@ -602,7 +610,7 @@ public:
 
 	static VkPipelineDepthStencilStateCreateInfo LoadPipelineDepthStencilStateCreateInfo(nlohmann::json json)
 	{
-		return VkPipelineDepthStencilStateCreateInfo
+		VkPipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo = VkPipelineDepthStencilStateCreateInfo
 		{
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
 			.pNext = nullptr,
@@ -612,7 +620,13 @@ public:
 			.depthCompareOp = json["depthCompareOp"],
 			.depthBoundsTestEnable = json["depthBoundsTestEnable"],
 			.stencilTestEnable = json["stencilTestEnable"],
-			.front = VkStencilOpState
+			.minDepthBounds = json["minDepthBounds"],
+			.maxDepthBounds = json["maxDepthBounds"],
+		};
+
+		if (depthStencilStateCreateInfo.stencilTestEnable)
+		{
+			depthStencilStateCreateInfo.front = VkStencilOpState
 			{
 				.failOp = json["front"]["failOp"],
 				.passOp = json["front"]["passOp"],
@@ -621,8 +635,8 @@ public:
 				.compareMask = json["front"]["compareMask"],
 				.writeMask = json["front"]["writeMask"],
 				.reference = json["front"]["reference"]
-			},
-			.back = VkStencilOpState
+			};
+			depthStencilStateCreateInfo.back = VkStencilOpState
 			{
 				.failOp = json["back"]["failOp"],
 				.passOp = json["back"]["passOp"],
@@ -631,10 +645,10 @@ public:
 				.compareMask = json["back"]["compareMask"],
 				.writeMask = json["back"]["writeMask"],
 				.reference = json["back"]["reference"]
-			},
-			.minDepthBounds = json["minDepthBounds"],
-			.maxDepthBounds = json["maxDepthBounds"],
-		};
+			};
+		}
+
+		return depthStencilStateCreateInfo;
 	}
 
 	static VkPipelineInputAssemblyStateCreateInfo LoadPipelineInputAssemblyStateCreateInfo(nlohmann::json json)

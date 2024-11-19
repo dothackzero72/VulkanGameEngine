@@ -57,7 +57,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static List<DescriptorBufferInfo> GetGameObjectPropertiesBuffer()
         {
             List<DescriptorBufferInfo> MeshPropertiesBuffer = new List<DescriptorBufferInfo>();
-            if (RenderMesh3DComponentList.Count == 0)
+            if (RenderMesh2DComponentList.Count == 0)
             {
                 DescriptorBufferInfo nullBuffer = new DescriptorBufferInfo();
                 nullBuffer.Buffer = new Silk.NET.Vulkan.Buffer();
@@ -67,14 +67,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
             else
             {
-                foreach (var mesh in RenderMesh3DComponentList)
+                foreach (var mesh in RenderMesh2DComponentList)
                 {
                     if (mesh != null)
                     {
                         DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
                         MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
                         MeshProperitesBufferInfo.Offset = 0;
-                        MeshProperitesBufferInfo.Range = mesh.GetMeshPropertiesBuffer().BufferSize;
+                        MeshProperitesBufferInfo.Range = Vk.WholeSize;
                         MeshPropertiesBuffer.Add(MeshProperitesBufferInfo);
                     }
                 }

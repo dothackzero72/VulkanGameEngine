@@ -15,14 +15,27 @@ using VulkanGameEngineLevelEditor.Vulkan;
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
 
-    [StructLayout(LayoutKind.Sequential)]
-    public struct UniformBufferObject
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct MeshProperitiesStruct
     {
-        public Matrix4X4<float> model;
-        public Matrix4X4<float> view;
-        public Matrix4X4<float> proj;
+        public uint MaterialIndex { get; set; }
+        public long Padding { get; set; }
+        public int Padding2 { get; set; }
+        public mat4 MeshTransform { get; set; }
+        public long Padding3 { get; set; }
+        public MeshProperitiesStruct()
+        {
+            MaterialIndex = uint.MaxValue;
+            MeshTransform = new mat4(1.0f, 2.0f, 3.0f, 4.0f,
+                                     5.0f, 6.0f, 7.0f, 8.0f,
+                                     9.0f, 10.0f, 11.0f, 12.0f,
+                                     13.0f, 14.0f, 15.0f, 16.0f);
+            Padding = 0;
+            Padding2 = 0;
+            Padding3 = 0;
+        }
+    };
 
-    }
 
     public static class MathHelper
     {
@@ -36,6 +49,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return radians * (180f / (float)Math.PI);
         }
     }
+
 
     public unsafe class Mesh
     {
@@ -52,37 +66,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public uint MeshBufferIndex { get; protected set; }
         public int VertexCount { get; protected set; }
         public int IndexCount { get; protected set; }
-
-      //  public MeshProperitiesBuffer MeshProperties { get; set; }
+        public MeshProperitiesStruct MeshProperties { get; set; }
         public mat4 MeshTransform { get; protected set; }
         public vec3 MeshPosition { get; protected set; }
         public vec3 MeshRotation { get; protected set; }
         public vec3 MeshScale { get; protected set; }
 
-        public VulkanBuffer<Vertex3D> MeshVertexBuffer { get; protected set; }
+        public VulkanBuffer<Vertex2D> MeshVertexBuffer { get; protected set; }
         public VulkanBuffer<UInt32> MeshIndexBuffer { get; protected set; }
-        public VulkanBuffer<UniformBufferObject> uniformBuffers { get; set; }
-
-        UniformBufferObject ubo;
-
-        readonly Vertex3D[] vertices = new Vertex3D[]
-{
-            new Vertex3D(new (-0.5f, -0.5f, 0.0f), new (1.0f, 0.0f, 0.0f), new (1.0f, 0.0f)),
-            new Vertex3D(new (0.5f, -0.5f, 0.0f), new (0.0f, 1.0f, 0.0f), new (0.0f, 0.0f)),
-            new Vertex3D(new (0.5f, 0.5f, 0.0f), new (0.0f, 0.0f, 1.0f), new (0.0f, 1.0f)),
-            new Vertex3D(new (-0.5f, 0.5f, 0.0f), new (1.0f, 1.0f, 1.0f), new (1.0f, 1.0f)),
-
-            new Vertex3D(new (-0.5f, -0.5f, -0.5f), new (1.0f, 0.0f, 0.0f), new (1.0f, 0.0f)),
-            new Vertex3D(new (0.5f, -0.5f, -0.5f), new (0.0f, 1.0f, 0.0f), new (0.0f, 0.0f)),
-            new Vertex3D(new (0.5f, 0.5f, -0.5f), new (0.0f, 0.0f, 1.0f), new (0.0f, 1.0f)),
-            new Vertex3D(new (-0.5f, 0.5f, -0.5f), new (1.0f, 1.0f, 1.0f), new (1.0f, 1.0f))
-};
-
-        readonly uint[] indices = new uint[]
-        {
-            0, 1, 2, 2, 3, 0,
-            4, 5, 6, 6, 7, 4
-        };
+        public VulkanBuffer<MeshProperitiesStruct> UniformBuffers { get; set; }
 
         public Mesh()
         {
@@ -96,96 +88,83 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             IndexCount = 0;
         }
 
-
-        public void MeshStartUp()
-        {
-            VertexCount = vertices.Length;
-            IndexCount = indices.Length;
-
-            GCHandle vhandle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
-            IntPtr vpointer = vhandle.AddrOfPinnedObject();
-            MeshVertexBuffer = new VulkanBuffer<Vertex3D>((void*)vpointer, (uint)vertices.Count(), BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
-
-            GCHandle fhandle = GCHandle.Alloc(indices, GCHandleType.Pinned);
-            IntPtr fpointer = fhandle.AddrOfPinnedObject();
-            MeshIndexBuffer = new VulkanBuffer<UInt32>((void*)fpointer, (uint)indices.Count(), BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit | BufferUsageFlags.IndexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
-
-            GCHandle uhandle = GCHandle.Alloc(ubo, GCHandleType.Pinned);
-            IntPtr upointer = uhandle.AddrOfPinnedObject();
-            uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.StorageBufferBit | BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
-
-        }
-
-        public void MeshStartUp(Vertex3D[] vertexList, uint[] indexList)
+        public void MeshStartUp(Vertex2D[] vertexList, uint[] indexList)
         {
             VertexCount = vertexList.Length;
             IndexCount = indexList.Length;
 
             GCHandle vhandle = GCHandle.Alloc(vertexList, GCHandleType.Pinned);
             IntPtr vpointer = vhandle.AddrOfPinnedObject();
-            MeshVertexBuffer = new VulkanBuffer<Vertex3D>((void*)vpointer, (uint)vertexList.Count(), BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
+            MeshVertexBuffer = new VulkanBuffer<Vertex2D>((void*)vpointer, (uint)vertexList.Count(), BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
 
             GCHandle fhandle = GCHandle.Alloc(indexList, GCHandleType.Pinned);
             IntPtr fpointer = fhandle.AddrOfPinnedObject();
             MeshIndexBuffer = new VulkanBuffer<UInt32>((void*)fpointer, (uint)indexList.Count(), BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit | BufferUsageFlags.IndexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
 
-            GCHandle uhandle = GCHandle.Alloc(ubo, GCHandleType.Pinned);
+            GCHandle uhandle = GCHandle.Alloc(UniformBuffers, GCHandleType.Pinned);
             IntPtr upointer = uhandle.AddrOfPinnedObject();
-            uniformBuffers = new VulkanBuffer<UniformBufferObject>((void*)upointer, 1, BufferUsageFlags.StorageBufferBit | BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
+            UniformBuffers = new VulkanBuffer<MeshProperitiesStruct>((void*)upointer, 1, BufferUsageFlags.StorageBufferBit | BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
         }
 
         virtual public void Destroy()
         {
             MeshVertexBuffer.DestroyBuffer();
             MeshIndexBuffer.DestroyBuffer();
-            uniformBuffers.DestroyBuffer();
+            UniformBuffers.DestroyBuffer();
         }
 
         virtual public void Update(float deltaTime)
         {
         }
 
-        public virtual void BufferUpdate(CommandBuffer commandBuffer, long startTime)
+        public static mat4 Transpose(mat4 matrix)
         {
-            float secondsPassed = (float)TimeSpan.FromTicks(DateTime.Now.Ticks - startTime).TotalSeconds;
-
-            ubo.model = Matrix4X4.CreateFromAxisAngle(
-                new Vector3D<float>(0, 0, 1),
-                secondsPassed * Scalar.DegreesToRadians(90.0f));
-
-            ubo.view = Matrix4X4.CreateLookAt(
-                new Vector3D<float>(2.0f, 2.0f, 2.0f),
-                new Vector3D<float>(0.0f, 0.0f, 0.0f),
-                new Vector3D<float>(0.0f, 0.0f, -0.1f));
-
-            ubo.proj = Matrix4X4.CreatePerspectiveFieldOfView(
-                Scalar.DegreesToRadians(45.0f),
-                VulkanRenderer.swapChain.swapchainExtent.Width / (float)VulkanRenderer.swapChain.swapchainExtent.Height,
-                0.1f,
-                10.0f);
-
-            ubo.proj.M11 *= -1;
-            uint dataSize = (uint)Marshal.SizeOf(ubo);
-            void* dataPtr = Unsafe.AsPointer(ref ubo);
-
-            uniformBuffers.UpdateBufferData(dataPtr);
+            return new mat4(
+                matrix[0, 0], matrix[1, 0], matrix[2, 0], matrix[3, 0],
+                matrix[0, 1], matrix[1, 1], matrix[2, 1], matrix[3, 1],
+                matrix[0, 2], matrix[1, 2], matrix[2, 2], matrix[3, 2],
+                matrix[0, 3], matrix[1, 3], matrix[2, 3], matrix[3, 3]
+            );
         }
 
-        public virtual void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet)
+        public virtual void BufferUpdate(CommandBuffer commandBuffer, long startTime)
         {
+            mat4 MeshMatrix = mat4.Identity;
+            MeshMatrix = mat4.Scale(MeshScale);
+            MeshMatrix = mat4.Rotate(glm.Radians(MeshRotation.x), new vec3(1.0f, 0.0f, 0.0f));
+            MeshMatrix = mat4.Rotate(glm.Radians(MeshRotation.y), new vec3(0.0f, 1.0f, 0.0f));
+            MeshMatrix = mat4.Rotate(glm.Radians(MeshRotation.z), new vec3(0.0f, 0.0f, 1.0f));
+            MeshMatrix = mat4.Translate(MeshPosition);
+
+            MeshProperitiesStruct properties = new MeshProperitiesStruct
+            {
+                MaterialIndex = MeshBufferIndex,
+                MeshTransform = MeshMatrix,
+            };
+
+            void* dataPtr = Unsafe.AsPointer(ref properties);
+            UniformBuffers.UpdateBufferData(dataPtr);
+        }
+
+        public virtual void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        {
+            sceneProperties.MeshBufferIndex = MeshBufferIndex;
+
             ulong offsets = 0;
             uint sceneDataSize = (uint)sizeof(SceneDataBuffer);
 
             var meshBuffer = MeshVertexBuffer.Buffer;
+            vk.CmdPushConstants(commandBuffer, shaderPipelineLayout, ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(SceneDataBuffer), &sceneProperties);
+            vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, pipeline);
             vk.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, shaderPipelineLayout, 0, 1, &descriptorSet, 0, null);
             vk.CmdBindVertexBuffers(commandBuffer, 0, 1, &meshBuffer, &offsets);
             vk.CmdBindIndexBuffer(commandBuffer, MeshIndexBuffer.Buffer, 0, IndexType.Uint32);
             vk.CmdDrawIndexed(commandBuffer, (uint)IndexCount, 1, 0, 0, 0);
         }
 
-        public VulkanBuffer<UniformBufferObject> GetMeshPropertiesBuffer()
+        public VulkanBuffer<MeshProperitiesStruct> GetMeshPropertiesBuffer()
         {
-            return uniformBuffers;
+            return UniformBuffers;
         }
     }
 }

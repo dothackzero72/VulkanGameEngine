@@ -43,32 +43,22 @@ public class OrthographicCamera : Camera
         ViewMatrix = mat4.Identity;
     }
 
-    public override SceneDataBuffer Update(SceneDataBuffer sceneProperties)
+    public override void Update(ref SceneDataBuffer sceneProperties)
     {
-        mat4 transform = mat4.Translate(Position)
-                          * mat4.Rotate(glm.Radians(0.0f), new vec3(0, 0, 1));
+        mat4 transform = mat4.Translate(Position) * mat4.Rotate(MathHelper.ToRadians(0.0f), new vec3(0, 0, 1));
+        ViewMatrix = transform.Inverse;
 
-        Matrix4x4.Invert(MatrixConverter.ToSystemNumerics(transform), out Matrix4x4 inverseTransform);
-        ViewMatrix = MatrixConverter.ToGLM(inverseTransform);
+        float Aspect = Width / Height;
+        ProjectionMatrix = mat4.Ortho(-Aspect * Zoom, Aspect * Zoom, -1.0f * Zoom, 1.0f * Zoom, -10.0f, 10.0f);
 
-        float aspect = Width / Height;
-        ProjectionMatrix = mat4.Ortho(
-            -aspect * Zoom, aspect * Zoom,
-            -1.0f * Zoom, 1.0f * Zoom,
-            -10.0f, 10.0f
-        );
+        mat4 modifiedProjectionMatrix = ProjectionMatrix;
+        modifiedProjectionMatrix[1, 1] *= -1;
 
-        var tempMatrix = ProjectionMatrix;
-        tempMatrix[1, 1] *= -1;
-        ProjectionMatrix = tempMatrix;
-
-        ViewScreenSize = new vec2((aspect * Zoom) * 2, (1.0f * Zoom) * 2);
+        ViewScreenSize = new vec2((Aspect * Zoom) * 2, (1.0f * Zoom) * 2);
 
         sceneProperties.CameraPosition = new vec3(Position.x, Position.y, Position.z);
         sceneProperties.View = ViewMatrix;
-        sceneProperties.Projection = ProjectionMatrix;
-
-        return sceneProperties;
+        sceneProperties.Projection = modifiedProjectionMatrix;
     }
 
     public override void UpdateKeyboard(float deltaTime)

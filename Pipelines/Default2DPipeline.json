@@ -84,7 +84,7 @@
   "LayoutBindingList": [
     {
       "binding": 0,
-      "descriptorType": 7,
+      "descriptorType": 6,
       "descriptorCount": 1,
       "stageFlags": 17,
       "pImmutableSamplers": null
@@ -101,7 +101,7 @@
     {
       "BindingNumber": 0,
       "BindingPropertiesList": 0,
-      "DescriptorType": 7
+      "DescriptorType": 6
     },
     {
       "BindingNumber": 1,

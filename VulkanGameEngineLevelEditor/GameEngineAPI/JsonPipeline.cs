@@ -60,7 +60,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             _device = VulkanRenderer.device;
 
-            SavePipeline();
+            //SavePipeline();
 
             string jsonContent = File.ReadAllText(jsonPipelineFilePath);
             RenderPipelineModel model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent);
@@ -81,8 +81,24 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     switch (binding.BindingPropertiesList)
                     {
-                        case DescriptorBindingPropertiesEnum.kMeshPropertiesDescriptor: descriptorPoolSizeList.Add(new DescriptorPoolSize() { Type = DescriptorType.StorageBuffer, DescriptorCount = meshProperties.UCount() }); break;
-                        case DescriptorBindingPropertiesEnum.kTextureDescriptor: descriptorPoolSizeList.Add(new DescriptorPoolSize() { Type = DescriptorType.CombinedImageSampler, DescriptorCount = textures.UCount() }); break;
+                        case DescriptorBindingPropertiesEnum.kMeshPropertiesDescriptor:
+                            {
+                                descriptorPoolSizeList.Add(new DescriptorPoolSize()
+                                {
+                                    Type = DescriptorType.StorageBuffer,
+                                    DescriptorCount = meshProperties.UCount()
+                                });
+                                break;
+                            }
+                        case DescriptorBindingPropertiesEnum.kTextureDescriptor:
+                            {
+                                descriptorPoolSizeList.Add(new DescriptorPoolSize()
+                                {
+                                    Type = DescriptorType.CombinedImageSampler,
+                                    DescriptorCount = textures.UCount()
+                                });
+                                break;
+                            }
                         default:
                             {
                                 throw new Exception($"{binding} case hasn't been handled yet");
@@ -121,7 +137,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                     DescriptorCount = meshProperties.UCount(),
                                     DescriptorType = DescriptorType.StorageBuffer,
                                     PImmutableSamplers = null,
-                                    StageFlags = ShaderStageFlags.All
+                                    StageFlags = ShaderStageFlags.FragmentBit | ShaderStageFlags.VertexBit
                                 });
                                 break;
                             }
@@ -133,7 +149,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                     DescriptorCount = textures.UCount(),
                                     DescriptorType = DescriptorType.CombinedImageSampler,
                                     PImmutableSamplers = null,
-                                    StageFlags = ShaderStageFlags.All
+                                    StageFlags = ShaderStageFlags.FragmentBit | ShaderStageFlags.VertexBit
                                 });
                                 break;
                             }
@@ -195,14 +211,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                         {
                                             SType = StructureType.WriteDescriptorSet,
                                             DescriptorCount = meshProperties.UCount(),
-                                            DescriptorType = DescriptorType.UniformBuffer,
+                                            DescriptorType = DescriptorType.StorageBuffer,
                                             DstBinding = binding.BindingNumber,
                                             DstArrayElement = 0,
                                             DstSet = descriptorSet,
                                             PBufferInfo = meshInfo,
-                                            PImageInfo = null,
-                                            PTexelBufferView = null,
-                                            PNext = null
                                         });
                                     }
                                     break;
@@ -219,10 +232,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                             DstBinding = binding.BindingNumber,
                                             DstArrayElement = 0,
                                             DstSet = descriptorSet,
-                                            PBufferInfo = null,
-                                            PImageInfo = texturesPtr,
-                                            PTexelBufferView = null,
-                                            PNext = null
+                                            PImageInfo = texturesPtr
                                         });
                                     }
                                     break;
@@ -372,37 +382,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void SavePipeline()
         {
-            List<VkPipelineColorBlendAttachmentState> pipelineColorBlendAttachmentState = new List<VkPipelineColorBlendAttachmentState>()
-            {
-                new VkPipelineColorBlendAttachmentState()
-                {
-                    blendEnable = true,
-                    srcColorBlendFactor = BlendFactor.SrcAlpha,
-                    dstColorBlendFactor = BlendFactor.OneMinusSrcAlpha,
-                    colorBlendOp = BlendOp.Add,
-                    srcAlphaBlendFactor = BlendFactor.One,
-                    dstAlphaBlendFactor = BlendFactor.OneMinusDstAlpha,
-                    alphaBlendOp = BlendOp.Add,
-                    colorWriteMask = ColorComponentFlags.RBit |
-                                     ColorComponentFlags.GBit |
-                                     ColorComponentFlags.BBit |
-                                     ColorComponentFlags.ABit
-                }
-            };
-
-            var pipelineColorBlendStateCreateInfo2 = new VkPipelineColorBlendStateCreateInfo()
-            {
-                sType = StructureType.PipelineColorBlendStateCreateInfo,
-                attachmentCount = 0,
-                pAttachments = null
-            };
-
             var jsonObj = new RenderPipelineModel
             {
                 _name = "DefaultPipeline",
                 VertexShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DVert.spv",
                 FragmentShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DFrag.spv",
-                PipelineColorBlendAttachmentStateList = pipelineColorBlendAttachmentState,
+                PipelineColorBlendAttachmentStateList = new List<VkPipelineColorBlendAttachmentState>()
+                {
+                    new VkPipelineColorBlendAttachmentState()
+                    {
+                        blendEnable = true,
+                        srcColorBlendFactor = BlendFactor.SrcAlpha,
+                        dstColorBlendFactor = BlendFactor.OneMinusSrcAlpha,
+                        colorBlendOp = BlendOp.Add,
+                        srcAlphaBlendFactor = BlendFactor.One,
+                        dstAlphaBlendFactor = BlendFactor.OneMinusDstAlpha,
+                        alphaBlendOp = BlendOp.Add,
+                        colorWriteMask = ColorComponentFlags.RBit |
+                                         ColorComponentFlags.GBit |
+                                         ColorComponentFlags.BBit |
+                                         ColorComponentFlags.ABit
+                    }
+                },
                 PipelineDepthStencilStateCreateInfo = new VkPipelineDepthStencilStateCreateInfo()
                 {
                     sType = StructureType.PipelineDepthStencilStateCreateInfo,
@@ -430,15 +431,21 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 },
                 ScissorList = new List<VkRect2D>(),
                 ViewportList = new List<VkViewport>(),
-                PipelineColorBlendStateCreateInfoModel = pipelineColorBlendStateCreateInfo2,
+                PipelineColorBlendStateCreateInfoModel = new VkPipelineColorBlendStateCreateInfo()
+                {
+                    sType = StructureType.PipelineColorBlendStateCreateInfo,
+                    attachmentCount = 0,
+                    pAttachments = null,
+                    logicOpEnable = false
+                },
                 PipelineInputAssemblyStateCreateInfo = new VkPipelineInputAssemblyStateCreateInfo()
                 {
                     sType = StructureType.PipelineInputAssemblyStateCreateInfo,
                     topology = PrimitiveTopology.TriangleList,
                     primitiveRestartEnable = false
                 },
-            PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
-                    {
+                PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
+                {
                         new PipelineDescriptorModel
                         {
                             BindingNumber = 0,
@@ -451,9 +458,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             BindingPropertiesList = DescriptorBindingPropertiesEnum.kTextureDescriptor,
                             DescriptorType = DescriptorType.CombinedImageSampler
                         }
-                    },
+                },
                 LayoutBindingList = new List<VkDescriptorSetLayoutBinding>()
-                    {
+                {
                         new VkDescriptorSetLayoutBinding()
                         {
                             binding = 0,
@@ -470,7 +477,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             stageFlags = ShaderStageFlags.FragmentBit,
                             pImmutableSamplers = null
                         }
-                    }
+                }
             };
 
             string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\Pipelines\Default2DPipeline.json";

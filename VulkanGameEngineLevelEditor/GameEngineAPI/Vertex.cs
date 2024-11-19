@@ -14,41 +14,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct vec2
-    {
-        public float x;
-        public float y;
-
-        public vec2(float x = 0.0f, float y = 0.0f)
-        {
-            this.x = x;
-            this.y = y;
-        }
-
-        public static implicit operator vec2(GlmSharp.vec2 v)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct vec4
-    {
-        public float r;
-        public float g;
-        public float b;
-        public float a;
-
-        public vec4(float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f)
-        {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
-        }
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct Vertex2D
     {
         public vec2 Position;

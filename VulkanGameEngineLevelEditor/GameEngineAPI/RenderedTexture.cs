@@ -67,11 +67,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public RenderedTexture(VkImageCreateInfo createInfo, VkSamplerCreateInfo samplerCreateInfo) : base()
+        public RenderedTexture(ivec2 TextureResolution, VkImageCreateInfo createInfo, VkSamplerCreateInfo samplerCreateInfo) : base()
         {
+            createInfo.extent.width = (uint)TextureResolution.x;
+            createInfo.extent.height = (uint)TextureResolution.y;
+            createInfo.extent.depth = 1;
             Width = (int)createInfo.extent.width;
             Height = (int)createInfo.extent.height;
-            Depth = (int)createInfo.extent.depth;
+            Depth = 1;
             TextureByteFormat = createInfo.format;
             TextureImageLayout = createInfo.initialLayout;
             SampleCount = createInfo.samples;

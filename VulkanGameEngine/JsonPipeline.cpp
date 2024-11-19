@@ -9,7 +9,7 @@ JsonPipeline::JsonPipeline()
 JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, uint constBufferSize)
 {
   //  ParentRenderPass = parentRenderPass;
-    nlohmann::json json = Json::ReadJson("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\\Pipelines\\DefaultPipeline.json");
+    nlohmann::json json = Json::ReadJson("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\\Pipelines\\Default2DPipeline.json");
     RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
     LoadDescriptorSets(renderPipelineModel);
     LoadPipeline(renderPipelineModel, renderPass, constBufferSize);
@@ -247,24 +247,25 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
         List<VkRect2D> scissorList = model.ScissorList;
         VkPipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo
         {
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-            .pNext = nullptr,
-            .flags = 0,
-            .viewportCount = static_cast<uint32>(viewPortList.size() + 1),
-            .pViewports = viewPortList.data(),
-            .scissorCount = static_cast<uint32>(scissorList.size() + 1),
-            .pScissors = scissorList.data()
+                    .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+                    .pNext = nullptr,
+                    .flags = 0,
+                    .viewportCount = static_cast<uint32>(viewPortList.size() + 1),
+                    .pViewports = viewPortList.data(),
+                    .scissorCount = static_cast<uint32>(scissorList.size() + 1),
+                    .pScissors = scissorList.data()
         };
+
+
+        VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfoModel = model.PipelineColorBlendStateCreateInfoModel;
+        pipelineColorBlendStateCreateInfoModel.attachmentCount = model.PipelineColorBlendAttachmentStateList.size();
+        pipelineColorBlendStateCreateInfoModel.pAttachments = model.PipelineColorBlendAttachmentStateList.data();
 
         List<VkDynamicState> dynamicStateList = List<VkDynamicState>
         {
             VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT,
             VkDynamicState::VK_DYNAMIC_STATE_SCISSOR
         };
-
-        VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfoModel = model.PipelineColorBlendStateCreateInfoModel;
-        pipelineColorBlendStateCreateInfoModel.attachmentCount = model.PipelineColorBlendAttachmentStateList.size();
-        pipelineColorBlendStateCreateInfoModel.pAttachments = model.PipelineColorBlendAttachmentStateList.data();
 
         VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo = VkPipelineDynamicStateCreateInfo
         {
@@ -306,6 +307,7 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
             .basePipelineHandle = VK_NULL_HANDLE,
             .basePipelineIndex = 0,
         };
+
         VULKAN_RESULT(vkCreateGraphicsPipelines(cRenderer.Device, PipelineCache, 1, &graphicsPipelineCreateInfo, nullptr, &Pipeline));
     }
 }
@@ -315,6 +317,9 @@ void JsonPipeline::Destroy()
     renderer.DestroyPipeline(Pipeline);
     renderer.DestroyPipelineLayout(PipelineLayout);
     renderer.DestroyPipelineCache(PipelineCache);
-    //renderer.DestroyDescriptorSetLayout(DescriptorSetLayout);
-    //renderer.DestroyDescriptorPool(DescriptorPool);
+    renderer.DestroyDescriptorPool(DescriptorPool);
+    for (auto descriptorSet : DescriptorSetLayoutList)
+    {
+        renderer.DestroyDescriptorSetLayout(descriptorSet);
+    }
 }

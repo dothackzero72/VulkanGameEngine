@@ -239,8 +239,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 throw new NotSupportedException("Validation layers requested, but not available!");
             }
 
-            uint extensionCount = 0;
-            GetWin32Extensions(ref extensionCount, out string[] enabledExtensions);
+            List<string> extentions = new List<string>();
+
+            uint extensionCount = extentions.UCount();
+            string[] enabledExtensions = extentions.ToArray();
+            GetWin32Extensions(ref extensionCount, ref enabledExtensions);
 
             ApplicationInfo applicationInfo = new
             (
@@ -397,10 +400,71 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             PhysicalDeviceFeatures deviceFeatures = new PhysicalDeviceFeatures()
             {
                 SamplerAnisotropy = true,
-
+                FragmentStoresAndAtomics = true,
                 DepthBiasClamp = true,
                 DepthBounds = true,
                 DepthClamp = true
+            };
+
+            PhysicalDeviceBufferDeviceAddressFeatures BufferDeviceAddressFeatures = new PhysicalDeviceBufferDeviceAddressFeatures()
+            {
+                SType = StructureType.PhysicalDeviceBufferDeviceAddressFeatures,
+                BufferDeviceAddress = true
+            };
+
+            //if (Renderer_GetRayTracingSupport())
+            //{
+            //    VkPhysicalDeviceRayTracingPipelineFeaturesKHR RayTracingPipelineFeatures = { 0 };
+            //    RayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+            //    RayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
+
+            //    VkPhysicalDeviceAccelerationStructureFeaturesKHR AccelerationStructureFeatures = { 0 };
+            //    AccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+            //    AccelerationStructureFeatures.accelerationStructure = VK_TRUE;
+
+            //    AccelerationStructureFeatures.pNext = &RayTracingPipelineFeatures;
+            //    BufferDeviceAddressFeatures.pNext = &AccelerationStructureFeatures;
+            //}
+            //else
+            //{
+            //    BufferDeviceAddressFeatures.pNext = NULL;
+            //}
+
+            PhysicalDeviceDescriptorIndexingFeatures DescriptorIndexingFeatures = new PhysicalDeviceDescriptorIndexingFeatures()
+            {
+                SType = StructureType.PhysicalDeviceDescriptorIndexingFeatures,
+                RuntimeDescriptorArray = true,
+                ShaderSampledImageArrayNonUniformIndexing = true,
+                DescriptorBindingVariableDescriptorCount = true,
+                PNext = &BufferDeviceAddressFeatures
+            };
+
+            PhysicalDeviceRobustness2FeaturesEXT Robustness2Features = new PhysicalDeviceRobustness2FeaturesEXT()
+            {
+                SType = StructureType.PhysicalDeviceRobustness2FeaturesExt,
+                NullDescriptor = true,
+                PNext = &DescriptorIndexingFeatures
+            };
+
+            PhysicalDeviceVulkan13Features Vulkan13Features = new PhysicalDeviceVulkan13Features()
+            {
+                SType = StructureType.PhysicalDeviceVulkan13Features,
+                ShaderDemoteToHelperInvocation = true,
+                PNext = &Robustness2Features
+            };
+
+            PhysicalDeviceFeatures2 Features2 = new PhysicalDeviceFeatures2()
+            {
+                SType = StructureType.PhysicalDeviceFeatures2,
+                Features = deviceFeatures,
+                PNext = &Vulkan13Features
+            };
+
+            PhysicalDeviceVulkan11Features Vulkan11Features = new PhysicalDeviceVulkan11Features()
+            {
+                SType = StructureType.PhysicalDeviceVulkan11Features,
+                Multiview = true,
+                PNext = &Features2
             };
 
             DeviceCreateInfo createInfo = new DeviceCreateInfo
@@ -408,11 +472,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 SType = StructureType.DeviceCreateInfo,
                 PQueueCreateInfos = queueCreate,
                 QueueCreateInfoCount = (uint)queueFamilyList.Count,
-                PEnabledFeatures = &deviceFeatures,
+                PEnabledFeatures = null,
                 EnabledExtensionCount = (uint)deviceExtensions.Length,
                 PpEnabledExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(deviceExtensions),
                 EnabledLayerCount = (uint)validationLayers.Length,
-                PpEnabledLayerNames = (byte**)SilkMarshal.StringArrayToPtr(validationLayers)
+                PpEnabledLayerNames = (byte**)SilkMarshal.StringArrayToPtr(validationLayers),
+                PNext = &Vulkan11Features
             };
 
             var result = vk.CreateDevice(physicalDevice, in createInfo, null, out Device devicePtr);
@@ -618,9 +683,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         [DllImport("vulkan-1.dll")]
         public static extern Result vkEnumerateInstanceExtensionProperties(IntPtr pLayerName, ref uint pPropertyCount, IntPtr pProperties);
-        public static void GetWin32Extensions(ref uint extensionCount, out string[] enabledExtensions)
+        public static void GetWin32Extensions(ref uint extensionCount, ref string[] enabledExtensions)
         {
-            enabledExtensions = null;
+            uint startCount = extensionCount;
+            string[] startExtenstions = enabledExtensions;
+
             Result result = vkEnumerateInstanceExtensionProperties(IntPtr.Zero, ref extensionCount, IntPtr.Zero);
             if (result != Result.Success)
             {
@@ -639,7 +706,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 }
 
                 string[] extensionNames = new string[extensionCount];
-                for (uint x = 0; x < extensionCount; x++)
+                for (uint x = 0; x < startExtenstions.Count(); x++)
+                {
+                    extensionNames[x] = startExtenstions[x];
+                }
+                for (uint x = startCount; x < extensionCount; x++)
                 {
                     ExtensionProperties extProps = Marshal.PtrToStructure<ExtensionProperties>(
                         IntPtr.Add(extensionsPtr, (int)(x * Marshal.SizeOf<ExtensionProperties>())));

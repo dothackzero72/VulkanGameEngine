@@ -12,9 +12,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
         }
 
-        public Mesh3D(Vertex3D[] vertexList, uint[] indexList, uint MeshBufferIndex) : base()
-        {
-            base.MeshStartUp(vertexList, indexList);
-        }
+        //public Mesh3D(Vertex3D[] vertexList, uint[] indexList, uint MeshBufferIndex) : base()
+        //{
+        //    base.MeshStartUp(vertexList, indexList);
+        //}
     }
 }

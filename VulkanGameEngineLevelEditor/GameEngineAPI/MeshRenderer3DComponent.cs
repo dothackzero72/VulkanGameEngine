@@ -20,7 +20,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         private void Initialize(String name, Vertex3D[] vertexList, uint[] indexList, uint meshBufferIndex)
         {
             Name = name;
-            mesh = new Mesh3D(vertexList, indexList, meshBufferIndex);
+            //mesh = new Mesh3D(vertexList, indexList, meshBufferIndex);
         }
 
         public static MeshRenderer3DComponent CreateRenderMesh3DComponent(String name, Vertex3D[] vertexList, uint[] indexList, uint meshBufferIndex)
@@ -43,7 +43,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public override void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
-            mesh.Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSet);
+            mesh.Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSet, sceneProperties);
         }
 
         public override void Destroy()
@@ -56,7 +56,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return sizeof(MeshRenderer3DComponent);
         }
 
-        public VulkanBuffer<UniformBufferObject> GetMeshPropertiesBuffer()
+        public VulkanBuffer<MeshProperitiesStruct> GetMeshPropertiesBuffer()
         {
             return mesh.GetMeshPropertiesBuffer();
         }
