@@ -38,7 +38,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             foreach (var messager in GlobalMessenger.messenger)
             {
-                if (messager != null &&
+                if (messager.richTextBox != null &&
+                    messager != null &&
                     messager.IsActive)
 
                 {

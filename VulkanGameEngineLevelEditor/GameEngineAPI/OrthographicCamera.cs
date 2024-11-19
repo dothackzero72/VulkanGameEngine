@@ -35,11 +35,7 @@ public class OrthographicCamera : Camera
 
         Position = new vec3(position);
         ViewScreenSize = new vec2(width, height);
-        ProjectionMatrix = mat4.Ortho(
-        -AspectRatio * Zoom, AspectRatio * Zoom,
-                  -1.0f * Zoom, 1.0f * Zoom,
-                  -10.0f, 10.0f
-              );
+        ProjectionMatrix = mat4.Ortho(-AspectRatio * Zoom, AspectRatio * Zoom, -1.0f * Zoom, 1.0f * Zoom, -1.0f, 1.0f);
         ViewMatrix = mat4.Identity;
     }
 

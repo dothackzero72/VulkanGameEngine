@@ -307,6 +307,12 @@
     <Compile Include="GameEngineAPI\MeshRenderer2DComponent.cs" />
     <Compile Include="GameEngineAPI\MeshRenderer3DComponent.cs" />
     <Compile Include="GameEngineAPI\OrthographicCamera.cs" />
+    <Compile Include="GameWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GameWindow.Designer.cs">
+      <DependentUpon>GameWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\VkAttachmentDescription.cs" />
     <Compile Include="GameEngineAPI\JsonPipeline.cs" />
     <Compile Include="Models\PipelineLayoutModel.cs" />
@@ -369,6 +375,9 @@
     <Compile Include="Vulkan\VulkanSwapChain.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GameWindow.resx">
+      <DependentUpon>GameWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
