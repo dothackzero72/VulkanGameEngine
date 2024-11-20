@@ -71,7 +71,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GameObjectList.Add(GameObject.CreateGameObject("object2", new List<ComponentTypeEnum>() { ComponentTypeEnum.kRenderMesh2DComponent }));
 
             MemoryManager.ViewMemoryMap();
-            renderPass3D.Create3dRenderPass();
+            renderPass3D.CreateRenderPass();
         }
 
         public void Update()

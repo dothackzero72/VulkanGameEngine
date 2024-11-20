@@ -12,7 +12,7 @@ namespace VulkanGameEngineLevelEditor.Models
     [Serializable]
     public class RenderPassBuildInfoModel : RenderPassEditorBaseModel
     {
-        public List<RenderPipelineModel> RenderPipelineList { get; set; } = new List<RenderPipelineModel>();
+        public List<String> PipelinePathList { get; set; } = new List<String>();
 
         public List<RenderedTextureInfoModel> RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>();
         public List<VkSubpassDependency> SubpassDependencyList { get; set; } = new List<VkSubpassDependency>();

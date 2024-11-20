@@ -2,10 +2,10 @@
   "RenderedTextureInfoModelList": [
     {
       "IsRenderedToSwapchain": true,
-      "RenderedTextureInfoName": "Rendered2DTexture",
+      "RenderedTextureInfoName": "texture",
       "ImageCreateInfo": {
         "imageType": 1,
-        "format": 44,
+        "format": 37,
         "mipLevels": 1,
         "arrayLayers": 1,
         "samples": 1,
@@ -35,21 +35,71 @@
       },
       "AttachmentDescription": {
         "flags": 0,
-        "format": 44,
+        "format": 37,
         "samples": 1,
         "loadOp": 1,
         "storeOp": 0,
         "stencilLoadOp": 2,
         "stencilStoreOp": 1,
-        "initialLayout": 0,
-        "finalLayout": 1000314000,
-        "_name": "wert"
+        "initialLayout": 2,
+        "finalLayout": 2,
+        "_name": null
       },
       "TextureType": 0,
-      "_name": "Texture2DRenderpass"
+      "_name": "ColorAttachment"
+    },
+    {
+      "IsRenderedToSwapchain": false,
+      "RenderedTextureInfoName": "texture",
+      "ImageCreateInfo": {
+        "imageType": 1,
+        "format": 126,
+        "mipLevels": 1,
+        "arrayLayers": 1,
+        "samples": 1,
+        "tiling": 0,
+        "usage": 39,
+        "sharingMode": 0,
+        "initialLayout": 0,
+        "_name": "DefaultColorTextureCreateInfo"
+      },
+      "SamplerCreateInfo": {
+        "magFilter": 0,
+        "minFilter": 0,
+        "mipmapMode": 1,
+        "addressModeU": 0,
+        "addressModeV": 0,
+        "addressModeW": 0,
+        "mipLodBias": 0.0,
+        "anisotropyEnable": true,
+        "maxAnisotropy": 16.0,
+        "compareEnable": false,
+        "compareOp": 7,
+        "minLod": 0.0,
+        "maxLod": 1.0,
+        "borderColor": 2,
+        "unnormalizedCoordinates": false,
+        "_name": "DefaultColorSampleCreateInfo"
+      },
+      "AttachmentDescription": {
+        "flags": 0,
+        "format": 126,
+        "samples": 1,
+        "loadOp": 1,
+        "storeOp": 1,
+        "stencilLoadOp": 2,
+        "stencilStoreOp": 1,
+        "initialLayout": 0,
+        "finalLayout": 3,
+        "_name": null
+      },
+      "TextureType": 1,
+      "_name": "depthAttachment"
     }
   ],
-  "RenderPipelineList": [],
+  "PipelinePathList": [
+    "..\\..\\..\\Pipelines\\Default2DPipeline.json"
+  ],
   "SubpassDependencyList": [
     {
       "srcSubpass": 4294967295,
@@ -59,8 +109,8 @@
       "srcAccessMask": 0,
       "dstAccessMask": 256,
       "dependencyFlags": 0,
-      "_name": "gfsd"
+      "_name": null
     }
   ],
-  "_name": "sdfg"
+  "_name": null
 }
