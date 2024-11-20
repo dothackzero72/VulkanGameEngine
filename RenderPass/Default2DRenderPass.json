@@ -1,7 +1,7 @@
 {
   "RenderedTextureInfoModelList": [
     {
-      "IsRenderedToSwapchain": false,
+      "IsRenderedToSwapchain": true,
       "RenderedTextureInfoName": "Rendered2DTexture",
       "ImageCreateInfo": {
         "imageType": 1,
