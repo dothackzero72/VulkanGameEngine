@@ -54,7 +54,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         static readonly long startTime = DateTime.Now.Ticks;
         public List<Texture> textureList { get; set; } = new List<Texture>();
         public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
-        RendererPass3D renderPass3D { get; set; } = new RendererPass3D();
+        JsonRenderPass renderPass3D { get; set; } = new JsonRenderPass();
 
         public void StartUp()
         {
@@ -71,7 +71,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GameObjectList.Add(GameObject.CreateGameObject("object2", new List<ComponentTypeEnum>() { ComponentTypeEnum.kRenderMesh2DComponent }));
 
             MemoryManager.ViewMemoryMap();
-            renderPass3D.Create3dRenderPass();
+            renderPass3D.CreateJsonRenderPass(RenderPassEditorConsts.Default2DRenderPass, new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
         }
 
         public void Update()

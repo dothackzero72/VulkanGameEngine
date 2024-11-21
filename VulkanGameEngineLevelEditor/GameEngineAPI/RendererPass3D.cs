@@ -180,7 +180,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             RenderPassBuildInfoModel model2 = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent2);
 
             CreateRenderPass(model2);
-            CreateFramebuffer(model2);
+            CreateFramebuffer();
             jsonPipeline = new JsonPipeline(RenderPassEditorConsts.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer));
             //LoadDescriptorSets(model);
             //CreateGraphicsPipeline();
@@ -301,15 +301,22 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return renderPass;
         }
 
-        public Framebuffer[] CreateFramebuffer(RenderPassBuildInfoModel model2)
+        public void CreateFramebuffer()
         {
-
             Framebuffer[] frameBufferList = new Framebuffer[VulkanRenderer.swapChain.ImageCount];
             for (int x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
             {
                 List<ImageView> TextureAttachmentList = new List<ImageView>();
-                TextureAttachmentList.Add(VulkanRenderer.swapChain.imageViews[x]);
-                TextureAttachmentList.Add(depthTexture.View);
+                foreach (var texture in RenderedColorTextureList)
+                {
+                  
+                        TextureAttachmentList.Add(VulkanRenderer.swapChain.imageViews[x]);
+               
+                }
+                if (depthTexture != null)
+                {
+                    TextureAttachmentList.Add(depthTexture.View);
+                }
 
                 fixed (ImageView* imageViewPtr = TextureAttachmentList.ToArray())
                 {
@@ -319,9 +326,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         RenderPass = renderPass,
                         AttachmentCount = TextureAttachmentList.UCount(),
                         PAttachments = imageViewPtr,
-                        Width = VulkanRenderer.swapChain.swapchainExtent.Width,
-                        Height = VulkanRenderer.swapChain.swapchainExtent.Height,
-                        Layers = 1
+                        Width = (uint)RenderPassResolution.x,
+                        Height = (uint)RenderPassResolution.y,
+                        Layers = 1,
+                        Flags = 0,
+                        PNext = null
                     };
 
                     Framebuffer frameBuffer = FrameBufferList[x];
@@ -331,7 +340,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             FrameBufferList = frameBufferList;
-            return frameBufferList;
         }
 
         public CommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
