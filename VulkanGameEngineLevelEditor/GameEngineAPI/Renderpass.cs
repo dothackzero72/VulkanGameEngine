@@ -16,12 +16,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public RenderPass renderPass { get; protected set; }
         public CommandBuffer[] commandBufferList { get; protected set; }
         public Framebuffer[] FrameBufferList { get; protected set; }
-        public DescriptorPool descriptorpool { get; protected set; }
-        public List<DescriptorSetLayout> descriptorSetLayoutList { get; protected set; } = new List<DescriptorSetLayout>();
-        public DescriptorSet descriptorset { get; protected set; }
-        public Pipeline shaderpipeline { get; protected set; }
-        public PipelineLayout shaderpipelineLayout { get; protected set; }
-        public PipelineCache pipelineCache { get; protected set; }
+        //public DescriptorPool descriptorpool { get; protected set; }
+        //public List<DescriptorSetLayout> descriptorSetLayoutList { get; protected set; } = new List<DescriptorSetLayout>();
+        //public DescriptorSet descriptorset { get; protected set; }
+        //public Pipeline shaderpipeline { get; protected set; }
+        //public PipelineLayout shaderpipelineLayout { get; protected set; }
+        //public PipelineCache pipelineCache { get; protected set; }
 
         public SilkRenderPassBase()
         {

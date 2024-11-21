@@ -284,16 +284,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             PipelineVertexInputStateCreateInfo vertexInputInfo = new PipelineVertexInputStateCreateInfo();
-            fixed (VertexInputBindingDescription* vertexBindings = Vertex3D.GetBindingDescriptions().ToArray())
-            fixed (VertexInputAttributeDescription* attributeBindings = Vertex3D.GetAttributeDescriptions().ToArray())
+            fixed (VertexInputBindingDescription* vertexBindings = Vertex2D.GetBindingDescriptions().ToArray())
+            fixed (VertexInputAttributeDescription* attributeBindings = Vertex2D.GetAttributeDescriptions().ToArray())
             {
                 vertexInputInfo = new PipelineVertexInputStateCreateInfo()
                 {
                     SType = StructureType.PipelineVertexInputStateCreateInfo,
                     PVertexAttributeDescriptions = attributeBindings,
                     PVertexBindingDescriptions = vertexBindings,
-                    VertexAttributeDescriptionCount = Vertex3D.GetAttributeDescriptions().UCount(),
-                    VertexBindingDescriptionCount = Vertex3D.GetBindingDescriptions().UCount(),
+                    VertexAttributeDescriptionCount = Vertex2D.GetAttributeDescriptions().UCount(),
+                    VertexBindingDescriptionCount = Vertex2D.GetBindingDescriptions().UCount(),
                     Flags = 0,
                     PNext = null
                 };

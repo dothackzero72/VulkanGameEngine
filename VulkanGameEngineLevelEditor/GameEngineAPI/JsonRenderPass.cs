@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
+using ImageLayout = Silk.NET.Vulkan.ImageLayout;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -50,88 +51,142 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             string jsonContent = File.ReadAllText(jsonPath);
             RenderPassBuildInfoModel model = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
 
-            CreateRenderPass(model);
-            CreateFramebuffer();
-            pipelineList.Add(new JsonPipeline(RenderPassEditorConsts.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer)));
+            //CreateRenderPass(model);
+            //CreateFramebuffer();
+           // pipelineList.Add(new JsonPipeline(RenderPassEditorConsts.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer)));
         }
 
         public void SaveRenderPass()
         {
-            RenderPassBuildInfoModel model = new RenderPassBuildInfoModel()
+            RenderPassBuildInfoModel modelInfo = new RenderPassBuildInfoModel()
             {
-                RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>()
+                RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>
                 {
-                    new RenderedTextureInfoModel()
+                    new RenderedTextureInfoModel
                     {
-                            _name = "Texture2DRenderpass",
-                            IsRenderedToSwapchain = false,
-                            TextureType = RenderedTextureType.ColorRenderedTexture,
-                            AttachmentDescription = new VkAttachmentDescription()
-                            {
-                                format = Format.B8G8R8A8Unorm,
-                                samples = SampleCountFlags.SampleCount1Bit,
-                                loadOp = AttachmentLoadOp.Clear,
-                                storeOp = AttachmentStoreOp.Store,
-                                stencilLoadOp = AttachmentLoadOp.DontCare,
-                                stencilStoreOp = AttachmentStoreOp.DontCare,
-                                initialLayout = Silk.NET.Vulkan.ImageLayout.Undefined,
-                                finalLayout = Silk.NET.Vulkan.ImageLayout.ReadOnlyOptimal
-                            },
-                            ImageCreateInfo = new VkImageCreateInfo()
-                            {
-                                sType = StructureType.ImageCreateInfo,
-                                imageType = ImageType.ImageType2D,
-                                format = Format.B8G8R8A8Unorm,
-                                extent = new VkExtent3D(1, 1, 1),
-                                mipLevels = 1,
-                                arrayLayers = 1,
-                                samples = SampleCountFlags.SampleCount1Bit,
-                                tiling = ImageTiling.Optimal,
-                                usage = ImageUsageFlags.ImageUsageTransferSrcBit |
-                                        ImageUsageFlags.ImageUsageTransferDstBit |
-                                        ImageUsageFlags.ImageUsageSampledBit |
-                                        ImageUsageFlags.ImageUsageColorAttachmentBit,
-                                sharingMode = SharingMode.Exclusive,
-                                initialLayout = Silk.NET.Vulkan.ImageLayout.Undefined,
-                            },
-                            SamplerCreateInfo = new VkSamplerCreateInfo()
-                            {
-                                structureType = StructureType.SamplerCreateInfo,
-                                magFilter = Filter.Nearest,
-                                minFilter = Filter.Nearest,
-                                mipmapMode = SamplerMipmapMode.Linear,
-                                addressModeU = SamplerAddressMode.Repeat,
-                                addressModeV = SamplerAddressMode.Repeat,
-                                addressModeW = SamplerAddressMode.Repeat,
-                                mipLodBias = 0.0f,
-                                anisotropyEnable = true,
-                                maxAnisotropy = 16.0f,
-                                compareEnable = false,
-                                compareOp = CompareOp.Always,
-                                minLod = 0.0f,
-                                maxLod = 1,
-                                borderColor = BorderColor.IntOpaqueBlack,
-                                unnormalizedCoordinates = false,
-                            },
-                            RenderedTextureInfoName = "Rendered2DTexture"
+                        ImageCreateInfo = new VkImageCreateInfo()
+                        {
+                            imageType = ImageType.ImageType2D,
+                            format= Format.R8G8B8A8Unorm,
+                            mipLevels = 1,
+                            arrayLayers = 1,
+                            samples = SampleCountFlags.Count1Bit,
+                            tiling = 0,
+                            usage = ImageUsageFlags.ImageUsageTransferSrcBit |
+                                    ImageUsageFlags.SampledBit |
+                                    ImageUsageFlags.ImageUsageColorAttachmentBit |
+                                    ImageUsageFlags.ImageUsageTransferDstBit,
+                            sharingMode = 0,
+                            initialLayout =  0,
+                            _name = "bnvnb"
+                        },
+                        SamplerCreateInfo = new VkSamplerCreateInfo()
+                        {
+                            magFilter = 0,
+                            minFilter = 0,
+                            mipmapMode = (SamplerMipmapMode)1,
+                            addressModeU = 0,
+                            addressModeV = 0,
+                            addressModeW = 0,
+                            mipLodBias = 0.0f,
+                            anisotropyEnable = true,
+                            maxAnisotropy = 16.0f,
+                            compareEnable = false,
+                            compareOp = (CompareOp)7,
+                            minLod = 0.0f,
+                            maxLod = 1.0f,
+                            borderColor = (BorderColor)3,
+                            unnormalizedCoordinates = false,
+                            _name = "tyuiy"
+                        },
+                        AttachmentDescription = new VkAttachmentDescription()
+                        {
+                            format = Format.R8G8B8A8Unorm,
+                            samples = SampleCountFlags.SampleCount1Bit,
+                            loadOp = AttachmentLoadOp.Clear,
+                            storeOp = AttachmentStoreOp.Store,
+                            stencilLoadOp = AttachmentLoadOp.DontCare,
+                            stencilStoreOp = AttachmentStoreOp.DontCare,
+                            initialLayout = ImageLayout.ColorAttachmentOptimal,
+                            finalLayout = ImageLayout.ColorAttachmentOptimal,
+                        },
+                        IsRenderedToSwapchain = true,
+                        TextureType = RenderedTextureType.ColorRenderedTexture,
+                        RenderedTextureInfoName = "texture",
+                        _name = "ColorAttachment"
+                    },
+                      new RenderedTextureInfoModel
+                    {
+                        ImageCreateInfo = new VkImageCreateInfo()
+                        {
+                            imageType = (ImageType)1,
+                            format = Format.D32Sfloat,
+                            mipLevels = 1,
+                            arrayLayers = 1,
+                            samples = (SampleCountFlags)1,
+                            tiling = 0,
+                            usage =  ImageUsageFlags.ImageUsageTransferSrcBit |
+                                    ImageUsageFlags.SampledBit |
+                                    ImageUsageFlags.DepthStencilAttachmentBit |
+                                    ImageUsageFlags.ImageUsageTransferDstBit,
+                            sharingMode = 0,
+                            queueFamilyIndexCount = 0,
+                            pQueueFamilyIndices = null,
+                            initialLayout = 0,
+                            _name = "DefaultColorTextureCreateInfo"
+                        },
+                        SamplerCreateInfo = new VkSamplerCreateInfo()
+                        {
+                            magFilter = 0,
+                            minFilter = 0,
+                            mipmapMode = (SamplerMipmapMode)1,
+                            addressModeU = 0,
+                            addressModeV = 0,
+                            addressModeW = 0,
+                            mipLodBias = 0.0f,
+                            anisotropyEnable = true,
+                            maxAnisotropy = 16.0f,
+                            compareEnable = false,
+                            compareOp = (CompareOp)7,
+                            minLod = 0.0f,
+                            maxLod = 1.0f,
+                            borderColor = (BorderColor)2,
+                            unnormalizedCoordinates = false,
+                            _name = "DefaultColorSampleCreateInfo"
+                        },
+                        AttachmentDescription = new VkAttachmentDescription()
+                        {
+                            format = Format.D32Sfloat,
+                            samples = SampleCountFlags.SampleCount1Bit,
+                            loadOp = AttachmentLoadOp.Clear,
+                            storeOp = AttachmentStoreOp.DontCare,
+                            stencilLoadOp = AttachmentLoadOp.DontCare,
+                            stencilStoreOp = AttachmentStoreOp.DontCare,
+                            initialLayout = ImageLayout.Undefined,
+                            finalLayout = ImageLayout.DepthStencilAttachmentOptimal,
+                        },
+                        IsRenderedToSwapchain = false,
+                        TextureType = RenderedTextureType.DepthRenderedTexture,
+                        RenderedTextureInfoName = "texture",
+                        _name = "depthAttachment"
                     }
                 },
                 SubpassDependencyList = new List<VkSubpassDependency>()
                 {
-                    new VkSubpassDependency()
-                    {
-                         srcSubpass = (~0U),
-                         dstSubpass = 0,
-                         srcStageMask = (VkPipelineStageFlags)PipelineStageFlags.ColorAttachmentOutputBit,
-                         dstStageMask = (VkPipelineStageFlags)PipelineStageFlags.ColorAttachmentOutputBit,
-                         srcAccessMask = 0,
-                         dstAccessMask = (VkAccessFlags)AccessFlags.ColorAttachmentWriteBit
-                    }
+                     new VkSubpassDependency
+                            {
+                                srcSubpass = uint.MaxValue,
+                                dstSubpass = 0,
+                                srcStageMask = (VkPipelineStageFlags)PipelineStageFlags.ColorAttachmentOutputBit,
+                                dstStageMask = (VkPipelineStageFlags)PipelineStageFlags.ColorAttachmentOutputBit, // Changed to Early Fragment Tests
+                                srcAccessMask = 0,
+                                dstAccessMask = (VkAccessFlags)AccessFlags.ColorAttachmentWriteBit, // Ensure this access mask is relevant to the chosen stage mask
+                            }
                 }
             };
 
             string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\Default2DRenderPass.json";
-            string jsonString = JsonConvert.SerializeObject(model, Formatting.Indented);
+            string jsonString = JsonConvert.SerializeObject(modelInfo, Formatting.Indented);
             File.WriteAllText(finalfilePath, jsonString);
         }
 
@@ -160,7 +215,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         }
                     case RenderedTextureType.DepthRenderedTexture:
                         {
-                            depthTexture = new DepthTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo);
+                            depthTexture = new DepthTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo);
                             depthReferenceList.Add(new AttachmentReference
                             {
                                 Attachment = (uint)(colorAttachmentReferenceList.Count + resolveAttachmentReferenceList.Count),
