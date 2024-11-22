@@ -32,6 +32,7 @@ namespace VulkanGameEngineLevelEditor
         {
             InitializeComponent();
             this.Load += Form1_Load;
+           // this.KeyDown += Form1_KeyDown;
 
             VulkanSwapChainResolution = new Extent2D() { Width = 1280, Height = 720 };
             Thread.CurrentThread.Name = "LevelEditor";
@@ -72,6 +73,7 @@ namespace VulkanGameEngineLevelEditor
             while (running)
             {
                 scene.Update();
+               // scene.KeyUpdate();
                 scene.DrawFrame();
             }
         }
