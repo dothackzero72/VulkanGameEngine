@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -16,6 +17,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public PrimitiveTopology topology { get; set; }
         public bool primitiveRestartEnable { get; set; }
         public uint flags { get; set; } = 0;
+        [JsonIgnore]
         public void* pNext { get; set; } = null;
         public VkPipelineInputAssemblyStateCreateInfo() { }
         public PipelineInputAssemblyStateCreateInfo* ConvertPtr()

@@ -1,6 +1,7 @@
 ﻿using GlmSharp;
 using System.Numerics;
 using System.Runtime.InteropServices.ComTypes;
+using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using vec2 = GlmSharp.vec2;
 

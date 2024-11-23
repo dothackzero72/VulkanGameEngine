@@ -2,6 +2,7 @@
 #include "VulkanBuffer.h"
 #include <stb/stb_image.h>
 
+
 BakedTexture::BakedTexture()
 {
 

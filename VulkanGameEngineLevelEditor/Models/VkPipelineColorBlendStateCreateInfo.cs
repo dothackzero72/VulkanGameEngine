@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using Silk.NET.Core.Native;
+using Newtonsoft.Json;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -25,11 +26,13 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         public StructureType sType { get; set; }
+        [JsonIgnore]
         public void* pNext { get; set; }
         public PipelineColorBlendStateCreateFlags flags { get; set; }
         public Bool32 logicOpEnable { get; set; }
         public LogicOp logicOp { get; set; }
         public uint attachmentCount { get; set; }
+        [JsonIgnore]
         public PipelineColorBlendAttachmentState* pAttachments { get; set; }
         public Blender blendConstants;
 

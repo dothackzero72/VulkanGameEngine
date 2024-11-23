@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
-#include <vulkan/vulkan_core.h>
-#include <nlohmann/json.hpp>
+#include "includes.h"
 #include "Typedef.h"
 #include "json.h"
 

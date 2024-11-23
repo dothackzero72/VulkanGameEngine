@@ -44,7 +44,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <CLRSupport>true</CLRSupport>
+    <CLRSupport>false</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -80,8 +80,9 @@
     <LibraryPath>$(SolutionDir)x64\Release;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;C:\Users\dotha\source\repos\WindowTest\External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)External/glfw/include/GLFW/glfw3.h;$(SolutionDir)External\GitHub\VulkanGameEngine\External\glfw\include;C:\Users\DHZ\Documents\Visual Studio 2022\nlohmann;$(SolutionDir)External\sdl\include;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngineCore;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)External/glfw/include/GLFW/glfw3.h;$(SolutionDir)External\GitHub\VulkanGameEngine\External\glfw\include;C:\Users\dotha\Documents\GitHub\VulkanGameEngine\External\nlohmann\include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngineCore;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)x64\Debug;$(SolutionDir)External\glfw;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
+    <ManagedAssembly>true</ManagedAssembly>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\DHZ\Documents\Visual Studio 2022\nlohmann;$(SolutionDir)External\sdl\include;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngineCore;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
@@ -153,10 +154,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CBuffer.c" />
-    <ClCompile Include="CGameObject.c" />
-    <ClCompile Include="CShaderCompiler.c" />
-    <ClCompile Include="CTexture.c" />
+    <ClCompile Include="CBuffer.c">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="CShaderCompiler.c">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="CTexture.c">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
+    </ClCompile>
     <ClCompile Include="CTimer.c" />
     <ClCompile Include="FrameTime.c" />
     <ClCompile Include="GameController.c" />
@@ -174,7 +180,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CBuffer.h" />
-    <ClInclude Include="CGameObject.h" />
     <ClInclude Include="CShaderCompiler.h" />
     <ClInclude Include="CTexture.h" />
     <ClInclude Include="CTimer.h" />
@@ -183,6 +188,7 @@
     <ClInclude Include="GameController.h" />
     <ClInclude Include="GLFWWindow.h" />
     <ClInclude Include="GraphicsDevice.h" />
+    <ClInclude Include="includes.h" />
     <ClInclude Include="io.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />

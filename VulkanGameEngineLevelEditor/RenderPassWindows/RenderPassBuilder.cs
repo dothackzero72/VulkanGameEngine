@@ -56,22 +56,22 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                     {
                         IsRenderedToSwapchain = true,
                         RenderedTextureInfoName = "ColorRenderTexture",
-                        AttachmentDescription = new VkAttachmentDescription(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel),
-                        ImageCreateInfo = new VkImageCreateInfo(RenderPassEditorConsts.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm),
-                        SamplerCreateInfo = new VkSamplerCreateInfo(RenderPassEditorConsts.DefaultColorSamplerCreateInfo),
+                        AttachmentDescription = new VkAttachmentDescription(ConstConfig.DefaultColorAttachmentDescriptionModel),
+                        ImageCreateInfo = new VkImageCreateInfo(ConstConfig.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm),
+                        SamplerCreateInfo = new VkSamplerCreateInfo(ConstConfig.DefaultColorSamplerCreateInfo),
                         TextureType = RenderedTextureType.ColorRenderedTexture
                     },
                     new RenderedTextureInfoModel()
                     {
                         IsRenderedToSwapchain = false,
                         RenderedTextureInfoName = "DepthRenderedTexture",
-                        AttachmentDescription = new VkAttachmentDescription(RenderPassEditorConsts.DefaultDepthAttachmentDescriptionModel),
-                        ImageCreateInfo = new VkImageCreateInfo(RenderPassEditorConsts.DefaultCreateDepthImageInfo, SwapChainResuloution, Format.D32Sfloat),
-                        SamplerCreateInfo = new VkSamplerCreateInfo(RenderPassEditorConsts.DefaultDepthSamplerCreateInfo),
+                        AttachmentDescription = new VkAttachmentDescription(ConstConfig.DefaultDepthAttachmentDescriptionModel),
+                        ImageCreateInfo = new VkImageCreateInfo(ConstConfig.DefaultCreateDepthImageInfo, SwapChainResuloution, Format.D32Sfloat),
+                        SamplerCreateInfo = new VkSamplerCreateInfo(ConstConfig.DefaultDepthSamplerCreateInfo),
                         TextureType = RenderedTextureType.DepthRenderedTexture
                     }
                 },
-                SubpassDependencyList = new List<VkSubpassDependency>() { new VkSubpassDependency(RenderPassEditorConsts.DefaultSubpassDependencyModel) },
+                SubpassDependencyList = new List<VkSubpassDependency>() { new VkSubpassDependency(ConstConfig.DefaultSubpassDependencyModel) },
             };
 
             listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].AttachmentDescription);

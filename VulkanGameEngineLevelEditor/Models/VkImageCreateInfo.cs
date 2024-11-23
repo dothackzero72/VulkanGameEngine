@@ -275,7 +275,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public VkImageCreateInfo(ivec2 swapChainResoultion, Format format) : base()
         {
-            LoadJsonComponent(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel);
+            LoadJsonComponent(ConstConfig.DefaultColorAttachmentDescriptionModel);
             _extent = new VkExtent3D((uint)swapChainResoultion.x, (uint)swapChainResoultion.y, 1);
             _format = format;
         }
@@ -316,7 +316,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public void SaveJsonComponent()
         {
-            base.SaveJsonComponent($@"{RenderPassEditorConsts.CreateImageInfoPath}{this._name}.json", this);
+            base.SaveJsonComponent($@"{ConstConfig.CreateImageInfoPath}{this._name}.json", this);
         }
     }
 }

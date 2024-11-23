@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
@@ -41,7 +42,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             RenderPassResolution = renderPassResolution;
             SaveRenderPass();
 
-            string jsonContent2 = File.ReadAllText(RenderPassEditorConsts.Default2DRenderPass);
+            string jsonContent2 = File.ReadAllText(ConstConfig.Default2DRenderPass);
             RenderPassBuildInfoModel model2 = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent2);
 
             FrameBufferList = new Framebuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
@@ -50,7 +51,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             CreateRenderPass(model2);
             CreateFramebuffer();
-            jsonPipeline = new JsonPipeline(RenderPassEditorConsts.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer));
+            jsonPipeline = new JsonPipeline(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer));
         }
 
         public RenderPass CreateRenderPass(RenderPassBuildInfoModel model2)
@@ -379,7 +380,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             string jsonString = JsonConvert.SerializeObject(modelInfo, Formatting.Indented);
-            File.WriteAllText(RenderPassEditorConsts.Default2DRenderPass, jsonString);
+            File.WriteAllText(ConstConfig.Default2DRenderPass, jsonString);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using VulkanGameEngineGameObjectScripts;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -35,9 +36,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GameObject gameObject = MemoryManager.AllocateGameObject();
 
             List<GameObjectComponent> componentList = new List<GameObjectComponent>();
-            componentList.Add(MeshRenderer2DComponent.CreateRenderMesh2DComponent("Mesh Renderer",
-                (uint)MemoryManager.RenderMesh2DComponentList.Count));
-
+            componentList.Add(MeshRenderer2DComponent.CreateRenderMesh2DComponent("Mesh Renderer", (uint)MemoryManager.RenderMesh2DComponentList.Count));
+            componentList.Add(TestScriptConponent.CreateTestScriptConponent());
             gameObject.Initialize(name, componentList);
             return gameObject;
         }
@@ -100,9 +100,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return GameObjectComponentList.Where(x => x.Name == name).First();
         }
 
-        public List<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type)
-        {
-            return GameObjectComponentList.Where(x => x.ComponentType == type).ToList();
-        }
+        //public List<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type)
+        //{
+        //    return GameObjectComponentList.Where(x => x.ComponentType == type).ToList();
+        //}
     }
 }

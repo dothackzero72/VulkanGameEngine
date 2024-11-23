@@ -1,4 +1,5 @@
-﻿using Silk.NET.Vulkan;
+﻿using Newtonsoft.Json;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public DescriptorType descriptorType { get; set; }
         public uint descriptorCount { get; set; }
         public ShaderStageFlags stageFlags { get; set; }
+        [JsonIgnore]
         public Sampler* pImmutableSamplers { get; set; }
 
         public VkDescriptorSetLayoutBinding() { }

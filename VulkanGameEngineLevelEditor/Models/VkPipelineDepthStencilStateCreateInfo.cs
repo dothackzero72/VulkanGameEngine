@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -23,6 +24,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public float minDepthBounds { get; set; }
         public float maxDepthBounds { get; set; }
         public uint flags { get; set; } = 0;
+        [JsonIgnore]
         public void* pNext { get; set; } = null;
         public VkPipelineDepthStencilStateCreateInfo() { }
         public PipelineDepthStencilStateCreateInfo* ConvertPtr()

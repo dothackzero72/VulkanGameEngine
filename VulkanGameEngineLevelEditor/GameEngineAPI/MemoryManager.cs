@@ -5,6 +5,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -13,19 +14,24 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class MemoryManager
     {
         public static Vk vk = Vk.GetApi();
+        public static Assembly GameObjectComponentDLL { get; set; }
         public static List<GameObject> GameObjectList = new List<GameObject>();
         public static List<MeshRenderer2DComponent> RenderMesh2DComponentList = new List<MeshRenderer2DComponent>();
-       // public static List<MeshRenderer3DComponent> RenderMesh3DComponentList = new List<MeshRenderer3DComponent>();
+        // public static List<MeshRenderer3DComponent> RenderMesh3DComponentList = new List<MeshRenderer3DComponent>();
+        public static List<TestScriptConponent> TestScriptConponentList = new List<TestScriptConponent>();
         public static List<Texture> TextureList = new List<Texture>();
         public static MemoryPool<GameObject> GameObjectMemoryPool = new MemoryPool<GameObject>();
         public static MemoryPool<MeshRenderer2DComponent> RenderMesh2DComponentMemoryPool = new MemoryPool<MeshRenderer2DComponent>();
+        public static MemoryPool<TestScriptConponent> TestScriptConponentMemoryPool = new MemoryPool<TestScriptConponent>();
         //public static MemoryPool<MeshRenderer3DComponent> RenderMesh3DComponentMemoryPool = new MemoryPool<MeshRenderer3DComponent>();
         public static MemoryPool<Texture> TextureMemoryPool = new MemoryPool<Texture>();
 
         public static void StartUp(uint estObjectCount)
         {
+            GameObjectComponentDLL = Assembly.LoadFrom(ConstConfig.GameObjectComponentDLLPath);
             GameObjectMemoryPool.CreateMemoryPool(estObjectCount);
             RenderMesh2DComponentMemoryPool.CreateMemoryPool(estObjectCount);
+            TestScriptConponentMemoryPool.CreateMemoryPool(estObjectCount);
          //   RenderMesh3DComponentMemoryPool.CreateMemoryPool(estObjectCount);
             TextureMemoryPool.CreateMemoryPool(estObjectCount);
         }
@@ -40,6 +46,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             RenderMesh2DComponentList.Add(RenderMesh2DComponentMemoryPool.AllocateMemoryLocation());
             return RenderMesh2DComponentList.Last();
+        }
+
+        public static TestScriptConponent AllocateTestScriptConponent()
+        {
+            TestScriptConponentList.Add(TestScriptConponentMemoryPool.AllocateMemoryLocation());
+            return TestScriptConponentList.Last();
         }
 
         //public static MeshRenderer3DComponent AllocateGameRenderMesh3DComponent()

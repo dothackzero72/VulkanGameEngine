@@ -163,7 +163,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public VkAttachmentDescription(string name, string jsonFilePath) : base(name)
         {
-            LoadJsonComponent(RenderPassEditorConsts.DefaultColorAttachmentDescriptionModel);
+            LoadJsonComponent(ConstConfig.DefaultColorAttachmentDescriptionModel);
         }
 
         public VkAttachmentDescription(AttachmentDescription other)
@@ -224,7 +224,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public void SaveJsonComponent()
         {
-            base.SaveJsonComponent($@"{RenderPassEditorConsts.AttachmentDescriptionModelPath}{this._name}.json", this);
+            base.SaveJsonComponent($@"{ConstConfig.AttachmentDescriptionModelPath}{this._name}.json", this);
         }
     }
 }

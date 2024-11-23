@@ -344,7 +344,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public void SaveJsonComponent()
         {
-            base.SaveJsonComponent($@"{RenderPassEditorConsts.SamplerCreateInfoPath}{this._name}.json", this);
+            base.SaveJsonComponent($@"{ConstConfig.SamplerCreateInfoPath}{this._name}.json", this);
         }
     }
 }

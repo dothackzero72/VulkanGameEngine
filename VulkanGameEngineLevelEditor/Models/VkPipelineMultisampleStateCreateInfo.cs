@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -16,10 +17,12 @@ namespace VulkanGameEngineLevelEditor.Models
         public SampleCountFlags rasterizationSamples { get; set; }
         public bool sampleShadingEnable { get; set; }
         public float minSampleShading { get; set; }
+        [JsonIgnore]
         public unsafe uint* pSampleMask { get; set; } = null;
         public bool alphaToCoverageEnable { get; set; }
         public bool alphaToOneEnable { get; set; }
         public uint flags { get; set; } = 0;
+        [JsonIgnore]
         public void* pNext { get; set; } = null;
         public VkPipelineMultisampleStateCreateInfo() { }
         public PipelineMultisampleStateCreateInfo* ConvertPtr()

@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
@@ -40,7 +41,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             //depthTexture = new DepthTexture(new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
             //texture = new GameEngineAPI.Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\bin\\Debug\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap);
 
-            string jsonContent = File.ReadAllText(RenderPassEditorConsts.Default2DPipeline);
+            string jsonContent = File.ReadAllText(ConstConfig.Default2DPipeline);
             RenderPipelineModel model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent);
 
             //jsonRenderer = new JsonRenderPass(VulkanRenderer.device);
@@ -174,14 +175,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             string jsonString = JsonConvert.SerializeObject(modelInfo, Formatting.Indented);
-            File.WriteAllText(RenderPassEditorConsts.Default2DRenderPass, jsonString);
+            File.WriteAllText(ConstConfig.Default2DRenderPass, jsonString);
 
-            string jsonContent2 = File.ReadAllText(RenderPassEditorConsts.Default2DRenderPass);
+            string jsonContent2 = File.ReadAllText(ConstConfig.Default2DRenderPass);
             RenderPassBuildInfoModel model2 = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent2);
 
             CreateRenderPass(model2);
             CreateFramebuffer();
-            jsonPipeline = new JsonPipeline(RenderPassEditorConsts.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer));
+            jsonPipeline = new JsonPipeline(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer));
             //LoadDescriptorSets(model);
             //CreateGraphicsPipeline();
 
