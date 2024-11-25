@@ -1,10 +1,10 @@
-﻿using RGiesecke.DllExport;
+﻿using RGiesecke.DllExport; // Ensure you've added this NuGet package
 using System;
 using System.Runtime.InteropServices;
 
 namespace MyExportedFunctions
 {
-    public class ExportedMethods
+    public static class ExportedMethods
     {
         [DllExport("Add", CallingConvention = CallingConvention.StdCall)]
         public static int Add(int a, int b)
@@ -17,6 +17,11 @@ namespace MyExportedFunctions
         {
             return a * b;
         }
+
+        [DllExport("CallSayHello", CallingConvention = CallingConvention.StdCall)]
+        public static void CallSayHello()
+        {
+            Console.WriteLine("Hello from C#");
+        }
     }
 }
-
