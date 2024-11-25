@@ -37,7 +37,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             List<GameObjectComponent> componentList = new List<GameObjectComponent>();
             componentList.Add(MeshRenderer2DComponent.CreateRenderMesh2DComponent("Mesh Renderer", (uint)MemoryManager.RenderMesh2DComponentList.Count));
-            componentList.Add(TestScriptConponent.CreateTestScriptConponent());
+           // componentList.Add(TestScriptConponent.CreateTestScriptConponent());
             gameObject.Initialize(name, componentList);
             return gameObject;
         }

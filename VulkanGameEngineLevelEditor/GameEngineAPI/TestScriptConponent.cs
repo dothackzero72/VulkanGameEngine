@@ -16,48 +16,72 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
     public class TestScriptConponent : GameObjectComponent
     {
-        private TestScriptComponentDLL _testScriptConponentDLL { get; set;}
-        public TestScriptConponent()
-        {
+        //private TestScriptComponentDLL _testScriptConponentDLL { get; set;}
+        //public TestScriptConponent()
+        //{
 
-        }
+        //}
 
-        private void Initialize()
-        {
-            _testScriptConponentDLL = new TestScriptComponentDLL(0);
-        }
+        //private void Initialize()
+        //{
+        //    _testScriptConponentDLL = new TestScriptComponentDLL(0);
+        //}
 
-        public static TestScriptConponent CreateTestScriptConponent()
-        {
-            TestScriptConponent gameObject = MemoryManager.AllocateTestScriptConponent();
-            gameObject.Initialize();
-            return gameObject;
-        }
+        //public static TestScriptConponent CreateTestScriptConponent()
+        //{
+        //    TestScriptConponent gameObject = MemoryManager.AllocateTestScriptConponent();
+        //    gameObject.Initialize();
+        //    return gameObject;
+        //}
 
-        public override void Update(long startTime)
-        {
-            _testScriptConponentDLL.Update(startTime);
-        }
+        //public override void Update(long startTime)
+        //{
+        //    _testScriptConponentDLL.Update(startTime);
+        //}
 
-        public override void Update(CommandBuffer commandBuffer, long startTime)
+        //public override void Update(CommandBuffer commandBuffer, long startTime)
+        //{
+        //    _testScriptConponentDLL?.Update(startTime);
+        //}
+
+        //public override void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        //{
+
+        //}
+
+        //public override void Destroy()
+        //{
+        //   _testScriptConponentDLL.Destroy();
+        //}
+
+        //public override int GetMemorySize()
+        //{
+        //    return 32;
+        //    //throw new NotImplementedException();
+        //}
+        public override void Destroy()
         {
-            _testScriptConponentDLL?.Update(startTime);
+            throw new NotImplementedException();
         }
 
         public override void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
-            
-        }
-
-        public override void Destroy()
-        {
-           _testScriptConponentDLL.Destroy();
+            throw new NotImplementedException();
         }
 
         public override int GetMemorySize()
         {
-            return 32;
-            //throw new NotImplementedException();
+            throw new NotImplementedException();
+        }
+
+        public override void Update(long startTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Update(CommandBuffer commandBuffer, long startTime)
+        {
+            throw new NotImplementedException();
         }
     }
 

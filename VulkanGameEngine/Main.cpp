@@ -1,49 +1,46 @@
-extern "C"
-{
-    #include <VulkanWindow.h>
-    #include <GLFWWindow.h>
-}
-#include "VulkanRenderer.h"
-#include <stdio.h>
-#include "InterfaceRenderPass.h"
-#include "Scene.h"
-#include <nlohmann/json.hpp>
-#include <ImPlot/implot.h>
-#include "SystemClock.h"
-#include "FrameTime.h"
+#include <windows.h>
 #include <iostream>
-#include "MemoryManager.h"
 
+typedef void (*CallSayHelloFunc)();
+typedef int (*Add)();
+typedef int (*Multiply)();
 
-int main()
-{
-    System::AppDomain^ domain = System::AppDomain::CurrentDomain;
-    SystemClock systemClock = SystemClock();
-    FrameTimer deltaTime = FrameTimer();
-    vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);
-    renderer.RendererSetUp();
-    MemoryManager::SetUpMemoryManager(30);
-    InterfaceRenderPass::StartUp();
-    ImPlot::CreateContext();
-
-    Scene scene;
-    scene.StartUp();
-    while (!vulkanWindow->WindowShouldClose(vulkanWindow))
-    {
-        vulkanWindow->PollEventHandler(vulkanWindow);
-        vulkanWindow->SwapBuffer(vulkanWindow);
-        scene.Update(deltaTime.GetFrameTime());
-        scene.ImGuiUpdate(deltaTime.GetFrameTime());
-        scene.Draw();
-        deltaTime.EndFrameTime();
+int main() {
+    // Load the DLL
+    HMODULE hModule = LoadLibrary(L"Project1.dll");
+    if (!hModule) {
+        std::cerr << "Could not load the DLL." << std::endl;
+        return 1;
     }
 
-    vkDeviceWaitIdle(cRenderer.Device);
-    scene.Destroy();
-    ImPlot::DestroyContext();
-    InterfaceRenderPass::Destroy();
-    renderer.DestroyRenderer();
-    vulkanWindow->DestroyWindow(vulkanWindow); 
+    // Retrieve the function address
+    CallSayHelloFunc CallSayHello = (CallSayHelloFunc)GetProcAddress(hModule, "CallSayHello");
+    if (!CallSayHello) {
+        std::cerr << "Could not locate the function." << std::endl;
+        FreeLibrary(hModule);
+        return 1;
+    }
+
+    Add add = (Add)GetProcAddress(hModule, "Add");
+    if (!add) {
+        std::cerr << "Could not locate the function." << std::endl;
+        FreeLibrary(hModule);
+        return 1;
+    }
+
+    Multiply multiply = (Multiply)GetProcAddress(hModule, "Multiply");
+    if (!multiply) {
+        std::cerr << "Could not locate the function." << std::endl;
+        FreeLibrary(hModule);
+        return 1;
+    }
+
+    // Call the managed method
+    CallSayHello();
+    auto a = add();
+    auto b = multiply();
+
+    // Clean up
+    FreeLibrary(hModule);
     return 0;
 }
-

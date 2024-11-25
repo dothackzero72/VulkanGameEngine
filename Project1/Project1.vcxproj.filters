@@ -15,18 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TestScriptComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObjectComponent.h">
+    <ClInclude Include="ManagedInterop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TestScriptComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObjectComponent.cpp">
+    <ClCompile Include="ManagedInterop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -46,9 +46,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void StartUp()
         {
-            //List<string> scriptList = new List<string>();
-            //scriptList.Add("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineLevelEditor\\Scripts\\TestScriptConponent.cs");
-            //ScriptCompiler.CompileScript(scriptList);
+            List<string> scriptList = new List<string>();
+            scriptList.Add(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\VulkanGameEngineLevelEditor\GameEngineAPI\TestScriptComponent.cs");
+            ScriptCompiler.CompileScript(scriptList);
 
             MemoryManager.StartUp(30);
 

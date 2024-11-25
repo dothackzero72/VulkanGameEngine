@@ -1,41 +1,22 @@
 ﻿using RGiesecke.DllExport;
-using Silk.NET.Vulkan;
 using System;
 using System.Runtime.InteropServices;
 
-namespace VulkanGameEngineGameObjectScripts
+namespace MyExportedFunctions
 {
-    public class TestScriptComponentDLL
+    public class ExportedMethods
     {
-        public int memorySize { get; set; } = 0;
-
-        public TestScriptComponentDLL(int memorySize)
+        [DllExport("Add", CallingConvention = CallingConvention.StdCall)]
+        public static int Add(int a, int b)
         {
-            this.memorySize = memorySize;
+            return a + b;
         }
 
-        [DllExport("DLL_TestScriptComponent_Update", CallingConvention = CallingConvention.Cdecl)]
-        public void Update(long startTime)
+        [DllExport("Multiply", CallingConvention = CallingConvention.StdCall)]
+        public static int Multiply(int a, int b)
         {
-            memorySize++;
-        }
-
-        [DllExport("DLL_TestScriptComponent_Update2", CallingConvention = CallingConvention.Cdecl)]
-        public void Update(CommandBuffer commandBuffer, long startTime)
-        {
-            memorySize++;
-        }
-
-        [DllExport("DLL_TestScriptComponent_Destroy", CallingConvention = CallingConvention.Cdecl)]
-        public void Destroy()
-        {
-            Console.WriteLine("Destroying component.");
-        }
-
-        [DllExport("DLL_TestScriptComponent_CreateTestScriptComponent", CallingConvention = CallingConvention.Cdecl)]
-        public static TestScriptComponentDLL CreateTestScriptComponent(int memorySize)
-        {
-            return new TestScriptComponentDLL(memorySize);
+            return a * b;
         }
     }
 }
+

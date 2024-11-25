@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
+using RGiesecke.DllExport;
+using System.Runtime.InteropServices;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {

@@ -82,7 +82,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)External/glfw/include/GLFW/glfw3.h;$(SolutionDir)External\GitHub\VulkanGameEngine\External\glfw\include;C:\Users\dotha\Documents\GitHub\VulkanGameEngine\External\nlohmann\include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngineCore;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)x64\Debug;$(SolutionDir)External\glfw;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
-    <ManagedAssembly>true</ManagedAssembly>
+    <ManagedAssembly>false</ManagedAssembly>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\DHZ\Documents\Visual Studio 2022\nlohmann;$(SolutionDir)External\sdl\include;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngineCore;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
