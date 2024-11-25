@@ -137,7 +137,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;VulkanGameEngineCore.lib;Project1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;VulkanGameEngineCore.lib;VulkanGameEngineGameObjectScriptsCLI.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -267,6 +267,11 @@
     <ClInclude Include="VulkanBuffer.h" />
     <ClInclude Include="DynamicVulkanBuffer.h" />
     <ClInclude Include="VulkanRenderer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VulkanGameEngineGameObjectScriptsCLI\VulkanGameEngineGameObjectScriptsCLI.vcxproj">
+      <Project>{f3c22b6a-dda5-4e5d-b8c5-2a13680caf3b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

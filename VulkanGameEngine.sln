@@ -6,7 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VulkanGameEngine", "VulkanGameEngine\VulkanGameEngine.vcxproj", "{44DE42E7-0D69-4422-B5B2-0823D4983781}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1F7762E6-CF2F-435A-8255-61E117650A26} = {1F7762E6-CF2F-435A-8255-61E117650A26}
-		{F67B2547-A271-42B7-92B5-DE220ED455D9} = {F67B2547-A271-42B7-92B5-DE220ED455D9}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VulkanGameEngineCore", "VulkanGameEngineCore\VulkanGameEngineCore.vcxproj", "{1F7762E6-CF2F-435A-8255-61E117650A26}"
@@ -37,9 +36,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VulkanGameEngineGameObjectScripts", "VulkanGameEngineGameObjectScripts\VulkanGameEngineGameObjectScripts.csproj", "{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project1", "Project1\Project1.vcxproj", "{F67B2547-A271-42B7-92B5-DE220ED455D9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{0EDEA954-1D78-4E87-B6E9-6AD004194688}"
+	ProjectSection(SolutionItems) = preProject
+		Pipelines\Default2DPipeline.json = Pipelines\Default2DPipeline.json
+		Pipelines\DefaultPipeline.json = Pipelines\DefaultPipeline.json
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ClassLibrary1", "ClassLibrary1\ClassLibrary1.vcxproj", "{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RenderPasses", "RenderPasses", "{6553F8D0-FC4F-4C55-A633-B3F3CBE2CD48}"
+	ProjectSection(SolutionItems) = preProject
+		RenderPass\Default2DRenderPass.json = RenderPass\Default2DRenderPass.json
+		RenderPass\DefaultRenderPass.json = RenderPass\DefaultRenderPass.json
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VulkanGameEngineGameObjectScriptsCLI", "VulkanGameEngineGameObjectScriptsCLI\VulkanGameEngineGameObjectScriptsCLI.vcxproj", "{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,33 +120,26 @@ Global
 		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Release|x64.Build.0 = Release|Any CPU
 		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Release|x86.ActiveCfg = Release|Any CPU
 		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Release|x86.Build.0 = Release|Any CPU
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Debug|Any CPU.Build.0 = Debug|x64
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Debug|x64.ActiveCfg = Debug|x64
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Debug|x64.Build.0 = Debug|x64
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Debug|x86.ActiveCfg = Debug|Win32
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Debug|x86.Build.0 = Debug|Win32
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Release|Any CPU.ActiveCfg = Release|x64
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Release|Any CPU.Build.0 = Release|x64
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Release|x64.ActiveCfg = Release|x64
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Release|x64.Build.0 = Release|x64
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Release|x86.ActiveCfg = Release|Win32
-		{F67B2547-A271-42B7-92B5-DE220ED455D9}.Release|x86.Build.0 = Release|Win32
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Debug|Any CPU.Build.0 = Debug|x64
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Debug|x64.ActiveCfg = Debug|x64
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Debug|x64.Build.0 = Debug|x64
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Debug|x86.ActiveCfg = Debug|Win32
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Debug|x86.Build.0 = Debug|Win32
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Release|Any CPU.ActiveCfg = Release|x64
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Release|Any CPU.Build.0 = Release|x64
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Release|x64.ActiveCfg = Release|x64
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Release|x64.Build.0 = Release|x64
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Release|x86.ActiveCfg = Release|Win32
-		{42EA6DD7-D8EE-4891-A9C7-CCA140953CF4}.Release|x86.Build.0 = Release|Win32
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|Any CPU.Build.0 = Debug|x64
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|x64.ActiveCfg = Debug|x64
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|x64.Build.0 = Debug|x64
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|x86.ActiveCfg = Debug|Win32
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|x86.Build.0 = Debug|Win32
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|Any CPU.ActiveCfg = Release|x64
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|Any CPU.Build.0 = Release|x64
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|x64.ActiveCfg = Release|x64
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|x64.Build.0 = Release|x64
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|x86.ActiveCfg = Release|Win32
+		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D6D5958C-19B6-4B6E-BA4B-28E99E6BE703} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
+		{0EDEA954-1D78-4E87-B6E9-6AD004194688} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
+		{6553F8D0-FC4F-4C55-A633-B3F3CBE2CD48} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F492211-3E89-431E-83CC-E65D5E8EBE55}
