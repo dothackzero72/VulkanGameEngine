@@ -1,7 +1,7 @@
 
-#using <System.dll>
 #include "pch.h"
-#include "ClassLibrary1.h"
+#using <System.dll>
+#using <../VulkanGameEngineGameObjectScripts/obj/Debug/net8.0/win-x64/ref/VulkanGameEngineGameObjectScripts.dll>
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
