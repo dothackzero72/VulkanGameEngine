@@ -1,28 +1,23 @@
-﻿using RGiesecke.DllExport;
-using System;
-using System.Runtime.InteropServices;
-
-namespace MyExportedFunctions
+﻿namespace VulkanGameEngineGameObjectScripts
 {
-    public class ExportedMethods
+    public class SimpleTest
     {
-        [DllExport("CallSayHello", CallingConvention = CallingConvention.StdCall)]
-        public static void CallSayHello()
+        public int counter = 0;
+
+        public SimpleTest()
         {
-            Console.WriteLine("Hello from C#");
+            counter = 0;
         }
 
-        [DllExport("Add", CallingConvention = CallingConvention.StdCall)]
-        public static int Add(int a, int b)
+        public int SimpleFunction(int input)
         {
-            return a + b;
+            counter++;
+            return counter;
         }
 
-        [DllExport("Multiply", CallingConvention = CallingConvention.StdCall)]
-        public static int Multiply(int a, int b)
+        public void SimpleDestroy()
         {
-            return a * b;
+            Console.WriteLine("Simple function called.");
         }
     }
 }
-

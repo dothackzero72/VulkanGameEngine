@@ -1,94 +1,93 @@
-extern "C"
-{
-#include <VulkanWindow.h>
-#include <GLFWWindow.h>
-}
-#include "VulkanRenderer.h"
-#include <stdio.h>
-#include "InterfaceRenderPass.h"
-#include "Scene.h"
-#include <nlohmann/json.hpp>
-#include <ImPlot/implot.h>
-#include "SystemClock.h"
-#include "FrameTime.h"
-#include <iostream>
-#include "MemoryManager.h"
 #include <windows.h>
 #include <iostream>
+#include <vector>
+#include <string>
 
-typedef void (*CallSayHelloFunc)();
-typedef int (*AddFunc)(int, int);
-typedef int (*MultiplyFunc)(int, int);
+extern "C" {
+    typedef void* (*CreateSimpleTestWrapper)();
+    typedef void (*DestroySimpleTestWrapper)(void* wrapperHandle);
+    typedef int (*CallSimpleTestWrapperFunctionType)(void* wrapperHandle, int a);
+}
 
-int main() {
-    // Load the DLL
-    HMODULE hModule = LoadLibrary(L"C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanGameEngineGameObjectScriptsCLI.dll");
-    if (!hModule) {
-        std::cerr << "Could not load the DLL." << std::endl;
-        return 1;
-    }
+class SimpleTestWrapperContainer {
+private:
+    HMODULE hModule;
+    void* wrapper;
 
-    // Retrieve the function addresses
-    CallSayHelloFunc CallSayHello = (CallSayHelloFunc)GetProcAddress(hModule, "CallSayHello");
-    if (!CallSayHello) {
-        std::cerr << "Could not locate CallSayHello function." << std::endl;
-        FreeLibrary(hModule);
-        return 1;
-    }
+    CreateSimpleTestWrapper CreateSimpleTestWrapperPtr;
+    DestroySimpleTestWrapper DestroySimpleTestWrapperPtr;
+    CallSimpleTestWrapperFunctionType CallSimpleTestWrapperFunctionTypePtr;
 
-    AddFunc add = (AddFunc)GetProcAddress(hModule, "Add");
-    if (!add) {
-        std::cerr << "Could not locate Add function." << std::endl;
-        FreeLibrary(hModule);
-        return 1;
-    }
-
-    MultiplyFunc multiply = (MultiplyFunc)GetProcAddress(hModule, "Multiply");
-    if (!multiply) {
-        std::cerr << "Could not locate Multiply function." << std::endl;
-        FreeLibrary(hModule);
-        return 1;
-    }
-
-    // Call the managed method
-    CallSayHello();
-
-    // Provide input values for add and multiply
-    int a = 5, b = 10;
-    int sum = add(a, b);           // Pass parameters to Add
-    int product = multiply(a, b);  // Pass parameters to Multiply
-
-    // Output the results
-    std::cout << "Sum: " << sum << std::endl;
-    std::cout << "Product: " << product << std::endl;
-
-    SystemClock systemClock = SystemClock();
-    FrameTimer deltaTime = FrameTimer();
-    vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);
-    renderer.RendererSetUp();
-    MemoryManager::SetUpMemoryManager(30);
-    InterfaceRenderPass::StartUp();
-    ImPlot::CreateContext();
-
-    Scene scene;
-    scene.StartUp();
-    while (!vulkanWindow->WindowShouldClose(vulkanWindow))
+public:
+    SimpleTestWrapperContainer(const std::wstring& dllPath) 
     {
-        vulkanWindow->PollEventHandler(vulkanWindow);
-        vulkanWindow->SwapBuffer(vulkanWindow);
-        scene.Update(deltaTime.GetFrameTime());
-        scene.ImGuiUpdate(deltaTime.GetFrameTime());
-        scene.Draw();
-        deltaTime.EndFrameTime();
+        hModule = LoadLibrary(dllPath.c_str());
+        if (!hModule) {
+            throw std::runtime_error("Could not load the DLL. Error code: " + std::to_string(GetLastError()));
+        }
+
+        CreateSimpleTestWrapperPtr = (CreateSimpleTestWrapper)GetProcAddress(hModule, "CreateSimpleTestWrapper");
+        if (!CreateSimpleTestWrapperPtr)
+        {
+            throw std::runtime_error("Could not find CreateSimpleTestWrapper function.");
+        }
+
+        DestroySimpleTestWrapperPtr = (DestroySimpleTestWrapper)GetProcAddress(hModule, "DestroySimpleTestWrapper");
+        if (!DestroySimpleTestWrapperPtr) 
+        {
+            throw std::runtime_error("Could not find DestroySimpleTestWrapper function.");
+        }
+
+        CallSimpleTestWrapperFunctionTypePtr = (CallSimpleTestWrapperFunctionType)GetProcAddress(hModule, "CallSimpleTestWrapperFunction");
+        if (!CallSimpleTestWrapperFunctionTypePtr) {
+            throw std::runtime_error("Could not find CallSimpleTestWrapperFunction function.");
+        }
     }
 
-    vkDeviceWaitIdle(cRenderer.Device);
-    scene.Destroy();
-    ImPlot::DestroyContext();
-    InterfaceRenderPass::Destroy();
-    renderer.DestroyRenderer();
-    vulkanWindow->DestroyWindow(vulkanWindow);
-    // Clean up
-    FreeLibrary(hModule);
+    ~SimpleTestWrapperContainer()
+    {
+        DestroySimpleTestWrapperPtr(wrapper);
+        FreeLibrary(hModule);
+    }
+
+    void* createWrapper() 
+    {
+        void* wrapperHandle = CreateSimpleTestWrapperPtr();
+        if (!wrapperHandle) {
+            throw std::runtime_error("Component creation failed.");
+        }
+
+        wrapper = wrapperHandle;
+        return wrapperHandle;
+    }
+
+    int callSimpleFunction(void* wrapperHandle, int a) 
+    {
+        return CallSimpleTestWrapperFunctionTypePtr(wrapperHandle, a);
+    }
+};
+
+
+int main() 
+{
+    try 
+    {
+        SimpleTestWrapperContainer container(L"C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanGameEngineGameObjectScriptsCLI.dll");
+
+        void* wrapperHandle = container.createWrapper();
+
+        int result = container.callSimpleFunction(wrapperHandle, 5); 
+         result = container.callSimpleFunction(wrapperHandle, 5);
+         result = container.callSimpleFunction(wrapperHandle, 5);
+         result = container.callSimpleFunction(wrapperHandle, 5);
+         result = container.callSimpleFunction(wrapperHandle, 5);
+         result = container.callSimpleFunction(wrapperHandle, 5);
+        std::cout << "SimpleFunction result: " << result << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
+
     return 0;
 }

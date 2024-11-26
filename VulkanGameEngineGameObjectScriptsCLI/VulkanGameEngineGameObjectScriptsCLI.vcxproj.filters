@@ -27,6 +27,9 @@
     <ClInclude Include="ClassLibrary1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ISimpleTestWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VulkanGameEngineGameObjectScriptsCLI.cpp">
@@ -39,6 +42,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ClassLibrary1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ISimpleTestWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
