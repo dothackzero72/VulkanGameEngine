@@ -49,7 +49,7 @@ void GameObject::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
 {
 	for (std::shared_ptr<GameObjectComponent> component : GameObjectComponentList)
 	{
-		component->Update(commandBuffer, deltaTime);
+		component->BufferUpdate(commandBuffer, deltaTime);
 	}
 }
 

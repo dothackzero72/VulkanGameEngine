@@ -126,6 +126,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ClassLibrary1.h" />
+    <ClInclude Include="DLLExport.h" />
+    <ClInclude Include="GameObjectComponentDLL.h" />
     <ClInclude Include="ISimpleTestWrapper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
@@ -134,6 +136,7 @@
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="ClassLibrary1.cpp" />
+    <ClCompile Include="GameObjectComponentDLL.cpp" />
     <ClCompile Include="ISimpleTestWrapper.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

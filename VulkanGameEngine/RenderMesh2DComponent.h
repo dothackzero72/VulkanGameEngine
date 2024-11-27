@@ -13,7 +13,7 @@ public:
 	static std::shared_ptr<RenderMesh2DComponent> CreateRenderMesh2DComponent(String name, uint32 meshBufferIndex);
 
 	virtual void Update(float deltaTime) override;
-	virtual void Update(VkCommandBuffer& commandBuffer, float deltaTime) override;
+	virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime) override;
 	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties) override;
 	virtual void Destroy() override;
 	virtual std::shared_ptr<GameObjectComponent> Clone() const override;

@@ -65,7 +65,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
-                component.Update(commandBuffer, startTime);
+                component.BufferUpdate(commandBuffer, startTime);
             }
         }
 

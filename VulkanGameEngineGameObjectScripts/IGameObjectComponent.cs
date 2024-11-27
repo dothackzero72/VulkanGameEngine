@@ -35,16 +35,7 @@ namespace VulkanGameEngineGameObjectScripts
         kTestScriptConponent
     };
 
-    public interface IGameObjectComponent
-    {
-        public abstract void Update(long startTime);
-        public abstract void Update(CommandBuffer commandBuffer, long startTime);
-        public abstract void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties);
-        public abstract void Destroy();
-        public abstract int GetMemorySize();
-    }
-
-    public abstract class GameObjectComponent : IGameObjectComponent
+    public abstract class GameObjectComponent
     {
         public String Name { get; protected set; }
         public ulong MemorySize { get; protected set; }
@@ -68,7 +59,7 @@ namespace VulkanGameEngineGameObjectScripts
         }
 
         public abstract void Update(long startTime);
-        public abstract void Update(CommandBuffer commandBuffer, long startTime);
+        public abstract void BufferUpdate(CommandBuffer commandBuffer, long startTime);
         public abstract void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties);
         public abstract void Destroy();
         public abstract int GetMemorySize();

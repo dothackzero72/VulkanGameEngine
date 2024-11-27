@@ -38,7 +38,7 @@ void RenderMesh2DComponent::Update(float deltaTime)
 	mesh->Update(deltaTime);
 }
 
-void RenderMesh2DComponent::Update(VkCommandBuffer& commandBuffer, float deltaTime)
+void RenderMesh2DComponent::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
 {
 	mesh->BufferUpdate(commandBuffer, deltaTime);
 	mesh->Update(deltaTime);

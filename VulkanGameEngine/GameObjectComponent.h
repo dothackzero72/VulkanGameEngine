@@ -42,7 +42,7 @@ public:
 	
 	
 	virtual void Update(float deltaTime) = 0;
-	virtual void Update(VkCommandBuffer& commandBuffer, float deltaTime) = 0;
+	virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime) = 0;
 	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties) = 0;
 	virtual void Destroy() = 0;
 	virtual std::shared_ptr<GameObjectComponent> Clone() const = 0;

@@ -55,7 +55,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             mesh.Update(startTime);
         }
 
-        public override void Update(CommandBuffer commandBuffer, long startTime)
+        public override void BufferUpdate(CommandBuffer commandBuffer, long startTime)
         {
             mesh.BufferUpdate(commandBuffer, startTime);
             mesh.Update(startTime);

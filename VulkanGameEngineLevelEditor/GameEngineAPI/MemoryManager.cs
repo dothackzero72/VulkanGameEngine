@@ -6,6 +6,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -18,11 +19,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static List<GameObject> GameObjectList = new List<GameObject>();
         public static List<MeshRenderer2DComponent> RenderMesh2DComponentList = new List<MeshRenderer2DComponent>();
         // public static List<MeshRenderer3DComponent> RenderMesh3DComponentList = new List<MeshRenderer3DComponent>();
-        public static List<TestScriptConponent> TestScriptConponentList = new List<TestScriptConponent>();
+        public static List<TestScriptComponent> TestScriptConponentList = new List<TestScriptComponent>();
         public static List<Texture> TextureList = new List<Texture>();
         public static MemoryPool<GameObject> GameObjectMemoryPool = new MemoryPool<GameObject>();
         public static MemoryPool<MeshRenderer2DComponent> RenderMesh2DComponentMemoryPool = new MemoryPool<MeshRenderer2DComponent>();
-        public static MemoryPool<TestScriptConponent> TestScriptConponentMemoryPool = new MemoryPool<TestScriptConponent>();
+        public static MemoryPool<TestScriptComponent> TestScriptConponentMemoryPool = new MemoryPool<TestScriptComponent>();
         //public static MemoryPool<MeshRenderer3DComponent> RenderMesh3DComponentMemoryPool = new MemoryPool<MeshRenderer3DComponent>();
         public static MemoryPool<Texture> TextureMemoryPool = new MemoryPool<Texture>();
 
@@ -48,7 +49,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return RenderMesh2DComponentList.Last();
         }
 
-        public static TestScriptConponent AllocateTestScriptConponent()
+        public static TestScriptComponent AllocateTestScriptConponent()
         {
             TestScriptConponentList.Add(TestScriptConponentMemoryPool.AllocateMemoryLocation());
             return TestScriptConponentList.Last();
