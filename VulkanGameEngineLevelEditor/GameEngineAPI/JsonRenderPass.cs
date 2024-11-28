@@ -40,7 +40,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public void CreateJsonRenderPass(string jsonPath, ivec2 renderPassResolution, SampleCountFlags sampleCount = SampleCountFlags.Count1Bit)
         {
             RenderPassResolution = renderPassResolution;
-            SaveRenderPass();
 
             string jsonContent2 = File.ReadAllText(ConstConfig.Default2DRenderPass);
             RenderPassBuildInfoModel model2 = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent2);
@@ -376,7 +375,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 srcAccessMask = 0,
                                 dstAccessMask = (VkAccessFlags)AccessFlags.ColorAttachmentWriteBit, // Ensure this access mask is relevant to the chosen stage mask
                             }
-                }
+                },
+                RenderPipelineList = new List<RenderPipelineModel>(),
+                _name = "pipeline"
             };
 
             string jsonString = JsonConvert.SerializeObject(modelInfo, Formatting.Indented);

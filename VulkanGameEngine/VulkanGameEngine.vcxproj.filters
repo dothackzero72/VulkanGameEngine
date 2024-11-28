@@ -177,6 +177,9 @@
     <ClCompile Include="TestScriptComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Transform2DComponent.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -345,6 +348,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TestScriptComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform2DComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>

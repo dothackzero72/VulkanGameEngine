@@ -12,12 +12,9 @@
 void Scene::StartUp()
 {
 	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
-	gameObjectList.emplace_back(GameObject::CreateGameObject("adsfda", List<ComponentTypeEnum> { kRenderMesh2DComponent }));
-	gameObjectList.emplace_back(GameObject::CreateGameObject("adsfda1", List<ComponentTypeEnum> { kRenderMesh2DComponent }));
-	//gameObjectList.emplace_back(GameObject::CreateGameObject("adsfda2", List<ComponentTypeEnum> { kRenderMesh2DComponent }));
-	//gameObjectList.emplace_back(GameObject::CreateGameObject("adsfda3", List<ComponentTypeEnum> { kRenderMesh2DComponent }));
-	//TextureList.emplace_back(Texture::CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\Textures\\awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
-	//TextureList.emplace_back(Texture::CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\Textures\\container2.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
+	gameObjectList.emplace_back(GameObject::CreateGameObject("adsfda", List<ComponentTypeEnum> { kRenderMesh2DComponent, kTestScriptComponent }));
+	TextureList.emplace_back(Texture::CreateTexture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
+	TextureList.emplace_back(Texture::CreateTexture("../Textures/container2.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 
 	MemoryManager::ViewMemoryMap();
 	BuildRenderPasses();

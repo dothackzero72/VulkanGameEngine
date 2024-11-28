@@ -6,23 +6,27 @@ GameObjectComponent::GameObjectComponent()
 
 }
 
-GameObjectComponent::GameObjectComponent(ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, ComponentTypeEnum componentType)
 {
     Name = "component";
     ComponentType = componentType;
+    ParentGameObjectPtr = parentGameObjectPtr;
 }
 
-GameObjectComponent::GameObjectComponent(String name, ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType)
 {
     Name = name;
     ComponentType = componentType;
+    ParentGameObjectPtr = parentGameObjectPtr;
 }
 
-GameObjectComponent::GameObjectComponent(String name, String componentName, ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, String componentName, ComponentTypeEnum componentType)
 {
     Name = name;
     ComponentType = componentType;
     hModuleRef = MemoryManager::GetEntityComponentSytemModule();
+    ParentGameObjectPtr = parentGameObjectPtr;
+
     StartUp(componentName);
 }
 
@@ -61,30 +65,24 @@ void GameObjectComponent::StartUp(String& componentName)
     {
         throw std::runtime_error("Could not find DLL_TestScriptComponent_GetMemorySize function.");
     }
-
-    wrapperHandle = CreateComponentPtr(componentPtr);
-    if (!wrapperHandle)
-    {
-        throw std::runtime_error("Component creation failed.");
-    }
 }
 
- void GameObjectComponent::Update(float deltaTime)
+void GameObjectComponent::Update(float deltaTime)
 {
-    DLLUpdatePtr(componentPtr, deltaTime);
+    DLLUpdatePtr(ComponentPtr, deltaTime);
 }
 
- void GameObjectComponent::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
+void GameObjectComponent::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
 {
-   // DLLBufferUpdatePtr(componentPtr, commandBuffer, deltaTime);
+    DLLBufferUpdatePtr(ComponentPtr, commandBuffer, deltaTime);
 }
 
- void GameObjectComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
+void GameObjectComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
 {
 
 }
 
- void GameObjectComponent::Destroy()
- {
-
- }
+void GameObjectComponent::Destroy()
+{
+    DLLDestroyPtr(ComponentPtr);
+}

@@ -103,8 +103,13 @@ namespace VulkanGameEngineLevelEditor
 
         private void SaveRenderPass_Click(object sender, EventArgs e)
         {
-           var a = JsonConvert.SerializeObject(renderPass, Formatting.Indented);
+            var a = JsonConvert.SerializeObject(renderPass, Formatting.Indented);
             var ab = 32;
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -3,13 +3,7 @@
 #include <vulkan/vulkan_core.h>
 #include "Typedef.h"
 #include "SceneDataBuffer.h"
-
-enum ComponentTypeEnum
-{
-	kUndefined,
-	kRenderMesh2DComponent,
-    kTestScriptComponent
-};
+#include "GameObject.h"
 
 #define GET_CLASS_NAME(classname) std::wstring(L#classname)
 
@@ -22,6 +16,7 @@ extern "C"
     typedef int (*DLL_ComponentGetMemorySize)(void* wrapperHandle);
 }
 
+class GameObject;
 class GameObjectComponent
 {
 private:
@@ -32,9 +27,10 @@ private:
     DLL_ComponentDestroy DLLDestroyPtr = nullptr;
 
     void StartUp(String& componentName);
+
 protected:
-    void* componentPtr = nullptr;
-    void* wrapperHandle = nullptr;
+    void* ComponentPtr = nullptr;
+    std::shared_ptr<GameObject> ParentGameObjectPtr = nullptr;
     DLL_ComponentGetMemorySize DLLGetMemorySizePtr = nullptr;
 
 public:
@@ -43,9 +39,9 @@ public:
     ComponentTypeEnum ComponentType = ComponentTypeEnum::kUndefined;
 
     GameObjectComponent();
-    GameObjectComponent(ComponentTypeEnum componentType);
-    GameObjectComponent(String name, ComponentTypeEnum componentType);
-    GameObjectComponent(String name, String componentName, ComponentTypeEnum componentType);
+    GameObjectComponent(std::shared_ptr<GameObject> ParentGameObjectPtr, ComponentTypeEnum componentType);
+    GameObjectComponent(std::shared_ptr<GameObject> ParentGameObjectPtr, String name, ComponentTypeEnum componentType);
+    GameObjectComponent(std::shared_ptr<GameObject> ParentGameObjectPtr, String name, String componentName, ComponentTypeEnum componentType);
     virtual ~GameObjectComponent();
 
     virtual void Update(float deltaTime);

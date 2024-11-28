@@ -30,19 +30,19 @@ std::shared_ptr<GameObject> GameObject::CreateGameObject(String name)
 std::shared_ptr<GameObject> GameObject::CreateGameObject(String name, List<ComponentTypeEnum> gameObjectComponentList)
 {
 	std::shared_ptr<GameObject> gameObject = MemoryManager::AllocateNewGameObject();
+	new (gameObject.get()) GameObject(name);
 
-	List<std::shared_ptr<GameObjectComponent>> conponentList;
 	for (auto component : gameObjectComponentList)
 	{
 		String asdf = "adsfasd";
 		switch (component)
 		{
-			case kRenderMesh2DComponent: conponentList.emplace_back(RenderMesh2DComponent::CreateRenderMesh2DComponent("Mesh Renderer", static_cast<uint32>(MemoryManager::GetRenderMesh2DComponentList().size()))); break;
-			case kTestScriptComponent: conponentList.emplace_back(std::make_shared<TestScriptComponent>(TestScriptComponent(asdf)));
+			case kRenderMesh2DComponent: gameObject->AddComponent(RenderMesh2DComponent::CreateRenderMesh2DComponent(gameObject,"Mesh Renderer", static_cast<uint32>(MemoryManager::GetRenderMesh2DComponentList().size()))); break;
+			case kTestScriptComponent: gameObject->AddComponent(std::make_shared<TestScriptComponent>(TestScriptComponent(gameObject, asdf)));
 		}
 	}
 	
-	new (gameObject.get()) GameObject(name, conponentList);
+	
 	return gameObject;
 }
 
@@ -86,6 +86,11 @@ void GameObject::AddComponent(std::shared_ptr<GameObjectComponent> newComponent)
 void GameObject::RemoveComponent(size_t index)
 {
 	GameObjectComponentList.erase(GameObjectComponentList.begin() + index);
+}
+
+List<std::shared_ptr<GameObjectComponent>> GameObject::GetGameObjectComponentList()
+{
+	return GameObjectComponentList;
 }
 
 std::shared_ptr<GameObjectComponent> GameObject::GetComponentByName(const std::string& name)

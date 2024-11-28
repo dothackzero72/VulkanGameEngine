@@ -2,10 +2,10 @@
 #include <memory>
 #include "GameObjectComponent.h"
 
-class GameObject {
+class GameObjectComponent;
+class GameObject 
+{
 private:
-
-
     size_t ObjectComponentMemorySize = 0;
 
     GameObject(String name);
@@ -26,6 +26,7 @@ public:
     void AddComponent(std::shared_ptr<GameObjectComponent> newComponent);
     void RemoveComponent(size_t index);
 
+    List<std::shared_ptr<GameObjectComponent>> GetGameObjectComponentList();
     std::shared_ptr<GameObjectComponent> GetComponentByName(const std::string& name);
     std::shared_ptr<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type);
 };
