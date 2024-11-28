@@ -92,19 +92,16 @@ namespace VulkanGameEngineLevelEditor.Models
             ptr->PNext = pNext;
             ptr->Flags = flags;
             ptr->LogicOpEnable = logicOpEnable;
-            if (logicOpEnable)
-            {
-                ptr->LogicOpEnable = logicOpEnable;
-                ptr->LogicOp = logicOp;
-                ptr->AttachmentCount = attachmentCount;
-                ptr->PAttachments = pAttachments;
-                ptr->BlendConstants[0] = blendConstants.R;
-                ptr->BlendConstants[2] = blendConstants.G;
-                ptr->BlendConstants[3] = blendConstants.B;
-                ptr->BlendConstants[4] = blendConstants.A;
-            }
+            ptr->LogicOp = logicOp;
+            ptr->AttachmentCount = attachmentCount;
+            ptr->PAttachments = pAttachments;
+            //ptr->BlendConstants[0] = blendConstants.R;
+            //ptr->BlendConstants[2] = blendConstants.G;
+            //ptr->BlendConstants[3] = blendConstants.B;
+            //ptr->BlendConstants[4] = blendConstants.A;
             return ptr;
         }
+
 
         static public PipelineColorBlendStateCreateInfo[] ConvertPtrArray(List<VkPipelineColorBlendStateCreateInfo> list)
         {
