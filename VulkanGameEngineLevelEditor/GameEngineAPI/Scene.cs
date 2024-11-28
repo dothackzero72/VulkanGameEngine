@@ -46,9 +46,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void StartUp()
         {
-            List<string> scriptList = new List<string>();
-            scriptList.Add(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\VulkanGameEngineLevelEditor\GameEngineAPI\TestScriptComponent.cs");
-            ScriptCompiler.CompileScript(scriptList);
+            //List<string> scriptList = new List<string>();
+            //scriptList.Add(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\VulkanGameEngineLevelEditor\GameEngineAPI\TestScriptComponent.cs");
+            //ScriptCompiler.CompileScript(scriptList);
 
             MemoryManager.StartUp(30);
 
@@ -59,7 +59,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
             textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\container2.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
 
-            GameObjectList.Add(GameObject.CreateGameObject("object1", new List<ComponentTypeEnum>() { ComponentTypeEnum.kRenderMesh2DComponent, ComponentTypeEnum.kTestScriptConponent }));
+            GameObjectList.Add(GameObject.CreateGameObject("object1", new List<ComponentTypeEnum>() { ComponentTypeEnum.kRenderMesh2DComponent }));
             GameObjectList.Add(GameObject.CreateGameObject("object2", new List<ComponentTypeEnum>() { ComponentTypeEnum.kRenderMesh2DComponent }));
 
             MemoryManager.ViewMemoryMap();

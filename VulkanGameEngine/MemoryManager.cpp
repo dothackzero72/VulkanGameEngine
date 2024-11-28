@@ -1,6 +1,7 @@
 #include "MemoryManager.h"
 #include <CBuffer.h>
 
+HMODULE MemoryManager::EntityComponentSytemModule = nullptr;
 List<std::shared_ptr<GameObject>> MemoryManager::GameObjectList;
 List<std::shared_ptr<RenderMesh2DComponent>> MemoryManager::RenderMesh2DComponentList;
 List<std::shared_ptr<Texture>> MemoryManager::TextureList;
@@ -15,6 +16,13 @@ MemoryPool<JsonPipeline> MemoryManager::JsonPipelineMemoryPool;
 
 void MemoryManager::SetUpMemoryManager(uint32_t EstObjectCount)
 {
+	EntityComponentSytemModule = LoadLibrary(EntityComponentSystemDLL);
+	if (!EntityComponentSytemModule)
+	{
+		throw std::runtime_error("Could not load the DLL. Error code: " + std::to_string(GetLastError()));
+	}
+
+
 	GameObjectMemoryPool.CreateMemoryPool(EstObjectCount);
 	RenderMesh2DComponentMemoryPool.CreateMemoryPool(EstObjectCount);
 	TextureMemoryPool.CreateMemoryPool(EstObjectCount);

@@ -3,6 +3,7 @@
 #include <iostream>
 #include "MemoryManager.h"
 #include "RenderMesh2DComponent.h"
+#include "TestScriptComponent.h"
 
 GameObject::GameObject()
 {
@@ -31,7 +32,15 @@ std::shared_ptr<GameObject> GameObject::CreateGameObject(String name, List<Compo
 	std::shared_ptr<GameObject> gameObject = MemoryManager::AllocateNewGameObject();
 
 	List<std::shared_ptr<GameObjectComponent>> conponentList;
-	conponentList.emplace_back(RenderMesh2DComponent::CreateRenderMesh2DComponent("Mesh Renderer", static_cast<uint32>(MemoryManager::GetRenderMesh2DComponentList().size())));
+	for (auto component : gameObjectComponentList)
+	{
+		String asdf = "adsfasd";
+		switch (component)
+		{
+			case kRenderMesh2DComponent: conponentList.emplace_back(RenderMesh2DComponent::CreateRenderMesh2DComponent("Mesh Renderer", static_cast<uint32>(MemoryManager::GetRenderMesh2DComponentList().size()))); break;
+			case kTestScriptComponent: conponentList.emplace_back(std::make_shared<TestScriptComponent>(TestScriptComponent(asdf)));
+		}
+	}
 	
 	new (gameObject.get()) GameObject(name, conponentList);
 	return gameObject;

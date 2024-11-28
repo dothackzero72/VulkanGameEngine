@@ -25,14 +25,10 @@
       "A": 0.0
     },
     "sType": 26,
-    "pNext": null,
     "flags": 0,
-    "logicOpEnable": {
-      "Value": 0
-    },
+    "logicOpEnable": false,
     "logicOp": 0,
-    "attachmentCount": 0,
-    "pAttachments": null
+    "attachmentCount": 0
   },
   "PipelineRasterizationStateCreateInfo": {
     "stype": 23,
@@ -46,19 +42,16 @@
     "depthBiasClamp": 0.0,
     "depthBiasSlopeFactor": 0.0,
     "lineWidth": 1.0,
-    "flags": 0,
-    "pNext": null
+    "flags": 0
   },
   "PipelineMultisampleStateCreateInfo": {
     "sType": 24,
     "rasterizationSamples": 1,
     "sampleShadingEnable": false,
     "minSampleShading": 0.0,
-    "pSampleMask": null,
     "alphaToCoverageEnable": false,
     "alphaToOneEnable": false,
-    "flags": 0,
-    "pNext": null
+    "flags": 0
   },
   "PipelineDepthStencilStateCreateInfo": {
     "sType": 25,
@@ -71,37 +64,33 @@
     "back": null,
     "minDepthBounds": 0.0,
     "maxDepthBounds": 0.0,
-    "flags": 0,
-    "pNext": null
+    "flags": 0
   },
   "PipelineInputAssemblyStateCreateInfo": {
     "sType": 20,
     "topology": 3,
     "primitiveRestartEnable": false,
-    "flags": 0,
-    "pNext": null
+    "flags": 0
   },
   "LayoutBindingList": [
     {
       "binding": 0,
-      "descriptorType": 6,
+      "descriptorType": 7,
       "descriptorCount": 1,
-      "stageFlags": 17,
-      "pImmutableSamplers": null
+      "stageFlags": 17
     },
     {
       "binding": 1,
       "descriptorType": 1,
       "descriptorCount": 1,
-      "stageFlags": 16,
-      "pImmutableSamplers": null
+      "stageFlags": 16
     }
   ],
   "PipelineDescriptorModelsList": [
     {
       "BindingNumber": 0,
       "BindingPropertiesList": 0,
-      "DescriptorType": 6
+      "DescriptorType": 7
     },
     {
       "BindingNumber": 1,

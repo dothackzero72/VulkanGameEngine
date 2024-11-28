@@ -29,7 +29,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [JsonIgnore]
         public void* pNext { get; set; }
         public PipelineColorBlendStateCreateFlags flags { get; set; }
-        public Bool32 logicOpEnable { get; set; }
+        public bool logicOpEnable { get; set; }
         public LogicOp logicOp { get; set; }
         public uint attachmentCount { get; set; }
         [JsonIgnore]
@@ -41,7 +41,7 @@ namespace VulkanGameEngineLevelEditor.Models
             sType = StructureType.PipelineColorBlendStateCreateInfo;
             pNext = null;
             flags = 0;
-            logicOpEnable = Vk.False;
+            logicOpEnable = false;
             logicOp = LogicOp.Clear;
             attachmentCount = 0;
             pAttachments = null;
@@ -92,13 +92,17 @@ namespace VulkanGameEngineLevelEditor.Models
             ptr->PNext = pNext;
             ptr->Flags = flags;
             ptr->LogicOpEnable = logicOpEnable;
-            ptr->LogicOp = logicOp;
-            ptr->AttachmentCount = attachmentCount;
-            ptr->PAttachments = pAttachments;
-            //ptr->BlendConstants[0] = blendConstants.R;
-            //ptr->BlendConstants[2] = blendConstants.G;
-            //ptr->BlendConstants[3] = blendConstants.B;
-            //ptr->BlendConstants[4] = blendConstants.A;
+            if (logicOpEnable)
+            {
+                ptr->LogicOpEnable = logicOpEnable;
+                ptr->LogicOp = logicOp;
+                ptr->AttachmentCount = attachmentCount;
+                ptr->PAttachments = pAttachments;
+                ptr->BlendConstants[0] = blendConstants.R;
+                ptr->BlendConstants[2] = blendConstants.G;
+                ptr->BlendConstants[3] = blendConstants.B;
+                ptr->BlendConstants[4] = blendConstants.A;
+            }
             return ptr;
         }
 

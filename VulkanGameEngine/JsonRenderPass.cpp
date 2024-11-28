@@ -43,7 +43,8 @@ VkCommandBuffer JsonRenderPass::Draw(List<std::shared_ptr<GameObject>> meshList,
 {
     std::vector<VkClearValue> clearValues
     {
-        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } }
+        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
+        VkClearValue{.depthStencil = { 1.0f, 0 } }
     };
 
     VkRenderPassBeginInfo renderPassInfo

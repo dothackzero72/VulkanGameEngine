@@ -550,24 +550,23 @@ public:
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
 			.pNext = nullptr,
 			.flags = 0,
+			.logicOpEnable = VK_FALSE,
 			.attachmentCount = 0,
 			.pAttachments = nullptr,
-			.blendConstants =
-			{
-				json["blendConstants"]["R"].get<float>(),
-				json["blendConstants"]["G"].get<float>(),
-				json["blendConstants"]["B"].get<float>(),
-				json["blendConstants"]["A"].get<float>(),
-			}
 		};
 
-		std::cout << json << std::endl;
-		auto asdf = json["logicOpEnable"]["Value"];
-		if (json["logicOpEnable"]["Value"].get<bool>())
-		{
-			blendStateCreateInfo.logicOpEnable = VK_TRUE;
-			blendStateCreateInfo.logicOp = json["logicOp"].get<VkLogicOp>();
-		}
+		//if (json["logicOpEnable"].get<bool>())
+		//{
+		//	blendStateCreateInfo.logicOpEnable = VK_TRUE;
+		//	blendStateCreateInfo.logicOp = json["logicOp"].get<VkLogicOp>();
+		//	/*blendStateCreateInfo.blendConstants =
+		//	{
+		//		json["blendConstants"]["R"].get<float>(),
+		//		json["blendConstants"]["G"].get<float>(),
+		//		json["blendConstants"]["B"].get<float>(),
+		//		json["blendConstants"]["A"].get<float>(),
+		//	}*/
+		//}
 
 		return blendStateCreateInfo;
 	}

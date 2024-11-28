@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "VulkanGameEngineGameObjectScriptsCLI.h"
+#include <msclr/marshal_cppstd.h>
 #include <iostream>
 
 using namespace System;
@@ -49,6 +50,24 @@ extern "C"
             try
             {
                 TestScriptComponentDLL^ component = gcnew TestScriptComponentDLL();
+                GCHandle handle = GCHandle::Alloc(component);
+                return (void*)GCHandle::ToIntPtr(handle).ToPointer();
+            }
+            catch (Exception^ e)
+            {
+                std::cerr << "Exception in managed code: " << msclr::interop::marshal_as<std::string>(e->Message) << std::endl;
+                return nullptr;
+            }
+        }
+    }
+
+    DLL_EXPORT_MANAGED void* DLL_CreateTestScriptComponentName(void* wrapperHandle, std::string name)
+    {
+        if (wrapperHandle != nullptr)
+        {
+            try
+            {
+                TestScriptComponentDLL^ component = gcnew TestScriptComponentDLL(msclr::interop::marshal_as<String^>(name));
                 GCHandle handle = GCHandle::Alloc(component);
                 return (void*)GCHandle::ToIntPtr(handle).ToPointer();
             }
