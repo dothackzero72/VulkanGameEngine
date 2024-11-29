@@ -13,13 +13,13 @@ GameObjectComponentDLL::GameObjectComponentDLL()
 
 }
 
-GameObjectComponentDLL::GameObjectComponentDLL(ComponentTypeEnum componentType)
+GameObjectComponentDLL::GameObjectComponentDLL(void* GameObjectPtr, ComponentTypeEnum componentType)
 {
     Name = "unnamed";
     ComponentType = componentType;
 }
 
-GameObjectComponentDLL::GameObjectComponentDLL(String^ name, ComponentTypeEnum componentType)
+GameObjectComponentDLL::GameObjectComponentDLL(void* GameObjectPtr, String^ name, ComponentTypeEnum componentType)
 {
     Name = name;
     ComponentType = componentType;

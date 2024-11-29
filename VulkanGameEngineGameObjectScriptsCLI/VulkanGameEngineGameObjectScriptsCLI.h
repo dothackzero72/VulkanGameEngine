@@ -4,11 +4,12 @@
 public ref class TestScriptComponentDLL : public GameObjectComponentDLL
 {
     private:
-        TestScriptComponent^ component;
+        TestScriptComponent_CS^ component;
 
     public:
         TestScriptComponentDLL();
-        TestScriptComponentDLL(String^ name);
+        TestScriptComponentDLL(void* gameObjectPtr);
+        TestScriptComponentDLL(void* gameObjectPtr, String^ name);
         void Update(long startTime) override;
         void BufferUpdate(VkCommandBuffer commandBuffer, long startTime) override;
         void Destroy() override;

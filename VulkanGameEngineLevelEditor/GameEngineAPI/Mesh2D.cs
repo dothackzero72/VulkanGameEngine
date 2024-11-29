@@ -14,7 +14,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
         }
 
-        public Mesh2D(uint MeshBufferIndex) : base()
+        public Mesh2D(IntPtr gameObject) : base()
         {
             List<Vertex2D> spriteVertexList = new List<Vertex2D>
             {
@@ -26,7 +26,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             List<uint> spriteIndexList = new List<uint> { 0, 1, 3, 1, 2, 3 };
 
-            base.MeshStartUp(spriteVertexList.ToArray(), spriteIndexList.ToArray());
+            base.MeshStartUp(gameObject, spriteVertexList.ToArray(), spriteIndexList.ToArray());
         }
     }
 }

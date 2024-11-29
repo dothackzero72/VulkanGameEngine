@@ -9,7 +9,7 @@
 
 extern "C"
 {
-    typedef void* (*DLL_CreateComponent)(void* wrapperHandle);
+    typedef void* (*DLL_CreateComponent)();
     typedef void (*DLL_ComponentUpdate)(void* wrapperHandle, long startTime);
     typedef void (*DLL_ComponentBufferUpdate)(void* wrapperHandle, VkCommandBuffer commandBuffer, long startTime);
     typedef void (*DLL_ComponentDestroy)(void* wrapperHandle);
@@ -26,7 +26,7 @@ private:
     DLL_ComponentBufferUpdate DLLBufferUpdatePtr = nullptr;
     DLL_ComponentDestroy DLLDestroyPtr = nullptr;
 
-    void StartUp(String& componentName);
+    void StartUp(std::shared_ptr<GameObject> gameObjectPtr, String& componentName);
 
 protected:
     void* ComponentPtr = nullptr;

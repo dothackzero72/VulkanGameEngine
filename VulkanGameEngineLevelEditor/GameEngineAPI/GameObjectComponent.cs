@@ -9,61 +9,51 @@ using VulkanGameEngineGameObjectScripts;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public enum ComponentTypeEnum
+    public abstract class GameObjectComponent : IGameObjectComponent
     {
-        kUndefined,
-        kRenderMesh2DComponent,
-        kTestScriptConponent
-    };
+        public nint ParentGameObject { get; set; }
+        public String Name { get; set; }
+        public ulong MemorySize { get; set; }
+        public ComponentTypeEnum ComponentType { get; set; }
 
-    //public class GameObjectComponent : IGameObjectComponent
-    //{
-    //    //private const string DLLPath = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\VulkanGameEngineGameObjectScripts\\bin\\Debug\\net8.0\\VulkanGameEngineGameObjectScripts.dll";
-    //    //public String Name { get; protected set; }
-    //    //public ulong MemorySize { get; protected set; }
-    //    //public ComponentTypeEnum ComponentType { get; protected set; }
+        public GameObjectComponent()
+        {
 
-    //    //public GameObjectComponent()
-    //    //{
+        }
 
-    //    //}
+        public GameObjectComponent(nint parentGameObject, ComponentTypeEnum componentType)
+        {
+            ParentGameObject = parentGameObject;
+            Name = "unnamed";
+            ComponentType = componentType;
+        }
 
-    //    //public GameObjectComponent(ComponentTypeEnum componentType)
-    //    //{
-    //    //    Name = "unnamed";
-    //    //    ComponentType = componentType;
-    //    //}
+        public GameObjectComponent(nint parentGameObject, String name, ComponentTypeEnum componentType)
+        {
+            ParentGameObject = parentGameObject;
+            Name = name;
+            ComponentType = componentType;
+        }
 
-    //    //public GameObjectComponent(String name, ComponentTypeEnum componentType)
-    //    //{
-    //    //    Name = name;
-    //    //    ComponentType = componentType;
-    //    //}
-    //    //virtual public void Destroy()
-    //    //{
-    //    //    throw new NotImplementedException();
-    //    //}
+        public abstract void Update(float deltaTime);
+        public abstract void BufferUpdate(CommandBuffer commandBuffer, float deltaTime);
+        public abstract void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties);
+        public abstract void Destroy();
+        public abstract int GetMemorySize();
 
-    //    //virtual public void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
-    //    //{
-    //    //}
+        public void BufferUpdate(nint commandBuffer, float deltaTime)
+        {
+            throw new NotImplementedException();
+        }
 
-    //    //virtual unsafe public int GetMemorySize()
-    //    //{
-    //    //    return sizeof(GameObjectComponent);
-    //    //}
+        public void Draw(nint commandBuffer, nint pipeline, nint shaderPipelineLayout, nint descriptorSet, SceneDataBuffer sceneProperties)
+        {
+            CommandBuffer commandBuffer1 = new CommandBuffer { Handle = commandBuffer };
+            Pipeline pipeline1 = new Pipeline { Handle = (ulong)pipeline };
+            PipelineLayout shaderPipelineLayout1 = new PipelineLayout { Handle = (ulong)shaderPipelineLayout };
+            DescriptorSet descriptorSet1 = new DescriptorSet { Handle = (ulong)descriptorSet };
 
-    //    //virtual public void Update(long startTime)
-    //    //{
-    //    //}
-
-    //    //virtual public void Update(CommandBuffer commandBuffer, long startTime)
-    //    //{
-    //    //}
-
-    //    //public void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, VulkanGameEngineGameObjectScripts.SceneDataBuffer sceneProperties)
-    //    //{
-    //    //    throw new NotImplementedException();
-    //    //}
-    //}
+            Draw(commandBuffer1, pipeline1, shaderPipelineLayout1, descriptorSet1, sceneProperties);
+        }
+    }
 }

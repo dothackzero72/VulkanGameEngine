@@ -27,15 +27,17 @@ GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameO
     hModuleRef = MemoryManager::GetEntityComponentSytemModule();
     ParentGameObjectPtr = parentGameObjectPtr;
 
-    StartUp(componentName);
+    StartUp(parentGameObjectPtr, componentName);
 }
 
 GameObjectComponent::~GameObjectComponent()
 {
 }
 
-void GameObjectComponent::StartUp(String& componentName)
+void GameObjectComponent::StartUp(std::shared_ptr<GameObject> gameObjectPtr, String& componentName)
 {
+    ParentGameObjectPtr = gameObjectPtr;
+
     CreateComponentPtr = (DLL_CreateComponent)GetProcAddress(hModuleRef, ("DLL_Create" + componentName).c_str());
     if (!CreateComponentPtr)
     {
@@ -64,6 +66,12 @@ void GameObjectComponent::StartUp(String& componentName)
     if (!DLLGetMemorySizePtr)
     {
         throw std::runtime_error("Could not find DLL_TestScriptComponent_GetMemorySize function.");
+    }
+
+    ComponentPtr = CreateComponentPtr();
+    if (!ComponentPtr)
+    {
+        throw std::runtime_error("Could not find DLL_CreateComponent function.");
     }
 }
 

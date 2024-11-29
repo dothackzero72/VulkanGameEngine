@@ -157,6 +157,11 @@
       <Project>{aeb85109-3c0f-4074-b7b9-6b34fe4f0a65}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Silk.NET.Vulkan">
+      <Version>2.22.0</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

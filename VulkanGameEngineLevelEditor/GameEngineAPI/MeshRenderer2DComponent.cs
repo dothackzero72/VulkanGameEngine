@@ -18,7 +18,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        private void Initialize(String name, uint meshBufferIndex)
+        private void Initialize(IntPtr parentGameObject, String name, uint meshBufferIndex)
         {
             List<Vertex2D> spriteVertexList = new List<Vertex2D>
             {
@@ -30,10 +30,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             List<uint> spriteIndexList = new List<uint> { 0, 1, 3, 1, 2, 3 };
 
-            mesh = new Mesh2D(meshBufferIndex);
+            mesh = new Mesh2D(parentGameObject);
         }
 
-        public static MeshRenderer2DComponent CreateRenderMesh2DComponent(String name, uint meshBufferIndex)
+        public static MeshRenderer2DComponent CreateRenderMesh2DComponent(IntPtr parentGameObject, String name, uint meshBufferIndex)
         {
             List<Vertex2D> spriteVertexList = new List<Vertex2D>
             {
@@ -46,19 +46,19 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             List<uint> spriteIndexList = new List<uint> { 0, 1, 3, 1, 2, 3 };
 
             MeshRenderer2DComponent gameObject = MemoryManager.AllocateGameRenderMesh2DComponent();
-            gameObject.Initialize(name, meshBufferIndex);
+            gameObject.Initialize(parentGameObject, name, meshBufferIndex);
             return gameObject;
         }
 
-        public override void Update(long startTime)
+        public override void Update(float deltaTime)
         {
-            mesh.Update(startTime);
+            mesh.Update(deltaTime);
         }
 
-        public override void BufferUpdate(CommandBuffer commandBuffer, long startTime)
+        public override void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
         {
-            mesh.BufferUpdate(commandBuffer, startTime);
-            mesh.Update(startTime);
+            mesh.BufferUpdate(commandBuffer, deltaTime);
+            mesh.Update(deltaTime);
         }
 
         public override void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)

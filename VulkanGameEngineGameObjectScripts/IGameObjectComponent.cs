@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VulkanGameEngineGameObjectScripts
 {
@@ -32,36 +30,20 @@ namespace VulkanGameEngineGameObjectScripts
     {
         kUndefined,
         kRenderMesh2DComponent,
-        kTestScriptConponent
+        kGameObjectTransform2DComponent,
+        kTestScriptComponent
     };
 
-    public abstract class GameObjectComponent
+    public interface IGameObjectComponent
     {
-        public String Name { get; protected set; }
-        public ulong MemorySize { get; protected set; }
-        public ComponentTypeEnum ComponentType { get; protected set; }
-
-        public GameObjectComponent()
-        {
-
-        }
-
-        public GameObjectComponent(ComponentTypeEnum componentType)
-        {
-            Name = "unnamed";
-            ComponentType = componentType;
-        }
-
-        public GameObjectComponent(String name, ComponentTypeEnum componentType)
-        {
-            Name = name;
-            ComponentType = componentType;
-        }
-
-        public abstract void Update(long startTime);
-        public abstract void BufferUpdate(CommandBuffer commandBuffer, long startTime);
-        public abstract void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties);
-        public abstract void Destroy();
-        public abstract int GetMemorySize();
+        IntPtr ParentGameObject { get; set; }
+        String Name { get; set; }
+        ulong MemorySize { get; }
+        ComponentTypeEnum ComponentType { get; }
+        void Update(float deltaTime);
+        void BufferUpdate(IntPtr commandBuffer, float deltaTime);
+        void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties);
+        void Destroy();
+        int GetMemorySize();
     }
 }

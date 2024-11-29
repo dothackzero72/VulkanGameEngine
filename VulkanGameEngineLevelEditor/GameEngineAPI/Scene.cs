@@ -30,6 +30,7 @@ using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 using ImageLayout = Silk.NET.Vulkan.ImageLayout;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineLevelEditor.Components;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -43,7 +44,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public List<Texture> textureList { get; set; } = new List<Texture>();
         public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
         JsonRenderPass renderPass3D { get; set; } = new JsonRenderPass();
-
         public void StartUp()
         {
             //List<string> scriptList = new List<string>();
@@ -59,8 +59,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
             textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\container2.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
 
-            GameObjectList.Add(GameObject.CreateGameObject("object1", new List<ComponentTypeEnum>() { ComponentTypeEnum.kRenderMesh2DComponent }));
-            GameObjectList.Add(GameObject.CreateGameObject("object2", new List<ComponentTypeEnum>() { ComponentTypeEnum.kRenderMesh2DComponent }));
+            GameObjectList.Add(GameObject.CreateGameObject("object1", new List<ComponentTypeEnum>() { ComponentTypeEnum.kGameObjectTransform2DComponent, ComponentTypeEnum.kRenderMesh2DComponent }));
+            GameObjectList.Add(GameObject.CreateGameObject("object2", new List<ComponentTypeEnum>() { ComponentTypeEnum.kGameObjectTransform2DComponent, ComponentTypeEnum.kRenderMesh2DComponent }));
 
             MemoryManager.ViewMemoryMap();
             renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
@@ -68,9 +68,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void Update()
         {
+         
             CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             foreach (var gameObject in GameObjectList)
             {
+                gameObject.Update(startTime);
                 gameObject.BufferUpdate(commandBuffer, startTime);
             }
             VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);

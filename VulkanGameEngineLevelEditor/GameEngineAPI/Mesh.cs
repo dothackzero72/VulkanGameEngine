@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineLevelEditor.Components;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -38,7 +40,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     };
 
 
-    public static class MathHelper
+    public unsafe static class MathHelper
     {
         public static float ToRadians(float degrees)
         {
@@ -64,6 +66,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                                                        MemoryPropertyFlags.HostCoherentBit;
 
         protected IntPtr mesh;
+        protected IntPtr ParentGameObject { get; private set; }
+        protected IntPtr TransformRefrence { get; private set; }
         public uint MeshBufferIndex { get; protected set; }
         public int VertexCount { get; protected set; }
         public int IndexCount { get; protected set; }
@@ -89,8 +93,25 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             IndexCount = 0;
         }
 
-        public void MeshStartUp(Vertex2D[] vertexList, uint[] indexList)
+        public void MeshStartUp(IntPtr parentGameObjectPtr, Vertex2D[] vertexList, uint[] indexList)
         {
+            GCHandle handle = GCHandle.FromIntPtr(parentGameObjectPtr);
+            var gameObject = handle.Target as GameObject;
+
+            ParentGameObject = parentGameObjectPtr;
+
+            var component = gameObject.GameObjectComponentList.FirstOrDefault(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent);
+            if (component is GameObjectTransform2D transformComponent)
+            {
+                GCHandle handle1 = GCHandle.Alloc(component, GCHandleType.Normal);
+                IntPtr transformComponentHandle = GCHandle.ToIntPtr(handle1);
+                TransformRefrence = transformComponentHandle;
+            }
+            else
+            {
+                TransformRefrence = IntPtr.Zero;
+            }
+
             VertexCount = vertexList.Length;
             IndexCount = indexList.Length;
 
@@ -128,8 +149,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             );
         }
 
-        public virtual void BufferUpdate(CommandBuffer commandBuffer, long startTime)
+        public virtual void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
         {
+            mat4 gameObjectTransform = mat4.Identity;
+            if (TransformRefrence != IntPtr.Zero)
+            {
+                GCHandle handle = GCHandle.FromIntPtr(TransformRefrence);
+                var goTransform = handle.Target as GameObjectTransform2D;
+                var transform = goTransform.transform2D_CS.GameObjectTransform;
+
+                gameObjectTransform = transform;
+            }
+
             mat4 MeshMatrix = mat4.Identity;
             MeshMatrix = mat4.Scale(MeshScale);
             MeshMatrix = mat4.Rotate(glm.Radians(MeshRotation.x), new vec3(1.0f, 0.0f, 0.0f));
@@ -140,7 +171,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MeshProperitiesStruct properties = new MeshProperitiesStruct
             {
                 MaterialIndex = MeshBufferIndex,
-                MeshTransform = MeshMatrix,
+                MeshTransform = gameObjectTransform * MeshMatrix,
             };
 
             void* dataPtr = Unsafe.AsPointer(ref properties);

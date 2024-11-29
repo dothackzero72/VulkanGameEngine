@@ -1,11 +1,14 @@
-﻿using Silk.NET.Vulkan;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineLevelEditor.Components;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -34,11 +37,21 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static GameObject CreateGameObject(string name, List<ComponentTypeEnum> componentTypeList)
         {
             GameObject gameObject = MemoryManager.AllocateGameObject();
+            gameObject.Initialize(name);
 
-            List<GameObjectComponent> componentList = new List<GameObjectComponent>();
-            componentList.Add(MeshRenderer2DComponent.CreateRenderMesh2DComponent("Mesh Renderer", (uint)MemoryManager.RenderMesh2DComponentList.Count));
-           // componentList.Add(TestScriptConponent.CreateTestScriptConponent());
-            gameObject.Initialize(name, componentList);
+            GCHandle handle = GCHandle.Alloc(gameObject, GCHandleType.Normal);
+            IntPtr parentGameObjectPtr = GCHandle.ToIntPtr(handle);
+
+            foreach (var component in componentTypeList)
+            {
+                String asdf = "adsfasd";
+                switch (component)
+                {
+                    case ComponentTypeEnum.kGameObjectTransform2DComponent: gameObject.AddComponent(new GameObjectTransform2D(parentGameObjectPtr, "Testing")); break;
+                    case ComponentTypeEnum.kRenderMesh2DComponent: gameObject.AddComponent(MeshRenderer2DComponent.CreateRenderMesh2DComponent(parentGameObjectPtr, "Mesh Renderer", (uint)MemoryManager.RenderMesh2DComponentList.Count)); break;
+                    case ComponentTypeEnum.kTestScriptComponent: gameObject.AddComponent(new TestScriptComponent(parentGameObjectPtr, "Testing")); break;
+                }
+            }
             return gameObject;
         }
 
@@ -55,7 +68,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public virtual void Update(long startTime)
         {
-            foreach (GameObjectComponent component in GameObjectComponentList)
+            foreach (IGameObjectComponent component in GameObjectComponentList)
             {
                 component.Update(startTime);
             }
@@ -100,9 +113,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return GameObjectComponentList.Where(x => x.Name == name).First();
         }
 
-        //public List<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type)
-        //{
-        //    return GameObjectComponentList.Where(x => x.ComponentType == type).ToList();
-        //}
+        public List<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type)
+        {
+            return GameObjectComponentList.Where(x => x.ComponentType == type).ToList();
+        }
     }
 }

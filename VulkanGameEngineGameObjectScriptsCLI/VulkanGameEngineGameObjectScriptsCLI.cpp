@@ -6,16 +6,23 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 
-TestScriptComponentDLL::TestScriptComponentDLL() : GameObjectComponentDLL()
+
+TestScriptComponentDLL::TestScriptComponentDLL()
 {
-    Console::WriteLine("Drawing with buffer update");
-    component = gcnew TestScriptComponent(ComponentTypeEnum::kTestScriptConponent);
+    std::cout << "do you hear me TestScriptComponentDLL" << std::endl;
+    component = gcnew TestScriptComponent_CS();
 }
 
-TestScriptComponentDLL::TestScriptComponentDLL(String^ name)
+TestScriptComponentDLL::TestScriptComponentDLL(void* gameObjectPtr)
 {
-    Console::WriteLine("Drawing with buffer update");
-    component = gcnew TestScriptComponent(name, ComponentTypeEnum::kTestScriptConponent);
+    std::cout << "do you hear me TestScriptComponentDLL2" << std::endl;
+    component = gcnew TestScriptComponent_CS((IntPtr)gameObjectPtr);
+}
+
+TestScriptComponentDLL::TestScriptComponentDLL(void* gameObjectPtr, String^ name)
+{
+    std::cout << "do you hear me TestScriptComponentDLL3" << std::endl;
+    component = gcnew TestScriptComponent_CS((IntPtr)gameObjectPtr, name);
 }
 
 void TestScriptComponentDLL::Update(long startTime)
@@ -43,31 +50,27 @@ int TestScriptComponentDLL::GetMemorySize()
 
 extern "C" 
 {
-    DLL_EXPORT_MANAGED void* DLL_CreateTestScriptComponent(void* wrapperHandle)
-    {
-        if (wrapperHandle != nullptr)
+    DLL_EXPORT_MANAGED void* DLL_CreateTestScriptComponent() {
+        try 
         {
-            try
-            {
-                TestScriptComponentDLL^ component = gcnew TestScriptComponentDLL();
-                GCHandle handle = GCHandle::Alloc(component);
-                return (void*)GCHandle::ToIntPtr(handle).ToPointer();
-            }
-            catch (Exception^ e)
-            {
-                std::cerr << "Exception in managed code: " << msclr::interop::marshal_as<std::string>(e->Message) << std::endl;
-                return nullptr;
-            }
+            std::cout << "do you hear me DLL_CreateTestScriptComponent" << std::endl;
+            TestScriptComponentDLL^ wrapper = gcnew TestScriptComponentDLL();
+            GCHandle handle = GCHandle::Alloc(wrapper);
+            return (void*)GCHandle::ToIntPtr(handle).ToPointer();
+        }
+        catch (Exception^ e) {
+            std::cerr << "Exception in managed code: " << msclr::interop::marshal_as<std::string>(e->Message) << std::endl;
+            return nullptr;
         }
     }
 
-    DLL_EXPORT_MANAGED void* DLL_CreateTestScriptComponentName(void* wrapperHandle, std::string name)
+    DLL_EXPORT_MANAGED void* DLL_CreateTestScriptComponentName(void* wrapperHandle, void* gameObjectPtr, std::string name)
     {
         if (wrapperHandle != nullptr)
         {
             try
             {
-                TestScriptComponentDLL^ component = gcnew TestScriptComponentDLL(msclr::interop::marshal_as<String^>(name));
+                TestScriptComponentDLL^ component = gcnew TestScriptComponentDLL(gameObjectPtr, msclr::interop::marshal_as<String^>(name));
                 GCHandle handle = GCHandle::Alloc(component);
                 return (void*)GCHandle::ToIntPtr(handle).ToPointer();
             }
