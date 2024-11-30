@@ -1,11 +1,11 @@
 #pragma once
 extern "C"
 {
-#include <CVulkanRenderer.h>
+
 	#include <CShaderCompiler.h>
 	#include <io.h>
 }
-#include <vulkan/vulkan.h>
+#include <CoreVulkanRenderer.h>
 #include <string>
 #include <CShaderCompiler.h>
 #include <Windows.h>

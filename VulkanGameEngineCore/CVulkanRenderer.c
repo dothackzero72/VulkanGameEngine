@@ -3,42 +3,6 @@
 #include "GLFWWindow.h"
 #include "CTypedef.h"
 
-RendererState cRenderer = { 0 };
-//RayTracingFunctions RTX = { 0 };
-
-static const char* DeviceExtensionList[] = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    VK_KHR_MAINTENANCE3_EXTENSION_NAME,
-    VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
-    VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
-    VK_KHR_SPIRV_1_4_EXTENSION_NAME,
-    VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME,
-    VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME,
-    
-};
-
-static const char* ValidationLayers[] = { "VK_LAYER_KHRONOS_validation" };
-
-static VkValidationFeatureEnableEXT enabledList[] = { VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT,
-                                                      VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT };
-
-static VkValidationFeatureDisableEXT disabledList[] = { VK_VALIDATION_FEATURE_DISABLE_THREAD_SAFETY_EXT,
-                                                        VK_VALIDATION_FEATURE_DISABLE_API_PARAMETERS_EXT,
-                                                        VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT,
-                                                        VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT };
-
-static bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32 arrayCount, const char* target)
-{
-    for (uint32 x = 0; x < arrayCount; x++)
-    {
-        if (strcmp(array[x].extensionName, target) == 0)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
     PFN_vkCreateDebugUtilsMessengerEXT func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -52,12 +16,12 @@ VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMes
     }
 }
 
-void DestroyDebugUtilsMessengerEXT(VkInstance instance, const VkAllocationCallbacks* pAllocator)
+void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugUtilsMessengerEXT, const VkAllocationCallbacks* pAllocator)
 {
     PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
     if (func != NULL)
     {
-        func(instance, cRenderer.DebugMessenger, pAllocator);
+        func(instance, debugUtilsMessengerEXT, pAllocator);
     }
     else
     {
@@ -100,215 +64,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
             callback(message);
     }
     return VK_FALSE;
-}
-
-VkExtensionProperties* Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice, uint32_t* deviceExtensionCountPtr)
-{
-    uint32_t deviceExtensionCount = 0;
-    VkResult result = vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, NULL);
-    if (result != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to enumerate device extension properties. Error: %d\n", result);
-        *deviceExtensionCountPtr = 0;
-        return NULL;
-    }
-
-    VkExtensionProperties* deviceExtensions = malloc(sizeof(VkExtensionProperties) * deviceExtensionCount);
-    if (!deviceExtensions)
-    {
-        fprintf(stderr, "Failed to allocate memory for device extensions.\n");
-        *deviceExtensionCountPtr = 0;
-        return NULL;
-    }
-
-    result = vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, deviceExtensions);
-    if (result != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to enumerate device extension properties. Error: %d\n", result);
-        free(deviceExtensions);
-        *deviceExtensionCountPtr = 0;
-        return NULL;
-    }
-
-    *deviceExtensionCountPtr = deviceExtensionCount;
-    return deviceExtensions;
-}
-
-VkResult Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceFormatKHR** surfaceFormats, uint32_t* surfaceFormatCount)
-{
-    VkResult result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, surfaceFormatCount, NULL);
-    if (result != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to get the physical device surface formats count. Error: %d\n", result);
-        return result;
-    }
-
-    if (*surfaceFormatCount > 0)
-    {
-        *surfaceFormats = malloc(sizeof(VkSurfaceFormatKHR) * (*surfaceFormatCount));
-        if (!(*surfaceFormats))
-        {
-            fprintf(stderr, "Failed to allocate memory for surface formats.\n");
-            return VK_ERROR_OUT_OF_HOST_MEMORY;
-        }
-
-        result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, surfaceFormatCount, *surfaceFormats);
-        if (result != VK_SUCCESS)
-        {
-            free(*surfaceFormats);
-            *surfaceFormats = NULL;
-            fprintf(stderr, "Failed to get physical device surface formats. Error: %d\n", result);
-            return result;
-        }
-    }
-    else
-    {
-        *surfaceFormats = NULL;
-    }
-    return VK_SUCCESS;
-}
-
-VkResult Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkPresentModeKHR** presentModes, uint32_t* presentModeCount)
-{
-    VkResult result = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, presentModeCount, NULL);
-    if (result != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to get the physical device surface present modes count. Error: %d\n", result);
-        return result;
-    }
-
-    if (*presentModeCount > 0)
-    {
-        *presentModes = malloc(sizeof(VkPresentModeKHR) * (*presentModeCount));
-        if (!(*presentModes))
-        {
-            fprintf(stderr, "Failed to allocate memory for present modes.\n");
-            return VK_ERROR_OUT_OF_HOST_MEMORY;
-        }
-
-        result = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, presentModeCount, *presentModes);
-        if (result != VK_SUCCESS)
-        {
-            free(*presentModes);
-            *presentModes = NULL;
-            fprintf(stderr, "Failed to get physical device surface present modes. Error: %d\n", result);
-            return result;
-        }
-    }
-    else
-    {
-        *presentModes = NULL;
-    }
-    return VK_SUCCESS;
-}
-
-bool Renderer_GetRayTracingSupport()
-{
-    /* uint32 deviceExtensionCount = INT32_MAX;
-     VkExtensionProperties* deviceExtensions = GetDeviceExtensions(cRenderer.PhysicalDevice, &deviceExtensionCount);
-     VkPhysicalDeviceAccelerationStructureFeaturesKHR physicalDeviceAccelerationStructureFeatures =
-     {
-         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR
-     };
-
-     VkPhysicalDeviceRayTracingPipelineFeaturesKHR physicalDeviceRayTracingPipelineFeatures =
-     {
-         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
-         .pNext = &physicalDeviceAccelerationStructureFeatures
-     };
-
-     VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 =
-     {
-         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-         .pNext = &physicalDeviceRayTracingPipelineFeatures
-     };
-     vkGetPhysicalDeviceFeatures2(cRenderer.PhysicalDevice, &physicalDeviceFeatures2);
-
-     if (physicalDeviceRayTracingPipelineFeatures.rayTracingPipeline == VK_TRUE &&
-         physicalDeviceAccelerationStructureFeatures.accelerationStructure == VK_TRUE)
-     {
-         if (Array_RendererExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
-             Array_RendererExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME))
-         {
-             uint32 pExtensionCount = 0;
-             VkExtensionProperties* extensions = NULL;
-             vulkanWindow->GetInstanceExtensions(vulkanWindow, &pExtensionCount, &extensions);
-             return true;
-         }
-         else
-         {
-             fprintf(stderr, "GPU/Mother Board isn't ray tracing compatible.\n");
-             free(deviceExtensions);
-             return false;
-         }
-     }
-     else
-     {
-         fprintf(stderr, "GPU/Mother Board isn't ray tracing compatible.\n");
-         free(deviceExtensions);
-         return false;
-     }*/
-    return false;
-}
-
-void Renderer_GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features)
-{
-    VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
-        .bufferDeviceAddress = VK_TRUE,
-    };
-
-    VkPhysicalDeviceDescriptorIndexingFeatures physicalDeviceDescriptorIndexingFeatures =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
-        .runtimeDescriptorArray = VK_TRUE,
-        .shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
-        .descriptorBindingVariableDescriptorCount = VK_TRUE,
-    };
-
-    VkPhysicalDeviceRobustness2FeaturesEXT PhysicalDeviceRobustness2Features =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
-        .nullDescriptor = VK_TRUE,
-        .pNext = &physicalDeviceDescriptorIndexingFeatures,
-    };
-
-    if (Renderer_GetRayTracingSupport())
-    {
-        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
-            .accelerationStructure = VK_TRUE,
-        };
-
-        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
-            .rayTracingPipeline = VK_TRUE,
-            .pNext = &accelerationStructureFeatures,
-        };
-
-        bufferDeviceAddressFeatures.pNext = &rayTracingPipelineFeatures;
-    }
-    PhysicalDeviceRobustness2Features.pNext = &bufferDeviceAddressFeatures;
-
-    VkPhysicalDeviceFeatures deviceFeatures =
-    {
-        .samplerAnisotropy = VK_TRUE,
-        .fillModeNonSolid = VK_TRUE,
-    };
-
-    VkPhysicalDeviceFeatures2 deviceFeatures2 =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-        .features = deviceFeatures,
-        .pNext = &PhysicalDeviceRobustness2Features,
-    };
-
-    physicalDeviceVulkan11Features->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
-    physicalDeviceVulkan11Features->multiview = VK_TRUE;
-    physicalDeviceVulkan11Features->pNext = &deviceFeatures2;
 }
 
 VkResult Renderer_GetWin32Extensions(uint32_t* extensionCount, char*** enabledExtensions)
@@ -374,278 +129,6 @@ VkResult Renderer_GetWin32Extensions(uint32_t* extensionCount, char*** enabledEx
     return VK_SUCCESS;
 }
 
-VkInstance Renderer_CreateVulkanInstance()
-{
-    VkInstance instance = VK_NULL_HANDLE;
-    VkDebugUtilsMessengerEXT* debugMessenger = VK_NULL_HANDLE;
-    VkDebugUtilsMessengerCreateInfoEXT debugInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
-                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
-        .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                       VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                       VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-        .pfnUserCallback = Vulkan_DebugCallBack
-    };
-
-    int enableValidationLayers = 1;
-#ifdef NDEBUG
-    enableValidationLayers = 0;
-#endif
-
-    uint32_t extensionCount = 0;
-    const char** extensions = NULL;
-    Renderer_GetWin32Extensions(&extensionCount, &extensions);
-
-    VkApplicationInfo applicationInfo = {
-        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-        .pApplicationName = "Vulkan Application",
-        .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-        .pEngineName = "No Engine",
-        .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-        .apiVersion = VK_API_VERSION_1_3
-    };
-
-    VkInstanceCreateInfo vulkanCreateInfo = {
-        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-        .pApplicationInfo = &applicationInfo,
-        .enabledLayerCount = (enableValidationLayers),
-        .ppEnabledLayerNames = (enableValidationLayers ? ValidationLayers : NULL),
-        .enabledExtensionCount = extensionCount,
-        .ppEnabledExtensionNames = extensions,
-        .pNext = (enableValidationLayers ? &debugInfo : NULL)
-    };
-
-    VkResult result = vkCreateInstance(&vulkanCreateInfo, NULL, &instance);
-    if (result != VK_SUCCESS) {
-        fprintf(stderr, "Failed to create Vulkan instance\n");
-        return VK_NULL_HANDLE;
-    }
-
-    return instance;
-}
-
-VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance)
-{
-    VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
-
-    VkDebugUtilsMessengerCreateInfoEXT debugInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
-        .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-        .pfnUserCallback = Vulkan_DebugCallBack
-    };
-
-    if (CreateDebugUtilsMessengerEXT(instance, &debugInfo, NULL, &debugMessenger) != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to set up debug messenger!\n");
-        return VK_NULL_HANDLE;
-    }
-
-    return debugMessenger;
-}
-
-VkResult Renderer_SetUpPhysicalDevice(VkInstance instance, VkPhysicalDevice* physicalDevice, VkSurfaceKHR surface, VkPhysicalDeviceFeatures* physicalDeviceFeatures, uint32_t* graphicsFamily, uint32_t* presentFamily)
-{
-    uint32_t deviceCount = 0;
-    VkResult result = vkEnumeratePhysicalDevices(instance, &deviceCount, NULL);
-    if (result != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to enumerate physical devices. Error: %d\n", result);
-        return result;
-    }
-    if (deviceCount == 0) {
-        fprintf(stderr, "No physical devices found.\n");
-        return VK_ERROR_INITIALIZATION_FAILED;
-    }
-
-    VkPhysicalDevice* physicalDeviceList = malloc(sizeof(VkPhysicalDevice) * deviceCount);
-    if (!physicalDeviceList)
-    {
-        fprintf(stderr, "Failed to allocate memory for physical devices.\n");
-        return VK_ERROR_OUT_OF_HOST_MEMORY;
-    }
-
-    result = vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDeviceList);
-    if (result != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to enumerate physical devices after allocation. Error: %d\n", result);
-        free(physicalDeviceList);
-        return result;
-    }
-
-    VkSurfaceFormatKHR surfaceFormat;
-    uint32_t surfaceFormatCount = 0;
-    VkPresentModeKHR* presentMode = NULL;
-    uint32_t presentModeCount = 0;
-
-    for (uint32_t x = 0; x < deviceCount; x++)
-    {
-        vkGetPhysicalDeviceFeatures(physicalDeviceList[x], physicalDeviceFeatures);
-        result = SwapChain_GetQueueFamilies(physicalDeviceList[x], surface, graphicsFamily, presentFamily);
-        if (result != VK_SUCCESS)
-        {
-            fprintf(stderr, "Failed to get queue families. Error: %d\n", result);
-            continue;
-        }
-
-        result = Renderer_GetSurfaceFormats(physicalDeviceList[x], surface, &surfaceFormat, &surfaceFormatCount);
-        if (result != VK_SUCCESS)
-        {
-            fprintf(stderr, "Failed to get surface formats. Error: %d\n", result);
-            continue;
-        }
-
-        result = Renderer_GetSurfacePresentModes(physicalDeviceList[x], surface, &presentMode, &presentModeCount);
-        if (result != VK_SUCCESS)
-        {
-            fprintf(stderr, "Failed to get surface present modes. Error: %d\n", result);
-            continue;
-        }
-
-        if (*graphicsFamily != UINT32_MAX &&
-            *presentFamily != UINT32_MAX &&
-            surfaceFormatCount > 0 &&
-            presentModeCount > 0 &&
-            physicalDeviceFeatures->samplerAnisotropy)
-        {
-            *physicalDevice = physicalDeviceList[x];
-            free(presentMode);
-            free(physicalDeviceList);
-            return VK_SUCCESS;
-        }
-    }
-
-    free(presentMode);
-    free(physicalDeviceList);
-    return VK_ERROR_DEVICE_LOST;
-}
-
-VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFamily, uint32 presentFamily)
-{
-    VkDevice device = VK_NULL_HANDLE;
-
-    float queuePriority = 1.0f;
-    VkDeviceQueueCreateInfo queueCreateInfo[2];
-    uint32 queueCreateInfoCount = 0;
-    if (graphicsFamily != UINT32_MAX)
-    {
-        queueCreateInfo[queueCreateInfoCount++] = (VkDeviceQueueCreateInfo){
-            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-            .queueFamilyIndex = graphicsFamily,
-            .queueCount = 1,
-            .pQueuePriorities = &queuePriority
-        };
-    }
-
-    if (presentFamily != UINT32_MAX &&
-        presentFamily != graphicsFamily)
-    {
-        queueCreateInfo[queueCreateInfoCount++] = (VkDeviceQueueCreateInfo)
-        {
-            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-            .queueFamilyIndex = presentFamily,
-            .queueCount = 1,
-            .pQueuePriorities = &queuePriority
-        };
-    }
-
-    VkPhysicalDeviceBufferDeviceAddressFeatures BufferDeviceAddressFeatures = {0};
-    BufferDeviceAddressFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
-    BufferDeviceAddressFeatures.bufferDeviceAddress = VK_TRUE;
-
-    if (Renderer_GetRayTracingSupport())
-    {
-        VkPhysicalDeviceRayTracingPipelineFeaturesKHR RayTracingPipelineFeatures = {0};
-        RayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
-        RayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
-
-        VkPhysicalDeviceAccelerationStructureFeaturesKHR AccelerationStructureFeatures = {0};
-        AccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
-        AccelerationStructureFeatures.accelerationStructure = VK_TRUE;
-
-        AccelerationStructureFeatures.pNext = &RayTracingPipelineFeatures;
-        BufferDeviceAddressFeatures.pNext = &AccelerationStructureFeatures;
-    }
-    else
-    {
-        BufferDeviceAddressFeatures.pNext = NULL;
-    }
-
-    VkPhysicalDeviceDescriptorIndexingFeatures DescriptorIndexingFeatures = {0};
-    DescriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
-    DescriptorIndexingFeatures.runtimeDescriptorArray = VK_TRUE;
-    DescriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
-    DescriptorIndexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
-    DescriptorIndexingFeatures.pNext = &BufferDeviceAddressFeatures;
-
-    VkPhysicalDeviceRobustness2FeaturesEXT Robustness2Features = {0};
-    Robustness2Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT;
-    Robustness2Features.nullDescriptor = VK_TRUE;
-    Robustness2Features.pNext = &DescriptorIndexingFeatures;
-
-    VkPhysicalDeviceFeatures DeviceFeatures = {0};
-    DeviceFeatures.samplerAnisotropy = VK_TRUE;
-    DeviceFeatures.fillModeNonSolid = VK_TRUE;
-    DeviceFeatures.wideLines = VK_TRUE;
-    DeviceFeatures.fragmentStoresAndAtomics = VK_TRUE;
-    DeviceFeatures.vertexPipelineStoresAndAtomics = VK_TRUE;
-    DeviceFeatures.sampleRateShading = VK_TRUE;
-
-    VkPhysicalDeviceVulkan13Features Vulkan13Features = {0};
-    Vulkan13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
-    Vulkan13Features.shaderDemoteToHelperInvocation = VK_TRUE;
-    Vulkan13Features.pNext = &Robustness2Features;
-
-    VkPhysicalDeviceFeatures2 Features2 = {0};
-    Features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-    Features2.features = DeviceFeatures;
-    Features2.pNext = &Vulkan13Features;
-
-    VkPhysicalDeviceVulkan11Features Vulkan11Features = {0};
-    Vulkan11Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
-    Vulkan11Features.multiview = VK_TRUE;
-    Vulkan11Features.pNext = &Features2;
-
-    VkDeviceCreateInfo deviceCreateInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-        .queueCreateInfoCount = queueCreateInfoCount,
-        .pQueueCreateInfos = queueCreateInfo,
-        .pEnabledFeatures = NULL,
-        .enabledExtensionCount = ARRAY_SIZE(DeviceExtensionList),
-        .ppEnabledExtensionNames = DeviceExtensionList,
-        .pNext = &Vulkan11Features
-    };
-
-#ifdef NDEBUG
-    deviceCreateInfo.enabledLayerCount = 0;
-#else
-    deviceCreateInfo.enabledLayerCount = ARRAY_SIZE(ValidationLayers);
-    deviceCreateInfo.ppEnabledLayerNames = ValidationLayers;
-#endif
-
-    vkCreateDevice(physicalDevice, &deviceCreateInfo, NULL, &device);
-    return device;
-}
-
-VkCommandPool Renderer_SetUpCommandPool(VkDevice device, uint32 graphicsFamily)
-{
-    VkCommandPool commandPool = VK_NULL_HANDLE;
-    VkCommandPoolCreateInfo CommandPoolCreateInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-        .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-        .queueFamilyIndex = graphicsFamily
-    };
-    VULKAN_RESULT(vkCreateCommandPool(device, &CommandPoolCreateInfo, NULL, &commandPool));
-    return commandPool;
-}
-
 VkResult Renderer_SetUpSemaphores(VkDevice device, VkFence** inFlightFences, VkSemaphore** acquireImageSemaphores, VkSemaphore** presentImageSemaphores, int maxFramesInFlight)
 {
     *inFlightFences = malloc(sizeof(VkFence) * maxFramesInFlight);
@@ -672,9 +155,9 @@ VkResult Renderer_SetUpSemaphores(VkDevice device, VkFence** inFlightFences, VkS
     VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo =
     {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
+        .pNext = NULL,
         .semaphoreType = VK_SEMAPHORE_TYPE_BINARY,
         .initialValue = 0,
-        .pNext = NULL
     };
 
     VkSemaphoreCreateInfo semaphoreCreateInfo =
@@ -698,14 +181,6 @@ VkResult Renderer_SetUpSemaphores(VkDevice device, VkFence** inFlightFences, VkS
 
     return VK_SUCCESS;
 }
-
-VkResult Renderer_GetDeviceQueue(VkDevice device, uint32 graphicsFamily, uint32 presentFamily, VkQueue* graphicsQueue, VkQueue* presentQueue)
-{
-    vkGetDeviceQueue(device, graphicsFamily, 0, graphicsQueue);
-    vkGetDeviceQueue(device, presentFamily, 0, presentQueue);
-    return VK_SUCCESS;
-}
-
 
 VkResult Renderer_CreateCommandBuffers(VkDevice device, VkCommandPool commandPool, VkCommandBuffer* commandBufferList, uint32 commandBufferCount)
 {
@@ -1034,9 +509,9 @@ void Renderer_DestroySurface(VkInstance instance, VkSurfaceKHR* surface)
     }
 }
 
-void Renderer_DestroyDebugger(VkInstance* instance)
+void Renderer_DestroyDebugger(VkInstance* instance, VkDebugUtilsMessengerEXT debugUtilsMessengerEXT)
 {
-    DestroyDebugUtilsMessengerEXT(*instance, NULL);
+    DestroyDebugUtilsMessengerEXT(*instance, debugUtilsMessengerEXT, NULL);
 }
 
 void Renderer_DestroyInstance(VkInstance* instance)
@@ -1117,11 +592,11 @@ void Renderer_FreeDeviceMemory(VkDevice device, VkDeviceMemory* memory)
     }
 }
 
-void Renderer_DestroySwapChainImageView(VkDevice device, VkImageView* pSwapChainImageViewList, uint32 count)
+void Renderer_DestroySwapChainImageView(VkDevice device, VkSurfaceKHR surface, VkImageView* pSwapChainImageViewList, uint32 count)
 {
     for (uint32 x = 0; x < count; x++)
     {
-        if (cRenderer.Surface != VK_NULL_HANDLE)
+        if (surface != VK_NULL_HANDLE)
         {
             vkDestroyImageView(device, pSwapChainImageViewList[x], NULL);
             pSwapChainImageViewList[x] = VK_NULL_HANDLE;
@@ -1188,9 +663,3 @@ void Renderer_DestroyPipelineCache(VkDevice device, VkPipelineCache* pipelineCac
         *pipelineCache = VK_NULL_HANDLE;
     }
 }
-
-int Renderer_SimpleTestLIB()
-{
-    return 43;
-}
-

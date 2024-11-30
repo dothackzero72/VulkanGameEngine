@@ -36,10 +36,6 @@ namespace VulkanGameEngineGameObjectScripts
 
     public interface IGameObjectComponent
     {
-        IntPtr ParentGameObject { get; set; }
-        String Name { get; set; }
-        ulong MemorySize { get; }
-        ComponentTypeEnum ComponentType { get; }
         void Update(float deltaTime);
         void BufferUpdate(IntPtr commandBuffer, float deltaTime);
         void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties);

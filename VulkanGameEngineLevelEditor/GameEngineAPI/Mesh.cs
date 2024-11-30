@@ -101,7 +101,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ParentGameObject = parentGameObjectPtr;
 
             var component = gameObject.GameObjectComponentList.FirstOrDefault(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent);
-            if (component is GameObjectTransform2D transformComponent)
+            if (component is Transform2DComponent transformComponent)
             {
                 GCHandle handle1 = GCHandle.Alloc(component, GCHandleType.Normal);
                 IntPtr transformComponentHandle = GCHandle.ToIntPtr(handle1);
@@ -155,8 +155,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             if (TransformRefrence != IntPtr.Zero)
             {
                 GCHandle handle = GCHandle.FromIntPtr(TransformRefrence);
-                var goTransform = handle.Target as GameObjectTransform2D;
-                var transform = goTransform.transform2D_CS.GameObjectTransform;
+                var goTransform = handle.Target as Transform2DComponent;
+                var transform = goTransform.GameObjectTransform;
 
                 gameObjectTransform = transform;
             }

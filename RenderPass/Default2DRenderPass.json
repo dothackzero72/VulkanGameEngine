@@ -43,7 +43,7 @@
         "stencilStoreOp": 1,
         "initialLayout": 2,
         "finalLayout": 2,
-        "_name": null
+        "_name": "dfhdfh"
       },
       "TextureType": 0,
       "_name": "ColorAttachment"
@@ -91,7 +91,7 @@
         "stencilStoreOp": 1,
         "initialLayout": 0,
         "finalLayout": 3,
-        "_name": null
+        "_name": "dfhdfh"
       },
       "TextureType": 1,
       "_name": "depthAttachment"
@@ -107,8 +107,8 @@
       "srcAccessMask": 0,
       "dstAccessMask": 256,
       "dependencyFlags": 0,
-      "_name": null
+      "_name": "dfhdfh"
     }
   ],
-  "_name": null
+  "_name": "dfhdfh"
 }

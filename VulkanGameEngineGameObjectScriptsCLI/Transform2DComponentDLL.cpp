@@ -1,59 +1,50 @@
 #include "pch.h"
-#include "VulkanGameEngineGameObjectScriptsCLI.h"
-#include <msclr/marshal_cppstd.h>
-#include <iostream>
+#include "Transform2DComponentDLL.h"
 
-using namespace System;
-using namespace System::Runtime::InteropServices;
 
-TestScriptComponentDLL::TestScriptComponentDLL()
+Transform2DComponentDLL::Transform2DComponentDLL()
 {
     std::cout << "do you hear me TestScriptComponentDLL" << std::endl;
-    component = gcnew TestScriptComponent_CS();
+    component = gcnew Transform2DComponent_CS();
 }
 
-TestScriptComponentDLL::TestScriptComponentDLL(void* gameObjectPtr)
-{
-    std::cout << "do you hear me TestScriptComponentDLL2" << std::endl;
-    component = gcnew TestScriptComponent_CS((IntPtr)gameObjectPtr);
-}
-
-TestScriptComponentDLL::TestScriptComponentDLL(void* gameObjectPtr, String^ name)
+Transform2DComponentDLL::Transform2DComponentDLL(void* gameObjectPtr, std::string name)
 {
     std::cout << "do you hear me TestScriptComponentDLL3" << std::endl;
-    component = gcnew TestScriptComponent_CS((IntPtr)gameObjectPtr, name);
+    component = gcnew Transform2DComponent_CS((IntPtr)gameObjectPtr, msclr::interop::marshal_as<String^>(name));
 }
 
-void TestScriptComponentDLL::Update(float deltaTime)
+void Transform2DComponentDLL::Update(float deltaTime)
 {
     Console::WriteLine("Drawing with buffer update");
     std::cout << "Test Object 1" << std::endl;
     component->Update(deltaTime);
 }
 
-void TestScriptComponentDLL::BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime)
+void Transform2DComponentDLL::BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime)
 {
     Console::WriteLine("Drawing with buffer update");
-   //component->BufferUpdate(static_cast<void*>(commandBuffer), deltaTime);
+    //component->BufferUpdate(static_cast<void*>(commandBuffer), startTime);
 }
 
-void TestScriptComponentDLL::Destroy()
+void Transform2DComponentDLL::Destroy()
 {
     Console::WriteLine("Destroying component: {0}", Name);
+    component->Destroy();
 }
 
-int TestScriptComponentDLL::GetMemorySize()
+int Transform2DComponentDLL::GetMemorySize()
 {
     return static_cast<int>(MemorySize);
 }
 
-extern "C" 
+extern "C"
 {
-    DLL_EXPORT_MANAGED void* DLL_CreateTestScriptComponent() {
-        try 
+    DLL_EXPORT_MANAGED void* DLL_CreateTransform2DComponent() {
+        try
         {
-            std::cout << "do you hear me DLL_CreateTestScriptComponent" << std::endl;
-            TestScriptComponentDLL^ wrapper = gcnew TestScriptComponentDLL();
+            std::cout << "do you hear me DLL_CreateGameObjectTransform2DComponent" << std::endl;
+            Transform2DComponentDLL^ wrapper = gcnew Transform2DComponentDLL();
             GCHandle handle = GCHandle::Alloc(wrapper);
             return (void*)GCHandle::ToIntPtr(handle).ToPointer();
         }
@@ -63,13 +54,13 @@ extern "C"
         }
     }
 
-    DLL_EXPORT_MANAGED void* DLL_CreateTestScriptComponentName(void* wrapperHandle, void* gameObjectPtr, std::string name)
+    DLL_EXPORT_MANAGED void* DLL_CreateTransform2DComponentName(void* wrapperHandle, void* gameObjectPtr, std::string name)
     {
         if (wrapperHandle != nullptr)
         {
             try
             {
-                TestScriptComponentDLL^ component = gcnew TestScriptComponentDLL(gameObjectPtr, msclr::interop::marshal_as<String^>(name));
+                Transform2DComponentDLL^ component = gcnew Transform2DComponentDLL(gameObjectPtr, name);
                 GCHandle handle = GCHandle::Alloc(component);
                 return (void*)GCHandle::ToIntPtr(handle).ToPointer();
             }
@@ -81,7 +72,7 @@ extern "C"
         }
     }
 
-    DLL_EXPORT_MANAGED void DLL_TestScriptComponent_Update(void* wrapperHandle, long startTime)
+    DLL_EXPORT_MANAGED void DLL_Transform2DComponent_Update(void* wrapperHandle, long startTime)
     {
         try
         {
@@ -89,7 +80,7 @@ extern "C"
             {
                 IntPtr handlePtr(wrapperHandle);
                 GCHandle handle = GCHandle::FromIntPtr(handlePtr);
-                TestScriptComponentDLL^ managedWrapper = static_cast<TestScriptComponentDLL^>(handle.Target);
+                Transform2DComponentDLL^ managedWrapper = static_cast<Transform2DComponentDLL^>(handle.Target);
                 if (managedWrapper != nullptr)
                 {
                     managedWrapper->Update(startTime);
@@ -102,7 +93,7 @@ extern "C"
         }
     }
 
-    DLL_EXPORT_MANAGED void DLL_TestScriptComponent_BufferUpdate(void* wrapperHandle, VkCommandBuffer commandBuffer, float deltaTime)
+    DLL_EXPORT_MANAGED void DLL_Transform2DComponent_BufferUpdate(void* wrapperHandle, VkCommandBuffer commandBuffer, float deltaTime)
     {
         try
         {
@@ -110,7 +101,7 @@ extern "C"
             {
                 IntPtr handlePtr(wrapperHandle);
                 GCHandle handle = GCHandle::FromIntPtr(handlePtr);
-                TestScriptComponentDLL^ managedWrapper = static_cast<TestScriptComponentDLL^>(handle.Target);
+                Transform2DComponentDLL^ managedWrapper = static_cast<Transform2DComponentDLL^>(handle.Target);
                 if (managedWrapper != nullptr)
                 {
                     managedWrapper->BufferUpdate(commandBuffer, deltaTime);
@@ -123,7 +114,7 @@ extern "C"
         }
     }
 
-    DLL_EXPORT_MANAGED void DLL_TestScriptComponent_Destroy(void* wrapperHandle)
+    DLL_EXPORT_MANAGED void DLL_Transform2DComponent_Destroy(void* wrapperHandle)
     {
         try
         {
@@ -131,8 +122,8 @@ extern "C"
             {
                 IntPtr handlePtr(wrapperHandle);
                 GCHandle handle = GCHandle::FromIntPtr(handlePtr);
-                TestScriptComponentDLL^ managedWrapper = static_cast<TestScriptComponentDLL^>(handle.Target);
-                if (managedWrapper != nullptr) 
+                Transform2DComponentDLL^ managedWrapper = static_cast<Transform2DComponentDLL^>(handle.Target);
+                if (managedWrapper != nullptr)
                 {
                     managedWrapper->Destroy();
                 }
@@ -144,7 +135,7 @@ extern "C"
         }
     }
 
-    DLL_EXPORT_MANAGED int DLL_TestScriptComponent_GetMemorySize(void* wrapperHandle)
+    DLL_EXPORT_MANAGED int DLL_Transform2DComponent_GetMemorySize(void* wrapperHandle)
     {
         try
         {
@@ -152,8 +143,8 @@ extern "C"
             {
                 IntPtr handlePtr(wrapperHandle);
                 GCHandle handle = GCHandle::FromIntPtr(handlePtr);
-                TestScriptComponentDLL^ managedWrapper = static_cast<TestScriptComponentDLL^>(handle.Target);
-                if (managedWrapper != nullptr) 
+                Transform2DComponentDLL^ managedWrapper = static_cast<Transform2DComponentDLL^>(handle.Target);
+                if (managedWrapper != nullptr)
                 {
                     return managedWrapper->GetMemorySize();
                 }

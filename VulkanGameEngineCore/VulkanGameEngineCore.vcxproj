@@ -157,6 +157,7 @@
     <ClCompile Include="CBuffer.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
     </ClCompile>
+    <ClCompile Include="CoreVulkanRenderer.cpp" />
     <ClCompile Include="CShaderCompiler.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
     </ClCompile>
@@ -175,11 +176,11 @@
     <ClCompile Include="SDLWindow.c" />
     <ClCompile Include="VulkanError.c" />
     <ClCompile Include="CVulkanRenderer.c" />
-    <ClCompile Include="VulkanSwapChain.c" />
     <ClCompile Include="VulkanWindow.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CBuffer.h" />
+    <ClInclude Include="CoreVulkanRenderer.h" />
     <ClInclude Include="CShaderCompiler.h" />
     <ClInclude Include="CTexture.h" />
     <ClInclude Include="CTimer.h" />
@@ -196,9 +197,9 @@
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="pixel.h" />
     <ClInclude Include="SDLWindow.h" />
+    <ClInclude Include="TypeDef.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="CVulkanRenderer.h" />
-    <ClInclude Include="VulkanSwapChain.h" />
     <ClInclude Include="VulkanWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

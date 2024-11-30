@@ -47,7 +47,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 String asdf = "adsfasd";
                 switch (component)
                 {
-                    case ComponentTypeEnum.kGameObjectTransform2DComponent: gameObject.AddComponent(new GameObjectTransform2D(parentGameObjectPtr, "Testing")); break;
+                    case ComponentTypeEnum.kGameObjectTransform2DComponent: gameObject.AddComponent(new Transform2DComponent(parentGameObjectPtr, "Testing")); break;
                     case ComponentTypeEnum.kRenderMesh2DComponent: gameObject.AddComponent(MeshRenderer2DComponent.CreateRenderMesh2DComponent(parentGameObjectPtr, "Mesh Renderer", (uint)MemoryManager.RenderMesh2DComponentList.Count)); break;
                     case ComponentTypeEnum.kTestScriptComponent: gameObject.AddComponent(new TestScriptComponent(parentGameObjectPtr, "Testing")); break;
                 }

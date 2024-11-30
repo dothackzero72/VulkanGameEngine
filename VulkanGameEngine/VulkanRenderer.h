@@ -6,6 +6,7 @@ extern "C"
 #include <CBuffer.h>
 }
 #include "Typedef.h"
+#include "CoreVulkanRenderer.h"
 
 class VulkanRenderer
 {

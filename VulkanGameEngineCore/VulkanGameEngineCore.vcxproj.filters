@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="VulkanSwapChain.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CVulkanRenderer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,12 +69,12 @@
     <ClCompile Include="Memory.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CoreVulkanRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CVulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanSwapChain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CTypedef.h">
@@ -135,6 +132,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreVulkanRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

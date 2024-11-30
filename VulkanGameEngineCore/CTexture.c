@@ -44,10 +44,10 @@ VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* i
 
 VkResult Texture_BaseCreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, VkImageCreateInfo imageCreateInfo)
 {
-	VULKAN_RESULT(vkCreateImage(cRenderer.Device, &imageCreateInfo, NULL, image));
+	VULKAN_RESULT(vkCreateImage(device, &imageCreateInfo, NULL, image));
 
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(cRenderer.Device, *image, &memRequirements);
+	vkGetImageMemoryRequirements(device, *image, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo =
 	{
@@ -56,7 +56,7 @@ VkResult Texture_BaseCreateTextureImage(VkDevice device, VkPhysicalDevice physic
 		.memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 	};
 	VULKAN_RESULT(vkAllocateMemory(device, &allocInfo, NULL, memory));
-	return vkBindImageMemory(cRenderer.Device, *image, *memory, 0);
+	return vkBindImageMemory(device, *image, *memory, 0);
 }
 
 VkResult Texture_NewTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat)
@@ -80,10 +80,10 @@ VkResult Texture_NewTextureImage(VkDevice device, VkPhysicalDevice physicalDevic
 		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 	};
-	VULKAN_RESULT(vkCreateImage(cRenderer.Device, &ImageCreateInfo, NULL, image));
+	VULKAN_RESULT(vkCreateImage(device, &ImageCreateInfo, NULL, image));
 
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(cRenderer.Device, *image, &memRequirements);
+	vkGetImageMemoryRequirements(device, *image, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo =
 	{
@@ -92,7 +92,7 @@ VkResult Texture_NewTextureImage(VkDevice device, VkPhysicalDevice physicalDevic
 		.memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
 	};
 	VULKAN_RESULT(vkAllocateMemory(device, &allocInfo, NULL, memory));
-	return vkBindImageMemory(cRenderer.Device, *image, *memory, 0);
+	return vkBindImageMemory(device, *image, *memory, 0);
 }
 
 VkResult Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat)
@@ -116,10 +116,10 @@ VkResult Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDe
 		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 	};
-	VULKAN_RESULT(vkCreateImage(cRenderer.Device, &ImageCreateInfo, NULL, image));
+	VULKAN_RESULT(vkCreateImage(device, &ImageCreateInfo, NULL, image));
 
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(cRenderer.Device, *image, &memRequirements);
+	vkGetImageMemoryRequirements(device, *image, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo =
 	{
@@ -128,7 +128,7 @@ VkResult Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDe
 		.memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 	};
 	VULKAN_RESULT(vkAllocateMemory(device, &allocInfo, NULL, memory));
-	return vkBindImageMemory(cRenderer.Device, *image, *memory, 0);
+	return vkBindImageMemory(device, *image, *memory, 0);
 }
 
 VkResult Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, uint32 mipmapLevels, VkImageLayout* oldLayout, VkImageLayout* newLayout)

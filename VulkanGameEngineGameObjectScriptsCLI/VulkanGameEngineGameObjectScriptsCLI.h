@@ -10,8 +10,8 @@ public ref class TestScriptComponentDLL : public GameObjectComponentDLL
         TestScriptComponentDLL();
         TestScriptComponentDLL(void* gameObjectPtr);
         TestScriptComponentDLL(void* gameObjectPtr, String^ name);
-        void Update(long startTime) override;
-        void BufferUpdate(VkCommandBuffer commandBuffer, long startTime) override;
+        void Update(float deltaTime) override;
+        void BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime) override;
         void Destroy() override;
         int GetMemorySize() override;
 };

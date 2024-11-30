@@ -1,5 +1,4 @@
 ﻿using GlmSharp;
-using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineGameObjectScripts
 {
-    public unsafe class GameObjectTransform2D_CS : IGameObjectComponent
+    public unsafe class Transform2DComponent_CS : IGameObjectComponent
     {
         public mat4 GameObjectTransform { get; set; }
         public vec2 GameObjectPosition { get; set; }
@@ -21,24 +20,26 @@ namespace VulkanGameEngineGameObjectScripts
 
         public ComponentTypeEnum ComponentType { get; set; } = ComponentTypeEnum.kGameObjectTransform2DComponent;
 
-        public GameObjectTransform2D_CS()
+        public Transform2DComponent_CS()
         {
-
+            ParentGameObject = IntPtr.Zero;
+            Name = "GameObjectTransform2DComponent";
         }
 
-        public GameObjectTransform2D_CS(IntPtr parentGameObject, String name)
+        public Transform2DComponent_CS(IntPtr parentGameObject)
         {
+            ParentGameObject = parentGameObject;
+            Name = "GameObjectTransform2DComponent";
+        }
+
+        public Transform2DComponent_CS(IntPtr parentGameObject, String name)
+        {
+            ParentGameObject = parentGameObject;
+            Name = name;
         }
 
         public void BufferUpdate(nint commandBuffer, float deltaTime)
         {
-            CommandBuffer commandBuffer1 = new CommandBuffer { Handle = commandBuffer };
-            BufferUpdate(commandBuffer1, deltaTime);
-        }
-
-        public void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
-        {
-
         }
 
         public void Destroy()
@@ -48,22 +49,12 @@ namespace VulkanGameEngineGameObjectScripts
 
         public void Draw(nint commandBuffer, nint pipeline, nint shaderPipelineLayout, nint descriptorSet, SceneDataBuffer sceneProperties)
         {
-            CommandBuffer commandBuffer1 = new CommandBuffer { Handle = commandBuffer };
-            Pipeline pipeline1 = new Pipeline { Handle = (ulong)pipeline };
-            PipelineLayout shaderPipelineLayout1 = new PipelineLayout { Handle = (ulong)shaderPipelineLayout };
-            DescriptorSet descriptorSet1 = new DescriptorSet { Handle = (ulong)descriptorSet };
 
-            Draw(commandBuffer1, pipeline1, shaderPipelineLayout1, descriptorSet1, sceneProperties);
-        }
-
-        public void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
-        {
-     
         }
 
         public int GetMemorySize()
         {
-            return (int)sizeof(GameObjectTransform2D_CS);
+            return (int)sizeof(Transform2DComponent_CS);
         }
 
         public void Update(float deltaTime)
