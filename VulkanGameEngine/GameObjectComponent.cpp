@@ -56,11 +56,11 @@ void GameObjectComponent::StartUp(std::shared_ptr<GameObject> gameObjectPtr, Str
         throw std::runtime_error("Could not find DLL_TestScriptComponent_BufferUpdate function.");
     }
 
-    DLLDestroyPtr = (DLL_ComponentDestroy)GetProcAddress(hModuleRef, ("DLL_" + componentName + "_Destroy").c_str());
+   /* DLLDestroyPtr = (DLL_ComponentDestroy)GetProcAddress(hModuleRef, ("DLL_" + componentName + "_Destroy").c_str());
     if (!DLLDestroyPtr)
     {
         throw std::runtime_error("Could not find DLL_TestScriptComponent_Destroy function.");
-    }
+    }*/
 
     DLLGetMemorySizePtr = (DLL_ComponentGetMemorySize)GetProcAddress(hModuleRef, ("DLL_" + componentName + "_GetMemorySize").c_str());
     if (!DLLGetMemorySizePtr)
@@ -68,7 +68,7 @@ void GameObjectComponent::StartUp(std::shared_ptr<GameObject> gameObjectPtr, Str
         throw std::runtime_error("Could not find DLL_TestScriptComponent_GetMemorySize function.");
     }
 
-    ComponentPtr = CreateComponentPtr();
+    ComponentPtr = CreateComponentPtr(this);
     if (!ComponentPtr)
     {
         throw std::runtime_error("Could not find DLL_CreateComponent function.");
@@ -93,4 +93,14 @@ void GameObjectComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipel
 void GameObjectComponent::Destroy()
 {
     DLLDestroyPtr(ComponentPtr);
+}
+
+std::shared_ptr<GameObjectComponent> GameObjectComponent::Clone() const
+{
+    return std::shared_ptr<GameObjectComponent>();
+}
+
+size_t GameObjectComponent::GetMemorySize() const
+{
+    return size_t();
 }

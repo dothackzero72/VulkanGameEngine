@@ -1,9 +1,7 @@
 #pragma once
 #include "GameObjectComponentDLL.h"
-#include <msclr/marshal_cppstd.h>
+#include "ComponentRegistry.h"
 
-using namespace System;
-using namespace System::Runtime::InteropServices;
 public ref class Transform2DComponentDLL : public GameObjectComponentDLL
 {
 private:
@@ -11,10 +9,14 @@ private:
 
 public:
     Transform2DComponentDLL();
-    Transform2DComponentDLL(void* gameObjectPtr, std::string name);
+    Transform2DComponentDLL(void* wrapperObjectPtrKey, std::string name);
 
     void Update(float deltaTime) override;
     void BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime) override;
     void Destroy() override;
     int GetMemorySize() override;
+    glm::vec2* GetPositionPtr() { return reinterpret_cast<glm::vec2*>(component->GetPositionPtr()); }
+    glm::vec2* GetRotationPtr() { return reinterpret_cast<glm::vec2*>(component->GetRotationPtr()); }
+    glm::vec2* GetScalePtr() { return reinterpret_cast<glm::vec2*>(component->GetScalePtr()); }
+    glm::mat4* GetTransformMatrixPtr() { return reinterpret_cast<glm::mat4*>(component->GetTransformMatrixPtr()); }
 };

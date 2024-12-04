@@ -19,7 +19,8 @@ RenderMesh2DComponent::RenderMesh2DComponent(std::shared_ptr<GameObject> parentG
 	  0, 1, 3,
 	  1, 2, 3
 	};
-	mesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList, meshBufferIndex));
+
+	mesh = std::make_shared<Mesh2D>(std::make_shared<RenderMesh2DComponent>(*this), SpriteVertexList, SpriteIndexList, meshBufferIndex);
 }
 
 RenderMesh2DComponent::~RenderMesh2DComponent()

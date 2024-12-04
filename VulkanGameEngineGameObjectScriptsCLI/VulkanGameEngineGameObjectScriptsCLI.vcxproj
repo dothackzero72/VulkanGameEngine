@@ -125,21 +125,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ClassLibrary1.h" />
+    <ClInclude Include="ComponentRegistry.h" />
     <ClInclude Include="DLLExport.h" />
     <ClInclude Include="GameObjectComponentDLL.h" />
     <ClInclude Include="Transform2DComponentDLL.h" />
-    <ClInclude Include="ISimpleTestWrapper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="VulkanGameEngineGameObjectScriptsCLI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="ClassLibrary1.cpp" />
+    <ClCompile Include="ComponentRegistry.cpp" />
     <ClCompile Include="GameObjectComponentDLL.cpp" />
     <ClCompile Include="Transform2DComponentDLL.cpp" />
-    <ClCompile Include="ISimpleTestWrapper.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

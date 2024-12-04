@@ -820,6 +820,7 @@ List<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, List<VkIma
 
 VkResult Renderer_SetUpSemaphores(VkDevice device, List<VkFence>& inFlightFences, List<VkSemaphore>& acquireImageSemaphores, List<VkSemaphore>& presentImageSemaphores)
 {
+
     VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo =
     {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,

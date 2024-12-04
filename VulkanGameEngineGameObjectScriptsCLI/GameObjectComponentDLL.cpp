@@ -8,20 +8,23 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 
+
 GameObjectComponentDLL::GameObjectComponentDLL()
 {
 
 }
 
-GameObjectComponentDLL::GameObjectComponentDLL(void* GameObjectPtr, ComponentTypeEnum componentType)
+GameObjectComponentDLL::GameObjectComponentDLL(void* wrapperObjectPtr, ComponentTypeEnum componentType)
 {
+    WrapperObjectPtr = wrapperObjectPtr;
     Name = "unnamed";
     ComponentType = componentType;
 }
 
-GameObjectComponentDLL::GameObjectComponentDLL(void* GameObjectPtr, String^ name, ComponentTypeEnum componentType)
+GameObjectComponentDLL::GameObjectComponentDLL(void* wrapperObjectPtr, std::string name, ComponentTypeEnum componentType)
 {
-    Name = name;
+    WrapperObjectPtr = wrapperObjectPtr;
+    Name = msclr::interop::marshal_as<String^>(name);
     ComponentType = componentType;
 }
 

@@ -2,27 +2,25 @@
 #include "Transform2DComponentDLL.h"
 
 
-Transform2DComponentDLL::Transform2DComponentDLL()
+Transform2DComponentDLL::Transform2DComponentDLL() : GameObjectComponentDLL()
 {
-    std::cout << "do you hear me TestScriptComponentDLL" << std::endl;
     component = gcnew Transform2DComponent_CS();
 }
 
-Transform2DComponentDLL::Transform2DComponentDLL(void* gameObjectPtr, std::string name)
+Transform2DComponentDLL::Transform2DComponentDLL(void* wrapperObjectPtrKey, std::string name) : GameObjectComponentDLL(wrapperObjectPtrKey, name, ComponentTypeEnum::kGameObjectTransform2DComponent)
 {
-    std::cout << "do you hear me TestScriptComponentDLL3" << std::endl;
-    component = gcnew Transform2DComponent_CS((IntPtr)gameObjectPtr, msclr::interop::marshal_as<String^>(name));
+    component = gcnew Transform2DComponent_CS((IntPtr)wrapperObjectPtrKey, msclr::interop::marshal_as<String^>(name));
 }
 
 void Transform2DComponentDLL::Update(float deltaTime)
 {
-    Console::WriteLine("Drawing with buffer update");
-    std::cout << "Test Object 1" << std::endl;
+    ComponentRegistry::DisplayRegistryDebug();
     component->Update(deltaTime);
 }
 
 void Transform2DComponentDLL::BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime)
 {
+    ComponentRegistry::DisplayRegistryDebug();
     Console::WriteLine("Drawing with buffer update");
     //component->BufferUpdate(static_cast<void*>(commandBuffer), startTime);
 }
@@ -40,51 +38,53 @@ int Transform2DComponentDLL::GetMemorySize()
 
 extern "C"
 {
-    DLL_EXPORT_MANAGED void* DLL_CreateTransform2DComponent() {
+    DLL_EXPORT_MANAGED void* DLL_CreateTransform2DComponent(void* objectKey)
+    {
+        GameObjectComponentDLL^ existingComponent = ComponentRegistry::GetComponent((IntPtr)objectKey);
+        if (existingComponent)
+        {
+            return GCHandle::ToIntPtr(GCHandle::Alloc(existingComponent)).ToPointer();
+        }
+
         try
         {
-            std::cout << "do you hear me DLL_CreateGameObjectTransform2DComponent" << std::endl;
-            Transform2DComponentDLL^ wrapper = gcnew Transform2DComponentDLL();
+            Transform2DComponentDLL^ wrapper = gcnew Transform2DComponentDLL(objectKey, "adsfa");
             GCHandle handle = GCHandle::Alloc(wrapper);
-            return (void*)GCHandle::ToIntPtr(handle).ToPointer();
+
+            auto ptr = GCHandle::ToIntPtr(handle).ToPointer();
+            ComponentRegistry::RegisterComponent((IntPtr)ptr, wrapper);
+
+            return ptr;
         }
-        catch (Exception^ e) {
+        catch (Exception^ e)
+        {
             std::cerr << "Exception in managed code: " << msclr::interop::marshal_as<std::string>(e->Message) << std::endl;
             return nullptr;
         }
     }
 
-    DLL_EXPORT_MANAGED void* DLL_CreateTransform2DComponentName(void* wrapperHandle, void* gameObjectPtr, std::string name)
+    DLL_EXPORT_MANAGED void DLL_Transform2DComponent_Update(void* objectKey, long startTime)
     {
-        if (wrapperHandle != nullptr)
-        {
-            try
-            {
-                Transform2DComponentDLL^ component = gcnew Transform2DComponentDLL(gameObjectPtr, name);
-                GCHandle handle = GCHandle::Alloc(component);
-                return (void*)GCHandle::ToIntPtr(handle).ToPointer();
-            }
-            catch (Exception^ e)
-            {
-                std::cerr << "Exception in managed code: " << msclr::interop::marshal_as<std::string>(e->Message) << std::endl;
-                return nullptr;
-            }
-        }
-    }
+        auto ptr = (IntPtr)objectKey;
+        std::cout << "DLL_Transform2DComponent_Update: 0x" << std::hex << ptr.ToInt64() << std::endl;
 
-    DLL_EXPORT_MANAGED void DLL_Transform2DComponent_Update(void* wrapperHandle, long startTime)
-    {
+        if (objectKey == nullptr)
+        {
+            std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
+            return;
+        }
+
         try
         {
-            if (wrapperHandle != nullptr)
+            GameObjectComponentDLL^ existingComponent = ComponentRegistry::GetComponent((IntPtr)objectKey);
+            if (existingComponent != nullptr)
             {
-                IntPtr handlePtr(wrapperHandle);
-                GCHandle handle = GCHandle::FromIntPtr(handlePtr);
-                Transform2DComponentDLL^ managedWrapper = static_cast<Transform2DComponentDLL^>(handle.Target);
-                if (managedWrapper != nullptr)
-                {
-                    managedWrapper->Update(startTime);
-                }
+                Transform2DComponentDLL^ transform = safe_cast<Transform2DComponentDLL^>(existingComponent);
+                transform->Update(startTime);
+            }
+            else
+            {
+                std::cerr << "Component not found for objectKey." << std::endl;
             }
         }
         catch (Exception^ e)
@@ -93,19 +93,28 @@ extern "C"
         }
     }
 
-    DLL_EXPORT_MANAGED void DLL_Transform2DComponent_BufferUpdate(void* wrapperHandle, VkCommandBuffer commandBuffer, float deltaTime)
+    DLL_EXPORT_MANAGED void DLL_Transform2DComponent_BufferUpdate(void* objectKey, VkCommandBuffer commandBuffer, float deltaTime)
     {
+        auto ptr = (IntPtr)objectKey;
+        std::cout << "DLL_Transform2DComponent_BufferUpdate: 0x" << std::hex << ptr.ToInt64() << std::endl;
+
+        if (objectKey == nullptr)
+        {
+            std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
+            return;
+        }
+
         try
         {
-            if (wrapperHandle != nullptr)
+            GameObjectComponentDLL^ existingComponent = ComponentRegistry::GetComponent((IntPtr)objectKey);
+            if (existingComponent != nullptr)
             {
-                IntPtr handlePtr(wrapperHandle);
-                GCHandle handle = GCHandle::FromIntPtr(handlePtr);
-                Transform2DComponentDLL^ managedWrapper = static_cast<Transform2DComponentDLL^>(handle.Target);
-                if (managedWrapper != nullptr)
-                {
-                    managedWrapper->BufferUpdate(commandBuffer, deltaTime);
-                }
+                Transform2DComponentDLL^ transform = safe_cast<Transform2DComponentDLL^>(existingComponent);
+                transform->BufferUpdate(commandBuffer, deltaTime);
+            }
+            else
+            {
+                std::cerr << "Component not found for objectKey." << std::endl;
             }
         }
         catch (Exception^ e)
@@ -114,19 +123,30 @@ extern "C"
         }
     }
 
-    DLL_EXPORT_MANAGED void DLL_Transform2DComponent_Destroy(void* wrapperHandle)
+    DLL_EXPORT_MANAGED void DLL_DestroyTransform2DComponent(void* objectKey) 
     {
+        auto ptr = (IntPtr)objectKey;
+        std::cout << "DLL_DestroyTransform2DComponent: 0x" << std::hex << ptr.ToInt64() << std::endl;
+
+        if (objectKey == nullptr)
+        {
+            std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
+            return;
+        }
+
         try
         {
-            if (wrapperHandle != nullptr)
+            GameObjectComponentDLL^ existingComponent = ComponentRegistry::GetComponent((IntPtr)objectKey);
+            if (existingComponent != nullptr)
             {
-                IntPtr handlePtr(wrapperHandle);
-                GCHandle handle = GCHandle::FromIntPtr(handlePtr);
-                Transform2DComponentDLL^ managedWrapper = static_cast<Transform2DComponentDLL^>(handle.Target);
-                if (managedWrapper != nullptr)
-                {
-                    managedWrapper->Destroy();
-                }
+                Transform2DComponentDLL^ transform = safe_cast<Transform2DComponentDLL^>(existingComponent);
+                transform->Destroy();
+
+                ComponentRegistry::DeregisterComponent((IntPtr)objectKey);
+            }
+            else
+            {
+                std::cerr << "Component not found for objectKey." << std::endl;
             }
         }
         catch (Exception^ e)
@@ -135,26 +155,162 @@ extern "C"
         }
     }
 
-    DLL_EXPORT_MANAGED int DLL_Transform2DComponent_GetMemorySize(void* wrapperHandle)
+    DLL_EXPORT_MANAGED int DLL_Transform2DComponent_GetMemorySize(void* objectKey)
     {
-        try
+        auto ptr = (IntPtr)objectKey;
+        std::cout << "DLL_Transform2DComponent_GetMemorySize: 0x" << std::hex << ptr.ToInt64() << std::endl;
+
+        if (objectKey == nullptr)
         {
-            if (wrapperHandle != nullptr)
-            {
-                IntPtr handlePtr(wrapperHandle);
-                GCHandle handle = GCHandle::FromIntPtr(handlePtr);
-                Transform2DComponentDLL^ managedWrapper = static_cast<Transform2DComponentDLL^>(handle.Target);
-                if (managedWrapper != nullptr)
-                {
-                    return managedWrapper->GetMemorySize();
-                }
-            }
+            std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
             return -1;
         }
+
+        try
+        {
+            GameObjectComponentDLL^ existingComponent = ComponentRegistry::GetComponent((IntPtr)objectKey);
+            if (existingComponent != nullptr)
+            {
+                Transform2DComponentDLL^ transform = safe_cast<Transform2DComponentDLL^>(existingComponent);
+                return transform->GetMemorySize();
+            }
+            else
+            {
+                std::cerr << "Component not found for objectKey." << std::endl;
+            }
+        }
         catch (Exception^ e)
         {
             std::cerr << "Exception in managed code: " << msclr::interop::marshal_as<std::string>(e->Message) << std::endl;
-            return -1;
+        }
+        return -1;
+    }
+
+    DLL_EXPORT_MANAGED glm::vec2* DLL_Transform2DComponent_GetPositionPtr(void* objectKey)
+    {
+        auto ptr = (IntPtr)objectKey;
+        std::cout << "DLL_Transform2DComponent_GetPosition: 0x" << std::hex << ptr.ToInt64() << std::endl;
+
+        if (objectKey == nullptr)
+        {
+            std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
+            return nullptr;
+        }
+
+        try
+        {
+            GameObjectComponentDLL^ existingComponent = ComponentRegistry::GetComponent((IntPtr)objectKey);
+            if (existingComponent != nullptr)
+            {
+                Transform2DComponentDLL^ transform = safe_cast<Transform2DComponentDLL^>(existingComponent);
+                return transform->GetPositionPtr();
+            }
+            else
+            {
+                std::cerr << "Component not found for objectKey." << std::endl;
+            }
+            return nullptr;
+        }
+        catch (Exception^ e)
+        {
+            std::cerr << "Exception in managed code: " << msclr::interop::marshal_as<std::string>(e->Message) << std::endl;
+            return nullptr;
+        }
+    }
+
+    DLL_EXPORT_MANAGED glm::vec2* DLL_Transform2DComponent_GetRotationPtr(void* objectKey)
+    {
+        auto ptr = (IntPtr)objectKey;
+        std::cout << "DLL_Transform2DComponent_GetPosition: 0x" << std::hex << ptr.ToInt64() << std::endl;
+
+        if (objectKey == nullptr)
+        {
+            std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
+            return nullptr;
+        }
+
+        try
+        {
+            GameObjectComponentDLL^ existingComponent = ComponentRegistry::GetComponent((IntPtr)objectKey);
+            if (existingComponent != nullptr)
+            {
+                Transform2DComponentDLL^ transform = safe_cast<Transform2DComponentDLL^>(existingComponent);
+                return transform->GetRotationPtr();
+            }
+            else
+            {
+                std::cerr << "Component not found for objectKey." << std::endl;
+            }
+            return nullptr;
+        }
+        catch (Exception^ e)
+        {
+            std::cerr << "Exception in managed code: " << msclr::interop::marshal_as<std::string>(e->Message) << std::endl;
+            return nullptr;
+        }
+    }
+
+    DLL_EXPORT_MANAGED glm::vec2* DLL_Transform2DComponent_GetScalePtr(void* objectKey)
+    {
+        auto ptr = (IntPtr)objectKey;
+        std::cout << "DLL_Transform2DComponent_GetPosition: 0x" << std::hex << ptr.ToInt64() << std::endl;
+
+        if (objectKey == nullptr)
+        {
+            std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
+            return nullptr;
+        }
+
+        try
+        {
+            GameObjectComponentDLL^ existingComponent = ComponentRegistry::GetComponent((IntPtr)objectKey);
+            if (existingComponent != nullptr)
+            {
+                Transform2DComponentDLL^ transform = safe_cast<Transform2DComponentDLL^>(existingComponent);
+                return transform->GetScalePtr();
+            }
+            else
+            {
+                std::cerr << "Component not found for objectKey." << std::endl;
+            }
+            return nullptr;
+        }
+        catch (Exception^ e)
+        {
+            std::cerr << "Exception in managed code: " << msclr::interop::marshal_as<std::string>(e->Message) << std::endl;
+            return nullptr;
+        }
+    }
+
+    DLL_EXPORT_MANAGED glm::mat4* DLL_Transform2DComponent_GetTransformMatrixPtr(void* objectKey)
+    {
+        auto ptr = (IntPtr)objectKey;
+        std::cout << "DLL_Transform2DComponent_GetPosition: 0x" << std::hex << ptr.ToInt64() << std::endl;
+
+        if (objectKey == nullptr)
+        {
+            std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
+            return nullptr;
+        }
+
+        try
+        {
+            GameObjectComponentDLL^ existingComponent = ComponentRegistry::GetComponent((IntPtr)objectKey);
+            if (existingComponent != nullptr)
+            {
+                Transform2DComponentDLL^ transform = safe_cast<Transform2DComponentDLL^>(existingComponent);
+                return transform->GetTransformMatrixPtr();
+            }
+            else
+            {
+                std::cerr << "Component not found for objectKey." << std::endl;
+            }
+            return nullptr;
+        }
+        catch (Exception^ e)
+        {
+            std::cerr << "Exception in managed code: " << msclr::interop::marshal_as<std::string>(e->Message) << std::endl;
+            return nullptr;
         }
     }
 }

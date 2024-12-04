@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineGameObjectScripts.CLI;
 using VulkanGameEngineLevelEditor.Components;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -163,9 +164,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             mat4 MeshMatrix = mat4.Identity;
             MeshMatrix = mat4.Scale(MeshScale);
-            MeshMatrix = mat4.Rotate(glm.Radians(MeshRotation.x), new vec3(1.0f, 0.0f, 0.0f));
-            MeshMatrix = mat4.Rotate(glm.Radians(MeshRotation.y), new vec3(0.0f, 1.0f, 0.0f));
-            MeshMatrix = mat4.Rotate(glm.Radians(MeshRotation.z), new vec3(0.0f, 0.0f, 1.0f));
+            MeshMatrix = mat4.Rotate(CLIMath.DegreesToRadians(MeshRotation.x), new vec3(1.0f, 0.0f, 0.0f));
+            MeshMatrix = mat4.Rotate(CLIMath.DegreesToRadians(MeshRotation.y), new vec3(0.0f, 1.0f, 0.0f));
+            MeshMatrix = mat4.Rotate(CLIMath.DegreesToRadians(MeshRotation.z), new vec3(0.0f, 0.0f, 1.0f));
             MeshMatrix = mat4.Translate(MeshPosition);
 
             MeshProperitiesStruct properties = new MeshProperitiesStruct

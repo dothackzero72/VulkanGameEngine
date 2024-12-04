@@ -13,6 +13,21 @@ Mesh::Mesh()
 	IndexCount = 0;
 }
 
+Mesh::Mesh(std::shared_ptr<GameObjectComponent> parentGameObjectComponent)
+{
+	MeshBufferIndex = 0;
+	MeshTransform = mat4(0.0f);
+	MeshPosition = vec3(0.0f);
+	MeshRotation = vec3(0.0f);
+	MeshScale = vec3(1.0f);
+
+	VertexCount = 0;
+	IndexCount = 0;
+
+	ParentGameObject = parentGameObjectComponent->GetParentGameObject();
+	ParentGameObjectComponent = parentGameObjectComponent;
+}
+
 Mesh::~Mesh()
 {
 }
@@ -23,6 +38,17 @@ void Mesh::Update(const float& deltaTime)
 
 void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
+	mat4 GameObjectMatrix = mat4(1.0);
+	if (GameObjectTransform)
+	{
+		GameObjectTransform->GameObjectPosition.get()->x += 0.01f;
+		GameObjectMatrix = glm::translate(GameObjectMatrix, vec3(GameObjectTransform->GameObjectPosition.get()->x, GameObjectTransform->GameObjectPosition.get()->y, 0.0f));
+		GameObjectMatrix = glm::rotate(GameObjectMatrix, glm::radians(GameObjectTransform->GameObjectRotation.get()->x), vec3(1.0f, 0.0f, 0.0f));
+		GameObjectMatrix = glm::rotate(GameObjectMatrix, glm::radians(GameObjectTransform->GameObjectRotation.get()->y), vec3(0.0f, 1.0f, 0.0f));
+		GameObjectMatrix = glm::rotate(GameObjectMatrix, glm::radians(0.0f), vec3(0.0f, 0.0f, 1.0f));
+		//GameObjectMatrix = glm::scale(GameObjectMatrix, vec3(GameObjectTransform->GameObjectScale.get()->x, GameObjectTransform->GameObjectScale.get()->y, 0.0f));
+	}
+
 	mat4 MeshMatrix = mat4(1.0f);
 	MeshMatrix = glm::translate(MeshMatrix, MeshPosition);
 	MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.x), vec3(1.0f, 0.0f, 0.0f));
@@ -31,7 +57,7 @@ void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 	MeshMatrix = glm::scale(MeshMatrix, MeshScale);
 
 	MeshProperties.MaterialIndex = MeshBufferIndex;
-	MeshProperties.MeshTransform = MeshMatrix;
+	MeshProperties.MeshTransform = GameObjectMatrix * MeshMatrix;
 	PropertiesBuffer.UpdateBufferData(static_cast<void*>(&MeshProperties));
 }
 

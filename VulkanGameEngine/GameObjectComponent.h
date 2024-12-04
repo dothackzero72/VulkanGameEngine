@@ -9,18 +9,17 @@
 
 extern "C"
 {
-    typedef void* (*DLL_CreateComponent)();
-    typedef void (*DLL_ComponentUpdate)(void* wrapperHandle, long startTime);
-    typedef void (*DLL_ComponentBufferUpdate)(void* wrapperHandle, VkCommandBuffer commandBuffer, long startTime);
-    typedef void (*DLL_ComponentDestroy)(void* wrapperHandle);
-    typedef int (*DLL_ComponentGetMemorySize)(void* wrapperHandle);
+    typedef void* (*DLL_CreateComponent)(void* wrapperObjectPtr);
+    typedef void (*DLL_ComponentUpdate)(void* wrapperObjectPtr, long startTime);
+    typedef void (*DLL_ComponentBufferUpdate)(void* wrapperObjectPtr, VkCommandBuffer commandBuffer, long startTime);
+    typedef void (*DLL_ComponentDestroy)(void* wrapperObjectPtr);
+    typedef int (*DLL_ComponentGetMemorySize)(void* wrapperObjectPtr);
 }
 
 class GameObject;
 class GameObjectComponent
 {
 private:
-    HMODULE hModuleRef = nullptr;
     DLL_CreateComponent CreateComponentPtr = nullptr;
     DLL_ComponentUpdate DLLUpdatePtr = nullptr;
     DLL_ComponentBufferUpdate DLLBufferUpdatePtr = nullptr;
@@ -34,6 +33,7 @@ protected:
     DLL_ComponentGetMemorySize DLLGetMemorySizePtr = nullptr;
 
 public:
+    HMODULE hModuleRef = nullptr;
     String Name = "Component";
     size_t MemorySize = 0;
     ComponentTypeEnum ComponentType = ComponentTypeEnum::kUndefined;
@@ -48,6 +48,8 @@ public:
     virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
     virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
     virtual void Destroy();
-    virtual std::shared_ptr<GameObjectComponent> Clone() const = 0;
-    virtual size_t GetMemorySize() const = 0;
+    virtual std::shared_ptr<GameObjectComponent> Clone() const;
+    virtual size_t GetMemorySize() const;
+
+    std::shared_ptr<GameObject> GetParentGameObject() { return ParentGameObjectPtr; }
 };

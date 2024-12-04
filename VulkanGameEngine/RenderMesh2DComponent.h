@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObjectComponent.h"
 #include "Mesh2D.h"
+
 class RenderMesh2DComponent : public GameObjectComponent
 {
 private:
