@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "ComponentRegistry.h"
 
 void ComponentRegistry::RegisterComponent(IntPtr wrapperObjectPtrKey, GameObjectComponentDLL^ component)

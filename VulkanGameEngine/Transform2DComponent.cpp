@@ -51,13 +51,13 @@ Transform2DComponent::Transform2DComponent(std::shared_ptr<GameObject> parentGam
     }
 
     GetScaleFunctionPtr = (DLL_Transform2DComponent_GetScalePtr)GetProcAddress(hModuleRef, "DLL_Transform2DComponent_GetScalePtr");
-    if (!GetRotationFunctionPtr)
+    if (!GetScaleFunctionPtr)
     {
         throw std::runtime_error("Could not find DLL_Transform2DComponent_GetScalePtr function.");
     }
 
     GetTransformMatrixFunctionPtr = (DLL_Transform2DComponent_GetTransformMatrixPtr)GetProcAddress(hModuleRef, "DLL_Transform2DComponent_GetTransformMatrixPtr");
-    if (!GetRotationFunctionPtr)
+    if (!GetTransformMatrixFunctionPtr)
     {
         throw std::runtime_error("Could not find DLL_Transform2DComponent_GetTransformMatrixPtr function.");
     }

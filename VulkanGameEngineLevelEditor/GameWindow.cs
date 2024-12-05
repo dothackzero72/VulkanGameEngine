@@ -9,9 +9,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.Vulkan;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace VulkanGameEngineLevelEditor
 {
@@ -32,10 +34,22 @@ namespace VulkanGameEngineLevelEditor
         {
             InitializeComponent();
             this.Load += Form1_Load;
+            this.KeyDown += KeyPress_Down;
+            this.KeyUp += KeyPress_Up;
            // this.KeyDown += Form1_KeyDown;
 
             VulkanSwapChainResolution = new Extent2D() { Width = 1280, Height = 720 };
             Thread.CurrentThread.Name = "LevelEditor";
+        }
+
+        private void KeyPress_Down(object sender, KeyEventArgs e)
+        {
+            scene.Input(e);
+        }
+
+        private void KeyPress_Up(object sender, KeyEventArgs e)
+        {
+            scene.Input(e);
         }
 
         private void Form1_Load(object sender, EventArgs e)

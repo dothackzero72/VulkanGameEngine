@@ -1,36 +1,11 @@
-﻿using CSScriptLib;
-using GlmSharp;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
-using Silk.NET.Core.Native;
-using Silk.NET.Maths;
-using Silk.NET.SDL;
+﻿using GlmSharp;
 using Silk.NET.Vulkan;
-using Silk.NET.Vulkan.Extensions.EXT;
-using Silk.NET.Vulkan.Extensions.KHR;
-using Silk.NET.Windowing;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
-using ImageLayout = Silk.NET.Vulkan.ImageLayout;
-using VulkanGameEngineGameObjectScripts;
-using VulkanGameEngineLevelEditor.Components;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -39,7 +14,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         Vk vk = Vk.GetApi();
         SceneDataBuffer sceneProperties;
         OrthographicCamera orthographicCamera;
-       
+
         static readonly long startTime = DateTime.Now.Ticks;
         public List<Texture> textureList { get; set; } = new List<Texture>();
         public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
@@ -59,16 +34,25 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
             textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\container2.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
 
-            GameObjectList.Add(GameObject.CreateGameObject("object1", new List<ComponentTypeEnum>() { ComponentTypeEnum.kGameObjectTransform2DComponent, ComponentTypeEnum.kRenderMesh2DComponent }));
-            GameObjectList.Add(GameObject.CreateGameObject("object2", new List<ComponentTypeEnum>() { ComponentTypeEnum.kGameObjectTransform2DComponent, ComponentTypeEnum.kRenderMesh2DComponent }));
+            GameObjectList.Add(MemoryManager.CreateGameObject("object1", new List<ComponentTypeEnum>() { ComponentTypeEnum.kGameObjectTransform2DComponent, ComponentTypeEnum.kRenderMesh2DComponent }));
+            GameObjectList.Add(MemoryManager.CreateGameObject("object2", new List<ComponentTypeEnum>() { ComponentTypeEnum.kGameObjectTransform2DComponent, ComponentTypeEnum.kRenderMesh2DComponent }));
 
             MemoryManager.ViewMemoryMap();
             renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
         }
 
+        public void Input(KeyEventArgs e)
+        {
+            var inputObjects = MemoryManager.InputComponentMemoryPool.ViewMemoryPool();
+            foreach (var obj in inputObjects)
+            {
+
+            }
+        }
+
         public void Update()
         {
-         
+
             CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             foreach (var gameObject in GameObjectList)
             {

@@ -179,6 +179,7 @@
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="HLSLShaderCompiler.cpp" />
+    <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
     <ClCompile Include="JsonPipeline.cpp" />
     <ClCompile Include="JsonRenderPass.cpp" />
@@ -204,7 +205,6 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="SystemClock.cpp" />
-    <ClCompile Include="TestScriptComponent.cpp" />
     <ClCompile Include="TextFormatter.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -232,6 +232,7 @@
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="HLSLShaderCompiler.h" />
+    <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="JsonPipeline.h" />
@@ -260,7 +261,6 @@
     <ClInclude Include="SceneDataBuffer.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="SystemClock.h" />
-    <ClInclude Include="TestScriptComponent.h" />
     <ClInclude Include="TextFormatter.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />

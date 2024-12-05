@@ -44,6 +44,7 @@ public:
     GameObjectComponent(std::shared_ptr<GameObject> ParentGameObjectPtr, String name, String componentName, ComponentTypeEnum componentType);
     virtual ~GameObjectComponent();
 
+    virtual void Input();
     virtual void Update(float deltaTime);
     virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
     virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);

@@ -50,6 +50,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return gameObject;
         }
 
+
+
         public override void Update(float deltaTime)
         {
             mesh.Update(deltaTime);
@@ -73,12 +75,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public override int GetMemorySize()
         {
-            return sizeof(MeshRenderer2DComponent);
+            return (int)sizeof(MeshRenderer2DComponent);
         }
 
         public VulkanBuffer<MeshProperitiesStruct> GetMeshPropertiesBuffer()
         {
             return mesh.GetMeshPropertiesBuffer();
+        }
+
+        public override void Input(InputKey key, KeyState keyState)
+        {
+
         }
     }
 }

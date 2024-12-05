@@ -71,8 +71,52 @@ void GameObjectComponent::StartUp(std::shared_ptr<GameObject> gameObjectPtr, Str
     ComponentPtr = CreateComponentPtr(this);
     if (!ComponentPtr)
     {
-        throw std::runtime_error("Could not find DLL_CreateComponent function.");
+        throw std::runtime_error("Could not create the component.");
     }
+}
+
+void GameObjectComponent::Input()
+{
+    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_W] == KS_PRESSED)
+    //{
+    //    const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
+    //    const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
+    //    meshRenderer->GetMesh2D()->MeshPosition.x += 1.0f * deltaTime;
+
+    //    //orthographicCamera->Position.y -= 1.0f * deltaTime;
+    //}
+    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_A] == KS_PRESSED)
+    //{
+    //    const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
+    //    const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
+    //    meshRenderer->GetMesh2D()->MeshPosition.x -= 1.0f * deltaTime;
+
+    //    //orthographicCamera->Position.x += 1.0f * deltaTime;
+    //}
+    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_S] == KS_PRESSED)
+    //{
+    //    const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
+    //    const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
+    //    meshRenderer->GetMesh2D()->MeshPosition.y -= 1.0f * deltaTime;
+
+    //    //orthographicCamera->Position.y += 1.0f * deltaTime;
+    //}
+    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_D] == KS_PRESSED)
+    //{
+    //    const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
+    //    const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
+    //    meshRenderer->GetMesh2D()->MeshPosition.y += 1.0f * deltaTime;
+
+    //    //orthographicCamera->Position.x -= 1.0f * deltaTime;
+    //}
+    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_D] == KS_PRESSED)
+    //{
+    //    orthographicCamera->Zoom -= 1.0f * deltaTime;
+    //}
+    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_D] == KS_PRESSED)
+    //{
+    //    orthographicCamera->Zoom += 1.0f * deltaTime;
+    //}
 }
 
 void GameObjectComponent::Update(float deltaTime)
@@ -92,7 +136,11 @@ void GameObjectComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipel
 
 void GameObjectComponent::Destroy()
 {
-    DLLDestroyPtr(ComponentPtr);
+    if (ComponentPtr) 
+    {
+        DLLDestroyPtr(ComponentPtr);
+        ComponentPtr = nullptr;
+    }
 }
 
 std::shared_ptr<GameObjectComponent> GameObjectComponent::Clone() const

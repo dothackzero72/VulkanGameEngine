@@ -4,7 +4,6 @@
 #include "MemoryManager.h"
 #include "RenderMesh2DComponent.h"
 #include "Transform2DComponent.h"
-#include "TestScriptComponent.h"
 
 GameObject::GameObject()
 {
@@ -40,7 +39,6 @@ std::shared_ptr<GameObject> GameObject::CreateGameObject(String name, List<Compo
 		{
 			case kRenderMesh2DComponent: gameObject->AddComponent(RenderMesh2DComponent::CreateRenderMesh2DComponent(gameObject, "Mesh Renderer", static_cast<uint32>(MemoryManager::GetRenderMesh2DComponentList().size()))); break;
 			case kTransform2DComponent: gameObject->AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(gameObject, asdf)));
-			case kTestScriptComponent: gameObject->AddComponent(std::make_shared<TestScriptComponent>(TestScriptComponent(gameObject, asdf)));
 		}
 	}
 	

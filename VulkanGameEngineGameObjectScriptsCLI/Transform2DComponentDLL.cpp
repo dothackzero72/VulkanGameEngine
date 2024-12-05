@@ -1,33 +1,27 @@
-#include "pch.h"
 #include "Transform2DComponentDLL.h"
-
 
 Transform2DComponentDLL::Transform2DComponentDLL() : GameObjectComponentDLL()
 {
-    component = gcnew Transform2DComponent_CS();
+    component = gcnew Transform2DComponent();
 }
 
 Transform2DComponentDLL::Transform2DComponentDLL(void* wrapperObjectPtrKey, std::string name) : GameObjectComponentDLL(wrapperObjectPtrKey, name, ComponentTypeEnum::kGameObjectTransform2DComponent)
 {
-    component = gcnew Transform2DComponent_CS((IntPtr)wrapperObjectPtrKey, msclr::interop::marshal_as<String^>(name));
+    component = gcnew Transform2DComponent((IntPtr)wrapperObjectPtrKey, msclr::interop::marshal_as<String^>(name));
 }
 
 void Transform2DComponentDLL::Update(float deltaTime)
 {
-    ComponentRegistry::DisplayRegistryDebug();
     component->Update(deltaTime);
 }
 
 void Transform2DComponentDLL::BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime)
 {
-    ComponentRegistry::DisplayRegistryDebug();
-    Console::WriteLine("Drawing with buffer update");
-    //component->BufferUpdate(static_cast<void*>(commandBuffer), startTime);
+   // component->BufferUpdate(static_cast<void*>(commandBuffer), startTime);
 }
 
 void Transform2DComponentDLL::Destroy()
 {
-    Console::WriteLine("Destroying component: {0}", Name);
     component->Destroy();
 }
 
@@ -65,9 +59,6 @@ extern "C"
 
     DLL_EXPORT_MANAGED void DLL_Transform2DComponent_Update(void* objectKey, long startTime)
     {
-        auto ptr = (IntPtr)objectKey;
-        std::cout << "DLL_Transform2DComponent_Update: 0x" << std::hex << ptr.ToInt64() << std::endl;
-
         if (objectKey == nullptr)
         {
             std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
@@ -95,9 +86,6 @@ extern "C"
 
     DLL_EXPORT_MANAGED void DLL_Transform2DComponent_BufferUpdate(void* objectKey, VkCommandBuffer commandBuffer, float deltaTime)
     {
-        auto ptr = (IntPtr)objectKey;
-        std::cout << "DLL_Transform2DComponent_BufferUpdate: 0x" << std::hex << ptr.ToInt64() << std::endl;
-
         if (objectKey == nullptr)
         {
             std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
@@ -125,9 +113,6 @@ extern "C"
 
     DLL_EXPORT_MANAGED void DLL_DestroyTransform2DComponent(void* objectKey) 
     {
-        auto ptr = (IntPtr)objectKey;
-        std::cout << "DLL_DestroyTransform2DComponent: 0x" << std::hex << ptr.ToInt64() << std::endl;
-
         if (objectKey == nullptr)
         {
             std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
@@ -157,9 +142,6 @@ extern "C"
 
     DLL_EXPORT_MANAGED int DLL_Transform2DComponent_GetMemorySize(void* objectKey)
     {
-        auto ptr = (IntPtr)objectKey;
-        std::cout << "DLL_Transform2DComponent_GetMemorySize: 0x" << std::hex << ptr.ToInt64() << std::endl;
-
         if (objectKey == nullptr)
         {
             std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
@@ -188,9 +170,6 @@ extern "C"
 
     DLL_EXPORT_MANAGED glm::vec2* DLL_Transform2DComponent_GetPositionPtr(void* objectKey)
     {
-        auto ptr = (IntPtr)objectKey;
-        std::cout << "DLL_Transform2DComponent_GetPosition: 0x" << std::hex << ptr.ToInt64() << std::endl;
-
         if (objectKey == nullptr)
         {
             std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
@@ -220,9 +199,6 @@ extern "C"
 
     DLL_EXPORT_MANAGED glm::vec2* DLL_Transform2DComponent_GetRotationPtr(void* objectKey)
     {
-        auto ptr = (IntPtr)objectKey;
-        std::cout << "DLL_Transform2DComponent_GetPosition: 0x" << std::hex << ptr.ToInt64() << std::endl;
-
         if (objectKey == nullptr)
         {
             std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
@@ -252,9 +228,6 @@ extern "C"
 
     DLL_EXPORT_MANAGED glm::vec2* DLL_Transform2DComponent_GetScalePtr(void* objectKey)
     {
-        auto ptr = (IntPtr)objectKey;
-        std::cout << "DLL_Transform2DComponent_GetPosition: 0x" << std::hex << ptr.ToInt64() << std::endl;
-
         if (objectKey == nullptr)
         {
             std::cerr << "Invalid objectKey: nullptr passed." << std::endl;
@@ -284,9 +257,6 @@ extern "C"
 
     DLL_EXPORT_MANAGED glm::mat4* DLL_Transform2DComponent_GetTransformMatrixPtr(void* objectKey)
     {
-        auto ptr = (IntPtr)objectKey;
-        std::cout << "DLL_Transform2DComponent_GetPosition: 0x" << std::hex << ptr.ToInt64() << std::endl;
-
         if (objectKey == nullptr)
         {
             std::cerr << "Invalid objectKey: nullptr passed." << std::endl;

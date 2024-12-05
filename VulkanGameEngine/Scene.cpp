@@ -7,7 +7,6 @@
 #include <stb/stb_image_write.h>
 #include <stb/stb_image.h>
 #include "MemoryManager.h"
-#include "TestScriptComponent.h"
 
 void Scene::StartUp()
 {
@@ -33,12 +32,48 @@ void Scene::Update(const float& deltaTime)
 		gameObject->Update(deltaTime);
 		gameObject->BufferUpdate(commandBuffer, deltaTime);
 	}
-	renderer.EndSingleTimeCommands(commandBuffer);/*
-	for (auto gameObject : gameObjectList)
+	renderer.EndSingleTimeCommands(commandBuffer);
+
+	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_W] == KS_PRESSED)
 	{
-		gameObject->BufferUpdate(commandBuffer, deltaTime);
+		const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
+		const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
+		meshRenderer->GetMesh2D()->MeshPosition.x += 1.0f * deltaTime;
+
+		//orthographicCamera->Position.y -= 1.0f * deltaTime;
 	}
-	renderer.EndSingleTimeCommands(commandBuffer);*/
+	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_A] == KS_PRESSED)
+	{
+		const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
+		const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
+		meshRenderer->GetMesh2D()->MeshPosition.x -= 1.0f * deltaTime;
+
+		//orthographicCamera->Position.x += 1.0f * deltaTime;
+	}
+	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_S] == KS_PRESSED)
+	{
+		const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
+		const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
+		meshRenderer->GetMesh2D()->MeshPosition.y -= 1.0f * deltaTime;
+
+		//orthographicCamera->Position.y += 1.0f * deltaTime;
+	}
+	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_D] == KS_PRESSED)
+	{
+		const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
+		const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
+		meshRenderer->GetMesh2D()->MeshPosition.y += 1.0f * deltaTime;
+
+		//orthographicCamera->Position.x -= 1.0f * deltaTime;
+	}
+	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_D] == KS_PRESSED)
+	{
+		orthographicCamera->Zoom -= 1.0f * deltaTime;
+	}
+	if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_D] == KS_PRESSED)
+	{
+		orthographicCamera->Zoom += 1.0f * deltaTime;
+	}
 }
 
 void Scene::ImGuiUpdate(const float& deltaTime)

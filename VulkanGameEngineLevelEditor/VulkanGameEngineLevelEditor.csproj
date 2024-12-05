@@ -102,4 +102,7 @@
   <ItemGroup>
     <ProjectReference Include="..\VulkanGameEngineGameObjectScripts\VulkanGameEngineGameObjectScripts.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\" />
+  </ItemGroup>
 </Project>
