@@ -10,8 +10,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DllExport" Version="1.7.4" />
     <PackageReference Include="Silk.NET.Vulkan" Version="2.22.0" />
     <PackageReference Include="UnmanagedExports" Version="1.2.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Coral.Managed">
+      <HintPath>..\x64\Debug\Coral.Managed.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
