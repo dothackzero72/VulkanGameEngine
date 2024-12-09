@@ -60,9 +60,14 @@
     <Compile Include="CLI\vec2.cs" />
     <Compile Include="CLI\vec3.cs" />
     <Compile Include="CLI\vec4.cs" />
+    <Compile Include="GameObject.cs" />
+    <Compile Include="GameObjectComponent.cs" />
+    <Compile Include="IGameObject.cs" />
+    <Compile Include="IGameObjectComponent.cs" />
     <Compile Include="input.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transform2DComponent.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

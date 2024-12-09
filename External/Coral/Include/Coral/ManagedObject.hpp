@@ -124,6 +124,8 @@ namespace Coral {
 
 		bool IsValid() const { return m_Handle != nullptr && m_Type != nullptr; }
 
+		void* GetHandle() { return m_Handle; }
+
 	private:
 		void InvokeMethodInternal(std::string_view InMethodName, const void** InParameters, const ManagedType* InParameterTypes, size_t InLength) const;
 		void InvokeMethodRetInternal(std::string_view InMethodName, const void** InParameters, const ManagedType* InParameterTypes, size_t InLength, void* InResultStorage) const;
