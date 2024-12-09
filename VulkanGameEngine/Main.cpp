@@ -97,8 +97,8 @@ public:
 struct GameObjectComponentBlight
 {
     std::shared_ptr<GameObject2> ParentGameObjectPtr;
-    String Name;
-    ComponentTypeEnum componentType;
+    std::shared_ptr<int> componentType;
+    std::shared_ptr<String> Name;
 
     GameObjectComponentBlight()
     {
@@ -124,9 +124,16 @@ struct GameObjectComponentBlight
 
      }
 
-     GameObjectComponent2(Coral::ManagedAssembly* assembly, GameObject2 baseObject)
+     GameObjectComponent2(Coral::ManagedAssembly* assembly, std::shared_ptr<GameObject2> baseObject)
      {
-         blight.ParentGameObjectPtr = std::make_shared<GameObject2>(baseObject);
+         blight.Name = std::make_shared<String>("asdfasdf");
+         blight.componentType = std::make_shared<int>(kTransform2DComponent);
+         blight.ParentGameObjectPtr = baseObject;
+
+         auto a = &blight;
+         auto b = &blight.ParentGameObjectPtr;
+         auto c = &blight.componentType;
+         auto d = &blight.Name;
 
          CSclass = std::make_shared<Coral::Type>(assembly->GetType("VulkanGameEngineGameObjectScripts.Transform2DComponent"));
          CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
@@ -166,8 +173,22 @@ struct GameObjectComponentBlight
 
  void GameObject2::AddComponent(std::shared_ptr<GameObjectComponent2> component)
  {
-     auto a = &component->blight;
-      CSobject->InvokeMethod("AddComponent", &component->blight);
+     // Ensure that the component is valid
+     if (!component) {
+         // Handle the null case (e.g., log an error)
+         return;
+     }
+
+     // Assuming 'blight' is a pointer that you want to pass to C#
+     void* blightPtr = &component->blight;
+     component->blight.componentType = ComponentTypeEnum::kTransform2DComponent;
+
+     // Call the C# method using your interop mechanism
+     String className = "Transform2DComponent";
+     auto a = this;
+     CSobject->InvokeMethod("AddComponent", blightPtr, 2);
+    
+     // Add the component to the list
      GameObjectComponentList->emplace_back(component);
  }
 
@@ -190,20 +211,20 @@ int main(int argc, char** argv)
     
     VkCommandBuffer commandBuffer;
 
-    GameObject2 obj = GameObject2(assembly);
-    obj.AddComponent(std::make_shared<GameObjectComponent2>(GameObjectComponent2(assembly, obj)));
-    obj.AddComponent(std::make_shared<GameObjectComponent2>(GameObjectComponent2(assembly, obj)));
-    (*obj.GameObjectComponentList)[0]->Input(InputKey::INPUTKEY_1, KeyState::KS_PRESSED);
+    std::shared_ptr<GameObject2> obj = std::make_shared<GameObject2>(GameObject2(assembly));
+    obj->AddComponent(std::make_shared<GameObjectComponent2>(GameObjectComponent2(assembly, obj)));
+    obj->AddComponent(std::make_shared<GameObjectComponent2>(GameObjectComponent2(assembly, obj)));
+    (*obj->GameObjectComponentList)[0]->Input(InputKey::INPUTKEY_1, KeyState::KS_PRESSED);
     for (int x = 0; x <= 30; x++)
     {
-        (*obj.GameObjectComponentList)[0]->Update((float)x);
+        (*obj->GameObjectComponentList)[0]->Update((float)x);
     }
-    (*obj.GameObjectComponentList)[1]->BufferUpdate(commandBuffer, 0.0f);
-    (*obj.GameObjectComponentList)[1]->BufferUpdate(commandBuffer, 0.0f);
-    (*obj.GameObjectComponentList)[1]->BufferUpdate(commandBuffer, 0.0f);
-    (*obj.GameObjectComponentList)[1]->BufferUpdate(commandBuffer, 0.0f);
-    (*obj.GameObjectComponentList)[1]->BufferUpdate(commandBuffer, 0.0f);
-    (*obj.GameObjectComponentList)[0]->Destroy();
+    (*obj->GameObjectComponentList)[1]->BufferUpdate(commandBuffer, 0.0f);
+    (*obj->GameObjectComponentList)[1]->BufferUpdate(commandBuffer, 0.0f);
+    (*obj->GameObjectComponentList)[1]->BufferUpdate(commandBuffer, 0.0f);
+    (*obj->GameObjectComponentList)[1]->BufferUpdate(commandBuffer, 0.0f);
+    (*obj->GameObjectComponentList)[1]->BufferUpdate(commandBuffer, 0.0f);
+    (*obj->GameObjectComponentList)[0]->Destroy();
 
     //assembly.AddInternalCall("VulkanGameEngineGameObjectScripts.GameObject", "EnumIcall", reinterpret_cast<void*>(&EnumIcall));
     //assembly->AddInternalCall("VulkanGameEngineGameObjectScripts.ExampleClass", "VectorAddIcall", reinterpret_cast<void*>(&VectorAddIcall));

@@ -63,66 +63,22 @@ namespace VulkanGameEngineGameObjectScripts
         public GameObjectComponent* ptr { get; set; }
     }
 
+    public interface IGameObject
+    {
+        public void Input(InputKey key, KeyState keyState);
+        public void Update(float deltaTime);
+        public void BufferUpdate(IntPtr commandBuffer, float deltaTime);
+        public void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties);
+        public void Destroy();
+        public int GetMemorySize();
+    }
 
-
-    public unsafe abstract class GameObjectBase
+    public unsafe class GameObject : IGameObject
     {
         public String Name { get; protected set; }
         public List<GameObjectComponent> GameObjectComponentList { get; protected set; } = new List<GameObjectComponent>();
 
-        public abstract void Input(InputKey key, KeyState keyState);
-        public abstract void Update(float deltaTime);
-        public abstract void BufferUpdate(IntPtr commandBuffer, float deltaTime);
-        public abstract void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties);
-        public abstract void Destroy();
-        public abstract int GetMemorySize();
 
-        public void AddComponent(GameObjectComponent newComponent)
-        {
-            Console.WriteLine("AddComponent()");
-            GameObjectComponentList.Add(newComponent);
-        }
-
-        public void AddComponent(IntPtr newComponent)
-        {
-            Console.WriteLine("AddComponent() in");
-            GameObjectComponent gameObjectComponent = new GameObjectComponent(newComponent);
-            Console.WriteLine("AddComponent() Convert");
-            GameObjectComponentList.Add(gameObjectComponent);
-            Console.WriteLine("AddComponent() add");
-            GameObjectComponentList[0].Update(0.0f);
-            Console.WriteLine("AddComponent() update");
-        }
-
-        public void RemoveComponent(GameObjectComponent gameObjectComponent)
-        {
-            GameObjectComponentList.Remove(gameObjectComponent);
-        }
-
-        //public GameObjectComponent GetComponentByName(String name)
-        //{
-        //    return GameObjectComponentList.Where(x => x.Name == name).First();
-        //}
-
-        //public List<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type)
-        //{
-        //    return GameObjectComponentList.Where(x => x.ComponentType == type).ToList();
-        //}
-
-        public unsafe GameObjectComponent* GetGameObjectComponentListPtr()
-        {
-            GameObjectComponent* arrayPtr = (GameObjectComponent*)Marshal.AllocHGlobal(GameObjectComponentList.Count * sizeof(GameObjectComponent*));
-            return arrayPtr;
-        }
-
-        public unsafe void FreeGameObjectComponentListPtr(GameObjectComponent* ptr)
-        {
-            Marshal.FreeHGlobal((IntPtr)ptr);
-        }
-    }
-
-    public unsafe class GameObject : GameObjectBase
-    {
         public GameObject()
         {
         }
@@ -149,11 +105,77 @@ namespace VulkanGameEngineGameObjectScripts
             GameObjectComponentList = componentTypeList;
         }
 
-        public override void Input(InputKey key, KeyState keyState)
+        public void AddComponent(GameObjectComponent newComponent)
+        {
+            Console.WriteLine("AddComponent()");
+            GameObjectComponentList.Add(newComponent);
+        }
+
+        public void AddComponent(IntPtr blightPtr, int componentTypeEnum)
+        {
+           //var ablightPtr = (GameObjectComponentBlight*)blightPtr.ToPointer();
+           // Console.WriteLine($"Initialized with Name: {ablightPtr->Name}, ComponentType: {ablightPtr->ComponentType}");
+
+            Console.WriteLine("Type in " + componentTypeEnum);
+            Console.WriteLine("AddComponent() in");
+
+            string typeName = string.Empty;
+
+            // Map component type enum to C# type name
+            switch ((ComponentTypeEnum)componentTypeEnum)
+            {
+                case ComponentTypeEnum.kGameObjectTransform2DComponent:
+                    typeName = "VulkanGameEngineGameObjectScripts.Transform2DComponent";
+                    break;
+                // Add more cases as necessary
+                default:
+                    Console.WriteLine("Unknown component type");
+                    return;
+            }
+
+            Console.WriteLine("Looking for type: " + typeName);
+            Type type = Type.GetType(typeName);
+            if (type == null)
+            {
+                Console.WriteLine($"Type '{typeName}' not found.");
+                return;
+            }
+
+            // Create the component instance dynamically
+            GameObjectComponent component = (GameObjectComponent)Activator.CreateInstance(type, blightPtr);
+
+            if (component == null)
+            {
+                Console.WriteLine("Failed to create component instance.");
+                return;
+            }
+
+            // Output the component type
+            Console.WriteLine("GameObjectPtr after creation: 0x" + component.ParentGameObjectPtr.ToString("X"));
+            Console.WriteLine("Component Type after creation: " + component.ComponentType);
+            Console.WriteLine("name after creation: " + component.Name);
+
+            // Add to the list
+            GameObjectComponentList.Add(component);
+            Console.WriteLine("AddComponent() added");
+            Console.WriteLine("GameObjectPtr after creation: 0x" + GameObjectComponentList.First().ParentGameObjectPtr.ToString("X"));
+            Console.WriteLine("Component Type after creation: " + GameObjectComponentList.First().ComponentType);
+            Console.WriteLine("name after creation: " + GameObjectComponentList.First().Name);
+
+            // Call Update on all components in the list
+            // foreach (var components in GameObjectComponentList)
+            // {
+            //     components.Update(0.0f); // Call update for each component
+            // }
+
+            Console.WriteLine("AddComponent() update");
+        }
+
+        public virtual void Input(InputKey key, KeyState keyState)
         {
         }
 
-        public override void Update(float deltaTime)
+        public virtual void Update(float deltaTime)
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
@@ -161,7 +183,7 @@ namespace VulkanGameEngineGameObjectScripts
             }
         }
 
-        public override void BufferUpdate(IntPtr commandBuffer, float deltaTime)
+        public virtual void BufferUpdate(IntPtr commandBuffer, float deltaTime)
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
@@ -169,7 +191,7 @@ namespace VulkanGameEngineGameObjectScripts
             }
         }
 
-        public override void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties)
+        public virtual void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties)
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
@@ -177,7 +199,7 @@ namespace VulkanGameEngineGameObjectScripts
             }
         }
 
-        public override void Destroy()
+        public virtual void Destroy()
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
@@ -185,17 +207,28 @@ namespace VulkanGameEngineGameObjectScripts
             }
         }
 
-        public override int GetMemorySize()
+        public virtual int GetMemorySize()
         {
             return sizeof(GameObject);
+        }
+
+        public unsafe GameObjectComponent* GetGameObjectComponentListPtr()
+        {
+            GameObjectComponent* arrayPtr = (GameObjectComponent*)Marshal.AllocHGlobal(GameObjectComponentList.Count * sizeof(GameObjectComponent*));
+            return arrayPtr;
+        }
+
+        public unsafe void FreeGameObjectComponentListPtr(GameObjectComponent* ptr)
+        {
+            Marshal.FreeHGlobal((IntPtr)ptr);
         }
     }
 
     public unsafe struct GameObjectComponentBlight
     {
         public IntPtr ParentGameObjectPtr = IntPtr.Zero;
+        public int ComponentType { get; set; }
         public NativeString Name { get; set; } = new NativeString();
-        public ComponentTypeEnum ComponentType { get; set; }
 
         public GameObjectComponentBlight()
         {
@@ -203,44 +236,76 @@ namespace VulkanGameEngineGameObjectScripts
         }
     }
 
-    public unsafe class GameObjectComponent
+    public interface IGameObjectComponent
     {
-        protected IntPtr blightPtr;
+        public void Input(InputKey key, KeyState keyState);
+        public void Update(float deltaTime);
+        public void BufferUpdate(IntPtr commandBuffer, float deltaTime);
+        public void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties);
+        public void Destroy();
+        public int GetMemorySize();
+    }
 
-        //public NativeString Name
-        //{
-        //    get => blightPtr->Name;
-        //    set => blightPtr->Name = value;
-        //}
+    public unsafe class GameObjectComponent : IGameObjectComponent
+    {
+        protected GameObjectComponentBlight* blight;
 
-        //public ComponentTypeEnum ComponentType
-        //{
-        //    get => blightPtr->ComponentType;
-        //    set => blightPtr->ComponentType = value;
-        //}
+        public NativeString Name
+        {
+            get => blight->Name;
+            set => blight->Name = value;
+        }
 
-        //public IntPtr ParentGameObjectPtr
-        //{
-        //    get => blightPtr->ParentGameObjectPtr;
-        //    set => blightPtr->ParentGameObjectPtr = value;
-        //}
+        public int ComponentType
+        {
+            get => blight->ComponentType;
+            set => blight->ComponentType = value;
+        }
+
+        public IntPtr ParentGameObjectPtr
+        {
+            get => blight->ParentGameObjectPtr;
+            set => blight->ParentGameObjectPtr = value;
+        }
 
         public GameObjectComponent()
         {
             
         }
 
-        public GameObjectComponent(IntPtr blight)
+        public GameObjectComponent(IntPtr blightPtr)
         {
-            blightPtr = blight;
+            blight = (GameObjectComponentBlight*)blightPtr.ToPointer();
         }
 
-        public virtual void Input(InputKey key, KeyState keyState) { }
-        public virtual void Update(float deltaTime) { Console.WriteLine("Updated"); }
-        public virtual void BufferUpdate(IntPtr commandBuffer, float deltaTime) { }
-        public virtual void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties) { }
-        public virtual void Destroy() { }
-        public virtual int GetMemorySize() { return sizeof(GameObjectComponent); }
+        public virtual void Input(InputKey key, KeyState keyState) 
+        { 
+        }
+
+        public virtual void Update(float deltaTime) 
+        { 
+            Console.WriteLine("GameObjectComponent Updated"); 
+        }
+
+        public virtual void BufferUpdate(IntPtr commandBuffer, float deltaTime) 
+        { 
+
+        }
+
+        public virtual void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties) 
+        { 
+
+        }
+
+        public virtual void Destroy() 
+        { 
+
+        }
+
+        public virtual int GetMemorySize() 
+        { 
+            return sizeof(GameObjectComponent); 
+        }
     }
 
     public unsafe class Transform2DComponent : GameObjectComponent
@@ -293,7 +358,7 @@ namespace VulkanGameEngineGameObjectScripts
             GameObjectTransform = mat4.Rotate(CLIMath.DegreesToRadians(GameObjectRotation.y), new vec3(0.0f, 1.0f, 0.0f));
             GameObjectTransform = mat4.Translate(new vec3(GameObjectPosition, 0.0f));
 
-            Console.WriteLine("Update called");
+            Console.WriteLine("Transform2DComponent Update called");
         }
 
         public override void BufferUpdate(IntPtr commandBuffer, float deltaTime)
@@ -304,7 +369,7 @@ namespace VulkanGameEngineGameObjectScripts
             GameObjectTransform = mat4.Rotate(CLIMath.DegreesToRadians(GameObjectRotation.y), new vec3(0.0f, 1.0f, 0.0f));
             GameObjectTransform = mat4.Translate(new vec3(GameObjectPosition, 0.0f));
 
-            Console.WriteLine("BufferUpdate called");
+            Console.WriteLine("Transform2DComponent BufferUpdate called");
         }
 
         public override void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties)
