@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using ClassLibrary1;
+using Coral.Managed.Interop;
+using Newtonsoft.Json.Linq;
 using Silk.NET.SDL;
 using Silk.NET.Vulkan;
 using System;
@@ -16,24 +18,24 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class MemoryManager
     {
         public static Vk vk = Vk.GetApi();
-        public static Assembly GameObjectComponentDLL { get; set; }
+       // public static Assembly GameObjectComponentDLL { get; set; }
         public static List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
         public static List<MeshRenderer2DComponent> RenderMesh2DComponentList { get; set; } = new List<MeshRenderer2DComponent>();
-        public static List<InputComponent> InputComponentList { get; set; } = new List<InputComponent>();
+        //public static List<InputComponent> InputComponentList { get; set; } = new List<InputComponent>();
         // public static List<MeshRenderer3DComponent> RenderMesh3DComponentList = new List<MeshRenderer3DComponent>();
         public static List<Texture> TextureList { get; set; } = new List<Texture>();
         public static MemoryPool<GameObject> GameObjectMemoryPool { get; set; } = new MemoryPool<GameObject>();
-        public static MemoryPool<InputComponent> InputComponentMemoryPool { get; set; } = new MemoryPool<InputComponent>();
+       // public static MemoryPool<InputComponent> InputComponentMemoryPool { get; set; } = new MemoryPool<InputComponent>();
         public static MemoryPool<MeshRenderer2DComponent> RenderMesh2DComponentMemoryPool { get; set; } = new MemoryPool<MeshRenderer2DComponent>();
         //public static MemoryPool<MeshRenderer3DComponent> RenderMesh3DComponentMemoryPool = new MemoryPool<MeshRenderer3DComponent>();
         public static MemoryPool<Texture> TextureMemoryPool { get; set; } = new MemoryPool<Texture>();
 
         public static void StartUp(uint estObjectCount)
         {
-            GameObjectComponentDLL = Assembly.LoadFrom(ConstConfig.GameObjectComponentDLLPath);
+          //  GameObjectComponentDLL = Assembly.LoadFrom(ConstConfig.GameObjectComponentDLLPath);
             GameObjectMemoryPool.CreateMemoryPool(estObjectCount);
             RenderMesh2DComponentMemoryPool.CreateMemoryPool(estObjectCount);
-            InputComponentMemoryPool.CreateMemoryPool(estObjectCount);
+          //  InputComponentMemoryPool.CreateMemoryPool(estObjectCount);
          //   RenderMesh3DComponentMemoryPool.CreateMemoryPool(estObjectCount);
             TextureMemoryPool.CreateMemoryPool(estObjectCount);
         }
@@ -77,11 +79,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return RenderMesh2DComponentList.Last();
         }
 
-        public static InputComponent AllocateInputComponenComponent()
-        {
-            InputComponentList.Add(InputComponentMemoryPool.AllocateMemoryLocation());
-            return InputComponentList.Last();
-        }
+        //public static InputComponent AllocateInputComponenComponent()
+        //{
+        //    InputComponentList.Add(InputComponentMemoryPool.AllocateMemoryLocation());
+        //    return InputComponentList.Last();
+        //}
 
         //public static MeshRenderer3DComponent AllocateGameRenderMesh3DComponent()
         //{
@@ -180,7 +182,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             var gameObjectMemoryList = GameObjectMemoryPool.ViewMemoryPool();
             var renderMesh2DMemoryList = RenderMesh2DComponentMemoryPool.ViewMemoryPool();
-            var inputMemoryList = InputComponentMemoryPool.ViewMemoryPool();
+           // var inputMemoryList = InputComponentMemoryPool.ViewMemoryPool();
             // var renderMesh3DMemoryList = RenderMesh3DComponentMemoryPool.ViewMemoryPool();
             var textureMemoryList = TextureMemoryPool.ViewMemoryPool();
 
@@ -226,20 +228,20 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             //    Console.WriteLine($"{x,10} : {address.ToString("X12")} : {value}");
             //}
 
-            Console.WriteLine();
+            //Console.WriteLine();
 
-            Console.WriteLine($"Memory Map of InputComponent:");
-            Console.WriteLine("{0,20} {1,15}", "Index", "Value");
-            for (int x = 0; x < InputComponentMemoryPool.ObjectCount; x++)
-            {
-                var inputMemoryListRef = inputMemoryList[x];
-                InputComponent* inputPtr = &inputMemoryListRef;
+            //Console.WriteLine($"Memory Map of InputComponent:");
+            //Console.WriteLine("{0,20} {1,15}", "Index", "Value");
+            //for (int x = 0; x < InputComponentMemoryPool.ObjectCount; x++)
+            //{
+            //    var inputMemoryListRef = inputMemoryList[x];
+            //    InputComponent* inputPtr = &inputMemoryListRef;
 
-                IntPtr address = (IntPtr)inputPtr + (sizeof(InputComponent) * x);
+            //    IntPtr address = (IntPtr)inputPtr + (sizeof(InputComponent) * x);
 
-                string value = inputMemoryList[x]?.ToString() ?? "null";
-                Console.WriteLine($"{x,10} : {address.ToString("X12")} : {value}");
-            }
+            //    string value = inputMemoryList[x]?.ToString() ?? "null";
+            //    Console.WriteLine($"{x,10} : {address.ToString("X12")} : {value}");
+            //}
         }
     }
 }

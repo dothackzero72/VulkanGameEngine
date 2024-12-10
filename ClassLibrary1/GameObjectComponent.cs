@@ -1,4 +1,6 @@
 ﻿using Coral.Managed.Interop;
+using GlmSharp;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +28,13 @@ namespace ClassLibrary1
             ParentGameObject = (GameObject)handle.Target;
         }
 
+        public GameObjectComponent(IntPtr parentGameObject, NativeString nString)
+        {
+            GCHandle handle = GCHandle.FromIntPtr(parentGameObject);
+            ParentGameObject = (GameObject)handle.Target;
+            Name = nString;
+        }
+
         public virtual void Input(InputKey key, KeyState keyState)
         {
         }
@@ -35,12 +44,12 @@ namespace ClassLibrary1
             Console.WriteLine("GameObjectComponent Updated");
         }
 
-        public virtual void BufferUpdate(IntPtr commandBuffer, float deltaTime)
+        public virtual void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
         {
 
         }
 
-        public virtual void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties)
+        public virtual void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout pipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
 
         }
@@ -54,5 +63,22 @@ namespace ClassLibrary1
         {
             return sizeof(GameObjectComponent);
         }
+
+        //public NativeString* GetPositionPtr()
+        //{
+        //    fixed (NativeString* positionPointer = &Name)
+        //    {
+        //        return positionPointer;
+        //    }
+        //}
+
+        //public unsafe ComponentTypeEnum* GetComponentTypePtr()
+        //{
+        //    // Get the address of the field: `ComponentType`
+        //    fixed (ComponentTypeEnum* ptr = &ComponentType)
+        //    {
+        //        return ptr;
+        //    }
+        //}
     }
 }

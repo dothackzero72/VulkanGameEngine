@@ -1,4 +1,6 @@
-﻿using GlmSharp;
+﻿using Coral.Managed.Interop;
+using GlmSharp;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,7 @@ namespace ClassLibrary1
     public unsafe class GameObject : IGameObject
     {
         public int id;
-        public String Name { get; protected set; }
+        public NativeString Name { get; protected set; }
         public List<GameObjectComponent> GameObjectComponentList { get; protected set; } = new List<GameObjectComponent>();
 
 
@@ -26,23 +28,23 @@ namespace ClassLibrary1
             id = ID;
         }
 
-        private GameObject(String name)
+        private GameObject(NativeString name)
         {
             Name = name;
         }
 
-        private GameObject(String name, List<GameObjectComponent> gameObjectComponentList)
+        private GameObject(NativeString name, List<GameObjectComponent> gameObjectComponentList)
         {
             Name = name;
             GameObjectComponentList = gameObjectComponentList;
         }
 
-        public void Initialize(String name)
+        public void Initialize(NativeString name)
         {
             Name = name;
         }
 
-        public void Initialize(String name, List<GameObjectComponent> componentTypeList)
+        public void Initialize(NativeString name, List<GameObjectComponent> componentTypeList)
         {
             Name = name;
             GameObjectComponentList = componentTypeList;
@@ -71,7 +73,7 @@ namespace ClassLibrary1
             }
         }
 
-        public virtual void BufferUpdate(IntPtr commandBuffer, float deltaTime)
+        public virtual void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
@@ -79,11 +81,11 @@ namespace ClassLibrary1
             }
         }
 
-        public virtual void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties)
+        public virtual void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout pipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
-                component.Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSet, sceneProperties);
+                component.Draw(commandBuffer, pipeline, pipelineLayout, descriptorSet, sceneProperties);
             }
         }
 

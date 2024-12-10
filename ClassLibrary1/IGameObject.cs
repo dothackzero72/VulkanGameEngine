@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.Vulkan;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,8 +12,8 @@ namespace ClassLibrary1
     {
         public void Input(InputKey key, KeyState keyState);
         public void Update(float deltaTime);
-        public void BufferUpdate(IntPtr commandBuffer, float deltaTime);
-        public void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties);
+        public void BufferUpdate(CommandBuffer commandBuffer, float deltaTime);
+        public void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout pipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties);
         public void Destroy();
         public int GetMemorySize();
     }

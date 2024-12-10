@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineGameObjectScripts.CLI;
 using VulkanGameEngineGameObjectScripts;
+using Coral.Managed.Interop;
+using Silk.NET.Vulkan;
 
 namespace ClassLibrary1
 {
@@ -19,6 +21,7 @@ namespace ClassLibrary1
         public Transform2DComponent() : base()
         {
             Name = "GameObjectTransform2DComponent";
+            ComponentType = ComponentTypeEnum.kGameObjectTransform2DComponent;
 
             GameObjectTransform = mat4.Identity;
             GameObjectPosition = new vec2(0.0f, 0.0f);
@@ -26,9 +29,10 @@ namespace ClassLibrary1
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(IntPtr blight3) : base(blight3)
+        public Transform2DComponent(IntPtr parentGameObject) : base(parentGameObject)
         {
             Name = "GameObjectTransform2DComponent";
+            ComponentType = ComponentTypeEnum.kGameObjectTransform2DComponent;
 
             GameObjectTransform = mat4.Identity;
             GameObjectPosition = new vec2(0.0f, 0.0f);
@@ -36,9 +40,9 @@ namespace ClassLibrary1
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(IntPtr blight3, String name) : base(blight3)
+        public Transform2DComponent(IntPtr parentGameObject, NativeString name) : base(parentGameObject, name)
         {
-            Name = name;
+            ComponentType = ComponentTypeEnum.kGameObjectTransform2DComponent;
 
             GameObjectTransform = mat4.Identity;
             GameObjectPosition = new vec2(0.0f, 0.0f);
@@ -48,7 +52,6 @@ namespace ClassLibrary1
 
         public override void Input(InputKey key, KeyState keyState)
         {
-            Console.WriteLine("input called");
         }
 
         public override void Update(float deltaTime)
@@ -58,24 +61,18 @@ namespace ClassLibrary1
             GameObjectTransform = mat4.Rotate(CLIMath.DegreesToRadians(GameObjectRotation.x), new vec3(1.0f, 0.0f, 0.0f));
             GameObjectTransform = mat4.Rotate(CLIMath.DegreesToRadians(GameObjectRotation.y), new vec3(0.0f, 1.0f, 0.0f));
             GameObjectTransform = mat4.Translate(new vec3(GameObjectPosition, 0.0f));
-
-            Console.WriteLine("Transform2DComponent Update called");
         }
 
-        public override void BufferUpdate(IntPtr commandBuffer, float deltaTime)
+        public override void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
         {
-            GameObjectPosition.x += 1.0f;
-
             GameObjectTransform = mat4.Identity;
             GameObjectTransform = mat4.Scale(new vec3(GameObjectScale, 0.0f));
             GameObjectTransform = mat4.Rotate(CLIMath.DegreesToRadians(GameObjectRotation.x), new vec3(1.0f, 0.0f, 0.0f));
             GameObjectTransform = mat4.Rotate(CLIMath.DegreesToRadians(GameObjectRotation.y), new vec3(0.0f, 1.0f, 0.0f));
             GameObjectTransform = mat4.Translate(new vec3(GameObjectPosition, 0.0f));
-
-            Console.WriteLine("Transform2DComponent BufferUpdate called");
         }
 
-        public override void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr shaderPipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties)
+        public override void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout pipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
             Console.WriteLine("Draw called");
         }

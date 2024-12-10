@@ -55,12 +55,6 @@ Coral::Array<float> ArrayReturnIcall()
     return Coral::Array<float>::New({ 10.0f, 5000.0f, 1000.0f });
 }
 
-struct ComponentListContainer
-{
-    int Count;
-    void* ptr;
-};
-
 class GameObjectComponent2;
 class GameObject2
 {
@@ -85,10 +79,6 @@ public:
     {
         CSclass = std::make_shared<Coral::Type>(assembly->GetType("ClassLibrary1.GameObject"));
         CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(32));
-
-        //GameObjectComponentList = std::make_shared<List<std::shared_ptr<GameObjectComponent2>>>(CSobject->InvokeMethod<List<std::shared_ptr<GameObjectComponent2>>>("GetGameObjectComponentListPtr"));
-        int a = 34;
-      
     }
 
     void AddComponent(std::shared_ptr<GameObjectComponent2> component);
@@ -96,23 +86,23 @@ public:
 };
 
 
- class GameObjectComponent2
- {
- private:
-     std::shared_ptr<Coral::Type> CSclass;
-     
-     std::shared_ptr<void*> CSclassPtr;
- public:
-     std::shared_ptr<Coral::ManagedObject> CSobject;
+class GameObjectComponent2
+{
+private:
+    std::shared_ptr<Coral::Type> CSclass;
 
-     void* ParentGameObjectPtr;
-     std::shared_ptr<ComponentTypeEnum> componentType;
-     std::shared_ptr<String> Name;
+    std::shared_ptr<void*> CSclassPtr;
+public:
+    std::shared_ptr<Coral::ManagedObject> CSobject;
 
-     std::shared_ptr<mat4> GameObjectTransform;
-     std::shared_ptr<vec2> GameObjectPosition;
-     std::shared_ptr<vec2> GameObjectRotation;
-     std::shared_ptr<vec2> GameObjectScale;
+    void* ParentGameObjectPtr;
+    std::shared_ptr<ComponentTypeEnum> componentType;
+    std::shared_ptr<Coral::String> Name;
+
+    std::shared_ptr<mat4> GameObjectTransform;
+    std::shared_ptr<vec2> GameObjectPosition;
+    std::shared_ptr<vec2> GameObjectRotation;
+    std::shared_ptr<vec2> GameObjectScale;
 
      GameObjectComponent2()
      {
@@ -121,12 +111,12 @@ public:
 
      GameObjectComponent2(Coral::ManagedAssembly* assembly, std::shared_ptr<GameObject2> baseObject)
      {
-         Name = std::make_shared<String>("asdfasdf");
+         Name = std::make_shared<Coral::String>(Coral::String::New("asdfasdf"));
          componentType = std::make_shared<ComponentTypeEnum>(kTransform2DComponent);
          ParentGameObjectPtr = baseObject->GetCSObjectHandle();
 
          CSclass = std::make_shared<Coral::Type>(assembly->GetType("ClassLibrary1.Transform2DComponent"));
-         CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ParentGameObjectPtr));
+         CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ParentGameObjectPtr, Name));
 
          GameObjectPosition = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetPositionPtr"));
          GameObjectRotation = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetRotationPtr"));

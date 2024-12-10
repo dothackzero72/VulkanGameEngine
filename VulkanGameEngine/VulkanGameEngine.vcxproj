@@ -270,11 +270,6 @@
     <ClInclude Include="DynamicVulkanBuffer.h" />
     <ClInclude Include="VulkanRenderer.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\VulkanGameEngineGameObjectScriptsCLI\VulkanGameEngineGameObjectScriptsCLI.vcxproj">
-      <Project>{f3c22b6a-dda5-4e5d-b8c5-2a13680caf3b}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

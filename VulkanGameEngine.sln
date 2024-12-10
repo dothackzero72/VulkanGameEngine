@@ -38,8 +38,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Coral.Native\Coral.Native.vcxproj = Coral.Native\Coral.Native.vcxproj
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VulkanGameEngineGameObjectScripts", "VulkanGameEngineGameObjectScripts\VulkanGameEngineGameObjectScripts.csproj", "{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipelines", "Pipelines", "{0EDEA954-1D78-4E87-B6E9-6AD004194688}"
 	ProjectSection(SolutionItems) = preProject
 		Pipelines\Default2DPipeline.json = Pipelines\Default2DPipeline.json
@@ -51,8 +49,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RenderPasses", "RenderPasse
 		RenderPass\Default2DRenderPass.json = RenderPass\Default2DRenderPass.json
 		RenderPass\DefaultRenderPass.json = RenderPass\DefaultRenderPass.json
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VulkanGameEngineGameObjectScriptsCLI", "VulkanGameEngineGameObjectScriptsCLI\VulkanGameEngineGameObjectScriptsCLI.vcxproj", "{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary1", "ClassLibrary1\ClassLibrary1.csproj", "{79BA6AC0-3790-4DD8-A9EB-E37D4A73EBD4}"
 EndProject
@@ -114,30 +110,6 @@ Global
 		{6BB46CA5-81ED-4A08-9AEF-885A15F5B43C}.Release|x64.Build.0 = Release|x64
 		{6BB46CA5-81ED-4A08-9AEF-885A15F5B43C}.Release|x86.ActiveCfg = Release|Win32
 		{6BB46CA5-81ED-4A08-9AEF-885A15F5B43C}.Release|x86.Build.0 = Release|Win32
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Debug|x64.Build.0 = Debug|Any CPU
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Debug|x86.Build.0 = Debug|Any CPU
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Release|x64.ActiveCfg = Release|Any CPU
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Release|x64.Build.0 = Release|Any CPU
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Release|x86.ActiveCfg = Release|Any CPU
-		{AEB85109-3C0F-4074-B7B9-6B34FE4F0A65}.Release|x86.Build.0 = Release|Any CPU
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|Any CPU.Build.0 = Debug|x64
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|x64.ActiveCfg = Debug|x64
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|x64.Build.0 = Debug|x64
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|x86.ActiveCfg = Debug|Win32
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Debug|x86.Build.0 = Debug|Win32
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|Any CPU.ActiveCfg = Release|x64
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|Any CPU.Build.0 = Release|x64
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|x64.ActiveCfg = Release|x64
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|x64.Build.0 = Release|x64
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|x86.ActiveCfg = Release|Win32
-		{F3C22B6A-DDA5-4E5D-B8C5-2A13680CAF3B}.Release|x86.Build.0 = Release|Win32
 		{79BA6AC0-3790-4DD8-A9EB-E37D4A73EBD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{79BA6AC0-3790-4DD8-A9EB-E37D4A73EBD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79BA6AC0-3790-4DD8-A9EB-E37D4A73EBD4}.Debug|x64.ActiveCfg = Debug|Any CPU

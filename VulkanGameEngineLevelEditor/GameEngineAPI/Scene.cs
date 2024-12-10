@@ -1,4 +1,5 @@
-﻿using GlmSharp;
+﻿using ClassLibrary1;
+using GlmSharp;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -43,15 +44,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void Input(KeyEventArgs e)
         {
-            var inputObjects = MemoryManager.InputComponentMemoryPool.ViewMemoryPool();
-            foreach (var obj in inputObjects)
-            {
+            //var inputObjects = MemoryManager.InputComponentMemoryPool.ViewMemoryPool();
+            //foreach (var obj in inputObjects)
+            //{
 
-            }
+            //}
         }
 
         public void Update()
         {
+            var a = GameObjectList[0].GameObjectComponentList[0] as Transform2DComponent;
+            a.GameObjectPosition.x += 0.01f;
 
             CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             foreach (var gameObject in GameObjectList)
