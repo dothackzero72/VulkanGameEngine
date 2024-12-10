@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VulkanGameEngineGameObjectScripts.CLI
+namespace VulkanGameEngineGameObjectScripts.Import
 {
     public class CLIMath
     {

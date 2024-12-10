@@ -1,5 +1,4 @@
-﻿using ClassLibrary1;
-using GlmSharp;
+﻿using GlmSharp;
 using Newtonsoft.Json;
 using Silk.NET.Core.Native;
 using Silk.NET.Maths;
@@ -377,7 +376,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, jsonPipeline.pipeline);
             foreach (var obj in gameObjectList)
             {
-                obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, descSet, sceneDataBuffer);
+                obj.Draw(commandBuffer.Handle, jsonPipeline.pipeline.Handle, jsonPipeline.pipelineLayout.Handle, descSet.Handle, sceneDataBuffer);
             }
             vk.CmdEndRenderPass(commandBuffer);
             vk.EndCommandBuffer(commandBuffer);

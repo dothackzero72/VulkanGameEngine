@@ -1,6 +1,5 @@
 ﻿using Coral.Managed.Interop;
 using GlmSharp;
-using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,12 +43,12 @@ namespace ClassLibrary1
             Console.WriteLine("GameObjectComponent Updated");
         }
 
-        public virtual void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
+        public virtual void BufferUpdate(IntPtr commandBuffer, float deltaTime)
         {
 
         }
 
-        public virtual void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout pipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        public virtual void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr pipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties)
         {
 
         }

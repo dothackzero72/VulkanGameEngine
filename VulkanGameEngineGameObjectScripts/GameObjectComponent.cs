@@ -1,32 +1,88 @@
-﻿//using GlmSharp;
-//using Silk.NET.Vulkan;
-//using System.Runtime.InteropServices;
+﻿using Coral.Managed.Interop;
+using GlmSharp;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
-//namespace VulkanGameEngineGameObjectScripts
-//{
+namespace VulkanGameEngineGameObjectScripts
+{
+    public unsafe class GameObjectComponent : IGameObjectComponent
+    {
+        public GameObject ParentGameObject;
+        public ComponentTypeEnum ComponentType { get; set; }
+        public NativeString Name { get; set; } = new NativeString();
 
-//    public unsafe abstract class GameObjectComponent
-//    {
-//        public IntPtr ParentGameObjectPtr = IntPtr.Zero;
-//        public String Name { get; protected set; } = string.Empty;
-//        public ComponentTypeEnum ComponentType { get; set; }
-//        public abstract void Input(InputKey key, KeyState keyState);
-//        public abstract void Update(float deltaTime);
-//        public abstract void BufferUpdate(CommandBuffer commandBuffer, float deltaTime);
-//        public abstract void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties);
-//        public abstract void Destroy();
-//        public abstract int GetMemorySize();
+        public GameObjectComponent()
+        {
 
-//        protected IntPtr AllocateAndMarshal<T>(T structure) where T : unmanaged
-//        {
-//            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf<T>());
-//            Marshal.StructureToPtr(structure, ptr, false);
-//            return ptr;
-//        }
+        }
 
-//        public static object PointerToObject(IntPtr pMapping, Type type)
-//        {
-//            return Marshal.PtrToStructure(pMapping, type);
-//        }
-//    }
-//}
+        public GameObjectComponent(IntPtr parentGameObject, ComponentTypeEnum componentType)
+        {
+            GCHandle handle = GCHandle.FromIntPtr(parentGameObject);
+
+            ParentGameObject = (GameObject)handle.Target;
+            Name = "GameObjectComponent";
+            ComponentType = componentType;
+        }
+
+        public GameObjectComponent(IntPtr parentGameObject, NativeString nString, ComponentTypeEnum componentType)
+        {
+            GCHandle handle = GCHandle.FromIntPtr(parentGameObject);
+
+            ParentGameObject = (GameObject)handle.Target;
+            Name = nString;
+            ComponentType = componentType;
+        }
+
+        public virtual void Input(InputKey key, KeyState keyState)
+        {
+        }
+
+        public virtual void Update(float deltaTime)
+        {
+            Console.WriteLine("GameObjectComponent Updated");
+        }
+
+        public virtual void BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime)
+        {
+
+        }
+
+        public virtual void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        {
+
+        }
+
+        public virtual void Destroy()
+        {
+
+        }
+
+        public virtual int GetMemorySize()
+        {
+            return sizeof(GameObjectComponent);
+        }
+
+        //public NativeString* GetPositionPtr()
+        //{
+        //    fixed (NativeString* positionPointer = &Name)
+        //    {
+        //        return positionPointer;
+        //    }
+        //}
+
+        //public unsafe ComponentTypeEnum* GetComponentTypePtr()
+        //{
+        //    // Get the address of the field: `ComponentType`
+        //    fixed (ComponentTypeEnum* ptr = &ComponentType)
+        //    {
+        //        return ptr;
+        //    }
+        //}
+    }
+}

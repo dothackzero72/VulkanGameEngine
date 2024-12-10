@@ -12,12 +12,18 @@ GameObject::GameObject()
 GameObject::GameObject(String name)
 {
 	Name = name;
+
+	CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(NameSpace));
+	CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
 }
 
 GameObject::GameObject(String name, List<std::shared_ptr<GameObjectComponent>> gameObjectComponentList)
 {
 	Name = name;
 	GameObjectComponentList = gameObjectComponentList;
+
+	CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(NameSpace));
+	CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
 }
 
 std::shared_ptr<GameObject> GameObject::CreateGameObject(String name)
@@ -96,8 +102,9 @@ List<std::shared_ptr<GameObjectComponent>> GameObject::GetGameObjectComponentLis
 std::shared_ptr<GameObjectComponent> GameObject::GetComponentByName(const std::string& name)
 {
 	auto component = std::find_if(GameObjectComponentList.begin(), GameObjectComponentList.end(),
-		[&name](const std::shared_ptr<GameObjectComponent>& component) {
-			return component->Name == name;
+		[&name](const std::shared_ptr<GameObjectComponent>& component)
+		{
+			return *component->Name.get() == name;
 		});
 
 	if (component != GameObjectComponentList.end())
@@ -113,7 +120,7 @@ std::shared_ptr<GameObjectComponent> GameObject::GetComponentByComponentType(Com
 	auto component = std::find_if(GameObjectComponentList.begin(), GameObjectComponentList.end(),
 		[&type](const std::shared_ptr<GameObjectComponent>& component)
 		{
-			return component->ComponentType == type;
+			return *component->ComponentType.get() == type;
 		});
 
 	if (component != GameObjectComponentList.end())

@@ -1,7 +1,7 @@
 #include "MemoryManager.h"
 #include <CBuffer.h>
 
-HMODULE MemoryManager::EntityComponentSytemModule = nullptr;
+std::shared_ptr<Coral::ManagedAssembly> MemoryManager::ECSassembly = nullptr;
 List<std::shared_ptr<GameObject>> MemoryManager::GameObjectList;
 List<std::shared_ptr<RenderMesh2DComponent>> MemoryManager::RenderMesh2DComponentList;
 List<std::shared_ptr<Texture>> MemoryManager::TextureList;
@@ -14,14 +14,28 @@ MemoryPool<Texture> MemoryManager::TextureMemoryPool;
 MemoryPool<JsonRenderPass> MemoryManager::JsonRenderPassMemoryPool;
 MemoryPool<JsonPipeline> MemoryManager::JsonPipelineMemoryPool;
 
+void ExceptionCallback(std::string_view InMessage)
+{
+	std::cout << "Unhandled native exception: " << InMessage << std::endl;
+}
+
 void MemoryManager::SetUpMemoryManager(uint32_t EstObjectCount)
 {
-	EntityComponentSytemModule = LoadLibrary(EntityComponentSystemDLL);
-	if (!EntityComponentSytemModule)
+	auto exeDir = std::filesystem::path(L"C:/Users/dotha/Documents/GitHub/VulkanGameEngine/x64/Debug");
+	String coralDir = exeDir.string();
+	Coral::HostSettings settings =
 	{
-		throw std::runtime_error("Could not load the DLL. Error code: " + std::to_string(GetLastError()));
-	}
+		.CoralDirectory = coralDir,
+		.ExceptionCallback = ExceptionCallback
+	};
+	Coral::HostInstance hostInstance;
+	hostInstance.Initialize(settings);
 
+	auto loadContext = hostInstance.CreateAssemblyLoadContext("ExampleContext");
+
+	std::string assemblyPath = "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/VulkanGameEngineGameObjectScripts/bin/Debug/VulkanGameEngineGameObjectScripts.dll";
+	Coral::ManagedAssembly* assembly = &loadContext.LoadAssembly(assemblyPath);
+	ECSassembly = std::shared_ptr<Coral::ManagedAssembly>(assembly);
 
 	GameObjectMemoryPool.CreateMemoryPool(EstObjectCount);
 	RenderMesh2DComponentMemoryPool.CreateMemoryPool(EstObjectCount);

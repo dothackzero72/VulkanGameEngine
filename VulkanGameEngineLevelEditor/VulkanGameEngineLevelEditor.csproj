@@ -100,10 +100,10 @@
     <Compile Remove="GameEngineAPI\RenderMesh2DComponent.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\ClassLibrary1.csproj" />
+    <Folder Include="Components\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Components\" />
+    <ProjectReference Include="..\VulkanGameEngineGameObjectScripts\VulkanGameEngineGameObjectScripts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Coral.Managed">

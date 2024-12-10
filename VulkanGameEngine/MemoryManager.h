@@ -6,11 +6,11 @@
 #include "JsonRenderPass.h"
 #include "JsonPipeline.h"
 
+void ExceptionCallback(std::string_view InMessage);
 class MemoryManager 
 {
 	private:
-		static constexpr LPCWSTR EntityComponentSystemDLL = L"VulkanGameEngineGameObjectScriptsCLI.dll";
-		static HMODULE EntityComponentSytemModule;
+		static std::shared_ptr<Coral::ManagedAssembly> ECSassembly;
 		static List<std::shared_ptr<GameObject>> GameObjectList;
 		static List<std::shared_ptr<RenderMesh2DComponent>> RenderMesh2DComponentList;
 		static List<std::shared_ptr<Texture>> TextureList;
@@ -46,5 +46,5 @@ class MemoryManager
 		static const List<std::shared_ptr<Texture>>& GetTextureList() { return TextureList; }
 		static const List<std::shared_ptr<JsonRenderPass>>& GetJsonRenderPassList() { return JsonRenderPassList; }
 		static const List<std::shared_ptr<JsonPipeline>>& GetJsonPipelineList() { return JsonPipelineList; }
-		static const HMODULE GetEntityComponentSytemModule() { return EntityComponentSytemModule; }
+		static const std::shared_ptr<Coral::ManagedAssembly> GetECSassemblyModule() { return ECSassembly; }
 };

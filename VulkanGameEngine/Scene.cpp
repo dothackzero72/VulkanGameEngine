@@ -26,6 +26,10 @@ void Scene::Update(const float& deltaTime)
 		UpdateRenderPasses();
 	}
 
+	auto transform = gameObjectList[0]->GetComponentByComponentType(kTransform2DComponent);
+	auto transform2 = static_cast<Transform2DComponent*>(transform.get());
+	transform2->GameObjectPosition->x += 0.01f;
+
 	VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
 	for (auto gameObject : gameObjectList)
 	{

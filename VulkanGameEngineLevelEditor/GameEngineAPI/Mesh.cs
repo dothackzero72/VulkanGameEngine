@@ -1,5 +1,4 @@
-﻿using ClassLibrary1;
-using GlmSharp;
+﻿using GlmSharp;
 using Silk.NET.Maths;
 using Silk.NET.Vulkan;
 using System;
@@ -13,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VulkanGameEngineGameObjectScripts;
-using VulkanGameEngineGameObjectScripts.CLI;
+using VulkanGameEngineGameObjectScripts.Import;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -55,7 +54,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     }
 
 
-    public unsafe class Mesh
+    public unsafe class Mesh : IMesh
     {
         Vk vk = Vk.GetApi();
         private const BufferUsageFlags MeshBufferUsageSettings = BufferUsageFlags.VertexBufferBit |
@@ -69,10 +68,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         protected IntPtr mesh;
         protected IntPtr ParentGameObject { get; private set; }
         protected IntPtr TransformRefrence { get; private set; }
+
         public uint MeshBufferIndex { get; protected set; }
         public int VertexCount { get; protected set; }
         public int IndexCount { get; protected set; }
+
         public MeshProperitiesStruct MeshProperties { get; set; }
+
         public mat4 MeshTransform { get; protected set; }
         public vec3 MeshPosition { get; protected set; }
         public vec3 MeshRotation { get; protected set; }
@@ -94,7 +96,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             IndexCount = 0;
         }
 
-        public void MeshStartUp(IntPtr parentGameObjectPtr, Vertex2D[] vertexList, uint[] indexList)
+        public void MeshStartUp(nint parentGameObjectPtr, VulkanGameEngineGameObjectScripts.Vertex2D[] vertexList, uint[] indexList)
         {
             GCHandle handle = GCHandle.FromIntPtr(parentGameObjectPtr);
             var gameObject = handle.Target as GameObject;
@@ -129,28 +131,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             UniformBuffers = new VulkanBuffer<MeshProperitiesStruct>((void*)upointer, 1, BufferUsageFlags.StorageBufferBit | BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
         }
 
-        virtual public void Destroy()
+        public void Update(float deltaTime)
         {
-            MeshVertexBuffer.DestroyBuffer();
-            MeshIndexBuffer.DestroyBuffer();
-            UniformBuffers.DestroyBuffer();
+
         }
 
-        virtual public void Update(float deltaTime)
-        {
-        }
-
-        public static mat4 Transpose(mat4 matrix)
-        {
-            return new mat4(
-                matrix[0, 0], matrix[1, 0], matrix[2, 0], matrix[3, 0],
-                matrix[0, 1], matrix[1, 1], matrix[2, 1], matrix[3, 1],
-                matrix[0, 2], matrix[1, 2], matrix[2, 2], matrix[3, 2],
-                matrix[0, 3], matrix[1, 3], matrix[2, 3], matrix[3, 3]
-            );
-        }
-
-        public virtual void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
+        public void BufferUpdate(nint commandBuffer, float deltaTime)
         {
             mat4 gameObjectTransform = mat4.Identity;
             if (TransformRefrence != IntPtr.Zero)
@@ -179,7 +165,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             UniformBuffers.UpdateBufferData(dataPtr);
         }
 
-        public virtual void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        public void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
             sceneProperties.MeshBufferIndex = MeshBufferIndex;
 
@@ -187,12 +173,20 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             uint sceneDataSize = (uint)sizeof(SceneDataBuffer);
 
             var meshBuffer = MeshVertexBuffer.Buffer;
-            vk.CmdPushConstants(commandBuffer, shaderPipelineLayout, ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(SceneDataBuffer), &sceneProperties);
-            vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, pipeline);
-            vk.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, shaderPipelineLayout, 0, 1, &descriptorSet, 0, null);
-            vk.CmdBindVertexBuffers(commandBuffer, 0, 1, &meshBuffer, &offsets);
-            vk.CmdBindIndexBuffer(commandBuffer, MeshIndexBuffer.Buffer, 0, IndexType.Uint32);
-            vk.CmdDrawIndexed(commandBuffer, (uint)IndexCount, 1, 0, 0, 0);
+            var descriptorSetRef = new DescriptorSet(descriptorSet);
+            vk.CmdPushConstants(new CommandBuffer(commandBuffer), new PipelineLayout(pipelineLayout), ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(SceneDataBuffer), &sceneProperties);
+            vk.CmdBindPipeline(new CommandBuffer(commandBuffer), PipelineBindPoint.Graphics, new Pipeline(pipeline));
+            vk.CmdBindDescriptorSets(new CommandBuffer(commandBuffer), PipelineBindPoint.Graphics, new PipelineLayout(pipelineLayout), 0, 1, &descriptorSetRef, 0, null);
+            vk.CmdBindVertexBuffers(new CommandBuffer(commandBuffer), 0, 1, &meshBuffer, &offsets);
+            vk.CmdBindIndexBuffer(new CommandBuffer(commandBuffer), MeshIndexBuffer.Buffer, 0, IndexType.Uint32);
+            vk.CmdDrawIndexed(new CommandBuffer(commandBuffer), (uint)IndexCount, 1, 0, 0, 0);
+        }
+
+        public void Destroy()
+        {
+            MeshVertexBuffer.DestroyBuffer();
+            MeshIndexBuffer.DestroyBuffer();
+            UniformBuffers.DestroyBuffer();
         }
 
         public VulkanBuffer<MeshProperitiesStruct> GetMeshPropertiesBuffer()

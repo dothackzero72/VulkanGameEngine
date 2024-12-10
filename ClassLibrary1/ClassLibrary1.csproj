@@ -53,9 +53,6 @@
     <Reference Include="Silk.NET.Core, Version=2.22.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Silk.NET.Core.2.22.0\lib\netstandard2.0\Silk.NET.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Silk.NET.Vulkan, Version=2.22.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Silk.NET.Vulkan.2.22.0\lib\netstandard2.0\Silk.NET.Vulkan.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -98,7 +95,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="SceneData.cs" />
     <Compile Include="CLI\CLIMath.cs" />
     <Compile Include="CLI\ivec2.cs" />
     <Compile Include="CLI\ivec3.cs" />

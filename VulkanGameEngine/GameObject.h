@@ -1,12 +1,21 @@
 #pragma once
 #include <memory>
 #include "GameObjectComponent.h"
+#include <Coral/HostInstance.hpp>
+#include <Coral/GC.hpp>
+#include <Coral/Array.hpp>
+#include <Coral/Attribute.hpp>
 
 class GameObjectComponent;
 class GameObject 
 {
 private:
+    const String NameSpace = "VulkanGameEngineGameObjectScripts.GameObject";
+
     size_t ObjectComponentMemorySize = 0;
+
+    std::shared_ptr<Coral::Type> CSclass;
+    std::shared_ptr<Coral::ManagedObject> CSobject;
 
     GameObject(String name);
     GameObject(String name, List<std::shared_ptr<GameObjectComponent>> gameObjectComponentList);
@@ -29,4 +38,5 @@ public:
     List<std::shared_ptr<GameObjectComponent>> GetGameObjectComponentList();
     std::shared_ptr<GameObjectComponent> GetComponentByName(const std::string& name);
     std::shared_ptr<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type);
+    void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
 };

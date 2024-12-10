@@ -22,4 +22,9 @@ public:
 
 	MeshPropertiesBuffer* GetMeshPropertiesBuffer() { return mesh->GetMeshPropertiesBuffer(); }
 	const std::shared_ptr<Mesh2D> GetMesh2D() { return mesh; }
+
+	virtual std::string GetClassName() const override
+	{
+		return "RenderMesh2DComponent";
+	}
 };

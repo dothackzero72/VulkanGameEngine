@@ -1,50 +1,43 @@
 #pragma once
+extern "C"
+{
+#include <VulkanWindow.h>
+#include <GLFWWindow.h>
+}
+
 #include <windows.h>
 #include <vulkan/vulkan_core.h>
 #include "Typedef.h"
 #include "SceneDataBuffer.h"
 #include "GameObject.h"
-
-#define GET_CLASS_NAME(classname) std::wstring(L#classname)
-
-extern "C"
-{
-    typedef void* (*DLL_CreateComponent)(void* wrapperObjectPtr);
-    typedef void (*DLL_ComponentUpdate)(void* wrapperObjectPtr, long startTime);
-    typedef void (*DLL_ComponentBufferUpdate)(void* wrapperObjectPtr, VkCommandBuffer commandBuffer, long startTime);
-    typedef void (*DLL_ComponentDestroy)(void* wrapperObjectPtr);
-    typedef int (*DLL_ComponentGetMemorySize)(void* wrapperObjectPtr);
-}
+#include <Coral/HostInstance.hpp>
+#include <Coral/GC.hpp>
+#include <Coral/Array.hpp>
+#include <Coral/Attribute.hpp>
 
 class GameObject;
 class GameObjectComponent
 {
 private:
-    DLL_CreateComponent CreateComponentPtr = nullptr;
-    DLL_ComponentUpdate DLLUpdatePtr = nullptr;
-    DLL_ComponentBufferUpdate DLLBufferUpdatePtr = nullptr;
-    DLL_ComponentDestroy DLLDestroyPtr = nullptr;
-
-    void StartUp(std::shared_ptr<GameObject> gameObjectPtr, String& componentName);
+    const String CSNameSpace = "VulkanGameEngineGameObjectScripts.";
 
 protected:
-    void* ComponentPtr = nullptr;
-    std::shared_ptr<GameObject> ParentGameObjectPtr = nullptr;
-    DLL_ComponentGetMemorySize DLLGetMemorySizePtr = nullptr;
+    std::shared_ptr<Coral::Type> CSclass = nullptr;
+    std::shared_ptr<Coral::ManagedObject> CSobject = nullptr;
 
 public:
-    HMODULE hModuleRef = nullptr;
-    String Name = "Component";
+    std::shared_ptr<GameObject> ParentGameObjectPtr = nullptr;
+    std::shared_ptr<ComponentTypeEnum> ComponentType = nullptr;
+    std::shared_ptr<Coral::String> Name = nullptr;
     size_t MemorySize = 0;
-    ComponentTypeEnum ComponentType = ComponentTypeEnum::kUndefined;
 
     GameObjectComponent();
-    GameObjectComponent(std::shared_ptr<GameObject> ParentGameObjectPtr, ComponentTypeEnum componentType);
-    GameObjectComponent(std::shared_ptr<GameObject> ParentGameObjectPtr, String name, ComponentTypeEnum componentType);
-    GameObjectComponent(std::shared_ptr<GameObject> ParentGameObjectPtr, String name, String componentName, ComponentTypeEnum componentType);
+    GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String className, ComponentTypeEnum componentType);
+    GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, String className, ComponentTypeEnum componentType);
+    GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, String componentName, String className, ComponentTypeEnum componentType);
     virtual ~GameObjectComponent();
 
-    virtual void Input();
+    virtual void Input(InputKey key, KeyState keyState);
     virtual void Update(float deltaTime);
     virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
     virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
@@ -52,5 +45,11 @@ public:
     virtual std::shared_ptr<GameObjectComponent> Clone() const;
     virtual size_t GetMemorySize() const;
 
+    virtual std::string GetClassName() const 
+    {
+        return "GameObjectComponent";
+    }
+
     std::shared_ptr<GameObject> GetParentGameObject() { return ParentGameObjectPtr; }
+    void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
 };

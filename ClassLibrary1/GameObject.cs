@@ -1,6 +1,5 @@
 ﻿using Coral.Managed.Interop;
 using GlmSharp;
-using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,19 +12,11 @@ namespace ClassLibrary1
 {
     public unsafe class GameObject : IGameObject
     {
-        public int id;
         public NativeString Name { get; protected set; }
         public List<GameObjectComponent> GameObjectComponentList { get; protected set; } = new List<GameObjectComponent>();
 
-
         public GameObject()
         {
-            int a = 0;
-        }
-
-        public GameObject(int ID)
-        {
-            id = ID;
         }
 
         private GameObject(NativeString name)
@@ -73,7 +64,7 @@ namespace ClassLibrary1
             }
         }
 
-        public virtual void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
+        public virtual void BufferUpdate(IntPtr commandBuffer, float deltaTime)
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
@@ -81,7 +72,7 @@ namespace ClassLibrary1
             }
         }
 
-        public virtual void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout pipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        public virtual void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr pipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties)
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
@@ -107,19 +98,11 @@ namespace ClassLibrary1
             return Marshal.UnsafeAddrOfPinnedArrayElement(GameObjectComponentList.ToArray(), 0);
         }
 
-        public unsafe int* GetIDPtr()
-        {
-            fixed (int* transformPointer = &id)
-            {
-                return transformPointer;
-            }
-        }
-
         public IntPtr GetGameObjectComponent(int index)
         {
             GameObjectComponent component = GameObjectComponentList[index];
-            GCHandle handle = GCHandle.Alloc(component); // Pin the component
-            return (IntPtr)handle; // Return the handle as a pointer
+            GCHandle handle = GCHandle.Alloc(component);
+            return (IntPtr)handle;
         }
 
         public void ReleaseComponentHandle(IntPtr handle)

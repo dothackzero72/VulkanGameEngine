@@ -6,141 +6,62 @@ GameObjectComponent::GameObjectComponent()
 
 }
 
-GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String className, ComponentTypeEnum componentType)
 {
-    Name = "component";
-    ComponentType = componentType;
+    //Name = "component";
+    ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
     ParentGameObjectPtr = parentGameObjectPtr;
+
+    CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(CSNameSpace + className));
+    CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ParentGameObjectPtr->GetCSObjectHandle()));
 }
 
-GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, String className, ComponentTypeEnum componentType)
 {
-    Name = name;
-    ComponentType = componentType;
+    //Name = name;
+    ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
     ParentGameObjectPtr = parentGameObjectPtr;
+
+    CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(CSNameSpace + className));
+    CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ParentGameObjectPtr->GetCSObjectHandle()));
 }
 
-GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, String componentName, ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, String componentName, String className, ComponentTypeEnum componentType)
 {
-    Name = name;
-    ComponentType = componentType;
-    hModuleRef = MemoryManager::GetEntityComponentSytemModule();
+    //Name = name;
+    ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
     ParentGameObjectPtr = parentGameObjectPtr;
 
-    StartUp(parentGameObjectPtr, componentName);
+    CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(CSNameSpace + className));
+    CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ParentGameObjectPtr->GetCSObjectHandle()));
 }
 
 GameObjectComponent::~GameObjectComponent()
 {
 }
 
-void GameObjectComponent::StartUp(std::shared_ptr<GameObject> gameObjectPtr, String& componentName)
+void GameObjectComponent::Input(InputKey key, KeyState keyState)
 {
-    ParentGameObjectPtr = gameObjectPtr;
-
-    CreateComponentPtr = (DLL_CreateComponent)GetProcAddress(hModuleRef, ("DLL_Create" + componentName).c_str());
-    if (!CreateComponentPtr)
-    {
-        throw std::runtime_error("Could not find DLL_CreateTestScriptComponent function.");
-    }
-
-    DLLUpdatePtr = (DLL_ComponentUpdate)GetProcAddress(hModuleRef, ("DLL_" + componentName + "_Update").c_str());
-    if (!DLLUpdatePtr)
-    {
-        throw std::runtime_error("Could not find DLL_TestScriptComponent_Update function.");
-    }
-
-    DLLBufferUpdatePtr = (DLL_ComponentBufferUpdate)GetProcAddress(hModuleRef, ("DLL_" + componentName + "_BufferUpdate").c_str());
-    if (!DLLBufferUpdatePtr)
-    {
-        throw std::runtime_error("Could not find DLL_TestScriptComponent_BufferUpdate function.");
-    }
-
-   /* DLLDestroyPtr = (DLL_ComponentDestroy)GetProcAddress(hModuleRef, ("DLL_" + componentName + "_Destroy").c_str());
-    if (!DLLDestroyPtr)
-    {
-        throw std::runtime_error("Could not find DLL_TestScriptComponent_Destroy function.");
-    }*/
-
-    DLLGetMemorySizePtr = (DLL_ComponentGetMemorySize)GetProcAddress(hModuleRef, ("DLL_" + componentName + "_GetMemorySize").c_str());
-    if (!DLLGetMemorySizePtr)
-    {
-        throw std::runtime_error("Could not find DLL_TestScriptComponent_GetMemorySize function.");
-    }
-
-    ComponentPtr = CreateComponentPtr(this);
-    if (!ComponentPtr)
-    {
-        throw std::runtime_error("Could not create the component.");
-    }
-}
-
-void GameObjectComponent::Input()
-{
-    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_W] == KS_PRESSED)
-    //{
-    //    const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
-    //    const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
-    //    meshRenderer->GetMesh2D()->MeshPosition.x += 1.0f * deltaTime;
-
-    //    //orthographicCamera->Position.y -= 1.0f * deltaTime;
-    //}
-    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_A] == KS_PRESSED)
-    //{
-    //    const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
-    //    const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
-    //    meshRenderer->GetMesh2D()->MeshPosition.x -= 1.0f * deltaTime;
-
-    //    //orthographicCamera->Position.x += 1.0f * deltaTime;
-    //}
-    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_S] == KS_PRESSED)
-    //{
-    //    const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
-    //    const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
-    //    meshRenderer->GetMesh2D()->MeshPosition.y -= 1.0f * deltaTime;
-
-    //    //orthographicCamera->Position.y += 1.0f * deltaTime;
-    //}
-    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_D] == KS_PRESSED)
-    //{
-    //    const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
-    //    const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
-    //    meshRenderer->GetMesh2D()->MeshPosition.y += 1.0f * deltaTime;
-
-    //    //orthographicCamera->Position.x -= 1.0f * deltaTime;
-    //}
-    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_D] == KS_PRESSED)
-    //{
-    //    orthographicCamera->Zoom -= 1.0f * deltaTime;
-    //}
-    //if (vulkanWindow->keyboard.KeyPressed[KeyCode::KEY_D] == KS_PRESSED)
-    //{
-    //    orthographicCamera->Zoom += 1.0f * deltaTime;
-    //}
+    CSobject->InvokeMethod("Input", key, keyState);
 }
 
 void GameObjectComponent::Update(float deltaTime)
 {
-    DLLUpdatePtr(ComponentPtr, deltaTime);
+    CSobject->InvokeMethod("Update", deltaTime);
 }
 
 void GameObjectComponent::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
 {
-    DLLBufferUpdatePtr(ComponentPtr, commandBuffer, deltaTime);
+    CSobject->InvokeMethod("BufferUpdate", commandBuffer, deltaTime);
 }
 
 void GameObjectComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
 {
-
+    CSobject->InvokeMethod("Destroy");
 }
 
 void GameObjectComponent::Destroy()
 {
-    if (ComponentPtr) 
-    {
-        DLLDestroyPtr(ComponentPtr);
-        ComponentPtr = nullptr;
-    }
 }
 
 std::shared_ptr<GameObjectComponent> GameObjectComponent::Clone() const
@@ -150,5 +71,5 @@ std::shared_ptr<GameObjectComponent> GameObjectComponent::Clone() const
 
 size_t GameObjectComponent::GetMemorySize() const
 {
-    return size_t();
+    return sizeof(GameObjectComponent);
 }

@@ -5,7 +5,7 @@ RenderMesh2DComponent::RenderMesh2DComponent() : GameObjectComponent()
 {
 }
 
-RenderMesh2DComponent::RenderMesh2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex) : GameObjectComponent(parentGameObjectPtr, name, ComponentTypeEnum::kRenderMesh2DComponent)
+RenderMesh2DComponent::RenderMesh2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex) : GameObjectComponent(parentGameObjectPtr, name, GetClassName(), ComponentTypeEnum::kRenderMesh2DComponent)
 {
 	std::vector<Vertex2D> SpriteVertexList =
 	{

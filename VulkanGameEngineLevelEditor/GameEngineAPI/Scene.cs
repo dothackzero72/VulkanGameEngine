@@ -1,5 +1,4 @@
-﻿using ClassLibrary1;
-using GlmSharp;
+﻿using GlmSharp;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -60,7 +59,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             foreach (var gameObject in GameObjectList)
             {
                 gameObject.Update(startTime);
-                gameObject.BufferUpdate(commandBuffer, startTime);
+                gameObject.BufferUpdate(commandBuffer.Handle, startTime);
             }
             VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 

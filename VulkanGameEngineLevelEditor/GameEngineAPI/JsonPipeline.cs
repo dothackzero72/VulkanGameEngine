@@ -1,5 +1,4 @@
-﻿using ClassLibrary1;
-using GlmSharp;
+﻿using GlmSharp;
 using Newtonsoft.Json;
 using Silk.NET.Vulkan;
 using System;
@@ -11,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -285,9 +285,32 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             }
 
+            List<VertexInputBindingDescription> vertexBindingList = new List<VertexInputBindingDescription>();
+            for (int x = 0; x < Vertex2D.GetBindingDescriptions().Count(); x++)
+            {
+                vertexBindingList.Add(new VertexInputBindingDescription()
+                {
+                    Stride = Vertex2D.GetBindingDescriptions()[x].stride,
+                    Binding = Vertex2D.GetBindingDescriptions()[x].binding,
+                    InputRate = (VertexInputRate)Vertex2D.GetBindingDescriptions()[x].inputRate
+                });
+            }
+
+            List<VertexInputAttributeDescription> attributeBindingList = new List<VertexInputAttributeDescription>();
+            for (int x = 0; x < Vertex2D.GetAttributeDescriptions().Count(); x++)
+            {
+                attributeBindingList.Add(new VertexInputAttributeDescription()
+                {
+                    Format = (Format)Vertex2D.GetAttributeDescriptions()[x].format,
+                    Location = Vertex2D.GetAttributeDescriptions()[x].location,
+                    Binding = Vertex2D.GetAttributeDescriptions()[x].binding,
+                    Offset = Vertex2D.GetAttributeDescriptions()[x].offset
+                });
+            }
+
             PipelineVertexInputStateCreateInfo vertexInputInfo = new PipelineVertexInputStateCreateInfo();
-            fixed (VertexInputBindingDescription* vertexBindings = Vertex2D.GetBindingDescriptions().ToArray())
-            fixed (VertexInputAttributeDescription* attributeBindings = Vertex2D.GetAttributeDescriptions().ToArray())
+            fixed (VertexInputBindingDescription* vertexBindings = vertexBindingList.ToArray())
+            fixed (VertexInputAttributeDescription* attributeBindings = attributeBindingList.ToArray())
             {
                 vertexInputInfo = new PipelineVertexInputStateCreateInfo()
                 {
@@ -550,7 +573,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, pipeline);
             foreach (var obj in gameObjectList)
             {
-                obj.Draw(commandBuffer, pipeline, pipelineLayout, descSet, sceneDataBuffer);
+                obj.Draw(commandBuffer.Handle, pipeline.Handle, pipelineLayout.Handle, descSet.Handle, sceneDataBuffer);
             }
             vk.CmdEndRenderPass(commandBuffer);
             vk.EndCommandBuffer(commandBuffer);

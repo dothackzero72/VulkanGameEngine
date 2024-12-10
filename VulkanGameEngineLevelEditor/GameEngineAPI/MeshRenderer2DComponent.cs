@@ -1,12 +1,13 @@
-﻿using ClassLibrary1;
-using GlmSharp;
+﻿using GlmSharp;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -51,22 +52,25 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return gameObject;
         }
 
+        public override void Input(InputKey key, KeyState keyState)
+        {
 
+        }
 
         public override void Update(float deltaTime)
         {
             mesh.Update(deltaTime);
         }
 
-        public override void BufferUpdate(CommandBuffer commandBuffer, float deltaTime)
+        public override void BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime)
         {
             mesh.BufferUpdate(commandBuffer, deltaTime);
             mesh.Update(deltaTime);
         }
 
-        public override void Draw(CommandBuffer commandBuffer, Pipeline pipeline, PipelineLayout shaderPipelineLayout, DescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
-            mesh.Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSet, sceneProperties);
+            mesh.Draw(commandBuffer, pipeline, pipelineLayout, descriptorSet, sceneProperties);
         }
 
         public override void Destroy()
@@ -82,11 +86,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public VulkanBuffer<MeshProperitiesStruct> GetMeshPropertiesBuffer()
         {
             return mesh.GetMeshPropertiesBuffer();
-        }
-
-        public override void Input(InputKey key, KeyState keyState)
-        {
-
         }
     }
 }

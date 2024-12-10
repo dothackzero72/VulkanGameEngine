@@ -1,5 +1,4 @@
-﻿using ClassLibrary1;
-using Coral.Managed.Interop;
+﻿using Coral.Managed.Interop;
 using Newtonsoft.Json.Linq;
 using Silk.NET.SDL;
 using Silk.NET.Vulkan;

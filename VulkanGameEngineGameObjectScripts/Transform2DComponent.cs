@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VulkanGameEngineGameObjectScripts.CLI;
 using VulkanGameEngineGameObjectScripts;
 using Coral.Managed.Interop;
+using VulkanGameEngineGameObjectScripts.Import;
 
-namespace ClassLibrary1
+namespace VulkanGameEngineGameObjectScripts
 {
     public unsafe class Transform2DComponent : GameObjectComponent
     {
@@ -20,7 +20,6 @@ namespace ClassLibrary1
         public Transform2DComponent() : base()
         {
             Name = "GameObjectTransform2DComponent";
-            ComponentType = ComponentTypeEnum.kGameObjectTransform2DComponent;
 
             GameObjectTransform = mat4.Identity;
             GameObjectPosition = new vec2(0.0f, 0.0f);
@@ -28,10 +27,9 @@ namespace ClassLibrary1
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(IntPtr parentGameObject) : base(parentGameObject)
+        public Transform2DComponent(IntPtr parentGameObject) : base(parentGameObject, ComponentTypeEnum.kGameObjectTransform2DComponent)
         {
             Name = "GameObjectTransform2DComponent";
-            ComponentType = ComponentTypeEnum.kGameObjectTransform2DComponent;
 
             GameObjectTransform = mat4.Identity;
             GameObjectPosition = new vec2(0.0f, 0.0f);
@@ -39,10 +37,8 @@ namespace ClassLibrary1
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(IntPtr parentGameObject, NativeString name) : base(parentGameObject, name)
+        public Transform2DComponent(IntPtr parentGameObject, NativeString name) : base(parentGameObject, name, ComponentTypeEnum.kGameObjectTransform2DComponent)
         {
-            ComponentType = ComponentTypeEnum.kGameObjectTransform2DComponent;
-
             GameObjectTransform = mat4.Identity;
             GameObjectPosition = new vec2(0.0f, 0.0f);
             GameObjectRotation = new vec2(0.0f, 0.0f);
@@ -71,7 +67,7 @@ namespace ClassLibrary1
             GameObjectTransform = mat4.Translate(new vec3(GameObjectPosition, 0.0f));
         }
 
-        public override void Draw(IntPtr commandBuffer, IntPtr pipeline, IntPtr pipelineLayout, IntPtr descriptorSet, SceneDataBuffer sceneProperties)
+        public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
             Console.WriteLine("Draw called");
         }
