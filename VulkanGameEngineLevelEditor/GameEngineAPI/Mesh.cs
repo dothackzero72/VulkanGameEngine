@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineGameObjectScripts.Component;
 using VulkanGameEngineGameObjectScripts.Import;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -54,7 +55,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     }
 
 
-    public unsafe class Mesh : IMesh
+    public unsafe class Mesh
     {
         Vk vk = Vk.GetApi();
         private const BufferUsageFlags MeshBufferUsageSettings = BufferUsageFlags.VertexBufferBit |

@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineGameObjectScripts.Component;
+using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -52,7 +54,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return gameObject;
         }
 
-        public override void Input(InputKey key, KeyState keyState)
+        public override void Input(KeyBoardKeys key, float deltaTime)
         {
 
         }

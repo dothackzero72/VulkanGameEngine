@@ -1,48 +1,58 @@
 #include "GameObjectComponent.h"
 #include "MemoryManager.h"
 
+std::string GameObjectComponent::GetCSNameSpacePath(ComponentTypeEnum componentType)
+{
+    switch (componentType) 
+    {
+        case kRenderMesh2DComponent: return CSNameSpace + "RenderMesh2DComponent";
+        case kTransform2DComponent:  return CSNameSpace + "Transform2DComponent";
+        case kInputComponent:        return CSNameSpace + "InputComponent";
+        default:     return "Undefined";
+    }
+}
+
 GameObjectComponent::GameObjectComponent()
 {
 
 }
 
-GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String className, ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(void* ptr, std::shared_ptr<GameObject> parentGameObjectPtr, ComponentTypeEnum componentType)
 {
-    //Name = "component";
+    void* reqw = this;
+    Name = std::make_shared<Coral::String>(Coral::String().New("component"));
     ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
     ParentGameObjectPtr = parentGameObjectPtr;
 
-    CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(CSNameSpace + className));
-    CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ParentGameObjectPtr->GetCSObjectHandle()));
+    CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(GetCSNameSpacePath(componentType)));
+    std::shared_ptr<GameObject> parentPtr = ParentGameObjectPtr.lock();
+    if (parentPtr)
+    {
+        CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ptr, parentGameObjectPtr.get(), parentPtr->GetCSObjectHandle()));
+    }
 }
 
-GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, String className, ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(void* ptr, std::shared_ptr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType)
 {
-    //Name = name;
+    Name = std::make_shared<Coral::String>(Coral::String().New(name));
     ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
     ParentGameObjectPtr = parentGameObjectPtr;
 
-    CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(CSNameSpace + className));
-    CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ParentGameObjectPtr->GetCSObjectHandle()));
-}
-
-GameObjectComponent::GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, String componentName, String className, ComponentTypeEnum componentType)
-{
-    //Name = name;
-    ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
-    ParentGameObjectPtr = parentGameObjectPtr;
-
-    CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(CSNameSpace + className));
-    CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ParentGameObjectPtr->GetCSObjectHandle()));
+    CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(GetCSNameSpacePath(componentType)));
+    std::shared_ptr<GameObject> parentPtr = ParentGameObjectPtr.lock();
+    if (parentPtr)
+    {
+        CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ptr, parentGameObjectPtr.get(), parentPtr->GetCSObjectHandle()));
+    }
 }
 
 GameObjectComponent::~GameObjectComponent()
 {
 }
 
-void GameObjectComponent::Input(InputKey key, KeyState keyState)
+void GameObjectComponent::Input(KeyBoardKeys key, float deltaTime)
 {
-    CSobject->InvokeMethod("Input", key, keyState);
+    CSobject->InvokeMethod("Input", key, deltaTime);
 }
 
 void GameObjectComponent::Update(float deltaTime)
@@ -55,13 +65,14 @@ void GameObjectComponent::BufferUpdate(VkCommandBuffer& commandBuffer, float del
     CSobject->InvokeMethod("BufferUpdate", commandBuffer, deltaTime);
 }
 
-void GameObjectComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
+void GameObjectComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
 {
-    CSobject->InvokeMethod("Destroy");
+
 }
 
 void GameObjectComponent::Destroy()
 {
+    CSobject->InvokeMethod("Destroy");
 }
 
 std::shared_ptr<GameObjectComponent> GameObjectComponent::Clone() const

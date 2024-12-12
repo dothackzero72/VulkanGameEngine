@@ -1,4 +1,8 @@
 #pragma once
+extern "C"
+{
+    #include <Keyboard.h>
+}
 #include <memory>
 #include "GameObjectComponent.h"
 #include <Coral/HostInstance.hpp>
@@ -28,6 +32,7 @@ public:
     static std::shared_ptr<GameObject> CreateGameObject(String name);
     static std::shared_ptr<GameObject> CreateGameObject(String name, List<ComponentTypeEnum> gameObjectComponentList);
 
+    virtual void Input(KeyBoardKeys key, float deltaTime);
     virtual void Update(float deltaTime);
     virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
     virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);

@@ -4,17 +4,15 @@ Transform2DComponent::Transform2DComponent() : GameObjectComponent()
 {
 }
 
-Transform2DComponent::Transform2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr) : GameObjectComponent(parentGameObjectPtr, GetClassName(), kTransform2DComponent)
+Transform2DComponent::Transform2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr) : GameObjectComponent(this, parentGameObjectPtr, kTransform2DComponent)
 {
-    auto a = GetClassName();
-
     GameObjectPosition = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetPositionPtr"));
     GameObjectRotation = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetRotationPtr"));
     GameObjectScale = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetScalePtr"));
     GameObjectMatrixTransform = std::shared_ptr<mat4>(CSobject->InvokeMethod<mat4*>("GetTransformMatrixPtr"));
 }
 
-Transform2DComponent::Transform2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String& name) : GameObjectComponent(parentGameObjectPtr, name, "Transform2DComponent", GetClassName(), kTransform2DComponent)
+Transform2DComponent::Transform2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String& name) : GameObjectComponent(this, parentGameObjectPtr, name, kTransform2DComponent)
 {
     GameObjectPosition = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetPositionPtr"));
     GameObjectRotation = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetRotationPtr"));
@@ -26,6 +24,10 @@ Transform2DComponent::~Transform2DComponent()
 {
 }
 
+void Transform2DComponent::Input(KeyBoardKeys key, float deltaTime)
+{
+    GameObjectComponent::Input(key, deltaTime);
+}
 
 void Transform2DComponent::Update(float deltaTime)
 {

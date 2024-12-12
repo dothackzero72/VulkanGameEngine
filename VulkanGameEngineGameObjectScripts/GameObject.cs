@@ -6,6 +6,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using VulkanGameEngineGameObjectScripts.Component;
+using VulkanGameEngineGameObjectScripts.Input;
+using VulkanGameEngineGameObjectScripts.Interface;
 
 namespace VulkanGameEngineGameObjectScripts
 {
@@ -40,6 +44,15 @@ namespace VulkanGameEngineGameObjectScripts
             GameObjectComponentList = componentTypeList;
         }
 
+        static public List<GameObjectComponent> GetComponentFromGameObjects(List<GameObject> gameObjectList, ComponentTypeEnum componentType)
+        {
+            return gameObjectList
+                .Where(x => x.GameObjectComponentList.Any(y => y.ComponentType == componentType))
+                .SelectMany(x => x.GameObjectComponentList
+                    .Where(y => y.ComponentType == componentType))
+                .ToList();
+        }
+
         public void AddComponent(GameObjectComponent newComponent)
         {
             Console.WriteLine("AddComponent()");
@@ -51,7 +64,7 @@ namespace VulkanGameEngineGameObjectScripts
             GameObjectComponentList.Add(*blightPtr);
         }
 
-        public virtual void Input(InputKey key, KeyState keyState)
+        public virtual void Input(KeyBoardKeys key, float deltaTime)
         {
         }
 

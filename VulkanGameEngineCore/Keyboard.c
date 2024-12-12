@@ -40,7 +40,7 @@
 
 void GameEngine_GLFW_KeyboardKeyPressed(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    KeyCode unifiedKey = ConvertGLFWKeyToUnified(key);
+    KeyboardKeyCode unifiedKey = ConvertGLFWKeyToUnified(key);
     switch (action)
     {
         case GLFW_PRESS: vulkanWindow->keyboard.KeyPressed[unifiedKey] = KS_PRESSED; break;
@@ -49,7 +49,7 @@ void GameEngine_GLFW_KeyboardKeyPressed(GLFWwindow* window, int key, int scancod
     }
 }
 
-KeyCode ConvertGLFWKeyToUnified(int glfwKey)
+KeyboardKeyCode ConvertGLFWKeyToUnified(int glfwKey)
 {
     switch (glfwKey)
     {

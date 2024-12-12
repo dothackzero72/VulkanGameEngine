@@ -2,8 +2,11 @@
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineGameObjectScripts.Component;
+using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -21,10 +24,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         JsonRenderPass renderPass3D { get; set; } = new JsonRenderPass();
         public void StartUp()
         {
-            //List<string> scriptList = new List<string>();
-            //scriptList.Add(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\VulkanGameEngineLevelEditor\GameEngineAPI\TestScriptComponent.cs");
-            //ScriptCompiler.CompileScript(scriptList);
-
             MemoryManager.StartUp(30);
 
             var res = new vec2((float)VulkanRenderer.swapChain.swapchainExtent.Width, (float)VulkanRenderer.swapChain.swapchainExtent.Height);
@@ -34,8 +33,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
             textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\container2.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
 
-            GameObjectList.Add(MemoryManager.CreateGameObject("object1", new List<ComponentTypeEnum>() { ComponentTypeEnum.kGameObjectTransform2DComponent, ComponentTypeEnum.kRenderMesh2DComponent }));
-            GameObjectList.Add(MemoryManager.CreateGameObject("object2", new List<ComponentTypeEnum>() { ComponentTypeEnum.kGameObjectTransform2DComponent, ComponentTypeEnum.kRenderMesh2DComponent }));
+            GameObjectList.Add(MemoryManager.CreateGameObject("object1", new List<ComponentTypeEnum>() 
+            { 
+                ComponentTypeEnum.kGameObjectTransform2DComponent, 
+                ComponentTypeEnum.kInputComponent, 
+                ComponentTypeEnum.kRenderMesh2DComponent 
+            }));
+            GameObjectList.Add(MemoryManager.CreateGameObject("object2", new List<ComponentTypeEnum>() 
+            { 
+                ComponentTypeEnum.kGameObjectTransform2DComponent, 
+                ComponentTypeEnum.kInputComponent, 
+                ComponentTypeEnum.kRenderMesh2DComponent 
+            }));
 
             MemoryManager.ViewMemoryMap();
             renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
@@ -43,18 +52,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void Input(KeyEventArgs e)
         {
-            //var inputObjects = MemoryManager.InputComponentMemoryPool.ViewMemoryPool();
-            //foreach (var obj in inputObjects)
-            //{
-
-            //}
+            var inputComponents = GameObject.GetComponentFromGameObjects(GameObjectList, ComponentTypeEnum.kInputComponent);
+            foreach (var obj in inputComponents)
+            {
+                (obj as InputComponent).Input((KeyBoardKeys)e.KeyCode, 0.0f);
+            }
         }
 
         public void Update()
         {
-            var a = GameObjectList[0].GameObjectComponentList[0] as Transform2DComponent;
-            a.GameObjectPosition.x += 0.01f;
-
             CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             foreach (var gameObject in GameObjectList)
             {

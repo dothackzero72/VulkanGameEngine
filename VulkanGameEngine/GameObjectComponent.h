@@ -14,42 +14,39 @@ extern "C"
 #include <Coral/GC.hpp>
 #include <Coral/Array.hpp>
 #include <Coral/Attribute.hpp>
+#include <Keyboard.h>
 
 class GameObject;
 class GameObjectComponent
 {
 private:
-    const String CSNameSpace = "VulkanGameEngineGameObjectScripts.";
+    const String CSNameSpace = "VulkanGameEngineGameObjectScripts.Component.";
+
+    std::string GetCSNameSpacePath(ComponentTypeEnum componentType);
 
 protected:
     std::shared_ptr<Coral::Type> CSclass = nullptr;
     std::shared_ptr<Coral::ManagedObject> CSobject = nullptr;
 
 public:
-    std::shared_ptr<GameObject> ParentGameObjectPtr = nullptr;
+    std::weak_ptr<GameObject> ParentGameObjectPtr;
     std::shared_ptr<ComponentTypeEnum> ComponentType = nullptr;
     std::shared_ptr<Coral::String> Name = nullptr;
     size_t MemorySize = 0;
 
     GameObjectComponent();
-    GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String className, ComponentTypeEnum componentType);
-    GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, String className, ComponentTypeEnum componentType);
-    GameObjectComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, String componentName, String className, ComponentTypeEnum componentType);
+    GameObjectComponent(void* ptr, std::shared_ptr<GameObject> parentGameObjectPtr, ComponentTypeEnum componentType);
+    GameObjectComponent(void* ptr, std::shared_ptr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType);
     virtual ~GameObjectComponent();
 
-    virtual void Input(InputKey key, KeyState keyState);
+    virtual void Input(KeyBoardKeys key, float deltaTime);
     virtual void Update(float deltaTime);
     virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
-    virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
+    virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
     virtual void Destroy();
     virtual std::shared_ptr<GameObjectComponent> Clone() const;
     virtual size_t GetMemorySize() const;
 
-    virtual std::string GetClassName() const 
-    {
-        return "GameObjectComponent";
-    }
-
-    std::shared_ptr<GameObject> GetParentGameObject() { return ParentGameObjectPtr; }
+    std::weak_ptr<GameObject> GetParentGameObject() { return ParentGameObjectPtr; }
     void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
 };

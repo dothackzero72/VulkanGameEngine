@@ -39,9 +39,11 @@ void Mesh::Update(const float& deltaTime)
 void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
 	mat4 GameObjectMatrix = mat4(1.0);
-	if (GameObjectTransform)
+	std::shared_ptr<Transform2DComponent> transform = GameObjectTransform.lock();
+	if (transform)
 	{
-		GameObjectMatrix = *GameObjectTransform->GameObjectMatrixTransform.get();
+			GameObjectMatrix = *transform->GameObjectMatrixTransform.get();
+		
 	}
 
 	mat4 MeshMatrix = mat4(1.0f);

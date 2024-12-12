@@ -41,7 +41,7 @@ typedef struct mouseState
     MouseButtonEventState MouseButtonState[MAXMOUSEKEY];
 }MouseState;
 
-typedef enum KeyCode {
+typedef enum KeyboardKeyCode {
     KEY_UNKNOWN = -1,
     KEY_A = 0, KEY_B, KEY_C, KEY_D, KEY_E, KEY_F, KEY_G, KEY_H, KEY_I,
     KEY_J, KEY_K, KEY_L, KEY_M, KEY_N, KEY_O, KEY_P, KEY_Q, KEY_R,
@@ -70,7 +70,7 @@ typedef enum KeyCode {
     KEY_INSERT,
     KEY_MENU,
     KEY_LAST
-} KeyCode;
+} KeyboardKeyCode;
 
 typedef enum inputKey
 {
@@ -243,8 +243,8 @@ typedef struct VulkanWindow
 } VulkanWindow;
 extern VulkanWindow* vulkanWindow;
 
-KeyCode ConvertGLFWKeyToUnified(int glfwKey);
-KeyCode ConvertSDLKeyToUnified(SDL_Keycode sdlKey);
+KeyboardKeyCode ConvertGLFWKeyToUnified(int glfwKey);
+KeyboardKeyCode ConvertSDLKeyToUnified(SDL_Keycode sdlKey);
 VulkanWindow* Window_CreateWindow(Window_Type windowType, const char* WindowName, uint32_t width, uint32_t height);
 #ifdef __cplusplus
 }

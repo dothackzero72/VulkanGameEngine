@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineGameObjectScripts.Component;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -56,11 +57,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             foreach (var component in componentTypeList)
             {
-                String asdf = "adsfasd";
                 switch (component)
                 {
                     case ComponentTypeEnum.kGameObjectTransform2DComponent: gameObject.AddComponent(new Transform2DComponent(parentGameObjectPtr, "Testing")); break;
                     case ComponentTypeEnum.kRenderMesh2DComponent: gameObject.AddComponent(MeshRenderer2DComponent.CreateRenderMesh2DComponent(parentGameObjectPtr, "Mesh Renderer", (uint)MemoryManager.RenderMesh2DComponentList.Count)); break;
+                    case ComponentTypeEnum.kInputComponent: gameObject.AddComponent(new InputComponent(parentGameObjectPtr)); break;
                 }
             }
             return gameObject;

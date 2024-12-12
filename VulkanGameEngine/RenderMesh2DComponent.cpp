@@ -5,7 +5,7 @@ RenderMesh2DComponent::RenderMesh2DComponent() : GameObjectComponent()
 {
 }
 
-RenderMesh2DComponent::RenderMesh2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex) : GameObjectComponent(parentGameObjectPtr, name, GetClassName(), ComponentTypeEnum::kRenderMesh2DComponent)
+RenderMesh2DComponent::RenderMesh2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex) : GameObjectComponent(this, parentGameObjectPtr, name, ComponentTypeEnum::kRenderMesh2DComponent)
 {
 	std::vector<Vertex2D> SpriteVertexList =
 	{
@@ -34,6 +34,10 @@ std::shared_ptr<RenderMesh2DComponent> RenderMesh2DComponent::CreateRenderMesh2D
 	return gameObject;
 }
 
+void RenderMesh2DComponent::Input(KeyBoardKeys key, float deltaTime)
+{
+}
+
 void RenderMesh2DComponent::Update(float deltaTime)
 {
 	mesh->Update(deltaTime);
@@ -45,9 +49,9 @@ void RenderMesh2DComponent::BufferUpdate(VkCommandBuffer& commandBuffer, float d
 	mesh->Update(deltaTime);
 }
 
-void RenderMesh2DComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
+void RenderMesh2DComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
 {
-	mesh->Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSet, sceneProperties);
+	mesh->Draw(commandBuffer, pipeline, pipelineLayout, descriptorSet, sceneProperties);
 }
 
 void RenderMesh2DComponent::Destroy()

@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using ImageLayout = Silk.NET.Vulkan.ImageLayout;
 using VulkanGameEngineLevelEditor.Vulkan;
+using VulkanGameEngineGameObjectScripts;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {

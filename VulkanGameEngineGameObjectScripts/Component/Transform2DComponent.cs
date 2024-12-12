@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using VulkanGameEngineGameObjectScripts;
 using Coral.Managed.Interop;
 using VulkanGameEngineGameObjectScripts.Import;
+using VulkanGameEngineGameObjectScripts.Input;
+using System.Windows.Forms;
 
-namespace VulkanGameEngineGameObjectScripts
+namespace VulkanGameEngineGameObjectScripts.Component
 {
     public unsafe class Transform2DComponent : GameObjectComponent
     {
@@ -27,7 +29,8 @@ namespace VulkanGameEngineGameObjectScripts
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(IntPtr parentGameObject) : base(parentGameObject, ComponentTypeEnum.kGameObjectTransform2DComponent)
+        public Transform2DComponent(IntPtr cppComponentPtr, IntPtr cppGameObjectPtr, IntPtr csParentGameObject) : 
+            base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, ComponentTypeEnum.kGameObjectTransform2DComponent)
         {
             Name = "GameObjectTransform2DComponent";
 
@@ -37,7 +40,8 @@ namespace VulkanGameEngineGameObjectScripts
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(IntPtr parentGameObject, NativeString name) : base(parentGameObject, name, ComponentTypeEnum.kGameObjectTransform2DComponent)
+        public Transform2DComponent(IntPtr cppComponentPtr, IntPtr cppGameObjectPtr, IntPtr csParentGameObject, NativeString name) : 
+            base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, name, ComponentTypeEnum.kGameObjectTransform2DComponent) 
         {
             GameObjectTransform = mat4.Identity;
             GameObjectPosition = new vec2(0.0f, 0.0f);
@@ -45,7 +49,7 @@ namespace VulkanGameEngineGameObjectScripts
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public override void Input(InputKey key, KeyState keyState)
+        public override void Input(KeyBoardKeys key, float deltaTime)
         {
         }
 

@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace VulkanGameEngineLevelEditor.GameEngineAPI
+namespace VulkanGameEngineGameObjectScripts
 {
     public struct Pixel3
     {
@@ -23,7 +27,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                    lhs.Blue == rhs.Blue;
         }
 
-        public static bool operator != (Pixel3 lhs, Pixel3 rhs)
+        public static bool operator !=(Pixel3 lhs, Pixel3 rhs)
         {
             return !(lhs == rhs);
         }
