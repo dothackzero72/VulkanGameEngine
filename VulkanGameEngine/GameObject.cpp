@@ -44,7 +44,7 @@ std::shared_ptr<GameObject> GameObject::CreateGameObject(String name, List<Compo
 		String asdf = "adsfasd";
 		switch (component)
 		{
-			//case kRenderMesh2DComponent: gameObject->AddComponent(RenderMesh2DComponent::CreateRenderMesh2DComponent(gameObject, "Mesh Renderer", static_cast<uint32>(MemoryManager::GetRenderMesh2DComponentList().size()))); break;
+			case kRenderMesh2DComponent: gameObject->AddComponent(RenderMesh2DComponent::CreateRenderMesh2DComponent(gameObject, "Mesh Renderer", static_cast<uint32>(MemoryManager::GetRenderMesh2DComponentList().size()))); break;
 			case kTransform2DComponent: gameObject->AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(gameObject, asdf))); break;
 			case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject, asdf))); break;
 		}
@@ -53,11 +53,11 @@ std::shared_ptr<GameObject> GameObject::CreateGameObject(String name, List<Compo
 	return gameObject;
 }
 
-void GameObject::Input(KeyBoardKeys key, float deltaTime)
+void GameObject::Input(float deltaTime)
 {
 	for (std::shared_ptr<GameObjectComponent> component : GameObjectComponentList)
 	{
-		component->Input(key, deltaTime);
+		component->Input(deltaTime);
 	}
 }
 
@@ -95,7 +95,8 @@ void GameObject::Destroy()
 
 void GameObject::AddComponent(std::shared_ptr<GameObjectComponent> newComponent)
 {
-	CSobject->InvokeMethod("AddComponent", newComponent->GetCSObjectHandle(), 2);
+	auto a = newComponent.get();
+	CSobject->InvokeMethod("AddComponent", newComponent->GetCSObjectHandle(), a);
 	GameObjectComponentList.emplace_back(newComponent);
 }
 

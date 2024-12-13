@@ -50,9 +50,9 @@ GameObjectComponent::~GameObjectComponent()
 {
 }
 
-void GameObjectComponent::Input(KeyBoardKeys key, float deltaTime)
+void GameObjectComponent::Input(float deltaTime)
 {
-    CSobject->InvokeMethod("Input", key, deltaTime);
+   // CSobject->InvokeMethod("Input", KeyboardKeyCode::KEY_D, deltaTime);
 }
 
 void GameObjectComponent::Update(float deltaTime)

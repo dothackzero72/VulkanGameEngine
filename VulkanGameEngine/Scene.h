@@ -30,6 +30,7 @@ private:
 
 public:
 	void StartUp();
+	void Input(float deltaTime);
 	void Update(const float& deltaTime);
 	void ImGuiUpdate(const float& deltaTime);
 	void BuildRenderPasses();

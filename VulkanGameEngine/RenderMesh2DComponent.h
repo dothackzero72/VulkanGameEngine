@@ -14,7 +14,7 @@ public:
 
 	static std::shared_ptr<RenderMesh2DComponent> CreateRenderMesh2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex);
 
-	virtual void Input(KeyBoardKeys key, float deltaTime) override;
+	virtual void Input(float deltaTime) override;
 	virtual void Update(float deltaTime) override;
 	virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime) override;
 	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties) override;

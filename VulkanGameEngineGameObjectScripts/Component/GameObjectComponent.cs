@@ -57,7 +57,7 @@ namespace VulkanGameEngineGameObjectScripts.Component
 
         public virtual void Update(float deltaTime)
         {
-            Console.WriteLine("GameObjectComponent Updated");
+
         }
 
         public virtual void BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime)

@@ -32,7 +32,7 @@ public:
     static std::shared_ptr<GameObject> CreateGameObject(String name);
     static std::shared_ptr<GameObject> CreateGameObject(String name, List<ComponentTypeEnum> gameObjectComponentList);
 
-    virtual void Input(KeyBoardKeys key, float deltaTime);
+    virtual void Input(float deltaTime);
     virtual void Update(float deltaTime);
     virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
     virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);

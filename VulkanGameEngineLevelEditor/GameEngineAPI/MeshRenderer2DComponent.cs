@@ -14,7 +14,9 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public unsafe class MeshRenderer2DComponent : GameObjectComponent
+    //RenderMesh2DComponent is basically just a skeletion container for linking from C++ to C#. 
+    //Mesh and Draw calls are too diffrent to cleanly run them on C#.
+    public unsafe class MeshRenderer2DComponent : RenderMesh2DComponent
     {
         public Mesh2D mesh { get; protected set; } = new Mesh2D();
         public MeshRenderer2DComponent()

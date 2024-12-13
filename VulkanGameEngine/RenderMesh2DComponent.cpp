@@ -34,7 +34,7 @@ std::shared_ptr<RenderMesh2DComponent> RenderMesh2DComponent::CreateRenderMesh2D
 	return gameObject;
 }
 
-void RenderMesh2DComponent::Input(KeyBoardKeys key, float deltaTime)
+void RenderMesh2DComponent::Input(float deltaTime)
 {
 }
 

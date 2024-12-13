@@ -30,7 +30,7 @@ public:
     InputComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String& name);
     virtual ~InputComponent();
 
-    virtual void Input(KeyBoardKeys key, float deltaTime) override;
+    virtual void Input(float deltaTime) override;
     virtual void Update(float deltaTime) override;
     virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime) override;
     virtual void Destroy() override;

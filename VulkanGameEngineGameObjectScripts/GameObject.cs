@@ -55,13 +55,16 @@ namespace VulkanGameEngineGameObjectScripts
 
         public void AddComponent(GameObjectComponent newComponent)
         {
-            Console.WriteLine("AddComponent()");
+
             GameObjectComponentList.Add(newComponent);
         }
 
-        public void AddComponent(GameObjectComponent* blightPtr, int className)
+        public void AddComponent(GameObjectComponent* gameObjectComponentPtr, IntPtr componentPtr)
         {
-            GameObjectComponentList.Add(*blightPtr);
+            //GameObjectComponent gameObjectComponent = *gameObjectComponentPtr;
+            //gameObjectComponent.CPPcomponentPtr = componentPtr;
+
+            GameObjectComponentList.Add(*gameObjectComponentPtr);
         }
 
         public virtual void Input(KeyBoardKeys key, float deltaTime)

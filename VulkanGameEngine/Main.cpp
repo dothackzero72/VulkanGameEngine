@@ -30,6 +30,7 @@ int main(int argc, char** argv)
     {
         vulkanWindow->PollEventHandler(vulkanWindow);
         vulkanWindow->SwapBuffer(vulkanWindow);
+        scene.Input(deltaTime.GetFrameTime());
         scene.Update(deltaTime.GetFrameTime());
         scene.ImGuiUpdate(deltaTime.GetFrameTime());
         scene.Draw();

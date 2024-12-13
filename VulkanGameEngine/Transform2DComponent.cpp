@@ -1,4 +1,5 @@
 #include "Transform2DComponent.h"
+#include "MemoryManager.h"
 
 Transform2DComponent::Transform2DComponent() : GameObjectComponent()
 {
@@ -24,9 +25,9 @@ Transform2DComponent::~Transform2DComponent()
 {
 }
 
-void Transform2DComponent::Input(KeyBoardKeys key, float deltaTime)
+void Transform2DComponent::Input(float deltaTime)
 {
-    GameObjectComponent::Input(key, deltaTime);
+    GameObjectComponent::Input(deltaTime);
 }
 
 void Transform2DComponent::Update(float deltaTime)

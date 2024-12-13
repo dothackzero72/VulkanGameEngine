@@ -19,6 +19,14 @@ void Scene::StartUp()
 	BuildRenderPasses();
 }
 
+void Scene::Input(float deltaTime)
+{
+	for (auto gameObject : gameObjectList)
+	{
+		gameObject->Input(deltaTime);
+	}
+}
+
 void Scene::Update(const float& deltaTime)
 {
 	if (cRenderer.RebuildRendererFlag)
@@ -26,54 +34,13 @@ void Scene::Update(const float& deltaTime)
 		UpdateRenderPasses();
 	}
 
-	//VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-	//for (auto gameObject : gameObjectList)
-	//{
-	//	gameObject->Update(deltaTime);
-	//	gameObject->BufferUpdate(commandBuffer, deltaTime);
-	//}
-	//renderer.EndSingleTimeCommands(commandBuffer);
-
-	//if (vulkanWindow->keyboard.KeyPressed[KeyboardKeyCode::KEY_W] == KS_PRESSED)
-	//{
-	//	const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
-	//	const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
-	//	meshRenderer->GetMesh2D()->MeshPosition.x += 1.0f * deltaTime;
-
-	//	//orthographicCamera->Position.y -= 1.0f * deltaTime;
-	//}
-	//if (vulkanWindow->keyboard.KeyPressed[KeyboardKeyCode::KEY_A] == KS_PRESSED)
-	//{
-	//	const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
-	//	const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
-	//	meshRenderer->GetMesh2D()->MeshPosition.x -= 1.0f * deltaTime;
-
-	//	//orthographicCamera->Position.x += 1.0f * deltaTime;
-	//}
-	//if (vulkanWindow->keyboard.KeyPressed[KeyboardKeyCode::KEY_S] == KS_PRESSED)
-	//{
-	//	const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
-	//	const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
-	//	meshRenderer->GetMesh2D()->MeshPosition.y -= 1.0f * deltaTime;
-
-	//	//orthographicCamera->Position.y += 1.0f * deltaTime;
-	//}
-	//if (vulkanWindow->keyboard.KeyPressed[KeyboardKeyCode::KEY_D] == KS_PRESSED)
-	//{
-	//	const auto conponent = gameObjectList.front()->GetComponentByComponentType(kRenderMesh2DComponent);
-	//	const auto meshRenderer = dynamic_cast<RenderMesh2DComponent*>(conponent.get());
-	//	meshRenderer->GetMesh2D()->MeshPosition.y += 1.0f * deltaTime;
-
-	//	//orthographicCamera->Position.x -= 1.0f * deltaTime;
-	//}
-	//if (vulkanWindow->keyboard.KeyPressed[KeyboardKeyCode::KEY_D] == KS_PRESSED)
-	//{
-	//	orthographicCamera->Zoom -= 1.0f * deltaTime;
-	//}
-	//if (vulkanWindow->keyboard.KeyPressed[KeyboardKeyCode::KEY_D] == KS_PRESSED)
-	//{
-	//	orthographicCamera->Zoom += 1.0f * deltaTime;
-	//}
+	VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
+	for (auto gameObject : gameObjectList)
+	{
+		gameObject->Update(deltaTime);
+		gameObject->BufferUpdate(commandBuffer, deltaTime);
+	}
+	renderer.EndSingleTimeCommands(commandBuffer);
 }
 
 void Scene::ImGuiUpdate(const float& deltaTime)

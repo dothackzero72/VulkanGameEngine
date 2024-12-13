@@ -55,23 +55,57 @@ namespace VulkanGameEngineGameObjectScripts.Component
             return sizeof(InputComponent);
         }
 
-        public override void Input(KeyBoardKeys key, float deltaTime)
+        //public override void Input(KeyBoardKeys key, float deltaTime)
+        //{
+        //    if (transform != null)
+        //    {
+        //        if (key == KeyBoardKeys.W)
+        //        {
+        //            transform.GameObjectPosition.y += 0.01f;
+        //        }
+        //        if (key == KeyBoardKeys.A)
+        //        {
+        //            transform.GameObjectPosition.x -= 0.01f;
+        //        }
+        //        if (key == KeyBoardKeys.S)
+        //        {
+        //            transform.GameObjectPosition.y -= 0.01f;
+        //        }
+        //        if (key == KeyBoardKeys.D)
+        //        {
+        //            transform.GameObjectPosition.x += 0.01f;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine($"Transform not found: GameObjectId: 0x{CPPcomponentPtr.ToString("x")} TransformID: 0x{CPPcomponentPtr.ToString("x")}");
+        //    }
+        //}
+
+        public void Input(int key, float deltaTime)
         {
-            if (key == KeyBoardKeys.W)
+            if (transform != null)
             {
-                transform.GameObjectPosition.y += 0.01f;
+                if ((KeyBoardKeys)key == KeyBoardKeys.W)
+                {
+                    transform.GameObjectPosition.y += 0.01f;
+                }
+                if ((KeyBoardKeys)key == KeyBoardKeys.A)
+                {
+                    transform.GameObjectPosition.x -= 0.01f;
+                }
+                if ((KeyBoardKeys)key == KeyBoardKeys.S)
+                {
+                    transform.GameObjectPosition.y -= 0.01f;
+                }
+                if ((KeyBoardKeys)key == KeyBoardKeys.D)
+                {
+                    transform.GameObjectPosition.x += 0.01f;
+                }
             }
-            if (key == KeyBoardKeys.A)
+            else
             {
-                transform.GameObjectPosition.x -= 0.01f;
-            }
-            if (key == KeyBoardKeys.S)
-            {
-                transform.GameObjectPosition.y -= 0.01f;
-            }
-            if (key == KeyBoardKeys.D)
-            {
-                transform.GameObjectPosition.x += 0.01f;
+                Console.WriteLine($"Transform not found: GameObjectId: 0x{CPPcomponentPtr.ToString("x")} TransformID: 0x{CPPcomponentPtr.ToString("x")}");
             }
         }
 

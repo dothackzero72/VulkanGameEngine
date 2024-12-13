@@ -22,11 +22,11 @@ class GameObjectComponent
 private:
     const String CSNameSpace = "VulkanGameEngineGameObjectScripts.Component.";
 
-    std::string GetCSNameSpacePath(ComponentTypeEnum componentType);
-
 protected:
     std::shared_ptr<Coral::Type> CSclass = nullptr;
     std::shared_ptr<Coral::ManagedObject> CSobject = nullptr;
+
+    std::string GetCSNameSpacePath(ComponentTypeEnum componentType);
 
 public:
     std::weak_ptr<GameObject> ParentGameObjectPtr;
@@ -39,7 +39,7 @@ public:
     GameObjectComponent(void* ptr, std::shared_ptr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType);
     virtual ~GameObjectComponent();
 
-    virtual void Input(KeyBoardKeys key, float deltaTime);
+    virtual void Input(float deltaTime);
     virtual void Update(float deltaTime);
     virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
     virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
@@ -49,4 +49,5 @@ public:
 
     std::weak_ptr<GameObject> GetParentGameObject() { return ParentGameObjectPtr; }
     void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
+    const GameObjectComponent* GetCPPObjectHandle() { return this; }
 };

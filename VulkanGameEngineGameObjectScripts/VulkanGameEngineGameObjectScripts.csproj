@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Component\GameObjectComponent.cs" />
     <Compile Include="Component\InputComponent.cs" />
+    <Compile Include="Component\MeshRenderer2DComponent.cs" />
     <Compile Include="Component\Transform2DComponent.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="Import\CLIMath.cs" />
