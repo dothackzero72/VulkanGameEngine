@@ -122,150 +122,6 @@ bool Renderer_GetRayTracingSupport()
     return false;
 }
 
-void Renderer_GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features)
-{
-    VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
-        .pNext = nullptr,
-        .bufferDeviceAddress = VK_TRUE,
-        .bufferDeviceAddressCaptureReplay = VK_FALSE,
-        .bufferDeviceAddressMultiDevice = VK_FALSE,
-    };
-
-    VkPhysicalDeviceDescriptorIndexingFeatures physicalDeviceDescriptorIndexingFeatures =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
-        .pNext = nullptr,
-        .shaderInputAttachmentArrayDynamicIndexing = VK_FALSE,
-        .shaderUniformTexelBufferArrayDynamicIndexing = VK_FALSE,
-        .shaderStorageTexelBufferArrayDynamicIndexing = VK_FALSE,
-        .shaderUniformBufferArrayNonUniformIndexing = VK_FALSE,
-        .shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
-        .shaderStorageBufferArrayNonUniformIndexing = VK_FALSE,
-        .shaderStorageImageArrayNonUniformIndexing = VK_FALSE,
-        .shaderInputAttachmentArrayNonUniformIndexing = VK_FALSE,
-        .shaderUniformTexelBufferArrayNonUniformIndexing = VK_FALSE,
-        .shaderStorageTexelBufferArrayNonUniformIndexing = VK_FALSE,
-        .descriptorBindingUniformBufferUpdateAfterBind = VK_FALSE,
-        .descriptorBindingSampledImageUpdateAfterBind = VK_FALSE,
-        .descriptorBindingStorageImageUpdateAfterBind = VK_FALSE,
-        .descriptorBindingStorageBufferUpdateAfterBind = VK_FALSE,
-        .descriptorBindingUniformTexelBufferUpdateAfterBind = VK_FALSE,
-        .descriptorBindingStorageTexelBufferUpdateAfterBind = VK_FALSE,
-        .descriptorBindingUpdateUnusedWhilePending = VK_FALSE,
-        .descriptorBindingPartiallyBound = VK_FALSE,
-        .descriptorBindingVariableDescriptorCount = VK_TRUE,
-        .runtimeDescriptorArray = VK_FALSE,
-    };
-
-    VkPhysicalDeviceRobustness2FeaturesEXT PhysicalDeviceRobustness2Features =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
-        .pNext = &physicalDeviceDescriptorIndexingFeatures,
-        .robustBufferAccess2 = VK_FALSE,
-        .robustImageAccess2 = VK_FALSE,
-        .nullDescriptor = VK_FALSE
-    };
-
-    if (Renderer_GetRayTracingSupport())
-    {
-        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
-            .accelerationStructure = VK_TRUE,
-            .accelerationStructureCaptureReplay = VK_FALSE,
-            .accelerationStructureIndirectBuild = VK_FALSE,
-            .accelerationStructureHostCommands = VK_FALSE,
-            .descriptorBindingAccelerationStructureUpdateAfterBind = VK_FALSE,
-        };
-
-        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
-            .pNext = &accelerationStructureFeatures,
-            .rayTracingPipeline = VK_TRUE,
-            .rayTracingPipelineShaderGroupHandleCaptureReplay = VK_FALSE,
-            .rayTracingPipelineShaderGroupHandleCaptureReplayMixed = VK_FALSE,
-            .rayTracingPipelineTraceRaysIndirect = VK_FALSE,
-            .rayTraversalPrimitiveCulling = VK_FALSE,
-        };
-
-        bufferDeviceAddressFeatures.pNext = &rayTracingPipelineFeatures;
-    }
-    PhysicalDeviceRobustness2Features.pNext = &bufferDeviceAddressFeatures;
-
-    VkPhysicalDeviceFeatures deviceFeatures =
-    {
-        .robustBufferAccess = VK_FALSE,
-        .fullDrawIndexUint32 = VK_FALSE,
-        .imageCubeArray = VK_FALSE,
-        .independentBlend = VK_FALSE,
-        .geometryShader = VK_FALSE,
-        .tessellationShader = VK_FALSE,
-        .sampleRateShading = VK_FALSE,
-        .dualSrcBlend = VK_FALSE,
-        .logicOp = VK_FALSE,
-        .multiDrawIndirect = VK_FALSE,
-        .drawIndirectFirstInstance = VK_FALSE,
-        .depthClamp = VK_FALSE,
-        .depthBiasClamp = VK_FALSE,
-        .fillModeNonSolid = VK_TRUE,
-        .depthBounds = VK_FALSE,
-        .wideLines = VK_FALSE,
-        .largePoints = VK_FALSE,
-        .alphaToOne = VK_FALSE,
-        .multiViewport = VK_FALSE,
-        .samplerAnisotropy = VK_TRUE,
-        .textureCompressionETC2 = VK_FALSE,
-        .textureCompressionASTC_LDR = VK_FALSE,
-        .textureCompressionBC = VK_FALSE,
-        .occlusionQueryPrecise = VK_FALSE,
-        .pipelineStatisticsQuery = VK_FALSE,
-        .vertexPipelineStoresAndAtomics = VK_FALSE,
-        .fragmentStoresAndAtomics = VK_FALSE,
-        .shaderTessellationAndGeometryPointSize = VK_FALSE,
-        .shaderImageGatherExtended = VK_FALSE,
-        .shaderStorageImageExtendedFormats = VK_FALSE,
-        .shaderStorageImageMultisample = VK_FALSE,
-        .shaderStorageImageReadWithoutFormat = VK_FALSE,
-        .shaderStorageImageWriteWithoutFormat = VK_FALSE,
-        .shaderUniformBufferArrayDynamicIndexing = VK_FALSE,
-        .shaderSampledImageArrayDynamicIndexing = VK_FALSE,
-        .shaderStorageBufferArrayDynamicIndexing = VK_FALSE,
-        .shaderStorageImageArrayDynamicIndexing = VK_FALSE,
-        .shaderClipDistance = VK_FALSE,
-        .shaderCullDistance = VK_FALSE,
-        .shaderFloat64 = VK_FALSE,
-        .shaderInt64 = VK_FALSE,
-        .shaderInt16 = VK_FALSE,
-        .shaderResourceResidency = VK_FALSE,
-        .shaderResourceMinLod = VK_FALSE,
-        .sparseBinding = VK_FALSE,
-        .sparseResidencyBuffer = VK_FALSE,
-        .sparseResidencyImage2D = VK_FALSE,
-        .sparseResidencyImage3D = VK_FALSE,
-        .sparseResidency2Samples = VK_FALSE,
-        .sparseResidency4Samples = VK_FALSE,
-        .sparseResidency8Samples = VK_FALSE,
-        .sparseResidency16Samples = VK_FALSE,
-        .sparseResidencyAliased = VK_FALSE,
-        .variableMultisampleRate = VK_FALSE,
-        .inheritedQueries = VK_FALSE,
-    };
-
-    VkPhysicalDeviceFeatures2 deviceFeatures2 =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-        .pNext = &PhysicalDeviceRobustness2Features,
-        .features = deviceFeatures,
-    };
-
-    physicalDeviceVulkan11Features->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
-    physicalDeviceVulkan11Features->multiview = VK_TRUE;
-    physicalDeviceVulkan11Features->pNext = &deviceFeatures2;
-}
-
 VkInstance Renderer_CreateVulkanInstance()
 {
     VkInstance instance = VK_NULL_HANDLE;
@@ -476,41 +332,6 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
         bufferDeviceAddressFeatures.pNext = NULL;
     }
 
-    VkPhysicalDeviceDescriptorIndexingFeatures physicalDeviceDescriptorIndexingFeatures =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
-        .pNext = &bufferDeviceAddressFeatures,
-        .shaderInputAttachmentArrayDynamicIndexing = VK_FALSE,
-        .shaderUniformTexelBufferArrayDynamicIndexing = VK_FALSE,
-        .shaderStorageTexelBufferArrayDynamicIndexing = VK_FALSE,
-        .shaderUniformBufferArrayNonUniformIndexing = VK_FALSE,
-        .shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
-        .shaderStorageBufferArrayNonUniformIndexing = VK_FALSE,
-        .shaderStorageImageArrayNonUniformIndexing = VK_FALSE,
-        .shaderInputAttachmentArrayNonUniformIndexing = VK_FALSE,
-        .shaderUniformTexelBufferArrayNonUniformIndexing = VK_FALSE,
-        .shaderStorageTexelBufferArrayNonUniformIndexing = VK_FALSE,
-        .descriptorBindingUniformBufferUpdateAfterBind = VK_FALSE,
-        .descriptorBindingSampledImageUpdateAfterBind = VK_FALSE,
-        .descriptorBindingStorageImageUpdateAfterBind = VK_FALSE,
-        .descriptorBindingStorageBufferUpdateAfterBind = VK_FALSE,
-        .descriptorBindingUniformTexelBufferUpdateAfterBind = VK_FALSE,
-        .descriptorBindingStorageTexelBufferUpdateAfterBind = VK_FALSE,
-        .descriptorBindingUpdateUnusedWhilePending = VK_FALSE,
-        .descriptorBindingPartiallyBound = VK_FALSE,
-        .descriptorBindingVariableDescriptorCount = VK_TRUE,
-        .runtimeDescriptorArray = VK_TRUE,
-    };
-
-    VkPhysicalDeviceRobustness2FeaturesEXT physicalDeviceRobustness2Features =
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
-        .pNext = &physicalDeviceDescriptorIndexingFeatures,
-        .robustBufferAccess2 = VK_FALSE,
-        .robustImageAccess2 = VK_FALSE,
-        .nullDescriptor = VK_FALSE
-    };
-
     VkPhysicalDeviceFeatures deviceFeatures =
     {
         .robustBufferAccess = VK_FALSE,
@@ -570,10 +391,79 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
         .inheritedQueries = VK_FALSE,
     };
 
-    VkPhysicalDeviceVulkan13Features physicalDeviceVulkan13Features = 
+    VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 =
+    {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+        .pNext = nullptr,
+        .features = deviceFeatures
+    };
+
+    VkPhysicalDeviceVulkan12Features physicalDeviceVulkan12Features =
+    {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
+        .pNext = &physicalDeviceFeatures2,
+        .samplerMirrorClampToEdge = VK_FALSE,
+        .drawIndirectCount = VK_FALSE,
+        .storageBuffer8BitAccess = VK_FALSE,
+        .uniformAndStorageBuffer8BitAccess = VK_FALSE,
+        .storagePushConstant8 = VK_FALSE,
+        .shaderBufferInt64Atomics = VK_FALSE,
+        .shaderSharedInt64Atomics = VK_FALSE,
+        .shaderFloat16 = VK_FALSE,
+        .shaderInt8 = VK_FALSE,
+        .descriptorIndexing = VK_TRUE,
+        .shaderInputAttachmentArrayDynamicIndexing = VK_FALSE,
+        .shaderUniformTexelBufferArrayDynamicIndexing = VK_FALSE,
+        .shaderStorageTexelBufferArrayDynamicIndexing = VK_FALSE,
+        .shaderUniformBufferArrayNonUniformIndexing = VK_FALSE,
+        .shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
+        .shaderStorageBufferArrayNonUniformIndexing = VK_FALSE,
+        .shaderStorageImageArrayNonUniformIndexing = VK_FALSE,
+        .shaderInputAttachmentArrayNonUniformIndexing = VK_FALSE,
+        .shaderUniformTexelBufferArrayNonUniformIndexing = VK_FALSE,
+        .shaderStorageTexelBufferArrayNonUniformIndexing = VK_FALSE,
+        .descriptorBindingUniformBufferUpdateAfterBind = VK_FALSE,
+        .descriptorBindingSampledImageUpdateAfterBind = VK_FALSE,
+        .descriptorBindingStorageImageUpdateAfterBind = VK_FALSE,
+        .descriptorBindingStorageBufferUpdateAfterBind = VK_FALSE,
+        .descriptorBindingUniformTexelBufferUpdateAfterBind = VK_FALSE,
+        .descriptorBindingStorageTexelBufferUpdateAfterBind = VK_FALSE,
+        .descriptorBindingUpdateUnusedWhilePending = VK_FALSE,
+        .descriptorBindingPartiallyBound = VK_FALSE,
+        .descriptorBindingVariableDescriptorCount = VK_TRUE,
+        .runtimeDescriptorArray = VK_TRUE,
+        .samplerFilterMinmax = VK_FALSE,
+        .scalarBlockLayout = VK_FALSE,
+        .imagelessFramebuffer = VK_FALSE,
+        .uniformBufferStandardLayout = VK_FALSE,
+        .shaderSubgroupExtendedTypes = VK_FALSE,
+        .separateDepthStencilLayouts = VK_TRUE,
+        .hostQueryReset = VK_FALSE,
+        .timelineSemaphore = VK_FALSE,
+        .bufferDeviceAddress = VK_FALSE,
+        .bufferDeviceAddressCaptureReplay = VK_FALSE,
+        .bufferDeviceAddressMultiDevice = VK_FALSE,
+        .vulkanMemoryModel = VK_FALSE,
+        .vulkanMemoryModelDeviceScope = VK_FALSE,
+        .vulkanMemoryModelAvailabilityVisibilityChains = VK_FALSE,
+        .shaderOutputViewportIndex = VK_FALSE,
+        .shaderOutputLayer = VK_FALSE,
+        .subgroupBroadcastDynamicId = VK_FALSE,
+    };
+
+    VkPhysicalDeviceRobustness2FeaturesEXT physicalDeviceRobustness2Features =
+    {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
+        .pNext = &physicalDeviceVulkan12Features,
+        .robustBufferAccess2 = VK_FALSE,
+        .robustImageAccess2 = VK_FALSE,
+        .nullDescriptor = VK_TRUE,
+    };
+
+    VkPhysicalDeviceVulkan13Features physicalDeviceVulkan13Features =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
-        .pNext = nullptr,
+        .pNext = &physicalDeviceRobustness2Features, 
         .robustImageAccess = VK_FALSE,
         .inlineUniformBlock = VK_FALSE,
         .descriptorBindingInlineUniformBlockUpdateAfterBind = VK_FALSE,
@@ -591,20 +481,13 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
         .maintenance4 = VK_FALSE
     };
 
-    VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 = 
-    {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-        .pNext = &physicalDeviceVulkan13Features,
-        .features = deviceFeatures
-    };
-    
     VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES,
-        .pNext = &physicalDeviceFeatures2,
+        .pNext = &physicalDeviceVulkan13Features,
         .multiview = VK_TRUE
     };
-    
+
     VkDeviceCreateInfo deviceCreateInfo =
     {
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,

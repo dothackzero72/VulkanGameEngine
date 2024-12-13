@@ -38,28 +38,28 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
         {
             switch (binding.BindingPropertiesList)
             {
-            case kMeshPropertiesDescriptor:
-            {
-                descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
-                    {
-                        .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                        .descriptorCount = static_cast<uint32>(meshProperties.size())
-                    });
-                break;
-            }
-            case kTextureDescriptor:
-            {
-                descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
-                    {
-                        .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                        .descriptorCount = static_cast<uint32>(TextureList.size())
-                    });
-                break;
-            }
-            default:
-            {
-                //throw new Exception($"{binding} case hasn't been handled yet");
-            }
+                case kMeshPropertiesDescriptor:
+                {
+                    descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
+                        {
+                            .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+                            .descriptorCount = static_cast<uint32>(meshProperties.size())
+                        });
+                    break;
+                }
+                case kTextureDescriptor:
+                {
+                    descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
+                        {
+                            .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                            .descriptorCount = static_cast<uint32>(TextureList.size())
+                        });
+                    break;
+                }
+                default:
+                {
+                    //throw new Exception($"{binding} case hasn't been handled yet");
+                }
             }
         }
 
