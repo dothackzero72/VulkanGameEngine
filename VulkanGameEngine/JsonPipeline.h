@@ -10,7 +10,6 @@ class JsonPipeline
 
 private:
 
-
     std::shared_ptr<JsonRenderPass> ParentRenderPass;
 
     JsonPipeline(String jsonPath, VkRenderPass renderPass, uint constBufferSize);

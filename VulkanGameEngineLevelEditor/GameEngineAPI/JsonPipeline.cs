@@ -290,9 +290,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 vertexBindingList.Add(new VertexInputBindingDescription()
                 {
-                    Stride = Vertex2D.GetBindingDescriptions()[x].stride,
-                    Binding = Vertex2D.GetBindingDescriptions()[x].binding,
-                    InputRate = (VertexInputRate)Vertex2D.GetBindingDescriptions()[x].inputRate
+                    Stride = Vertex2D.GetBindingDescriptions()[x].Stride,
+                    Binding = Vertex2D.GetBindingDescriptions()[x].Binding,
+                    InputRate = (VertexInputRate)Vertex2D.GetBindingDescriptions()[x].InputRate
                 });
             }
 
@@ -301,10 +301,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 attributeBindingList.Add(new VertexInputAttributeDescription()
                 {
-                    Format = (Format)Vertex2D.GetAttributeDescriptions()[x].format,
-                    Location = Vertex2D.GetAttributeDescriptions()[x].location,
-                    Binding = Vertex2D.GetAttributeDescriptions()[x].binding,
-                    Offset = Vertex2D.GetAttributeDescriptions()[x].offset
+                    Format = (Format)Vertex2D.GetAttributeDescriptions()[x].Format,
+                    Location = Vertex2D.GetAttributeDescriptions()[x].Location,
+                    Binding = Vertex2D.GetAttributeDescriptions()[x].Binding,
+                    Offset = Vertex2D.GetAttributeDescriptions()[x].Offset
                 });
             }
 

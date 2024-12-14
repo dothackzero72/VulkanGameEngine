@@ -22,6 +22,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public List<Texture> textureList { get; set; } = new List<Texture>();
         public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
         JsonRenderPass renderPass3D { get; set; } = new JsonRenderPass();
+        FrameBufferRenderPass frameBufferRenderPass { get; set; } = new FrameBufferRenderPass();
         public void StartUp()
         {
             MemoryManager.StartUp(30);
@@ -33,21 +34,22 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
             textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\container2.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
 
-            GameObjectList.Add(MemoryManager.CreateGameObject("object1", new List<ComponentTypeEnum>() 
-            { 
-                ComponentTypeEnum.kGameObjectTransform2DComponent, 
-                ComponentTypeEnum.kInputComponent, 
-                ComponentTypeEnum.kRenderMesh2DComponent 
+            GameObjectList.Add(MemoryManager.CreateGameObject("object1", new List<ComponentTypeEnum>()
+            {
+                ComponentTypeEnum.kGameObjectTransform2DComponent,
+                ComponentTypeEnum.kInputComponent,
+                ComponentTypeEnum.kRenderMesh2DComponent
             }));
-            GameObjectList.Add(MemoryManager.CreateGameObject("object2", new List<ComponentTypeEnum>() 
-            { 
-                ComponentTypeEnum.kGameObjectTransform2DComponent, 
-                ComponentTypeEnum.kInputComponent, 
-                ComponentTypeEnum.kRenderMesh2DComponent 
+            GameObjectList.Add(MemoryManager.CreateGameObject("object2", new List<ComponentTypeEnum>()
+            {
+                ComponentTypeEnum.kGameObjectTransform2DComponent,
+                ComponentTypeEnum.kInputComponent,
+                ComponentTypeEnum.kRenderMesh2DComponent
             }));
 
-            MemoryManager.ViewMemoryMap();
+            // MemoryManager.ViewMemoryMap();
             renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
+            frameBufferRenderPass.BuildRenderPass(textureList[0]);
         }
 
         public void Input(KeyEventArgs e)
@@ -76,8 +78,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
             VulkanRenderer.StartFrame();
-
             commandBufferList.Add(renderPass3D.Draw(GameObjectList, sceneProperties));
+            commandBufferList.Add(frameBufferRenderPass.Draw());
             VulkanRenderer.EndFrame(commandBufferList);
         }
     }

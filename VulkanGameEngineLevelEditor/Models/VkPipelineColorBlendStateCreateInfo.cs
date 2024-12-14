@@ -91,8 +91,8 @@ namespace VulkanGameEngineLevelEditor.Models
             ptr->SType = sType;
             ptr->PNext = pNext;
             ptr->Flags = flags;
-            ptr->LogicOpEnable = logicOpEnable;
-            ptr->LogicOp = logicOp;
+            ptr->LogicOpEnable = false;
+            //ptr->LogicOp = logicOp;
             ptr->AttachmentCount = attachmentCount;
             ptr->PAttachments = pAttachments;
             //ptr->BlendConstants[0] = blendConstants.R;

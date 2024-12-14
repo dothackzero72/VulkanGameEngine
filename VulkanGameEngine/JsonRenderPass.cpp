@@ -119,14 +119,7 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
         {
             case RenderedTextureType::ColorRenderedTexture:
             {
-                if (!renderPassBuildInfo.IsRenderedToSwapchain)
-                {
-                    RenderedColorTextureList.emplace_back(nullptr);
-                }
-                else
-                {
-                    RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
-                }
+                RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
                 colorAttachmentReferenceList.emplace_back(VkAttachmentReference
                     {
                         .attachment = static_cast<uint32>(colorAttachmentReferenceList.size()),
@@ -217,14 +210,7 @@ void JsonRenderPass::BuildFrameBuffer()
         std::vector<VkImageView> TextureAttachmentList;
         for (auto texture : RenderedColorTextureList)
         {
-            if (texture == nullptr)
-            {
-                TextureAttachmentList.emplace_back(cRenderer.SwapChain.SwapChainImageViews[x]);
-            }
-            else
-            {
-                TextureAttachmentList.emplace_back(texture->View);
-            }
+            TextureAttachmentList.emplace_back(texture->View);
         }
         if (depthTexture != nullptr)
         {

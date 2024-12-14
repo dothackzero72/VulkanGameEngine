@@ -11,13 +11,13 @@ namespace VulkanGameEngineLevelEditor.Models
 {
     public unsafe class VkStencilOpState
     {
-        public StencilOp failOp { get; set; }
-        public StencilOp passOp { get; set; }
-        public StencilOp depthFailOp { get; set; }
-        public CompareOp compareOp { get; set; }
-        public uint compareMask { get; set; }
-        public uint writeMask { get; set; }
-        public uint reference { get; set; }
+        public StencilOp failOp { get; set; } = 0;
+        public StencilOp passOp { get; set; } = 0;
+        public StencilOp depthFailOp { get; set; } = 0;
+        public CompareOp compareOp { get; set; } = 0;
+        public uint compareMask { get; set; } = 0;
+        public uint writeMask { get; set; } = 0;
+        public uint reference { get; set; } = 0;
         public VkStencilOpState() { }
 
         public StencilOpState Convert()

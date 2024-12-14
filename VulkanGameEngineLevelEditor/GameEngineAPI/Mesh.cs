@@ -97,7 +97,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             IndexCount = 0;
         }
 
-        public void MeshStartUp(nint parentGameObjectPtr, VulkanGameEngineGameObjectScripts.Vertex2D[] vertexList, uint[] indexList)
+        public void MeshStartUp(nint parentGameObjectPtr, Vertex2D[] vertexList, uint[] indexList)
         {
             GCHandle handle = GCHandle.FromIntPtr(parentGameObjectPtr);
             var gameObject = handle.Target as GameObject;

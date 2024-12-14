@@ -40,7 +40,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public void CreateJsonRenderPass(string jsonPath, ivec2 renderPassResolution, SampleCountFlags sampleCount = SampleCountFlags.Count1Bit)
         {
             RenderPassResolution = renderPassResolution;
-
+            SaveRenderPass();
             string jsonContent2 = File.ReadAllText(ConstConfig.Default2DRenderPass);
             RenderPassBuildInfoModel model2 = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent2);
 
@@ -175,9 +175,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 List<ImageView> TextureAttachmentList = new List<ImageView>();
                 foreach (var texture in RenderedColorTextureList)
                 {
-
-                    TextureAttachmentList.Add(VulkanRenderer.swapChain.imageViews[x]);
-
+                    TextureAttachmentList.Add(RenderedColorTextureList.First().View);
                 }
                 if (depthTexture != null)
                 {
@@ -271,7 +269,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                     ImageUsageFlags.ImageUsageTransferDstBit,
                             sharingMode = 0,
                             initialLayout =  0,
-                            _name = "bnvnb"
+                            _name = string.Empty
                         },
                         SamplerCreateInfo = new VkSamplerCreateInfo()
                         {
@@ -290,7 +288,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             maxLod = 1.0f,
                             borderColor = (BorderColor)3,
                             unnormalizedCoordinates = false,
-                            _name = "tyuiy"
+                            _name = string.Empty
                         },
                         AttachmentDescription = new VkAttachmentDescription()
                         {
@@ -302,11 +300,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             stencilStoreOp = AttachmentStoreOp.DontCare,
                             initialLayout = ImageLayout.Undefined,
                             finalLayout = ImageLayout.ShaderReadOnlyOptimal,
+                            _name = string.Empty
                         },
                         IsRenderedToSwapchain = true,
                         TextureType = RenderedTextureType.ColorRenderedTexture,
                         RenderedTextureInfoName = "texture",
-                        _name = "ColorAttachment"
+                        _name = string.Empty
                     },
                       new RenderedTextureInfoModel
                     {
@@ -326,7 +325,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             queueFamilyIndexCount = 0,
                             pQueueFamilyIndices = null,
                             initialLayout = 0,
-                            _name = "DefaultColorTextureCreateInfo"
+                            _name = string.Empty
                         },
                         SamplerCreateInfo = new VkSamplerCreateInfo()
                         {
@@ -345,7 +344,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             maxLod = 1.0f,
                             borderColor = (BorderColor)2,
                             unnormalizedCoordinates = false,
-                            _name = "DefaultColorSampleCreateInfo"
+                            _name = string.Empty
                         },
                         AttachmentDescription = new VkAttachmentDescription()
                         {
@@ -357,11 +356,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             stencilStoreOp = AttachmentStoreOp.DontCare,
                             initialLayout = ImageLayout.Undefined,
                             finalLayout = ImageLayout.DepthStencilAttachmentOptimal,
+                            _name = string.Empty
                         },
                         IsRenderedToSwapchain = false,
                         TextureType = RenderedTextureType.DepthRenderedTexture,
                         RenderedTextureInfoName = "texture",
-                        _name = "depthAttachment"
+                        _name = string.Empty
                     }
                 },
                 SubpassDependencyList = new List<VkSubpassDependency>()
@@ -373,11 +373,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 srcStageMask = (VkPipelineStageFlags)PipelineStageFlags.ColorAttachmentOutputBit,
                                 dstStageMask = (VkPipelineStageFlags)PipelineStageFlags.ColorAttachmentOutputBit, // Changed to Early Fragment Tests
                                 srcAccessMask = 0,
-                                dstAccessMask = (VkAccessFlags)AccessFlags.ColorAttachmentWriteBit, // Ensure this access mask is relevant to the chosen stage mask
-                            }
+                                dstAccessMask = (VkAccessFlags)AccessFlags.ColorAttachmentWriteBit, // Ensure this access mask is relevant to the chosen stage mask,
+                                _name = string.Empty
+                            },
                 },
                 RenderPipelineList = new List<RenderPipelineModel>(),
-                _name = "pipeline"
+                _name = "Default2DRenderPass"
             };
 
             string jsonString = JsonConvert.SerializeObject(modelInfo, Formatting.Indented);

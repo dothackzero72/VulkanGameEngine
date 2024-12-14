@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,14 +31,20 @@ namespace VulkanGameEngineLevelEditor
         public RenderPassBuildInfoModel renderPass { get; private set; } = new RenderPassBuildInfoModel();
         public MessengerModel RenderPassMessager { get; set; }
 
+
+        [DllImport("kernel32.dll")]
+        static extern bool AllocConsole();
+
         public GameWindow()
         {
             InitializeComponent();
+            AllocConsole();
+
             this.Load += Form1_Load;
             this.KeyDown += KeyPress_Down;
             this.KeyUp += KeyPress_Up;
-           // this.KeyDown += Form1_KeyDown;
-
+            // this.KeyDown += Form1_KeyDown;
+            Console.WriteLine("asdfasdf");
             VulkanSwapChainResolution = new Extent2D() { Width = 1280, Height = 720 };
             Thread.CurrentThread.Name = "LevelEditor";
         }

@@ -399,72 +399,158 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             PhysicalDeviceFeatures deviceFeatures = new PhysicalDeviceFeatures()
             {
+                RobustBufferAccess = false,
+                FullDrawIndexUint32 = false,
+                ImageCubeArray = false,
+                IndependentBlend = false,
+                GeometryShader = false,
+                TessellationShader = false,
+                SampleRateShading = true,
+                DualSrcBlend = false,
+                LogicOp = false,
+                MultiDrawIndirect = false,
+                DrawIndirectFirstInstance = false,
+                DepthClamp = false,
+                DepthBiasClamp = false,
+                FillModeNonSolid = true,
+                DepthBounds = false,
+                WideLines = false,
+                LargePoints = false,
+                AlphaToOne = false,
+                MultiViewport = false,
                 SamplerAnisotropy = true,
+                TextureCompressionAstcLdr = false,
+                TextureCompressionEtc2 = false,
+                TextureCompressionBC = false,
+                OcclusionQueryPrecise = false,
+                PipelineStatisticsQuery = false,
+                VertexPipelineStoresAndAtomics = true,
                 FragmentStoresAndAtomics = true,
-                DepthBiasClamp = true,
-                DepthBounds = true,
-                DepthClamp = true
+                ShaderTessellationAndGeometryPointSize = false,
+                ShaderImageGatherExtended = false,
+                ShaderStorageImageExtendedFormats = false,
+                ShaderStorageImageMultisample = false,
+                ShaderStorageImageReadWithoutFormat = false,
+                ShaderStorageImageWriteWithoutFormat = false,
+                ShaderUniformBufferArrayDynamicIndexing = false,
+                ShaderSampledImageArrayDynamicIndexing = false,
+                ShaderStorageBufferArrayDynamicIndexing = false,
+                ShaderStorageImageArrayDynamicIndexing = false,
+                ShaderClipDistance = false,
+                ShaderCullDistance = false,
+                ShaderFloat64 = false,
+                ShaderInt64 = false,
+                ShaderInt16 = false,
+                ShaderResourceResidency = false,
+                ShaderResourceMinLod = false,
+                SparseBinding = false,
+                SparseResidencyBuffer = false,
+                SparseResidencyImage2D = false,
+                SparseResidencyImage3D = false,
+                SparseResidency2Samples = false,
+                SparseResidency4Samples = false,
+                SparseResidency8Samples = false,
+                SparseResidency16Samples = false,
+                SparseResidencyAliased = false,
+                VariableMultisampleRate = false,
+                InheritedQueries = false,
             };
 
-            PhysicalDeviceBufferDeviceAddressFeatures BufferDeviceAddressFeatures = new PhysicalDeviceBufferDeviceAddressFeatures()
-            {
-                SType = StructureType.PhysicalDeviceBufferDeviceAddressFeatures,
-                BufferDeviceAddress = true
-            };
-
-            //if (Renderer_GetRayTracingSupport())
-            //{
-            //    VkPhysicalDeviceRayTracingPipelineFeaturesKHR RayTracingPipelineFeatures = { 0 };
-            //    RayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
-            //    RayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
-
-            //    VkPhysicalDeviceAccelerationStructureFeaturesKHR AccelerationStructureFeatures = { 0 };
-            //    AccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
-            //    AccelerationStructureFeatures.accelerationStructure = VK_TRUE;
-
-            //    AccelerationStructureFeatures.pNext = &RayTracingPipelineFeatures;
-            //    BufferDeviceAddressFeatures.pNext = &AccelerationStructureFeatures;
-            //}
-            //else
-            //{
-            //    BufferDeviceAddressFeatures.pNext = NULL;
-            //}
-
-            PhysicalDeviceDescriptorIndexingFeatures DescriptorIndexingFeatures = new PhysicalDeviceDescriptorIndexingFeatures()
-            {
-                SType = StructureType.PhysicalDeviceDescriptorIndexingFeatures,
-                RuntimeDescriptorArray = true,
-                ShaderSampledImageArrayNonUniformIndexing = true,
-                DescriptorBindingVariableDescriptorCount = true,
-                PNext = &BufferDeviceAddressFeatures
-            };
-
-            PhysicalDeviceRobustness2FeaturesEXT Robustness2Features = new PhysicalDeviceRobustness2FeaturesEXT()
-            {
-                SType = StructureType.PhysicalDeviceRobustness2FeaturesExt,
-                NullDescriptor = true,
-                PNext = &DescriptorIndexingFeatures
-            };
-
-            PhysicalDeviceVulkan13Features Vulkan13Features = new PhysicalDeviceVulkan13Features()
-            {
-                SType = StructureType.PhysicalDeviceVulkan13Features,
-                ShaderDemoteToHelperInvocation = true,
-                PNext = &Robustness2Features
-            };
-
-            PhysicalDeviceFeatures2 Features2 = new PhysicalDeviceFeatures2()
+            PhysicalDeviceFeatures2 physicalDeviceFeatures2 = new PhysicalDeviceFeatures2()
             {
                 SType = StructureType.PhysicalDeviceFeatures2,
-                Features = deviceFeatures,
-                PNext = &Vulkan13Features
+                PNext = null,
+                Features = deviceFeatures
             };
 
-            PhysicalDeviceVulkan11Features Vulkan11Features = new PhysicalDeviceVulkan11Features()
+            PhysicalDeviceVulkan12Features physicalDeviceVulkan12Features = new PhysicalDeviceVulkan12Features()
+            {
+                SType = StructureType.PhysicalDeviceVulkan12Features,
+                PNext = &physicalDeviceFeatures2,
+                SamplerMirrorClampToEdge = false,
+                DrawIndirectCount = false,
+                StorageBuffer8BitAccess = false,
+                UniformAndStorageBuffer8BitAccess = false,
+                StoragePushConstant8 = false,
+                ShaderBufferInt64Atomics = false,
+                ShaderSharedInt64Atomics = false,
+                ShaderFloat16 = false,
+                ShaderInt8 = false,
+                DescriptorIndexing = true,
+                ShaderInputAttachmentArrayDynamicIndexing = false,
+                ShaderUniformTexelBufferArrayDynamicIndexing = false,
+                ShaderStorageTexelBufferArrayDynamicIndexing = false,
+                ShaderUniformBufferArrayNonUniformIndexing = false,
+                ShaderSampledImageArrayNonUniformIndexing = true,
+                ShaderStorageBufferArrayNonUniformIndexing = false,
+                ShaderStorageImageArrayNonUniformIndexing = false,
+                ShaderInputAttachmentArrayNonUniformIndexing = false,
+                ShaderUniformTexelBufferArrayNonUniformIndexing = false,
+                ShaderStorageTexelBufferArrayNonUniformIndexing = false,
+                DescriptorBindingUniformBufferUpdateAfterBind = false,
+                DescriptorBindingSampledImageUpdateAfterBind = false,
+                DescriptorBindingStorageImageUpdateAfterBind = false,
+                DescriptorBindingStorageBufferUpdateAfterBind = false,
+                DescriptorBindingUniformTexelBufferUpdateAfterBind = false,
+                DescriptorBindingStorageTexelBufferUpdateAfterBind = false,
+                DescriptorBindingUpdateUnusedWhilePending = false,
+                DescriptorBindingPartiallyBound = false,
+                DescriptorBindingVariableDescriptorCount = true,
+                RuntimeDescriptorArray = true,
+                SamplerFilterMinmax = false,
+                ScalarBlockLayout = false,
+                ImagelessFramebuffer = false,
+                UniformBufferStandardLayout = false,
+                ShaderSubgroupExtendedTypes = false,
+                SeparateDepthStencilLayouts = true,
+                HostQueryReset = false,
+                TimelineSemaphore = false,
+                BufferDeviceAddress = false,
+                BufferDeviceAddressCaptureReplay = false,
+                BufferDeviceAddressMultiDevice = false,
+                VulkanMemoryModel = false,
+                VulkanMemoryModelDeviceScope = false,
+                VulkanMemoryModelAvailabilityVisibilityChains = false,
+                ShaderOutputViewportIndex = false,
+                ShaderOutputLayer = false,
+                SubgroupBroadcastDynamicId = false,
+            };
+
+            PhysicalDeviceRobustness2FeaturesEXT physicalDeviceRobustness2Features = new PhysicalDeviceRobustness2FeaturesEXT()
+            {
+                SType = StructureType.PhysicalDeviceRobustness2FeaturesExt,
+                PNext = &physicalDeviceVulkan12Features,
+                RobustBufferAccess2 = false,
+                RobustImageAccess2 = false,
+                NullDescriptor = true,
+            };
+
+            PhysicalDeviceVulkan13Features physicalDeviceVulkan13Features = new PhysicalDeviceVulkan13Features()
+            {
+                SType = StructureType.PhysicalDeviceVulkan13Features,
+                PNext = &physicalDeviceRobustness2Features,
+                RobustImageAccess = false,
+                InlineUniformBlock = false,
+                DescriptorBindingInlineUniformBlockUpdateAfterBind = false,
+                PipelineCreationCacheControl = false,
+                PrivateData = false,
+                ShaderDemoteToHelperInvocation = false,
+                ShaderTerminateInvocation = false,
+                SubgroupSizeControl = false,
+                ComputeFullSubgroups = false,
+                Synchronization2 = false,
+                TextureCompressionAstcHdr = false,
+                ShaderZeroInitializeWorkgroupMemory = false,
+                DynamicRendering = false,
+                ShaderIntegerDotProduct = false,
+                Maintenance4 = false,
+            };
+
+            PhysicalDeviceVulkan11Features physicalDeviceVulkan11Features = new PhysicalDeviceVulkan11Features()
             {
                 SType = StructureType.PhysicalDeviceVulkan11Features,
+                PNext = &physicalDeviceVulkan13Features,
                 Multiview = true,
-                PNext = &Features2
             };
 
             DeviceCreateInfo createInfo = new DeviceCreateInfo
@@ -477,7 +563,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 PpEnabledExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(deviceExtensions),
                 EnabledLayerCount = (uint)validationLayers.Length,
                 PpEnabledLayerNames = (byte**)SilkMarshal.StringArrayToPtr(validationLayers),
-                PNext = &Vulkan11Features
+                PNext = &physicalDeviceVulkan11Features
             };
 
             var result = vk.CreateDevice(physicalDevice, in createInfo, null, out Device devicePtr);

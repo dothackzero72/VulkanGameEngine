@@ -19,8 +19,8 @@ namespace VulkanGameEngineLevelEditor.Models
         public CompareOp depthCompareOp { get; set; }
         public bool depthBoundsTestEnable { get; set; }
         public bool stencilTestEnable { get; set; }
-        public VkStencilOpState front { get; set; }
-        public VkStencilOpState back { get; set; }
+        public VkStencilOpState front { get; set; } = new VkStencilOpState();
+        public VkStencilOpState back { get; set; } = new VkStencilOpState();
         public float minDepthBounds { get; set; }
         public float maxDepthBounds { get; set; }
         public uint flags { get; set; } = 0;
@@ -38,17 +38,17 @@ namespace VulkanGameEngineLevelEditor.Models
             ptr->StencilTestEnable = stencilTestEnable;
             ptr->MinDepthBounds = minDepthBounds;
             ptr->MaxDepthBounds = maxDepthBounds;
+            ptr->Front = new StencilOpState();
+            ptr->Back = new StencilOpState();
             ptr->Flags = 0;
             ptr->PNext = null;
 
-            if(front != null)
+            if(stencilTestEnable)
             {
                 ptr->Front = front.Convert();
-            }
-            if(back != null)
-            {
                 ptr->Back = back.Convert();
             }
+
             return ptr;
         }
     }

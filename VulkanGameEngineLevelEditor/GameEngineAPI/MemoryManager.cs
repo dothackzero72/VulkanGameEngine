@@ -59,9 +59,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 switch (component)
                 {
-                    case ComponentTypeEnum.kGameObjectTransform2DComponent: gameObject.AddComponent(new Transform2DComponent(parentGameObjectPtr, "Testing")); break;
+                    case ComponentTypeEnum.kGameObjectTransform2DComponent: gameObject.AddComponent(new Transform2DComponent(IntPtr.Zero, IntPtr.Zero, parentGameObjectPtr, "Testing")); break;
                     case ComponentTypeEnum.kRenderMesh2DComponent: gameObject.AddComponent(MeshRenderer2DComponent.CreateRenderMesh2DComponent(parentGameObjectPtr, "Mesh Renderer", (uint)MemoryManager.RenderMesh2DComponentList.Count)); break;
-                    case ComponentTypeEnum.kInputComponent: gameObject.AddComponent(new InputComponent(parentGameObjectPtr)); break;
+                    case ComponentTypeEnum.kInputComponent: gameObject.AddComponent(new InputComponent(IntPtr.Zero, IntPtr.Zero, parentGameObjectPtr)); break;
                 }
             }
             return gameObject;
