@@ -73,12 +73,12 @@ namespace VulkanGameEngineGameObjectScripts.Component
 
         public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
-            Console.WriteLine("Draw called");
+
         }
 
         public override void Destroy()
         {
-            Console.WriteLine("Destroy called");
+
         }
 
         public override int GetMemorySize()

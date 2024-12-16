@@ -209,9 +209,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var fragmentShaderModule = VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/FrameBufferShaderFrag.spv", ShaderStageFlags.FragmentBit);
             PipelineShaderStageCreateInfo* shadermoduleList = stackalloc[]
             {
-        vertexShaderModule,
-        fragmentShaderModule
-    };
+                vertexShaderModule,
+                fragmentShaderModule
+            };
 
             PipelineVertexInputStateCreateInfo vertexInputInfo = new PipelineVertexInputStateCreateInfo();
             List<VertexInputBindingDescription> bindingDescriptionList = new List<VertexInputBindingDescription>();
@@ -220,11 +220,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             fixed (VertexInputBindingDescription* bindingDescription = bindingDescriptionList.ToArray())
             fixed (VertexInputAttributeDescription* AttributeDescription = AttributeDescriptions.ToArray())
             {
-                vertexInputInfo.SType = StructureType.PipelineVertexInputStateCreateInfo;
-                vertexInputInfo.VertexBindingDescriptionCount = (uint)bindingDescriptionList.Count;
-                vertexInputInfo.PVertexBindingDescriptions = bindingDescription;
-                vertexInputInfo.VertexAttributeDescriptionCount = (uint)AttributeDescriptions.Count;
-                vertexInputInfo.PVertexAttributeDescriptions = AttributeDescription;
+                vertexInputInfo = new PipelineVertexInputStateCreateInfo()
+                {
+                    SType = StructureType.PipelineVertexInputStateCreateInfo
+                };
             }
 
             PipelineInputAssemblyStateCreateInfo inputAssembly = new(topology: PrimitiveTopology.TriangleList);
@@ -304,7 +303,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 DepthClampEnable = false,
                 RasterizerDiscardEnable = false,
                 PolygonMode = PolygonMode.Fill,
-                CullMode = CullModeFlags.CullModeBackBit,
+                CullMode = CullModeFlags.CullModeNone,
                 FrontFace = FrontFace.CounterClockwise,
                 DepthBiasEnable = false,
                 DepthBiasConstantFactor = 0.0f,

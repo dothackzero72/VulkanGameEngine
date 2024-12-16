@@ -39,9 +39,14 @@ namespace VulkanGameEngineLevelEditor
         public RenderPassBuildInfoModel renderPass { get; private set; } = new RenderPassBuildInfoModel();
         public MessengerModel RenderPassMessager { get; set; }
 
+        [DllImport("kernel32.dll")]
+        static extern bool AllocConsole();
+
         public Form1()
         {
             InitializeComponent();
+            AllocConsole();
+
             this.Load += Form1_Load;
 
             VulkanSwapChainResolution = new Extent2D() { Width = 1280, Height = 720 };

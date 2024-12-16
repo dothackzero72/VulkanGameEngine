@@ -15,60 +15,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DLLVulkanRenderer.h">
+    <ClInclude Include="DLLCoreVulkanRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DLLCVulkanRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DLLVulkanSwapChain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DLLTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DLLVulkanBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DLLShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DLLWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DLLCoreVulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanEngine_DLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DLL.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DLLVulkanRenderer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DLLVulkanSwapChain.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DLLTexture.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DLLVulkanBuffer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DLLShader.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DLLWindow.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DLLCoreVulkanRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanEngine_DLL.cpp">
+    <ClCompile Include="DLLCVulkanRenderer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLLVulkanBuffer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

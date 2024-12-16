@@ -12,7 +12,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class GameEngineDLL
     {
-        private const string DLLPath = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanDLL.dll";
+        private const string DLLPath = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanEngineDLL.dll";
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern Result DLL_Buffer_AllocateMemory(Device device, PhysicalDevice physicalDevice, ref Silk.NET.Vulkan.Buffer bufferData, ref DeviceMemory bufferMemory, MemoryPropertyFlags properties);

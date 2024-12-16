@@ -233,29 +233,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static void CreateInstance()
         {
-            validationLayers = CheckAvailableValidationLayers(validationLayers);
-            if (validationLayers is null)
-            {
-                throw new NotSupportedException("Validation layers requested, but not available!");
-            }
+            instance = new Instance(GameEngineImport.DLL_Renderer_CreateVulkanInstance());
 
-            List<string> extentions = new List<string>();
 
-            uint extensionCount = extentions.UCount();
-            string[] enabledExtensions = extentions.ToArray();
-            GetWin32Extensions(ref extensionCount, ref enabledExtensions);
-
-            ApplicationInfo applicationInfo = new
-            (
-                pApplicationName: (byte*)Marshal.StringToHGlobalAnsi("Level Editor Play Test"),
-                applicationVersion: new Version32(1, 0, 0),
-                pEngineName: (byte*)Marshal.StringToHGlobalAnsi(""),
-                engineVersion: new Version32(1, 0, 0),
-                apiVersion: Vk.Version13
-            );
-
-            byte** validationLayersPtr = CreateStringPointerArray(validationLayers);
-            byte** extensionsPtr = CreateStringPointerArray(enabledExtensions);
 
             var debugInfo = new DebugUtilsMessengerCreateInfoEXT
             (
@@ -268,24 +248,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                              DebugUtilsMessageTypeFlagsEXT.PerformanceBitExt,
                 pfnUserCallback: new PfnDebugUtilsMessengerCallbackEXT(VulkanDebug.MessageCallback)
             );
-
-            InstanceCreateInfo vulkanCreateInfo = new InstanceCreateInfo
-            {
-                SType = StructureType.InstanceCreateInfo,
-                PApplicationInfo = &applicationInfo,
-                EnabledLayerCount = (uint)validationLayers.Length,
-                PpEnabledLayerNames = validationLayersPtr, 
-                EnabledExtensionCount = extensionCount,
-                PpEnabledExtensionNames = extensionsPtr, 
-                PNext = (void*)(&debugInfo) 
-            };
-
-            Result result = vk.CreateInstance(in vulkanCreateInfo, null, out Instance vkInstance);
-            instance = vkInstance;
-            if (result != Result.Success)
-            {
-                throw new Exception("Failed to create instance!");
-            }
 
             ExtDebugUtils debugUtils;
             if (!vk.TryGetInstanceExtension(instance, out debugUtils))
@@ -301,9 +263,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             debugMessenger = DebugMessenger;
 
-            Marshal.FreeHGlobal((nint)applicationInfo.PApplicationName);
-            Marshal.FreeHGlobal((nint)applicationInfo.PEngineName);
-            FreeStringPointerArray(validationLayersPtr, validationLayers.Length);
         }
 
         public static uint GetMemoryType(uint typeFilter, MemoryPropertyFlags properties)
@@ -346,233 +305,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static void CreatePhysicalDevice()
         {
-            uint deviceCount = 0;
-            vk.EnumeratePhysicalDevices(instance, &deviceCount, null);
-            PhysicalDevice[] physicalDevices = new PhysicalDevice[deviceCount];
-            vk.EnumeratePhysicalDevices(instance, &deviceCount, physicalDevices);
-
-            foreach (var tempPhysicalDevice in physicalDevices)
-            {
-                string[] availableExtensions = GetExtensionProperteis(tempPhysicalDevice);
-                bool isExtensionsSupported = deviceExtensions.All(e => availableExtensions.Contains(e));
-                uint tempGraphicsFamily = FindGraphicsQueueFamily(tempPhysicalDevice);
-                uint tempPresentFamily = FindPresentQueueFamily(tempPhysicalDevice);
-
-                bool isSwapChainAdequate = false;
-                if (isExtensionsSupported)
-                {
-                    var surfaceFormats = GetSurfaceFormatsKHR(tempPhysicalDevice);
-                    var presentModes = GetSurfacePresentModesKHR(tempPhysicalDevice);
-                    isSwapChainAdequate = (surfaceFormats != null) && (presentModes != null);
-                }
-
-                vk.GetPhysicalDeviceFeatures(tempPhysicalDevice, out PhysicalDeviceFeatures supportedFeatures);
-                if (isExtensionsSupported &&
-                    isSwapChainAdequate &&
-                    supportedFeatures.SamplerAnisotropy)
-                {
-                    physicalDevice = tempPhysicalDevice;
-                    break;
-                }
-            }
+            physicalDevice = new PhysicalDevice(GameEngineImport.DLL_Renderer_SetUpPhysicalDevice(instance.Handle, surface.Handle, GraphicsFamily, PresentFamily));
         }
 
         public static void CreateDevice()
         {
-            HashSet<uint> queueFamilyList = new() { GraphicsFamily, PresentFamily };
-            using var memory = GlobalMemory.Allocate(queueFamilyList.Count * sizeof(DeviceQueueCreateInfo));
-            var queueCreate = (DeviceQueueCreateInfo*)Unsafe.AsPointer(ref memory.GetPinnableReference());
-
-            float queuePriority = 1.0f;
-
-            uint x = 0;
-            foreach (var queueId in queueFamilyList)
-            {
-                DeviceQueueCreateInfo queueCreateInfo = new DeviceQueueCreateInfo
-                (
-                    queueFamilyIndex: queueId,
-                    queueCount: 1,
-                    pQueuePriorities: &queuePriority
-                );
-                queueCreate[x++] = queueCreateInfo;
-            }
-
-            PhysicalDeviceFeatures deviceFeatures = new PhysicalDeviceFeatures()
-            {
-                RobustBufferAccess = false,
-                FullDrawIndexUint32 = false,
-                ImageCubeArray = false,
-                IndependentBlend = false,
-                GeometryShader = false,
-                TessellationShader = false,
-                SampleRateShading = true,
-                DualSrcBlend = false,
-                LogicOp = false,
-                MultiDrawIndirect = false,
-                DrawIndirectFirstInstance = false,
-                DepthClamp = false,
-                DepthBiasClamp = false,
-                FillModeNonSolid = true,
-                DepthBounds = false,
-                WideLines = false,
-                LargePoints = false,
-                AlphaToOne = false,
-                MultiViewport = false,
-                SamplerAnisotropy = true,
-                TextureCompressionAstcLdr = false,
-                TextureCompressionEtc2 = false,
-                TextureCompressionBC = false,
-                OcclusionQueryPrecise = false,
-                PipelineStatisticsQuery = false,
-                VertexPipelineStoresAndAtomics = true,
-                FragmentStoresAndAtomics = true,
-                ShaderTessellationAndGeometryPointSize = false,
-                ShaderImageGatherExtended = false,
-                ShaderStorageImageExtendedFormats = false,
-                ShaderStorageImageMultisample = false,
-                ShaderStorageImageReadWithoutFormat = false,
-                ShaderStorageImageWriteWithoutFormat = false,
-                ShaderUniformBufferArrayDynamicIndexing = false,
-                ShaderSampledImageArrayDynamicIndexing = false,
-                ShaderStorageBufferArrayDynamicIndexing = false,
-                ShaderStorageImageArrayDynamicIndexing = false,
-                ShaderClipDistance = false,
-                ShaderCullDistance = false,
-                ShaderFloat64 = false,
-                ShaderInt64 = false,
-                ShaderInt16 = false,
-                ShaderResourceResidency = false,
-                ShaderResourceMinLod = false,
-                SparseBinding = false,
-                SparseResidencyBuffer = false,
-                SparseResidencyImage2D = false,
-                SparseResidencyImage3D = false,
-                SparseResidency2Samples = false,
-                SparseResidency4Samples = false,
-                SparseResidency8Samples = false,
-                SparseResidency16Samples = false,
-                SparseResidencyAliased = false,
-                VariableMultisampleRate = false,
-                InheritedQueries = false,
-            };
-
-            PhysicalDeviceFeatures2 physicalDeviceFeatures2 = new PhysicalDeviceFeatures2()
-            {
-                SType = StructureType.PhysicalDeviceFeatures2,
-                PNext = null,
-                Features = deviceFeatures
-            };
-
-            PhysicalDeviceVulkan12Features physicalDeviceVulkan12Features = new PhysicalDeviceVulkan12Features()
-            {
-                SType = StructureType.PhysicalDeviceVulkan12Features,
-                PNext = &physicalDeviceFeatures2,
-                SamplerMirrorClampToEdge = false,
-                DrawIndirectCount = false,
-                StorageBuffer8BitAccess = false,
-                UniformAndStorageBuffer8BitAccess = false,
-                StoragePushConstant8 = false,
-                ShaderBufferInt64Atomics = false,
-                ShaderSharedInt64Atomics = false,
-                ShaderFloat16 = false,
-                ShaderInt8 = false,
-                DescriptorIndexing = true,
-                ShaderInputAttachmentArrayDynamicIndexing = false,
-                ShaderUniformTexelBufferArrayDynamicIndexing = false,
-                ShaderStorageTexelBufferArrayDynamicIndexing = false,
-                ShaderUniformBufferArrayNonUniformIndexing = false,
-                ShaderSampledImageArrayNonUniformIndexing = true,
-                ShaderStorageBufferArrayNonUniformIndexing = false,
-                ShaderStorageImageArrayNonUniformIndexing = false,
-                ShaderInputAttachmentArrayNonUniformIndexing = false,
-                ShaderUniformTexelBufferArrayNonUniformIndexing = false,
-                ShaderStorageTexelBufferArrayNonUniformIndexing = false,
-                DescriptorBindingUniformBufferUpdateAfterBind = false,
-                DescriptorBindingSampledImageUpdateAfterBind = false,
-                DescriptorBindingStorageImageUpdateAfterBind = false,
-                DescriptorBindingStorageBufferUpdateAfterBind = false,
-                DescriptorBindingUniformTexelBufferUpdateAfterBind = false,
-                DescriptorBindingStorageTexelBufferUpdateAfterBind = false,
-                DescriptorBindingUpdateUnusedWhilePending = false,
-                DescriptorBindingPartiallyBound = false,
-                DescriptorBindingVariableDescriptorCount = true,
-                RuntimeDescriptorArray = true,
-                SamplerFilterMinmax = false,
-                ScalarBlockLayout = false,
-                ImagelessFramebuffer = false,
-                UniformBufferStandardLayout = false,
-                ShaderSubgroupExtendedTypes = false,
-                SeparateDepthStencilLayouts = true,
-                HostQueryReset = false,
-                TimelineSemaphore = false,
-                BufferDeviceAddress = false,
-                BufferDeviceAddressCaptureReplay = false,
-                BufferDeviceAddressMultiDevice = false,
-                VulkanMemoryModel = false,
-                VulkanMemoryModelDeviceScope = false,
-                VulkanMemoryModelAvailabilityVisibilityChains = false,
-                ShaderOutputViewportIndex = false,
-                ShaderOutputLayer = false,
-                SubgroupBroadcastDynamicId = false,
-            };
-
-            PhysicalDeviceRobustness2FeaturesEXT physicalDeviceRobustness2Features = new PhysicalDeviceRobustness2FeaturesEXT()
-            {
-                SType = StructureType.PhysicalDeviceRobustness2FeaturesExt,
-                PNext = &physicalDeviceVulkan12Features,
-                RobustBufferAccess2 = false,
-                RobustImageAccess2 = false,
-                NullDescriptor = true,
-            };
-
-            PhysicalDeviceVulkan13Features physicalDeviceVulkan13Features = new PhysicalDeviceVulkan13Features()
-            {
-                SType = StructureType.PhysicalDeviceVulkan13Features,
-                PNext = &physicalDeviceRobustness2Features,
-                RobustImageAccess = false,
-                InlineUniformBlock = false,
-                DescriptorBindingInlineUniformBlockUpdateAfterBind = false,
-                PipelineCreationCacheControl = false,
-                PrivateData = false,
-                ShaderDemoteToHelperInvocation = false,
-                ShaderTerminateInvocation = false,
-                SubgroupSizeControl = false,
-                ComputeFullSubgroups = false,
-                Synchronization2 = false,
-                TextureCompressionAstcHdr = false,
-                ShaderZeroInitializeWorkgroupMemory = false,
-                DynamicRendering = false,
-                ShaderIntegerDotProduct = false,
-                Maintenance4 = false,
-            };
-
-            PhysicalDeviceVulkan11Features physicalDeviceVulkan11Features = new PhysicalDeviceVulkan11Features()
-            {
-                SType = StructureType.PhysicalDeviceVulkan11Features,
-                PNext = &physicalDeviceVulkan13Features,
-                Multiview = true,
-            };
-
-            DeviceCreateInfo createInfo = new DeviceCreateInfo
-            {
-                SType = StructureType.DeviceCreateInfo,
-                PQueueCreateInfos = queueCreate,
-                QueueCreateInfoCount = (uint)queueFamilyList.Count,
-                PEnabledFeatures = null,
-                EnabledExtensionCount = (uint)deviceExtensions.Length,
-                PpEnabledExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(deviceExtensions),
-                EnabledLayerCount = (uint)validationLayers.Length,
-                PpEnabledLayerNames = (byte**)SilkMarshal.StringArrayToPtr(validationLayers),
-                PNext = &physicalDeviceVulkan11Features
-            };
-
-            var result = vk.CreateDevice(physicalDevice, in createInfo, null, out Device devicePtr);
-            if (result != Result.Success)
-            {
-                throw new Exception("Failed to create Vulkan device");
-            }
-
-            device = devicePtr;
+            device = new Device(GameEngineImport.DLL_Renderer_SetUpDevice(physicalDevice.Handle, GraphicsFamily, PresentFamily));
         }
 
         public static void CreateCommandPool()

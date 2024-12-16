@@ -1,7 +1,7 @@
 {
   "RenderedTextureInfoModelList": [
     {
-      "IsRenderedToSwapchain": false,
+      "IsRenderedToSwapchain": true,
       "RenderedTextureInfoName": "texture",
       "ImageCreateInfo": {
         "imageType": 1,
@@ -13,7 +13,7 @@
         "usage": 23,
         "sharingMode": 0,
         "initialLayout": 0,
-        "_name": "bnvnb"
+        "_name": ""
       },
       "SamplerCreateInfo": {
         "magFilter": 0,
@@ -31,7 +31,7 @@
         "maxLod": 1.0,
         "borderColor": 3,
         "unnormalizedCoordinates": false,
-        "_name": "tyuiy"
+        "_name": ""
       },
       "AttachmentDescription": {
         "flags": 0,
@@ -43,10 +43,10 @@
         "stencilStoreOp": 1,
         "initialLayout": 0,
         "finalLayout": 5,
-        "_name": "dfhdfh"
+        "_name": ""
       },
       "TextureType": 0,
-      "_name": "ColorAttachment"
+      "_name": ""
     },
     {
       "IsRenderedToSwapchain": false,
@@ -61,7 +61,7 @@
         "usage": 39,
         "sharingMode": 0,
         "initialLayout": 0,
-        "_name": "DefaultColorTextureCreateInfo"
+        "_name": ""
       },
       "SamplerCreateInfo": {
         "magFilter": 0,
@@ -79,7 +79,7 @@
         "maxLod": 1.0,
         "borderColor": 2,
         "unnormalizedCoordinates": false,
-        "_name": "DefaultColorSampleCreateInfo"
+        "_name": ""
       },
       "AttachmentDescription": {
         "flags": 0,
@@ -91,10 +91,10 @@
         "stencilStoreOp": 1,
         "initialLayout": 0,
         "finalLayout": 3,
-        "_name": "dfhdfh"
+        "_name": ""
       },
       "TextureType": 1,
-      "_name": "depthAttachment"
+      "_name": ""
     }
   ],
   "RenderPipelineList": [],
@@ -107,8 +107,8 @@
       "srcAccessMask": 0,
       "dstAccessMask": 256,
       "dependencyFlags": 0,
-      "_name": "dfhdfh"
+      "_name": ""
     }
   ],
-  "_name": "dfhdfh"
+  "_name": "Default2DRenderPass"
 }
