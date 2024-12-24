@@ -1,0 +1,31 @@
+#pragma once
+#include "Typedef.h"
+#include "Material.h"
+
+class SpriteSheet
+{
+private:
+	vec2				SpriteSize;
+	ivec2				SpriteCellCount;
+	ivec2				SpriteSizeInPixels;
+	ivec2				SpritePosition;
+	vec2				SpriteUVSize;
+	vec2				CurrentSpriteUV;
+
+	bool				DrawSprite = true;
+	bool				Animated;
+	uint32				CurrentFrame;
+	float				CurrentFrameTime;
+	float				FrameHoldTime;
+	std::vector<ivec2>  AnimationFrameOffsets;
+
+	std::shared_ptr<Material> SpriteMaterial;
+
+public:
+	SpriteSheet();
+	SpriteSheet(std::shared_ptr<Material> material, vec2 spriteSize, ivec2 tileSizeInPixels, ivec2 SpritePosition, std::vector<ivec2>& AnimationFrameOffsets, float FrameTime);
+	virtual ~SpriteSheet();
+
+	void Update(float deltaTime);
+};
+

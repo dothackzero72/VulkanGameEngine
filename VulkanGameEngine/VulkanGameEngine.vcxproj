@@ -168,6 +168,7 @@
     <ClCompile Include="..\External\ImPlot\implot.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
+    <ClCompile Include="Animation2D.cpp" />
     <ClCompile Include="BakedTexture.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="File.cpp" />
@@ -203,6 +204,8 @@
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
+    <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="SpriteSheet.cpp" />
     <ClCompile Include="SystemClock.cpp" />
     <ClCompile Include="TextFormatter.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -221,6 +224,7 @@
     <ClInclude Include="..\External\imgui\imstb_truetype.h" />
     <ClInclude Include="..\External\ImPlot\implot.h" />
     <ClInclude Include="..\External\ImPlot\implot_internal.h" />
+    <ClInclude Include="Animation2D.h" />
     <ClInclude Include="BakedTexture.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="File.h" />
@@ -259,12 +263,13 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneDataBuffer.h" />
     <ClInclude Include="ShaderCompiler.h" />
+    <ClInclude Include="Sprite.h" />
+    <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="SystemClock.h" />
     <ClInclude Include="TextFormatter.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform2DComponent.h" />
-    <ClInclude Include="Typedef.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VulkanBuffer.h" />
     <ClInclude Include="DynamicVulkanBuffer.h" />
