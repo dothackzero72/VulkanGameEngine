@@ -21,9 +21,9 @@ class Renderpass
 		VkPipelineLayout ShaderPipelineLayout = VK_NULL_HANDLE;
 		VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 
-		VkWriteDescriptorSet CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot);
-		VkWriteDescriptorSet CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount);
-		VkWriteDescriptorSet CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount, uint32 arrayElement);
+		VkWriteDescriptorSet CreateTextureDescriptorSet(SharedPtr<Texture> texture, uint32 bindingSlot);
+		VkWriteDescriptorSet CreateTextureDescriptorSet(SharedPtr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount);
+		VkWriteDescriptorSet CreateTextureDescriptorSet(SharedPtr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount, uint32 arrayElement);
 		VkWriteDescriptorSet CreateStorageDescriptorSet(uint32 bindingSlot);
 		VkWriteDescriptorSet CreateStorageDescriptorSet(uint32 bindingSlot, uint32 arrayElement);
 		//VkWriteDescriptorSet CreateUnimformDescriptorSet();

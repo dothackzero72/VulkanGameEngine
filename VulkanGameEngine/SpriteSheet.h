@@ -19,11 +19,11 @@ private:
 	float				FrameHoldTime;
 	std::vector<ivec2>  AnimationFrameOffsets;
 
-	std::shared_ptr<Material> SpriteMaterial;
+	SharedPtr<Material> SpriteMaterial;
 
 public:
 	SpriteSheet();
-	SpriteSheet(std::shared_ptr<Material> material, vec2 spriteSize, ivec2 tileSizeInPixels, ivec2 SpritePosition, std::vector<ivec2>& AnimationFrameOffsets, float FrameTime);
+	SpriteSheet(SharedPtr<Material> material, vec2 spriteSize, ivec2 tileSizeInPixels, ivec2 SpritePosition, std::vector<ivec2>& AnimationFrameOffsets, float FrameTime);
 	virtual ~SpriteSheet();
 
 	void Update(float deltaTime);

@@ -11,7 +11,7 @@ private:
 	VkDescriptorPool CreateDescriptorPoolBinding();
 	VkDescriptorSetLayout CreateDescriptorSetLayout();
     VkDescriptorSet CreateDescriptorSets();
-    void UpdateDescriptorSet(std::shared_ptr<Texture> texture);
+    void UpdateDescriptorSet(SharedPtr<Texture> texture);
     VkPipelineLayout CreatePipelineLayout();
     List<VkPipelineShaderStageCreateInfo> CreateShaders();
 
@@ -19,9 +19,9 @@ public:
 	FrameBufferRenderPass();
 	virtual ~FrameBufferRenderPass();
 
-	void BuildRenderPass(std::shared_ptr<Texture> renderedTexture);
-	void BuildRenderPipeline(std::shared_ptr<Texture> renderedTexture);
-	void UpdateRenderPass(std::shared_ptr<Texture> texture);
+	void BuildRenderPass(SharedPtr<Texture> renderedTexture);
+	void BuildRenderPipeline(SharedPtr<Texture> renderedTexture);
+	void UpdateRenderPass(SharedPtr<Texture> texture);
 	VkCommandBuffer Draw();
 	void Destroy() override;
 };

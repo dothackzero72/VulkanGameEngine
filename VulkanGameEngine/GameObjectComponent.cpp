@@ -17,7 +17,7 @@ GameObjectComponent::GameObjectComponent()
 
 }
 
-GameObjectComponent::GameObjectComponent(void* ptr, std::shared_ptr<GameObject> parentGameObjectPtr, ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, ComponentTypeEnum componentType)
 {
     void* reqw = this;
     Name = std::make_shared<Coral::String>(Coral::String().New("component"));
@@ -25,21 +25,21 @@ GameObjectComponent::GameObjectComponent(void* ptr, std::shared_ptr<GameObject> 
     ParentGameObjectPtr = parentGameObjectPtr;
 
     CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(GetCSNameSpacePath(componentType)));
-    std::shared_ptr<GameObject> parentPtr = ParentGameObjectPtr.lock();
+    SharedPtr<GameObject> parentPtr = ParentGameObjectPtr.lock();
     if (parentPtr)
     {
         CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ptr, parentGameObjectPtr.get(), parentPtr->GetCSObjectHandle()));
     }
 }
 
-GameObjectComponent::GameObjectComponent(void* ptr, std::shared_ptr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType)
 {
     Name = std::make_shared<Coral::String>(Coral::String().New(name));
     ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
     ParentGameObjectPtr = parentGameObjectPtr;
 
     CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(GetCSNameSpacePath(componentType)));
-    std::shared_ptr<GameObject> parentPtr = ParentGameObjectPtr.lock();
+    SharedPtr<GameObject> parentPtr = ParentGameObjectPtr.lock();
     if (parentPtr)
     {
         CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ptr, parentGameObjectPtr.get(), parentPtr->GetCSObjectHandle()));
@@ -75,9 +75,9 @@ void GameObjectComponent::Destroy()
     CSobject->InvokeMethod("Destroy");
 }
 
-std::shared_ptr<GameObjectComponent> GameObjectComponent::Clone() const
+SharedPtr<GameObjectComponent> GameObjectComponent::Clone() const
 {
-    return std::shared_ptr<GameObjectComponent>();
+    return SharedPtr<GameObjectComponent>();
 }
 
 size_t GameObjectComponent::GetMemorySize() const

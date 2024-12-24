@@ -18,7 +18,7 @@ GameObject::GameObject(String name)
 	CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
 }
 
-GameObject::GameObject(String name, List<std::shared_ptr<GameObjectComponent>> gameObjectComponentList)
+GameObject::GameObject(String name, List<SharedPtr<GameObjectComponent>> gameObjectComponentList)
 {
 	Name = name;
 	GameObjectComponentList = gameObjectComponentList;
@@ -27,16 +27,16 @@ GameObject::GameObject(String name, List<std::shared_ptr<GameObjectComponent>> g
 	CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
 }
 
-std::shared_ptr<GameObject> GameObject::CreateGameObject(String name)
+SharedPtr<GameObject> GameObject::CreateGameObject(String name)
 {
-	std::shared_ptr<GameObject> gameObject = MemoryManager::AllocateNewGameObject();
+	SharedPtr<GameObject> gameObject = MemoryManager::AllocateNewGameObject();
 	new (gameObject.get()) GameObject(name);
 	return gameObject;
 }
 
-std::shared_ptr<GameObject> GameObject::CreateGameObject(String name, List<ComponentTypeEnum> gameObjectComponentList)
+SharedPtr<GameObject> GameObject::CreateGameObject(String name, List<ComponentTypeEnum> gameObjectComponentList)
 {
-	std::shared_ptr<GameObject> gameObject = MemoryManager::AllocateNewGameObject();
+	SharedPtr<GameObject> gameObject = MemoryManager::AllocateNewGameObject();
 	new (gameObject.get()) GameObject(name);
 
 	for (auto component : gameObjectComponentList)
@@ -55,7 +55,7 @@ std::shared_ptr<GameObject> GameObject::CreateGameObject(String name, List<Compo
 
 void GameObject::Input(float deltaTime)
 {
-	for (std::shared_ptr<GameObjectComponent> component : GameObjectComponentList)
+	for (SharedPtr<GameObjectComponent> component : GameObjectComponentList)
 	{
 		component->Input(deltaTime);
 	}
@@ -63,7 +63,7 @@ void GameObject::Input(float deltaTime)
 
 void GameObject::Update(float deltaTime)
 {
-	for (std::shared_ptr<GameObjectComponent> component : GameObjectComponentList)
+	for (SharedPtr<GameObjectComponent> component : GameObjectComponentList)
 	{
 		component->Update(deltaTime);
 	}
@@ -71,7 +71,7 @@ void GameObject::Update(float deltaTime)
 
 void GameObject::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
 {
-	for (std::shared_ptr<GameObjectComponent> component : GameObjectComponentList)
+	for (SharedPtr<GameObjectComponent> component : GameObjectComponentList)
 	{
 		component->BufferUpdate(commandBuffer, deltaTime);
 	}
@@ -79,7 +79,7 @@ void GameObject::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
 
 void GameObject::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
 {
-	for (std::shared_ptr<GameObjectComponent> component : GameObjectComponentList)
+	for (SharedPtr<GameObjectComponent> component : GameObjectComponentList)
 	{
 		component->Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSet, sceneProperties);
 	}
@@ -87,13 +87,13 @@ void GameObject::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPi
 
 void GameObject::Destroy()
 {
-	for (std::shared_ptr<GameObjectComponent> component : GameObjectComponentList)
+	for (SharedPtr<GameObjectComponent> component : GameObjectComponentList)
 	{
 		component->Destroy();
 	}
 }
 
-void GameObject::AddComponent(std::shared_ptr<GameObjectComponent> newComponent)
+void GameObject::AddComponent(SharedPtr<GameObjectComponent> newComponent)
 {
 	auto a = newComponent.get();
 	CSobject->InvokeMethod("AddComponent", newComponent->GetCSObjectHandle(), a);
@@ -105,15 +105,15 @@ void GameObject::RemoveComponent(size_t index)
 	GameObjectComponentList.erase(GameObjectComponentList.begin() + index);
 }
 
-List<std::shared_ptr<GameObjectComponent>> GameObject::GetGameObjectComponentList()
+List<SharedPtr<GameObjectComponent>> GameObject::GetGameObjectComponentList()
 {
 	return GameObjectComponentList;
 }
 
-std::shared_ptr<GameObjectComponent> GameObject::GetComponentByName(const std::string& name)
+SharedPtr<GameObjectComponent> GameObject::GetComponentByName(const std::string& name)
 {
 	auto component = std::find_if(GameObjectComponentList.begin(), GameObjectComponentList.end(),
-		[&name](const std::shared_ptr<GameObjectComponent>& component)
+		[&name](const SharedPtr<GameObjectComponent>& component)
 		{
 			return *component->Name.get() == name;
 		});
@@ -126,10 +126,10 @@ std::shared_ptr<GameObjectComponent> GameObject::GetComponentByName(const std::s
 	return nullptr;
 }
 
-std::shared_ptr<GameObjectComponent> GameObject::GetComponentByComponentType(ComponentTypeEnum type)
+SharedPtr<GameObjectComponent> GameObject::GetComponentByComponentType(ComponentTypeEnum type)
 {
 	auto component = std::find_if(GameObjectComponentList.begin(), GameObjectComponentList.end(),
-		[&type](const std::shared_ptr<GameObjectComponent>& component)
+		[&type](const SharedPtr<GameObjectComponent>& component)
 		{
 			return *component->ComponentType.get() == type;
 		});

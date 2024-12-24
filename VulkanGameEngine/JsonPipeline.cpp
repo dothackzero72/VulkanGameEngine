@@ -19,9 +19,9 @@ JsonPipeline::~JsonPipeline()
 {
 }
 
-std::shared_ptr<JsonPipeline> JsonPipeline::CreateJsonRenderPass(String jsonPath, VkRenderPass renderPass, uint constBufferSize)
+SharedPtr<JsonPipeline> JsonPipeline::CreateJsonRenderPass(String jsonPath, VkRenderPass renderPass, uint constBufferSize)
 {
-    std::shared_ptr<JsonPipeline> pipeline = MemoryManager::AllocateJsonPipeline();
+    SharedPtr<JsonPipeline> pipeline = MemoryManager::AllocateJsonPipeline();
     new (pipeline.get()) JsonPipeline(jsonPath, renderPass, constBufferSize);
     return pipeline;
 }

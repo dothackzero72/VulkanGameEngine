@@ -4,7 +4,7 @@ Mesh2D::Mesh2D() : Mesh()
 {
 }
 
-Mesh2D::Mesh2D(std::shared_ptr<GameObjectComponent> parentGameObjectComponent, List<Vertex2D>& vertexList, List<uint32>& indexList, uint32 MeshBufferIndex) : Mesh(parentGameObjectComponent)
+Mesh2D::Mesh2D(SharedPtr<GameObjectComponent> parentGameObjectComponent, List<Vertex2D>& vertexList, List<uint32>& indexList, uint32 MeshBufferIndex) : Mesh(parentGameObjectComponent)
 {
 	std::vector<Vertex2D> SpriteVertexList =
 	{

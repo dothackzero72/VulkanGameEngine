@@ -13,7 +13,7 @@ Mesh::Mesh()
 	IndexCount = 0;
 }
 
-Mesh::Mesh(std::shared_ptr<GameObjectComponent> parentGameObjectComponent)
+Mesh::Mesh(SharedPtr<GameObjectComponent> parentGameObjectComponent)
 {
 	MeshBufferIndex = 0;
 	MeshTransform = mat4(0.0f);
@@ -39,7 +39,7 @@ void Mesh::Update(const float& deltaTime)
 void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
 	mat4 GameObjectMatrix = mat4(1.0);
-	std::shared_ptr<Transform2DComponent> transform = GameObjectTransform.lock();
+	SharedPtr<Transform2DComponent> transform = GameObjectTransform.lock();
 	if (transform)
 	{
 			GameObjectMatrix = *transform->GameObjectMatrixTransform.get();

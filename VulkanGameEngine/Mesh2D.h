@@ -9,7 +9,7 @@ protected:
 
 public:
 	Mesh2D();
-	Mesh2D(std::shared_ptr<GameObjectComponent> parentGameObjectComponent, List<Vertex2D>& vertexList, List<uint32>& indexList, uint32 MeshBufferIndex);
+	Mesh2D(SharedPtr<GameObjectComponent> parentGameObjectComponent, List<Vertex2D>& vertexList, List<uint32>& indexList, uint32 MeshBufferIndex);
 
 	virtual ~Mesh2D();
 	virtual void Update(const float& deltaTime) override;

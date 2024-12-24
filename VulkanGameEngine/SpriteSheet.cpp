@@ -4,7 +4,7 @@ SpriteSheet::SpriteSheet()
 {
 }
 
-SpriteSheet::SpriteSheet(std::shared_ptr<Material> material, vec2 spriteSize, ivec2 tileSizeInPixels, ivec2 SpritePosition, std::vector<ivec2>& AnimationFrameOffsets, float FrameTime)
+SpriteSheet::SpriteSheet(SharedPtr<Material> material, vec2 spriteSize, ivec2 tileSizeInPixels, ivec2 SpritePosition, std::vector<ivec2>& AnimationFrameOffsets, float FrameTime)
 {
 }
 

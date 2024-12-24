@@ -10,12 +10,12 @@ void ExceptionCallback(std::string_view InMessage);
 class MemoryManager 
 {
 	private:
-		static std::shared_ptr<Coral::ManagedAssembly> ECSassembly;
-		static List<std::shared_ptr<GameObject>> GameObjectList;
-		static List<std::shared_ptr<RenderMesh2DComponent>> RenderMesh2DComponentList;
-		static List<std::shared_ptr<Texture>> TextureList;
-		static List<std::shared_ptr<JsonRenderPass>> JsonRenderPassList;
-		static List<std::shared_ptr<JsonPipeline>> JsonPipelineList;
+		static SharedPtr<Coral::ManagedAssembly> ECSassembly;
+		static List<SharedPtr<GameObject>> GameObjectList;
+		static List<SharedPtr<RenderMesh2DComponent>> RenderMesh2DComponentList;
+		static List<SharedPtr<Texture>> TextureList;
+		static List<SharedPtr<JsonRenderPass>> JsonRenderPassList;
+		static List<SharedPtr<JsonPipeline>> JsonPipelineList;
 
 		static MemoryPool<GameObject> GameObjectMemoryPool;
 		static MemoryPool<Texture> TextureMemoryPool;
@@ -25,11 +25,11 @@ class MemoryManager
 
 	public:
 		static void SetUpMemoryManager(uint32_t EstObjectCount);
-		static std::shared_ptr<GameObject> AllocateNewGameObject();
-		static std::shared_ptr<Texture> AllocateNewTexture();
-		static std::shared_ptr<RenderMesh2DComponent> AllocateRenderMesh2DComponent();
-		static std::shared_ptr<JsonRenderPass> AllocateJsonRenderPass();
-		static std::shared_ptr<JsonPipeline> AllocateJsonPipeline();
+		static SharedPtr<GameObject> AllocateNewGameObject();
+		static SharedPtr<Texture> AllocateNewTexture();
+		static SharedPtr<RenderMesh2DComponent> AllocateRenderMesh2DComponent();
+		static SharedPtr<JsonRenderPass> AllocateJsonRenderPass();
+		static SharedPtr<JsonPipeline> AllocateJsonPipeline();
 		static void Destroy();
 
 		static void ViewGameObjectMemoryMap();
@@ -41,10 +41,10 @@ class MemoryManager
 
 		static std::vector<VkDescriptorBufferInfo> GetGameObjectPropertiesBuffer();
 		static std::vector<VkDescriptorImageInfo> GetTexturePropertiesBuffer();
-		static const List<std::shared_ptr<GameObject>>& GetGameObjectList() { return GameObjectList; }
-		static const List<std::shared_ptr<RenderMesh2DComponent>>& GetRenderMesh2DComponentList() { return RenderMesh2DComponentList; }
-		static const List<std::shared_ptr<Texture>>& GetTextureList() { return TextureList; }
-		static const List<std::shared_ptr<JsonRenderPass>>& GetJsonRenderPassList() { return JsonRenderPassList; }
-		static const List<std::shared_ptr<JsonPipeline>>& GetJsonPipelineList() { return JsonPipelineList; }
-		static const std::shared_ptr<Coral::ManagedAssembly> GetECSassemblyModule() { return ECSassembly; }
+		static const List<SharedPtr<GameObject>>& GetGameObjectList() { return GameObjectList; }
+		static const List<SharedPtr<RenderMesh2DComponent>>& GetRenderMesh2DComponentList() { return RenderMesh2DComponentList; }
+		static const List<SharedPtr<Texture>>& GetTextureList() { return TextureList; }
+		static const List<SharedPtr<JsonRenderPass>>& GetJsonRenderPassList() { return JsonRenderPassList; }
+		static const List<SharedPtr<JsonPipeline>>& GetJsonPipelineList() { return JsonPipelineList; }
+		static const SharedPtr<Coral::ManagedAssembly> GetECSassemblyModule() { return ECSassembly; }
 };

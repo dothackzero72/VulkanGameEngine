@@ -1,12 +1,12 @@
 #include "MemoryManager.h"
 #include <CBuffer.h>
 
-std::shared_ptr<Coral::ManagedAssembly> MemoryManager::ECSassembly = nullptr;
-List<std::shared_ptr<GameObject>> MemoryManager::GameObjectList;
-List<std::shared_ptr<RenderMesh2DComponent>> MemoryManager::RenderMesh2DComponentList;
-List<std::shared_ptr<Texture>> MemoryManager::TextureList;
-List<std::shared_ptr<JsonRenderPass>> MemoryManager::JsonRenderPassList;
-List<std::shared_ptr<JsonPipeline>> MemoryManager::JsonPipelineList;
+SharedPtr<Coral::ManagedAssembly> MemoryManager::ECSassembly = nullptr;
+List<SharedPtr<GameObject>> MemoryManager::GameObjectList;
+List<SharedPtr<RenderMesh2DComponent>> MemoryManager::RenderMesh2DComponentList;
+List<SharedPtr<Texture>> MemoryManager::TextureList;
+List<SharedPtr<JsonRenderPass>> MemoryManager::JsonRenderPassList;
+List<SharedPtr<JsonPipeline>> MemoryManager::JsonPipelineList;
 
 MemoryPool<GameObject> MemoryManager::GameObjectMemoryPool;
 MemoryPool<RenderMesh2DComponent> MemoryManager::RenderMesh2DComponentMemoryPool;
@@ -35,7 +35,7 @@ void MemoryManager::SetUpMemoryManager(uint32_t EstObjectCount)
 
 	std::string assemblyPath = "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/VulkanGameEngineGameObjectScripts/bin/Debug/VulkanGameEngineGameObjectScripts.dll";
 	Coral::ManagedAssembly* assembly = &loadContext.LoadAssembly(assemblyPath);
-	ECSassembly = std::shared_ptr<Coral::ManagedAssembly>(assembly);
+	ECSassembly = SharedPtr<Coral::ManagedAssembly>(assembly);
 
 	GameObjectMemoryPool.CreateMemoryPool(EstObjectCount);
 	RenderMesh2DComponentMemoryPool.CreateMemoryPool(EstObjectCount);
@@ -44,31 +44,31 @@ void MemoryManager::SetUpMemoryManager(uint32_t EstObjectCount)
 	JsonPipelineMemoryPool.CreateMemoryPool(EstObjectCount);
 }
 
-std::shared_ptr<GameObject> MemoryManager::AllocateNewGameObject()
+SharedPtr<GameObject> MemoryManager::AllocateNewGameObject()
 {
 	GameObjectList.emplace_back(GameObjectMemoryPool.AllocateMemoryLocation());
 	return GameObjectList.back();
 }
 
-std::shared_ptr<Texture> MemoryManager::AllocateNewTexture()
+SharedPtr<Texture> MemoryManager::AllocateNewTexture()
 {
 	TextureList.emplace_back(TextureMemoryPool.AllocateMemoryLocation());
 	return TextureList.back();
 }
 
-std::shared_ptr<RenderMesh2DComponent> MemoryManager::AllocateRenderMesh2DComponent()
+SharedPtr<RenderMesh2DComponent> MemoryManager::AllocateRenderMesh2DComponent()
 {
 	RenderMesh2DComponentList.emplace_back(RenderMesh2DComponentMemoryPool.AllocateMemoryLocation());
 	return RenderMesh2DComponentList.back();
 }
 
-std::shared_ptr<JsonRenderPass> MemoryManager::AllocateJsonRenderPass()
+SharedPtr<JsonRenderPass> MemoryManager::AllocateJsonRenderPass()
 {
 	JsonRenderPassList.emplace_back(JsonRenderPassMemoryPool.AllocateMemoryLocation());
 	return JsonRenderPassList.back();
 }
 
-std::shared_ptr<JsonPipeline> MemoryManager::AllocateJsonPipeline()
+SharedPtr<JsonPipeline> MemoryManager::AllocateJsonPipeline()
 {
 	JsonPipelineList.emplace_back(JsonPipelineMemoryPool.AllocateMemoryLocation());
 	return JsonPipelineList.back();

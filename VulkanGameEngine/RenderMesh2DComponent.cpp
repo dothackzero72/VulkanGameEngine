@@ -5,7 +5,7 @@ RenderMesh2DComponent::RenderMesh2DComponent() : GameObjectComponent()
 {
 }
 
-RenderMesh2DComponent::RenderMesh2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex) : GameObjectComponent(this, parentGameObjectPtr, name, ComponentTypeEnum::kRenderMesh2DComponent)
+RenderMesh2DComponent::RenderMesh2DComponent(SharedPtr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex) : GameObjectComponent(this, parentGameObjectPtr, name, ComponentTypeEnum::kRenderMesh2DComponent)
 {
 	std::vector<Vertex2D> SpriteVertexList =
 	{
@@ -27,9 +27,9 @@ RenderMesh2DComponent::~RenderMesh2DComponent()
 {
 }
 
-std::shared_ptr<RenderMesh2DComponent> RenderMesh2DComponent::CreateRenderMesh2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex)
+SharedPtr<RenderMesh2DComponent> RenderMesh2DComponent::CreateRenderMesh2DComponent(SharedPtr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex)
 {
-	std::shared_ptr<RenderMesh2DComponent> gameObject = MemoryManager::AllocateRenderMesh2DComponent();
+	SharedPtr<RenderMesh2DComponent> gameObject = MemoryManager::AllocateRenderMesh2DComponent();
 	new (gameObject.get()) RenderMesh2DComponent(parentGameObjectPtr, name, meshBufferIndex);
 	return gameObject;
 }
@@ -59,7 +59,7 @@ void RenderMesh2DComponent::Destroy()
 	mesh->Destroy();
 }
 
-std::shared_ptr<GameObjectComponent> RenderMesh2DComponent::Clone() const
+SharedPtr<GameObjectComponent> RenderMesh2DComponent::Clone() const
 {
 	return std::make_shared<RenderMesh2DComponent>(*this);
 }

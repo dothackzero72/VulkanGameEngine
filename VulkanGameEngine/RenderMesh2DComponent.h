@@ -5,23 +5,23 @@
 class RenderMesh2DComponent : public GameObjectComponent
 {
 private:
-	std::shared_ptr<Mesh2D> mesh;
-	RenderMesh2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex);
+	SharedPtr<Mesh2D> mesh;
+	RenderMesh2DComponent(SharedPtr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex);
 
 public:
 	RenderMesh2DComponent();
 	virtual ~RenderMesh2DComponent() override;
 
-	static std::shared_ptr<RenderMesh2DComponent> CreateRenderMesh2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex);
+	static SharedPtr<RenderMesh2DComponent> CreateRenderMesh2DComponent(SharedPtr<GameObject> parentGameObjectPtr, String name, uint32 meshBufferIndex);
 
 	virtual void Input(float deltaTime) override;
 	virtual void Update(float deltaTime) override;
 	virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime) override;
 	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties) override;
 	virtual void Destroy() override;
-	virtual std::shared_ptr<GameObjectComponent> Clone() const override;
+	virtual SharedPtr<GameObjectComponent> Clone() const override;
 	virtual size_t GetMemorySize() const override;
 
 	MeshPropertiesBuffer* GetMeshPropertiesBuffer() { return mesh->GetMeshPropertiesBuffer(); }
-	const std::shared_ptr<Mesh2D> GetMesh2D() { return mesh; }
+	const SharedPtr<Mesh2D> GetMesh2D() { return mesh; }
 };

@@ -22,17 +22,17 @@ Renderpass::~Renderpass()
 {
 }
 
-VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot)
+VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(SharedPtr<Texture> texture, uint32 bindingSlot)
 {
     return CreateTextureDescriptorSet(texture, bindingSlot, 1);
 }
 
-VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount)
+VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(SharedPtr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount)
 {
     return CreateTextureDescriptorSet(texture, bindingSlot, descriptorCount, 0);
 }
 
-VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(std::shared_ptr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount, uint32 arrayElement)
+VkWriteDescriptorSet Renderpass::CreateTextureDescriptorSet(SharedPtr<Texture> texture, uint32 bindingSlot, uint32 descriptorCount, uint32 arrayElement)
 {
     VkWriteDescriptorSet textureBuffer
     {

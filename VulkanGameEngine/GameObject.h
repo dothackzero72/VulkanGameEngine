@@ -18,30 +18,30 @@ private:
 
     size_t ObjectComponentMemorySize = 0;
 
-    std::shared_ptr<Coral::Type> CSclass;
-    std::shared_ptr<Coral::ManagedObject> CSobject;
+    SharedPtr<Coral::Type> CSclass;
+    SharedPtr<Coral::ManagedObject> CSobject;
 
     GameObject(String name);
-    GameObject(String name, List<std::shared_ptr<GameObjectComponent>> gameObjectComponentList);
+    GameObject(String name, List<SharedPtr<GameObjectComponent>> gameObjectComponentList);
 
 public:
     String Name;
-    List<std::shared_ptr<GameObjectComponent>> GameObjectComponentList;
+    List<SharedPtr<GameObjectComponent>> GameObjectComponentList;
 
     GameObject();
-    static std::shared_ptr<GameObject> CreateGameObject(String name);
-    static std::shared_ptr<GameObject> CreateGameObject(String name, List<ComponentTypeEnum> gameObjectComponentList);
+    static SharedPtr<GameObject> CreateGameObject(String name);
+    static SharedPtr<GameObject> CreateGameObject(String name, List<ComponentTypeEnum> gameObjectComponentList);
 
     virtual void Input(float deltaTime);
     virtual void Update(float deltaTime);
     virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
     virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
     virtual void Destroy();
-    void AddComponent(std::shared_ptr<GameObjectComponent> newComponent);
+    void AddComponent(SharedPtr<GameObjectComponent> newComponent);
     void RemoveComponent(size_t index);
 
-    List<std::shared_ptr<GameObjectComponent>> GetGameObjectComponentList();
-    std::shared_ptr<GameObjectComponent> GetComponentByName(const std::string& name);
-    std::shared_ptr<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type);
+    List<SharedPtr<GameObjectComponent>> GetGameObjectComponentList();
+    SharedPtr<GameObjectComponent> GetComponentByName(const std::string& name);
+    SharedPtr<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type);
     void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
 };

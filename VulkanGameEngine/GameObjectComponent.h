@@ -23,20 +23,20 @@ private:
     const String CSNameSpace = "VulkanGameEngineGameObjectScripts.Component.";
 
 protected:
-    std::shared_ptr<Coral::Type> CSclass = nullptr;
-    std::shared_ptr<Coral::ManagedObject> CSobject = nullptr;
+    SharedPtr<Coral::Type> CSclass = nullptr;
+    SharedPtr<Coral::ManagedObject> CSobject = nullptr;
 
     std::string GetCSNameSpacePath(ComponentTypeEnum componentType);
 
 public:
-    std::weak_ptr<GameObject> ParentGameObjectPtr;
-    std::shared_ptr<ComponentTypeEnum> ComponentType = nullptr;
-    std::shared_ptr<Coral::String> Name = nullptr;
+    WeakPtr<GameObject> ParentGameObjectPtr;
+    SharedPtr<ComponentTypeEnum> ComponentType = nullptr;
+    SharedPtr<Coral::String> Name = nullptr;
     size_t MemorySize = 0;
 
     GameObjectComponent();
-    GameObjectComponent(void* ptr, std::shared_ptr<GameObject> parentGameObjectPtr, ComponentTypeEnum componentType);
-    GameObjectComponent(void* ptr, std::shared_ptr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType);
+    GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, ComponentTypeEnum componentType);
+    GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType);
     virtual ~GameObjectComponent();
 
     virtual void Input(float deltaTime);
@@ -44,10 +44,10 @@ public:
     virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
     virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
     virtual void Destroy();
-    virtual std::shared_ptr<GameObjectComponent> Clone() const;
+    virtual SharedPtr<GameObjectComponent> Clone() const;
     virtual size_t GetMemorySize() const;
 
-    std::weak_ptr<GameObject> GetParentGameObject() { return ParentGameObjectPtr; }
+    WeakPtr<GameObject> GetParentGameObject() { return ParentGameObjectPtr; }
     void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
     const GameObjectComponent* GetCPPObjectHandle() { return this; }
 };

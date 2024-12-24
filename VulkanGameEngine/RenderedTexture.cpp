@@ -111,9 +111,9 @@ void RenderedTexture::RecreateRendererTexture(glm::vec2 TextureResolution)
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-std::shared_ptr<BakedTexture> RenderedTexture::BakeColorTexture(const char* filename, BakeTextureFormat textureFormat)
+SharedPtr<BakedTexture> RenderedTexture::BakeColorTexture(const char* filename, BakeTextureFormat textureFormat)
 {
-	std::shared_ptr<BakedTexture> BakeTexture = std::make_shared<BakedTexture>(BakedTexture(Pixel(255, 0, 0, 255), glm::ivec2(1280, 720), VkFormat::VK_FORMAT_R8G8B8A8_UNORM));
+	SharedPtr<BakedTexture> BakeTexture = std::make_shared<BakedTexture>(BakedTexture(Pixel(255, 0, 0, 255), glm::ivec2(1280, 720), VkFormat::VK_FORMAT_R8G8B8A8_UNORM));
 
 	VkCommandBuffer commandBuffer = VulkanRenderer::BeginSingleTimeCommands();
 
@@ -161,9 +161,9 @@ std::shared_ptr<BakedTexture> RenderedTexture::BakeColorTexture(const char* file
 	return BakeTexture;
 }
 
-std::vector<byte> ExportColorTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, const char* filename, std::shared_ptr<Texture> texture, BakeTextureFormat textureFormat, uint32 channels)
+std::vector<byte> ExportColorTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, const char* filename, SharedPtr<Texture> texture, BakeTextureFormat textureFormat, uint32 channels)
 {
-	std::shared_ptr<BakedTexture> bakeTexture = std::make_shared<BakedTexture>(BakedTexture(Pixel(0x00, 0x00, 0x00, 0xFF), glm::ivec2(texture->Width, texture->Height), texture->TextureByteFormat));
+	SharedPtr<BakedTexture> bakeTexture = std::make_shared<BakedTexture>(BakedTexture(Pixel(0x00, 0x00, 0x00, 0xFF), glm::ivec2(texture->Width, texture->Height), texture->TextureByteFormat));
 
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

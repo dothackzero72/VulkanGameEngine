@@ -11,7 +11,7 @@ FrameBufferRenderPass::~FrameBufferRenderPass()
 {
 }
 
-void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
+void FrameBufferRenderPass::BuildRenderPass(SharedPtr<Texture> texture)
 {
     RenderPass = CreateRenderPass();
     FrameBufferList = CreateFramebuffer();
@@ -166,7 +166,7 @@ VkDescriptorSet FrameBufferRenderPass::CreateDescriptorSets()
     return descriptorSet;
 }
 
-void FrameBufferRenderPass::UpdateDescriptorSet(std::shared_ptr<Texture> texture)
+void FrameBufferRenderPass::UpdateDescriptorSet(SharedPtr<Texture> texture)
 {
     std::vector<VkDescriptorImageInfo> ColorDescriptorImage
     {
@@ -218,7 +218,7 @@ List<VkPipelineShaderStageCreateInfo> FrameBufferRenderPass::CreateShaders()
     };
 }
 
-void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture)
+void FrameBufferRenderPass::BuildRenderPipeline(SharedPtr<Texture> texture)
 {
     DescriptorPool = CreateDescriptorPoolBinding();
     DescriptorSetLayout = CreateDescriptorSetLayout();
@@ -355,7 +355,7 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
    }
 }
 
-void FrameBufferRenderPass::UpdateRenderPass(std::shared_ptr<Texture> texture)
+void FrameBufferRenderPass::UpdateRenderPass(SharedPtr<Texture> texture)
 {
     RenderPassResolution = glm::ivec2((int)cRenderer.SwapChain.SwapChainResolution.width, (int)cRenderer.SwapChain.SwapChainResolution.height);
     SampleCount = VK_SAMPLE_COUNT_1_BIT;

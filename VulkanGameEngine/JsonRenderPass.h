@@ -23,20 +23,20 @@ private:
 	void BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInfo);
 	void BuildFrameBuffer();
 
-	List<std::shared_ptr<JsonPipeline>> JsonPipelineList;
+	List<SharedPtr<JsonPipeline>> JsonPipelineList;
 
 	JsonRenderPass(String jsonPath, ivec2 renderPassResolution);
 
 public:
 	String RenderPassName;
-	List<std::shared_ptr<RenderedTexture>> RenderedColorTextureList = List<std::shared_ptr<RenderedTexture>>();
-	std::shared_ptr<DepthTexture> depthTexture;
+	List<SharedPtr<RenderedTexture>> RenderedColorTextureList = List<SharedPtr<RenderedTexture>>();
+	SharedPtr<DepthTexture> depthTexture;
 
 	JsonRenderPass();
 	JsonRenderPass(const JsonRenderPass& df);
 	virtual ~JsonRenderPass();
-	static std::shared_ptr<JsonRenderPass> JsonCreateRenderPass(String JsonPath, ivec2 RenderPassResolution);
-	VkCommandBuffer Draw(List<std::shared_ptr<GameObject>> meshList, SceneDataBuffer& sceneProperties);
+	static SharedPtr<JsonRenderPass> JsonCreateRenderPass(String JsonPath, ivec2 RenderPassResolution);
+	VkCommandBuffer Draw(List<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties);
 
 	void Destroy();
 };

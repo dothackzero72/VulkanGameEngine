@@ -26,10 +26,10 @@ template <class T>
 class VulkanBuffer
 {
 private:
-	std::shared_ptr<VkDevice> _device;
-	std::shared_ptr<VkPhysicalDevice> _physicalDevice;
-	std::shared_ptr<VkCommandPool> _commandPool;
-	std::shared_ptr<VkQueue> _graphicsQueue;
+	SharedPtr<VkDevice> _device;
+	SharedPtr<VkPhysicalDevice> _physicalDevice;
+	SharedPtr<VkCommandPool> _commandPool;
+	SharedPtr<VkQueue> _graphicsQueue;
 
 protected:
 	VkBuffer StagingBuffer = VK_NULL_HANDLE;

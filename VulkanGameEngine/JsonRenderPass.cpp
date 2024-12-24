@@ -32,14 +32,14 @@ JsonRenderPass::~JsonRenderPass()
 {
 }
 
-std::shared_ptr<JsonRenderPass> JsonRenderPass::JsonCreateRenderPass(String jsonPath, ivec2 renderPassResolution)
+SharedPtr<JsonRenderPass> JsonRenderPass::JsonCreateRenderPass(String jsonPath, ivec2 renderPassResolution)
 {
-    std::shared_ptr<JsonRenderPass> renderPass = MemoryManager::AllocateJsonRenderPass();
+    SharedPtr<JsonRenderPass> renderPass = MemoryManager::AllocateJsonRenderPass();
     new (renderPass.get()) JsonRenderPass(jsonPath, renderPassResolution);
     return renderPass;
 }
 
-VkCommandBuffer JsonRenderPass::Draw(List<std::shared_ptr<GameObject>> meshList, SceneDataBuffer& sceneProperties)
+VkCommandBuffer JsonRenderPass::Draw(List<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties)
 {
     std::vector<VkClearValue> clearValues
     {

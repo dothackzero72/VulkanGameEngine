@@ -36,12 +36,12 @@ private:
 	const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-	std::weak_ptr<GameObject> ParentGameObject;
-	std::weak_ptr<GameObjectComponent> ParentGameObjectComponent;
-	std::weak_ptr<Transform2DComponent> GameObjectTransform;
+	WeakPtr<GameObject> ParentGameObject;
+	WeakPtr<GameObjectComponent> ParentGameObjectComponent;
+	WeakPtr<Transform2DComponent> GameObjectTransform;
 	
 protected:
-	//std::shared_ptr<JsonPipeline> MeshRenderPipeline;
+	//SharedPtr<JsonPipeline> MeshRenderPipeline;
 
 public:
 	uint64 MeshBufferIndex;
@@ -72,10 +72,10 @@ public:
 		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings , MeshBufferPropertySettings, true);
 		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
-		std::shared_ptr parentGameObject = ParentGameObject.lock();
+		SharedPtr parentGameObject = ParentGameObject.lock();
 		if (parentGameObject)
 		{
-			std::shared_ptr<GameObjectComponent> component = parentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent);
+			SharedPtr<GameObjectComponent> component = parentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent);
 			if (component)
 			{
 				GameObjectTransform = std::dynamic_pointer_cast<Transform2DComponent>(component);
@@ -84,7 +84,7 @@ public:
 	}
 
 	Mesh();
-	Mesh(std::shared_ptr<GameObjectComponent> parentGameObjectComponent);
+	Mesh(SharedPtr<GameObjectComponent> parentGameObjectComponent);
 	virtual ~Mesh();
 	virtual void Update(const float& deltaTime);
 	virtual void BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime);

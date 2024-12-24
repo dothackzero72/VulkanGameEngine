@@ -5,20 +5,20 @@ Transform2DComponent::Transform2DComponent() : GameObjectComponent()
 {
 }
 
-Transform2DComponent::Transform2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr) : GameObjectComponent(this, parentGameObjectPtr, kTransform2DComponent)
+Transform2DComponent::Transform2DComponent(SharedPtr<GameObject> parentGameObjectPtr) : GameObjectComponent(this, parentGameObjectPtr, kTransform2DComponent)
 {
-    GameObjectPosition = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetPositionPtr"));
-    GameObjectRotation = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetRotationPtr"));
-    GameObjectScale = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetScalePtr"));
-    GameObjectMatrixTransform = std::shared_ptr<mat4>(CSobject->InvokeMethod<mat4*>("GetTransformMatrixPtr"));
+    GameObjectPosition = SharedPtr<vec2>(CSobject->InvokeMethod<vec2*>("GetPositionPtr"));
+    GameObjectRotation = SharedPtr<vec2>(CSobject->InvokeMethod<vec2*>("GetRotationPtr"));
+    GameObjectScale = SharedPtr<vec2>(CSobject->InvokeMethod<vec2*>("GetScalePtr"));
+    GameObjectMatrixTransform = SharedPtr<mat4>(CSobject->InvokeMethod<mat4*>("GetTransformMatrixPtr"));
 }
 
-Transform2DComponent::Transform2DComponent(std::shared_ptr<GameObject> parentGameObjectPtr, String& name) : GameObjectComponent(this, parentGameObjectPtr, name, kTransform2DComponent)
+Transform2DComponent::Transform2DComponent(SharedPtr<GameObject> parentGameObjectPtr, String& name) : GameObjectComponent(this, parentGameObjectPtr, name, kTransform2DComponent)
 {
-    GameObjectPosition = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetPositionPtr"));
-    GameObjectRotation = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetRotationPtr"));
-    GameObjectScale = std::shared_ptr<vec2>(CSobject->InvokeMethod<vec2*>("GetScalePtr"));
-    GameObjectMatrixTransform = std::shared_ptr<mat4>(CSobject->InvokeMethod<mat4*>("GetTransformMatrixPtr"));
+    GameObjectPosition = SharedPtr<vec2>(CSobject->InvokeMethod<vec2*>("GetPositionPtr"));
+    GameObjectRotation = SharedPtr<vec2>(CSobject->InvokeMethod<vec2*>("GetRotationPtr"));
+    GameObjectScale = SharedPtr<vec2>(CSobject->InvokeMethod<vec2*>("GetScalePtr"));
+    GameObjectMatrixTransform = SharedPtr<mat4>(CSobject->InvokeMethod<mat4*>("GetTransformMatrixPtr"));
 }
 
 Transform2DComponent::~Transform2DComponent()
@@ -45,7 +45,7 @@ void Transform2DComponent::Destroy()
     GameObjectComponent::Destroy();
 }
 
-std::shared_ptr<GameObjectComponent> Transform2DComponent::Clone() const
+SharedPtr<GameObjectComponent> Transform2DComponent::Clone() const
 {
     return std::make_shared<Transform2DComponent>(*this);
 }

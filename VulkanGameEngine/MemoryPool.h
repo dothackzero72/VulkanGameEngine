@@ -42,7 +42,7 @@ private:
 		return blockIndex < ObjectCount ? blockIndex : FailedToFind;
 	}
 
-	//void UpdateMemoryPoolSize(List<std::shared_ptr<T>>& memoryPoolList)
+	//void UpdateMemoryPoolSize(List<SharedPtr<T>>& memoryPoolList)
 	//{
 	//	uint32 newObjectCount =  ObjectCount * 2;
 	//	MemoryBlock* tempMemoryBlock = new MemoryBlock[ObjectSize * newObjectCount];
@@ -54,7 +54,7 @@ private:
 
 	//		uint8_t* address = reinterpret_cast<uint8_t*>(MemoryBlockPtr) + (x * sizeof(T));
 	//		T* ptr = reinterpret_cast<T*>(address);
-	//		memoryPoolList[x] = std::shared_ptr<T>(newObject, [this, memoryIndex](T* ptr)
+	//		memoryPoolList[x] = SharedPtr<T>(newObject, [this, memoryIndex](T* ptr)
 	//			{
 	//				ptr->~T();
 	//				MemoryBlockInUse[memoryIndex] = false;
@@ -85,7 +85,7 @@ public:
 		MemoryBlockPtr = new MemoryAddress[ObjectSize * ObjectCount];
 	}
 
-	std::shared_ptr<T> AllocateMemoryLocation()
+	SharedPtr<T> AllocateMemoryLocation()
 	{
 		MemoryBlock* memoryAddress = MemoryBlockPtr;
 
@@ -100,7 +100,7 @@ public:
 		T* newObject = new (memoryAddress + offset) T();
 
 		MemoryBlockInUse[memoryIndex] = MemoryBlockUsed;
-		return std::shared_ptr<T>(newObject, [this, memoryIndex](T* ptr)
+		return SharedPtr<T>(newObject, [this, memoryIndex](T* ptr)
 			{
 				if (MemoryBlockInUse.size() > 0 &&
 					MemoryBlockInUse[memoryIndex] == MemoryBlockUsed)

@@ -26,7 +26,7 @@ public:
     ~RenderedTexture();
     void RecreateRendererTexture(glm::vec2 TextureResolution);
 
-    std::shared_ptr<BakedTexture> BakeColorTexture(const char* filename, BakeTextureFormat textureFormat);
+    SharedPtr<BakedTexture> BakeColorTexture(const char* filename, BakeTextureFormat textureFormat);
 };
 
-std::vector<byte> ExportColorTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, const char* filename, std::shared_ptr<Texture> texture, BakeTextureFormat textureFormat, uint32 channels);
+std::vector<byte> ExportColorTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, const char* filename, SharedPtr<Texture> texture, BakeTextureFormat textureFormat, uint32 channels);

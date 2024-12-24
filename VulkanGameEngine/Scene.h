@@ -18,15 +18,15 @@ private:
 
 	FrameTimer timer;
 	SceneDataBuffer sceneProperties;
-	List<std::shared_ptr<Texture>> texture;
-	std::shared_ptr<Texture> texture2;
-	std::shared_ptr<OrthographicCamera> orthographicCamera;
+	List<SharedPtr<Texture>> texture;
+	SharedPtr<Texture> texture2;
+	SharedPtr<OrthographicCamera> orthographicCamera;
 	FrameBufferRenderPass frameRenderPass;
 	//RenderPass2D		  renderPass2D;
-	std::shared_ptr<JsonRenderPass>        renderPass2D;
+	SharedPtr<JsonRenderPass>        renderPass2D;
 
-	List<std::shared_ptr<GameObject>> gameObjectList;
-	List<std::shared_ptr<Texture>> TextureList;
+	List<SharedPtr<GameObject>> gameObjectList;
+	List<SharedPtr<Texture>> TextureList;
 
 public:
 	void StartUp();
@@ -36,6 +36,6 @@ public:
 	void BuildRenderPasses();
 	void UpdateRenderPasses();
 	void Draw();
-	//void BakeCubeTextureAtlus(const String& FilePath, std::shared_ptr<BakedTexture> texture);
+	//void BakeCubeTextureAtlus(const String& FilePath, SharedPtr<BakedTexture> texture);
 	void Destroy();
 };
