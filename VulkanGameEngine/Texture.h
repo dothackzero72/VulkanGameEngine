@@ -24,8 +24,6 @@ class Texture
 private:
 	uint64 TextureBufferIndex;
 
-
-
 	void	 TextureSetUp();
 	VkResult GenerateMipmaps();
 
@@ -72,6 +70,7 @@ public:
 	static SharedPtr<Texture> CreateTexture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
 
 	virtual void UpdateTextureSize(vec2 TextureResolution);
+	void UpdateTextureBufferIndex(uint64_t bufferIndex);
 	virtual void Destroy();
 
 	VkResult TransitionImageLayout(VkImageLayout newLayout);
@@ -91,5 +90,6 @@ public:
 
 	const VkFormat GetTextureByteFormat() { return TextureByteFormat; }
 	const VkSampleCountFlagBits GetSampleCount() { return SampleCount; }
+	const uint64 GetTextureBufferIndex() { return TextureBufferIndex; }
 };
 

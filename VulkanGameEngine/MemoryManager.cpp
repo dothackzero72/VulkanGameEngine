@@ -77,11 +77,11 @@ SharedPtr<JsonPipeline> MemoryManager::AllocateJsonPipeline()
 
 void MemoryManager::ViewMemoryMap()
 {
-	ViewGameObjectMemoryMap();
-	ViewTextureMemoryMap();
-	ViewRenderMesh2DComponentMemoryMap();
-	ViewJsonRenderPassMemoryMap();
-	ViewJsonPipelineMemoryMap();
+	GameObjectMemoryPool.ViewMemoryMap();
+	TextureMemoryPool.ViewMemoryMap();
+	RenderMesh2DComponentMemoryPool.ViewMemoryMap();
+	JsonRenderPassMemoryPool.ViewMemoryMap();
+	JsonPipelineMemoryPool.ViewMemoryMap();
 }
 
 // std::vector<VkDescriptorBufferInfo>  MemoryManager::GetVertexPropertiesBuffer()
@@ -160,6 +160,18 @@ std::vector<VkDescriptorBufferInfo> MemoryManager::GetGameObjectPropertiesBuffer
 	}
 
 	return MeshPropertiesBuffer;
+}
+
+void MemoryManager::UpdateDrawBuffers()
+{
+	for (int x = 0; x < TextureList.size(); x++)
+	{
+		TextureList[x]->UpdateTextureBufferIndex(x);
+	}
+	//for (int x = 0; x < MaterialList.size(); x++)
+	//{
+	//	MaterialList[x]->UpdateMaterialBufferIndex(x);
+	//}
 }
 
 void MemoryManager::Destroy()

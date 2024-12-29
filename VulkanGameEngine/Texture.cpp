@@ -126,6 +126,11 @@ void Texture::UpdateTextureSize(glm::vec2 TextureResolution)
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
+void Texture::UpdateTextureBufferIndex(uint64_t bufferIndex)
+{
+	TextureBufferIndex = bufferIndex;
+}
+
 void Texture::Destroy()
 {
 	renderer.DestroyImageView(View);

@@ -55,7 +55,7 @@ void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 
 	MeshProperties.MaterialIndex = MeshBufferIndex;
 	MeshProperties.MeshTransform = GameObjectMatrix * MeshMatrix;
-	PropertiesBuffer.UpdateBufferData(static_cast<void*>(&MeshProperties));
+	PropertiesBuffer.UpdateBufferMemory(MeshProperties);
 }
 
 void Mesh::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)

@@ -28,7 +28,7 @@ private:
 	JsonRenderPass(String jsonPath, ivec2 renderPassResolution);
 
 public:
-	String RenderPassName;
+	String Name;
 	List<SharedPtr<RenderedTexture>> RenderedColorTextureList = List<SharedPtr<RenderedTexture>>();
 	SharedPtr<DepthTexture> depthTexture;
 

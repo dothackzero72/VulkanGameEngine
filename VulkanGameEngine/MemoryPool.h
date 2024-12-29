@@ -3,6 +3,7 @@ extern "C"
 {
 #include <Macro.h>
 }
+#include <iostream>
 #include "Typedef.h"
 #include <limits>
 
@@ -121,6 +122,26 @@ public:
 			memoryList.emplace_back(ptr);
 		}
 		return memoryList;
+	}
+
+	void ViewMemoryMap()
+	{
+		const auto memory = ViewMemoryPool();
+
+		std::cout << "Memory Map of the " << typeid(T).name()  << " Memory Pool(" << sizeof(T) << " bytes each, " << std::to_string(sizeof(T) * memory.size()) << " bytes total) : " << std::endl;
+		std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
+		for (size_t x = 0; x < memory.size(); x++)
+		{
+			if (ViewMemoryBlockUsage()[x] == 1)
+			{
+				std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
+			}
+			else
+			{
+				std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
+			}
+		}
+		std::cout << "" << std::endl << std::endl;
 	}
 
 	List<uint8_t> ViewMemoryBlockUsage()

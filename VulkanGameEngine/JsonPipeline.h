@@ -18,7 +18,7 @@ private:
     void LoadPipeline(RenderPipelineModel model, VkRenderPass renderPass, uint ConstBufferSize);
 
 public:
-    String PipelineName;
+    String Name;
     VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
     List<VkDescriptorSetLayout> DescriptorSetLayoutList;
     List<VkDescriptorSet> DescriptorSetList;

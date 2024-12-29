@@ -30,7 +30,11 @@ class MemoryManager
 		static SharedPtr<RenderMesh2DComponent> AllocateRenderMesh2DComponent();
 		static SharedPtr<JsonRenderPass> AllocateJsonRenderPass();
 		static SharedPtr<JsonPipeline> AllocateJsonPipeline();
+		
+		static void UpdateDrawBuffers();
 		static void Destroy();
+
+
 
 		static void ViewGameObjectMemoryMap();
 		static void ViewTextureMemoryMap();

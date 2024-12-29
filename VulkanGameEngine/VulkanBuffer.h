@@ -10,18 +10,6 @@ extern "C"
 #include "Vertex.h"
 #include "Typedef.h"
 
-#pragma once
-extern "C"
-{
-#include <CBuffer.h>
-}
-#include "VulkanRenderer.h"
-#include <iostream>
-#include <memory>
-#include <vector>
-#include "Vertex.h"
-#include "Typedef.h"
-
 template <class T>
 class VulkanBuffer
 {
@@ -105,17 +93,17 @@ public:
 		return Buffer_CopyBuffer(*_device.get(), *_commandPool.get(), cRenderer.SwapChain.GraphicsQueue, srcBuffer, dstBuffer, size);
 	}
 
-	void UpdateBufferData(T& bufferData)
+	void UpdateBufferMemory(T& bufferData)
 	{
-		Buffer_UpdateBufferData(*_device.get(), &BufferMemory, static_cast<void*>(&bufferData), BufferSize, IsStagingBuffer);
+		Buffer_UpdateBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, static_cast<void*>(&bufferData), BufferSize, IsStagingBuffer);
 	}
 
-	void UpdateBufferData(T& bufferData, VkDeviceMemory bufferMemory)
+	void UpdateBufferMemory(T& bufferData, VkDeviceMemory bufferMemory)
 	{
-		Buffer_UpdateBufferData(*_device.get(), &BufferMemory, static_cast<void*>(&bufferData), BufferSize, IsStagingBuffer);
+		Buffer_UpdateBufferData(*_device.get(), &StagingBufferMemory, &bufferMemory, static_cast<void*>(&bufferData), BufferSize, IsStagingBuffer);
 	}
 
-	void UpdateBufferData(List<T>& bufferData, VkDeviceMemory bufferMemory)
+	void UpdateBufferMemory(List<T>& bufferData, VkDeviceMemory bufferMemory)
 	{
 		const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
 		if (BufferSize != newBufferSize)
@@ -136,7 +124,7 @@ public:
 		Buffer_UpdateBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, static_cast<void*>(bufferData.data()), BufferSize, IsStagingBuffer);
 	}
 
-	void UpdateBufferData(void* bufferData, VkDeviceSize bufferListCount, VkDeviceMemory bufferMemory)
+	void UpdateBufferMemory(void* bufferData, VkDeviceSize bufferListCount, VkDeviceMemory bufferMemory)
 	{
 		const VkDeviceSize newBufferSize = sizeof(T) * bufferListCount;
 		if (BufferSize != newBufferSize)
@@ -151,12 +139,12 @@ public:
 		Buffer_UpdateBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, static_cast<void*>(&bufferData), BufferSize, IsStagingBuffer);
 	}
 
-	void UpdateBufferData(void* bufferData, VkDeviceMemory bufferMemory)
+	void UpdateBufferMemory(void* bufferData, VkDeviceMemory bufferMemory)
 	{
 		Buffer_UpdateBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, bufferData, BufferSize, IsStagingBuffer);
 	}
 
-	void UpdateBufferData(void* bufferData)
+	void UpdateBufferMemory(void* bufferData)
 	{
 		if (BufferSize < sizeof(T))
 		{

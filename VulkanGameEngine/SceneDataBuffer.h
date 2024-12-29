@@ -14,5 +14,6 @@ enum ComponentTypeEnum
 	kUndefined,
 	kRenderMesh2DComponent,
 	kTransform2DComponent,
-	kInputComponent
+	kInputComponent,
+	kSpriteComponent
 };

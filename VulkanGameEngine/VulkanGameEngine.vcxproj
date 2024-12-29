@@ -197,6 +197,8 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="SpriteBatchLayerhRenderer.cpp" />
+    <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="SpriteSheet.cpp" />
     <ClCompile Include="SystemClock.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -248,6 +250,8 @@
     <ClInclude Include="SceneDataBuffer.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="SpriteBatchLayerhRenderer.h" />
+    <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="SystemClock.h" />
     <ClInclude Include="Texture.h" />
@@ -255,7 +259,6 @@
     <ClInclude Include="Transform2DComponent.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VulkanBuffer.h" />
-    <ClInclude Include="DynamicVulkanBuffer.h" />
     <ClInclude Include="VulkanRenderer.h" />
   </ItemGroup>
   <ItemGroup>
