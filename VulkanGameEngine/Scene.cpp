@@ -78,14 +78,14 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 void Scene::BuildRenderPasses()
 {
 	//renderPass2D.BuildRenderPass(texture, texture2);
-	renderPass2D = JsonRenderPass::JsonCreateRenderPass("C://Users//dotha//Documents//GitHub//VulkanGameEngine//RenderPass//DefaultRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
-	frameRenderPass.BuildRenderPass(renderPass2D->RenderedColorTextureList[0]);
+	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("C://Users//dotha//Documents//GitHub//VulkanGameEngine//RenderPass//DefaultRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
+	frameRenderPass.BuildRenderPass(levelRenderer->RenderedColorTextureList[0]);
 }
 
 void Scene::UpdateRenderPasses()
 {
 	renderer.RebuildSwapChain();
-	frameRenderPass.UpdateRenderPass(renderPass2D->RenderedColorTextureList[0]);
+	frameRenderPass.UpdateRenderPass(levelRenderer->RenderedColorTextureList[0]);
 	InterfaceRenderPass::RebuildSwapChain();
 	cRenderer.RebuildRendererFlag = false;
 }
@@ -95,7 +95,7 @@ void Scene::Draw()
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 
 	VULKAN_RESULT(renderer.StartFrame());
-	CommandBufferSubmitList.emplace_back(renderPass2D->Draw(gameObjectList, sceneProperties));
+	CommandBufferSubmitList.emplace_back(levelRenderer->Draw(gameObjectList, sceneProperties));
 	CommandBufferSubmitList.emplace_back(frameRenderPass.Draw());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
 	VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
@@ -111,6 +111,6 @@ void Scene::Destroy()
 	{
 		texture->Destroy();
 	}
-	renderPass2D->Destroy();
+	levelRenderer->Destroy();
 	frameRenderPass.Destroy();
 }

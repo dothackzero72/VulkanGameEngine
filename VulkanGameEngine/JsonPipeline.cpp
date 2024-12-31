@@ -28,8 +28,9 @@ SharedPtr<JsonPipeline> JsonPipeline::CreateJsonRenderPass(String jsonPath, VkRe
 
 void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
 {
-    List<VkDescriptorBufferInfo> meshProperties = MemoryManager::GetGameObjectPropertiesBuffer();
+    List<VkDescriptorBufferInfo> meshProperties = MemoryManager::GetMeshPropertiesBuffer();
     List<VkDescriptorImageInfo> TextureList = MemoryManager::GetTexturePropertiesBuffer();
+    List<VkDescriptorBufferInfo> materialProperties = MemoryManager::GetMaterialPropertiesBuffer();
 
     //CreateDescriptorPool
     {
@@ -56,9 +57,18 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
                         });
                     break;
                 }
+                case kMaterialDescriptor:
+                {
+                    descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
+                        {
+                            .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+                            .descriptorCount = static_cast<uint32>(materialProperties.size())
+                        });
+                    break;
+                }
                 default:
                 {
-                    //throw new Exception($"{binding} case hasn't been handled yet");
+                    throw std::runtime_error("Binding case hasn't been handled yet");
                 }
             }
         }
@@ -106,9 +116,21 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
                         });
                     break;
                 }
+                case kMaterialDescriptor:
+                {
+                    descriptorSetLayoutBindingList.emplace_back(VkDescriptorSetLayoutBinding
+                        {
+                            .binding = binding.BindingNumber,
+                            .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+                            .descriptorCount = static_cast<uint32>(materialProperties.size()),
+                            .stageFlags = VK_SHADER_STAGE_ALL,
+                            .pImmutableSamplers = nullptr
+                        });
+                    break;
+                }
                 default:
                 {
-                    // throw new Exception($"{binding} case hasn't been handled yet");
+                    throw std::runtime_error("Binding case hasn't been handled yet");
                 }
             }
         }
@@ -189,9 +211,27 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
 
                         break;
                     }
+                    case kMaterialDescriptor:
+                    {
+                        writeDescriptorSet.emplace_back(VkWriteDescriptorSet
+                            {
+                                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                                .pNext = nullptr,
+                                .dstSet = descriptorSet,
+                                .dstBinding = binding.BindingNumber,
+                                .dstArrayElement = 0,
+                                .descriptorCount = static_cast<uint32>(materialProperties.size()),
+                                .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+                                .pImageInfo = TextureList.data(),
+                                .pBufferInfo = nullptr,
+                                .pTexelBufferView = nullptr
+                            });
+
+                        break;
+                    }
                     default:
                     {
-                        //throw new Exception($"{binding} case hasn't been handled yet");
+                        throw std::runtime_error("Binding case hasn't been handled yet");
                     }
                 }
             }

@@ -84,6 +84,12 @@
       "descriptorType": 1,
       "descriptorCount": 1,
       "stageFlags": 16
+    },
+    {
+      "binding": 2,
+      "descriptorType": 7,
+      "descriptorCount": 1,
+      "stageFlags": 17
     }
   ],
   "PipelineDescriptorModelsList": [
@@ -96,6 +102,11 @@
       "BindingNumber": 1,
       "BindingPropertiesList": 1,
       "DescriptorType": 1
+    },
+    {
+      "BindingNumber": 2,
+      "BindingPropertiesList": 2,
+      "DescriptorType": 7
     }
   ],
   "_name": "DefaultPipeline"

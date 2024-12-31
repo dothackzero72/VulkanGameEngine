@@ -9,9 +9,14 @@ protected:
 
 public:
 	Mesh2D();
-	Mesh2D(SharedPtr<GameObjectComponent> parentGameObjectComponent, List<Vertex2D>& vertexList, List<uint32>& indexList, uint32 MeshBufferIndex);
+	Mesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material);
+	Mesh2D(SharedPtr<GameObjectComponent> parentGameObjectComponent, List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material);
 
+	static SharedPtr<Mesh2D> CreateMesh2D(String name, SharedPtr<Material> material);
+	static SharedPtr<Mesh2D> CreateMesh2D(SharedPtr<GameObjectComponent> parentGameObjectComponent, String name, SharedPtr<Material> material);
 	virtual ~Mesh2D();
+
+
 	virtual void Update(const float& deltaTime) override;
 	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties) override;
 	virtual void Destroy() override;

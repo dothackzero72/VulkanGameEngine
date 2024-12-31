@@ -43,7 +43,6 @@ void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 	if (transform)
 	{
 			GameObjectMatrix = *transform->GameObjectMatrixTransform.get();
-		
 	}
 
 	mat4 MeshMatrix = mat4(1.0f);
@@ -53,20 +52,13 @@ void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 	MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.z), vec3(0.0f, 0.0f, 1.0f));
 	MeshMatrix = glm::scale(MeshMatrix, MeshScale);
 
-	MeshProperties.MaterialIndex = MeshBufferIndex;
+	MeshProperties.MaterialIndex = MeshMaterial->GetMaterialBufferIndex();
 	MeshProperties.MeshTransform = GameObjectMatrix * MeshMatrix;
 	PropertiesBuffer.UpdateBufferMemory(MeshProperties);
 }
 
 void Mesh::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
 {
-	/*VkDeviceSize offsets[] = { 0 };
-	vkCmdPushConstants(commandBuffer, MeshRenderPipeline->PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneProperties);
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, MeshRenderPipeline->Pipeline);
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, MeshRenderPipeline->PipelineLayout, 0, 1, &MeshRenderPipeline->DescriptorSet, 0, nullptr);
-	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &MeshVertexBuffer.Buffer, offsets);
-	vkCmdBindIndexBuffer(commandBuffer, MeshIndexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
-	vkCmdDrawIndexed(commandBuffer, IndexCount, 1, 0, 0, 0);*/
 }
 
 void Mesh::Destroy()
@@ -74,4 +66,15 @@ void Mesh::Destroy()
 	MeshVertexBuffer.DestroyBuffer();
 	MeshIndexBuffer.DestroyBuffer();
 	PropertiesBuffer.DestroyBuffer();
+}
+
+void Mesh::GetMeshPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList)
+{
+	VkDescriptorBufferInfo meshBufferInfo =
+	{
+		.buffer = PropertiesBuffer.Buffer,
+		.offset = 0,
+		.range = VK_WHOLE_SIZE
+	};
+	meshBufferList.emplace_back(meshBufferInfo);
 }

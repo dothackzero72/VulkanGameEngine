@@ -44,7 +44,7 @@ SharedPtr<GameObject> GameObject::CreateGameObject(String name, List<ComponentTy
 		String asdf = "adsfasd";
 		switch (component)
 		{
-			case kRenderMesh2DComponent: gameObject->AddComponent(RenderMesh2DComponent::CreateRenderMesh2DComponent(gameObject, "Mesh Renderer", static_cast<uint32>(MemoryManager::GetRenderMesh2DComponentList().size()))); break;
+		//	case kRenderMesh2DComponent: gameObject->AddComponent(RenderMesh2DComponent::CreateRenderMesh2DComponent(gameObject, "Mesh Renderer", static_cast<uint32>(MemoryManager::GetRenderMesh2DComponentList().size()))); break;
 			case kTransform2DComponent: gameObject->AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(gameObject, asdf))); break;
 			case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject, asdf))); break;
 		}

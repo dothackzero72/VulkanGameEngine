@@ -106,17 +106,6 @@ void Texture::TextureSetUp()
 	SampleCount = VK_SAMPLE_COUNT_1_BIT;
 }
 
-VkDescriptorImageInfo* Texture::GetTextureBuffer()
-{
-	textureBuffer = VkDescriptorImageInfo
-	{
-		.sampler = Sampler,
-		.imageView = View,
-		.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-	};
-	return &textureBuffer;
-}
-
 void Texture::UpdateTextureSize(glm::vec2 TextureResolution)
 {
 	renderer.DestroyImageView(View);
@@ -195,6 +184,17 @@ void Texture::CreateTextureSampler()
 		.unnormalizedCoordinates = VK_FALSE,
 	};
 	VULKAN_RESULT(CreateTextureSampler(TextureImageSamplerInfo));
+}
+
+void Texture::GetTexturePropertiesBuffer(std::vector<VkDescriptorImageInfo>& textureDescriptorList)
+{
+	VkDescriptorImageInfo textureDescriptor =
+	{
+		.sampler = Sampler,
+		.imageView = View,
+		.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+	};
+	textureDescriptorList.emplace_back(textureDescriptor);
 }
 
 void Texture::ImGuiShowTexture(const ImVec2& TextureDisplaySize)

@@ -3,7 +3,7 @@
 #include "ShaderCompiler.h"
 #include <stdexcept>
 
-FrameBufferRenderPass::FrameBufferRenderPass() : Renderpass()
+FrameBufferRenderPass::FrameBufferRenderPass()
 {
 }
 
@@ -13,6 +13,13 @@ FrameBufferRenderPass::~FrameBufferRenderPass()
 
 void FrameBufferRenderPass::BuildRenderPass(SharedPtr<Texture> texture)
 {
+    RenderPassResolution = glm::ivec2((int)cRenderer.SwapChain.SwapChainResolution.width, (int)cRenderer.SwapChain.SwapChainResolution.height);
+    SampleCount = VK_SAMPLE_COUNT_1_BIT;
+
+    CommandBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
+    FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
+
+    VULKAN_RESULT(renderer.CreateCommandBuffers(CommandBufferList));
     RenderPass = CreateRenderPass();
     FrameBufferList = CreateFramebuffer();
     BuildRenderPipeline(texture);
@@ -441,7 +448,9 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
 
 void FrameBufferRenderPass::Destroy()
 {
-    Renderpass::Destroy();
+    renderer.DestroyRenderPass(RenderPass);
+    renderer.DestroyCommandBuffers(CommandBufferList);
+    renderer.DestroyFrameBuffers(FrameBufferList);
     renderer.DestroyPipeline(ShaderPipeline);
     renderer.DestroyPipelineLayout(ShaderPipelineLayout);
     renderer.DestroyPipelineCache(PipelineCache);

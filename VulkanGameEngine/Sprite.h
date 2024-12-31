@@ -19,12 +19,13 @@ private:
 	vec2 UV;
 	vec4 Color;
 
-	List<Vertex2D> VertexList;
-
 public:
 
+	List<Vertex2D> VertexList;
+	List<uint32> IndexList;
+
 	Sprite();
-	Sprite(const String& spriteSheetLocation, vec2 spriteSize);
+	Sprite(SharedPtr<Material> material, vec2 spriteSize);
 	virtual ~Sprite();
 
 	virtual void Input(float deltaTime);

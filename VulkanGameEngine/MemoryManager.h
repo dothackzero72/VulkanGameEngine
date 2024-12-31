@@ -5,6 +5,9 @@
 #include "Texture.h"
 #include "JsonRenderPass.h"
 #include "JsonPipeline.h"
+#include "Material.h"
+#include "Mesh2D.h"
+#include "SpriteBatchLayer.h"
 
 void ExceptionCallback(std::string_view InMessage);
 class MemoryManager 
@@ -12,43 +15,48 @@ class MemoryManager
 	private:
 		static SharedPtr<Coral::ManagedAssembly> ECSassembly;
 		static List<SharedPtr<GameObject>> GameObjectList;
-		static List<SharedPtr<RenderMesh2DComponent>> RenderMesh2DComponentList;
+		//static List<SharedPtr<RenderMesh2DComponent>> RenderMesh2DComponentList;
 		static List<SharedPtr<Texture>> TextureList;
+		static List<SharedPtr<Material>> MaterialList;
 		static List<SharedPtr<JsonRenderPass>> JsonRenderPassList;
 		static List<SharedPtr<JsonPipeline>> JsonPipelineList;
+		static List<SharedPtr<Mesh>> MeshList;
+		static List<SharedPtr<Mesh2D>> Mesh2DList;
+		static List<SharedPtr<SpriteBatchLayer>> SpriteBatchLayerList;
 
 		static MemoryPool<GameObject> GameObjectMemoryPool;
 		static MemoryPool<Texture> TextureMemoryPool;
-		static MemoryPool<RenderMesh2DComponent> RenderMesh2DComponentMemoryPool;
+		static MemoryPool<Material> MaterialMemoryPool;
+		//static MemoryPool<RenderMesh2DComponent> RenderMesh2DComponentMemoryPool;
 		static MemoryPool<JsonRenderPass> JsonRenderPassMemoryPool;
 		static MemoryPool<JsonPipeline> JsonPipelineMemoryPool;
+		static MemoryPool<Mesh2D> Mesh2DMemoryPool;
+		static MemoryPool<SpriteBatchLayer> SpriteBatchLayerMemeryPool;
 
 	public:
-		static void SetUpMemoryManager(uint32_t EstObjectCount);
+		static void SetUpMemoryManager(uint32 EstObjectCount);
 		static SharedPtr<GameObject> AllocateNewGameObject();
+		static SharedPtr<Mesh2D> AllocateMesh2D();
 		static SharedPtr<Texture> AllocateNewTexture();
-		static SharedPtr<RenderMesh2DComponent> AllocateRenderMesh2DComponent();
+		//static SharedPtr<RenderMesh2DComponent> AllocateRenderMesh2DComponent();
 		static SharedPtr<JsonRenderPass> AllocateJsonRenderPass();
 		static SharedPtr<JsonPipeline> AllocateJsonPipeline();
-		
+		static SharedPtr<SpriteBatchLayer> AllocateSpriteBatchLayer();
+
 		static void UpdateDrawBuffers();
 		static void Destroy();
 
-
-
-		static void ViewGameObjectMemoryMap();
-		static void ViewTextureMemoryMap();
-		static void ViewRenderMesh2DComponentMemoryMap();
-		static void ViewJsonRenderPassMemoryMap();
-		static void ViewJsonPipelineMemoryMap();
 		static void ViewMemoryMap();
 
-		static std::vector<VkDescriptorBufferInfo> GetGameObjectPropertiesBuffer();
-		static std::vector<VkDescriptorImageInfo> GetTexturePropertiesBuffer();
+		static const List<VkDescriptorBufferInfo> GetMeshPropertiesBuffer();
+		static const List<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer();
+		static const List<VkDescriptorImageInfo> GetTexturePropertiesBuffer();
 		static const List<SharedPtr<GameObject>>& GetGameObjectList() { return GameObjectList; }
-		static const List<SharedPtr<RenderMesh2DComponent>>& GetRenderMesh2DComponentList() { return RenderMesh2DComponentList; }
+		//static const List<SharedPtr<RenderMesh2DComponent>>& GetRenderMesh2DComponentList() { return RenderMesh2DComponentList; }
 		static const List<SharedPtr<Texture>>& GetTextureList() { return TextureList; }
 		static const List<SharedPtr<JsonRenderPass>>& GetJsonRenderPassList() { return JsonRenderPassList; }
 		static const List<SharedPtr<JsonPipeline>>& GetJsonPipelineList() { return JsonPipelineList; }
+		static const List<SharedPtr<Mesh>>& GetMeshListList() { return MeshList; }
+		static const List<SharedPtr<Mesh2D>>& GetMesh2DList() { return Mesh2DList; }
 		static const SharedPtr<Coral::ManagedAssembly> GetECSassemblyModule() { return ECSassembly; }
 };

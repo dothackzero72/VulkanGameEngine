@@ -6,10 +6,6 @@ JsonRenderPass::JsonRenderPass()
 {
 }
 
-JsonRenderPass::JsonRenderPass(const JsonRenderPass& df)
-{
-}
-
 JsonRenderPass::JsonRenderPass(String jsonPath, ivec2 renderPassResolution)
 {
     RenderPassResolution = renderPassResolution;

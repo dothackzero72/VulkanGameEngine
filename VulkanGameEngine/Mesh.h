@@ -10,6 +10,7 @@ extern "C"
 #include "FrameTimer.h"
 #include "JsonPipeline.h"
 #include "Transform2DComponent.h"
+#include "Material.h"
 
 struct MeshProperitiesStruct
 {
@@ -42,6 +43,7 @@ private:
 	
 protected:
 	//SharedPtr<JsonPipeline> MeshRenderPipeline;
+	SharedPtr<Material> MeshMaterial;
 
 public:
 	uint64 MeshBufferIndex;
@@ -61,15 +63,34 @@ public:
 	template<class T>
 	void MeshStartUp(List<T>& vertexList, List<uint32>& indexList, uint32 meshBufferIndex)
 	{
-		//ParentGameObject = parentGameObjectComponent->GetParentGameObject();
-		//ParentGameObjectComponent = std::make_shared<GameObjectComponent>(parentGameObjectComponent.get());
-
 		MeshBufferIndex = meshBufferIndex;
 		VertexCount = vertexList.size();
 		IndexCount = indexList.size();
 
 		MeshVertexBuffer = VertexBuffer(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings , MeshBufferPropertySettings, true);
+		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+
+		SharedPtr parentGameObject = ParentGameObject.lock();
+		if (parentGameObject)
+		{
+			SharedPtr<GameObjectComponent> component = parentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent);
+			if (component)
+			{
+				GameObjectTransform = std::dynamic_pointer_cast<Transform2DComponent>(component);
+			}
+		}
+	}
+
+	template<class T>
+	void MeshStartUp(List<T>& vertexList, List<uint32>& indexList, SharedPtr<Material> material)
+	{
+		MeshMaterial = material;
+		VertexCount = vertexList.size();
+		IndexCount = indexList.size();
+
+		MeshVertexBuffer = VertexBuffer(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
 		SharedPtr parentGameObject = ParentGameObject.lock();
@@ -91,6 +112,6 @@ public:
 	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
 	virtual void Destroy();
 
-	MeshPropertiesBuffer* GetMeshPropertiesBuffer() { return &PropertiesBuffer; }
+	void GetMeshPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList);
 };
 

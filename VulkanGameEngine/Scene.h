@@ -8,6 +8,7 @@
 #include "JsonRenderPass.h"
 #include "GameObject.h"
 #include "RenderMesh2DComponent.h"
+#include "Level2DRenderer.h"
 
 
 
@@ -22,8 +23,7 @@ private:
 	SharedPtr<Texture> texture2;
 	SharedPtr<OrthographicCamera> orthographicCamera;
 	FrameBufferRenderPass frameRenderPass;
-	//RenderPass2D		  renderPass2D;
-	SharedPtr<JsonRenderPass>        renderPass2D;
+	SharedPtr<Level2DRenderer>        levelRenderer;
 
 	List<SharedPtr<GameObject>> gameObjectList;
 	List<SharedPtr<Texture>> TextureList;

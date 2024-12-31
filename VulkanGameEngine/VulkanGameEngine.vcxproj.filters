@@ -144,9 +144,6 @@
     <ClCompile Include="File.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RenderPass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Transform2DComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -162,11 +159,14 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SpriteBatchLayerhRenderer.cpp">
+    <ClCompile Include="SpriteBatchLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SpriteComponent.cpp">
       <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Level2DRenderer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -302,9 +302,6 @@
     <ClInclude Include="File.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Transform2DComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -323,11 +320,14 @@
     <ClInclude Include="SpriteSheet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SpriteBatchLayerhRenderer.h">
+    <ClInclude Include="SpriteBatchLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SpriteComponent.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Level2DRenderer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

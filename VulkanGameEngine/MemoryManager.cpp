@@ -3,23 +3,30 @@
 
 SharedPtr<Coral::ManagedAssembly> MemoryManager::ECSassembly = nullptr;
 List<SharedPtr<GameObject>> MemoryManager::GameObjectList;
-List<SharedPtr<RenderMesh2DComponent>> MemoryManager::RenderMesh2DComponentList;
+//List<SharedPtr<RenderMesh2DComponent>> MemoryManager::RenderMesh2DComponentList;
 List<SharedPtr<Texture>> MemoryManager::TextureList;
+List<SharedPtr<Material>> MemoryManager::MaterialList;
 List<SharedPtr<JsonRenderPass>> MemoryManager::JsonRenderPassList;
 List<SharedPtr<JsonPipeline>> MemoryManager::JsonPipelineList;
+List<SharedPtr<Mesh>> MemoryManager::MeshList;
+List<SharedPtr<Mesh2D>> MemoryManager::Mesh2DList;
+List<SharedPtr<SpriteBatchLayer>> MemoryManager::SpriteBatchLayerList;
 
 MemoryPool<GameObject> MemoryManager::GameObjectMemoryPool;
-MemoryPool<RenderMesh2DComponent> MemoryManager::RenderMesh2DComponentMemoryPool;
+//MemoryPool<RenderMesh2DComponent> MemoryManager::RenderMesh2DComponentMemoryPool;
 MemoryPool<Texture> MemoryManager::TextureMemoryPool;
+MemoryPool<Material> MemoryManager::MaterialMemoryPool;
 MemoryPool<JsonRenderPass> MemoryManager::JsonRenderPassMemoryPool;
 MemoryPool<JsonPipeline> MemoryManager::JsonPipelineMemoryPool;
+MemoryPool<Mesh2D> MemoryManager::Mesh2DMemoryPool;
+MemoryPool<SpriteBatchLayer> MemoryManager::SpriteBatchLayerMemeryPool;
 
 void ExceptionCallback(std::string_view InMessage)
 {
 	std::cout << "Unhandled native exception: " << InMessage << std::endl;
 }
 
-void MemoryManager::SetUpMemoryManager(uint32_t EstObjectCount)
+void MemoryManager::SetUpMemoryManager(uint32 EstObjectCount)
 {
 	auto exeDir = std::filesystem::path(L"C:/Users/dotha/Documents/GitHub/VulkanGameEngine/x64/Debug");
 	String coralDir = exeDir.string();
@@ -38,50 +45,61 @@ void MemoryManager::SetUpMemoryManager(uint32_t EstObjectCount)
 	ECSassembly = SharedPtr<Coral::ManagedAssembly>(assembly);
 
 	GameObjectMemoryPool.CreateMemoryPool(EstObjectCount);
-	RenderMesh2DComponentMemoryPool.CreateMemoryPool(EstObjectCount);
+	//RenderMesh2DComponentMemoryPool.CreateMemoryPool(EstObjectCount);
 	TextureMemoryPool.CreateMemoryPool(EstObjectCount);
+	MaterialMemoryPool.CreateMemoryPool(EstObjectCount);
 	JsonRenderPassMemoryPool.CreateMemoryPool(EstObjectCount);
 	JsonPipelineMemoryPool.CreateMemoryPool(EstObjectCount);
+	SpriteBatchLayerMemeryPool.CreateMemoryPool(EstObjectCount);
 }
 
 SharedPtr<GameObject> MemoryManager::AllocateNewGameObject()
 {
-	GameObjectList.emplace_back(GameObjectMemoryPool.AllocateMemoryLocation());
-	return GameObjectList.back();
+	return GameObjectList.emplace_back(GameObjectMemoryPool.AllocateMemoryLocation());
+}
+
+SharedPtr<Mesh2D> MemoryManager::AllocateMesh2D()
+{
+	SharedPtr<Mesh2D> mesh2D = Mesh2DList.emplace_back(Mesh2DMemoryPool.AllocateMemoryLocation());
+	MeshList.emplace_back(mesh2D);
+	return mesh2D;
 }
 
 SharedPtr<Texture> MemoryManager::AllocateNewTexture()
 {
-	TextureList.emplace_back(TextureMemoryPool.AllocateMemoryLocation());
-	return TextureList.back();
+	return TextureList.emplace_back(TextureMemoryPool.AllocateMemoryLocation());
 }
 
-SharedPtr<RenderMesh2DComponent> MemoryManager::AllocateRenderMesh2DComponent()
-{
-	RenderMesh2DComponentList.emplace_back(RenderMesh2DComponentMemoryPool.AllocateMemoryLocation());
-	return RenderMesh2DComponentList.back();
-}
+//SharedPtr<RenderMesh2DComponent> MemoryManager::AllocateRenderMesh2DComponent()
+//{
+//	return RenderMesh2DComponentList.emplace_back(RenderMesh2DComponentMemoryPool.AllocateMemoryLocation());
+//}
 
 SharedPtr<JsonRenderPass> MemoryManager::AllocateJsonRenderPass()
 {
-	JsonRenderPassList.emplace_back(JsonRenderPassMemoryPool.AllocateMemoryLocation());
-	return JsonRenderPassList.back();
+	return JsonRenderPassList.emplace_back(JsonRenderPassMemoryPool.AllocateMemoryLocation());
 }
 
 SharedPtr<JsonPipeline> MemoryManager::AllocateJsonPipeline()
 {
-	JsonPipelineList.emplace_back(JsonPipelineMemoryPool.AllocateMemoryLocation());
-	return JsonPipelineList.back();
+	return JsonPipelineList.emplace_back(JsonPipelineMemoryPool.AllocateMemoryLocation());
 }
 
+SharedPtr<SpriteBatchLayer> MemoryManager::AllocateSpriteBatchLayer()
+{
+	SharedPtr<SpriteBatchLayer> spriteLayer = SpriteBatchLayerList.emplace_back(SpriteBatchLayerMemeryPool.AllocateMemoryLocation());
+	MeshList.emplace_back(spriteLayer->GetSpriteLayerMesh());
+	return spriteLayer;
+}
 
 void MemoryManager::ViewMemoryMap()
 {
 	GameObjectMemoryPool.ViewMemoryMap();
 	TextureMemoryPool.ViewMemoryMap();
-	RenderMesh2DComponentMemoryPool.ViewMemoryMap();
+	//RenderMesh2DComponentMemoryPool.ViewMemoryMap();
 	JsonRenderPassMemoryPool.ViewMemoryMap();
 	JsonPipelineMemoryPool.ViewMemoryMap();
+	SpriteBatchLayerMemeryPool.ViewMemoryMap();
 }
 
 // std::vector<VkDescriptorBufferInfo>  MemoryManager::GetVertexPropertiesBuffer()
@@ -136,156 +154,64 @@ void MemoryManager::ViewMemoryMap()
 //	return IndexPropertiesBuffer;
 //}
 
-std::vector<VkDescriptorBufferInfo> MemoryManager::GetGameObjectPropertiesBuffer()
-{
-	std::vector<VkDescriptorBufferInfo>	MeshPropertiesBuffer;
-	if (GameObjectList.size() == 0)
-	{
-		VkDescriptorBufferInfo nullBuffer;
-		nullBuffer.buffer = VK_NULL_HANDLE;
-		nullBuffer.offset = 0;
-		nullBuffer.range = VK_WHOLE_SIZE;
-		MeshPropertiesBuffer.emplace_back(nullBuffer);
-	}
-	else
-	{
-		for (auto& mesh : RenderMesh2DComponentList)
-		{
-			VkDescriptorBufferInfo MeshProperitesBufferInfo = {};
-			MeshProperitesBufferInfo.buffer = mesh->GetMeshPropertiesBuffer()->Buffer;
-			MeshProperitesBufferInfo.offset = 0;
-			MeshProperitesBufferInfo.range = mesh->GetMeshPropertiesBuffer()->GetBufferSize();
-			MeshPropertiesBuffer.emplace_back(MeshProperitesBufferInfo);
-		}
-	}
-
-	return MeshPropertiesBuffer;
-}
-
 void MemoryManager::UpdateDrawBuffers()
 {
 	for (int x = 0; x < TextureList.size(); x++)
 	{
 		TextureList[x]->UpdateTextureBufferIndex(x);
 	}
-	//for (int x = 0; x < MaterialList.size(); x++)
-	//{
-	//	MaterialList[x]->UpdateMaterialBufferIndex(x);
-	//}
+	for (int x = 0; x < MaterialList.size(); x++)
+	{
+		MaterialList[x]->UpdateMaterialBufferIndex(x);
+	}
 }
 
 void MemoryManager::Destroy()
 {
 	GameObjectMemoryPool.Destroy();
-	RenderMesh2DComponentMemoryPool.Destroy();
+	//RenderMesh2DComponentMemoryPool.Destroy();
+	TextureMemoryPool.Destroy();
+	MaterialMemoryPool.Destroy();
+	JsonRenderPassMemoryPool.Destroy();
+	JsonPipelineMemoryPool.Destroy();
+	//SpriteBatchLayerMemeryPool.Destroy();
 
 	GameObjectList.clear();
-	RenderMesh2DComponentList.clear();
+	//RenderMesh2DComponentList.clear();
+	TextureList.clear();
+	MaterialList.clear();
+	JsonRenderPassList.clear();
+	JsonPipelineList.clear();
+	MeshList.clear();
+	Mesh2DList.clear();
+	//SpriteBatchLayerList.clear();
 }
 
-void MemoryManager::ViewGameObjectMemoryMap()
+const List<VkDescriptorBufferInfo> MemoryManager::GetMeshPropertiesBuffer()
 {
-	const auto memory = GameObjectMemoryPool.ViewMemoryPool();
-
-	std::cout << "Memory Map of the Game Object Pool(" << sizeof(GameObject) << " bytes each," << std::to_string(sizeof(GameObject) * memory.size()) << " bytes total): " << std::endl;
-	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
-	for (size_t x = 0; x < memory.size(); x++)
+	List<VkDescriptorBufferInfo> meshPropertiesBuffer;
+	if (MeshList.size() == 0)
 	{
-		if (GameObjectMemoryPool.ViewMemoryBlockUsage()[x] == 1)
+		VkDescriptorBufferInfo nullBuffer;
+		nullBuffer.buffer = VK_NULL_HANDLE;
+		nullBuffer.offset = 0;
+		nullBuffer.range = VK_WHOLE_SIZE;
+		meshPropertiesBuffer.emplace_back(nullBuffer);
+	}
+	else
+	{
+		for (auto& mesh : MeshList)
 		{
-			std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
-		}
-		else
-		{
-			std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
+			mesh->GetMeshPropertiesBuffer(meshPropertiesBuffer);
 		}
 	}
-	std::cout << "" << std::endl << std::endl;
+
+	return meshPropertiesBuffer;
 }
 
-void MemoryManager::ViewTextureMemoryMap()
+const List<VkDescriptorImageInfo> MemoryManager::GetTexturePropertiesBuffer()
 {
-	const auto memory = TextureMemoryPool.ViewMemoryPool();
-
-	std::cout << "Memory Map of the Texture Memory Pool(" << sizeof(Texture) << " bytes each," << std::to_string(sizeof(Texture) * memory.size()) << " bytes total): " << std::endl;
-	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
-	for (size_t x = 0; x < memory.size(); x++)
-	{
-		if (TextureMemoryPool.ViewMemoryBlockUsage()[x] == 1)
-		{
-			std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
-		}
-		else
-		{
-			std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
-		}
-	}
-	std::cout << "" << std::endl << std::endl;
-}
-
-void MemoryManager::ViewRenderMesh2DComponentMemoryMap()
-{
-	const auto memory = RenderMesh2DComponentMemoryPool.ViewMemoryPool();
-
-	std::cout << "Memory Map of the RenderComponent Memory Pool(" << sizeof(RenderMesh2DComponent) << " bytes each," << std::to_string(sizeof(RenderMesh2DComponent) * memory.size()) << " bytes total): " << std::endl;
-	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
-	for (size_t x = 0; x < memory.size(); x++)
-	{
-		if (RenderMesh2DComponentMemoryPool.ViewMemoryBlockUsage()[x] == 1)
-		{
-			std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
-		}
-		else
-		{
-			std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
-		}
-	}
-	std::cout << "" << std::endl << std::endl;
-}
-
-void MemoryManager::ViewJsonRenderPassMemoryMap()
-{
-	const auto memory = JsonRenderPassMemoryPool.ViewMemoryPool();
-
-	std::cout << "Memory Map of the RenderComponent Memory Pool(" << sizeof(RenderMesh2DComponent) << " bytes each," << std::to_string(sizeof(RenderMesh2DComponent) * memory.size()) << " bytes total): " << std::endl;
-	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
-	for (size_t x = 0; x < memory.size(); x++)
-	{
-		if (JsonRenderPassMemoryPool.ViewMemoryBlockUsage()[x] == 1)
-		{
-			//std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
-		}
-		else
-		{
-			std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
-		}
-	}
-	std::cout << "" << std::endl << std::endl;
-}
-
-void MemoryManager::ViewJsonPipelineMemoryMap()
-{
-	const auto memory = JsonPipelineMemoryPool.ViewMemoryPool();
-
-	std::cout << "Memory Map of the RenderComponent Memory Pool(" << sizeof(RenderMesh2DComponent) << " bytes each," << std::to_string(sizeof(RenderMesh2DComponent) * memory.size()) << " bytes total): " << std::endl;
-	std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
-	for (size_t x = 0; x < memory.size(); x++)
-	{
-		if (JsonPipelineMemoryPool.ViewMemoryBlockUsage()[x] == 1)
-		{
-			//std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
-		}
-		else
-		{
-			std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
-		}
-	}
-	std::cout << "" << std::endl << std::endl;
-}
-
-std::vector<VkDescriptorImageInfo> MemoryManager::GetTexturePropertiesBuffer()
-{
-	std::vector<VkDescriptorImageInfo>	TexturePropertiesBuffer = List<VkDescriptorImageInfo>();
+	List<VkDescriptorImageInfo>	texturePropertiesBuffer;
 	if (TextureList.size() == 0)
 	{
 		VkSamplerCreateInfo NullSamplerInfo = {};
@@ -316,22 +242,40 @@ std::vector<VkDescriptorImageInfo> MemoryManager::GetTexturePropertiesBuffer()
 		nullBuffer.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		nullBuffer.imageView = VK_NULL_HANDLE;
 		nullBuffer.sampler = nullSampler;
-		TexturePropertiesBuffer.emplace_back(nullBuffer);
+		texturePropertiesBuffer.emplace_back(nullBuffer);
 	}
 	else
 	{
 		for (auto& texture : TextureList)
 		{
-			VkDescriptorImageInfo textureDescriptor;
-			textureDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			textureDescriptor.imageView = texture->View;
-			textureDescriptor.sampler = texture->Sampler;
-			TexturePropertiesBuffer.emplace_back(textureDescriptor);
+			texture->GetTexturePropertiesBuffer(texturePropertiesBuffer);
 		}
 	}
 
-	return TexturePropertiesBuffer;
+	return texturePropertiesBuffer;
 }
+
+const List<VkDescriptorBufferInfo> MemoryManager::GetMaterialPropertiesBuffer()
+{
+	std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
+	if (MaterialList.size() == 0)
+	{
+		VkDescriptorBufferInfo nullBuffer;
+		nullBuffer.buffer = VK_NULL_HANDLE;
+		nullBuffer.offset = 0;
+		nullBuffer.range = VK_WHOLE_SIZE;
+		materialPropertiesBuffer.emplace_back(nullBuffer);
+	}
+	else
+	{
+		for (auto& material : MaterialList)
+		{
+			material->GetMaterialPropertiesBuffer(materialPropertiesBuffer);
+		}
+	}
+	return materialPropertiesBuffer;
+}
+
 
 // std::vector<VkDescriptorBufferInfo>  MemoryManager::GetGameObjectTransformBuffer()
 //{

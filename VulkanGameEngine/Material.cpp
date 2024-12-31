@@ -11,7 +11,7 @@ Material::Material(const std::string& materialName)
 	MaterialName = materialName;
 	MaterialIDCounter++;
 	MaterialBufferIndex = MaterialIDCounter;
-	MaterialBuffer = VulkanBuffer<MaterialBufferInfo>(static_cast<void*>(&MaterialBuffer), 1, VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | 
+	MaterialBuffer = VulkanBuffer<MaterialProperitiesBuffer>(static_cast<void*>(&MaterialBuffer), 1, VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
 																							  VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | 
 																							  VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | 
 																							  VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR, 
@@ -29,7 +29,7 @@ void Material::GenerateID()
 	MaterialID = MaterialIDCounter;
 }
 
-void Material::UpdateMaterialBufferIndex(uint64_t bufferIndex)
+void Material::UpdateMaterialBufferIndex(uint64 bufferIndex)
 {
 	MaterialBufferIndex = bufferIndex;
 }
@@ -51,15 +51,17 @@ void Material::Destroy()
 	MaterialBuffer.DestroyBuffer();
 }
 
-void Material::GetMaterialPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& MaterialBufferList)
+void Material::GetMaterialPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& materialBufferList)
 {
 	UpdateBuffer();
 
-	VkDescriptorBufferInfo MaterialBufferInfo = {};
-	MaterialBufferInfo.buffer = MaterialBuffer.Buffer;
-	MaterialBufferInfo.offset = 0;
-	MaterialBufferInfo.range = VK_WHOLE_SIZE;
-	MaterialBufferList.emplace_back(MaterialBufferInfo);
+	VkDescriptorBufferInfo meshBufferInfo =
+	{
+		.buffer = MaterialBuffer.Buffer,
+		.offset = 0,
+		.range = VK_WHOLE_SIZE
+	};
+	materialBufferList.emplace_back(meshBufferInfo);
 }
 
 void Material::SetAlbedo(glm::vec3 color)

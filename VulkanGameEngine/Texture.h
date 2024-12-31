@@ -85,8 +85,8 @@ public:
 	void UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout);
 	void UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, uint32_t MipLevel);
 
+	void GetTexturePropertiesBuffer(std::vector<VkDescriptorImageInfo>& textureDescriptorList);
 	void ImGuiShowTexture(const ImVec2& TextureDisplaySize);
-	VkDescriptorImageInfo* GetTextureBuffer();
 
 	const VkFormat GetTextureByteFormat() { return TextureByteFormat; }
 	const VkSampleCountFlagBits GetSampleCount() { return SampleCount; }

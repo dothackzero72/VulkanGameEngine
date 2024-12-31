@@ -183,6 +183,7 @@
     <ClCompile Include="InterfaceRenderPass.cpp" />
     <ClCompile Include="JsonPipeline.cpp" />
     <ClCompile Include="JsonRenderPass.cpp" />
+    <ClCompile Include="Level2DRenderer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MemoryManager.cpp" />
@@ -193,11 +194,10 @@
     <ClCompile Include="RenderMesh2DComponent.cpp" />
     <ClCompile Include="RenderedColorTexture.cpp" />
     <ClCompile Include="RenderedTexture.cpp" />
-    <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="SpriteBatchLayerhRenderer.cpp" />
+    <ClCompile Include="SpriteBatchLayer.cpp" />
     <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="SpriteSheet.cpp" />
     <ClCompile Include="SystemClock.cpp" />
@@ -234,6 +234,7 @@
     <ClInclude Include="JsonPipeline.h" />
     <ClInclude Include="JsonRenderPass.h" />
     <ClInclude Include="JsonStructs.h" />
+    <ClInclude Include="Level2DRenderer.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="MemoryManager.h" />
@@ -244,13 +245,12 @@
     <ClInclude Include="RenderMesh2DComponent.h" />
     <ClInclude Include="RenderedColorTexture.h" />
     <ClInclude Include="RenderedTexture.h" />
-    <ClInclude Include="RenderPass.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneDataBuffer.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="Sprite.h" />
-    <ClInclude Include="SpriteBatchLayerhRenderer.h" />
+    <ClInclude Include="SpriteBatchLayer.h" />
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="SystemClock.h" />

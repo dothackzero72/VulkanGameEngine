@@ -12,7 +12,8 @@
 class JsonRenderPass
 {
 	friend class JsonPipeline;
-private:
+
+protected:
 	ivec2 RenderPassResolution;
 	VkSampleCountFlagBits SampleCount;
 
@@ -20,8 +21,8 @@ private:
 	std::vector<VkCommandBuffer> CommandBufferList;
 	std::vector<VkFramebuffer> FrameBufferList;
 
-	void BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInfo);
-	void BuildFrameBuffer();
+	virtual void BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInfo);
+	virtual void BuildFrameBuffer();
 
 	List<SharedPtr<JsonPipeline>> JsonPipelineList;
 
@@ -33,11 +34,10 @@ public:
 	SharedPtr<DepthTexture> depthTexture;
 
 	JsonRenderPass();
-	JsonRenderPass(const JsonRenderPass& df);
-	virtual ~JsonRenderPass();
 	static SharedPtr<JsonRenderPass> JsonCreateRenderPass(String JsonPath, ivec2 RenderPassResolution);
-	VkCommandBuffer Draw(List<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties);
+	virtual ~JsonRenderPass();
 
-	void Destroy();
+	virtual VkCommandBuffer Draw(List<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties);
+	virtual void Destroy();
 };
 

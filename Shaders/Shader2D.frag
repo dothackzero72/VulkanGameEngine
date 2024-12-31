@@ -24,25 +24,43 @@ struct MeshProperitiesBuffer
 	mat4   MeshTransform;
 };
 
+struct MaterialProperitiesBuffer
+{
+	vec3 Albedo;
+	float Metallic;
+	float Roughness;
+	float AmbientOcclusion;
+	vec3 Emission;
+	float Alpha;
+
+	uint AlbedoMap;
+	uint MetallicRoughnessMap;
+	uint MetallicMap;
+	uint RoughnessMap;
+	uint AmbientOcclusionMap;
+	uint NormalMap;
+	uint DepthMap;
+	uint AlphaMap;
+	uint EmissionMap;
+	uint HeightMap;
+};
+
 layout(binding = 0) buffer MeshProperities { MeshProperitiesBuffer meshProperties; } meshBuffer[];
 layout(binding = 1) uniform sampler2D TextureMap[];
+layout(binding = 2) buffer MaterialProperities { MaterialProperitiesBuffer materialProperties; } materialBuffer[];
 
 void main() 
 {
-//	material.Albedo = texture(TextureMap[material.AlbedoMap], UV).rgb;
-//	material.Alpha = texture(TextureMap[material.AlbedoMap], UV).a;
-//	
-//	if(material.Alpha != 1.0f)
-//	{
-//		discard;
-//	}
-//
-//   vec3 result = material.Albedo;
-//   
-//   vec3 finalResult = vec3(1.0) - exp(-result * 1.0f);
-//		finalResult = pow(finalResult, vec3(1.0 / 2.2f));
+	const int meshIndex = sceneData.MeshBufferIndex;
+	MaterialProperitiesBuffer material = materialBuffer[meshIndex].materialProperties;
 
-   const int meshIndex = sceneData.MeshBufferIndex;
-   const int textureIndex = meshBuffer[meshIndex].meshProperties.MaterialIndex;
-   outColor = texture(TextureMap[textureIndex], UV).rgba;
+	material.Albedo = texture(TextureMap[material.AlbedoMap], UV).rgb;
+	material.Alpha = texture(TextureMap[material.AlbedoMap], UV).a;
+	
+	if(material.Alpha != 1.0f)
+	{
+		discard;
+	}
+   
+   outColor = vec4(material.Albedo, material.Alpha);
 }
