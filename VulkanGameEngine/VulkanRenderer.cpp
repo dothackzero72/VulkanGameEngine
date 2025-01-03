@@ -1,4 +1,5 @@
 #include "VulkanRenderer.h"
+#include <iostream>
 
 VkResult VulkanRenderer::SetUpSwapChain()
 {

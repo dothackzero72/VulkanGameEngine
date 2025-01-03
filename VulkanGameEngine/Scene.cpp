@@ -15,6 +15,7 @@ void Scene::StartUp()
 	TextureList.emplace_back(Texture::CreateTexture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 	TextureList.emplace_back(Texture::CreateTexture("../Textures/container2.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 
+
 	MemoryManager::ViewMemoryMap();
 	BuildRenderPasses();
 }
@@ -34,13 +35,7 @@ void Scene::Update(const float& deltaTime)
 		UpdateRenderPasses();
 	}
 
-	VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-	for (auto gameObject : gameObjectList)
-	{
-		gameObject->Update(deltaTime);
-		gameObject->BufferUpdate(commandBuffer, deltaTime);
-	}
-	renderer.EndSingleTimeCommands(commandBuffer);
+	MemoryManager::Update(deltaTime);
 }
 
 void Scene::ImGuiUpdate(const float& deltaTime)
@@ -113,4 +108,5 @@ void Scene::Destroy()
 	}
 	levelRenderer->Destroy();
 	frameRenderPass.Destroy();
+	MemoryManager::Destroy();
 }

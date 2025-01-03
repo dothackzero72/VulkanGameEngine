@@ -52,12 +52,13 @@ layout(binding = 2) buffer MaterialProperities { MaterialProperitiesBuffer mater
 void main() 
 {
 	const int meshIndex = sceneData.MeshBufferIndex;
-	MaterialProperitiesBuffer material = materialBuffer[meshIndex].materialProperties;
+	const int materialIndex = meshBuffer[meshIndex].meshProperties.MaterialIndex;
+	MaterialProperitiesBuffer material = materialBuffer[materialIndex].materialProperties;
 
 	material.Albedo = texture(TextureMap[material.AlbedoMap], UV).rgb;
 	material.Alpha = texture(TextureMap[material.AlbedoMap], UV).a;
 	
-	if(material.Alpha != 1.0f)
+	if(material.Alpha == 0.0f)
 	{
 		discard;
 	}

@@ -1,11 +1,16 @@
 #include "SpriteBatchLayer.h"
+#include "MemoryManager.h"
 
 SpriteBatchLayer::SpriteBatchLayer()
 {
+
+	auto asdf = Material::CreateMaterial("Material1");
+	asdf->SetAlbedoMap(MemoryManager::GetTextureList()[0]);
+
 	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite()));
 	VertexList = SpriteDrawList[0]->VertexList;
 	IndexList = SpriteDrawList[0]->IndexList;
-	SpriteLayerMesh = std::make_shared<Mesh2D>(Mesh2D(VertexList, IndexList, nullptr));
+	SpriteLayerMesh = Mesh2D::CreateMesh2D(VertexList, IndexList, asdf);
 }
 
 SpriteBatchLayer::~SpriteBatchLayer()

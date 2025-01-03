@@ -42,8 +42,10 @@ class MemoryManager
 		static SharedPtr<JsonRenderPass> AllocateJsonRenderPass();
 		static SharedPtr<JsonPipeline> AllocateJsonPipeline();
 		static SharedPtr<SpriteBatchLayer> AllocateSpriteBatchLayer();
+		static SharedPtr<Material> AllocateMaterial();
 
-		static void UpdateDrawBuffers();
+		static void Update(float deltaTime);
+		static void UpdateBufferIndex();
 		static void Destroy();
 
 		static void ViewMemoryMap();
@@ -51,6 +53,7 @@ class MemoryManager
 		static const List<VkDescriptorBufferInfo> GetMeshPropertiesBuffer();
 		static const List<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer();
 		static const List<VkDescriptorImageInfo> GetTexturePropertiesBuffer();
+
 		static const List<SharedPtr<GameObject>>& GetGameObjectList() { return GameObjectList; }
 		//static const List<SharedPtr<RenderMesh2DComponent>>& GetRenderMesh2DComponentList() { return RenderMesh2DComponentList; }
 		static const List<SharedPtr<Texture>>& GetTextureList() { return TextureList; }
@@ -58,5 +61,6 @@ class MemoryManager
 		static const List<SharedPtr<JsonPipeline>>& GetJsonPipelineList() { return JsonPipelineList; }
 		static const List<SharedPtr<Mesh>>& GetMeshListList() { return MeshList; }
 		static const List<SharedPtr<Mesh2D>>& GetMesh2DList() { return Mesh2DList; }
+		static const List<SharedPtr<Material>>& GetMaterialist() { return MaterialList; }
 		static const SharedPtr<Coral::ManagedAssembly> GetECSassemblyModule() { return ECSassembly; }
 };

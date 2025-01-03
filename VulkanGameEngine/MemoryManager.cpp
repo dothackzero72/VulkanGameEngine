@@ -51,6 +51,7 @@ void MemoryManager::SetUpMemoryManager(uint32 EstObjectCount)
 	JsonRenderPassMemoryPool.CreateMemoryPool(EstObjectCount);
 	JsonPipelineMemoryPool.CreateMemoryPool(EstObjectCount);
 	SpriteBatchLayerMemeryPool.CreateMemoryPool(EstObjectCount);
+	Mesh2DMemoryPool.CreateMemoryPool(EstObjectCount);
 }
 
 SharedPtr<GameObject> MemoryManager::AllocateNewGameObject()
@@ -67,7 +68,9 @@ SharedPtr<Mesh2D> MemoryManager::AllocateMesh2D()
 
 SharedPtr<Texture> MemoryManager::AllocateNewTexture()
 {
-	return TextureList.emplace_back(TextureMemoryPool.AllocateMemoryLocation());
+	SharedPtr<Texture> texture = TextureList.emplace_back(TextureMemoryPool.AllocateMemoryLocation());
+	UpdateBufferIndex();
+	return texture;
 }
 
 //SharedPtr<RenderMesh2DComponent> MemoryManager::AllocateRenderMesh2DComponent()
@@ -92,6 +95,13 @@ SharedPtr<SpriteBatchLayer> MemoryManager::AllocateSpriteBatchLayer()
 	return spriteLayer;
 }
 
+SharedPtr<Material> MemoryManager::AllocateMaterial()
+{
+	SharedPtr<Material> material = MaterialList.emplace_back(MaterialMemoryPool.AllocateMemoryLocation());
+	UpdateBufferIndex();
+	return material;
+}
+
 void MemoryManager::ViewMemoryMap()
 {
 	GameObjectMemoryPool.ViewMemoryMap();
@@ -100,6 +110,7 @@ void MemoryManager::ViewMemoryMap()
 	JsonRenderPassMemoryPool.ViewMemoryMap();
 	JsonPipelineMemoryPool.ViewMemoryMap();
 	SpriteBatchLayerMemeryPool.ViewMemoryMap();
+	MaterialMemoryPool.ViewMemoryMap();
 }
 
 // std::vector<VkDescriptorBufferInfo>  MemoryManager::GetVertexPropertiesBuffer()
@@ -154,7 +165,17 @@ void MemoryManager::ViewMemoryMap()
 //	return IndexPropertiesBuffer;
 //}
 
-void MemoryManager::UpdateDrawBuffers()
+void MemoryManager::Update(float deltaTime)
+{
+	VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
+	for (auto drawLayer : Mesh2DList)
+	{
+		drawLayer->BufferUpdate(commandBuffer, deltaTime);
+	}
+	renderer.EndSingleTimeCommands(commandBuffer);
+}
+
+void MemoryManager::UpdateBufferIndex()
 {
 	for (int x = 0; x < TextureList.size(); x++)
 	{
@@ -168,14 +189,6 @@ void MemoryManager::UpdateDrawBuffers()
 
 void MemoryManager::Destroy()
 {
-	GameObjectMemoryPool.Destroy();
-	//RenderMesh2DComponentMemoryPool.Destroy();
-	TextureMemoryPool.Destroy();
-	MaterialMemoryPool.Destroy();
-	JsonRenderPassMemoryPool.Destroy();
-	JsonPipelineMemoryPool.Destroy();
-	//SpriteBatchLayerMemeryPool.Destroy();
-
 	GameObjectList.clear();
 	//RenderMesh2DComponentList.clear();
 	TextureList.clear();
@@ -184,7 +197,15 @@ void MemoryManager::Destroy()
 	JsonPipelineList.clear();
 	MeshList.clear();
 	Mesh2DList.clear();
-	//SpriteBatchLayerList.clear();
+	SpriteBatchLayerList.clear();
+
+	GameObjectMemoryPool.Destroy();
+	//RenderMesh2DComponentMemoryPool.Destroy();
+	TextureMemoryPool.Destroy();
+	MaterialMemoryPool.Destroy();
+	JsonRenderPassMemoryPool.Destroy();
+	JsonPipelineMemoryPool.Destroy();
+	SpriteBatchLayerMemeryPool.Destroy();
 }
 
 const List<VkDescriptorBufferInfo> MemoryManager::GetMeshPropertiesBuffer()

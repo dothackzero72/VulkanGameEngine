@@ -26,8 +26,31 @@ struct MeshProperitiesBuffer
 	mat4   MeshTransform;
 };
 
+struct MaterialProperitiesBuffer
+{
+	vec3 Albedo;
+	float Metallic;
+	float Roughness;
+	float AmbientOcclusion;
+	vec3 Emission;
+	float Alpha;
+
+	uint AlbedoMap;
+	uint MetallicRoughnessMap;
+	uint MetallicMap;
+	uint RoughnessMap;
+	uint AmbientOcclusionMap;
+	uint NormalMap;
+	uint DepthMap;
+	uint AlphaMap;
+	uint EmissionMap;
+	uint HeightMap;
+};
+
+
 layout(binding = 0) readonly buffer MeshProperities { MeshProperitiesBuffer meshProperties; } meshBuffer[];
 layout(binding = 1) uniform sampler2D TextureMap[];
+layout(binding = 2) buffer MaterialProperities { MaterialProperitiesBuffer materialProperties; } materialBuffer[];
 
 void main() 
 {

@@ -51,15 +51,16 @@ private:
 	SharedPtr<Texture> EmissionMap = nullptr;
 	SharedPtr<Texture> HeightMap = nullptr;
 
+	Material(const String& materialName);
 	void GenerateID();
 	void UpdateBuffer();
 
 public:
 	Material();
-	Material(const std::string& materialName);
+	static SharedPtr<Material> CreateMaterial(const String& materialName);
 	~Material();
 
-	std::string MaterialName;
+	String Name;
 	MaterialProperitiesBuffer MaterialInfo;
 
 	void UpdateMaterialBufferIndex(uint64 bufferIndex);
@@ -67,11 +68,11 @@ public:
 	void Destroy();
 	void GetMaterialPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& materialBufferList);
 
-	void SetAlbedo(glm::vec3 color);
+	void SetAlbedo(vec3 color);
 	void SetMetallic(float value);
 	void SetRoughness(float value);
 	void SetAmbientOcclusion(float value);
-	void SetEmission(glm::vec3 color);
+	void SetEmission(vec3 color);
 	void SetAlpha(float value);
 
 	void SetAlbedoMap(SharedPtr<Texture> texture);

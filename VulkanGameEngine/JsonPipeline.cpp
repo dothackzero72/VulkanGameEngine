@@ -222,8 +222,8 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
                                 .dstArrayElement = 0,
                                 .descriptorCount = static_cast<uint32>(materialProperties.size()),
                                 .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                                .pImageInfo = TextureList.data(),
-                                .pBufferInfo = nullptr,
+                                .pImageInfo = nullptr,
+                                .pBufferInfo = materialProperties.data(),
                                 .pTexelBufferView = nullptr
                             });
 

@@ -1,4 +1,5 @@
 #include "Material.h"
+#include "MemoryManager.h"
 
 uint64_t Material::MaterialIDCounter = 0;
 
@@ -6,17 +7,22 @@ Material::Material()
 {
 }
 
-Material::Material(const std::string& materialName)
+SharedPtr<Material> Material::CreateMaterial(const String& materialName)
 {
-	MaterialName = materialName;
+	SharedPtr<Material> material = MemoryManager::AllocateMaterial();
+	new (material.get()) Material(materialName);
+	return material;
+}
+
+Material::Material(const String& materialName)
+{
+	Name = materialName;
 	MaterialIDCounter++;
 	MaterialBufferIndex = MaterialIDCounter;
-	MaterialBuffer = VulkanBuffer<MaterialProperitiesBuffer>(static_cast<void*>(&MaterialBuffer), 1, VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
-																							  VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | 
-																							  VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | 
-																							  VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR, 
-																							  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
-																							  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
+	MaterialBuffer = VulkanBuffer<MaterialProperitiesBuffer>(static_cast<void*>(&MaterialBuffer), 1,  VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
+																									  VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 
+																									  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
+																									  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
 }
 
 Material::~Material()

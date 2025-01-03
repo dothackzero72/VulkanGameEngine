@@ -75,7 +75,6 @@ public:
 
 	~MemoryPool()
 	{
-		Destroy();
 	}
 
 	void CreateMemoryPool(uint objectCount)
