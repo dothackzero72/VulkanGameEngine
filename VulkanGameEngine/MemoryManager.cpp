@@ -20,6 +20,7 @@ MemoryPool<JsonRenderPass> MemoryManager::JsonRenderPassMemoryPool;
 MemoryPool<JsonPipeline> MemoryManager::JsonPipelineMemoryPool;
 MemoryPool<Mesh2D> MemoryManager::Mesh2DMemoryPool;
 MemoryPool<SpriteBatchLayer> MemoryManager::SpriteBatchLayerMemeryPool;
+MemoryPool<MyClass> MemoryManager::myclassMemoryPool;
 
 void ExceptionCallback(std::string_view InMessage)
 {
@@ -52,6 +53,7 @@ void MemoryManager::SetUpMemoryManager(uint32 EstObjectCount)
 	JsonPipelineMemoryPool.CreateMemoryPool(EstObjectCount);
 	SpriteBatchLayerMemeryPool.CreateMemoryPool(EstObjectCount);
 	Mesh2DMemoryPool.CreateMemoryPool(EstObjectCount);
+	myclassMemoryPool.CreateMemoryPool(EstObjectCount);
 }
 
 SharedPtr<GameObject> MemoryManager::AllocateNewGameObject()

@@ -63,6 +63,7 @@ void Mesh::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipeline
 
 void Mesh::Destroy()
 {
+	MeshMaterial.reset();
 	MeshVertexBuffer.DestroyBuffer();
 	MeshIndexBuffer.DestroyBuffer();
 	PropertiesBuffer.DestroyBuffer();

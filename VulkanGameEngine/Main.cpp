@@ -41,6 +41,10 @@ int main(int argc, char** argv)
     scene.Destroy();
     ImPlot::DestroyContext();
     InterfaceRenderPass::Destroy();
+
+    MemoryManager::ViewMemoryMap();
+    MemoryManager::Destroy();
+
     renderer.DestroyRenderer();
     vulkanWindow->DestroyWindow(vulkanWindow);
     return 0;

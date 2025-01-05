@@ -15,8 +15,8 @@ private:
 	const uint8_t MemoryBlockUsed = 1;
 	const uint8_t FreeMemoryBlock = 0;
 
-	MemoryBlock* MemoryBlockPtr = nullptr;
-	size_t ObjectSize = 0;
+	uint8_t* MemoryBlockPtr = nullptr;  // Use uint8_t for byte-level operations
+	size_t ObjectSize = sizeof(T);
 	uint32 ObjectCount = 0;
 	List<uint8_t> MemoryBlockInUse;
 
@@ -27,20 +27,6 @@ private:
 			return std::distance(MemoryBlockInUse.begin(), itr);
 		}
 		return FailedToFind;
-	}
-
-	uint32 FindBlockIndexFromMemory(void* memoryLocation)
-	{
-		void* baseAddress = MemoryBlockPtr;
-		void* targetAddress = memoryLocation;
-
-		if (targetAddress < baseAddress ||
-			targetAddress >= baseAddress + (ObjectSize * ObjectCount)) {
-			return FailedToFind;
-		}
-
-		uint32 blockIndex = (targetAddress - baseAddress) / ObjectSize;
-		return blockIndex < ObjectCount ? blockIndex : FailedToFind;
 	}
 
 	//void UpdateMemoryPoolSize(List<SharedPtr<T>>& memoryPoolList)
@@ -68,6 +54,8 @@ private:
 	//}
 
 public:
+	List<SharedPtr<T>> AllocatedMemory;
+
 	MemoryPool()
 	{
 
@@ -77,47 +65,42 @@ public:
 	{
 	}
 
-	void CreateMemoryPool(uint objectCount)
+	void CreateMemoryPool(uint32 objectCount)
 	{
 		MemoryBlockInUse.resize(objectCount, FreeMemoryBlock);
-		ObjectSize = sizeof(T);
 		ObjectCount = objectCount;
-		MemoryBlockPtr = new MemoryAddress[ObjectSize * ObjectCount];
+		MemoryBlockPtr = new uint8_t[ObjectSize * ObjectCount];
 	}
 
 	SharedPtr<T> AllocateMemoryLocation()
 	{
-		MemoryBlock* memoryAddress = MemoryBlockPtr;
-
 		uint32 memoryIndex = FindNextFreeMemoryBlockIndex();
 		if (memoryIndex == FailedToFind)
 		{
-			/*UpdateMemoryPoolSize();
-			memoryIndex = FindNextFreeMemoryBlockIndex();*/
+			throw std::runtime_error("No free memory block available.");
 		}
 
-		size_t offset = memoryIndex * sizeof(T);
-		T* newObject = new (memoryAddress + offset) T();
-
-		MemoryBlockInUse[memoryIndex] = MemoryBlockUsed;
-		return SharedPtr<T>(newObject, [this, memoryIndex](T* ptr)
+		T* newObject = new (MemoryBlockPtr + (memoryIndex * ObjectSize)) T(); 
+		SharedPtr<T> newPtr(newObject, [this, memoryIndex](T* ptr)
 			{
-				if (MemoryBlockInUse.size() > 0 &&
-					MemoryBlockInUse[memoryIndex] == MemoryBlockUsed)
+				if (MemoryBlockInUse[memoryIndex] == MemoryBlockUsed)
 				{
 					ptr->Destroy();
 					MemoryBlockInUse[memoryIndex] = FreeMemoryBlock;
 				}
 			});
+
+		AllocatedMemory.emplace_back(newPtr);
+		MemoryBlockInUse[memoryIndex] = MemoryBlockUsed;
+		return newPtr;
 	}
 
-	std::vector<T*> ViewMemoryPool()
+	List<T*> ViewMemoryPool()
 	{
-		std::vector<T*> memoryList;
-		for (int x = 0; x < ObjectCount; x++)
+		List<T*> memoryList;
+		for (uint32 x = 0; x < ObjectCount; x++)
 		{
-			MemoryAddress* address = MemoryBlockPtr + (x * sizeof(T));
-			T* ptr = reinterpret_cast<T*>(address);
+			T* ptr = reinterpret_cast<T*>(MemoryBlockPtr + (x * ObjectSize));
 			memoryList.emplace_back(ptr);
 		}
 		return memoryList;
@@ -126,43 +109,41 @@ public:
 	void ViewMemoryMap()
 	{
 		const auto memory = ViewMemoryPool();
-
-		std::cout << "Memory Map of the " << typeid(T).name()  << " Memory Pool(" << sizeof(T) << " bytes each, " << std::to_string(sizeof(T) * memory.size()) << " bytes total) : " << std::endl;
+		std::cout << "Memory Map of the " << typeid(T).name() << " Memory Pool(" << sizeof(T) << " bytes each, "
+			<< std::to_string(sizeof(T) * memory.size()) << " bytes total) : " << std::endl;
 		std::cout << std::setw(20) << "Address" << std::setw(15) << "Value" << std::endl;
+
 		for (size_t x = 0; x < memory.size(); x++)
 		{
-			if (ViewMemoryBlockUsage()[x] == 1)
-			{
-				std::cout << std::setw(10) << std::hex << "0x" << &memory[x] << ": " << std::setw(15) << memory[x]->Name << std::endl;
-			}
-			else
-			{
-				std::cout << std::hex << "0x" << &memory[x] << ": " << "nullptr" << std::endl;
-			}
+			std::cout << std::hex << "0x" << reinterpret_cast<void*>(memory[x]) << ": "
+				<< (MemoryBlockInUse[x] == MemoryBlockUsed ? memory[x]->Name : "nullptr") << std::endl;
 		}
-		std::cout << "" << std::endl << std::endl;
+
+		std::cout << std::endl << std::endl;
 	}
 
-	List<uint8_t> ViewMemoryBlockUsage()
+	const List<uint8_t> ViewMemoryBlockUsage()
 	{
 		return MemoryBlockInUse;
 	}
 
 	void Destroy()
 	{
-		for (int x = 0; x < ObjectCount; x++)
+		for (int x = 0; x < AllocatedMemory.size(); x++)
 		{
-			MemoryAddress* address = MemoryBlockPtr + (x * sizeof(T));
-			T* ptr = reinterpret_cast<T*>(address);
-			if (MemoryBlockInUse[x] == MemoryBlockUsed)
+			AllocatedMemory[x].reset();
+			if (MemoryBlockUsed != 0)
 			{
-				ptr->Destroy();
-				ptr = nullptr;
-				MemoryBlockInUse[x] = FreeMemoryBlock;
+				T* ptr = reinterpret_cast<T*>(MemoryBlockPtr + (x * ObjectSize));
+				std::cout << typeid(T).name() << "  " << std::hex << "0x" << reinterpret_cast<void*>(ptr) << ": " << ptr->Name << " Hasn't been deleted correctly" << std::endl;
 			}
 		}
-		delete[] MemoryBlockPtr;
-		MemoryBlockPtr = nullptr;
+
+		if (MemoryBlockPtr)
+		{
+			delete[] MemoryBlockPtr;
+			MemoryBlockPtr = nullptr;
+		}
 		MemoryBlockInUse.clear();
 	}
 };
