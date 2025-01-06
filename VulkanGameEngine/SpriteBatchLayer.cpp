@@ -35,4 +35,7 @@ void SpriteBatchLayer::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline
 void SpriteBatchLayer::Destroy()
 {
 	SpriteLayerMesh->Destroy();
+	SpriteDrawList.clear();
+	VertexList.clear();
+	IndexList.clear();
 }

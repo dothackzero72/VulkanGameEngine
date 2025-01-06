@@ -16,10 +16,10 @@ MemoryPool<GameObject> MemoryManager::GameObjectMemoryPool;
 //MemoryPool<RenderMesh2DComponent> MemoryManager::RenderMesh2DComponentMemoryPool;
 MemoryPool<Texture> MemoryManager::TextureMemoryPool;
 MemoryPool<Material> MemoryManager::MaterialMemoryPool;
-MemoryPool<JsonRenderPass> MemoryManager::JsonRenderPassMemoryPool;
-MemoryPool<JsonPipeline> MemoryManager::JsonPipelineMemoryPool;
 MemoryPool<Mesh2D> MemoryManager::Mesh2DMemoryPool;
 MemoryPool<SpriteBatchLayer> MemoryManager::SpriteBatchLayerMemeryPool;
+MemoryPool<JsonRenderPass> MemoryManager::JsonRenderPassMemoryPool;
+MemoryPool<JsonPipeline> MemoryManager::JsonPipelineMemoryPool;
 MemoryPool<MyClass> MemoryManager::myclassMemoryPool;
 
 void ExceptionCallback(std::string_view InMessage)
@@ -203,11 +203,11 @@ void MemoryManager::Destroy()
 
 	GameObjectMemoryPool.Destroy();
 	//RenderMesh2DComponentMemoryPool.Destroy();
-	TextureMemoryPool.Destroy();
-	MaterialMemoryPool.Destroy();
-	JsonRenderPassMemoryPool.Destroy();
-	JsonPipelineMemoryPool.Destroy();
 	SpriteBatchLayerMemeryPool.Destroy();
+	MaterialMemoryPool.Destroy();
+	TextureMemoryPool.Destroy();
+	JsonPipelineMemoryPool.Destroy();
+	JsonRenderPassMemoryPool.Destroy();
 }
 
 const List<VkDescriptorBufferInfo> MemoryManager::GetMeshPropertiesBuffer()

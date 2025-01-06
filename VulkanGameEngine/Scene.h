@@ -10,23 +10,18 @@
 #include "RenderMesh2DComponent.h"
 #include "Level2DRenderer.h"
 
-
-
 class Scene
 {
 private:
 	std::vector<Vertex2D> SpriteVertexList;
 
 	FrameTimer timer;
-	SceneDataBuffer sceneProperties;
-	List<SharedPtr<Texture>> texture;
-	SharedPtr<Texture> texture2;
+	SceneDataBuffer				  sceneProperties;
 	SharedPtr<OrthographicCamera> orthographicCamera;
-	FrameBufferRenderPass frameRenderPass;
-	SharedPtr<Level2DRenderer>        levelRenderer;
-
-	List<SharedPtr<GameObject>> gameObjectList;
-	List<SharedPtr<Texture>> TextureList;
+	FrameBufferRenderPass		  frameRenderPass;
+	SharedPtr<Level2DRenderer>    levelRenderer;
+	List<SharedPtr<GameObject>>   GameObjectList;
+	List<SharedPtr<Texture>>      TextureList;
 
 public:
 	void StartUp();
@@ -36,6 +31,5 @@ public:
 	void BuildRenderPasses();
 	void UpdateRenderPasses();
 	void Draw();
-	//void BakeCubeTextureAtlus(const String& FilePath, SharedPtr<BakedTexture> texture);
 	void Destroy();
 };

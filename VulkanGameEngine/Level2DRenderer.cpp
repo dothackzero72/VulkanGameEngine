@@ -84,10 +84,10 @@ VkCommandBuffer Level2DRenderer::Draw(List<SharedPtr<GameObject>> meshList, Scen
     vkCmdBeginRenderPass(CommandBufferList[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBufferList[cRenderer.CommandIndex], 0, 1, &viewport);
     vkCmdSetScissor(CommandBufferList[cRenderer.CommandIndex], 0, 1, &scissor);
-    for (auto spriteLayer : SpriteLayerRenderList)
-    {
-        spriteLayer->Draw(CommandBufferList[cRenderer.CommandIndex], JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0], sceneProperties);
-    }
+    //for (auto spriteLayer : SpriteLayerRenderList)
+    //{
+    //    spriteLayer->Draw(CommandBufferList[cRenderer.CommandIndex], JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0], sceneProperties);
+    //}
     vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
     vkEndCommandBuffer(CommandBufferList[cRenderer.CommandIndex]);
     return CommandBufferList[cRenderer.CommandIndex];
@@ -97,7 +97,7 @@ void Level2DRenderer::Destroy()
 {
     for (auto spriteLayer : SpriteLayerRenderList)
     {
-        spriteLayer->Destroy();
+        spriteLayer.reset();
     }
     JsonRenderPass::Destroy();
 }

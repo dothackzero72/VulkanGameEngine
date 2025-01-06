@@ -54,6 +54,16 @@ void Material::UpdateBuffer()
 
 void Material::Destroy()
 {
+	AlbedoMap.reset();
+	MetallicRoughnessMap.reset();
+	MetallicMap.reset();
+	RoughnessMap.reset();
+	AmbientOcclusionMap.reset();
+	NormalMap.reset();
+	DepthMap.reset();
+	AlphaMap.reset();
+	EmissionMap.reset();
+	HeightMap.reset();
 	MaterialBuffer.DestroyBuffer();
 }
 

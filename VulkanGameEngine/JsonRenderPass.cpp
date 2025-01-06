@@ -232,15 +232,16 @@ void JsonRenderPass::Destroy()
 {
     for (auto renderedTexture : RenderedColorTextureList)
     {
-        renderedTexture->Destroy();
+        renderedTexture.reset();
     }
     for (auto pipeline : JsonPipelineList)
     {
-        pipeline->Destroy();
+        pipeline.reset();
     }
     depthTexture->Destroy();
     renderer.DestroyRenderPass(RenderPass);
     renderer.DestroyCommandBuffers(CommandBufferList);
     renderer.DestroyFrameBuffers(FrameBufferList);
-
+    CommandBufferList.clear();
+    FrameBufferList.clear();
 }

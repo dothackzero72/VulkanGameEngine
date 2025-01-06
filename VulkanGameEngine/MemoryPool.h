@@ -131,11 +131,12 @@ public:
 	{
 		for (int x = 0; x < AllocatedMemory.size(); x++)
 		{
+			const uint32 useCount = AllocatedMemory[x].use_count() - 1;
 			AllocatedMemory[x].reset();
-			if (MemoryBlockUsed != 0)
+			if (MemoryBlockInUse[x] != 0)
 			{
 				T* ptr = reinterpret_cast<T*>(MemoryBlockPtr + (x * ObjectSize));
-				std::cout << typeid(T).name() << "  " << std::hex << "0x" << reinterpret_cast<void*>(ptr) << ": " << ptr->Name << " Hasn't been deleted correctly" << std::endl;
+				std::cout << typeid(T).name() << "  " << std::hex << "0x" << reinterpret_cast<void*>(ptr) << ": " << ptr->Name << " Used in " << useCount << " more locations and Hasn't been deleted correctly." << std::endl;
 			}
 		}
 

@@ -91,6 +91,9 @@ void GameObject::Destroy()
 	{
 		component->Destroy();
 	}
+	CSclass.reset();
+	CSobject.reset();
+	GameObjectComponentList.clear();
 }
 
 void GameObject::AddComponent(SharedPtr<GameObjectComponent> newComponent)
