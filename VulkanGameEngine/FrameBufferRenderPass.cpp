@@ -15,11 +15,9 @@ void FrameBufferRenderPass::BuildRenderPass(SharedPtr<Texture> texture)
 {
     RenderPassResolution = glm::ivec2((int)cRenderer.SwapChain.SwapChainResolution.width, (int)cRenderer.SwapChain.SwapChainResolution.height);
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
-
-    CommandBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
     FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
 
-    VULKAN_RESULT(renderer.CreateCommandBuffers(CommandBufferList));
+    VULKAN_RESULT(renderer.CreateCommandBuffer(CommandBuffer));
     RenderPass = CreateRenderPass();
     FrameBufferList = CreateFramebuffer();
     BuildRenderPipeline(texture);
@@ -434,22 +432,22 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
-    VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[cRenderer.CommandIndex], &CommandBufferBeginInfo));
-    vkCmdBeginRenderPass(CommandBufferList[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdSetViewport(CommandBufferList[cRenderer.CommandIndex], 0, static_cast<uint32>(viewport.size()), viewport.data());
-    vkCmdSetScissor(CommandBufferList[cRenderer.CommandIndex], 0, static_cast<uint32>(rect2D.size()), rect2D.data());
-    vkCmdBindPipeline(CommandBufferList[cRenderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipeline);
-    vkCmdBindDescriptorSets(CommandBufferList[cRenderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &DescriptorSet, 0, nullptr);
-    vkCmdDraw(CommandBufferList[cRenderer.CommandIndex], 6, 1, 0, 0);
-    vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
-    vkEndCommandBuffer(CommandBufferList[cRenderer.CommandIndex]);
-    return CommandBufferList[cRenderer.CommandIndex];
+    VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
+    vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdSetViewport(CommandBuffer, 0, static_cast<uint32>(viewport.size()), viewport.data());
+    vkCmdSetScissor(CommandBuffer, 0, static_cast<uint32>(rect2D.size()), rect2D.data());
+    vkCmdBindPipeline(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipeline);
+    vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &DescriptorSet, 0, nullptr);
+    vkCmdDraw(CommandBuffer, 6, 1, 0, 0);
+    vkCmdEndRenderPass(CommandBuffer);
+    vkEndCommandBuffer(CommandBuffer);
+    return CommandBuffer;
 }
 
 void FrameBufferRenderPass::Destroy()
 {
     renderer.DestroyRenderPass(RenderPass);
-    renderer.DestroyCommandBuffers(CommandBufferList);
+    renderer.DestroyCommandBuffers(CommandBuffer);
     renderer.DestroyFrameBuffers(FrameBufferList);
     renderer.DestroyPipeline(ShaderPipeline);
     renderer.DestroyPipelineLayout(ShaderPipelineLayout);

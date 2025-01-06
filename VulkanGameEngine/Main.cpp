@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     }
 
     vkDeviceWaitIdle(cRenderer.Device);
-    scene.Destroy();
+  ///  scene.Destroy();
     ImPlot::DestroyContext();
     InterfaceRenderPass::Destroy();
 

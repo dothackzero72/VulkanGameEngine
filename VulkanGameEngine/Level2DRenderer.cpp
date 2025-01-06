@@ -10,11 +10,9 @@ Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : 
 
     RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
-
-    CommandBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
     FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
 
-    VULKAN_RESULT(renderer.CreateCommandBuffers(CommandBufferList));
+    VULKAN_RESULT(renderer.CreateCommandBuffer(CommandBuffer));
 
     nlohmann::json json = Json::ReadJson("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json");
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
@@ -80,17 +78,17 @@ VkCommandBuffer Level2DRenderer::Draw(List<SharedPtr<GameObject>> meshList, Scen
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
-    VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[cRenderer.CommandIndex], &CommandBufferBeginInfo));
-    vkCmdBeginRenderPass(CommandBufferList[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdSetViewport(CommandBufferList[cRenderer.CommandIndex], 0, 1, &viewport);
-    vkCmdSetScissor(CommandBufferList[cRenderer.CommandIndex], 0, 1, &scissor);
-    //for (auto spriteLayer : SpriteLayerRenderList)
-    //{
-    //    spriteLayer->Draw(CommandBufferList[cRenderer.CommandIndex], JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0], sceneProperties);
-    //}
-    vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
-    vkEndCommandBuffer(CommandBufferList[cRenderer.CommandIndex]);
-    return CommandBufferList[cRenderer.CommandIndex];
+    VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
+    vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);
+    vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
+    for (auto spriteLayer : SpriteLayerRenderList)
+    {
+        spriteLayer->Draw(CommandBuffer, JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0], sceneProperties);
+    }
+    vkCmdEndRenderPass(CommandBuffer);
+    vkEndCommandBuffer(CommandBuffer);
+    return CommandBuffer;
 }
 
 void Level2DRenderer::Destroy()

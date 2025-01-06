@@ -11,10 +11,9 @@ JsonRenderPass::JsonRenderPass(String jsonPath, ivec2 renderPassResolution)
     RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
-    CommandBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
     FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
 
-    VULKAN_RESULT(renderer.CreateCommandBuffers(CommandBufferList));
+    VULKAN_RESULT(renderer.CreateCommandBuffer(CommandBuffer));
 
     nlohmann::json json= Json::ReadJson("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json");
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
@@ -87,17 +86,17 @@ VkCommandBuffer JsonRenderPass::Draw(List<SharedPtr<GameObject>> meshList, Scene
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
-    VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[cRenderer.CommandIndex], &CommandBufferBeginInfo));
-    vkCmdBeginRenderPass(CommandBufferList[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdSetViewport(CommandBufferList[cRenderer.CommandIndex], 0, 1, &viewport);
-    vkCmdSetScissor(CommandBufferList[cRenderer.CommandIndex], 0, 1, &scissor);
+    VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
+    vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);
+    vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
     for (auto mesh : meshList)
     {
-        mesh->Draw(CommandBufferList[cRenderer.CommandIndex], JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0], sceneProperties);
+        mesh->Draw(CommandBuffer, JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0], sceneProperties);
     }
-    vkCmdEndRenderPass(CommandBufferList[cRenderer.CommandIndex]);
-    vkEndCommandBuffer(CommandBufferList[cRenderer.CommandIndex]);
-    return CommandBufferList[cRenderer.CommandIndex];
+    vkCmdEndRenderPass(CommandBuffer);
+    vkEndCommandBuffer(CommandBuffer);
+    return CommandBuffer;
 }
 
 void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInfo)
@@ -240,8 +239,7 @@ void JsonRenderPass::Destroy()
     }
     depthTexture->Destroy();
     renderer.DestroyRenderPass(RenderPass);
-    renderer.DestroyCommandBuffers(CommandBufferList);
+    renderer.DestroyCommandBuffers(CommandBuffer);
     renderer.DestroyFrameBuffers(FrameBufferList);
-    CommandBufferList.clear();
     FrameBufferList.clear();
 }

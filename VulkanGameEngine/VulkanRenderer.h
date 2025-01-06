@@ -20,7 +20,7 @@ class VulkanRenderer
         VkResult StartFrame();
         VkResult EndFrame(List<VkCommandBuffer> commandBufferSubmitList);
 
-        VkResult CreateCommandBuffers(List<VkCommandBuffer>& commandBufferList);
+        VkResult CreateCommandBuffer(VkCommandBuffer& commandBuffer);
         VkResult CreateFrameBuffer(VkFramebuffer frameBuffer, VkFramebufferCreateInfo& frameBufferCreateInfo);
         VkResult CreateRenderPass(RenderPassCreateInfoStruct& renderPassCreateInfo);
         VkResult CreateGraphicsPipelines(VkPipeline& graphicPipeline, VkGraphicsPipelineCreateInfo createGraphicPipelines);
@@ -32,11 +32,6 @@ class VulkanRenderer
         VkResult CreateGraphicsPipelines(VkPipeline& graphicPipeline, List<VkGraphicsPipelineCreateInfo> createGraphicPipelines);
         VkResult CreateCommandPool(VkCommandPool& commandPool, VkCommandPoolCreateInfo commandPoolInfo);
         void UpdateDescriptorSet(List<VkWriteDescriptorSet> writeDescriptorSetList);
-
-        //VkCommandBuffer BeginCommandBuffer();
-        //VkResult BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo);
-        //VkResult EndCommandBuffer(VkCommandBuffer* pCommandBufferList);
-        //VkResult EndCommandBuffer(VkCommandBuffer commandBuffer);
 
         static VkCommandBuffer  BeginSingleTimeCommands();
         static VkCommandBuffer  BeginSingleTimeCommands(VkCommandPool& commandPool);
@@ -54,7 +49,7 @@ class VulkanRenderer
         void DestroyFrameBuffers(List<VkFramebuffer>& frameBufferList);
         void DestroyDescriptorPool(VkDescriptorPool& descriptorPool);
         void DestroyDescriptorSetLayout(VkDescriptorSetLayout& descriptorSetLayout);
-        void DestroyCommandBuffers(List<VkCommandBuffer>& commandBufferList);
+        void DestroyCommandBuffers(VkCommandBuffer& commandBuffer);
         void DestroyBuffer(VkBuffer& buffer);
         void FreeDeviceMemory(VkDeviceMemory& memory);
         void DestroySwapChainImageView();

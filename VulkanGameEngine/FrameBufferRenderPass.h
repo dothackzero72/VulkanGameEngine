@@ -9,7 +9,7 @@ private:
 	VkSampleCountFlagBits SampleCount;
 
 	VkRenderPass RenderPass = VK_NULL_HANDLE;
-	std::vector<VkCommandBuffer> CommandBufferList;
+	VkCommandBuffer CommandBuffer = VK_NULL_HANDLE;
 	std::vector<VkFramebuffer> FrameBufferList;
 
 	VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;

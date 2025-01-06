@@ -18,7 +18,7 @@ protected:
 	VkSampleCountFlagBits SampleCount;
 
 	VkRenderPass RenderPass = VK_NULL_HANDLE;
-	std::vector<VkCommandBuffer> CommandBufferList;
+	VkCommandBuffer CommandBuffer;
 	std::vector<VkFramebuffer> FrameBufferList;
 
 	virtual void BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInfo);

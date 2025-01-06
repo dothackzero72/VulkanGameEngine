@@ -89,9 +89,9 @@ void VulkanRenderer::DestroyRenderer()
     renderer.DestroyInstance();
 }
 
-VkResult VulkanRenderer::CreateCommandBuffers(List<VkCommandBuffer>& commandBufferList)
+VkResult VulkanRenderer::CreateCommandBuffer(VkCommandBuffer& commandBuffer)
 {
-    return Renderer_CreateCommandBuffers(cRenderer.Device, cRenderer.CommandPool, commandBufferList.data(), commandBufferList.size());
+    return Renderer_CreateCommandBuffers(cRenderer.Device, cRenderer.CommandPool, &commandBuffer, 1);
 }
 
 VkResult VulkanRenderer::CreateFrameBuffer(VkFramebuffer frameBuffer, VkFramebufferCreateInfo& frameBufferCreateInfo)
@@ -289,9 +289,9 @@ void VulkanRenderer::DestroyDescriptorSetLayout(VkDescriptorSetLayout& descripto
     Renderer_DestroyDescriptorSetLayout(cRenderer.Device, &descriptorSetLayout);
 }
 
-void VulkanRenderer::DestroyCommandBuffers(List<VkCommandBuffer>& commandBufferList)
+void VulkanRenderer::DestroyCommandBuffers(VkCommandBuffer& commandBuffer)
 {
-    Renderer_DestroyCommandBuffers(cRenderer.Device, &cRenderer.CommandPool, commandBufferList.data(), commandBufferList.size());
+    Renderer_DestroyCommandBuffers(cRenderer.Device, &cRenderer.CommandPool, &commandBuffer, 1);
 }
 
 void VulkanRenderer::DestroyBuffer(VkBuffer& buffer)

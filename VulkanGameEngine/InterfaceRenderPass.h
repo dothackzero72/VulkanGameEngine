@@ -16,7 +16,8 @@ private:
     static VkRenderPass RenderPass;
     static VkDescriptorPool ImGuiDescriptorPool;
     static std::vector<VkFramebuffer> SwapChainFramebuffers;
-   
+    static VkCommandBuffer ImGuiCommandBuffer;
+
     static void CreateRenderPass()
     {
         VkAttachmentDescription colorAttachment
@@ -94,8 +95,7 @@ private:
 
     static void DestroyCommandBuffers()
     {
-        renderer.DestroyCommandBuffers(ImGuiCommandBuffers);
-        ImGuiCommandBuffers.clear();
+        renderer.DestroyCommandBuffers(ImGuiCommandBuffer);
     }
 
     static void DestroyFrameBuffers()
@@ -113,7 +113,6 @@ private:
     }
 
 public:
-    static std::vector<VkCommandBuffer> ImGuiCommandBuffers;
 
     static void StartUp()
     {
@@ -130,14 +129,6 @@ public:
         
         CreateRenderPass();
         CreateRendererFramebuffers();
-
- /*       VkCommandPoolCreateInfo poolInfo
-        {
-            .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-            .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-            .queueFamilyIndex = cRenderer.SwapChain.GraphicsFamily
-        };
-        VULKAN_RESULT(renderer.CreateCommandPool(ImGuiCommandPool, poolInfo));*/
 
         VkDescriptorPoolSize poolSizes[] =
         {
@@ -163,7 +154,6 @@ public:
         };
         VULKAN_RESULT(renderer.CreateDescriptorPool(ImGuiDescriptorPool, pool_info));
 
-        ImGuiCommandBuffers.resize(cRenderer.SwapChain.SwapChainImageCount);
         for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
         {
             VkCommandBufferAllocateInfo commandBufferAllocateInfo
@@ -173,7 +163,7 @@ public:
                 .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
                 .commandBufferCount = 1
             };
-            VULKAN_RESULT(vkAllocateCommandBuffers(cRenderer.Device, &commandBufferAllocateInfo, &ImGuiCommandBuffers[x]));
+            VULKAN_RESULT(vkAllocateCommandBuffers(cRenderer.Device, &commandBufferAllocateInfo, &ImGuiCommandBuffer));
         }
 
         ImGui_ImplVulkan_InitInfo init_info =
@@ -266,13 +256,13 @@ public:
             .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
         };
         
-        VULKAN_RESULT(vkBeginCommandBuffer(ImGuiCommandBuffers[cRenderer.CommandIndex], &beginInfo));
-        vkCmdBeginRenderPass(ImGuiCommandBuffers[cRenderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), ImGuiCommandBuffers[cRenderer.CommandIndex]);
-        vkCmdEndRenderPass(ImGuiCommandBuffers[cRenderer.CommandIndex]);
-        VULKAN_RESULT(vkEndCommandBuffer(ImGuiCommandBuffers[cRenderer.CommandIndex]));
+        VULKAN_RESULT(vkBeginCommandBuffer(ImGuiCommandBuffer, &beginInfo));
+        vkCmdBeginRenderPass(ImGuiCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), ImGuiCommandBuffer);
+        vkCmdEndRenderPass(ImGuiCommandBuffer);
+        VULKAN_RESULT(vkEndCommandBuffer(ImGuiCommandBuffer));
        
-        return ImGuiCommandBuffers[cRenderer.CommandIndex];
+        return ImGuiCommandBuffer;
     }
 
     static void RebuildSwapChain()
