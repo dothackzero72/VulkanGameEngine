@@ -349,6 +349,10 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
         };
 
         VULKAN_RESULT(vkCreateGraphicsPipelines(cRenderer.Device, PipelineCache, 1, &graphicsPipelineCreateInfo, nullptr, &Pipeline));
+        for (auto& shader : pipelineShaderStageCreateInfoList)
+        {
+            vkDestroyShaderModule(cRenderer.Device, shader.module, nullptr);
+        }
     }
 }
 
@@ -358,7 +362,7 @@ void JsonPipeline::Destroy()
     renderer.DestroyPipelineLayout(PipelineLayout);
     renderer.DestroyPipelineCache(PipelineCache);
     renderer.DestroyDescriptorPool(DescriptorPool);
-    for (auto descriptorSet : DescriptorSetLayoutList)
+    for (auto& descriptorSet : DescriptorSetLayoutList)
     {
         renderer.DestroyDescriptorSetLayout(descriptorSet);
     }

@@ -52,8 +52,8 @@ VkCommandBuffer JsonRenderPass::Draw(List<SharedPtr<GameObject>> meshList, Scene
             .offset = {0, 0},
             .extent =
             {
-                static_cast<uint32>(RenderPassResolution.x),
-                static_cast<uint32>(RenderPassResolution.y)
+                .width = static_cast<uint32>(RenderPassResolution.x),
+                .height = static_cast<uint32>(RenderPassResolution.y)
             }
         },
         .clearValueCount = static_cast<uint32>(clearValues.size()),
@@ -64,8 +64,8 @@ VkCommandBuffer JsonRenderPass::Draw(List<SharedPtr<GameObject>> meshList, Scene
     {
         .x = 0.0f,
         .y = 0.0f,
-        .width = (float)RenderPassResolution.x,
-        .height = (float)RenderPassResolution.y,
+        .width = static_cast<float>(RenderPassResolution.x),
+        .height = static_cast<float>(RenderPassResolution.y),
         .minDepth = 0.0f,
         .maxDepth = 1.0f
     };
@@ -75,8 +75,8 @@ VkCommandBuffer JsonRenderPass::Draw(List<SharedPtr<GameObject>> meshList, Scene
         .offset =  VkOffset2D(0, 0),
         .extent =  VkExtent2D
         {
-            .width = (uint)RenderPassResolution.x,
-            .height = (uint)RenderPassResolution.y
+          .width = static_cast<uint32>(RenderPassResolution.x),
+          .height = static_cast<uint32>(RenderPassResolution.y)
         }
     };
 
@@ -231,11 +231,11 @@ void JsonRenderPass::Destroy()
 {
     for (auto renderedTexture : RenderedColorTextureList)
     {
-        renderedTexture.reset();
+        renderedTexture->Destroy();
     }
     for (auto pipeline : JsonPipelineList)
     {
-        pipeline.reset();
+        pipeline->Destroy();
     }
     depthTexture->Destroy();
     renderer.DestroyRenderPass(RenderPass);

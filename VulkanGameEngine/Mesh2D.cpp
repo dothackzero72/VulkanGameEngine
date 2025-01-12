@@ -9,10 +9,10 @@ Mesh2D::Mesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Ma
 {
 	std::vector<Vertex2D> SpriteVertexList =
 	{
-	  { {0.5f,   0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-	  { {0.5f,  -0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-	  { {-0.5f, -0.5f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-	  { {-0.5f,  0.5f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
+	  { {0.0f, 0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
+	  { {0.5f, 0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
+	  { {0.5f, 0.0f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
+	  { {0.0f, 0.0f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
 	};
 	std::vector<uint32> SpriteIndexList =
 	{
@@ -27,10 +27,10 @@ Mesh2D::Mesh2D(SharedPtr<GameObjectComponent> parentGameObjectComponent, List<Ve
 {
 	std::vector<Vertex2D> SpriteVertexList =
 	{
-	  { {0.5f,   0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-	  { {0.5f,  -0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-	  { {-0.5f, -0.5f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-	  { {-0.5f,  0.5f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
+	  { {0.0f, 0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
+	  { {0.5f, 0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
+	  { {0.5f, 0.0f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
+	  { {0.0f, 0.0f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
 	};
 	std::vector<uint32> SpriteIndexList = 
 	{
@@ -45,10 +45,10 @@ SharedPtr<Mesh2D> Mesh2D::CreateMesh2D(String name, SharedPtr<Material> material
 {
 	std::vector<Vertex2D> SpriteVertexList =
 	{
-	  { {0.5f,   0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-	  { {0.5f,  -0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-	  { {-0.5f, -0.5f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-	  { {-0.5f,  0.5f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
+	  { {0.0f, 1.0f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
+	  { {1.0f, 1.0f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
+	  { {1.0f, 0.0f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
+	  { {0.0f, 0.0f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
 	};
 	std::vector<uint32> SpriteIndexList =
 	{
@@ -66,10 +66,10 @@ SharedPtr<Mesh2D> Mesh2D::CreateMesh2D(SharedPtr<GameObjectComponent> parentGame
 {
 	std::vector<Vertex2D> SpriteVertexList =
 	{
-	  { {0.5f,   0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-	  { {0.5f,  -0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-	  { {-0.5f, -0.5f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-	  { {-0.5f,  0.5f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
+	  { {0.0f, 0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
+	  { {0.5f, 0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
+	  { {0.5f, 0.0f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
+	  { {0.0f, 0.0f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
 	};
 	std::vector<uint32> SpriteIndexList =
 	{
@@ -87,10 +87,10 @@ SharedPtr<Mesh2D> Mesh2D::CreateMesh2D(List<Vertex2D>& vertexList, List<uint32>&
 {
 	std::vector<Vertex2D> SpriteVertexList =
 	{
-	  { {0.5f,   0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-	  { {0.5f,  -0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-	  { {-0.5f, -0.5f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-	  { {-0.5f,  0.5f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
+	  { {0.0f, 0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
+	  { {0.5f, 0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
+	  { {0.5f, 0.0f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
+	  { {0.0f, 0.0f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
 	};
 	std::vector<uint32> SpriteIndexList =
 	{

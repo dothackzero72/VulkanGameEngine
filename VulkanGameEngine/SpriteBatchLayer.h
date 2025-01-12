@@ -8,6 +8,7 @@ class SpriteBatchLayer
 private:
 	uint32                    MaxSpritesPerSheet;
 	uint32                    SpriteLayer;
+	SharedPtr<Material>		  Material;
 	List<SharedPtr<Sprite>>   SpriteDrawList;
 	SharedPtr<Mesh2D>		  SpriteLayerMesh;
 

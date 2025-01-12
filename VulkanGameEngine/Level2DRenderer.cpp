@@ -44,8 +44,8 @@ VkCommandBuffer Level2DRenderer::Draw(List<SharedPtr<GameObject>> meshList, Scen
             .offset = {0, 0},
             .extent =
             {
-                static_cast<uint32>(RenderPassResolution.x),
-                static_cast<uint32>(RenderPassResolution.y)
+                .width = static_cast<uint32>(RenderPassResolution.x),
+                .height = static_cast<uint32>(RenderPassResolution.y)
             }
         },
         .clearValueCount = static_cast<uint32>(clearValues.size()),
@@ -56,8 +56,8 @@ VkCommandBuffer Level2DRenderer::Draw(List<SharedPtr<GameObject>> meshList, Scen
     {
         .x = 0.0f,
         .y = 0.0f,
-        .width = (float)RenderPassResolution.x,
-        .height = (float)RenderPassResolution.y,
+        .width = static_cast<float>(RenderPassResolution.x),
+        .height = static_cast<float>(RenderPassResolution.y),
         .minDepth = 0.0f,
         .maxDepth = 1.0f
     };
@@ -67,8 +67,8 @@ VkCommandBuffer Level2DRenderer::Draw(List<SharedPtr<GameObject>> meshList, Scen
         .offset = VkOffset2D(0, 0),
         .extent = VkExtent2D
         {
-            .width = (uint)RenderPassResolution.x,
-            .height = (uint)RenderPassResolution.y
+          .width = static_cast<uint32>(RenderPassResolution.x),
+          .height = static_cast<uint32>(RenderPassResolution.y)
         }
     };
 
@@ -95,7 +95,7 @@ void Level2DRenderer::Destroy()
 {
     for (auto spriteLayer : SpriteLayerRenderList)
     {
-        spriteLayer.reset();
+        spriteLayer->Destroy();
     }
     JsonRenderPass::Destroy();
 }

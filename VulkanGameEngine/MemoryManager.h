@@ -27,6 +27,7 @@ void ExceptionCallback(std::string_view InMessage);
 class MemoryManager 
 {
 	private:
+		static Coral::HostInstance hostInstance;
 		static SharedPtr<Coral::ManagedAssembly> ECSassembly;
 		static List<SharedPtr<GameObject>> GameObjectList;
 		//static List<SharedPtr<RenderMesh2DComponent>> RenderMesh2DComponentList;

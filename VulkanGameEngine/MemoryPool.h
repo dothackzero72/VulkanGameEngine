@@ -15,7 +15,7 @@ private:
 	const uint8_t MemoryBlockUsed = 1;
 	const uint8_t FreeMemoryBlock = 0;
 
-	uint8_t* MemoryBlockPtr = nullptr;  // Use uint8_t for byte-level operations
+	uint8_t* MemoryBlockPtr = nullptr;
 	size_t ObjectSize = sizeof(T);
 	uint32 ObjectCount = 0;
 	List<uint8_t> MemoryBlockInUse;
@@ -54,7 +54,6 @@ private:
 	//}
 
 public:
-	List<SharedPtr<T>> AllocatedMemory;
 
 	MemoryPool()
 	{
@@ -81,16 +80,8 @@ public:
 		}
 
 		T* newObject = new (MemoryBlockPtr + (memoryIndex * ObjectSize)) T(); 
-		SharedPtr<T> newPtr(newObject, [this, memoryIndex](T* ptr)
-			{
-				if (MemoryBlockInUse[memoryIndex] == MemoryBlockUsed)
-				{
-					ptr->Destroy();
-					MemoryBlockInUse[memoryIndex] = FreeMemoryBlock;
-				}
-			});
+		SharedPtr<T> newPtr(newObject);
 
-		AllocatedMemory.emplace_back(newPtr);
 		MemoryBlockInUse[memoryIndex] = MemoryBlockUsed;
 		return newPtr;
 	}
@@ -127,16 +118,22 @@ public:
 		return MemoryBlockInUse;
 	}
 
+	void DestroyObject(int memoryIndex)
+	{
+		if (MemoryBlockInUse[memoryIndex])
+		{
+			reinterpret_cast<T*>(MemoryBlockPtr + (memoryIndex * ObjectSize))->Destroy();
+			MemoryBlockInUse = 0;
+		}
+	}
+
 	void Destroy()
 	{
-		for (int x = 0; x < AllocatedMemory.size(); x++)
+		for (int x = 0; x < MemoryBlockInUse.size(); x++)
 		{
-			const uint32 useCount = AllocatedMemory[x].use_count() - 1;
-			AllocatedMemory[x].reset();
-			if (MemoryBlockInUse[x] != 0)
+			if (MemoryBlockInUse[x])
 			{
-				T* ptr = reinterpret_cast<T*>(MemoryBlockPtr + (x * ObjectSize));
-				std::cout << typeid(T).name() << "  " << std::hex << "0x" << reinterpret_cast<void*>(ptr) << ": " << ptr->Name << " Used in " << useCount << " more locations and Hasn't been deleted correctly." << std::endl;
+				reinterpret_cast<T*>(MemoryBlockPtr + (x * ObjectSize))->Destroy();
 			}
 		}
 

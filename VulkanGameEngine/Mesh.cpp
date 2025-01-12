@@ -39,11 +39,11 @@ void Mesh::Update(const float& deltaTime)
 void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
 	mat4 GameObjectMatrix = mat4(1.0);
-	SharedPtr<Transform2DComponent> transform = GameObjectTransform.lock();
-	if (transform)
-	{
-			GameObjectMatrix = *transform->GameObjectMatrixTransform.get();
-	}
+	//SharedPtr<Transform2DComponent> transform = GameObjectTransform.lock();
+	//if (transform)
+	//{
+	//		GameObjectMatrix = *transform->GameObjectMatrixTransform.get();
+	//}
 
 	mat4 MeshMatrix = mat4(1.0f);
 	MeshMatrix = glm::translate(MeshMatrix, MeshPosition);

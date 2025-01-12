@@ -1,6 +1,7 @@
 #include "MemoryManager.h"
 #include <CBuffer.h>
 
+Coral::HostInstance MemoryManager::hostInstance;
 SharedPtr<Coral::ManagedAssembly> MemoryManager::ECSassembly = nullptr;
 List<SharedPtr<GameObject>> MemoryManager::GameObjectList;
 //List<SharedPtr<RenderMesh2DComponent>> MemoryManager::RenderMesh2DComponentList;
@@ -36,7 +37,6 @@ void MemoryManager::SetUpMemoryManager(uint32 EstObjectCount)
 		.CoralDirectory = coralDir,
 		.ExceptionCallback = ExceptionCallback
 	};
-	Coral::HostInstance hostInstance;
 	hostInstance.Initialize(settings);
 
 	auto loadContext = hostInstance.CreateAssemblyLoadContext("ExampleContext");
@@ -44,6 +44,8 @@ void MemoryManager::SetUpMemoryManager(uint32 EstObjectCount)
 	std::string assemblyPath = "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/VulkanGameEngineGameObjectScripts/bin/Debug/VulkanGameEngineGameObjectScripts.dll";
 	Coral::ManagedAssembly* assembly = &loadContext.LoadAssembly(assemblyPath);
 	ECSassembly = SharedPtr<Coral::ManagedAssembly>(assembly);
+
+	
 
 	GameObjectMemoryPool.CreateMemoryPool(EstObjectCount);
 	//RenderMesh2DComponentMemoryPool.CreateMemoryPool(EstObjectCount);
@@ -191,15 +193,15 @@ void MemoryManager::UpdateBufferIndex()
 
 void MemoryManager::Destroy()
 {
-	GameObjectList.clear();
-	//RenderMesh2DComponentList.clear();
-	TextureList.clear();
-	MaterialList.clear();
-	JsonRenderPassList.clear();
-	JsonPipelineList.clear();
-	MeshList.clear();
-	Mesh2DList.clear();
-	SpriteBatchLayerList.clear();
+	//GameObjectList.clear();
+	////RenderMesh2DComponentList.clear();
+	//TextureList.clear();
+	//MaterialList.clear();
+	//JsonRenderPassList.clear();
+	//JsonPipelineList.clear();
+	//MeshList.clear();
+	//Mesh2DList.clear();
+	//SpriteBatchLayerList.clear();
 
 	GameObjectMemoryPool.Destroy();
 	//RenderMesh2DComponentMemoryPool.Destroy();
@@ -208,6 +210,8 @@ void MemoryManager::Destroy()
 	TextureMemoryPool.Destroy();
 	JsonPipelineMemoryPool.Destroy();
 	JsonRenderPassMemoryPool.Destroy();
+
+	hostInstance.Shutdown();
 }
 
 const List<VkDescriptorBufferInfo> MemoryManager::GetMeshPropertiesBuffer()

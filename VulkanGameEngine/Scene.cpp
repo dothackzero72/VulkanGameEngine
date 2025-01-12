@@ -10,7 +10,7 @@
 
 void Scene::StartUp()
 {
-	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 5.0f)));
+	orthographicCamera = std::make_shared<OrthographicCamera>(OrthographicCamera(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
 //	gameObjectList.emplace_back(GameObject::CreateGameObject("adsfda", List<ComponentTypeEnum> { kTransform2DComponent, kInputComponent, kRenderMesh2DComponent }));
 	TextureList.emplace_back(Texture::CreateTexture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 	TextureList.emplace_back(Texture::CreateTexture("../Textures/container2.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
@@ -33,7 +33,7 @@ void Scene::Update(const float& deltaTime)
 	{
 		UpdateRenderPasses();
 	}
-
+	orthographicCamera->Update(sceneProperties);
 	MemoryManager::Update(deltaTime);
 }
 
@@ -98,13 +98,13 @@ void Scene::Destroy()
 {
 	for (auto gameObject : GameObjectList)
 	{
-		gameObject.reset();
+		gameObject->Destroy();
 	}
 	for (auto texture : TextureList)
 	{
-		texture.reset();
+		texture->Destroy();
 	}
-	levelRenderer.reset();
+	levelRenderer->Destroy();
 	frameRenderPass.Destroy();
 	GameObjectList.clear();
 	TextureList.clear();
