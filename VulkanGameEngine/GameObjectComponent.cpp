@@ -19,22 +19,8 @@ GameObjectComponent::GameObjectComponent()
 
 GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, ComponentTypeEnum componentType)
 {
-    //void* reqw = this;
-    //Name = std::make_shared<Coral::String>(Coral::String().New("component"));
-    //ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
-    //ParentGameObjectPtr = parentGameObjectPtr;
-
-    //CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(GetCSNameSpacePath(componentType)));
-    //SharedPtr<GameObject> parentPtr = ParentGameObjectPtr.lock();
-    //if (parentPtr)
-    //{
-    //    CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ptr, parentGameObjectPtr.get(), parentPtr->GetCSObjectHandle()));
-    //}
-}
-
-GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType)
-{
- /*   Name = std::make_shared<Coral::String>(Coral::String().New(name));
+    void* reqw = this;
+    Name = std::make_shared<Coral::String>(Coral::String().New("component"));
     ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
     ParentGameObjectPtr = parentGameObjectPtr;
 
@@ -43,7 +29,21 @@ GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parent
     if (parentPtr)
     {
         CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ptr, parentGameObjectPtr.get(), parentPtr->GetCSObjectHandle()));
-    }*/
+    }
+}
+
+GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType)
+{
+    Name = std::make_shared<Coral::String>(Coral::String().New(name));
+    ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
+    ParentGameObjectPtr = parentGameObjectPtr;
+
+    CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(GetCSNameSpacePath(componentType)));
+    SharedPtr<GameObject> parentPtr = ParentGameObjectPtr.lock();
+    if (parentPtr)
+    {
+        CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ptr, parentGameObjectPtr.get(), parentPtr->GetCSObjectHandle()));
+    }
 }
 
 GameObjectComponent::~GameObjectComponent()
@@ -52,7 +52,7 @@ GameObjectComponent::~GameObjectComponent()
 
 void GameObjectComponent::Input(float deltaTime)
 {
-   // CSobject->InvokeMethod("Input", KeyboardKeyCode::KEY_D, deltaTime);
+    CSobject->InvokeMethod("Input", KeyboardKeyCode::KEY_D, deltaTime);
 }
 
 void GameObjectComponent::Update(float deltaTime)

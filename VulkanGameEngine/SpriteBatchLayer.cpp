@@ -6,9 +6,15 @@ SpriteBatchLayer::SpriteBatchLayer()
 	 Material = Material::CreateMaterial("Material1");
 	 Material->SetAlbedoMap(MemoryManager::GetTextureList()[0]);
 
-	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite()));
+	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f), vec2(1.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), Material)));
 	VertexList = SpriteDrawList[0]->VertexList;
-	IndexList = SpriteDrawList[0]->IndexList;
+
+	IndexList.emplace_back(0);
+	IndexList.emplace_back(0 + 1);
+	IndexList.emplace_back(0 + 2);
+	IndexList.emplace_back(0 + 2);
+	IndexList.emplace_back(0 + 3);
+	IndexList.emplace_back(0);
 	SpriteLayerMesh = Mesh2D::CreateMesh2D(VertexList, IndexList, Material);
 }
 

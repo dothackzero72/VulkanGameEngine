@@ -9,20 +9,6 @@
 #include "Mesh2D.h"
 #include "SpriteBatchLayer.h"
 
-class MyClass {
-public:
-	MyClass() {
-		std::cout << "MyClass Constructor called!" << std::endl;
-	}
-	~MyClass() {
-		std::cout << "MyClass Destructor called!" << std::endl;
-	}
-	void Destroy()
-	{
-		std::cout << "MyClass Destroy called!" << std::endl;
-	}
-};
-
 void ExceptionCallback(std::string_view InMessage);
 class MemoryManager 
 {
@@ -47,7 +33,6 @@ class MemoryManager
 		static MemoryPool<JsonPipeline> JsonPipelineMemoryPool;
 		static MemoryPool<Mesh2D> Mesh2DMemoryPool;
 		static MemoryPool<SpriteBatchLayer> SpriteBatchLayerMemeryPool;
-		static MemoryPool<MyClass> myclassMemoryPool;
 
 	public:
 		static void SetUpMemoryManager(uint32 EstObjectCount);

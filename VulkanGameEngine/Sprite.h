@@ -14,10 +14,8 @@ private:
 	SharedPtr<SpriteSheet> SpriteSheetPtr;
 	List<SharedPtr<Animation2D>> AnimationList;
 	ivec2 SpriteSize;
-
-	vec2 Position;
-	vec2 UV;
-	vec4 Color;
+	vec2  SpritePosition;
+	vec4  SpriteColor;
 
 public:
 
@@ -25,7 +23,7 @@ public:
 	List<uint32> IndexList;
 
 	Sprite();
-	Sprite(SharedPtr<Material> material, vec2 spriteSize);
+	Sprite(vec2 spritePosition, vec2 spriteSize, vec4 spriteColor, SharedPtr<Material> material);
 	virtual ~Sprite();
 
 	virtual void Input(float deltaTime);

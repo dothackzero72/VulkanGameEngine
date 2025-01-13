@@ -7,100 +7,13 @@ Mesh2D::Mesh2D() : Mesh()
 
 Mesh2D::Mesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material) : Mesh()
 {
-	std::vector<Vertex2D> SpriteVertexList =
-	{
-	  { {0.0f, 0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-	  { {0.5f, 0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-	  { {0.5f, 0.0f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-	  { {0.0f, 0.0f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
-	};
-	std::vector<uint32> SpriteIndexList =
-	{
-	  0, 3, 1,
-	  1, 3, 2
-	};
-
-	MeshStartUp<Vertex2D>(SpriteVertexList, SpriteIndexList, material);
-}
-
-Mesh2D::Mesh2D(SharedPtr<GameObjectComponent> parentGameObjectComponent, List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material) : Mesh(parentGameObjectComponent)
-{
-	std::vector<Vertex2D> SpriteVertexList =
-	{
-	  { {0.0f, 0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-	  { {0.5f, 0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-	  { {0.5f, 0.0f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-	  { {0.0f, 0.0f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
-	};
-	std::vector<uint32> SpriteIndexList = 
-	{
-	  0, 3, 1,
-	  1, 3, 2
-	};
-
-	MeshStartUp<Vertex2D>(SpriteVertexList, SpriteIndexList, MeshBufferIndex);
-}
-
-SharedPtr<Mesh2D> Mesh2D::CreateMesh2D(String name, SharedPtr<Material> material)
-{
-	std::vector<Vertex2D> SpriteVertexList =
-	{
-	  { {0.0f, 1.0f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-	  { {1.0f, 1.0f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-	  { {1.0f, 0.0f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-	  { {0.0f, 0.0f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
-	};
-	std::vector<uint32> SpriteIndexList =
-	{
-	  0, 3, 1,
-	  1, 3, 2
-	};
-
-
-	SharedPtr<Mesh2D> gameObject = MemoryManager::AllocateMesh2D();
-	new (gameObject.get()) Mesh2D(SpriteVertexList, SpriteIndexList, material);
-	return gameObject;
-}
-
-SharedPtr<Mesh2D> Mesh2D::CreateMesh2D(SharedPtr<GameObjectComponent> parentGameObjectComponent, String name, SharedPtr<Material> material)
-{
-	std::vector<Vertex2D> SpriteVertexList =
-	{
-	  { {0.0f, 0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-	  { {0.5f, 0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-	  { {0.5f, 0.0f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-	  { {0.0f, 0.0f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
-	};
-	std::vector<uint32> SpriteIndexList =
-	{
-	  0, 3, 1,
-	  1, 3, 2
-	};
-
-
-	SharedPtr<Mesh2D> gameObject = MemoryManager::AllocateMesh2D();
-	new (gameObject.get()) Mesh2D(SpriteVertexList, SpriteIndexList, material);
-	return gameObject;
+	MeshStartUp<Vertex2D>(vertexList, indexList, material);
 }
 
 SharedPtr<Mesh2D> Mesh2D::CreateMesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material)
 {
-	std::vector<Vertex2D> SpriteVertexList =
-	{
-	  { {0.0f, 0.5f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-	  { {0.5f, 0.5f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-	  { {0.5f, 0.0f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-	  { {0.0f, 0.0f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
-	};
-	std::vector<uint32> SpriteIndexList =
-	{
-	  0, 3, 1,
-	  1, 3, 2
-	};
-
-
 	SharedPtr<Mesh2D> gameObject = MemoryManager::AllocateMesh2D();
-	new (gameObject.get()) Mesh2D(SpriteVertexList, SpriteIndexList, material);
+	new (gameObject.get()) Mesh2D(vertexList, indexList, material);
 	return gameObject;
 }
 

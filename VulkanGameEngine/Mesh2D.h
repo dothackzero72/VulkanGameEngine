@@ -10,10 +10,7 @@ protected:
 public:
 	Mesh2D();
 	Mesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material);
-	Mesh2D(SharedPtr<GameObjectComponent> parentGameObjectComponent, List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material);
 
-	static SharedPtr<Mesh2D> CreateMesh2D(String name, SharedPtr<Material> material);
-	static SharedPtr<Mesh2D> CreateMesh2D(SharedPtr<GameObjectComponent> parentGameObjectComponent, String name, SharedPtr<Material> material);
 	static SharedPtr<Mesh2D> CreateMesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material);
 	virtual ~Mesh2D();
 

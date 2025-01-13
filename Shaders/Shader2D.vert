@@ -7,10 +7,12 @@
 layout (location = 0) in vec2 inPosition;
 layout (location = 1) in vec2 aUV;
 layout (location = 2) in vec3 aColor;
+layout (location = 3) in uint aMaterialID;
 
 layout(location = 0) out vec2 FragPos;
 layout(location = 1) out vec2 UV;
 layout(location = 2) out vec3 Color;
+layout(location = 3) out uint MaterialID;
 
 layout(push_constant) uniform SceneDataBuffer
 {
@@ -60,6 +62,8 @@ void main()
     FragPos = vec2(inPosition.xy);    
     Color = aColor;
     UV = aUV;
+	MaterialID = aMaterialID;
+
     gl_Position = sceneData.Projection * 
                   sceneData.View *  
                   meshTransform *
