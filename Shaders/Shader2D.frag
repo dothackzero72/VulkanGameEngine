@@ -7,7 +7,7 @@
 layout(location = 0) in vec2 Position;
 layout(location = 1) in vec2 UV;
 layout(location = 2) in vec3 Color;
-layout(location = 3) in uint MaterialID;
+//layout(location = 3) in uint MaterialID;
 
 layout(location = 0) out vec4 outColor;
 
@@ -53,7 +53,8 @@ layout(binding = 2) buffer MaterialProperities { MaterialProperitiesBuffer mater
 void main() 
 {
 	const int meshIndex = sceneData.MeshBufferIndex;
-	MaterialProperitiesBuffer material = materialBuffer[MaterialID].materialProperties;
+	const int materialIndex = meshBuffer[meshIndex].meshProperties.MaterialIndex;
+	MaterialProperitiesBuffer material = materialBuffer[materialIndex].materialProperties;
 
 	material.Albedo = texture(TextureMap[material.AlbedoMap], UV).rgb;
 	material.Alpha = texture(TextureMap[material.AlbedoMap], UV).a;

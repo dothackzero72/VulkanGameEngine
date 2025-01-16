@@ -15,6 +15,8 @@ private:
 	List<Vertex2D>            VertexList;
 	List<uint32>              IndexList;
 
+	void AddSprite(List<SharedPtr<Sprite>>& spriteVertexList);
+
 public:
 	String					  Name;
 

@@ -20,7 +20,6 @@ private:
 public:
 
 	List<Vertex2D> VertexList;
-	List<uint32> IndexList;
 
 	Sprite();
 	Sprite(vec2 spritePosition, vec2 spriteSize, vec4 spriteColor, SharedPtr<Material> material);
