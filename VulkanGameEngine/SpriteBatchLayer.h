@@ -8,7 +8,8 @@ class SpriteBatchLayer
 private:
 	uint32                    MaxSpritesPerSheet;
 	uint32                    SpriteLayer;
-	SharedPtr<Material>		  Material;
+	SharedPtr<Material>		  material;
+	SharedPtr<Material>		  Material2;
 	List<SharedPtr<Sprite>>   SpriteDrawList;
 	SharedPtr<Mesh2D>		  SpriteLayerMesh;
 
@@ -24,6 +25,7 @@ public:
 	virtual ~SpriteBatchLayer();
 
 	void BuildSpriteLayer(List<SharedPtr<Sprite>>& spriteDrawList);
+	void Update(float deltaTime);
 	void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
 	void Destroy();
 

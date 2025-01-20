@@ -214,9 +214,20 @@ VkResult Buffer_UpdateBufferSize(VkDevice device, VkPhysicalDevice physicalDevic
     return VK_SUCCESS;
 }
 
-void Buffer_UpdateBufferData(VkDevice device, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize, bool IsStagingBuffer)
+void Buffer_UpdateBufferData(VkDevice device, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize, bool usingStagingBuffer)
 {
-    if (IsStagingBuffer)
+    if (usingStagingBuffer == true)
+    {
+        RENDERER_ERROR("This buffer uses staging");
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }
+
+    Buffer_UpdateBufferMemory(device, *bufferMemory, dataToCopy, bufferSize);
+}
+
+void Buffer_UpdateStagingBufferData(VkDevice device, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize, bool usingStagingBuffer)
+{
+    if (usingStagingBuffer)
     {
         VkResult result = Buffer_UpdateBufferMemory(device, *stagingBufferMemory, dataToCopy, bufferSize);
         if (result == VK_SUCCESS)

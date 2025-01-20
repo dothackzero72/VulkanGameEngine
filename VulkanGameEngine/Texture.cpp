@@ -22,6 +22,7 @@ Texture::Texture(const Pixel& clearColor, int width, int height, VkFormat textur
 	Height = height;
 	TextureType = textureType;
 	TextureByteFormat = textureByteFormat;
+	TextureBufferIndex = MemoryManager::GetTextureList().size() - 1;
 
 	CreateImageTexture(clearColor);
 	CreateTextureView();
@@ -35,6 +36,7 @@ Texture::Texture(const String& filePath, VkFormat textureByteFormat, TextureType
 	MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
 	TextureType = textureType;
 	TextureByteFormat = textureByteFormat;
+	TextureBufferIndex = MemoryManager::GetTextureList().size() - 1;
 
 	CreateImageTexture(filePath);
 	CreateTextureView();
@@ -51,6 +53,7 @@ Texture::Texture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& sample
 	TextureByteFormat = createImageInfo.format;
 	TextureImageLayout = createImageInfo.initialLayout;
 	SampleCount = createImageInfo.samples;
+	TextureBufferIndex = MemoryManager::GetTextureList().size() - 1;
 
 	CreateTextureImage(createImageInfo);
 	CreateTextureView();

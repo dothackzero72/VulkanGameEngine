@@ -34,6 +34,10 @@ SharedPtr<JsonRenderPass> JsonRenderPass::JsonCreateRenderPass(String jsonPath, 
     return renderPass;
 }
 
+void JsonRenderPass::Update(const float& deltaTime)
+{
+}
+
 VkCommandBuffer JsonRenderPass::Draw(List<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties)
 {
     std::vector<VkClearValue> clearValues

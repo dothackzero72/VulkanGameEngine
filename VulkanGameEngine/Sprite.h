@@ -12,6 +12,7 @@ private:
 	uint32 CurrentAnimationID = 0;
 
 	SharedPtr<SpriteSheet> SpriteSheetPtr;
+	SharedPtr<Material> MaterialPtr;
 	List<SharedPtr<Animation2D>> AnimationList;
 	ivec2 SpriteSize;
 	vec2  SpritePosition;

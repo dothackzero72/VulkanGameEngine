@@ -37,6 +37,7 @@ public:
 	static SharedPtr<JsonRenderPass> JsonCreateRenderPass(String JsonPath, ivec2 RenderPassResolution);
 	virtual ~JsonRenderPass();
 
+	virtual void Update(const float& deltaTime);
 	virtual VkCommandBuffer Draw(List<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties);
 	virtual void Destroy();
 };

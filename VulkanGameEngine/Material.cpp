@@ -18,11 +18,11 @@ Material::Material(const String& materialName)
 {
 	Name = materialName;
 	MaterialIDCounter++;
-	MaterialBufferIndex = MaterialIDCounter;
-	MaterialBuffer = VulkanBuffer<MaterialProperitiesBuffer>(static_cast<void*>(&MaterialBuffer), 1,  VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
-																									  VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 
-																									  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
-																									  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
+	MaterialBufferIndex = MemoryManager::GetMaterialist().size() - 1;
+	MaterialBuffer = VulkanBuffer<MaterialProperitiesBuffer>(MaterialInfo,  VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
+																			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 
+																			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
+																			VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
 }
 
 Material::~Material()

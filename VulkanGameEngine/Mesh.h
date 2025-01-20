@@ -91,7 +91,7 @@ public:
 
 		MeshVertexBuffer = VertexBuffer(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+		PropertiesBuffer = MeshPropertiesBuffer(MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
 		SharedPtr parentGameObject = ParentGameObject.lock();
 		if (parentGameObject)
@@ -102,6 +102,13 @@ public:
 				GameObjectTransform = std::dynamic_pointer_cast<Transform2DComponent>(component);
 			}
 		}
+	}
+
+	template<class T>
+	void VertexBufferUpdate(const float& deltaTime, List<T>& vertexList, List<uint32>& indexList)
+	{
+		MeshVertexBuffer.UpdateBufferMemory(vertexList);
+		MeshIndexBuffer.UpdateBufferMemory(indexList);
 	}
 
 	Mesh();

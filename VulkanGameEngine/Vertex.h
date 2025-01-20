@@ -10,22 +10,22 @@ struct Vertex2D
     vec2 Position;
     vec2 UV;
     vec4 Color;
-   // uint MaterialID;
+    uint MaterialID;
 
     Vertex2D()
     {
         Position = vec2(0.0f);
         UV = vec2(0.0f);
         Color = vec4(0.0f);
-       // MaterialID = 0;
+        MaterialID = 0;
     }
 
-    Vertex2D(vec2 position, vec2 uv, vec4 color)
+    Vertex2D(vec2 position, vec2 uv, vec4 color, uint materialID)
     {
         Position = position;
         UV = uv;
         Color = color;
-     //   MaterialID = materialID;
+        MaterialID = materialID;
     }
 
     static std::vector<VkVertexInputBindingDescription> GetBindingDescriptions()
@@ -66,13 +66,13 @@ struct Vertex2D
                 .format = VK_FORMAT_R32G32B32A32_SFLOAT,
                 .offset = offsetof(Vertex2D, Color)
             },
-         /*   VkVertexInputAttributeDescription
+            VkVertexInputAttributeDescription
             {
                 .location = 3,
                 .binding = 0,
                 .format = VK_FORMAT_R32_UINT,
-                .offset = offsetof(Vertex2D, Color)
-            },*/
+                .offset = offsetof(Vertex2D, MaterialID)
+            },
         };
     }
 };

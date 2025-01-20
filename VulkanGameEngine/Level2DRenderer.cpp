@@ -26,6 +26,14 @@ Level2DRenderer::~Level2DRenderer()
 {
 }
 
+void Level2DRenderer::Update(const float& deltaTime)
+{
+    for (auto& spriteLayer : SpriteLayerRenderList)
+    {
+        spriteLayer->Update(deltaTime);
+    }
+}
+
 VkCommandBuffer Level2DRenderer::Draw(List<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties)
 {
     std::vector<VkClearValue> clearValues

@@ -30,7 +30,7 @@ protected:
 	VkAccelerationStructureKHR BufferHandle = VK_NULL_HANDLE;
 	void* BufferData;
 	bool IsMapped = false;
-	bool IsStagingBuffer = false;
+	bool UsingStagingBuffer = false;
 
 	VkResult CreateBuffer(void* bufferData)
 	{
@@ -62,7 +62,7 @@ public:
 		_graphicsQueue = std::make_shared<VkQueue>(cRenderer.SwapChain.GraphicsQueue);
 	}
 
-	VulkanBuffer(void* bufferData, uint32 bufferElementCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool isStagingBuffer)
+	VulkanBuffer(void* bufferData, uint32 bufferElementCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 	{
 		_device = std::make_shared<VkDevice>(cRenderer.Device);
 		_physicalDevice = std::make_shared<VkPhysicalDevice>(cRenderer.PhysicalDevice);
@@ -71,16 +71,64 @@ public:
 
 		BufferSize = sizeof(T) * bufferElementCount;
 		BufferProperties = properties;
-		IsStagingBuffer = isStagingBuffer;
+		UsingStagingBuffer = usingStagingBuffer;
 		BufferUsage = usage;
 
-		if (isStagingBuffer)
+		if (UsingStagingBuffer)
 		{
 			CreateStagingBuffer(bufferData);
 		}
 		else
 		{
 			CreateBuffer(bufferData);
+		}
+	}
+
+	VulkanBuffer(T bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+	{
+		_device = std::make_shared<VkDevice>(cRenderer.Device);
+		_physicalDevice = std::make_shared<VkPhysicalDevice>(cRenderer.PhysicalDevice);
+		_commandPool = std::make_shared<VkCommandPool>(cRenderer.CommandPool);
+		_graphicsQueue = std::make_shared<VkQueue>(cRenderer.SwapChain.GraphicsQueue);
+
+		BufferSize = sizeof(T);
+		BufferProperties = properties;
+		UsingStagingBuffer = usingStagingBuffer;
+		BufferUsage = usage;
+
+		void* bufferData2 = static_cast<void*>(&bufferData);
+
+		if (UsingStagingBuffer)
+		{
+			CreateStagingBuffer(bufferData2);
+		}
+		else
+		{
+			CreateBuffer(bufferData2);
+		}
+	}
+
+	VulkanBuffer(List<T> bufferDataList, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+	{
+		_device = std::make_shared<VkDevice>(cRenderer.Device);
+		_physicalDevice = std::make_shared<VkPhysicalDevice>(cRenderer.PhysicalDevice);
+		_commandPool = std::make_shared<VkCommandPool>(cRenderer.CommandPool);
+		_graphicsQueue = std::make_shared<VkQueue>(cRenderer.SwapChain.GraphicsQueue);
+
+		BufferSize = sizeof(T) * bufferDataList.size();
+		BufferProperties = properties;
+		UsingStagingBuffer = usingStagingBuffer;
+		BufferUsage = usage;
+
+		void* bufferData2 = static_cast<void*>(bufferDataList.data());
+
+		if (UsingStagingBuffer)
+		{
+			CreateStagingBuffer(bufferData2);
+		}
+		else
+		{
+			CreateBuffer(bufferData2);
 		}
 	}
 
@@ -95,64 +143,59 @@ public:
 
 	void UpdateBufferMemory(T& bufferData)
 	{
-		Buffer_UpdateBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, static_cast<void*>(&bufferData), BufferSize, IsStagingBuffer);
-	}
-
-	void UpdateBufferMemory(T& bufferData, VkDeviceMemory bufferMemory)
-	{
-		Buffer_UpdateBufferData(*_device.get(), &StagingBufferMemory, &bufferMemory, static_cast<void*>(&bufferData), BufferSize, IsStagingBuffer);
-	}
-
-	void UpdateBufferMemory(List<T>& bufferData, VkDeviceMemory bufferMemory)
-	{
-		const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
-		if (BufferSize != newBufferSize)
+		void* rawBufferData = static_cast<void*>(&bufferData);
+		if (UsingStagingBuffer)
 		{
-			if (UpdateBufferSize(newBufferSize) != VK_SUCCESS)
+			Buffer_UpdateStagingBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, rawBufferData, BufferSize, UsingStagingBuffer);
+		}
+		else
+		{
+			Buffer_UpdateBufferData(*_device.get(), &BufferMemory, rawBufferData, BufferSize, UsingStagingBuffer);
+		}
+	}
+
+	void UpdateBufferMemory(List<T>& bufferData)
+	{
+		void* rawBufferData = static_cast<void*>(&bufferData);
+		if (UsingStagingBuffer)
+		{
+			const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
+			if (BufferSize != newBufferSize)
 			{
-				RENDERER_ERROR("Failed to update buffer size.");
-				return;
+				if (UpdateBufferSize(StagingBuffer, StagingBufferMemory, newBufferSize) != VK_SUCCESS)
+				{
+					RENDERER_ERROR("Failed to update buffer size.");
+					return;
+				}
 			}
+			Buffer_UpdateStagingBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, rawBufferData, BufferSize, UsingStagingBuffer);
 		}
-
-		if (!IsMapped)
+		else
 		{
-			RENDERER_ERROR("Buffer is not mapped! Cannot update data.");
-			return;
+			Buffer_UpdateBufferData(*_device.get(), &BufferMemory, rawBufferData, BufferSize, UsingStagingBuffer);
 		}
-
-		Buffer_UpdateBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, static_cast<void*>(bufferData.data()), BufferSize, IsStagingBuffer);
 	}
 
-	void UpdateBufferMemory(void* bufferData, VkDeviceSize bufferListCount, VkDeviceMemory bufferMemory)
+	void UpdateBufferMemory(void* bufferData, uint32 totalBufferSize)
 	{
-		const VkDeviceSize newBufferSize = sizeof(T) * bufferListCount;
-		if (BufferSize != newBufferSize)
+		void* rawBufferData = static_cast<void*>(&bufferData);
+		if (UsingStagingBuffer)
 		{
-			if (UpdateBufferSize(newBufferSize) != VK_SUCCESS)
+			const VkDeviceSize newBufferSize = totalBufferSize;
+			if (BufferSize != newBufferSize)
 			{
-				RENDERER_ERROR("Failed to update buffer size.");
-				return;
+				if (UpdateBufferSize(StagingBuffer, StagingBufferMemory, newBufferSize) != VK_SUCCESS)
+				{
+					RENDERER_ERROR("Failed to update buffer size.");
+					return;
+				}
 			}
+			Buffer_UpdateStagingBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, rawBufferData, BufferSize, UsingStagingBuffer);
 		}
-
-		Buffer_UpdateBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, static_cast<void*>(&bufferData), BufferSize, IsStagingBuffer);
-	}
-
-	void UpdateBufferMemory(void* bufferData, VkDeviceMemory bufferMemory)
-	{
-		Buffer_UpdateBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, bufferData, BufferSize, IsStagingBuffer);
-	}
-
-	void UpdateBufferMemory(void* bufferData)
-	{
-		if (BufferSize < sizeof(T))
+		else
 		{
-			RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
-			return;
+			Buffer_UpdateBufferData(*_device.get(), &BufferMemory, rawBufferData, BufferSize, UsingStagingBuffer);
 		}
-
-		Buffer_UpdateBufferData(*_device.get(), &StagingBufferMemory, &BufferMemory, bufferData, BufferSize, IsStagingBuffer);
 	}
 
 	std::vector<T> CheckBufferContents()
