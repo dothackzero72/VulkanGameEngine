@@ -14,10 +14,21 @@ private:
 	SharedPtr<SpriteSheet> SpriteSheetPtr;
 	SharedPtr<Material> MaterialPtr;
 	List<SharedPtr<Animation2D>> AnimationList;
-	ivec2 SpriteSize;
-	vec2  SpritePosition;
-	vec4  SpriteColor;
 
+	mat4 SpriteMatrix = mat4(1.0f);
+	vec2 SpritePosition = vec2(0.0f);
+	vec2 SpriteRotation = vec2(0.0f);
+	vec2 SpriteScale = vec2(0.0f);
+
+
+
+	//vec2 SpriteSize = vec2(0.0f);
+	//vec2 UV = vec2(0.0f);
+	//vec2 UVOffset = vec2(0.0f);
+	//ivec2 FlipSprite = ivec2(0);
+	//vec4 Color = vec4(0.0f);
+	//uint MaterialID = 0;
+	//mat4 InstanceTransform = mat4(1.0f);
 public:
 
 	List<Vertex2D> VertexList;

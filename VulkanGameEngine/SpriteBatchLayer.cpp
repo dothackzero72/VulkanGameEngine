@@ -24,6 +24,9 @@ SpriteBatchLayer::~SpriteBatchLayer()
 
 void SpriteBatchLayer::AddSprite(List<SharedPtr<Sprite>>& spriteVertexList)
 {
+	SpriteInstanceStruct spriteInstance;
+	spriteInstance.
+
     uint32_t baseIndex = VertexList.size();
     for (auto& sprite : spriteVertexList)
     {
