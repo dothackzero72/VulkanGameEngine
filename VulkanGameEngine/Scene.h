@@ -3,7 +3,7 @@
 #include "Vertex.h"
 #include "SceneDataBuffer.h"
 #include "FrameBufferRenderPass.h"
-#include "OrthographicCamera.h"
+#include "OrthographicCamera2D.h"
 #include "FrameTimer.h"
 #include "JsonRenderPass.h"
 #include "GameObject.h"
@@ -17,7 +17,7 @@ private:
 
 	FrameTimer timer;
 	SceneDataBuffer				  sceneProperties;
-	SharedPtr<OrthographicCamera> orthographicCamera;
+	SharedPtr<OrthographicCamera2D> orthographicCamera;
 	FrameBufferRenderPass		  frameRenderPass;
 	SharedPtr<Level2DRenderer>    levelRenderer;
 	List<SharedPtr<GameObject>>   GameObjectList;

@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 {
     SystemClock systemClock = SystemClock();
     FrameTimer deltaTime = FrameTimer();
-    vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1280, 720);
+    vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1920, 1080);
     MemoryManager::SetUpMemoryManager(30);
     renderer.RendererSetUp();
     InterfaceRenderPass::StartUp();

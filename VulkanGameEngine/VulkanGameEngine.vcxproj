@@ -189,7 +189,8 @@
     <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mesh2D.cpp" />
-    <ClCompile Include="OrthographicCamera.cpp" />
+    <ClCompile Include="OrthographicCamera3D.cpp" />
+    <ClCompile Include="OrthographicCamera2D.cpp" />
     <ClCompile Include="ProgramStats.cpp" />
     <ClCompile Include="RenderMesh2DComponent.cpp" />
     <ClCompile Include="RenderedColorTexture.cpp" />
@@ -240,7 +241,8 @@
     <ClInclude Include="MemoryManager.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Mesh2D.h" />
-    <ClInclude Include="OrthographicCamera.h" />
+    <ClInclude Include="OrthographicCamera3D.h" />
+    <ClInclude Include="OrthographicCamera2D.h" />
     <ClInclude Include="ProgramStats.h" />
     <ClInclude Include="RenderMesh2DComponent.h" />
     <ClInclude Include="RenderedColorTexture.h" />

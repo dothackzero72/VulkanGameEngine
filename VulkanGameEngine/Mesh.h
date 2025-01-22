@@ -107,8 +107,8 @@ public:
 	template<class T>
 	void VertexBufferUpdate(const float& deltaTime, List<T>& vertexList, List<uint32>& indexList)
 	{
-		MeshVertexBuffer.UpdateBufferMemory(vertexList);
-		MeshIndexBuffer.UpdateBufferMemory(indexList);
+		//MeshVertexBuffer.UpdateBufferMemory(vertexList);
+		//MeshIndexBuffer.UpdateBufferMemory(indexList);
 	}
 
 	Mesh();

@@ -9,9 +9,10 @@ SpriteBatchLayer::SpriteBatchLayer()
 	 Material2 = Material::CreateMaterial("Material2");
 	 Material2->SetAlbedoMap(MemoryManager::GetTextureList()[1]);
 
-	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f), vec2(1.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), material)));
-	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite(vec2(1.2f, 0.0f), vec2(1.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), Material2)));
-	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite(vec2(-1.2f, 0.0f), vec2(1.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), material)));
+
+	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f),   vec2(128.0f, 256.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), material)));
+	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite(vec2(128.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), Material2)));
+	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite(vec2(256.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), material)));
 	AddSprite(SpriteDrawList);
 
 	SpriteLayerMesh = Mesh2D::CreateMesh2D(VertexList, IndexList, material);
@@ -46,7 +47,7 @@ void SpriteBatchLayer::BuildSpriteLayer(List<SharedPtr<Sprite>>& spriteDrawList)
 {
 	for (const SharedPtr<Sprite> sprite : SpriteDrawList)
 	{
-		VertexList = SpriteDrawList[0]->VertexList;
+		//VertexList = SpriteDrawList[0]->VertexList;
 		//IndexList = SpriteDrawList[0]->IndexList;
 		//SpriteLayerMesh = std::make_shared<Mesh2D>(Mesh2D(VertexList, IndexList, nullptr));
 	}

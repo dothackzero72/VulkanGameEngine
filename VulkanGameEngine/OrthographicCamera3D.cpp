@@ -1,12 +1,12 @@
-#include "OrthographicCamera.h"
+#include "OrthographicCamera3D.h"
 #include "SceneDataBuffer.h"
 
-OrthographicCamera::OrthographicCamera()
+OrthographicCamera3D::OrthographicCamera3D()
 {
 
 }
 
-OrthographicCamera::OrthographicCamera(float width, float height)
+OrthographicCamera3D::OrthographicCamera3D(float width, float height)
 {
 	Width = width;
 	Height = height;
@@ -19,7 +19,7 @@ OrthographicCamera::OrthographicCamera(float width, float height)
 	ViewMatrix = mat4(1.0f);
 }
 
-OrthographicCamera::OrthographicCamera(const vec2& viewScreenSize)
+OrthographicCamera3D::OrthographicCamera3D(const vec2& viewScreenSize)
 {
 	Width = viewScreenSize.x;
 	Height = viewScreenSize.y;
@@ -32,7 +32,7 @@ OrthographicCamera::OrthographicCamera(const vec2& viewScreenSize)
 	ViewMatrix = mat4(1.0f);
 }
 
-OrthographicCamera::OrthographicCamera(const vec2& viewScreenSize, const vec2& position)
+OrthographicCamera3D::OrthographicCamera3D(const vec2& viewScreenSize, const vec2& position)
 {
 	Width = viewScreenSize.x;
 	Height = viewScreenSize.y;
@@ -45,12 +45,12 @@ OrthographicCamera::OrthographicCamera(const vec2& viewScreenSize, const vec2& p
 	ViewMatrix = mat4(1.0f);
 }
 
-OrthographicCamera::~OrthographicCamera()
+OrthographicCamera3D::~OrthographicCamera3D()
 {
 
 }
 
-void OrthographicCamera::Update(SceneDataBuffer& sceneProperties)
+void OrthographicCamera3D::Update(SceneDataBuffer& sceneProperties)
 {
 	mat4 transform = glm::translate(mat4(1.0f), Position) * rotate(mat4(1.0f), glm::radians(0.0f), vec3(0, 0, 1));
 	ViewMatrix = glm::inverse(transform);
@@ -66,12 +66,12 @@ void OrthographicCamera::Update(SceneDataBuffer& sceneProperties)
 	sceneProperties.Projection = ProjectionMatrix;
 }
 
-void OrthographicCamera::UpdateKeyboard(float deltaTime)
+void OrthographicCamera3D::UpdateKeyboard(float deltaTime)
 {
 
 }
 
-void OrthographicCamera::UpdateMouse()
+void OrthographicCamera3D::UpdateMouse()
 {
 
 }
