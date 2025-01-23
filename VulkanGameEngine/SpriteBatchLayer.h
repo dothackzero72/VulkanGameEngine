@@ -3,69 +3,38 @@
 #include "Sprite.h"
 #include "Mesh2D.h"
 
-struct SpriteInstanceStruct
-{
-	vec2 SpriteSize = vec2(0.0f);
-	vec2 UV = vec2(0.0f);
-	vec2 UVOffset = vec2(0.0f);
-	ivec2 FlipSprite = ivec2(0);
-	vec4 Color = vec4(0.0f);
-	uint MaterialID = 0;
-	mat4 InstanceTransform = mat4(1.0f);
-
-	SpriteInstanceStruct()
-	{
-
-	}
-
-	SpriteInstanceStruct(vec2 spriteSize, vec2 uv, vec2 uvOffset, vec2 flipSprite, vec4 color, uint materialID, mat4 instanceTransform)
-	{
-		SpriteSize = spriteSize;
-		UV = uv;
-		UVOffset = uvOffset;
-		FlipSprite = flipSprite;
-		Color = color;
-		MaterialID = materialID;
-		InstanceTransform = instanceTransform;
-	}
-};
-
 class SpriteBatchLayer
 {
 private:
-	const List<Vertex2D> SpriteVertexList =
+	 List<Vertex2D> SpriteVertexList =
 	{
-		Vertex2D(vec2(0.0f, 0.0)),
-		Vertex2D(vec2(0.0f, 0.0)),
-		Vertex2D(vec2(0.0f, 0.0)),
-		Vertex2D(vec2(0.0f, 0.0)),
+		Vertex2D(vec2(0.0f, 0.0), vec2(0.0f, 0.0f)),
+		Vertex2D(vec2(0.0f, 0.0), vec2(1.0f, 0.0f)),
+		Vertex2D(vec2(0.0f, 0.0), vec2(1.0f, 1.0f)),
+		Vertex2D(vec2(0.0f, 0.0), vec2(0.0f, 1.0f)),
 	};
 
-	const List<uint32> SpriteIndexList =
+	 List<uint32> SpriteIndexList =
 	{
 	  0, 3, 1,
 	  1, 3, 2
 	};
 
-	uint32                     MaxSpritesPerSheet;
-	uint32                     SpriteLayer;
-	SharedPtr<Material>		   material;
-	SharedPtr<Material>		   Material2;
-	List<SharedPtr<Sprite>>    SpriteDrawList;
-	List<SpriteInstanceStruct> SpriteInstanceInfo;
-	SharedPtr<Mesh2D>		   SpriteLayerMesh;
+	uint32                          MaxSpritesPerSheet;
+	uint32                          SpriteLayerIndex;
 
-	List<Vertex2D>             VertexList;
-	List<uint32>               IndexList;
+	List<SharedPtr<Sprite>>         SpriteList;
+	List<SpriteInstanceStruct>      SpriteInstanceList;
+	SharedPtr<SpriteInstanceBuffer> SpriteBuffer;
+	SharedPtr<Mesh2D>		        SpriteLayerMesh;
 
-	void AddSprite(List<SharedPtr<Sprite>>& spriteVertexList);
 
 public:
-	String					   Name;
+	String					        Name;
 
 	SpriteBatchLayer();
 	virtual ~SpriteBatchLayer();
-
+	void AddSprite(SharedPtr<Sprite> sprite);
 	void BuildSpriteLayer(List<SharedPtr<Sprite>>& spriteDrawList);
 	void Update(float deltaTime);
 	void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);

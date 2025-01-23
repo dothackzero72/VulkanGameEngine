@@ -7,6 +7,9 @@ Level2DRenderer::Level2DRenderer() : JsonRenderPass()
 Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : JsonRenderPass()
 {
     SpriteLayerRenderList.emplace_back(MemoryManager::AllocateSpriteBatchLayer());
+    SpriteLayerRenderList[0]->AddSprite(std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f), vec2(128.0f, 256.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), material)));
+    SpriteLayerRenderList[0]->AddSprite(std::make_shared<Sprite>(Sprite(vec2(128.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), Material2)));
+    SpriteLayerRenderList[0]->AddSprite(std::make_shared<Sprite>(Sprite(vec2(256.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), material)));
 
     RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;

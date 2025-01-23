@@ -20,6 +20,7 @@ struct MeshProperitiesStruct
 
 typedef VulkanBuffer<Vertex2D> VertexBuffer;
 typedef VulkanBuffer<uint32> IndexBuffer;
+typedef VulkanBuffer<SpriteInstanceStruct> SpriteInstanceBuffer;
 typedef VulkanBuffer<MeshProperitiesStruct> MeshPropertiesBuffer;
 
 class Mesh
@@ -56,8 +57,9 @@ public:
 	vec3 MeshRotation;
 	vec3 MeshScale;
 
-	VulkanBuffer<Vertex2D> MeshVertexBuffer;
+	VertexBuffer MeshVertexBuffer;
 	IndexBuffer MeshIndexBuffer;
+
 	MeshPropertiesBuffer PropertiesBuffer;
 
 	template<class T>
@@ -120,5 +122,7 @@ public:
 	virtual void Destroy();
 
 	void GetMeshPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList);
+	const VkBufferUsageFlags GetMeshBufferUsageSettings() { return MeshBufferUsageSettings; }
+	const VkMemoryPropertyFlags GetMeshBufferPropertySettings() { return MeshBufferPropertySettings; }
 };
 

@@ -3,82 +3,29 @@
 
 SpriteBatchLayer::SpriteBatchLayer()
 {
-	material = Material::CreateMaterial("Material1");
-	material->SetAlbedoMap(MemoryManager::GetTextureList()[0]);
-
-	 Material2 = Material::CreateMaterial("Material2");
-	 Material2->SetAlbedoMap(MemoryManager::GetTextureList()[1]);
-
-
-	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f),   vec2(128.0f, 256.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), material)));
-	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite(vec2(128.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), Material2)));
-	SpriteDrawList.emplace_back(std::make_shared<Sprite>(Sprite(vec2(256.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), material)));
-	AddSprite(SpriteDrawList);
-
-	SpriteLayerMesh = Mesh2D::CreateMesh2D(VertexList, IndexList, material);
+	SpriteLayerMesh = Mesh2D::CreateMesh2D(SpriteVertexList, SpriteIndexList, nullptr);
+	SpriteBuffer = std::make_shared<SpriteInstanceBuffer>(SpriteInstanceBuffer(SpriteInstanceList, SpriteLayerMesh->GetMeshBufferUsageSettings(), SpriteLayerMesh->GetMeshBufferPropertySettings(), false));
 }
 
 SpriteBatchLayer::~SpriteBatchLayer()
 {
 }
 
-void SpriteBatchLayer::AddSprite(List<SharedPtr<Sprite>>& spriteVertexList)
+void SpriteBatchLayer::AddSprite(SharedPtr<Sprite> sprite)
 {
-	SpriteInstanceStruct spriteInstance;
-	spriteInstance.
-
-    uint32_t baseIndex = VertexList.size();
-    for (auto& sprite : spriteVertexList)
-    {
-        for (const auto& vertex : sprite->VertexList)
-        {
-            VertexList.push_back(vertex);
-        }
-
-        IndexList.emplace_back(baseIndex + 0); 
-        IndexList.emplace_back(baseIndex + 1);
-        IndexList.emplace_back(baseIndex + 3); 
-        IndexList.emplace_back(baseIndex + 1);
-        IndexList.emplace_back(baseIndex + 2); 
-        IndexList.emplace_back(baseIndex + 3); 
-
-        baseIndex += 4;
-    }
-}
-
-void SpriteBatchLayer::BuildSpriteLayer(List<SharedPtr<Sprite>>& spriteDrawList)
-{
-	for (const SharedPtr<Sprite> sprite : SpriteDrawList)
-	{
-		//VertexList = SpriteDrawList[0]->VertexList;
-		//IndexList = SpriteDrawList[0]->IndexList;
-		//SpriteLayerMesh = std::make_shared<Mesh2D>(Mesh2D(VertexList, IndexList, nullptr));
-	}
+	SpriteList.emplace_back(sprite);
 }
 
 void SpriteBatchLayer::Update(float deltaTime)
 {
-	VertexList.clear();
-	IndexList.clear();
-
-	uint32_t baseIndex = VertexList.size();
-	for (auto& sprite : SpriteDrawList)
+	SpriteInstanceList.clear();
+	SpriteInstanceList.reserve(SpriteList.size());
+	for (auto& sprite : SpriteList)
 	{
-		for (const auto& vertex : sprite->VertexList)
-		{
-			VertexList.push_back(vertex);
-		}
-
-		IndexList.emplace_back(baseIndex + 0);
-		IndexList.emplace_back(baseIndex + 1);
-		IndexList.emplace_back(baseIndex + 3);
-		IndexList.emplace_back(baseIndex + 1);
-		IndexList.emplace_back(baseIndex + 2);
-		IndexList.emplace_back(baseIndex + 3);
-
-		baseIndex += 4;
+		sprite->Update(deltaTime);
+		SpriteInstanceList.emplace_back(sprite);
 	}
-	SpriteLayerMesh->VertexBufferUpdate(deltaTime, VertexList, IndexList);
+	SpriteBuffer->UpdateBufferMemory(SpriteInstanceList);
 }
 
 void SpriteBatchLayer::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
@@ -89,7 +36,4 @@ void SpriteBatchLayer::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline
 void SpriteBatchLayer::Destroy()
 {
 	SpriteLayerMesh->Destroy();
-	material->Destroy();
-	VertexList.clear();
-	IndexList.clear();
 }

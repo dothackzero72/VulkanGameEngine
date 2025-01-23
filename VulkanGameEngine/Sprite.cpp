@@ -9,19 +9,6 @@ Sprite::Sprite(vec2 spritePosition, vec2 spriteSize, vec4 spriteColor, SharedPtr
 	SpriteSize = spriteSize;
 	SpriteSheetPtr = std::make_shared<SpriteSheet>(SpriteSheet(material));
 	MaterialPtr = material;
-
-	const float LeftSideUV = SpriteSheetPtr->LeftSideUV;
-	const float RightSideUV = SpriteSheetPtr->RightSideUV;
-	const float TopSideUV = SpriteSheetPtr->TopSideUV;
-	const float BottomSideUV = SpriteSheetPtr->BottomSideUV;
-
-	//VertexList.emplace_back(Vertex2D(vec2(spritePosition.x,				   spritePosition.y + spriteSize.y), vec2( 0.0f, 0.0f ), spriteColor));
-	//VertexList.emplace_back(Vertex2D(vec2(spritePosition.x + spriteSize.x, spritePosition.y + spriteSize.y), vec2( 1.0f, 0.0f ), spriteColor));
-	//VertexList.emplace_back(Vertex2D(vec2(spritePosition.x + spriteSize.x, spritePosition.y),				 vec2( 1.0f, 1.0f ), spriteColor));
-	//VertexList.emplace_back(Vertex2D(vec2(spritePosition.x,				   spritePosition.y),				 vec2( 0.0f, 1.0f ), spriteColor));
-
-
-	//Vertex2D(vec2(spritePosition.x, spritePosition.y + spriteSize.y), vec2(0.0f, 0.0f), spriteColor)
 }
 
 Sprite::~Sprite()
@@ -35,12 +22,18 @@ void Sprite::Input(float deltaTime)
 
 void Sprite::Update(float deltaTime)
 {
-	mat4 MeshMatrix = mat4(1.0f);
-	MeshMatrix = glm::translate(MeshMatrix, MeshPosition);
-	MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.x), vec3(1.0f, 0.0f, 0.0f));
-	MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.y), vec3(0.0f, 1.0f, 0.0f));
-	MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.z), vec3(0.0f, 0.0f, 1.0f));
-	MeshMatrix = glm::scale(MeshMatrix, MeshScale);
+	mat4 spriteMatrix = mat4(1.0f);
+	spriteMatrix = glm::translate(spriteMatrix, vec3(SpritePosition.x, SpritePosition.y, 0.0f));
+	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(SpriteRotation.x), vec3(1.0f, 0.0f, 0.0f));
+	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(SpriteRotation.y), vec3(0.0f, 1.0f, 0.0f));
+	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(0.0f), vec3(0.0f, 0.0f, 1.0f));
+	spriteMatrix = glm::scale(spriteMatrix, vec3(SpriteScale.x, SpriteScale.y, 0.0f));
+
+	SpriteInstance.SpriteSize = SpriteSize;
+	SpriteInstance.UVOffset = vec2(0.0f, 0.0f);
+	SpriteInstance.Color = SpriteColor;
+	SpriteInstance.MaterialID = MaterialPtr->GetMaterialBufferIndex();
+	SpriteInstance.InstanceTransform = spriteMatrix;
 }
 
 void Sprite::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
@@ -53,4 +46,5 @@ void Sprite::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipeli
 
 void Sprite::Destroy()
 {
+	//SpriteInstance.reset();
 }
