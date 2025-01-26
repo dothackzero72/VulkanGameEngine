@@ -5,8 +5,6 @@
 class Level2DRenderer : public JsonRenderPass
 {
 private:
-	SharedPtr<Material>		        material;
-	SharedPtr<Material>		        Material2;
 	List<SharedPtr<SpriteBatchLayer>> SpriteLayerRenderList;
 
 public:

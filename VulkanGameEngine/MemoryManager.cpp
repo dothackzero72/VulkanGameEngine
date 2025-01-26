@@ -283,21 +283,10 @@ const List<VkDescriptorImageInfo> MemoryManager::GetTexturePropertiesBuffer()
 const List<VkDescriptorBufferInfo> MemoryManager::GetMaterialPropertiesBuffer()
 {
 	std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
-	if (MaterialList.size() == 0)
-	{
-		VkDescriptorBufferInfo nullBuffer;
-		nullBuffer.buffer = VK_NULL_HANDLE;
-		nullBuffer.offset = 0;
-		nullBuffer.range = VK_WHOLE_SIZE;
-		materialPropertiesBuffer.emplace_back(nullBuffer);
-	}
-	else
-	{
 		for (auto& material : MaterialList)
 		{
 			material->GetMaterialPropertiesBuffer(materialPropertiesBuffer);
 		}
-	}
 	return materialPropertiesBuffer;
 }
 

@@ -15,7 +15,13 @@ void Scene::StartUp()
 	TextureList.emplace_back(Texture::CreateTexture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 	TextureList.emplace_back(Texture::CreateTexture("../Textures/container2.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
 
-	MemoryManager::ViewMemoryMap();
+	material = Material::CreateMaterial("Material1");
+	material->SetAlbedoMap(MemoryManager::GetTextureList()[0]);
+
+	Material2 = Material::CreateMaterial("Material2");
+	Material2->SetAlbedoMap(MemoryManager::GetTextureList()[1]);
+
+	//MemoryManager::ViewMemoryMap();
 	BuildRenderPasses();
 }
 

@@ -7,13 +7,13 @@
 
 layout (location = 0) in vec2  VS_Position;
 layout (location = 1) in vec2  VS_UV;
-layout (location = 2) in vec2  VS_UVOffset;
-layout (location = 3) in vec2  VS_SpriteSize;
-layout (location = 4) in ivec2 VS_FlipSprite;
-layout (location = 5) in vec4  VS_Color;
-layout (location = 6) in mat4  VS_InstanceTransform;
-layout (location = 10) in int VS_MaterialID;
-layout (location = 11) in int VS_Buffer;
+layout (location = 2) in vec2  VS_SpritePosition;
+layout (location = 3) in vec2  VS_UVOffset;
+layout (location = 4) in vec2  VS_SpriteSize;
+layout (location = 5) in ivec2 VS_FlipSprite;
+layout (location = 6) in vec4  VS_Color;
+layout (location = 7) in mat4  VS_InstanceTransform;
+layout (location = 11) in int  VS_MaterialID;
 
 layout (location = 0) out vec3  PS_Position;
 layout (location = 1) out vec2  PS_UV;
@@ -70,10 +70,10 @@ void main()
     vec2 pos = vec2(0.0f);
     switch(gl_VertexIndex) 
 	{
-        case 0: pos = vec2(VS_Position.x                  , VS_Position.y + VS_SpriteSize.y); break; 
-        case 1: pos = vec2(VS_Position.x + VS_SpriteSize.x, VS_Position.y + VS_SpriteSize.y); break;
-        case 2: pos = vec2(VS_Position.x + VS_SpriteSize.x, VS_Position.y                  ); break;
-        case 3: pos = vec2(VS_Position.x                  , VS_Position.y                  ); break;
+        case 0: pos = vec2(VS_SpritePosition.x                  , VS_SpritePosition.y + VS_SpriteSize.y); break; 
+        case 1: pos = vec2(VS_SpritePosition.x + VS_SpriteSize.x, VS_SpritePosition.y + VS_SpriteSize.y); break;
+        case 2: pos = vec2(VS_SpritePosition.x + VS_SpriteSize.x, VS_SpritePosition.y                  ); break;
+        case 3: pos = vec2(VS_SpritePosition.x                  , VS_SpritePosition.y                  ); break;
     }
 
     PS_Position = vec3(VS_InstanceTransform * vec4(pos.xy, 0.0f, 1.0f));

@@ -19,17 +19,11 @@ Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : 
 
     JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer)));
 
-    material = Material::CreateMaterial("Material1");
-    material->SetAlbedoMap(MemoryManager::GetTextureList()[0]);
-
-    Material2 = Material::CreateMaterial("Material2");
-    Material2->SetAlbedoMap(MemoryManager::GetTextureList()[1]);
-
     List<SharedPtr<Sprite>> spriteList
     {
-        std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f), vec2(128.0f, 256.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), material)),
-        std::make_shared<Sprite>(Sprite(vec2(128.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), Material2)),
-        std::make_shared<Sprite>(Sprite(vec2(256.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), material))
+        std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f), vec2(128.0f, 256.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[1])),
+        std::make_shared<Sprite>(Sprite(vec2(128.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[1])),
+        std::make_shared<Sprite>(Sprite(vec2(256.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[1]))
     };
     SpriteLayerRenderList.emplace_back(SpriteBatchLayer::CreateSpriteBatchLayer(spriteList));
 }

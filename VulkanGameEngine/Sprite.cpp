@@ -6,6 +6,7 @@ Sprite::Sprite()
 
 Sprite::Sprite(vec2 spritePosition, vec2 spriteSize, vec4 spriteColor, SharedPtr<Material> material)
 {
+	SpritePosition = spritePosition;
 	SpriteSize = spriteSize;
 	SpriteColor = spriteColor;
 	SpriteMaterial = material;
@@ -32,6 +33,7 @@ void Sprite::Update(float deltaTime)
 	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(0.0f), vec3(0.0f, 0.0f, 1.0f));
 	spriteMatrix = glm::scale(spriteMatrix, vec3(SpriteScale.x, SpriteScale.y, 0.0f));
 
+	SpriteInstance->SpritePosition = SpritePosition;
 	SpriteInstance->SpriteSize = SpriteSize;
 	SpriteInstance->UVOffset = vec2(0.0f, 0.0f);
 	SpriteInstance->Color = SpriteColor;

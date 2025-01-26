@@ -60,43 +60,67 @@ struct Vertex2D
 
 struct SpriteInstanceStruct
 {
-    vec2 UVOffset;           // 8 bytes
-    vec2 SpriteSize;         // 8 bytes
-    ivec2 FlipSprite;        // 8 bytes
-    vec4 Color;              // 16 bytes
-    mat4 InstanceTransform;   // 64 bytes
-    int MaterialID;     // 8 bytes
-    int buffer;
+    vec2 SpritePosition;
+    vec2 UVOffset;           
+    vec2 SpriteSize;        
+    ivec2 FlipSprite;       
+    vec4 Color;            
+    mat4 InstanceTransform;  
+    int MaterialID; 
 
     SpriteInstanceStruct()
-        : UVOffset(vec2(0.0f)), SpriteSize(vec2(0.0f)), FlipSprite(ivec2(0)), Color(vec4(0.0f)), MaterialID(0), InstanceTransform(mat4(1.0f))
     {
+        SpritePosition = vec2(0.0f);
+        UVOffset = vec2(0.0f);
+        SpriteSize = vec2(0.0f);
+        FlipSprite = ivec2(0);
+        Color = vec4(0.0f);
+        MaterialID = 0;
+        InstanceTransform = mat4(1.0f);
     }
 
-    SpriteInstanceStruct(vec2 spriteSize, vec2 uv, ivec2 flipSprite, vec4 color, uint materialID, mat4 instanceTransform)
-        : UVOffset(uv), SpriteSize(spriteSize), FlipSprite(flipSprite), Color(color), MaterialID(materialID), InstanceTransform(instanceTransform)
+    SpriteInstanceStruct(vec2 spritePosition, vec2 uv, vec2 spriteSize, ivec2 flipSprite, vec4 color, uint materialID, mat4 instanceTransform)
     {
+        SpritePosition = spritePosition;
+        UVOffset = uv;
+        SpriteSize = spriteSize;
+        FlipSprite = flipSprite;
+        Color = color;
+        MaterialID = materialID;
+        InstanceTransform = instanceTransform;
     }
 };
 
 struct SpriteInstanceVertex2D
 {
-    vec2 UVOffset;           // 8 bytes
-    vec2 SpriteSize;         // 8 bytes
-    ivec2 FlipSprite;        // 8 bytes
-    vec4 Color;              // 16 bytes
-    mat4 InstanceTransform;   // 64 bytes
-    int MaterialID;     // 8 bytes
-    int buffer = INT32_MAX;
+    vec2 SpritePosition;
+    vec2 UVOffset;          
+    vec2 SpriteSize;        
+    ivec2 FlipSprite;        
+    vec4 Color;             
+    mat4 InstanceTransform;  
+    int MaterialID;
 
     SpriteInstanceVertex2D()
-        : UVOffset(vec2(0.0f)), SpriteSize(vec2(0.0f)), FlipSprite(ivec2(0)), Color(vec4(0.0f)), MaterialID(0), InstanceTransform(mat4(1.0f))
     {
+        SpritePosition = vec2(0.0f);
+        UVOffset = vec2(0.0f);
+        SpriteSize = vec2(0.0f);
+        FlipSprite = ivec2(0);
+        Color = vec4(0.0f);
+        MaterialID = 0;
+        InstanceTransform = mat4(1.0f);
     }
 
-    SpriteInstanceVertex2D(vec2 uvOffset, vec2 spriteSize, ivec2 flipSprite, vec4 color, uint64_t materialID, mat4 instanceTransform)
-        : UVOffset(uvOffset), SpriteSize(spriteSize), FlipSprite(flipSprite), Color(color), MaterialID(materialID), InstanceTransform(instanceTransform)
+    SpriteInstanceVertex2D(vec2 spritePosition, vec2 uv, vec2 spriteSize, ivec2 flipSprite, vec4 color, uint materialID, mat4 instanceTransform)
     {
+        SpritePosition = spritePosition;
+        UVOffset = uv;
+        SpriteSize = spriteSize;
+        FlipSprite = flipSprite;
+        Color = color;
+        MaterialID = materialID;
+        InstanceTransform = instanceTransform;
     }
 
     static std::vector<VkVertexInputBindingDescription> GetBindingDescriptions()
@@ -116,76 +140,76 @@ struct SpriteInstanceVertex2D
     {
         return std::vector<VkVertexInputAttributeDescription>
         {
-                VkVertexInputAttributeDescription
+            VkVertexInputAttributeDescription
             {
                 .location = 2,
                 .binding = 1,
                 .format = VK_FORMAT_R32G32_SFLOAT,
-                .offset = offsetof(SpriteInstanceVertex2D, UVOffset)
+                .offset = offsetof(SpriteInstanceVertex2D, SpritePosition)
             },
                 VkVertexInputAttributeDescription
             {
                 .location = 3,
                 .binding = 1,
                 .format = VK_FORMAT_R32G32_SFLOAT,
-                .offset = offsetof(SpriteInstanceVertex2D, SpriteSize)
+                .offset = offsetof(SpriteInstanceVertex2D, UVOffset)
             },
                 VkVertexInputAttributeDescription
             {
                 .location = 4,
+                .binding = 1,
+                .format = VK_FORMAT_R32G32_SFLOAT,
+                .offset = offsetof(SpriteInstanceVertex2D, SpriteSize)
+            },
+                VkVertexInputAttributeDescription
+            {
+                .location = 5,
                 .binding = 1,
                 .format = VK_FORMAT_R32G32_SINT,
                 .offset = offsetof(SpriteInstanceVertex2D, FlipSprite)
             },
                 VkVertexInputAttributeDescription
             {
-                .location = 5,
+                .location = 6,
                 .binding = 1,
                 .format = VK_FORMAT_R32G32B32A32_SFLOAT,
                 .offset = offsetof(SpriteInstanceVertex2D, Color)
             },
                 VkVertexInputAttributeDescription
             {
-                .location = 6,
+                .location = 7,
                 .binding = 1,
                 .format = VK_FORMAT_R32G32B32A32_SFLOAT,
                 .offset = offsetof(SpriteInstanceVertex2D, InstanceTransform)
             },
                 VkVertexInputAttributeDescription
             {
-                .location = 7,
+                .location = 8,
                 .binding = 1,
                 .format = VK_FORMAT_R32G32B32A32_SFLOAT,
                 .offset = offsetof(SpriteInstanceVertex2D, InstanceTransform) + sizeof(vec4)
             },
                 VkVertexInputAttributeDescription
             {
-                .location = 8,
+                .location = 9,
                 .binding = 1,
                 .format = VK_FORMAT_R32G32B32A32_SFLOAT,
                 .offset = offsetof(SpriteInstanceVertex2D, InstanceTransform) + sizeof(vec4) * 2
             },
                 VkVertexInputAttributeDescription
             {
-                .location = 9,
+                .location = 10,
                 .binding = 1,
                 .format = VK_FORMAT_R32G32B32A32_SFLOAT,
                 .offset = offsetof(SpriteInstanceVertex2D, InstanceTransform) + sizeof(vec4) * 3
             },
                 VkVertexInputAttributeDescription
             {
-                .location = 10,
+                .location = 11,
                 .binding = 1,
                 .format = VK_FORMAT_R32_SINT,
                 .offset = offsetof(SpriteInstanceVertex2D, MaterialID)
-            },
-                    VkVertexInputAttributeDescription
-                {
-                    .location = 11,
-                    .binding = 1,
-                    .format = VK_FORMAT_R32_SINT,
-                    .offset = offsetof(SpriteInstanceVertex2D, buffer)
-                }
+            }
         };
     }
 };

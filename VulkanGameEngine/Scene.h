@@ -23,6 +23,9 @@ private:
 	List<SharedPtr<GameObject>>   GameObjectList;
 	List<SharedPtr<Texture>>      TextureList;
 
+	SharedPtr<Material>		        material;
+	SharedPtr<Material>		        Material2;
+
 public:
 	void StartUp();
 	void Input(float deltaTime);
