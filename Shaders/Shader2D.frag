@@ -4,12 +4,15 @@
 #extension GL_EXT_scalar_block_layout : enable
 #extension GL_EXT_debug_printf : enable
 
-layout(location = 0) in vec2 Position;
-layout(location = 1) in vec2 UV;
-layout(location = 2) in vec3 Color;
-layout(location = 3) in flat uint MaterialID;
+layout (location = 0) in vec3  PS_Position;
+layout (location = 1) in vec2  PS_UV;
+layout (location = 2) in vec2  PS_UVOffset;
+layout (location = 3) in vec2  PS_SpriteSize;
+layout (location = 4) in flat ivec2 PS_FlipSprite;
+layout (location = 5) in vec4  PS_Color;
+layout (location = 6) in flat uint  PS_MaterialID;
 
-layout(location = 0) out vec4 outColor;
+layout(location = 0) out vec4 OutputColor;
 
 layout(push_constant) uniform SceneDataBuffer
 {
@@ -52,16 +55,15 @@ layout(binding = 2) buffer MaterialProperities { MaterialProperitiesBuffer mater
 
 void main() 
 {
-	const int meshIndex = sceneData.MeshBufferIndex;
-	MaterialProperitiesBuffer material = materialBuffer[MaterialID].materialProperties;
+	MaterialProperitiesBuffer material = materialBuffer[PS_MaterialID].materialProperties;
 
-	material.Albedo = texture(TextureMap[material.AlbedoMap], UV).rgb;
-	material.Alpha = texture(TextureMap[material.AlbedoMap], UV).a;
+	material.Albedo = texture(TextureMap[material.AlbedoMap], PS_UV).rgb;
+	material.Alpha = texture(TextureMap[material.AlbedoMap], PS_UV).a;
 	
 	if(material.Alpha == 0.0f)
 	{
 		discard;
 	}
    
-   outColor = vec4(material.Albedo, material.Alpha);
+   OutputColor = vec4(material.Albedo, material.Alpha);
 }

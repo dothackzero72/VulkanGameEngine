@@ -481,10 +481,17 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
         .maintenance4 = VK_FALSE
     };
 
+    VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT vertexAttributeRobustnessFeatures =
+    {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_ROBUSTNESS_FEATURES_EXT,
+        .pNext = &physicalDeviceVulkan13Features,
+        .vertexAttributeRobustness = VK_TRUE
+    };
+
     VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES,
-        .pNext = &physicalDeviceVulkan13Features,
+        .pNext = &vertexAttributeRobustnessFeatures,
         .multiview = VK_TRUE
     };
 

@@ -11,14 +11,14 @@ class Sprite
 private:
 	uint32 CurrentAnimationID = 0;
 
-	SharedPtr<SpriteSheet> SpriteSheetPtr;
-	SharedPtr<Material> MaterialPtr;
-	List<SharedPtr<Animation2D>> AnimationList;
-	SpriteInstanceStruct SpriteInstance;
-
 	vec2 SpriteSize = vec2(50.0f);
 	vec4 SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	vec2 UVOffset = vec2(0.0f);
+
+	SharedPtr<SpriteSheet> SpriteSheetPtr;
+	SharedPtr<Material> SpriteMaterial;
+	SharedPtr<SpriteInstanceStruct> SpriteInstance;
+	List<SharedPtr<Animation2D>> AnimationList;
 
 public:
 
@@ -36,5 +36,7 @@ public:
 	virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
 	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
 	virtual void Destroy();
+
+	SharedPtr<SpriteInstanceStruct> GetSpriteInstance() { return SpriteInstance; }
 };
 

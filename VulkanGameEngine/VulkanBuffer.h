@@ -132,6 +132,30 @@ public:
 		}
 	}
 
+	VulkanBuffer(List<T> bufferDataList, uint reserveCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+	{
+		_device = std::make_shared<VkDevice>(cRenderer.Device);
+		_physicalDevice = std::make_shared<VkPhysicalDevice>(cRenderer.PhysicalDevice);
+		_commandPool = std::make_shared<VkCommandPool>(cRenderer.CommandPool);
+		_graphicsQueue = std::make_shared<VkQueue>(cRenderer.SwapChain.GraphicsQueue);
+
+		BufferSize = sizeof(T) * (reserveCount + bufferDataList.size());
+		BufferProperties = properties;
+		UsingStagingBuffer = usingStagingBuffer;
+		BufferUsage = usage;
+
+		void* bufferData2 = static_cast<void*>(bufferDataList.data());
+
+		if (UsingStagingBuffer)
+		{
+			CreateStagingBuffer(bufferData2);
+		}
+		else
+		{
+			CreateBuffer(bufferData2);
+		}
+	}
+
 	virtual ~VulkanBuffer()
 	{
 	}
@@ -172,6 +196,12 @@ public:
 		}
 		else
 		{
+			const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
+			if (BufferSize != newBufferSize)
+			{
+					RENDERER_ERROR("Failed to update buffer size.");
+					return;
+			}
 			Buffer_UpdateBufferData(*_device.get(), &BufferMemory, rawBufferData, BufferSize, UsingStagingBuffer);
 		}
 	}

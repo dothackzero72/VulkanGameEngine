@@ -270,8 +270,19 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
 
     //pipeline
     {
-        auto vertexBinding = Vertex2D::GetBindingDescriptions();
-        auto vertexAttribute = Vertex2D::GetAttributeDescriptions();
+        List<VkVertexInputBindingDescription> vertexBinding = Vertex2D::GetBindingDescriptions();
+        for (auto& instanceVar : SpriteInstanceVertex2D::GetBindingDescriptions())
+        {
+            vertexBinding.emplace_back(instanceVar);
+        }
+
+        List<VkVertexInputAttributeDescription> vertexAttribute = Vertex2D::GetAttributeDescriptions();
+        for (auto& instanceVar : SpriteInstanceVertex2D::GetAttributeDescriptions())
+        {
+            vertexAttribute.emplace_back(instanceVar);
+        }
+
+
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,

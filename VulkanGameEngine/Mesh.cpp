@@ -52,7 +52,7 @@ void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 	MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.z), vec3(0.0f, 0.0f, 1.0f));
 	MeshMatrix = glm::scale(MeshMatrix, MeshScale);
 
-	MeshProperties.MaterialIndex = MeshMaterial->GetMaterialBufferIndex();
+	MeshProperties.MaterialIndex = (MeshMaterial) ? MeshMaterial->GetMaterialBufferIndex() : 0;
 	MeshProperties.MeshTransform = GameObjectMatrix * MeshMatrix;
 	PropertiesBuffer.UpdateBufferMemory(MeshProperties);
 }

@@ -219,26 +219,6 @@ VkResult  VulkanRenderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer, V
     return result;
 }
 
-//VkCommandBuffer VulkanRenderer::BeginCommandBuffer()
-//{
-//    return Renderer_BeginSingleUseCommandBuffer(cRenderer.Device, cRenderer.CommandPool);
-//}
-//
-//VkResult VulkanRenderer::BeginCommandBuffer(VkCommandBuffer* pCommandBufferList, VkCommandBufferBeginInfo* commandBufferBeginInfo)
-//{
-//    return Renderer_BeginCommandBuffer(pCommandBufferList, commandBufferBeginInfo);
-//}
-//
-//VkResult VulkanRenderer::EndCommandBuffer(VkCommandBuffer* pCommandBufferList)
-//{
-//	return Renderer_EndCommandBuffer(pCommandBufferList);
-//}
-//
-//VkResult VulkanRenderer::EndCommandBuffer(VkCommandBuffer commandBuffer)
-//{
-//	return Renderer_EndSingleUseCommandBuffer(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, commandBuffer);
-//}
-
 void VulkanRenderer::DestroyFences()
 {
     Renderer_DestroyFences(cRenderer.Device, &cRenderer.AcquireImageSemaphores[0], &cRenderer.PresentImageSemaphores[0], &cRenderer.InFlightFences[0], MAX_FRAMES_IN_FLIGHT);

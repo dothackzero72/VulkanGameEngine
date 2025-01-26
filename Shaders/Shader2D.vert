@@ -1,18 +1,27 @@
 #version 460
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_EXT_nonuniform_qualifier : enable
+#extension GL_KHR_Vulkan_GLSL : enable 
 #extension GL_EXT_scalar_block_layout : enable
 #extension GL_EXT_debug_printf : enable
 
-layout (location = 0) in vec2 inPosition;
-layout (location = 1) in vec2 aUV;
-layout (location = 2) in vec3 aColor;
-layout (location = 3) in uint aMaterialID;
+layout (location = 0) in vec2  VS_Position;
+layout (location = 1) in vec2  VS_UV;
+layout (location = 2) in vec2  VS_UVOffset;
+layout (location = 3) in vec2  VS_SpriteSize;
+layout (location = 4) in ivec2 VS_FlipSprite;
+layout (location = 5) in vec4  VS_Color;
+layout (location = 6) in mat4  VS_InstanceTransform;
+layout (location = 10) in int VS_MaterialID;
+layout (location = 11) in int VS_Buffer;
 
-layout(location = 0) out vec2 FragPos;
-layout(location = 1) out vec2 UV;
-layout(location = 2) out vec3 Color;
-layout(location = 3) out uint MaterialID;
+layout (location = 0) out vec3  PS_Position;
+layout (location = 1) out vec2  PS_UV;
+layout (location = 2) out vec2  PS_UVOffset;
+layout (location = 3) out vec2  PS_SpriteSize;
+layout (location = 4) out ivec2 PS_FlipSprite;
+layout (location = 5) out vec4  PS_Color;
+layout (location = 6) out uint  PS_MaterialID;
 
 layout(push_constant) uniform SceneDataBuffer
 {
@@ -56,16 +65,27 @@ layout(binding = 2) buffer MaterialProperities { MaterialProperitiesBuffer mater
 
 void main() 
 {
-    const int meshIndex = sceneData.MeshBufferIndex;
+   // mat4 meshTransform = meshBuffer[meshIndex].meshProperties.MeshTransform;
 
-    mat4 meshTransform = meshBuffer[meshIndex].meshProperties.MeshTransform;
-    FragPos = vec2(inPosition.xy);    
-    Color = aColor;
-    UV = aUV;
-	MaterialID = aMaterialID;
+    vec2 pos = vec2(0.0f);
+    switch(gl_VertexIndex) 
+	{
+        case 0: pos = vec2(VS_Position.x                  , VS_Position.y + VS_SpriteSize.y); break; 
+        case 1: pos = vec2(VS_Position.x + VS_SpriteSize.x, VS_Position.y + VS_SpriteSize.y); break;
+        case 2: pos = vec2(VS_Position.x + VS_SpriteSize.x, VS_Position.y                  ); break;
+        case 3: pos = vec2(VS_Position.x                  , VS_Position.y                  ); break;
+    }
+
+    PS_Position = vec3(VS_InstanceTransform * vec4(pos.xy, 0.0f, 1.0f));
+	PS_UV = VS_UV;
+    PS_UVOffset = VS_UVOffset;
+    PS_SpriteSize = VS_SpriteSize;
+	PS_FlipSprite = VS_FlipSprite;
+	PS_Color = VS_Color;
+	PS_MaterialID = PS_MaterialID;
 
     gl_Position = sceneData.Projection * 
                   sceneData.View *  
-                  meshTransform *
-                  vec4(inPosition, 0.0f, 1.0f);
+                  VS_InstanceTransform *
+                  vec4(pos.xy, 0.0f, 1.0f);
 }

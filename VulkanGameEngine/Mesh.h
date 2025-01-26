@@ -122,7 +122,10 @@ public:
 	virtual void Destroy();
 
 	void GetMeshPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList);
+
 	const VkBufferUsageFlags GetMeshBufferUsageSettings() { return MeshBufferUsageSettings; }
 	const VkMemoryPropertyFlags GetMeshBufferPropertySettings() { return MeshBufferPropertySettings; }
+	SharedPtr<VkBuffer> GetVertexBuffer() { return std::make_shared<VkBuffer>(MeshVertexBuffer.Buffer); }
+	SharedPtr<VkBuffer> GetIndexBuffer() { return std::make_shared<VkBuffer>(MeshIndexBuffer.Buffer); }
 };
 
