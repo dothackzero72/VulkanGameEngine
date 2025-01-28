@@ -39,6 +39,8 @@ void Sprite::Update(float deltaTime)
 	SpriteInstance->Color = SpriteColor;
 	SpriteInstance->MaterialID = (SpriteMaterial) ? SpriteMaterial->GetMaterialBufferIndex() : 0;
 	SpriteInstance->InstanceTransform = spriteMatrix;
+
+	SpritePosition.x += 1;
 }
 
 void Sprite::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)

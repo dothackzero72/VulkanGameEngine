@@ -9,7 +9,7 @@ JsonPipeline::JsonPipeline()
 JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, uint constBufferSize)
 {
   //  ParentRenderPass = parentRenderPass;
-    nlohmann::json json = Json::ReadJson("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\\Pipelines\\Default2DPipeline.json");
+    nlohmann::json json = Json::ReadJson("../Pipelines/Default2DPipeline.json");
     RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
     LoadDescriptorSets(renderPipelineModel);
     LoadPipeline(renderPipelineModel, renderPass, constBufferSize);

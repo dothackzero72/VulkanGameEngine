@@ -2,6 +2,8 @@ C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 FrameBufferShader.frag -o FrameBufferShaderFrag.spv
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 Shader2D.vert -o Shader2DVert.spv
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 Shader2D.frag -o Shader2DFrag.spv
+C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 SpriteInstanceShader.vert -o SpriteInstanceShaderVert.spv
+C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 SpriteInstanceShader.frag -o SpriteInstanceShaderFrag.spv
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 vertshader.vert -o vertshader.spv
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 fragshader.frag -o fragshader.spv
 
@@ -9,6 +11,8 @@ C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 FrameBufferShader.frag -o ../x64/Debug/FrameBufferShaderFrag.spv
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 Shader2D.vert -o ../x64/Debug/Shader2DVert.spv
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 Shader2D.frag -o ../x64/Debug/Shader2DFrag.spv
+C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 SpriteInstanceShader.vert -o SpriteInstanceShaderVert.spv
+C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 SpriteInstanceShader.frag -o SpriteInstanceShaderFrag.spv
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 vertshader.vert -o ../x64/Debug/vertshader.spv
 C:/VulkanSDK/1.3.290.0/Bin/glslc.exe --target-env=vulkan1.3 --target-spv=spv1.4 fragshader.frag -o ../x64/Debug/fragshader.spv
 

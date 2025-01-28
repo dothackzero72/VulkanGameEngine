@@ -25,7 +25,7 @@ private:
 
 	List<SharedPtr<Sprite>>         SpriteList;
 	List<SpriteInstanceStruct>      SpriteInstanceList;
-	SharedPtr<SpriteInstanceBuffer> SpriteBuffer;
+	SpriteInstanceBuffer SpriteBuffer;
 	SharedPtr<Mesh2D>		        SpriteLayerMesh;
 
 	SpriteBatchLayer(List<SharedPtr<Sprite>> spriteList);

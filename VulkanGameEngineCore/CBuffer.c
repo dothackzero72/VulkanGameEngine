@@ -1,7 +1,7 @@
 #include "CBuffer.h"
 #include "CVulkanRenderer.h"
 
-static VkResult Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize)
+ VkResult Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize)
 {
     if (dataToCopy == NULL || bufferSize == 0)
     {
@@ -20,12 +20,23 @@ static VkResult Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory buffer
     memcpy(mappedData, dataToCopy, (size_t)bufferSize);
     vkUnmapMemory(device, bufferMemory);
     return VK_SUCCESS;
-}
+    {
+    }
+ }
 
-static void Buffer_CopyBufferMemory(VkDeviceMemory srcBuffer, VkDeviceMemory* dstBuffer, VkDeviceSize bufferSize)
-{
-    memcpy(dstBuffer, &srcBuffer, bufferSize);
-}
+ void Buffer_CopyBufferMemory(VkDevice device, VkCommandPool commandPool, VkDeviceMemory srcBuffer, VkDeviceMemory* dstBuffer, VkDeviceSize bufferSize)
+ {
+     VkBufferCopy copyRegion =
+     {
+         .srcOffset = 0,
+         .dstOffset = 0,
+         .size = bufferSize
+     };
+
+     VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
+     vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+     Renderer_EndCommandBuffer(&commandBuffer);
+ }
 
 VkResult Buffer_AllocateMemory(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer* bufferData, VkDeviceMemory* bufferMemory, VkMemoryPropertyFlags properties)
 {
@@ -225,19 +236,15 @@ void Buffer_UpdateBufferData(VkDevice device, VkDeviceMemory* bufferMemory, void
     Buffer_UpdateBufferMemory(device, *bufferMemory, dataToCopy, bufferSize);
 }
 
-void Buffer_UpdateStagingBufferData(VkDevice device, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize, bool usingStagingBuffer)
+void Buffer_UpdateStagingBufferData(VkDevice device, VkCommandPool commandPool, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize, bool usingStagingBuffer)
 {
-    if (usingStagingBuffer)
+
+    VkResult result = Buffer_UpdateBufferMemory(device, *stagingBufferMemory, dataToCopy, bufferSize);
+    if (result != VK_SUCCESS)
     {
-        VkResult result = Buffer_UpdateBufferMemory(device, *stagingBufferMemory, dataToCopy, bufferSize);
-        if (result == VK_SUCCESS)
-        {
-            Buffer_CopyBufferMemory(*stagingBufferMemory, bufferMemory, bufferSize);
-        }
         return;
     }
-
-    Buffer_UpdateBufferMemory(device, *bufferMemory, dataToCopy, bufferSize);
+    Buffer_CopyBufferMemory(device, commandPool, *stagingBufferMemory, bufferMemory, bufferSize);
 }
 
 VkResult Buffer_DestroyBuffer(VkDevice device, VkBuffer* buffer, VkBuffer* stagingBuffer, VkDeviceMemory* bufferMemory, VkDeviceMemory* stagingBufferMemory, void* bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsageFlags, VkMemoryPropertyFlags* propertyFlags)

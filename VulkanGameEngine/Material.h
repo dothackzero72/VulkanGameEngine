@@ -29,7 +29,7 @@ private:
 	static uint64_t MaterialIDCounter;
 
 	uint64_t MaterialID = 0;
-	uint64_t MaterialBufferIndex = 0;
+	uint MaterialBufferIndex = 0;
 
 	VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;
 

@@ -256,6 +256,7 @@ public:
             .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
         };
         
+        VULKAN_RESULT(vkResetCommandBuffer(ImGuiCommandBuffer, 0));
         VULKAN_RESULT(vkBeginCommandBuffer(ImGuiCommandBuffer, &beginInfo));
         vkCmdBeginRenderPass(ImGuiCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), ImGuiCommandBuffer);

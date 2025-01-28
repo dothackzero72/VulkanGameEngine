@@ -25,7 +25,7 @@ private:
 
 	SharedPtr<Material>		        material;
 	SharedPtr<Material>		        Material2;
-
+	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 public:
 	void StartUp();
 	void Input(float deltaTime);

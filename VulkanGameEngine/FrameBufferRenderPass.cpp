@@ -426,6 +426,7 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
+    VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);

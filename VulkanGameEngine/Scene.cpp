@@ -54,31 +54,12 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	//texture2.get()->ImGuiShowTexture(ImVec2(256, 128));
 	ImGui::End();
-
-
-	//ImGui::Begin("Basic Graph");
-
-	//// Sample data for the graph
-	//static double x_data[100], y_data[100];
-	//for (int i = 0; i < 100; ++i) {
-	//	x_data[i] = i * 0.1;     // x values from 0 to 9.9
-	//	y_data[i] = sin(x_data[i]); // Example: sine function
-	//}
-
-	//// Create a plot
-	//ImPlot::BeginPlot("Sine Wave");
-	//ImPlot::PlotLine("sin(x)", x_data, y_data, 100);
-	//ImPlot::EndPlot();
-
-	//ImGui::End();
-
-
 	ImGui::Render();
 }
 
 void Scene::BuildRenderPasses()
 {
-	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("C://Users//dotha//Documents//GitHub//VulkanGameEngine//RenderPass//DefaultRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
+	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("../RenderPass/DefaultRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
 	frameRenderPass.BuildRenderPass(levelRenderer->RenderedColorTextureList[0]);
 }
 
@@ -92,13 +73,12 @@ void Scene::UpdateRenderPasses()
 
 void Scene::Draw()
 {
-	std::vector<VkCommandBuffer> CommandBufferSubmitList;
-
 	VULKAN_RESULT(renderer.StartFrame());
 	CommandBufferSubmitList.emplace_back(levelRenderer->Draw(GameObjectList, sceneProperties));
 	CommandBufferSubmitList.emplace_back(frameRenderPass.Draw());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
 	VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
+	CommandBufferSubmitList.clear();
 }
 
 void Scene::Destroy()

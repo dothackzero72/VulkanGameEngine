@@ -66,7 +66,7 @@ struct SpriteInstanceStruct
     ivec2 FlipSprite;       
     vec4 Color;            
     mat4 InstanceTransform;  
-    int MaterialID; 
+    uint MaterialID; 
 
     SpriteInstanceStruct()
     {
@@ -99,7 +99,7 @@ struct SpriteInstanceVertex2D
     ivec2 FlipSprite;        
     vec4 Color;             
     mat4 InstanceTransform;  
-    int MaterialID;
+    uint MaterialID;
 
     SpriteInstanceVertex2D()
     {
@@ -207,7 +207,7 @@ struct SpriteInstanceVertex2D
             {
                 .location = 11,
                 .binding = 1,
-                .format = VK_FORMAT_R32_SINT,
+                .format = VK_FORMAT_R32_UINT,
                 .offset = offsetof(SpriteInstanceVertex2D, MaterialID)
             }
         };

@@ -15,12 +15,12 @@ JsonRenderPass::JsonRenderPass(String jsonPath, ivec2 renderPassResolution)
 
     VULKAN_RESULT(renderer.CreateCommandBuffer(CommandBuffer));
 
-    nlohmann::json json= Json::ReadJson("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json");
+    nlohmann::json json= Json::ReadJson("../RenderPass/Default2DRenderPass.json");
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer();
 
-    JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer)));
+    JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("../../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer)));
 }
 
 JsonRenderPass::~JsonRenderPass()
@@ -90,6 +90,7 @@ VkCommandBuffer JsonRenderPass::Draw(List<SharedPtr<GameObject>> meshList, Scene
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
+    VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);

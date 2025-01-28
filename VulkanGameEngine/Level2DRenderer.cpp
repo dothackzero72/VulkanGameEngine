@@ -12,18 +12,19 @@ Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : 
 
     VULKAN_RESULT(renderer.CreateCommandBuffer(CommandBuffer));
 
-    nlohmann::json json = Json::ReadJson("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json");
+    nlohmann::json json = Json::ReadJson("../RenderPass/Default2DRenderPass.json");
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer();
 
-    JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer)));
+    JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer)));
+    JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("../Pipelines/SpriteInstancePipeline.json", RenderPass, sizeof(SceneDataBuffer)));
 
     List<SharedPtr<Sprite>> spriteList
     {
-        std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f), vec2(128.0f, 256.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[1])),
+        std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f), vec2(128.0f, 256.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[0])),
         std::make_shared<Sprite>(Sprite(vec2(128.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[1])),
-        std::make_shared<Sprite>(Sprite(vec2(256.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[1]))
+        std::make_shared<Sprite>(Sprite(vec2(256.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[0]))
     };
     SpriteLayerRenderList.emplace_back(SpriteBatchLayer::CreateSpriteBatchLayer(spriteList));
 }
@@ -92,13 +93,14 @@ VkCommandBuffer Level2DRenderer::Draw(List<SharedPtr<GameObject>> meshList, Scen
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
+    VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);
     vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
     for (auto spriteLayer : SpriteLayerRenderList)
     {
-        spriteLayer->Draw(CommandBuffer, JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0], sceneProperties);
+        spriteLayer->Draw(CommandBuffer, JsonPipelineList[1]->Pipeline, JsonPipelineList[1]->PipelineLayout, JsonPipelineList[1]->DescriptorSetList[0], sceneProperties);
     }
     vkCmdEndRenderPass(CommandBuffer);
     vkEndCommandBuffer(CommandBuffer);

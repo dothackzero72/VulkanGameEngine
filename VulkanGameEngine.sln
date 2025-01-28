@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{D6D5
 		Shaders\FrameBufferShader.vert = Shaders\FrameBufferShader.vert
 		Shaders\Shader2D.frag = Shaders\Shader2D.frag
 		Shaders\Shader2D.vert = Shaders\Shader2D.vert
+		Shaders\SpriteInstanceShader.frag = Shaders\SpriteInstanceShader.frag
+		Shaders\SpriteInstanceShader.vert = Shaders\SpriteInstanceShader.vert
 		Shaders\vertshader.vert = Shaders\vertshader.vert
 	EndProjectSection
 EndProject
