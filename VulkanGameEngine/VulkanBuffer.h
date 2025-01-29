@@ -170,18 +170,17 @@ public:
 		void* rawBufferData = static_cast<void*>(&bufferData);
 		if (UsingStagingBuffer)
 		{
-			Buffer_UpdateStagingBufferData(*_device.get(), *_commandPool.get(), &StagingBufferMemory, &BufferMemory, rawBufferData, BufferSize, UsingStagingBuffer);
+			Buffer_UpdateStagingBufferData(*_device.get(), *_commandPool.get(), *_graphicsQueue.get(), StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, rawBufferData, BufferSize);
 		}
 		else
 		{
-			Buffer_UpdateBufferData(*_device.get(), &BufferMemory, rawBufferData, BufferSize, UsingStagingBuffer);
+			Buffer_UpdateBufferData(*_device.get(), &BufferMemory, rawBufferData, BufferSize);
 		}
 	}
 
 	void UpdateBufferMemory(List<T>& bufferData)
 	{
 		const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
-
 		if (UsingStagingBuffer)
 		{
 			if (BufferSize != newBufferSize)
@@ -193,30 +192,10 @@ public:
 				}
 			}
 
-			if (Buffer_UpdateBufferMemory(*_device.get(), StagingBufferMemory, (void*)bufferData.data(), newBufferSize) != VK_SUCCESS)
-			{
-				RENDERER_ERROR("Failed to update staging buffer memory.");
-				return;
-			}
-
-			VkBufferCopy copyRegion =
-			{
-				.srcOffset = 0,
-				.dstOffset = 0,
-				.size = newBufferSize
-			};
-
-			auto sf = CheckBufferContents();
-
-			VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(*_device.get(), *_commandPool.get());
-			vkCmdCopyBuffer(commandBuffer, StagingBuffer, Buffer, 1, &copyRegion);
-			Renderer_EndSingleUseCommandBuffer(*_device.get(), *_commandPool.get(), *_graphicsQueue.get(), commandBuffer);
-
-			auto fds = CheckBufferContents();
+			Buffer_UpdateStagingBufferData(*_device.get(), *_commandPool.get(), *_graphicsQueue.get(), StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData.data(), BufferSize);
 		}
 		else
 		{
-			// Check for size update for the main buffer
 			if (BufferSize != newBufferSize)
 			{
 				if (UpdateBufferSize(Buffer, BufferMemory, newBufferSize) != VK_SUCCESS)
@@ -226,7 +205,6 @@ public:
 				}
 			}
 
-			// Update memory directly
 			VkResult result = Buffer_UpdateBufferMemory(*_device.get(), BufferMemory, (void*)bufferData.data(), newBufferSize);
 			if (result != VK_SUCCESS)
 			{
@@ -238,23 +216,37 @@ public:
 
 	void UpdateBufferMemory(void* bufferData, uint32 totalBufferSize)
 	{
-		void* rawBufferData = static_cast<void*>(&bufferData);
+		const VkDeviceSize newBufferSize = totalBufferSize;
 		if (UsingStagingBuffer)
 		{
-			const VkDeviceSize newBufferSize = totalBufferSize;
 			if (BufferSize != newBufferSize)
 			{
 				if (UpdateBufferSize(StagingBuffer, StagingBufferMemory, newBufferSize) != VK_SUCCESS)
+				{
+					RENDERER_ERROR("Failed to update staging buffer size.");
+					return;
+				}
+			}
+
+			Buffer_UpdateStagingBufferData(*_device.get(), *_commandPool.get(), *_graphicsQueue.get(), StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData.data(), BufferSize);
+		}
+		else
+		{
+			if (BufferSize != newBufferSize)
+			{
+				if (UpdateBufferSize(Buffer, BufferMemory, newBufferSize) != VK_SUCCESS)
 				{
 					RENDERER_ERROR("Failed to update buffer size.");
 					return;
 				}
 			}
-			Buffer_UpdateStagingBufferData(*_device.get(), *_commandPool.get(), &StagingBufferMemory, &BufferMemory, rawBufferData, BufferSize, UsingStagingBuffer);
-		}
-		else
-		{
-			Buffer_UpdateBufferData(*_device.get(), &BufferMemory, rawBufferData, BufferSize, UsingStagingBuffer);
+
+			VkResult result = Buffer_UpdateBufferMemory(*_device.get(), BufferMemory, (void*)bufferData.data(), newBufferSize);
+			if (result != VK_SUCCESS)
+			{
+				RENDERER_ERROR("Failed to update buffer memory.");
+				return;
+			}
 		}
 	}
 
