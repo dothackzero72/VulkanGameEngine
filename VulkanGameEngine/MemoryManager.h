@@ -8,6 +8,7 @@
 #include "Material.h"
 #include "Mesh2D.h"
 #include "SpriteBatchLayer.h"
+#include "SpriteComponent.h"
 
 void ExceptionCallback(std::string_view InMessage);
 class MemoryManager 
@@ -16,7 +17,7 @@ class MemoryManager
 		static Coral::HostInstance hostInstance;
 		static SharedPtr<Coral::ManagedAssembly> ECSassembly;
 		static List<SharedPtr<GameObject>> GameObjectList;
-		//static List<SharedPtr<RenderMesh2DComponent>> RenderMesh2DComponentList;
+		static List<SharedPtr<SpriteComponent>> SpriteComponentList;
 		static List<SharedPtr<Texture>> TextureList;
 		static List<SharedPtr<Material>> MaterialList;
 		static List<SharedPtr<JsonRenderPass>> JsonRenderPassList;
@@ -28,7 +29,7 @@ class MemoryManager
 		static MemoryPool<GameObject> GameObjectMemoryPool;
 		static MemoryPool<Texture> TextureMemoryPool;
 		static MemoryPool<Material> MaterialMemoryPool;
-		//static MemoryPool<RenderMesh2DComponent> RenderMesh2DComponentMemoryPool;
+		static MemoryPool<SpriteComponent> SpriteComponentMemoryPool;
 		static MemoryPool<JsonRenderPass> JsonRenderPassMemoryPool;
 		static MemoryPool<JsonPipeline> JsonPipelineMemoryPool;
 		static MemoryPool<Mesh2D> Mesh2DMemoryPool;
@@ -39,7 +40,7 @@ class MemoryManager
 		static SharedPtr<GameObject> AllocateNewGameObject();
 		static SharedPtr<Mesh2D> AllocateMesh2D();
 		static SharedPtr<Texture> AllocateNewTexture();
-		//static SharedPtr<RenderMesh2DComponent> AllocateRenderMesh2DComponent();
+		static SharedPtr<SpriteComponent> AllocateSpriteComponent();
 		static SharedPtr<JsonRenderPass> AllocateJsonRenderPass();
 		static SharedPtr<JsonPipeline> AllocateJsonPipeline();
 		static SharedPtr<SpriteBatchLayer> AllocateSpriteBatchLayer();
@@ -56,7 +57,7 @@ class MemoryManager
 		static const List<VkDescriptorImageInfo> GetTexturePropertiesBuffer();
 
 		static const List<SharedPtr<GameObject>>& GetGameObjectList() { return GameObjectList; }
-		//static const List<SharedPtr<RenderMesh2DComponent>>& GetRenderMesh2DComponentList() { return RenderMesh2DComponentList; }
+		static const List<SharedPtr<SpriteComponent>>& GetSpriteComponentList() { return SpriteComponentList; }
 		static const List<SharedPtr<Texture>>& GetTextureList() { return TextureList; }
 		static const List<SharedPtr<JsonRenderPass>>& GetJsonRenderPassList() { return JsonRenderPassList; }
 		static const List<SharedPtr<JsonPipeline>>& GetJsonPipelineList() { return JsonPipelineList; }

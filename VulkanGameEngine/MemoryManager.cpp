@@ -4,7 +4,7 @@
 Coral::HostInstance MemoryManager::hostInstance;
 SharedPtr<Coral::ManagedAssembly> MemoryManager::ECSassembly = nullptr;
 List<SharedPtr<GameObject>> MemoryManager::GameObjectList;
-//List<SharedPtr<RenderMesh2DComponent>> MemoryManager::RenderMesh2DComponentList;
+List<SharedPtr<SpriteComponent>> MemoryManager::SpriteComponentList;
 List<SharedPtr<Texture>> MemoryManager::TextureList;
 List<SharedPtr<Material>> MemoryManager::MaterialList;
 List<SharedPtr<JsonRenderPass>> MemoryManager::JsonRenderPassList;
@@ -14,7 +14,7 @@ List<SharedPtr<Mesh2D>> MemoryManager::Mesh2DList;
 List<SharedPtr<SpriteBatchLayer>> MemoryManager::SpriteBatchLayerList;
 
 MemoryPool<GameObject> MemoryManager::GameObjectMemoryPool;
-//MemoryPool<RenderMesh2DComponent> MemoryManager::RenderMesh2DComponentMemoryPool;
+MemoryPool<SpriteComponent> MemoryManager::SpriteComponentMemoryPool;
 MemoryPool<Texture> MemoryManager::TextureMemoryPool;
 MemoryPool<Material> MemoryManager::MaterialMemoryPool;
 MemoryPool<Mesh2D> MemoryManager::Mesh2DMemoryPool;

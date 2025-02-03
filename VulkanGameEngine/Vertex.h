@@ -40,7 +40,7 @@ struct Vertex2D
     {
         return std::vector<VkVertexInputAttributeDescription>
         {
-  /*          VkVertexInputAttributeDescription
+            VkVertexInputAttributeDescription
             {
                 .location = 0,
                 .binding = 0,
@@ -53,7 +53,7 @@ struct Vertex2D
                 .binding = 0,
                 .format = VK_FORMAT_R32G32_SFLOAT,
                 .offset = offsetof(Vertex2D, UV)
-            },*/
+            },
         };
     }
 };
