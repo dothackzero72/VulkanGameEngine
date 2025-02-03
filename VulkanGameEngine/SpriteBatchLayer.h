@@ -25,10 +25,11 @@ private:
 
 	List<SharedPtr<Sprite>>         SpriteList;
 	List<SpriteInstanceStruct>      SpriteInstanceList;
-	SpriteInstanceBuffer SpriteBuffer;
+	SpriteInstanceBuffer			SpriteBuffer;
 	SharedPtr<Mesh2D>		        SpriteLayerMesh;
+	SharedPtr<JsonPipeline>			SpriteRenderPipeline;
 
-	SpriteBatchLayer(List<SharedPtr<Sprite>> spriteList);
+	SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline, List<SharedPtr<Sprite>> spriteList);
 
 public:
 	String					        Name;
@@ -36,14 +37,22 @@ public:
 	SpriteBatchLayer();
 	virtual ~SpriteBatchLayer();
 
-	static SharedPtr<SpriteBatchLayer> CreateSpriteBatchLayer(List<SharedPtr<Sprite>>& spriteList);
+	static SharedPtr<SpriteBatchLayer> CreateSpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline, List<SharedPtr<Sprite>>& spriteList);
 
-	void AddSprite(SharedPtr<Sprite> sprite);
 	void BuildSpriteLayer(List<SharedPtr<Sprite>>& spriteDrawList);
 	void Update(float deltaTime);
-	void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
+	void Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneProperties);
 	void Destroy();
 
+	void AddSprite(SharedPtr<Sprite> sprite);
+	void RemoveSprite(SharedPtr<Sprite> sprite);
+
 	SharedPtr<Mesh2D> GetSpriteLayerMesh() { return SpriteLayerMesh; }
+	void SortSpritesByLayer(std::vector<SharedPtr<Sprite>>& sprites)
+	{
+		std::sort(sprites.begin(), sprites.end(), [](const SharedPtr<Sprite>& a, const SharedPtr<Sprite>& b) {
+			return a->SpriteLayer > b->SpriteLayer;
+			});
+	}
 };
 

@@ -22,11 +22,12 @@ Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : 
 
     List<SharedPtr<Sprite>> spriteList
     {
-        std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f), vec2(128.0f, 256.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[0])),
-        std::make_shared<Sprite>(Sprite(vec2(128.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[1])),
-        std::make_shared<Sprite>(Sprite(vec2(256.0f, 0.0f), vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[0]))
+        std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f), 0, vec2(128.0f, 256.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[0])),
+       std::make_shared<Sprite>(Sprite(vec2(32.0f, 0.0f), 3, vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[1])),
+        std::make_shared<Sprite>(Sprite(vec2(64.0f, 0.0f), 0, vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[0])),
+
     };
-    SpriteLayerRenderList.emplace_back(SpriteBatchLayer::CreateSpriteBatchLayer(spriteList));
+    SpriteLayerRenderList.emplace_back(SpriteBatchLayer::CreateSpriteBatchLayer(JsonPipelineList[1], spriteList));
 }
 
 Level2DRenderer::~Level2DRenderer()
@@ -45,7 +46,7 @@ VkCommandBuffer Level2DRenderer::Draw(List<SharedPtr<GameObject>> meshList, Scen
 {
     std::vector<VkClearValue> clearValues
     {
-        VkClearValue{.color = { {1.0f, 0.0f, 0.0f, 1.0f} } },
+        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
         VkClearValue{.depthStencil = { 1.0f, 0 } }
     };
 
@@ -100,7 +101,7 @@ VkCommandBuffer Level2DRenderer::Draw(List<SharedPtr<GameObject>> meshList, Scen
     vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
     for (auto spriteLayer : SpriteLayerRenderList)
     {
-        spriteLayer->Draw(CommandBuffer, JsonPipelineList[1]->Pipeline, JsonPipelineList[1]->PipelineLayout, JsonPipelineList[1]->DescriptorSetList[0], sceneProperties);
+        spriteLayer->Draw(CommandBuffer, sceneProperties);
     }
     vkCmdEndRenderPass(CommandBuffer);
     vkEndCommandBuffer(CommandBuffer);

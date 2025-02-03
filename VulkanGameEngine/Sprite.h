@@ -19,16 +19,17 @@ private:
 	SharedPtr<Material> SpriteMaterial;
 	SharedPtr<SpriteInstanceStruct> SpriteInstance;
 	List<SharedPtr<Animation2D>> AnimationList;
-
+	bool SpriteAlive = true;
 public:
 
 	List<Vertex2D> VertexList;
 	vec2 SpritePosition = vec2(0.0f);
+	uint SpriteLayer = 0;
 	vec2 SpriteRotation = vec2(0.0f);
 	vec2 SpriteScale = vec2(1.0f);
 
 	Sprite();
-	Sprite(vec2 spritePosition, vec2 spriteSize, vec4 spriteColor, SharedPtr<Material> material);
+	Sprite(vec2 spritePosition, uint spriteLayer, vec2 spriteSize, vec4 spriteColor, SharedPtr<Material> material);
 	virtual ~Sprite();
 
 	virtual void Input(float deltaTime);

@@ -43,8 +43,8 @@ private:
 	WeakPtr<Transform2DComponent> GameObjectTransform;
 	
 protected:
-	//SharedPtr<JsonPipeline> MeshRenderPipeline;
-	SharedPtr<Material> MeshMaterial;
+	SharedPtr<JsonPipeline>	MeshRenderPipeline;
+	SharedPtr<Material>		MeshMaterial;
 
 public:
 	uint64 MeshBufferIndex;

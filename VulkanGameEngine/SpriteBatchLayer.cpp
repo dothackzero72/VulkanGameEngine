@@ -6,8 +6,9 @@ SpriteBatchLayer::SpriteBatchLayer()
 
 }
 
-SpriteBatchLayer::SpriteBatchLayer(List<SharedPtr<Sprite>> spriteList)
+SpriteBatchLayer::SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline, List<SharedPtr<Sprite>> spriteList)
 {
+	SpriteRenderPipeline = spriteRenderPipeline;
 	SpriteLayerMesh = Mesh2D::CreateMesh2D(SpriteVertexList, SpriteIndexList, nullptr);
 	SpriteList = spriteList;
 	for (auto& sprite : SpriteList)
@@ -16,22 +17,29 @@ SpriteBatchLayer::SpriteBatchLayer(List<SharedPtr<Sprite>> spriteList)
 		SpriteInstanceList.emplace_back(*sprite->GetSpriteInstance().get());
 	}
 	SpriteBuffer = SpriteInstanceBuffer(SpriteInstanceList, SpriteLayerMesh->GetMeshBufferUsageSettings(), SpriteLayerMesh->GetMeshBufferPropertySettings(), false);
+	SortSpritesByLayer(SpriteList);
 }
 
 SpriteBatchLayer::~SpriteBatchLayer()
 {
 }
 
-SharedPtr<SpriteBatchLayer> SpriteBatchLayer::CreateSpriteBatchLayer(List<SharedPtr<Sprite>>& spriteList)
+SharedPtr<SpriteBatchLayer> SpriteBatchLayer::CreateSpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline, List<SharedPtr<Sprite>>& spriteList)
 {
 	SharedPtr<SpriteBatchLayer> spriteBatch = MemoryManager::AllocateSpriteBatchLayer();
-	new (spriteBatch.get()) SpriteBatchLayer(spriteList);
+	new (spriteBatch.get()) SpriteBatchLayer(spriteRenderPipeline, spriteList);
 	return spriteBatch;
 }
 
 void SpriteBatchLayer::AddSprite(SharedPtr<Sprite> sprite)
 {
 	SpriteList.emplace_back(sprite);
+	SortSpritesByLayer(SpriteList);
+}
+
+void SpriteBatchLayer::RemoveSprite(SharedPtr<Sprite> sprite)
+{
+	sprite->Destroy();
 }
 
 void SpriteBatchLayer::Update(float deltaTime)
@@ -47,14 +55,12 @@ void SpriteBatchLayer::Update(float deltaTime)
 	SpriteBuffer.UpdateBufferMemory(SpriteInstanceList);
 }
 
-void SpriteBatchLayer::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
+void SpriteBatchLayer::Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneProperties)
 {
-	auto sdf = SpriteBuffer.CheckBufferContents();
-
 	VkDeviceSize offsets[] = { 0 };
-	vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneProperties);
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
+	vkCmdPushConstants(commandBuffer, SpriteRenderPipeline->PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneProperties);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline->Pipeline);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline->PipelineLayout, 0, 1, &SpriteRenderPipeline->DescriptorSetList[0], 0, nullptr);
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, SpriteLayerMesh->GetVertexBuffer().get(), offsets);
 	vkCmdBindVertexBuffers(commandBuffer, 1, 1, &SpriteBuffer.Buffer, offsets);
 	vkCmdBindIndexBuffer(commandBuffer, *SpriteLayerMesh->GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
@@ -63,5 +69,6 @@ void SpriteBatchLayer::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline
 
 void SpriteBatchLayer::Destroy()
 {
+	SpriteRenderPipeline.reset();
 	SpriteLayerMesh->Destroy();
 }

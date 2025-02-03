@@ -4,12 +4,14 @@ Sprite::Sprite()
 {
 }
 
-Sprite::Sprite(vec2 spritePosition, vec2 spriteSize, vec4 spriteColor, SharedPtr<Material> material)
+Sprite::Sprite(vec2 spritePosition, uint spriteLayer, vec2 spriteSize, vec4 spriteColor, SharedPtr<Material> material)
 {
 	SpritePosition = spritePosition;
+	SpriteLayer = spriteLayer;
 	SpriteSize = spriteSize;
 	SpriteColor = spriteColor;
 	SpriteMaterial = material;
+
 
 	SpriteSheetPtr = std::make_shared<SpriteSheet>(SpriteSheet(material));
 	SpriteInstance = std::make_shared<SpriteInstanceStruct>(SpriteInstanceStruct());
@@ -39,8 +41,6 @@ void Sprite::Update(float deltaTime)
 	SpriteInstance->Color = SpriteColor;
 	SpriteInstance->MaterialID = (SpriteMaterial) ? SpriteMaterial->GetMaterialBufferIndex() : 0;
 	SpriteInstance->InstanceTransform = spriteMatrix;
-
-	SpritePosition.x += 1;
 }
 
 void Sprite::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
@@ -53,5 +53,6 @@ void Sprite::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipeli
 
 void Sprite::Destroy()
 {
+	SpriteAlive = false;
 	SpriteInstance.reset();
 }
