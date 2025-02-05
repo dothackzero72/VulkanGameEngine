@@ -9,10 +9,7 @@ class JsonPipeline
     friend class Mesh;
 
 private:
-
     SharedPtr<JsonRenderPass> ParentRenderPass;
-
-    JsonPipeline(String jsonPath, VkRenderPass renderPass, uint constBufferSize);
 
     void LoadDescriptorSets(RenderPipelineModel model);
     void LoadPipeline(RenderPipelineModel model, VkRenderPass renderPass, uint ConstBufferSize);
@@ -20,14 +17,16 @@ private:
 public:
     String Name;
     VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
-    List<VkDescriptorSetLayout> DescriptorSetLayoutList;
-    List<VkDescriptorSet> DescriptorSetList;
+    Vector<VkDescriptorSetLayout> DescriptorSetLayoutList;
+    Vector<VkDescriptorSet> DescriptorSetList;
     VkPipeline Pipeline = VK_NULL_HANDLE;
     VkPipelineLayout PipelineLayout = VK_NULL_HANDLE;
     VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 
     JsonPipeline();
+    JsonPipeline(String jsonPath, VkRenderPass renderPass, uint constBufferSize);
     ~JsonPipeline();
+
     static SharedPtr<JsonPipeline> CreateJsonRenderPass(String jsonPath, VkRenderPass renderPass, uint constBufferSize);
     void Destroy();
 };

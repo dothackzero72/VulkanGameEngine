@@ -193,7 +193,9 @@
     <ClInclude Include="io.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />
-    <ClInclude Include="Memory.h" />
+    <ClInclude Include="Memory.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="pixel.h" />
     <ClInclude Include="SDLWindow.h" />

@@ -24,21 +24,21 @@ int main(int argc, char** argv)
     InterfaceRenderPass::StartUp();
     ImPlot::CreateContext();
 
-    Scene scene;
-    scene.StartUp();
+    //Scene scene;
+    //scene.StartUp();
     while (!vulkanWindow->WindowShouldClose(vulkanWindow))
     {
         vulkanWindow->PollEventHandler(vulkanWindow);
         vulkanWindow->SwapBuffer(vulkanWindow);
-        scene.Input(deltaTime.GetFrameTime());
-        scene.Update(deltaTime.GetFrameTime());
-        scene.ImGuiUpdate(deltaTime.GetFrameTime());
-        scene.Draw();
+        //scene.Input(deltaTime.GetFrameTime());
+        //scene.Update(deltaTime.GetFrameTime());
+        //scene.ImGuiUpdate(deltaTime.GetFrameTime());
+        //scene.Draw();
         deltaTime.EndFrameTime();
     }
 
     vkDeviceWaitIdle(cRenderer.Device);
-    scene.Destroy();
+    //scene.Destroy();
     ImPlot::DestroyContext();
     InterfaceRenderPass::Destroy();
     MemoryManager::Destroy();

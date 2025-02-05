@@ -5,6 +5,7 @@
 #include "RenderMesh2DComponent.h"
 #include "Transform2DComponent.h"
 #include "InputComponent.h"
+#include "Sprite.h"
 
 GameObject::GameObject()
 {
@@ -18,39 +19,36 @@ GameObject::GameObject(String name)
 	CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
 }
 
-GameObject::GameObject(String name, List<SharedPtr<GameObjectComponent>> gameObjectComponentList)
+GameObject::GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList)
 {
 	Name = name;
-	GameObjectComponentList = gameObjectComponentList;
-
-	CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(NameSpace));
-	CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
-}
-
-SharedPtr<GameObject> GameObject::CreateGameObject(String name)
-{
-	SharedPtr<GameObject> gameObject = MemoryManager::AllocateNewGameObject();
-	new (gameObject.get()) GameObject(name);
-	return gameObject;
-}
-
-SharedPtr<GameObject> GameObject::CreateGameObject(String name, List<ComponentTypeEnum> gameObjectComponentList)
-{
-	SharedPtr<GameObject> gameObject = MemoryManager::AllocateNewGameObject();
-	new (gameObject.get()) GameObject(name);
-
 	for (auto component : gameObjectComponentList)
 	{
 		String asdf = "adsfasd";
 		switch (component)
 		{
-			//case kSpriteComponent: gameObject->AddComponent(MemoryManager::AllocateSpriteComponent(gameObject, "Mesh Renderer", static_cast<uint32>(MemoryManager::GetRenderMesh2DComponentList().size()))); break;
-			case kTransform2DComponent: gameObject->AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(gameObject, asdf))); break;
-			case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject, asdf))); break;
+			//case kTransform2DComponent: AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(std::make_shared<GameObject>(this), asdf))); break;
+			//case kInputComponent: AddComponent(std::make_shared<InputComponent>(InputComponent(std::make_shared<GameObject>(this), asdf))); break;
+		}
+	}
+
+	CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(NameSpace));
+	CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
+}
+
+GameObject::GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList, SharedPtr<Material> spriteMaterial, const uint& DrawLayer)
+{
+	String asdf = "adsfasd";
+	for (auto component : gameObjectComponentList)
+	{
+		switch (component)
+		{
+		/*	case kTransform2DComponent: AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(std::make_shared<GameObject>(this), asdf))); break;
+			case kInputComponent: AddComponent(std::make_shared<InputComponent>(InputComponent(std::make_shared<GameObject>(this), asdf))); break;*/
 		}
 	}
 	
-	return gameObject;
+	//AddComponent(SpriteComponent::CreateSpriteComponent(asdf, std::make_shared<GameObject>(this), spriteMaterial, DrawLayer));
 }
 
 void GameObject::Input(float deltaTime)
@@ -98,8 +96,8 @@ void GameObject::Destroy()
 
 void GameObject::AddComponent(SharedPtr<GameObjectComponent> newComponent)
 {
-	auto a = newComponent.get();
-	CSobject->InvokeMethod("AddComponent", newComponent->GetCSObjectHandle(), a);
+	//auto a = newComponent.get();
+	//CSobject->InvokeMethod("AddComponent", newComponent->GetCSObjectHandle(), a);
 	GameObjectComponentList.emplace_back(newComponent);
 }
 
@@ -108,7 +106,7 @@ void GameObject::RemoveComponent(size_t index)
 	GameObjectComponentList.erase(GameObjectComponentList.begin() + index);
 }
 
-List<SharedPtr<GameObjectComponent>> GameObject::GetGameObjectComponentList()
+Vector<SharedPtr<GameObjectComponent>> GameObject::GetGameObjectComponentList()
 {
 	return GameObjectComponentList;
 }

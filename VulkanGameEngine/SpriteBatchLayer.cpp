@@ -6,10 +6,10 @@ SpriteBatchLayer::SpriteBatchLayer()
 
 }
 
-SpriteBatchLayer::SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline, List<SharedPtr<Sprite>> spriteList)
+SpriteBatchLayer::SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline, Vector<SharedPtr<Sprite>> spriteList)
 {
 	SpriteRenderPipeline = spriteRenderPipeline;
-	SpriteLayerMesh = Mesh2D::CreateMesh2D(SpriteVertexList, SpriteIndexList, nullptr);
+	SpriteLayerMesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList, nullptr));
 	SpriteList = spriteList;
 	for (auto& sprite : SpriteList)
 	{
@@ -22,13 +22,6 @@ SpriteBatchLayer::SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline,
 
 SpriteBatchLayer::~SpriteBatchLayer()
 {
-}
-
-SharedPtr<SpriteBatchLayer> SpriteBatchLayer::CreateSpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline, List<SharedPtr<Sprite>>& spriteList)
-{
-	SharedPtr<SpriteBatchLayer> spriteBatch = MemoryManager::AllocateSpriteBatchLayer();
-	new (spriteBatch.get()) SpriteBatchLayer(spriteRenderPipeline, spriteList);
-	return spriteBatch;
 }
 
 void SpriteBatchLayer::AddSprite(SharedPtr<Sprite> sprite)

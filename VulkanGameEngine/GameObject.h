@@ -9,7 +9,9 @@ extern "C"
 #include <Coral/GC.hpp>
 #include <Coral/Array.hpp>
 #include <Coral/Attribute.hpp>
+#include "Material.h"
 
+class Sprite;
 class GameObjectComponent;
 class GameObject 
 {
@@ -21,16 +23,14 @@ private:
     SharedPtr<Coral::Type> CSclass;
     SharedPtr<Coral::ManagedObject> CSobject;
 
-    GameObject(String name);
-    GameObject(String name, List<SharedPtr<GameObjectComponent>> gameObjectComponentList);
-
 public:
     String Name;
-    List<SharedPtr<GameObjectComponent>> GameObjectComponentList;
+    Vector<SharedPtr<GameObjectComponent>> GameObjectComponentList;
 
     GameObject();
-    static SharedPtr<GameObject> CreateGameObject(String name);
-    static SharedPtr<GameObject> CreateGameObject(String name, List<ComponentTypeEnum> gameObjectComponentList);
+    GameObject(String name);
+    GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList);
+    GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList, SharedPtr<Material> spriteMaterial, const uint& DrawLayer);
 
     virtual void Input(float deltaTime);
     virtual void Update(float deltaTime);
@@ -40,7 +40,7 @@ public:
     void AddComponent(SharedPtr<GameObjectComponent> newComponent);
     void RemoveComponent(size_t index);
 
-    List<SharedPtr<GameObjectComponent>> GetGameObjectComponentList();
+    Vector<SharedPtr<GameObjectComponent>> GetGameObjectComponentList();
     SharedPtr<GameObjectComponent> GetComponentByName(const std::string& name);
     SharedPtr<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type);
     void* GetCSObjectHandle() const { return CSobject->GetHandle(); }

@@ -60,14 +60,10 @@ public:
 	VkDescriptorImageInfo textureBuffer;
 
 	Texture();
-	virtual ~Texture();
 	Texture(const Pixel& clearColor, int width, int height, VkFormat textureByteFormat, TextureTypeEnum textureType);
 	Texture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
 	Texture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
-
-	static SharedPtr<Texture> CreateTexture(const Pixel& clearColor, int width, int height, VkFormat textureByteFormat, TextureTypeEnum textureType);
-	static SharedPtr<Texture> CreateTexture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
-	static SharedPtr<Texture> CreateTexture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
+	virtual ~Texture();
 
 	virtual void UpdateTextureSize(vec2 TextureResolution);
 	void UpdateTextureBufferIndex(uint64_t bufferIndex);

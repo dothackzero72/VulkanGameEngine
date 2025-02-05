@@ -5,16 +5,9 @@ Mesh2D::Mesh2D() : Mesh()
 {
 }
 
-Mesh2D::Mesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material) : Mesh()
+Mesh2D::Mesh2D(Vector<Vertex2D>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material) : Mesh()
 {
 	MeshStartUp<Vertex2D>(vertexList, indexList, material);
-}
-
-SharedPtr<Mesh2D> Mesh2D::CreateMesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material)
-{
-	SharedPtr<Mesh2D> gameObject = MemoryManager::AllocateMesh2D();
-	new (gameObject.get()) Mesh2D(vertexList, indexList, material);
-	return gameObject;
 }
 
 Mesh2D::~Mesh2D()

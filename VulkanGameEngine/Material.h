@@ -1,6 +1,7 @@
 #pragma once
 #include "Texture.h"
 #include "VulkanBuffer.h"
+#include "Texture.h"
 
 struct MaterialProperitiesBuffer
 {
@@ -51,14 +52,13 @@ private:
 	SharedPtr<Texture> EmissionMap = nullptr;
 	SharedPtr<Texture> HeightMap = nullptr;
 
-	Material(const String& materialName);
 	void GenerateID();
 	void UpdateBuffer();
 
 public:
 	Material();
-	static SharedPtr<Material> CreateMaterial(const String& materialName);
-	~Material();
+	Material(const String& materialName);
+	virtual ~Material();
 
 	String Name;
 	MaterialProperitiesBuffer MaterialInfo;

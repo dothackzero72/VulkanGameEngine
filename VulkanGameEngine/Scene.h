@@ -20,8 +20,9 @@ private:
 	SharedPtr<OrthographicCamera2D> orthographicCamera;
 	FrameBufferRenderPass		  frameRenderPass;
 	SharedPtr<Level2DRenderer>    levelRenderer;
-	List<SharedPtr<GameObject>>   GameObjectList;
-	List<SharedPtr<Texture>>      TextureList;
+	Vector<SharedPtr<GameObject>>   GameObjectList;
+	Vector<SharedPtr<Sprite>>		  SpriteList;
+	Vector<SharedPtr<Texture>>      TextureList;
 
 	SharedPtr<Material>		        material;
 	SharedPtr<Material>		        Material2;

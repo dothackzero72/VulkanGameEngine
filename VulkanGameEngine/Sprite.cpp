@@ -4,12 +4,16 @@ Sprite::Sprite()
 {
 }
 
-Sprite::Sprite(vec2 spritePosition, uint spriteLayer, vec2 spriteSize, vec4 spriteColor, SharedPtr<Material> material)
+Sprite::Sprite(SharedPtr<GameObject> parentGameObject, SharedPtr<Material> material, uint spriteLayer)
 {
-	SpritePosition = spritePosition;
+	ParentGameObject = parentGameObject;
+
+	Transform2D = std::make_shared<Transform2DComponent>();
+	Transform2D = std::static_pointer_cast<Transform2DComponent>(ParentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent));
+
 	SpriteLayer = spriteLayer;
-	SpriteSize = spriteSize;
-	SpriteColor = spriteColor;
+	SpriteSize = vec2(material->GetAlbedoMap()->Width, material->GetAlbedoMap()->Height);
+	SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	SpriteMaterial = material;
 
 
@@ -21,29 +25,30 @@ Sprite::~Sprite()
 {
 }
 
-void Sprite::Input(float deltaTime)
+void Sprite::Input(const float& deltaTime)
 {
 
 }
 
-void Sprite::Update(float deltaTime)
+void Sprite::Update(const float& deltaTime)
 {
 	mat4 spriteMatrix = mat4(1.0f);
-	spriteMatrix = glm::translate(spriteMatrix, vec3(SpritePosition.x, SpritePosition.y, 0.0f));
-	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(SpriteRotation.x), vec3(1.0f, 0.0f, 0.0f));
-	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(SpriteRotation.y), vec3(0.0f, 1.0f, 0.0f));
+	spriteMatrix = glm::translate(spriteMatrix, vec3(Transform2D->GameObjectPosition.x, Transform2D->GameObjectPosition.y, 0.0f));
+	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(Transform2D->GameObjectRotation.x), vec3(1.0f, 0.0f, 0.0f));
+	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(Transform2D->GameObjectRotation.y), vec3(0.0f, 1.0f, 0.0f));
 	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(0.0f), vec3(0.0f, 0.0f, 1.0f));
-	spriteMatrix = glm::scale(spriteMatrix, vec3(SpriteScale.x, SpriteScale.y, 0.0f));
+	spriteMatrix = glm::scale(spriteMatrix, vec3(Transform2D->GameObjectScale.x, Transform2D->GameObjectScale.y, 0.0f));
 
+	vec2 spriteUVOffset = vec2(0.058823529411765f, 1.0f);
 	SpriteInstance->SpritePosition = SpritePosition;
 	SpriteInstance->SpriteSize = SpriteSize;
-	SpriteInstance->UVOffset = vec2(0.0f, 0.0f);
+	SpriteInstance->UVOffset = vec4(spriteUVOffset.x * 3, 0.0f, spriteUVOffset.x, spriteUVOffset.y);
 	SpriteInstance->Color = SpriteColor;
 	SpriteInstance->MaterialID = (SpriteMaterial) ? SpriteMaterial->GetMaterialBufferIndex() : 0;
 	SpriteInstance->InstanceTransform = spriteMatrix;
 }
 
-void Sprite::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
+void Sprite::BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
 }
 

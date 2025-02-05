@@ -6,10 +6,10 @@ class Transform2DComponent : public GameObjectComponent
 {
 public:
 
-    SharedPtr<vec2> GameObjectPosition;
-    SharedPtr<vec2> GameObjectRotation;
-    SharedPtr<vec2> GameObjectScale;
-    SharedPtr<mat4> GameObjectMatrixTransform;
+    vec2 GameObjectPosition = vec2(0.0f);
+    vec2 GameObjectRotation = vec2(0.0f);
+    vec2 GameObjectScale = vec2(1.0f);
+    mat4 GameObjectMatrixTransform = mat4(0.0f);
 
     Transform2DComponent();
     Transform2DComponent(SharedPtr<GameObject> parentGameObjectPtr);

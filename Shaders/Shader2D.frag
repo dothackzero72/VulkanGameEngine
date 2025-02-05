@@ -6,11 +6,10 @@
 
 layout (location = 0) in vec3  PS_Position;
 layout (location = 1) in vec2  PS_UV;
-layout (location = 2) in vec2  PS_UVOffset;
-layout (location = 3) in vec2  PS_SpriteSize;
-layout (location = 4) in flat ivec2 PS_FlipSprite;
-layout (location = 5) in vec4  PS_Color;
-layout (location = 6) in flat uint  PS_MaterialID;
+layout (location = 2) in vec2  PS_SpriteSize;
+layout (location = 3) in flat ivec2 PS_FlipSprite;
+layout (location = 4) in vec4  PS_Color;
+layout (location = 5) in flat uint  PS_MaterialID;
 
 layout(location = 0) out vec4 OutputColor;
 

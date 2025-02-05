@@ -96,7 +96,7 @@ public:
     bool IsRenderedToSwapchain;
     std::vector<std::string> RenderPipelineList;
     std::vector<RenderedTextureInfoModel> RenderedTextureInfoModelList;
-    List<VkSubpassDependency> SubpassDependencyModelList;
+    Vector<VkSubpassDependency> SubpassDependencyModelList;
 
     RenderPassBuildInfoModel()
     {
@@ -123,17 +123,17 @@ struct RenderPipelineModel : RenderPassEditorBaseModel
 {
     String VertexShaderPath;
     String FragmentShaderPath;
-    List<VkViewport> ViewportList;
-    List<VkRect2D> ScissorList;
+    Vector<VkViewport> ViewportList;
+    Vector<VkRect2D> ScissorList;
 
     VkPipelineColorBlendStateCreateInfo PipelineColorBlendStateCreateInfoModel;
     VkPipelineRasterizationStateCreateInfo PipelineRasterizationStateCreateInfo;
     VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo;
     VkPipelineDepthStencilStateCreateInfo PipelineDepthStencilStateCreateInfo;
     VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo;
-    List<VkDescriptorSetLayoutBinding> LayoutBindingList;
-    List<PipelineDescriptorModel> PipelineDescriptorModelsList;
-    List<VkPipelineColorBlendAttachmentState> PipelineColorBlendAttachmentStateList;
+    Vector<VkDescriptorSetLayoutBinding> LayoutBindingList;
+    Vector<PipelineDescriptorModel> PipelineDescriptorModelsList;
+    Vector<VkPipelineColorBlendAttachmentState> PipelineColorBlendAttachmentStateList;
 
     RenderPipelineModel()
     {

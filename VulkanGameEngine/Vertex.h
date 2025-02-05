@@ -61,7 +61,7 @@ struct Vertex2D
 struct SpriteInstanceStruct
 {
     vec2 SpritePosition;
-    vec2 UVOffset;           
+    vec4 UVOffset;
     vec2 SpriteSize;        
     ivec2 FlipSprite;       
     vec4 Color;            
@@ -71,7 +71,7 @@ struct SpriteInstanceStruct
     SpriteInstanceStruct()
     {
         SpritePosition = vec2(0.0f);
-        UVOffset = vec2(0.0f);
+        UVOffset = vec4(0.0f);
         SpriteSize = vec2(0.0f);
         FlipSprite = ivec2(0);
         Color = vec4(0.0f);
@@ -79,7 +79,7 @@ struct SpriteInstanceStruct
         InstanceTransform = mat4(1.0f);
     }
 
-    SpriteInstanceStruct(vec2 spritePosition, vec2 uv, vec2 spriteSize, ivec2 flipSprite, vec4 color, uint materialID, mat4 instanceTransform, uint spriteLayer)
+    SpriteInstanceStruct(vec2 spritePosition, vec4 uv, vec2 spriteSize, ivec2 flipSprite, vec4 color, uint materialID, mat4 instanceTransform, uint spriteLayer)
     {
         SpritePosition = spritePosition;
         UVOffset = uv;
@@ -94,7 +94,7 @@ struct SpriteInstanceStruct
 struct SpriteInstanceVertex2D
 {
     vec2 SpritePosition;
-    vec2 UVOffset;          
+    vec4 UVOffset;
     vec2 SpriteSize;        
     ivec2 FlipSprite;        
     vec4 Color;             
@@ -104,7 +104,7 @@ struct SpriteInstanceVertex2D
     SpriteInstanceVertex2D()
     {
         SpritePosition = vec2(0.0f);
-        UVOffset = vec2(0.0f);
+        UVOffset = vec4(0.0f);
         SpriteSize = vec2(0.0f);
         FlipSprite = ivec2(0);
         Color = vec4(0.0f);
@@ -112,7 +112,7 @@ struct SpriteInstanceVertex2D
         InstanceTransform = mat4(1.0f);
     }
 
-    SpriteInstanceVertex2D(vec2 spritePosition, vec2 uv, vec2 spriteSize, ivec2 flipSprite, vec4 color, uint materialID, mat4 instanceTransform, uint spriteLayer)
+    SpriteInstanceVertex2D(vec2 spritePosition, vec4 uv, vec2 spriteSize, ivec2 flipSprite, vec4 color, uint materialID, mat4 instanceTransform, uint spriteLayer)
     {
         SpritePosition = spritePosition;
         UVOffset = uv;
@@ -151,7 +151,7 @@ struct SpriteInstanceVertex2D
             {
                 .location = 1,
                 .binding = 1,
-                .format = VK_FORMAT_R32G32_SFLOAT,
+                .format = VK_FORMAT_R32G32B32A32_SFLOAT,
                 .offset = offsetof(SpriteInstanceVertex2D, UVOffset)
             },
                 VkVertexInputAttributeDescription

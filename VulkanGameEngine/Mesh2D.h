@@ -9,8 +9,7 @@ protected:
 
 public:
 	Mesh2D();
-	Mesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material);
-	static SharedPtr<Mesh2D> CreateMesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList, SharedPtr<Material> material);
+	Mesh2D(Vector<Vertex2D>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material);
 	virtual ~Mesh2D();
 
 	virtual void Update(const float& deltaTime) override;

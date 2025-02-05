@@ -19,22 +19,15 @@ JsonPipeline::~JsonPipeline()
 {
 }
 
-SharedPtr<JsonPipeline> JsonPipeline::CreateJsonRenderPass(String jsonPath, VkRenderPass renderPass, uint constBufferSize)
-{
-    SharedPtr<JsonPipeline> pipeline = MemoryManager::AllocateJsonPipeline();
-    new (pipeline.get()) JsonPipeline(jsonPath, renderPass, constBufferSize);
-    return pipeline;
-}
-
 void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
 {
-    List<VkDescriptorBufferInfo> meshProperties = MemoryManager::GetMeshPropertiesBuffer();
-    List<VkDescriptorImageInfo> TextureList = MemoryManager::GetTexturePropertiesBuffer();
-    List<VkDescriptorBufferInfo> materialProperties = MemoryManager::GetMaterialPropertiesBuffer();
+    Vector<VkDescriptorBufferInfo> meshProperties = MemoryManager::GetMeshPropertiesBuffer();
+    Vector<VkDescriptorImageInfo> TextureList = MemoryManager::GetTexturePropertiesBuffer();
+    Vector<VkDescriptorBufferInfo> materialProperties = MemoryManager::GetMaterialPropertiesBuffer();
 
     //CreateDescriptorPool
     {
-        List<VkDescriptorPoolSize> descriptorPoolSizeList = List<VkDescriptorPoolSize>();
+        Vector<VkDescriptorPoolSize> descriptorPoolSizeList = Vector<VkDescriptorPoolSize>();
         for (auto binding : model.PipelineDescriptorModelsList)
         {
             switch (binding.BindingPropertiesList)
@@ -87,7 +80,7 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
 
     //CreateDescriptorSetLayout
     {
-        List<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindingList = List<VkDescriptorSetLayoutBinding>();
+        Vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindingList = Vector<VkDescriptorSetLayoutBinding>();
         for (auto binding : model.PipelineDescriptorModelsList)
         {
             switch (binding.BindingPropertiesList)
@@ -171,7 +164,7 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
     {
         for (auto& descriptorSet : DescriptorSetList)
         {
-            List<VkWriteDescriptorSet> writeDescriptorSet = List<VkWriteDescriptorSet>();
+            Vector<VkWriteDescriptorSet> writeDescriptorSet = Vector<VkWriteDescriptorSet>();
             for (auto binding : model.PipelineDescriptorModelsList)
             {
                 switch (binding.BindingPropertiesList)
@@ -244,7 +237,7 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
 {
     //PipelineLayout
     {
-        List<VkPushConstantRange> pushConstantRangeList = List<VkPushConstantRange>();
+        Vector<VkPushConstantRange> pushConstantRangeList = Vector<VkPushConstantRange>();
         if (constBufferSize > 0)
         {
             pushConstantRangeList.emplace_back(VkPushConstantRange
@@ -270,18 +263,17 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
 
     //pipeline
     {
-        List<VkVertexInputBindingDescription> vertexBinding = Vertex2D::GetBindingDescriptions();
+        Vector<VkVertexInputBindingDescription> vertexBinding = Vertex2D::GetBindingDescriptions();
         for (auto& instanceVar : SpriteInstanceVertex2D::GetBindingDescriptions())
         {
             vertexBinding.emplace_back(instanceVar);
         }
 
-        List<VkVertexInputAttributeDescription> vertexAttribute = Vertex2D::GetAttributeDescriptions();
+        Vector<VkVertexInputAttributeDescription> vertexAttribute = Vertex2D::GetAttributeDescriptions();
         for (auto& instanceVar : SpriteInstanceVertex2D::GetAttributeDescriptions())
         {
             vertexAttribute.emplace_back(instanceVar);
         }
-
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo
         {
@@ -294,8 +286,8 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
             .pVertexAttributeDescriptions = vertexAttribute.data()
         };
 
-        List<VkViewport> viewPortList = model.ViewportList;
-        List<VkRect2D> scissorList = model.ScissorList;
+        Vector<VkViewport> viewPortList = model.ViewportList;
+        Vector<VkRect2D> scissorList = model.ScissorList;
         VkPipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo
         {
                     .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
@@ -312,7 +304,7 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
         pipelineColorBlendStateCreateInfoModel.attachmentCount = model.PipelineColorBlendAttachmentStateList.size();
         pipelineColorBlendStateCreateInfoModel.pAttachments = model.PipelineColorBlendAttachmentStateList.data();
 
-        List<VkDynamicState> dynamicStateList = List<VkDynamicState>
+        Vector<VkDynamicState> dynamicStateList = Vector<VkDynamicState>
         {
             VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT,
             VkDynamicState::VK_DYNAMIC_STATE_SCISSOR
@@ -327,7 +319,7 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPa
             .pDynamicStates = dynamicStateList.data()
         };
 
-        List<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = List<VkPipelineShaderStageCreateInfo>
+        Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
         {
             ShaderCompiler::CreateShader(model.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
             ShaderCompiler::CreateShader(model.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)

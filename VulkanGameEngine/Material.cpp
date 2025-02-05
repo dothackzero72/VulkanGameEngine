@@ -7,13 +7,6 @@ Material::Material()
 {
 }
 
-SharedPtr<Material> Material::CreateMaterial(const String& materialName)
-{
-	SharedPtr<Material> material = MemoryManager::AllocateMaterial();
-	new (material.get()) Material(materialName);
-	return material;
-}
-
 Material::Material(const String& materialName)
 {
 	Name = materialName;

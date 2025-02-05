@@ -4,6 +4,8 @@
 class Animation2D
 {
 private:
+
+
 	uint32 CurrentFrame;
 	Frame2D CurrentFrameUV;
 	float CurrentFrameTime;

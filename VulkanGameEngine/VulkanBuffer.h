@@ -108,7 +108,7 @@ public:
 		}
 	}
 
-	VulkanBuffer(List<T> bufferDataList, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+	VulkanBuffer(Vector<T> bufferDataList, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 	{
 		_device = std::make_shared<VkDevice>(cRenderer.Device);
 		_physicalDevice = std::make_shared<VkPhysicalDevice>(cRenderer.PhysicalDevice);
@@ -132,7 +132,7 @@ public:
 		}
 	}
 
-	VulkanBuffer(List<T> bufferDataList, uint reserveCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+	VulkanBuffer(Vector<T> bufferDataList, uint reserveCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 	{
 		_device = std::make_shared<VkDevice>(cRenderer.Device);
 		_physicalDevice = std::make_shared<VkPhysicalDevice>(cRenderer.PhysicalDevice);
@@ -178,7 +178,7 @@ public:
 		}
 	}
 
-	void UpdateBufferMemory(List<T>& bufferData)
+	void UpdateBufferMemory(Vector<T>& bufferData)
 	{
 		const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
 		if (UsingStagingBuffer)

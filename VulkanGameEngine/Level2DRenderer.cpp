@@ -10,6 +10,20 @@ Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : 
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
     FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
 
+
+    TextureList.emplace_back(Texture("../Textures/MegaMan_diffuse.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
+    TextureList.emplace_back(Texture("../Textures/container2.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
+
+    MaterialList.emplace_back(Material("Material1"));
+    MaterialList.back()->SetAlbedoMap(MemoryManager::GetTextureList()[0]);
+
+    MaterialList.emplace_back(Material("Material2"));
+    MaterialList.back()->SetAlbedoMap(MemoryManager::GetTextureList()[1]);
+
+    GameObjectList.emplace_back(GameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, MaterialList[0], 0));
+    GameObjectList.emplace_back(GameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, MaterialList[1], 0));
+    //GameObjectList.emplace_back(GameObject::CreateGameObject("Obj3", List<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, SpriteList[2]));
+
     VULKAN_RESULT(renderer.CreateCommandBuffer(CommandBuffer));
 
     nlohmann::json json = Json::ReadJson("../RenderPass/Default2DRenderPass.json");
@@ -20,29 +34,34 @@ Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : 
     JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer)));
     JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("../Pipelines/SpriteInstancePipeline.json", RenderPass, sizeof(SceneDataBuffer)));
 
-    List<SharedPtr<Sprite>> spriteList
-    {
-        std::make_shared<Sprite>(Sprite(vec2(0.0f, 0.0f), 0, vec2(128.0f, 256.0f), vec4(0.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[0])),
-       std::make_shared<Sprite>(Sprite(vec2(32.0f, 0.0f), 3, vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[1])),
-        std::make_shared<Sprite>(Sprite(vec2(64.0f, 0.0f), 0, vec2(128.0f, 256.0f), vec4(1.0, 0.0f, 0.0f, 1.0f), MemoryManager::GetMaterialist()[0])),
-
-    };
-    SpriteLayerRenderList.emplace_back(SpriteBatchLayer::CreateSpriteBatchLayer(JsonPipelineList[1], spriteList));
+    SpriteLayerRenderList.emplace_back(SpriteBatchLayer(JsonPipelineList[1], SpriteList));
 }
 
 Level2DRenderer::~Level2DRenderer()
 {
 }
 
+void Level2DRenderer::Input(const float& deltaTime)
+{
+    for (auto gameObject : GameObjectList)
+    {
+        gameObject->Input(deltaTime);
+    }
+}
+
 void Level2DRenderer::Update(const float& deltaTime)
 {
+    for (auto gameObject : GameObjectList)
+    {
+        gameObject->Update(deltaTime);
+    }
     for (auto& spriteLayer : SpriteLayerRenderList)
     {
         spriteLayer->Update(deltaTime);
     }
 }
 
-VkCommandBuffer Level2DRenderer::Draw(List<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties)
+VkCommandBuffer Level2DRenderer::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties)
 {
     std::vector<VkClearValue> clearValues
     {
@@ -110,9 +129,17 @@ VkCommandBuffer Level2DRenderer::Draw(List<SharedPtr<GameObject>> meshList, Scen
 
 void Level2DRenderer::Destroy()
 {
+    for (auto gameObject : GameObjectList)
+    {
+        gameObject->Destroy();
+    }
     for (auto spriteLayer : SpriteLayerRenderList)
     {
         spriteLayer->Destroy();
+    }
+    for (auto texture : TextureList)
+    {
+        texture->Destroy();
     }
     JsonRenderPass::Destroy();
 }

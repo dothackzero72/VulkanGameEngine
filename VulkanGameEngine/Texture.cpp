@@ -66,27 +66,6 @@ Texture::~Texture()
 
 }
 
-SharedPtr<Texture> Texture::CreateTexture(const Pixel& clearColor, int width, int height, VkFormat textureByteFormat, TextureTypeEnum textureType)
-{
-	SharedPtr<Texture> texture = MemoryManager::AllocateNewTexture();
-	new (texture.get()) Texture(clearColor, width, height, textureByteFormat, textureType);
-	return texture;
-}
-
-SharedPtr<Texture> Texture::CreateTexture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType)
-{
-	SharedPtr<Texture> texture = MemoryManager::AllocateNewTexture();
-	new (texture.get()) Texture(filePath, textureByteFormat, TextureType);
-	return texture;
-}
-
-SharedPtr<Texture> Texture::CreateTexture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
-{
-	SharedPtr<Texture> texture = MemoryManager::AllocateNewTexture();
-	new (texture.get()) Texture(createImageInfo, samplerCreateInfo);
-	return texture;
-}
-
 void Texture::TextureSetUp()
 {
 	Name = "Texture";

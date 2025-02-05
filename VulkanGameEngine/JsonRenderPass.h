@@ -24,13 +24,13 @@ protected:
 	virtual void BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInfo);
 	virtual void BuildFrameBuffer();
 
-	List<SharedPtr<JsonPipeline>> JsonPipelineList;
+	Vector<SharedPtr<JsonPipeline>> JsonPipelineList;
 
 	JsonRenderPass(String jsonPath, ivec2 renderPassResolution);
 
 public:
 	String Name;
-	List<SharedPtr<RenderedTexture>> RenderedColorTextureList = List<SharedPtr<RenderedTexture>>();
+	Vector<SharedPtr<RenderedTexture>> RenderedColorTextureList = Vector<SharedPtr<RenderedTexture>>();
 	SharedPtr<DepthTexture> depthTexture;
 
 	JsonRenderPass();
@@ -38,7 +38,7 @@ public:
 	virtual ~JsonRenderPass();
 
 	virtual void Update(const float& deltaTime);
-	virtual VkCommandBuffer Draw(List<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties);
+	virtual VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties);
 	virtual void Destroy();
 };
 

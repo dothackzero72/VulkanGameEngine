@@ -27,18 +27,11 @@ JsonRenderPass::~JsonRenderPass()
 {
 }
 
-SharedPtr<JsonRenderPass> JsonRenderPass::JsonCreateRenderPass(String jsonPath, ivec2 renderPassResolution)
-{
-    SharedPtr<JsonRenderPass> renderPass = MemoryManager::AllocateJsonRenderPass();
-    new (renderPass.get()) JsonRenderPass(jsonPath, renderPassResolution);
-    return renderPass;
-}
-
 void JsonRenderPass::Update(const float& deltaTime)
 {
 }
 
-VkCommandBuffer JsonRenderPass::Draw(List<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties)
+VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties)
 {
     std::vector<VkClearValue> clearValues
     {
@@ -106,12 +99,12 @@ VkCommandBuffer JsonRenderPass::Draw(List<SharedPtr<GameObject>> meshList, Scene
 
 void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInfo)
 {
-    List<VkAttachmentDescription> attachmentDescriptionList = List<VkAttachmentDescription>();
-    List<VkAttachmentReference> inputAttachmentReferenceList = List<VkAttachmentReference>();
-    List<VkAttachmentReference> colorAttachmentReferenceList = List<VkAttachmentReference>();
-    List<VkAttachmentReference> resolveAttachmentReferenceList = List<VkAttachmentReference>();
-    List<VkSubpassDescription> preserveAttachmentReferenceList = List<VkSubpassDescription>();
-    List<VkAttachmentReference> depthReference = List<VkAttachmentReference>();
+    Vector<VkAttachmentDescription> attachmentDescriptionList = Vector<VkAttachmentDescription>();
+    Vector<VkAttachmentReference> inputAttachmentReferenceList = Vector<VkAttachmentReference>();
+    Vector<VkAttachmentReference> colorAttachmentReferenceList = Vector<VkAttachmentReference>();
+    Vector<VkAttachmentReference> resolveAttachmentReferenceList = Vector<VkAttachmentReference>();
+    Vector<VkSubpassDescription> preserveAttachmentReferenceList = Vector<VkSubpassDescription>();
+    Vector<VkAttachmentReference> depthReference = Vector<VkAttachmentReference>();
     for (RenderedTextureInfoModel renderedTextureInfoModel : renderPassBuildInfo.RenderedTextureInfoModelList)
     {
         attachmentDescriptionList.emplace_back(renderedTextureInfoModel.AttachmentDescription);
@@ -163,7 +156,7 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
             }
         }
     }
-    List<VkSubpassDescription> subpassDescriptionList =
+    Vector<VkSubpassDescription> subpassDescriptionList =
     {
         VkSubpassDescription
         {
@@ -184,7 +177,7 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
         subpassDescriptionList[0].pDepthStencilAttachment = &depthReference[0];
     }
 
-    List<VkSubpassDependency> subPassList = List<VkSubpassDependency>();
+    Vector<VkSubpassDependency> subPassList = Vector<VkSubpassDependency>();
     for (VkSubpassDependency subpass : renderPassBuildInfo.SubpassDependencyModelList)
     {
         subPassList.emplace_back(subpass);

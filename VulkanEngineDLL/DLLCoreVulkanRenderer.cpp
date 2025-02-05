@@ -39,17 +39,17 @@ VkPresentModeKHR* DLL_Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalD
 }
 
 
-List<VkExtensionProperties> DLL_Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice)
+Vector<VkExtensionProperties> DLL_Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice)
 {
 	return Renderer_GetDeviceExtensions(physicalDevice);
 }
 
-List<VkSurfaceFormatKHR> DLL_Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+Vector<VkSurfaceFormatKHR> DLL_Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
 {
 	return Renderer_GetSurfaceFormats(physicalDevice, surface);
 }
 
-List<VkPresentModeKHR> DLL_Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+Vector<VkPresentModeKHR> DLL_Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
 {
 	return Renderer_GetSurfacePresentModes(physicalDevice, surface);
 }

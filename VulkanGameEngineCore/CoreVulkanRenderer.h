@@ -44,8 +44,8 @@ typedef struct swapChainState
 	VkColorSpaceKHR    ColorSpace;
 	VkPresentModeKHR   PresentMode;
 
-	List<VkImage> SwapChainImages;
-	List<VkImageView> SwapChainImageViews;
+	Vector<VkImage> SwapChainImages;
+	Vector<VkImageView> SwapChainImageViews;
 	VkExtent2D SwapChainResolution;
 	VkSwapchainKHR Swapchain;
 }SwapChainState;
@@ -63,37 +63,37 @@ typedef struct rendererState
 	SwapChainState SwapChain;
 	VkPhysicalDeviceFeatures PhysicalDeviceFeatures;
 
-	List<VkFence> InFlightFences;
-	List<VkSemaphore> AcquireImageSemaphores;
-	List<VkSemaphore> PresentImageSemaphores;
+	Vector<VkFence> InFlightFences;
+	Vector<VkSemaphore> AcquireImageSemaphores;
+	Vector<VkSemaphore> PresentImageSemaphores;
 	bool RebuildRendererFlag;
 }RendererState;
 extern RendererState cRenderer;
 
 
 
-List<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice);
-List<VkSurfaceFormatKHR> Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
-List<VkPresentModeKHR> Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
+Vector<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice);
+Vector<VkSurfaceFormatKHR> Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
+Vector<VkPresentModeKHR> Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 bool Renderer_GetRayTracingSupport();
 void Renderer_GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features);
 VkInstance Renderer_CreateVulkanInstance();
 VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance);
 VkPhysicalDeviceFeatures Renderer_GetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice);
-List<VkPhysicalDevice> Renderer_GetPhysicalDeviceList(VkInstance& instance);
+Vector<VkPhysicalDevice> Renderer_GetPhysicalDeviceList(VkInstance& instance);
 VkPhysicalDevice Renderer_SetUpPhysicalDevice(VkInstance instance, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily);
-VkResult Renderer_SetUpSemaphores(VkDevice device, List<VkFence>& inFlightFences, List<VkSemaphore>& acquireImageSemaphores, List<VkSemaphore>& presentImageSemaphores);
+VkResult Renderer_SetUpSemaphores(VkDevice device, Vector<VkFence>& inFlightFences, Vector<VkSemaphore>& acquireImageSemaphores, Vector<VkSemaphore>& presentImageSemaphores);
 VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFamily, uint32 presentFamily);
 VkCommandPool Renderer_SetUpCommandPool(VkDevice device, uint32 graphicsFamily);
 VkResult Renderer_GetDeviceQueue(VkDevice device, uint32 graphicsFamily, uint32 presentFamily, VkQueue& graphicsQueue, VkQueue& presentQueue);
 
 VkResult SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32& graphicsFamily, uint32& presentFamily);
 VkSurfaceCapabilitiesKHR SwapChain_GetSurfaceCapabilities(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
-List<VkSurfaceFormatKHR> SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
-List<VkPresentModeKHR> SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
+Vector<VkSurfaceFormatKHR> SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
+Vector<VkPresentModeKHR> SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, uint32 width, uint32 height, uint32* swapChainImageCount);
-List<VkImage> SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain);
+Vector<VkImage> SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain);
 
-List<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, List<VkImage> swapChainImageList, VkSurfaceFormatKHR& swapChainImageFormat);
-VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(List<VkSurfaceFormatKHR>& availableFormats);
-VkPresentModeKHR SwapChain_FindSwapPresentMode(List<VkPresentModeKHR>& availablePresentModes);
+Vector<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<VkImage> swapChainImageList, VkSurfaceFormatKHR& swapChainImageFormat);
+VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(Vector<VkSurfaceFormatKHR>& availableFormats);
+VkPresentModeKHR SwapChain_FindSwapPresentMode(Vector<VkPresentModeKHR>& availablePresentModes);

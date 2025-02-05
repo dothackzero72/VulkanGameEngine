@@ -20,13 +20,13 @@ private:
 	VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 
 	VkRenderPass CreateRenderPass();
-	List<VkFramebuffer> CreateFramebuffer();
+	Vector<VkFramebuffer> CreateFramebuffer();
 	VkDescriptorPool CreateDescriptorPoolBinding();
 	VkDescriptorSetLayout CreateDescriptorSetLayout();
     VkDescriptorSet CreateDescriptorSets();
     void UpdateDescriptorSet(SharedPtr<Texture> texture);
     VkPipelineLayout CreatePipelineLayout();
-    List<VkPipelineShaderStageCreateInfo> CreateShaders();
+	Vector<VkPipelineShaderStageCreateInfo> CreateShaders();
 
 public:
 	FrameBufferRenderPass();

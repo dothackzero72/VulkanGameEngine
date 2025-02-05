@@ -18,7 +18,7 @@ class VulkanRenderer
         VkResult RebuildSwapChain();
 
         VkResult StartFrame();
-        VkResult EndFrame(List<VkCommandBuffer> commandBufferSubmitList);
+        VkResult EndFrame(Vector<VkCommandBuffer> commandBufferSubmitList);
 
         VkResult CreateCommandBuffer(VkCommandBuffer& commandBuffer);
         VkResult CreateFrameBuffer(VkFramebuffer frameBuffer, VkFramebufferCreateInfo& frameBufferCreateInfo);
@@ -29,9 +29,9 @@ class VulkanRenderer
         VkResult CreatePipelineLayout(VkPipelineLayout& pipelineLayout, VkPipelineLayoutCreateInfo& pipelineLayoutCreateInfo);
         VkResult AllocateDescriptorSets(VkDescriptorSet& descriptorSet, VkDescriptorSetAllocateInfo& descriptorSetAllocateInfo);
         VkResult AllocateCommandBuffers(VkCommandBuffer commandBuffer, VkCommandBufferAllocateInfo& commandBufferAllocateInfo);
-        VkResult CreateGraphicsPipelines(VkPipeline& graphicPipeline, List<VkGraphicsPipelineCreateInfo> createGraphicPipelines);
+        VkResult CreateGraphicsPipelines(VkPipeline& graphicPipeline, Vector<VkGraphicsPipelineCreateInfo> createGraphicPipelines);
         VkResult CreateCommandPool(VkCommandPool& commandPool, VkCommandPoolCreateInfo commandPoolInfo);
-        void UpdateDescriptorSet(List<VkWriteDescriptorSet> writeDescriptorSetList);
+        void UpdateDescriptorSet(Vector<VkWriteDescriptorSet> writeDescriptorSetList);
 
         static VkCommandBuffer  BeginSingleTimeCommands();
         static VkCommandBuffer  BeginSingleTimeCommands(VkCommandPool& commandPool);
@@ -46,7 +46,7 @@ class VulkanRenderer
         void DestroyDebugger();
         void DestroyInstance();
         void DestroyRenderPass(VkRenderPass& renderPass);
-        void DestroyFrameBuffers(List<VkFramebuffer>& frameBufferList);
+        void DestroyFrameBuffers(Vector<VkFramebuffer>& frameBufferList);
         void DestroyDescriptorPool(VkDescriptorPool& descriptorPool);
         void DestroyDescriptorSetLayout(VkDescriptorSetLayout& descriptorSetLayout);
         void DestroyCommandBuffers(VkCommandBuffer& commandBuffer);

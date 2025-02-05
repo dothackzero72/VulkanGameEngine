@@ -63,7 +63,7 @@ public:
 	MeshPropertiesBuffer PropertiesBuffer;
 
 	template<class T>
-	void MeshStartUp(List<T>& vertexList, List<uint32>& indexList, uint32 meshBufferIndex)
+	void MeshStartUp(Vector<T>& vertexList, Vector<uint32>& indexList, uint32 meshBufferIndex)
 	{
 		MeshBufferIndex = meshBufferIndex;
 		VertexCount = vertexList.size();
@@ -85,7 +85,7 @@ public:
 	}
 
 	template<class T>
-	void MeshStartUp(List<T>& vertexList, List<uint32>& indexList, SharedPtr<Material> material)
+	void MeshStartUp(Vector<T>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material)
 	{
 		MeshMaterial = material;
 		VertexCount = vertexList.size();
@@ -107,7 +107,7 @@ public:
 	}
 
 	template<class T>
-	void VertexBufferUpdate(const float& deltaTime, List<T>& vertexList, List<uint32>& indexList)
+	void VertexBufferUpdate(const float& deltaTime, Vector<T>& vertexList, Vector<uint32>& indexList)
 	{
 		//MeshVertexBuffer.UpdateBufferMemory(vertexList);
 		//MeshIndexBuffer.UpdateBufferMemory(indexList);

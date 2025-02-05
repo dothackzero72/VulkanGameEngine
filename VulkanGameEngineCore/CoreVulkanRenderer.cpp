@@ -4,9 +4,9 @@
 
 RendererState cRenderer = { 0 };
 
-List<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice)
+Vector<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice)
 {
-    List<VkExtensionProperties> deviceExtensionList = List<VkExtensionProperties>();
+    Vector<VkExtensionProperties> deviceExtensionList = Vector<VkExtensionProperties>();
 
     uint32 deviceExtentionCount = 0;
     VkResult result = vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &deviceExtentionCount, nullptr);
@@ -16,7 +16,7 @@ List<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physic
         return deviceExtensionList;
     }
 
-    deviceExtensionList = List<VkExtensionProperties>(deviceExtentionCount);
+    deviceExtensionList = Vector<VkExtensionProperties>(deviceExtentionCount);
     result = vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &deviceExtentionCount, deviceExtensionList.data());
     if (result != VK_SUCCESS)
     {
@@ -27,9 +27,9 @@ List<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physic
     return deviceExtensionList;
 }
 
-List<VkSurfaceFormatKHR> Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+Vector<VkSurfaceFormatKHR> Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
 {
-    List<VkSurfaceFormatKHR> surfaceFormatList = List<VkSurfaceFormatKHR>();
+    Vector<VkSurfaceFormatKHR> surfaceFormatList = Vector<VkSurfaceFormatKHR>();
 
     uint32 surfaceFormatCount = 0;
     VkResult result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, nullptr);
@@ -39,7 +39,7 @@ List<VkSurfaceFormatKHR> Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDev
         return surfaceFormatList;
     }
 
-    surfaceFormatList = List<VkSurfaceFormatKHR>(surfaceFormatCount);
+    surfaceFormatList = Vector<VkSurfaceFormatKHR>(surfaceFormatCount);
     result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, surfaceFormatList.data());
     if (result != VK_SUCCESS)
     {
@@ -50,9 +50,9 @@ List<VkSurfaceFormatKHR> Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDev
     return surfaceFormatList;
 }
 
-List<VkPresentModeKHR> Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+Vector<VkPresentModeKHR> Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
 {
-    List<VkPresentModeKHR> presentModeList = List<VkPresentModeKHR>();
+    Vector<VkPresentModeKHR> presentModeList = Vector<VkPresentModeKHR>();
 
     uint32_t presentModeCount = 0;
     VkResult result = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, NULL);
@@ -62,7 +62,7 @@ List<VkPresentModeKHR> Renderer_GetSurfacePresentModes(VkPhysicalDevice physical
         return presentModeList;
     }
 
-    presentModeList = List<VkPresentModeKHR>(presentModeCount);
+    presentModeList = Vector<VkPresentModeKHR>(presentModeCount);
     result = vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, presentModeList.data());
     if (result != VK_SUCCESS)
     {
@@ -210,9 +210,9 @@ VkPhysicalDeviceFeatures Renderer_GetPhysicalDeviceFeatures(VkPhysicalDevice phy
     return features;
 }
 
-List<VkPhysicalDevice> Renderer_GetPhysicalDeviceList(VkInstance& instance)
+Vector<VkPhysicalDevice> Renderer_GetPhysicalDeviceList(VkInstance& instance)
 {
-    List<VkPhysicalDevice> physicalDeviceList = List<VkPhysicalDevice>();
+    Vector<VkPhysicalDevice> physicalDeviceList = Vector<VkPhysicalDevice>();
 
     uint32 deviceCount = 0;
     VkResult result = vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -226,7 +226,7 @@ List<VkPhysicalDevice> Renderer_GetPhysicalDeviceList(VkInstance& instance)
         return physicalDeviceList;
     }
 
-    physicalDeviceList = List<VkPhysicalDevice>(deviceCount);
+    physicalDeviceList = Vector<VkPhysicalDevice>(deviceCount);
     result = vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDeviceList.data());
     if (result != VK_SUCCESS)
     {
@@ -239,13 +239,13 @@ List<VkPhysicalDevice> Renderer_GetPhysicalDeviceList(VkInstance& instance)
 
 VkPhysicalDevice Renderer_SetUpPhysicalDevice(VkInstance instance, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily)
 {
-    List<VkPhysicalDevice> physicalDeviceList = Renderer_GetPhysicalDeviceList(instance);
+    Vector<VkPhysicalDevice> physicalDeviceList = Renderer_GetPhysicalDeviceList(instance);
     for (auto& physicalDevice : physicalDeviceList)
     {
         VkPhysicalDeviceFeatures physicalDeviceFeatures = Renderer_GetPhysicalDeviceFeatures(physicalDevice);
         VkResult result = SwapChain_GetQueueFamilies(physicalDevice, surface, graphicsFamily, presentFamily);
-        List<VkSurfaceFormatKHR> surfaceFormatList = Renderer_GetSurfaceFormats(physicalDevice, surface);
-        List<VkPresentModeKHR> presentModeList = Renderer_GetSurfacePresentModes(physicalDevice, surface);
+        Vector<VkSurfaceFormatKHR> surfaceFormatList = Renderer_GetSurfaceFormats(physicalDevice, surface);
+        Vector<VkPresentModeKHR> presentModeList = Renderer_GetSurfacePresentModes(physicalDevice, surface);
 
         if (graphicsFamily != UINT32_MAX &&
             presentFamily != UINT32_MAX &&
@@ -265,7 +265,7 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
     VkDevice device = VK_NULL_HANDLE;
 
     float queuePriority = 1.0f;
-    List<VkDeviceQueueCreateInfo> queueCreateInfoList;
+    Vector<VkDeviceQueueCreateInfo> queueCreateInfoList;
     if (graphicsFamily != UINT32_MAX)
     {
         queueCreateInfoList.emplace_back(VkDeviceQueueCreateInfo
@@ -541,7 +541,7 @@ VkResult Renderer_GetDeviceQueue(VkDevice device, uint32 graphicsFamily, uint32 
     return VK_SUCCESS;
 }
 
-VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(List<VkSurfaceFormatKHR>& availableFormats)
+VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(Vector<VkSurfaceFormatKHR>& availableFormats)
 {
     for (uint32_t x = 0; x < availableFormats.size(); x++)
     {
@@ -555,7 +555,7 @@ VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(List<VkSurfaceFormatKHR>& ava
     return VkSurfaceFormatKHR { VK_FORMAT_UNDEFINED, VK_COLOR_SPACE_MAX_ENUM_KHR };
 }
 
-VkPresentModeKHR SwapChain_FindSwapPresentMode(List<VkPresentModeKHR>& availablePresentModes)
+VkPresentModeKHR SwapChain_FindSwapPresentMode(Vector<VkPresentModeKHR>& availablePresentModes)
 {
     for (uint32_t x = 0; x < availablePresentModes.size(); x++)
     {
@@ -572,7 +572,7 @@ VkResult SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKH
     uint32 queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, NULL);
 
-    List<VkQueueFamilyProperties> queueFamilyList(queueFamilyCount);
+    Vector<VkQueueFamilyProperties> queueFamilyList(queueFamilyCount);
     vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilyList.data());
 
     for (uint32 x = 0; x <= queueFamilyCount; x++)
@@ -598,23 +598,23 @@ VkSurfaceCapabilitiesKHR SwapChain_GetSurfaceCapabilities(VkPhysicalDevice physi
     return surfaceCapabilities;
 }
 
-List<VkSurfaceFormatKHR> SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+Vector<VkSurfaceFormatKHR> SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
 {
     uint32 surfaceFormatCount = 0;
     VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, nullptr));
 
-    List<VkSurfaceFormatKHR> compatibleSwapChainFormatList = List<VkSurfaceFormatKHR>(surfaceFormatCount);
+    Vector<VkSurfaceFormatKHR> compatibleSwapChainFormatList = Vector<VkSurfaceFormatKHR>(surfaceFormatCount);
     VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, compatibleSwapChainFormatList.data()));
 
     return compatibleSwapChainFormatList;
 }
 
-List<VkPresentModeKHR> SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+Vector<VkPresentModeKHR> SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
 {
     uint32 presentModeCount = 0;
     VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, nullptr));
 
-    List<VkPresentModeKHR> compatiblePresentModesList = List<VkPresentModeKHR>(presentModeCount);
+    Vector<VkPresentModeKHR> compatiblePresentModesList = Vector<VkPresentModeKHR>(presentModeCount);
     VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModeCount, compatiblePresentModesList.data()));
 
     return compatiblePresentModesList;
@@ -630,8 +630,8 @@ VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physic
         height
     };
 
-    List<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats(cRenderer.PhysicalDevice, cRenderer.Surface);
-    List<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(cRenderer.PhysicalDevice, cRenderer.Surface);
+    Vector<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats(cRenderer.PhysicalDevice, cRenderer.Surface);
+    Vector<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(cRenderer.PhysicalDevice, cRenderer.Surface);
 
     VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities(cRenderer.PhysicalDevice, cRenderer.Surface);
     VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
@@ -662,7 +662,7 @@ VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physic
 
     if (graphicsFamily != presentFamily)
     {
-        List<uint32> queueFamilyIndices = { graphicsFamily, presentFamily };
+        Vector<uint32> queueFamilyIndices = { graphicsFamily, presentFamily };
 
         SwapChainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
         SwapChainCreateInfo.queueFamilyIndexCount = static_cast<uint32>(queueFamilyIndices.size());
@@ -676,20 +676,20 @@ VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physic
     return swapChain;
 }
 
-List<VkImage> SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain)
+Vector<VkImage> SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain)
 {
-    List<VkImage> swapChainImageList;
+    Vector<VkImage> swapChainImageList;
 
     uint32 swapChainImageCount = MAX_FRAMES_IN_FLIGHT;
     VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, &swapChainImageCount, nullptr));
 
-    swapChainImageList = List<VkImage>(swapChainImageCount);
+    swapChainImageList = Vector<VkImage>(swapChainImageCount);
     VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, &swapChainImageCount, swapChainImageList.data()));
 
     return swapChainImageList;
 }
 
-List<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, List<VkImage> swapChainImageList, VkSurfaceFormatKHR& swapChainImageFormat)
+Vector<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<VkImage> swapChainImageList, VkSurfaceFormatKHR& swapChainImageFormat)
 {
     std::vector<VkImageView> swapChainImageViewList(swapChainImageList.size());
     for (uint32_t x = 0; x < swapChainImageList.size(); x++)
@@ -715,7 +715,7 @@ List<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, List<VkIma
     return swapChainImageViewList;
 }
 
-VkResult Renderer_SetUpSemaphores(VkDevice device, List<VkFence>& inFlightFences, List<VkSemaphore>& acquireImageSemaphores, List<VkSemaphore>& presentImageSemaphores)
+VkResult Renderer_SetUpSemaphores(VkDevice device, Vector<VkFence>& inFlightFences, Vector<VkSemaphore>& acquireImageSemaphores, Vector<VkSemaphore>& presentImageSemaphores)
 {
 
     VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo =

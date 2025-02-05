@@ -9,9 +9,9 @@ VkResult VulkanRenderer::SetUpSwapChain()
     uint32 presentModeCount = 0;
 
     VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities(cRenderer.PhysicalDevice, cRenderer.Surface);
-    List<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats(cRenderer.PhysicalDevice, cRenderer.Surface);
+    Vector<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats(cRenderer.PhysicalDevice, cRenderer.Surface);
     VULKAN_RESULT(SwapChain_GetQueueFamilies(cRenderer.PhysicalDevice, cRenderer.Surface, cRenderer.SwapChain.GraphicsFamily, cRenderer.SwapChain.PresentFamily));
-    List<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(cRenderer.PhysicalDevice, cRenderer.Surface);
+    Vector<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(cRenderer.PhysicalDevice, cRenderer.Surface);
     VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
     VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
     vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
@@ -62,7 +62,7 @@ VkResult VulkanRenderer::StartFrame()
                                &cRenderer.RebuildRendererFlag);
 }
 
-VkResult VulkanRenderer::EndFrame(List<VkCommandBuffer> commandBufferSubmitList)
+VkResult VulkanRenderer::EndFrame(Vector<VkCommandBuffer> commandBufferSubmitList)
 {
     return Renderer_EndFrame(cRenderer.SwapChain.Swapchain,
                              &cRenderer.AcquireImageSemaphores[0],
@@ -134,7 +134,7 @@ VkResult VulkanRenderer::CreateGraphicsPipelines(VkPipeline& graphicPipeline, Vk
     return Renderer_CreateGraphicsPipelines(cRenderer.Device, &graphicPipeline, &createGraphicPipelines, 1);
 }
 
-VkResult VulkanRenderer::CreateGraphicsPipelines(VkPipeline& graphicPipeline, List<VkGraphicsPipelineCreateInfo> createGraphicPipelines)
+VkResult VulkanRenderer::CreateGraphicsPipelines(VkPipeline& graphicPipeline, Vector<VkGraphicsPipelineCreateInfo> createGraphicPipelines)
 {
     return Renderer_CreateGraphicsPipelines(cRenderer.Device, &graphicPipeline, createGraphicPipelines.data(), createGraphicPipelines.size());
 }
@@ -144,7 +144,7 @@ VkResult VulkanRenderer::CreateCommandPool(VkCommandPool& commandPool, VkCommand
     return Renderer_CreateCommandPool(cRenderer.Device, &commandPool, &commandPoolInfo);
 }
 
-void VulkanRenderer::UpdateDescriptorSet(List<VkWriteDescriptorSet> writeDescriptorSetList)
+void VulkanRenderer::UpdateDescriptorSet(Vector<VkWriteDescriptorSet> writeDescriptorSetList)
 {
     Renderer_UpdateDescriptorSet(cRenderer.Device, writeDescriptorSetList.data(), writeDescriptorSetList.size());
 }
@@ -254,7 +254,7 @@ void VulkanRenderer::DestroyRenderPass(VkRenderPass& renderPass)
     Renderer_DestroyRenderPass(cRenderer.Device, &renderPass);
 }
 
-void VulkanRenderer::DestroyFrameBuffers(List<VkFramebuffer>& frameBufferList)
+void VulkanRenderer::DestroyFrameBuffers(Vector<VkFramebuffer>& frameBufferList)
 {
     Renderer_DestroyFrameBuffers(cRenderer.Device, frameBufferList.data(), frameBufferList.size());
 }

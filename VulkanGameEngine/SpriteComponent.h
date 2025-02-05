@@ -5,13 +5,15 @@
 class SpriteComponent : public GameObjectComponent
 {
 private:
-	SharedPtr<Sprite> sprite;
+	SharedPtr<Sprite> SpriteObj = nullptr;
 
 public:
 	SpriteComponent();
-	SpriteComponent(SharedPtr<GameObject> parentGameObjectPtr);
-	SpriteComponent(SharedPtr<GameObject> parentGameObjectPtr, String& name);
+	SpriteComponent(String& name, SharedPtr<GameObject> parentGameObjectPtr, SharedPtr<Material> spriteMaterial, const uint& drawLayer);
 	virtual ~SpriteComponent() override;
+
+	static SharedPtr<SpriteComponent> CreateSpriteComponent(String& name, SharedPtr<GameObject> parentGameObjectPtr, SharedPtr<Material> spriteMaterial, const uint& drawLayer);
+
 
 	virtual void Input(float deltaTime) override;
 	virtual void Update(float deltaTime) override;
