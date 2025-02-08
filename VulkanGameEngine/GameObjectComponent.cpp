@@ -21,7 +21,7 @@ GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parent
 {
     //void* reqw = this;
     //Name = std::make_shared<Coral::String>(Coral::String().New("component"));
-    //ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
+    ComponentType = componentType;
     //ParentGameObjectPtr = parentGameObjectPtr;
 
     //CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(GetCSNameSpacePath(componentType)));
@@ -35,7 +35,7 @@ GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parent
 GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType)
 {
     //Name = std::make_shared<Coral::String>(Coral::String().New(name));
-    //ComponentType = std::make_shared<ComponentTypeEnum>(componentType);
+    ComponentType = componentType;
     //ParentGameObjectPtr = parentGameObjectPtr;
 
     //CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(GetCSNameSpacePath(componentType)));

@@ -22,13 +22,15 @@ GameObject::GameObject(String name)
 GameObject::GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList)
 {
 	Name = name;
+	String asdf = "adsfasd";
+	SharedPtr<GameObject> thisPtr = SharedPtr<GameObject>(this);
 	for (auto component : gameObjectComponentList)
 	{
-		String asdf = "adsfasd";
+
 		switch (component)
 		{
-			//case kTransform2DComponent: AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(std::make_shared<GameObject>(this), asdf))); break;
-			//case kInputComponent: AddComponent(std::make_shared<InputComponent>(InputComponent(std::make_shared<GameObject>(this), asdf))); break;
+		case kTransform2DComponent: AddComponent(MemoryManager::AddGameObjectComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(thisPtr, asdf)))); break;
+		case kInputComponent: AddComponent(MemoryManager::AddGameObjectComponent(std::make_shared<InputComponent>(InputComponent(thisPtr, asdf)))); break;
 		}
 	}
 
@@ -36,19 +38,24 @@ GameObject::GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponen
 	CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
 }
 
-GameObject::GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList, SharedPtr<Material> spriteMaterial, const uint& DrawLayer)
+GameObject::GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList, SpriteSheet& spriteSheet)
 {
+	Name = name;
 	String asdf = "adsfasd";
+	SharedPtr<GameObject> thisPtr = SharedPtr<GameObject>(this);
 	for (auto component : gameObjectComponentList)
 	{
 		switch (component)
 		{
-		/*	case kTransform2DComponent: AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(std::make_shared<GameObject>(this), asdf))); break;
-			case kInputComponent: AddComponent(std::make_shared<InputComponent>(InputComponent(std::make_shared<GameObject>(this), asdf))); break;*/
+		case kTransform2DComponent: AddComponent(MemoryManager::AddGameObjectComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(thisPtr, asdf)))); break;
+		case kInputComponent: AddComponent(MemoryManager::AddGameObjectComponent(std::make_shared<InputComponent>(InputComponent(thisPtr, asdf)))); break;
 		}
 	}
-	
-	//AddComponent(SpriteComponent::CreateSpriteComponent(asdf, std::make_shared<GameObject>(this), spriteMaterial, DrawLayer));
+
+	AddComponent(MemoryManager::AddGameObjectComponent(MemoryManager::AddGameObjectComponent(std::make_shared<SpriteComponent>(SpriteComponent(asdf, thisPtr, spriteSheet)))));
+
+	//CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(NameSpace));
+	//CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
 }
 
 void GameObject::Input(float deltaTime)
@@ -132,7 +139,7 @@ SharedPtr<GameObjectComponent> GameObject::GetComponentByComponentType(Component
 	auto component = std::find_if(GameObjectComponentList.begin(), GameObjectComponentList.end(),
 		[&type](const SharedPtr<GameObjectComponent>& component)
 		{
-			return *component->ComponentType.get() == type;
+			return component->ComponentType == type;
 		});
 
 	if (component != GameObjectComponentList.end())

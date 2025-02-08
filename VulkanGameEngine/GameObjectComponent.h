@@ -30,7 +30,7 @@ protected:
 
 public:
     WeakPtr<GameObject> ParentGameObjectPtr;
-    SharedPtr<ComponentTypeEnum> ComponentType = nullptr;
+    ComponentTypeEnum ComponentType;
     SharedPtr<Coral::String> Name = nullptr;
     size_t MemorySize = 0;
 

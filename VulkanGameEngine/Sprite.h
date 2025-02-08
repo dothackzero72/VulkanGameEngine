@@ -32,7 +32,7 @@ public:
 	vec2 SpriteScale = vec2(1.0f);
 
 	Sprite();
-	Sprite(SharedPtr<GameObject> parentGameObject, SharedPtr<Material> material,  uint spriteLayer);
+	Sprite(SharedPtr<GameObject> parentGameObject, SpriteSheet& spriteSheet);
 	virtual ~Sprite();
 
 	virtual void Input(const float& deltaTime);

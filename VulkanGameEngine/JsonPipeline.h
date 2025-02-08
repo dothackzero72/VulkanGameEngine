@@ -27,6 +27,5 @@ public:
     JsonPipeline(String jsonPath, VkRenderPass renderPass, uint constBufferSize);
     ~JsonPipeline();
 
-    static SharedPtr<JsonPipeline> CreateJsonRenderPass(String jsonPath, VkRenderPass renderPass, uint constBufferSize);
     void Destroy();
 };

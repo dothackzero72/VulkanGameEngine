@@ -19,8 +19,6 @@ JsonRenderPass::JsonRenderPass(String jsonPath, ivec2 renderPassResolution)
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer();
-
-    JsonPipelineList.emplace_back(JsonPipeline::CreateJsonRenderPass("../../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer)));
 }
 
 JsonRenderPass::~JsonRenderPass()

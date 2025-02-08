@@ -3,15 +3,25 @@
 
 Coral::HostInstance MemoryManager::hostInstance;
 SharedPtr<Coral::ManagedAssembly> MemoryManager::ECSassembly = nullptr;
-Vector<SharedPtr<GameObject>> MemoryManager::GameObjectList;
-Vector<SharedPtr<SpriteComponent>> MemoryManager::SpriteComponentList;
-Vector<SharedPtr<Texture>> MemoryManager::TextureList;
-Vector<SharedPtr<Material>> MemoryManager::MaterialList;
-Vector<SharedPtr<JsonRenderPass>> MemoryManager::JsonRenderPassList;
-Vector<SharedPtr<JsonPipeline>> MemoryManager::JsonPipelineList;
-Vector<SharedPtr<Mesh>> MemoryManager::MeshList;
-Vector<SharedPtr<Mesh2D>> MemoryManager::Mesh2DList;
-Vector<SharedPtr<SpriteBatchLayer>> MemoryManager::SpriteBatchLayerList;
+
+Vector<GameObject> MemoryManager::GameObjectList;
+Vector<SharedPtr<GameObjectComponent>> MemoryManager::GameObjectComponentList;
+Vector<Texture> MemoryManager::TextureList;
+Vector<Material> MemoryManager::MaterialList;
+Vector<JsonRenderPass> MemoryManager::JsonRenderPassList;
+Vector<JsonPipeline> MemoryManager::JsonPipelineList;
+Vector<Mesh> MemoryManager::MeshList;
+Vector<SpriteBatchLayer> MemoryManager::SpriteBatchLayerList;
+Vector<Sprite> MemoryManager::SpriteList;
+
+Vector<SharedPtr<GameObject>> MemoryManager::SharedGameObjectPtrList;
+Vector<SharedPtr<Texture>> MemoryManager::SharedTexturePtrList;
+Vector<SharedPtr<Material>> MemoryManager::SharedMaterialPtrList;
+Vector<SharedPtr<JsonRenderPass>> MemoryManager::SharedJsonRenderPassPtrList;
+Vector<SharedPtr<JsonPipeline>> MemoryManager::SharedJsonPipelinePtrList;
+Vector<SharedPtr<Mesh>> MemoryManager::SharedMeshPtrList;
+Vector<SharedPtr<SpriteBatchLayer>> MemoryManager::SharedSpriteBatchLayerPtrList;
+Vector<SharedPtr<Sprite>> MemoryManager::SharedSpritePtrList;
 
 //MemoryPool<GameObject> MemoryManager::GameObjectMemoryPool;
 //MemoryPool<SpriteComponent> MemoryManager::SpriteComponentMemoryPool;
@@ -170,9 +180,9 @@ void MemoryManager::SetUpMemoryManager(uint32 EstObjectCount)
 void MemoryManager::Update(float deltaTime)
 {
 	VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-	for (auto drawLayer : Mesh2DList)
+	for (auto drawLayer : MeshList)
 	{
-		drawLayer->BufferUpdate(commandBuffer, deltaTime);
+		drawLayer.BufferUpdate(commandBuffer, deltaTime);
 	}
 	renderer.EndSingleTimeCommands(commandBuffer);
 }
@@ -181,11 +191,11 @@ void MemoryManager::UpdateBufferIndex()
 {
 	for (int x = 0; x < TextureList.size(); x++)
 	{
-		TextureList[x]->UpdateTextureBufferIndex(x);
+		TextureList[x].UpdateTextureBufferIndex(x);
 	}
 	for (int x = 0; x < MaterialList.size(); x++)
 	{
-		MaterialList[x]->UpdateMaterialBufferIndex(x);
+		MaterialList[x].UpdateMaterialBufferIndex(x);
 	}
 }
 
@@ -193,13 +203,13 @@ void MemoryManager::Destroy()
 {
 	GameObjectList.clear();
 	//RenderMesh2DComponentList.clear();
-	TextureList.clear();
-	MaterialList.clear();
-	JsonRenderPassList.clear();
-	JsonPipelineList.clear();
-	MeshList.clear();
-	Mesh2DList.clear();
-	SpriteBatchLayerList.clear();
+	//TextureList.clear();
+	//MaterialList.clear();
+	//JsonRenderPassList.clear();
+	//JsonPipelineList.clear();
+	//MeshList.clear();
+	//Mesh2DList.clear();
+	//SpriteBatchLayerList.clear();
 
 	//GameObjectMemoryPool.Destroy();
 	//SpriteComponentMemoryPool.Destroy();
@@ -227,12 +237,73 @@ const Vector<VkDescriptorBufferInfo> MemoryManager::GetMeshPropertiesBuffer()
 	{
 		for (auto& mesh : MeshList)
 		{
-			mesh->GetMeshPropertiesBuffer(meshPropertiesBuffer);
+			mesh.GetMeshPropertiesBuffer(meshPropertiesBuffer);
 		}
 	}
 
 	return meshPropertiesBuffer;
 }
+
+SharedPtr<GameObject> MemoryManager::AddGameObject(GameObject gameObject)
+{
+	GameObjectList.emplace_back(gameObject);
+	SharedGameObjectPtrList.emplace_back(std::make_shared<GameObject>(GameObject(gameObject)));
+	return SharedGameObjectPtrList.back();
+}
+
+ SharedPtr<GameObjectComponent> MemoryManager::AddGameObjectComponent(SharedPtr<GameObjectComponent> gameObjectComponent)
+ {
+	 return GameObjectComponentList.emplace_back(gameObjectComponent);
+ }
+
+ SharedPtr<Texture> MemoryManager::AddTexture(Texture texture)
+ {
+	 TextureList.emplace_back(texture);
+	 SharedTexturePtrList.emplace_back(std::make_shared<Texture>(Texture(texture)));
+	 return SharedTexturePtrList.back();
+ }
+
+ SharedPtr<Material> MemoryManager::AddMaterial(Material material)
+ {
+	 MaterialList.emplace_back(material);
+	 SharedMaterialPtrList.emplace_back(std::make_shared<Material>(Material(material)));
+	 return SharedMaterialPtrList.back();
+ }
+
+ SharedPtr<JsonRenderPass> MemoryManager::AddJsonRenderPass(JsonRenderPass jsonRenderPass)
+ {
+	 JsonRenderPassList.emplace_back(jsonRenderPass);
+	 SharedJsonRenderPassPtrList.emplace_back(std::make_shared<JsonRenderPass>(JsonRenderPass(jsonRenderPass)));
+	 return SharedJsonRenderPassPtrList.back();
+ }
+
+ SharedPtr<JsonPipeline> MemoryManager::AddJsonPipeline(JsonPipeline jsonPipeline)
+ {
+	 JsonPipelineList.emplace_back(jsonPipeline);
+	 SharedJsonPipelinePtrList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline(jsonPipeline)));
+	 return SharedJsonPipelinePtrList.back();
+ }
+
+ SharedPtr<Mesh> MemoryManager::AddMesh(Mesh mesh)
+ {
+	 MeshList.emplace_back(mesh);
+	 SharedMeshPtrList.emplace_back(std::make_shared<Mesh>(Mesh(mesh)));
+	 return SharedMeshPtrList.back();
+ }
+
+ SharedPtr<SpriteBatchLayer> MemoryManager::AddSpriteBatchLayer(SpriteBatchLayer spriteBatchLayer)
+ {
+	 SpriteBatchLayerList.emplace_back(spriteBatchLayer);
+	 SharedSpriteBatchLayerPtrList.emplace_back(std::make_shared<SpriteBatchLayer>(SpriteBatchLayer(spriteBatchLayer)));
+	 return SharedSpriteBatchLayerPtrList.back();
+ }
+
+ SharedPtr<Sprite> MemoryManager::AddSprite(Sprite sprite)
+ {
+	 SpriteList.emplace_back(sprite);
+	 SharedSpritePtrList.emplace_back(std::make_shared<Sprite>(Sprite(sprite)));
+	 return SharedSpritePtrList.back();
+ }
 
 const Vector<VkDescriptorImageInfo> MemoryManager::GetTexturePropertiesBuffer()
 {
@@ -273,7 +344,7 @@ const Vector<VkDescriptorImageInfo> MemoryManager::GetTexturePropertiesBuffer()
 	{
 		for (auto& texture : TextureList)
 		{
-			texture->GetTexturePropertiesBuffer(texturePropertiesBuffer);
+			texture.GetTexturePropertiesBuffer(texturePropertiesBuffer);
 		}
 	}
 
@@ -285,7 +356,7 @@ const Vector<VkDescriptorBufferInfo> MemoryManager::GetMaterialPropertiesBuffer(
 	std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
 		for (auto& material : MaterialList)
 		{
-			material->GetMaterialPropertiesBuffer(materialPropertiesBuffer);
+			material.GetMaterialPropertiesBuffer(materialPropertiesBuffer);
 		}
 	return materialPropertiesBuffer;
 }

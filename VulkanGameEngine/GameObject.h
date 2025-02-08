@@ -10,8 +10,10 @@ extern "C"
 #include <Coral/Array.hpp>
 #include <Coral/Attribute.hpp>
 #include "Material.h"
+#include "SpriteSheet.h"
 
 class Sprite;
+class SpriteSheet;
 class GameObjectComponent;
 class GameObject 
 {
@@ -30,7 +32,7 @@ public:
     GameObject();
     GameObject(String name);
     GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList);
-    GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList, SharedPtr<Material> spriteMaterial, const uint& DrawLayer);
+    GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList, SpriteSheet& spriteSheet);
 
     virtual void Input(float deltaTime);
     virtual void Update(float deltaTime);
@@ -42,6 +44,7 @@ public:
 
     Vector<SharedPtr<GameObjectComponent>> GetGameObjectComponentList();
     SharedPtr<GameObjectComponent> GetComponentByName(const std::string& name);
-    SharedPtr<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type);
     void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
+
+    std::shared_ptr<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type);
 };

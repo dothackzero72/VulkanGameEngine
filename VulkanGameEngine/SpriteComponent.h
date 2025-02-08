@@ -9,11 +9,8 @@ private:
 
 public:
 	SpriteComponent();
-	SpriteComponent(String& name, SharedPtr<GameObject> parentGameObjectPtr, SharedPtr<Material> spriteMaterial, const uint& drawLayer);
+	SpriteComponent(String& name, SharedPtr<GameObject> parentGameObjectPtr, SpriteSheet& spriteSheet);
 	virtual ~SpriteComponent() override;
-
-	static SharedPtr<SpriteComponent> CreateSpriteComponent(String& name, SharedPtr<GameObject> parentGameObjectPtr, SharedPtr<Material> spriteMaterial, const uint& drawLayer);
-
 
 	virtual void Input(float deltaTime) override;
 	virtual void Update(float deltaTime) override;

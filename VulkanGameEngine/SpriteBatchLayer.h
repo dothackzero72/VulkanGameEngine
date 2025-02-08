@@ -33,7 +33,7 @@ public:
 	String					        Name;
 
 	SpriteBatchLayer();
-	SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline, Vector<SharedPtr<Sprite>> spriteList);
+	SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline);
 	virtual ~SpriteBatchLayer();
 
 	void BuildSpriteLayer(Vector<SharedPtr<Sprite>>& spriteDrawList);

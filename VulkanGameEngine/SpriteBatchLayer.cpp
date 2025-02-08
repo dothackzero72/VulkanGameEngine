@@ -6,11 +6,11 @@ SpriteBatchLayer::SpriteBatchLayer()
 
 }
 
-SpriteBatchLayer::SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline, Vector<SharedPtr<Sprite>> spriteList)
+SpriteBatchLayer::SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline)
 {
 	SpriteRenderPipeline = spriteRenderPipeline;
 	SpriteLayerMesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList, nullptr));
-	SpriteList = spriteList;
+	SpriteList = MemoryManager::GetSpriteList();
 	for (auto& sprite : SpriteList)
 	{
 		sprite->Update(0.0f);

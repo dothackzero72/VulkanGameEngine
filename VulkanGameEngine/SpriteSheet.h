@@ -6,35 +6,23 @@
 class Sprite;
 class SpriteSheet
 {
-	friend class Sprite;
 private:
 	SharedPtr<Material> SpriteMaterial;
 
-	vec2				SpriteSize;
-	ivec2				SpriteCellCount;
-	ivec2				SpriteSizeInPixels;
-	ivec2				SpritePosition;
+	ivec2				SpritePixelSize;
+	ivec2				SpriteCells;
 	vec2				SpriteUVSize;
-	vec2				CurrentSpriteUV;
-
-	bool				DrawSprite = true;
-	bool				Animated;
-	uint32				CurrentFrame;
-	float				CurrentFrameTime;
-	float				FrameHoldTime;
-	std::vector<ivec2>  AnimationFrameOffsets;
-
-	float				LeftSideUV;
-	float				RightSideUV;
-	float				TopSideUV;
-	float				BottomSideUV;
+	uint				SpriteLayer;
 
 public:
 	SpriteSheet();
-	SpriteSheet(SharedPtr<Material> material);
-	SpriteSheet(SharedPtr<Material> material, vec2 spriteSize, ivec2 tileSizeInPixels, ivec2 SpritePosition, std::vector<ivec2>& AnimationFrameOffsets, float FrameTime);
+	SpriteSheet(SharedPtr<Material> spriteMaterial, vec2& spritePixelSize, uint spriteLayer);
 	virtual ~SpriteSheet();
 
-	void Update(float deltaTime);
+	SharedPtr<Material> GetSpriteMaterial() { return SpriteMaterial; }
+	ivec2 GetSpritePixelSize() { return SpritePixelSize; }
+	ivec2 GetSpriteCells() { return SpriteCells; }
+	vec2 GetSpriteUVSize() { return SpriteUVSize; }
+	uint GetSpriteLayer() { return SpriteLayer; }
 };
 
