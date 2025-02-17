@@ -14,16 +14,20 @@ private:
 
 	vec2 SpriteSize = vec2(50.0f);
 	vec4 SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	vec2 UVOffset = vec2(0.0f);
 
 	SharedPtr<GameObject> ParentGameObject;
 	SharedPtr<Transform2DComponent> Transform2D;
 
-	SharedPtr<SpriteSheet> SpriteSheetPtr;
+	SpriteSheet Spritesheet;
 	SharedPtr<Material> SpriteMaterial;
 	SharedPtr<SpriteInstanceStruct> SpriteInstance;
-	Vector<SharedPtr<Animation2D>> AnimationList;
+	Animation2D CurrentSpriteAnimation;
+
+	Vector<Animation2D> AnimationList;
+	uint CurrentFrame = 0;
+
 	bool SpriteAlive = true;
+
 public:
 
 	vec2 SpritePosition = vec2(0.0f);

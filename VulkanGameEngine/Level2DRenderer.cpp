@@ -11,18 +11,21 @@ Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : 
     FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
 
 
-    TextureList.emplace_back(MemoryManager::AddTexture(Texture("../Textures/MegaMan_diffuse.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap)));
-    TextureList.emplace_back(MemoryManager::AddTexture(Texture("../Textures/container2.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap)));
+    TextureList.emplace_back(MemoryManager::AddTexture(Texture("../Textures/MegaMan_diffuse.bmp", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap)));
+   // TextureList.emplace_back(MemoryManager::AddTexture(Texture("../Textures/container2.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap)));
 
     MaterialList.emplace_back(MemoryManager::AddMaterial(Material("Material1")));
     MaterialList.back()->SetAlbedoMap(MemoryManager::GetTextureList()[0]);
 
-    MaterialList.emplace_back(MemoryManager::AddMaterial(Material("Material2")));
-    MaterialList.back()->SetAlbedoMap(MemoryManager::GetTextureList()[1]);
+    //MaterialList.emplace_back(MemoryManager::AddMaterial(Material("Material2")));
+    //MaterialList.back()->SetAlbedoMap(MemoryManager::GetTextureList()[1]);
 
-    GameObjectList.emplace_back(MemoryManager::AddGameObject(GameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, MaterialList[0], 0)));
-    GameObjectList.emplace_back(MemoryManager::AddGameObject(GameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, MaterialList[0], 0)));
-    GameObjectList.emplace_back(MemoryManager::AddGameObject(GameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, MaterialList[0], 0)));
+    ivec2 size = ivec2(32);
+    SpriteSheet spriteSheet = SpriteSheet(MaterialList[0], size, 0);
+
+    GameObjectList.emplace_back(MemoryManager::AddGameObject(GameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet)));
+   // GameObjectList.emplace_back(MemoryManager::AddGameObject(GameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet)));
+   // GameObjectList.emplace_back(MemoryManager::AddGameObject(GameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet)));
 
     VULKAN_RESULT(renderer.CreateCommandBuffer(CommandBuffer));
 
@@ -35,8 +38,8 @@ Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : 
     JsonPipelineList.emplace_back(MemoryManager::AddJsonPipeline(JsonPipeline("../Pipelines/SpriteInstancePipeline.json", RenderPass, sizeof(SceneDataBuffer))));
 
     std::dynamic_pointer_cast<Transform2DComponent>(MemoryManager::GetGameObjectList()[0]->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent))->GameObjectPosition = vec2(300.0f, 40.0f);
-    std::dynamic_pointer_cast<Transform2DComponent>(MemoryManager::GetGameObjectList()[1]->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent))->GameObjectPosition = vec2(300.0f, 20.0f);
-    std::dynamic_pointer_cast<Transform2DComponent>(MemoryManager::GetGameObjectList()[2]->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent))->GameObjectPosition = vec2(300.0f, 80.0f);
+   // std::dynamic_pointer_cast<Transform2DComponent>(MemoryManager::GetGameObjectList()[1]->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent))->GameObjectPosition = vec2(300.0f, 20.0f);
+   // std::dynamic_pointer_cast<Transform2DComponent>(MemoryManager::GetGameObjectList()[2]->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent))->GameObjectPosition = vec2(300.0f, 80.0f);
 
     SpriteLayerRenderList.emplace_back(MemoryManager::AddSpriteBatchLayer(SpriteBatchLayer(JsonPipelineList[1])));
 }

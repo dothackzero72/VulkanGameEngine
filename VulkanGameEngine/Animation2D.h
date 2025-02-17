@@ -1,24 +1,17 @@
 #pragma once
 #include <TypeDef.h>
+#include "SpriteSheet.h"
 
-class Animation2D
+struct Animation2D
 {
-private:
-
-
 	uint32 CurrentFrame;
-	Frame2D CurrentFrameUV;
+	vec2 CurrentFrameUV;
 	float CurrentFrameTime;
 	float FrameHoldTime;
-	std::vector<FrameOffset> FrameList;
+	Vector<ivec2> FrameList;
+	String AnimationName;
 
-public:
 	Animation2D();
-	Animation2D(std::vector<FrameOffset> frameList, float frameHoldTime, uint32_t StartFrame = 0);
-	virtual ~Animation2D();
-
-	void Update(float deltaTime, glm::vec2 spriteUVSize, uint32_t SpriesInSpriteSheet, bool FlipSpriteX);
-	uint32_t GetCurrentFrame() { return CurrentFrame; }
-	Frame2D GetFrame() { return CurrentFrameUV; }
+	Animation2D(const String& animationName, Vector<ivec2>& frameList, float frameHoldTime);
 };
 

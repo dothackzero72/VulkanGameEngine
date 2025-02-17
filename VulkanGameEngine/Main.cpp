@@ -28,11 +28,13 @@ int main(int argc, char** argv)
     scene.StartUp();
     while (!vulkanWindow->WindowShouldClose(vulkanWindow))
     {
+        const float frameTime = deltaTime.GetFrameTime();
+
         vulkanWindow->PollEventHandler(vulkanWindow);
         vulkanWindow->SwapBuffer(vulkanWindow);
-        scene.Input(deltaTime.GetFrameTime());
-        scene.Update(deltaTime.GetFrameTime());
-        scene.ImGuiUpdate(deltaTime.GetFrameTime());
+        scene.Input(frameTime);
+        scene.Update(frameTime);
+        scene.ImGuiUpdate(frameTime);
         scene.Draw();
         deltaTime.EndFrameTime();
     }

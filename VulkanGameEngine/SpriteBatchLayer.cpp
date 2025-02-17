@@ -13,7 +13,6 @@ SpriteBatchLayer::SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline)
 	SpriteList = MemoryManager::GetSpriteList();
 	for (auto& sprite : SpriteList)
 	{
-		sprite->Update(0.0f);
 		SpriteInstanceList.emplace_back(*sprite->GetSpriteInstance().get());
 	}
 	SpriteBuffer = SpriteInstanceBuffer(SpriteInstanceList, SpriteLayerMesh->GetMeshBufferUsageSettings(), SpriteLayerMesh->GetMeshBufferPropertySettings(), false);

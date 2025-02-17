@@ -151,17 +151,17 @@ void Texture::CreateTextureSampler()
 		.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
 		.magFilter = VK_FILTER_NEAREST,
 		.minFilter = VK_FILTER_NEAREST,
-		.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
-		.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-		.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+		.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST, // Disable mipmaps, pixel perfect
+		.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, // Prevent wrapping.
+		.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+		.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, //Usually not important
 		.mipLodBias = 0,
-		.anisotropyEnable = VK_TRUE,
-		.maxAnisotropy = 16.0f,
+		.anisotropyEnable = VK_FALSE, // Disable for pixel-perfect rendering, to avoid blur.
+		.maxAnisotropy = 1.0f,  // No anisotropy
 		.compareEnable = VK_FALSE,
 		.compareOp = VK_COMPARE_OP_ALWAYS,
 		.minLod = 0,
-		.maxLod = static_cast<float>(MipMapLevels),
+		.maxLod = 0.0f, // No mipmaps, LOD is 0
 		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
 		.unnormalizedCoordinates = VK_FALSE,
 	};
