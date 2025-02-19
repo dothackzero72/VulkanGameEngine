@@ -10,6 +10,8 @@ private:
 	Vector<SharedPtr<Texture>>		    TextureList;
 	Vector<SharedPtr<Material>>		    MaterialList;
 
+	void AddGameObject(const String& name, Vector<ComponentTypeEnum> gameObjectComponentList, SpriteSheet& spriteSheet, vec2 objectPosition);
+	void RemoveGameObject(SharedPtr<GameObject> gameObject);
 	void DestroyDeadGameObjects();
 
 public:

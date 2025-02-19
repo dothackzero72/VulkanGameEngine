@@ -48,6 +48,17 @@ Level2DRenderer::~Level2DRenderer()
 {
 }
 
+void Level2DRenderer::AddGameObject(const String& name, Vector<ComponentTypeEnum> gameObjectComponentList, SpriteSheet& spriteSheet, vec2 objectPosition)
+{
+    GameObjectList.emplace_back(MemoryManager::AddGameObject(GameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet)));
+    std::dynamic_pointer_cast<Transform2DComponent>(MemoryManager::GetGameObjectList()[0]->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent))->GameObjectPosition = objectPosition;
+}
+
+void Level2DRenderer::RemoveGameObject(SharedPtr<GameObject> gameObject)
+{
+    gameObject->GameObjectAlive = false;
+}
+
 void Level2DRenderer::Input(const float& deltaTime)
 {
     for (auto gameObject : GameObjectList)
@@ -58,8 +69,6 @@ void Level2DRenderer::Input(const float& deltaTime)
 
 void Level2DRenderer::Update(const float& deltaTime)
 {
-    DestroyDeadGameObjects();
-
     for (auto gameObject : GameObjectList)
     {
         gameObject->Update(deltaTime);
@@ -146,43 +155,9 @@ void Level2DRenderer::Destroy()
     {
         spriteLayer->Destroy();
     }
-    for (auto material : MaterialList)
-    {
-        material->Destroy();
-    }
     for (auto texture : TextureList)
     {
         texture->Destroy();
     }
     JsonRenderPass::Destroy();
-}
-
-void Level2DRenderer::DestroyDeadGameObjects()
-{
-    Vector<SharedPtr<GameObject>> deadGameObjectList;
-    for (auto it = GameObjectList.begin(); it != GameObjectList.end(); ++it) {
-        if (!(*it)->GameObjectAlive) {
-            deadGameObjectList.push_back(*it);
-        }
-    }
-
-    if (deadGameObjectList.size())
-    {
-        for (auto& gameObject : deadGameObjectList) {
-            if (SharedPtr spriteComponent = gameObject->GetComponentByComponentType(kSpriteComponent)) {
-                SharedPtr sprite = std::dynamic_pointer_cast<SpriteComponent>(spriteComponent);
-                if (sprite) {
-                    SharedPtr spriteObject = sprite->GetSprite();
-                    SpriteLayerList[0]->RemoveSprite(spriteObject);
-                }
-            }
-            gameObject->Destroy();
-        }
-
-        GameObjectList.erase(std::remove_if(GameObjectList.begin(), GameObjectList.end(),
-            [&](const SharedPtr<GameObject>& gameObject) {
-                return !gameObject->GameObjectAlive;
-            }),
-            GameObjectList.end());
-    }
 }

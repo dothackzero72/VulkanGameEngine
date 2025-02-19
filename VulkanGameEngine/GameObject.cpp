@@ -72,12 +72,6 @@ void GameObject::Update(float deltaTime)
 	{
 		component->Update(deltaTime);
 	}
-
-	CurrentFrametime += deltaTime;
-	if (CurrentFrametime >= 10.0f)
-	{
-		GameObjectAlive = false;
-	}
 }
 
 void GameObject::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
