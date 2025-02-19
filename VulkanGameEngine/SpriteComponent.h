@@ -19,5 +19,7 @@ public:
 	virtual void Destroy() override;
 	virtual SharedPtr<GameObjectComponent> Clone() const override;
 	virtual size_t GetMemorySize() const override;
+
+	SharedPtr<Sprite> GetSprite() { return SpriteObj; }
 };
 

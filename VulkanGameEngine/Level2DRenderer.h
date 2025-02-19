@@ -5,11 +5,12 @@
 class Level2DRenderer : public JsonRenderPass
 {
 private:
-	Vector<SharedPtr<SpriteBatchLayer>> SpriteLayerRenderList;
-	Vector<SharedPtr<GameObject>>		  GameObjectList;
-	Vector<SharedPtr<Sprite>>			  SpriteList;
-	Vector<SharedPtr<Texture>>		  TextureList;
-	Vector<SharedPtr<Material>>		  MaterialList;
+	Vector<SharedPtr<SpriteBatchLayer>> SpriteLayerList;
+	Vector<SharedPtr<GameObject>>		GameObjectList;
+	Vector<SharedPtr<Texture>>		    TextureList;
+	Vector<SharedPtr<Material>>		    MaterialList;
+
+	void DestroyDeadGameObjects();
 
 public:
 	Level2DRenderer();

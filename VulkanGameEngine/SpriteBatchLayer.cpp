@@ -32,6 +32,11 @@ void SpriteBatchLayer::AddSprite(SharedPtr<Sprite> sprite)
 void SpriteBatchLayer::RemoveSprite(SharedPtr<Sprite> sprite)
 {
 	sprite->Destroy();
+	SpriteList.erase(std::remove_if(SpriteList.begin(), SpriteList.end(),
+		[&sprite](const SharedPtr<Sprite>& spriteList) {
+			return spriteList.get() == sprite.get();
+		}),
+		SpriteList.end());
 }
 
 void SpriteBatchLayer::Update(float deltaTime)
@@ -44,7 +49,11 @@ void SpriteBatchLayer::Update(float deltaTime)
 		sprite->Update(deltaTime);
 		SpriteInstanceList.emplace_back(*sprite->GetSpriteInstance().get());
 	}
-	SpriteBuffer.UpdateBufferMemory(SpriteInstanceList);
+
+	if (SpriteList.size())
+	{
+		SpriteBuffer.UpdateBufferMemory(SpriteInstanceList);
+	}
 }
 
 void SpriteBatchLayer::Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneProperties)

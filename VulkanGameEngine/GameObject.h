@@ -28,6 +28,8 @@ private:
 public:
     String Name;
     Vector<SharedPtr<GameObjectComponent>> GameObjectComponentList;
+    bool GameObjectAlive = true;
+    float CurrentFrametime = 0.0f;
 
     GameObject();
     GameObject(String name);

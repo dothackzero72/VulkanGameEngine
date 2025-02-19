@@ -41,7 +41,7 @@ Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : 
    // std::dynamic_pointer_cast<Transform2DComponent>(MemoryManager::GetGameObjectList()[1]->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent))->GameObjectPosition = vec2(300.0f, 20.0f);
    // std::dynamic_pointer_cast<Transform2DComponent>(MemoryManager::GetGameObjectList()[2]->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent))->GameObjectPosition = vec2(300.0f, 80.0f);
 
-    SpriteLayerRenderList.emplace_back(MemoryManager::AddSpriteBatchLayer(SpriteBatchLayer(JsonPipelineList[1])));
+    SpriteLayerList.emplace_back(MemoryManager::AddSpriteBatchLayer(SpriteBatchLayer(JsonPipelineList[1])));
 }
 
 Level2DRenderer::~Level2DRenderer()
@@ -58,11 +58,13 @@ void Level2DRenderer::Input(const float& deltaTime)
 
 void Level2DRenderer::Update(const float& deltaTime)
 {
+    DestroyDeadGameObjects();
+
     for (auto gameObject : GameObjectList)
     {
         gameObject->Update(deltaTime);
     }
-    for (auto& spriteLayer : SpriteLayerRenderList)
+    for (auto& spriteLayer : SpriteLayerList)
     {
         spriteLayer->Update(deltaTime);
     }
@@ -125,7 +127,7 @@ VkCommandBuffer Level2DRenderer::Draw(Vector<SharedPtr<GameObject>> meshList, Sc
     vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);
     vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
-    for (auto spriteLayer : SpriteLayerRenderList)
+    for (auto spriteLayer : SpriteLayerList)
     {
         spriteLayer->Draw(CommandBuffer, sceneProperties);
     }
@@ -140,13 +142,47 @@ void Level2DRenderer::Destroy()
     {
         gameObject->Destroy();
     }
-    for (auto spriteLayer : SpriteLayerRenderList)
+    for (auto spriteLayer : SpriteLayerList)
     {
         spriteLayer->Destroy();
+    }
+    for (auto material : MaterialList)
+    {
+        material->Destroy();
     }
     for (auto texture : TextureList)
     {
         texture->Destroy();
     }
     JsonRenderPass::Destroy();
+}
+
+void Level2DRenderer::DestroyDeadGameObjects()
+{
+    Vector<SharedPtr<GameObject>> deadGameObjectList;
+    for (auto it = GameObjectList.begin(); it != GameObjectList.end(); ++it) {
+        if (!(*it)->GameObjectAlive) {
+            deadGameObjectList.push_back(*it);
+        }
+    }
+
+    if (deadGameObjectList.size())
+    {
+        for (auto& gameObject : deadGameObjectList) {
+            if (SharedPtr spriteComponent = gameObject->GetComponentByComponentType(kSpriteComponent)) {
+                SharedPtr sprite = std::dynamic_pointer_cast<SpriteComponent>(spriteComponent);
+                if (sprite) {
+                    SharedPtr spriteObject = sprite->GetSprite();
+                    SpriteLayerList[0]->RemoveSprite(spriteObject);
+                }
+            }
+            gameObject->Destroy();
+        }
+
+        GameObjectList.erase(std::remove_if(GameObjectList.begin(), GameObjectList.end(),
+            [&](const SharedPtr<GameObject>& gameObject) {
+                return !gameObject->GameObjectAlive;
+            }),
+            GameObjectList.end());
+    }
 }

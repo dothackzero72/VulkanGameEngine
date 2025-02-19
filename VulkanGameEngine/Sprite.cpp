@@ -31,7 +31,7 @@ Sprite::Sprite(SharedPtr<GameObject> parentGameObject, SpriteSheet& spriteSheet)
 		ivec2(5, 0),
 		ivec2(4, 0)
 	};
-	CurrentSpriteAnimation = AnimationList.emplace_back(Animation2D("Walking", frameList2, 10.0f));
+	CurrentSpriteAnimation = AnimationList.emplace_back(Animation2D("Walking", frameList2, 0.5f));
 }
 
 Sprite::~Sprite()
