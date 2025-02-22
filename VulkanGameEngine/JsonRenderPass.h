@@ -7,7 +7,6 @@
 #include "DepthTexture.h"
 #include "JsonPipeline.h"
 #include "GameObject.h"
-#include "json.h"
 
 class JsonRenderPass
 {

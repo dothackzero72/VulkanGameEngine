@@ -5,18 +5,18 @@ Mesh2D::Mesh2D() : Mesh()
 {
 }
 
-Mesh2D::Mesh2D(Vector<Vertex2D>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material) : Mesh()
+Mesh2D::Mesh2D(Vector<Vertex2D>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material) : Mesh<Vertex2D>()
 {
-	MeshStartUp<Vertex2D>(vertexList, indexList, material);
+	MeshStartUp(vertexList, indexList, material);
 }
 
 Mesh2D::~Mesh2D()
 {
 }
 
-void Mesh2D::Update(const float& deltaTime)
+void Mesh2D::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
-	Mesh::Update(deltaTime);
+	Mesh<Vertex2D>::Update(commandBuffer, deltaTime);
 }
 
 void Mesh2D::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
@@ -38,5 +38,5 @@ void Mesh2D::InstanceDraw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, 
 
 void Mesh2D::Destroy()
 {
-	Mesh::Destroy();
+	Mesh<Vertex2D>::Destroy();
 }

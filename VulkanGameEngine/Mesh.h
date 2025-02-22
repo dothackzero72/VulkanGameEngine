@@ -8,7 +8,6 @@ extern "C"
 #include "VulkanBuffer.h"
 #include "SceneDataBuffer.h"
 #include "FrameTimer.h"
-#include "JsonPipeline.h"
 #include "Transform2DComponent.h"
 #include "Material.h"
 
@@ -18,15 +17,14 @@ struct MeshProperitiesStruct
 	alignas(16) mat4   MeshTransform = mat4(1.0f);
 };
 
-typedef VulkanBuffer<Vertex2D> VertexBuffer;
-typedef VulkanBuffer<uint32> IndexBuffer;
-typedef VulkanBuffer<SpriteInstanceStruct> SpriteInstanceBuffer;
+typedef VulkanBuffer<uint32>				IndexBuffer;
+typedef VulkanBuffer<mat4>					TransformBuffer;
+typedef VulkanBuffer<SpriteInstanceStruct>  SpriteInstanceBuffer;
 typedef VulkanBuffer<MeshProperitiesStruct> MeshPropertiesBuffer;
 
+template<class T>
 class Mesh
 {
-	friend class JsonPipeline;
-
 private:
 
 	const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
@@ -43,8 +41,9 @@ private:
 	WeakPtr<Transform2DComponent> GameObjectTransform;
 	
 protected:
-	SharedPtr<JsonPipeline>	MeshRenderPipeline;
-	SharedPtr<Material>		MeshMaterial;
+	SharedPtr<Material>		  MeshMaterial;
+	SharedPtr<Vector<T>>      MeshVertexList;
+	SharedPtr<Vector<uint32>> MeshIndexList;
 
 public:
 	uint64 MeshBufferIndex;
@@ -57,20 +56,51 @@ public:
 	vec3 MeshRotation;
 	vec3 MeshScale;
 
-	VertexBuffer MeshVertexBuffer;
-	IndexBuffer MeshIndexBuffer;
-
+	VulkanBuffer<T>		 MeshVertexBuffer;
+	IndexBuffer			 MeshIndexBuffer;
+	TransformBuffer      MeshTransformBuffer;
 	MeshPropertiesBuffer PropertiesBuffer;
 
-	template<class T>
+	Mesh()
+	{
+		MeshBufferIndex = 0;
+		MeshTransform = mat4(0.0f);
+		MeshPosition = vec3(0.0f);
+		MeshRotation = vec3(0.0f);
+		MeshScale = vec3(1.0f);
+
+		VertexCount = 0;
+		IndexCount = 0;
+	}
+
+	Mesh(SharedPtr<GameObjectComponent> parentGameObjectComponent)
+	{
+		MeshBufferIndex = 0;
+		MeshTransform = mat4(0.0f);
+		MeshPosition = vec3(0.0f);
+		MeshRotation = vec3(0.0f);
+		MeshScale = vec3(1.0f);
+
+		VertexCount = 0;
+		IndexCount = 0;
+
+		ParentGameObject = parentGameObjectComponent->GetParentGameObject();
+		ParentGameObjectComponent = parentGameObjectComponent;
+	}
+
+	virtual ~Mesh()
+	{
+
+	}
+
 	void MeshStartUp(Vector<T>& vertexList, Vector<uint32>& indexList, uint32 meshBufferIndex)
 	{
 		MeshBufferIndex = meshBufferIndex;
 		VertexCount = vertexList.size();
 		IndexCount = indexList.size();
 
-		MeshVertexBuffer = VertexBuffer(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings , MeshBufferPropertySettings, true);
+		MeshVertexBuffer = VulkanBuffer<T>(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
 		SharedPtr parentGameObject = ParentGameObject.lock();
@@ -84,14 +114,13 @@ public:
 		}
 	}
 
-	template<class T>
 	void MeshStartUp(Vector<T>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material)
 	{
 		MeshMaterial = material;
 		VertexCount = vertexList.size();
 		IndexCount = indexList.size();
 
-		MeshVertexBuffer = VertexBuffer(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		MeshVertexBuffer = VulkanBuffer<T>(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		PropertiesBuffer = MeshPropertiesBuffer(MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
@@ -106,22 +135,83 @@ public:
 		}
 	}
 
-	template<class T>
-	void VertexBufferUpdate(const float& deltaTime, Vector<T>& vertexList, Vector<uint32>& indexList)
+	virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 	{
-		//MeshVertexBuffer.UpdateBufferMemory(vertexList);
-		//MeshIndexBuffer.UpdateBufferMemory(indexList);
+		mat4 GameObjectMatrix = mat4(1.0);
+		//SharedPtr<Transform2DComponent> transform = GameObjectTransform.lock();
+		//if (transform)
+		//{
+		//		GameObjectMatrix = *transform->GameObjectMatrixTransform.get();
+		//}
+
+		mat4 MeshMatrix = mat4(1.0f);
+		MeshMatrix = glm::translate(MeshMatrix, MeshPosition);
+		MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.x), vec3(1.0f, 0.0f, 0.0f));
+		MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.y), vec3(0.0f, 1.0f, 0.0f));
+		MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.z), vec3(0.0f, 0.0f, 1.0f));
+		MeshMatrix = glm::scale(MeshMatrix, MeshScale);
+
+		MeshProperties.MaterialIndex = (MeshMaterial) ? MeshMaterial->GetMaterialBufferIndex() : 0;
+		MeshProperties.MeshTransform = GameObjectMatrix * MeshMatrix;
+		PropertiesBuffer.UpdateBufferMemory(MeshProperties);
 	}
 
-	Mesh();
-	Mesh(SharedPtr<GameObjectComponent> parentGameObjectComponent);
-	virtual ~Mesh();
-	virtual void Update(const float& deltaTime);
-	virtual void BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime);
-	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
-	virtual void Destroy();
+	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
+	{
 
-	void GetMeshPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList);
+	}
+
+	virtual void Destroy()
+	{
+		MeshMaterial.reset();
+		MeshVertexBuffer.DestroyBuffer();
+		MeshIndexBuffer.DestroyBuffer();
+		PropertiesBuffer.DestroyBuffer();
+	}
+
+	//void GetMeshPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList)
+	//{
+	//	VkDescriptorBufferInfo meshBufferInfo =
+	//	{
+	//		.buffer = VertexBuffer.Buffer,
+	//		.offset = 0,
+	//		.range = VK_WHOLE_SIZE
+	//	};
+	//	meshBufferList.emplace_back(meshBufferInfo);
+	//}
+
+	//void GetVertexPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList)
+	//{
+	//	VkDescriptorBufferInfo meshBufferInfo =
+	//	{
+	//		.buffer = IndexBuffer.Buffer,
+	//		.offset = 0,
+	//		.range = VK_WHOLE_SIZE
+	//	};
+	//	meshBufferList.emplace_back(meshBufferInfo);
+	//}
+
+	//void GetIndexPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList)
+	//{
+	//	VkDescriptorBufferInfo meshBufferInfo =
+	//	{
+	//		.buffer = TransformBuffer.Buffer,
+	//		.offset = 0,
+	//		.range = VK_WHOLE_SIZE
+	//	};
+	//	meshBufferList.emplace_back(meshBufferInfo);
+	//}
+
+	void GetMeshPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList)
+	{
+		VkDescriptorBufferInfo meshBufferInfo =
+		{
+			.buffer = PropertiesBuffer.Buffer,
+			.offset = 0,
+			.range = VK_WHOLE_SIZE
+		};
+		meshBufferList.emplace_back(meshBufferInfo);
+	}
 
 	const VkBufferUsageFlags GetMeshBufferUsageSettings() { return MeshBufferUsageSettings; }
 	const VkMemoryPropertyFlags GetMeshBufferPropertySettings() { return MeshBufferPropertySettings; }

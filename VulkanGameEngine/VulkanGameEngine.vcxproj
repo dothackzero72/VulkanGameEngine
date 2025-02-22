@@ -187,7 +187,6 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MemoryManager.cpp" />
-    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mesh2D.cpp" />
     <ClCompile Include="OrthographicCamera3D.cpp" />
     <ClCompile Include="OrthographicCamera2D.cpp" />
@@ -205,6 +204,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Transform2DComponent.cpp" />
+    <ClCompile Include="Transform3DComponent.cpp" />
     <ClCompile Include="VulkanRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +259,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform2DComponent.h" />
+    <ClInclude Include="Transform3DComponent.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VulkanBuffer.h" />
     <ClInclude Include="VulkanRenderer.h" />

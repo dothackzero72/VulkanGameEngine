@@ -6,12 +6,13 @@ JsonPipeline::JsonPipeline()
 {
 }
 
-JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, uint constBufferSize)
+JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport& gpuImport, uint constBufferSize)
 {
   //  ParentRenderPass = parentRenderPass;
     nlohmann::json json = Json::ReadJson("../Pipelines/Default2DPipeline.json");
+
     RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
-    LoadDescriptorSets(renderPipelineModel);
+    LoadDescriptorSets(renderPipelineModel, gpuImport);
     LoadPipeline(renderPipelineModel, renderPass, constBufferSize);
 }
 
@@ -19,11 +20,11 @@ JsonPipeline::~JsonPipeline()
 {
 }
 
-void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
+void JsonPipeline::LoadDescriptorSets(RenderPipelineModel& model, GPUImport& gpuImport)
 {
-    Vector<VkDescriptorBufferInfo> meshProperties = MemoryManager::GetMeshPropertiesBuffer();
-    Vector<VkDescriptorImageInfo> TextureList = MemoryManager::GetTexturePropertiesBuffer();
-    Vector<VkDescriptorBufferInfo> materialProperties = MemoryManager::GetMaterialPropertiesBuffer();
+    Vector<VkDescriptorBufferInfo> meshProperties = GetMeshPropertiesBuffer(gpuImport.MeshList);
+    Vector<VkDescriptorImageInfo> textureList = GetTexturePropertiesBuffer(gpuImport.TextureList);
+    Vector<VkDescriptorBufferInfo> materialProperties = GetMaterialPropertiesBuffer(gpuImport.MaterialList);
 
     //CreateDescriptorPool
     {
@@ -46,7 +47,7 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
                     descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
                         {
                             .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                            .descriptorCount = static_cast<uint32>(TextureList.size())
+                            .descriptorCount = static_cast<uint32>(textureList.size())
                         });
                     break;
                 }
@@ -103,7 +104,7 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
                         {
                             .binding = binding.BindingNumber,
                             .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                            .descriptorCount = static_cast<uint32>(TextureList.size()),
+                            .descriptorCount = static_cast<uint32>(textureList.size()),
                             .stageFlags = VK_SHADER_STAGE_ALL,
                             .pImmutableSamplers = nullptr
                         });
@@ -195,9 +196,9 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
                                 .dstSet = descriptorSet,
                                 .dstBinding = binding.BindingNumber,
                                 .dstArrayElement = 0,
-                                .descriptorCount = static_cast<uint32>(TextureList.size()),
+                                .descriptorCount = static_cast<uint32>(textureList.size()),
                                 .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                .pImageInfo = TextureList.data(),
+                                .pImageInfo = textureList.data(),
                                 .pBufferInfo = nullptr,
                                 .pTexelBufferView = nullptr
                             });
@@ -233,7 +234,7 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel model)
     }
 }
 
-void JsonPipeline::LoadPipeline(RenderPipelineModel model, VkRenderPass renderPass, uint constBufferSize)
+void JsonPipeline::LoadPipeline(RenderPipelineModel& model, VkRenderPass renderPass, uint constBufferSize)
 {
     //PipelineLayout
     {
@@ -369,4 +370,167 @@ void JsonPipeline::Destroy()
     {
         renderer.DestroyDescriptorSetLayout(descriptorSet);
     }
+}
+
+//const Vector<VkDescriptorBufferInfo>  JsonPipeline::GetVertexPropertiesBuffer()
+//{
+//	std::vector<VkDescriptorBufferInfo>	VertexPropertiesBuffer;
+//	if (GameObjectList.size() == 0)
+//	{
+//		std::vector<VkDescriptorBufferInfo>	VertexPropertiesBuffer;
+//		VkDescriptorBufferInfo nullBuffer;
+//		nullBuffer.buffer = VK_NULL_HANDLE;
+//		nullBuffer.offset = 0;
+//		nullBuffer.range = VK_WHOLE_SIZE;
+//		VertexPropertiesBuffer.emplace_back(nullBuffer);
+//	}
+//	else
+//	{
+//		
+//		for (auto& mesh : RenderMesh2DComponentList)
+//		{
+//			VkDescriptorBufferInfo MeshProperitesBufferInfo = {};
+//			MeshProperitesBufferInfo.buffer = mesh->GetVertexPropertiesBuffer().buffer;
+//			MeshProperitesBufferInfo.offset = 0;
+//			MeshProperitesBufferInfo.range = VK_WHOLE_SIZE;
+//			VertexPropertiesBuffer.emplace_back(MeshProperitesBufferInfo);
+//		}
+//	}
+//	return VertexPropertiesBuffer;
+//}
+//
+//const Vector<VkDescriptorBufferInfo>  JsonPipeline::GetIndexPropertiesBuffer()
+//{
+//	std::vector<VkDescriptorBufferInfo>	IndexPropertiesBuffer;
+//	if (GameObjectList.size() == 0)
+//	{
+//		VkDescriptorBufferInfo nullBuffer;
+//		nullBuffer.buffer = VK_NULL_HANDLE;
+//		nullBuffer.offset = 0;
+//		nullBuffer.range = VK_WHOLE_SIZE;
+//		IndexPropertiesBuffer.emplace_back(nullBuffer);
+//	}
+//	else
+//	{
+//		for (auto& gameObject : GameObjectList)
+//		{
+//			VkDescriptorBufferInfo MeshProperitesBufferInfo = {};
+//			MeshProperitesBufferInfo.buffer = gameObject->GetIndexPropertiesBuffer().buffer;
+//			MeshProperitesBufferInfo.offset = 0;
+//			MeshProperitesBufferInfo.range = VK_WHOLE_SIZE;
+//			IndexPropertiesBuffer.emplace_back(MeshProperitesBufferInfo);
+//		}
+//	}
+//	return IndexPropertiesBuffer;
+//}
+//
+//const Vector<VkDescriptorBufferInfo> JsonPipeline::GetGameObjectTransformBuffer()
+//{
+//	std::vector<VkDescriptorBufferInfo>	TransformPropertiesBuffer;
+//	if (GameObjectList.size() == 0)
+//	{
+//		VkDescriptorBufferInfo nullBuffer;
+//		nullBuffer.buffer = VK_NULL_HANDLE;
+//		nullBuffer.offset = 0;
+//		nullBuffer.range = VK_WHOLE_SIZE;
+//		TransformPropertiesBuffer.emplace_back(nullBuffer);
+//	}
+//	else
+//	{
+//		for (auto& gameObject : GameObjectList)
+//		{
+//			for (int x = 0; x < gameObject->GetGameObjectTransformMatrixBuffer().size(); x++)
+//			{
+//				VkDescriptorBufferInfo TransformBufferInfo = {};
+//				TransformBufferInfo.buffer = gameObject->GetGameObjectTransformMatrixBuffer()[x].buffer;
+//				TransformBufferInfo.offset = 0;
+//				TransformBufferInfo.range = VK_WHOLE_SIZE;
+//				TransformPropertiesBuffer.emplace_back(TransformBufferInfo);
+//			}
+//		}
+//	}
+//
+//	return TransformPropertiesBuffer;
+//}
+
+const Vector<VkDescriptorBufferInfo> JsonPipeline::GetMeshPropertiesBuffer(Vector<SharedPtr<Mesh<Vertex2D>>> meshList)
+{
+    Vector<VkDescriptorBufferInfo> meshPropertiesBuffer;
+    if (meshList.size() == 0)
+    {
+        VkDescriptorBufferInfo nullBuffer;
+        nullBuffer.buffer = VK_NULL_HANDLE;
+        nullBuffer.offset = 0;
+        nullBuffer.range = VK_WHOLE_SIZE;
+        meshPropertiesBuffer.emplace_back(nullBuffer);
+    }
+    else
+    {
+        for (auto& mesh : meshList)
+        {
+            mesh->GetMeshPropertiesBuffer(meshPropertiesBuffer);
+        }
+    }
+
+    return meshPropertiesBuffer;
+}
+
+const Vector<VkDescriptorImageInfo> JsonPipeline::GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>> textureList)
+{
+    Vector<VkDescriptorImageInfo>	texturePropertiesBuffer;
+    if (textureList.size() == 0)
+    {
+        VkSamplerCreateInfo NullSamplerInfo = 
+        {
+            .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+            .magFilter = VK_FILTER_NEAREST,
+            .minFilter = VK_FILTER_NEAREST,
+            .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
+            .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+            .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+            .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+            .mipLodBias = 0,
+            .anisotropyEnable = VK_TRUE,
+            .maxAnisotropy = 16.0f,
+            .compareEnable = VK_FALSE,
+            .compareOp = VK_COMPARE_OP_ALWAYS,
+            .minLod = 0,
+            .maxLod = 0,
+            .borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+            .unnormalizedCoordinates = VK_FALSE,
+        };
+
+        VkSampler nullSampler = VK_NULL_HANDLE;
+        if (vkCreateSampler(cRenderer.Device, &NullSamplerInfo, nullptr, &nullSampler))
+        {
+            throw std::runtime_error("Failed to create Sampler.");
+        }
+
+        VkDescriptorImageInfo nullBuffer = 
+        {
+            .sampler = nullSampler,
+            .imageView = VK_NULL_HANDLE,
+            .imageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        };
+        texturePropertiesBuffer.emplace_back(nullBuffer);
+    }
+    else
+    {
+        for (auto& texture : textureList)
+        {
+            texture->GetTexturePropertiesBuffer(texturePropertiesBuffer);
+        }
+    }
+
+    return texturePropertiesBuffer;
+}
+
+const Vector<VkDescriptorBufferInfo> JsonPipeline::GetMaterialPropertiesBuffer(Vector<SharedPtr<Material>> materialList)
+{
+    std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
+    for (auto& material : materialList)
+    {
+        material->GetMaterialPropertiesBuffer(materialPropertiesBuffer);
+    }
+    return materialPropertiesBuffer;
 }

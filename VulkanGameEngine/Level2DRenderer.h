@@ -13,6 +13,7 @@ private:
 	void AddGameObject(const String& name, Vector<ComponentTypeEnum> gameObjectComponentList, SpriteSheet& spriteSheet, vec2 objectPosition);
 	void RemoveGameObject(SharedPtr<GameObject> gameObject);
 	void DestroyDeadGameObjects();
+	Vector<SharedPtr<Mesh<Vertex2D>>> GetMeshFromGameObjects();
 
 public:
 	Level2DRenderer();
@@ -21,6 +22,7 @@ public:
 
 	virtual void Input(const float& deltaTime);
 	virtual void Update(const float& deltaTime) override;
+	void UpdateBufferIndex();
 	virtual VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties) override;
 	virtual void Destroy() override;
 };

@@ -7,7 +7,7 @@ SpriteComponent::SpriteComponent()
 
 SpriteComponent::SpriteComponent(String& name, SharedPtr<GameObject> parentGameObjectPtr, SpriteSheet& spriteSheet) : GameObjectComponent(this, parentGameObjectPtr, kSpriteComponent)
 {
-	SpriteObj = MemoryManager::AddSprite(Sprite(parentGameObjectPtr, spriteSheet));
+	SpriteObj = std::make_shared<Sprite>(Sprite(parentGameObjectPtr, spriteSheet));
 }
 
 SpriteComponent::~SpriteComponent()

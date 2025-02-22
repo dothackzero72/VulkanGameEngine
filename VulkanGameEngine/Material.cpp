@@ -11,7 +11,7 @@ Material::Material(const String& materialName)
 {
 	Name = materialName;
 	MaterialIDCounter++;
-	MaterialBufferIndex = MemoryManager::GetMaterialist().size() - 1;
+	MaterialBufferIndex = 0;
 	MaterialBuffer = VulkanBuffer<MaterialProperitiesBuffer>(MaterialInfo,  VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
 																			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 
 																			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 

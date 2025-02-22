@@ -30,7 +30,6 @@ void Scene::Update(const float& deltaTime)
 		UpdateRenderPasses();
 	}
 	orthographicCamera->Update(sceneProperties);
-	MemoryManager::Update(deltaTime);
 	levelRenderer->Update(deltaTime);
 }
 

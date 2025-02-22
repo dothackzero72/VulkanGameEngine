@@ -162,9 +162,6 @@
     <ClCompile Include="MemoryManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -176,6 +173,9 @@
     </ClCompile>
     <ClCompile Include="OrthographicCamera3D.cpp">
       <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform3DComponent.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -340,6 +340,9 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Header Files\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform3DComponent.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

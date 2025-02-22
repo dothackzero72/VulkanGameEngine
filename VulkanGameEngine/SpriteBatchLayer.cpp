@@ -6,15 +6,22 @@ SpriteBatchLayer::SpriteBatchLayer()
 
 }
 
-SpriteBatchLayer::SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline)
+SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, SharedPtr<JsonPipeline> spriteRenderPipeline)
 {
 	SpriteRenderPipeline = spriteRenderPipeline;
 	SpriteLayerMesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList, nullptr));
-	SpriteList = MemoryManager::GetSpriteList();
-	for (auto& sprite : SpriteList)
+
+	for (auto& gameObject : gameObjectList) 
 	{
-		SpriteInstanceList.emplace_back(*sprite->GetSpriteInstance().get());
+		if (SharedPtr spriteComponent = gameObject->GetComponentByComponentType(kSpriteComponent)) {
+			SharedPtr sprite = std::dynamic_pointer_cast<SpriteComponent>(spriteComponent);
+			if (sprite) {
+				SpriteList.emplace_back(sprite->GetSprite());
+				SpriteInstanceList.emplace_back(*sprite->GetSprite()->GetSpriteInstance().get());
+			}
+		}
 	}
+
 	SpriteBuffer = SpriteInstanceBuffer(SpriteInstanceList, SpriteLayerMesh->GetMeshBufferUsageSettings(), SpriteLayerMesh->GetMeshBufferPropertySettings(), false);
 	SortSpritesByLayer(SpriteList);
 }
@@ -33,8 +40,9 @@ void SpriteBatchLayer::RemoveSprite(SharedPtr<Sprite> sprite)
 {
 	sprite->Destroy();
 	SpriteList.erase(std::remove_if(SpriteList.begin(), SpriteList.end(),
-		[&sprite](const SharedPtr<Sprite>& spriteList) {
-			return spriteList.get() == sprite.get();
+		[&sprite](const WeakPtr<Sprite>& spriteWeakPtr) {
+			const SharedPtr spritePtr = spriteWeakPtr.lock();
+			return spritePtr.get() == sprite.get();
 		}),
 		SpriteList.end());
 }
@@ -44,10 +52,13 @@ void SpriteBatchLayer::Update(float deltaTime)
 	SpriteInstanceList.clear();
 	SpriteInstanceList.reserve(SpriteList.size());
 
-	for (auto& sprite : SpriteList)
+	for (auto& spritePtr : SpriteList)
 	{
-		sprite->Update(deltaTime);
-		SpriteInstanceList.emplace_back(*sprite->GetSpriteInstance().get());
+		const SharedPtr sprite = spritePtr.lock();
+		{
+			sprite->Update(deltaTime);
+			SpriteInstanceList.emplace_back(*sprite->GetSpriteInstance().get());
+		}
 	}
 
 	if (SpriteList.size())
@@ -72,4 +83,18 @@ void SpriteBatchLayer::Destroy()
 {
 	SpriteRenderPipeline.reset();
 	SpriteLayerMesh->Destroy();
+}
+
+void SpriteBatchLayer::SortSpritesByLayer(std::vector<WeakPtr<Sprite>>& sprites)
+{
+	std::sort(sprites.begin(), sprites.end(), [](const WeakPtr<Sprite>& a, const WeakPtr<Sprite>& b) {
+			const SharedPtr spriteA = a.lock();
+			const SharedPtr spriteB = b.lock();
+			if (spriteA &&
+				spriteB)
+			{
+				return spriteA->SpriteLayer > spriteB->SpriteLayer;
+			}
+			return true;
+		});
 }

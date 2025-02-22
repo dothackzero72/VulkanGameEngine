@@ -29,8 +29,8 @@ GameObject::GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponen
 
 		switch (component)
 		{
-		case kTransform2DComponent: AddComponent(MemoryManager::AddGameObjectComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(thisPtr, asdf)))); break;
-		case kInputComponent: AddComponent(MemoryManager::AddGameObjectComponent(std::make_shared<InputComponent>(InputComponent(thisPtr, asdf)))); break;
+		case kTransform2DComponent: AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(thisPtr, asdf))); break;
+		case kInputComponent: AddComponent(std::make_shared<InputComponent>(InputComponent(thisPtr, asdf))); break;
 		}
 	}
 
@@ -47,12 +47,12 @@ GameObject::GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponen
 	{
 		switch (component)
 		{
-		case kTransform2DComponent: AddComponent(MemoryManager::AddGameObjectComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(thisPtr, asdf)))); break;
-		case kInputComponent: AddComponent(MemoryManager::AddGameObjectComponent(std::make_shared<InputComponent>(InputComponent(thisPtr, asdf)))); break;
+		case kTransform2DComponent: AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(thisPtr, asdf))); break;
+		case kInputComponent: AddComponent(std::make_shared<InputComponent>(InputComponent(thisPtr, asdf))); break;
 		}
 	}
 
-	AddComponent(MemoryManager::AddGameObjectComponent(MemoryManager::AddGameObjectComponent(std::make_shared<SpriteComponent>(SpriteComponent(asdf, thisPtr, spriteSheet)))));
+	AddComponent(std::make_shared<SpriteComponent>(SpriteComponent(asdf, thisPtr, spriteSheet)));
 
 	//CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(NameSpace));
 	//CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());

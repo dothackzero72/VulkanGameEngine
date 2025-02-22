@@ -2,6 +2,7 @@
 #include "TypeDef.h"
 #include "Sprite.h"
 #include "Mesh2D.h"
+#include "JsonPipeline.h"
 
 class SpriteBatchLayer
 {
@@ -23,20 +24,21 @@ private:
 	uint32                          MaxSpritesPerSheet;
 	uint32                          SpriteLayerIndex;
 
-	Vector<SharedPtr<Sprite>>         SpriteList;
+	Vector<WeakPtr<Sprite>>         SpriteList;
 	Vector<SpriteInstanceStruct>      SpriteInstanceList;
 	SpriteInstanceBuffer			SpriteBuffer;
 	SharedPtr<Mesh2D>		        SpriteLayerMesh;
 	SharedPtr<JsonPipeline>			SpriteRenderPipeline;
 
+	void SortSpritesByLayer(std::vector<WeakPtr<Sprite>>& sprites);
+
 public:
 	String					        Name;
 
 	SpriteBatchLayer();
-	SpriteBatchLayer(SharedPtr<JsonPipeline> spriteRenderPipeline);
+	SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, SharedPtr<JsonPipeline> spriteRenderPipeline);
 	virtual ~SpriteBatchLayer();
 
-	void BuildSpriteLayer(Vector<SharedPtr<Sprite>>& spriteDrawList);
 	void Update(float deltaTime);
 	void Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneProperties);
 	void Destroy();
@@ -45,11 +47,5 @@ public:
 	void RemoveSprite(SharedPtr<Sprite> sprite);
 
 	SharedPtr<Mesh2D> GetSpriteLayerMesh() { return SpriteLayerMesh; }
-	void SortSpritesByLayer(std::vector<SharedPtr<Sprite>>& sprites)
-	{
-		std::sort(sprites.begin(), sprites.end(), [](const SharedPtr<Sprite>& a, const SharedPtr<Sprite>& b) {
-			return a->SpriteLayer > b->SpriteLayer;
-			});
-	}
 };
 

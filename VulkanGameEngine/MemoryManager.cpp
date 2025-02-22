@@ -4,33 +4,10 @@
 Coral::HostInstance MemoryManager::hostInstance;
 SharedPtr<Coral::ManagedAssembly> MemoryManager::ECSassembly = nullptr;
 
-Vector<GameObject> MemoryManager::GameObjectList;
-Vector<SharedPtr<GameObjectComponent>> MemoryManager::GameObjectComponentList;
-Vector<Texture> MemoryManager::TextureList;
-Vector<Material> MemoryManager::MaterialList;
 Vector<JsonRenderPass> MemoryManager::JsonRenderPassList;
 Vector<JsonPipeline> MemoryManager::JsonPipelineList;
-Vector<Mesh> MemoryManager::MeshList;
-Vector<SpriteBatchLayer> MemoryManager::SpriteBatchLayerList;
-Vector<Sprite> MemoryManager::SpriteList;
-
-Vector<SharedPtr<GameObject>> MemoryManager::SharedGameObjectPtrList;
-Vector<SharedPtr<Texture>> MemoryManager::SharedTexturePtrList;
-Vector<SharedPtr<Material>> MemoryManager::SharedMaterialPtrList;
 Vector<SharedPtr<JsonRenderPass>> MemoryManager::SharedJsonRenderPassPtrList;
 Vector<SharedPtr<JsonPipeline>> MemoryManager::SharedJsonPipelinePtrList;
-Vector<SharedPtr<Mesh>> MemoryManager::SharedMeshPtrList;
-Vector<SharedPtr<SpriteBatchLayer>> MemoryManager::SharedSpriteBatchLayerPtrList;
-Vector<SharedPtr<Sprite>> MemoryManager::SharedSpritePtrList;
-
-//MemoryPool<GameObject> MemoryManager::GameObjectMemoryPool;
-//MemoryPool<SpriteComponent> MemoryManager::SpriteComponentMemoryPool;
-//MemoryPool<Texture> MemoryManager::TextureMemoryPool;
-//MemoryPool<Material> MemoryManager::MaterialMemoryPool;
-//MemoryPool<Mesh2D> MemoryManager::Mesh2DMemoryPool;
-//MemoryPool<SpriteBatchLayer> MemoryManager::SpriteBatchLayerMemeryPool;
-//MemoryPool<JsonRenderPass> MemoryManager::JsonRenderPassMemoryPool;
-//MemoryPool<JsonPipeline> MemoryManager::JsonPipelineMemoryPool;
 
 void ExceptionCallback(std::string_view InMessage)
 {
@@ -53,17 +30,6 @@ void MemoryManager::SetUpMemoryManager(uint32 EstObjectCount)
 	std::string assemblyPath = "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/VulkanGameEngineGameObjectScripts/bin/Debug/VulkanGameEngineGameObjectScripts.dll";
 	Coral::ManagedAssembly* assembly = &loadContext.LoadAssembly(assemblyPath);
 	ECSassembly = SharedPtr<Coral::ManagedAssembly>(assembly);
-
-	
-
-	//GameObjectMemoryPool.CreateMemoryPool(EstObjectCount);
-	//SpriteComponentMemoryPool.CreateMemoryPool(EstObjectCount);
-	//TextureMemoryPool.CreateMemoryPool(EstObjectCount);
-	//MaterialMemoryPool.CreateMemoryPool(EstObjectCount);
-	//JsonRenderPassMemoryPool.CreateMemoryPool(EstObjectCount);
-	//JsonPipelineMemoryPool.CreateMemoryPool(EstObjectCount);
-	//SpriteBatchLayerMemeryPool.CreateMemoryPool(EstObjectCount);
-	//Mesh2DMemoryPool.CreateMemoryPool(EstObjectCount);
 }
 
 //SharedPtr<GameObject> MemoryManager::AllocateNewGameObject()
@@ -177,31 +143,31 @@ void MemoryManager::SetUpMemoryManager(uint32 EstObjectCount)
 //	return IndexPropertiesBuffer;
 //}
 
-void MemoryManager::Update(float deltaTime)
-{
-	VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-	for (auto drawLayer : MeshList)
-	{
-		drawLayer.BufferUpdate(commandBuffer, deltaTime);
-	}
-	renderer.EndSingleTimeCommands(commandBuffer);
-}
-
-void MemoryManager::UpdateBufferIndex()
-{
-	for (int x = 0; x < TextureList.size(); x++)
-	{
-		TextureList[x].UpdateTextureBufferIndex(x);
-	}
-	for (int x = 0; x < MaterialList.size(); x++)
-	{
-		MaterialList[x].UpdateMaterialBufferIndex(x);
-	}
-}
+//void MemoryManager::Update(float deltaTime)
+//{
+//	VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
+//	for (auto drawLayer : MeshList)
+//	{
+//		drawLayer.BufferUpdate(commandBuffer, deltaTime);
+//	}
+//	renderer.EndSingleTimeCommands(commandBuffer);
+//}
+//
+//void MemoryManager::UpdateBufferIndex()
+//{
+//	for (int x = 0; x < TextureList.size(); x++)
+//	{
+//		TextureList[x].UpdateTextureBufferIndex(x);
+//	}
+//	for (int x = 0; x < MaterialList.size(); x++)
+//	{
+//		MaterialList[x].UpdateMaterialBufferIndex(x);
+//	}
+//}
 
 void MemoryManager::Destroy()
 {
-	GameObjectList.clear();
+	//GameObjectList.clear();
 	//RenderMesh2DComponentList.clear();
 	//TextureList.clear();
 	//MaterialList.clear();
@@ -222,53 +188,53 @@ void MemoryManager::Destroy()
 	hostInstance.Shutdown();
 }
 
-const Vector<VkDescriptorBufferInfo> MemoryManager::GetMeshPropertiesBuffer()
-{
-	Vector<VkDescriptorBufferInfo> meshPropertiesBuffer;
-	if (MeshList.size() == 0)
-	{
-		VkDescriptorBufferInfo nullBuffer;
-		nullBuffer.buffer = VK_NULL_HANDLE;
-		nullBuffer.offset = 0;
-		nullBuffer.range = VK_WHOLE_SIZE;
-		meshPropertiesBuffer.emplace_back(nullBuffer);
-	}
-	else
-	{
-		for (auto& mesh : MeshList)
-		{
-			mesh.GetMeshPropertiesBuffer(meshPropertiesBuffer);
-		}
-	}
+//const Vector<VkDescriptorBufferInfo> MemoryManager::GetMeshPropertiesBuffer()
+//{
+//	Vector<VkDescriptorBufferInfo> meshPropertiesBuffer;
+//	if (MeshList.size() == 0)
+//	{
+//		VkDescriptorBufferInfo nullBuffer;
+//		nullBuffer.buffer = VK_NULL_HANDLE;
+//		nullBuffer.offset = 0;
+//		nullBuffer.range = VK_WHOLE_SIZE;
+//		meshPropertiesBuffer.emplace_back(nullBuffer);
+//	}
+//	else
+//	{
+//		for (auto& mesh : MeshList)
+//		{
+//			mesh.GetMeshPropertiesBuffer(meshPropertiesBuffer);
+//		}
+//	}
+//
+//	return meshPropertiesBuffer;
+//}
 
-	return meshPropertiesBuffer;
-}
+//SharedPtr<GameObject> MemoryManager::AddGameObject(GameObject gameObject)
+//{
+//	GameObjectList.emplace_back(gameObject);
+//	SharedGameObjectPtrList.emplace_back(std::make_shared<GameObject>(GameObject(gameObject)));
+//	return SharedGameObjectPtrList.back();
+//}
+//
+// SharedPtr<GameObjectComponent> MemoryManager::AddGameObjectComponent(SharedPtr<GameObjectComponent> gameObjectComponent)
+// {
+//	 return GameObjectComponentList.emplace_back(gameObjectComponent);
+// }
 
-SharedPtr<GameObject> MemoryManager::AddGameObject(GameObject gameObject)
-{
-	GameObjectList.emplace_back(gameObject);
-	SharedGameObjectPtrList.emplace_back(std::make_shared<GameObject>(GameObject(gameObject)));
-	return SharedGameObjectPtrList.back();
-}
+ //SharedPtr<Texture> MemoryManager::AddTexture(Texture texture)
+ //{
+	// TextureList.emplace_back(texture);
+	// SharedTexturePtrList.emplace_back(std::make_shared<Texture>(Texture(texture)));
+	// return SharedTexturePtrList.back();
+ //}
 
- SharedPtr<GameObjectComponent> MemoryManager::AddGameObjectComponent(SharedPtr<GameObjectComponent> gameObjectComponent)
- {
-	 return GameObjectComponentList.emplace_back(gameObjectComponent);
- }
-
- SharedPtr<Texture> MemoryManager::AddTexture(Texture texture)
- {
-	 TextureList.emplace_back(texture);
-	 SharedTexturePtrList.emplace_back(std::make_shared<Texture>(Texture(texture)));
-	 return SharedTexturePtrList.back();
- }
-
- SharedPtr<Material> MemoryManager::AddMaterial(Material material)
- {
-	 MaterialList.emplace_back(material);
-	 SharedMaterialPtrList.emplace_back(std::make_shared<Material>(Material(material)));
-	 return SharedMaterialPtrList.back();
- }
+ //SharedPtr<Material> MemoryManager::AddMaterial(Material material)
+ //{
+	// MaterialList.emplace_back(material);
+	// SharedMaterialPtrList.emplace_back(std::make_shared<Material>(Material(material)));
+	// return SharedMaterialPtrList.back();
+ //}
 
  SharedPtr<JsonRenderPass> MemoryManager::AddJsonRenderPass(JsonRenderPass jsonRenderPass)
  {
@@ -284,82 +250,82 @@ SharedPtr<GameObject> MemoryManager::AddGameObject(GameObject gameObject)
 	 return SharedJsonPipelinePtrList.back();
  }
 
- SharedPtr<Mesh> MemoryManager::AddMesh(Mesh mesh)
- {
-	 MeshList.emplace_back(mesh);
-	 SharedMeshPtrList.emplace_back(std::make_shared<Mesh>(Mesh(mesh)));
-	 return SharedMeshPtrList.back();
- }
+ //SharedPtr<Mesh> MemoryManager::AddMesh(Mesh mesh)
+ //{
+	// MeshList.emplace_back(mesh);
+	// SharedMeshPtrList.emplace_back(std::make_shared<Mesh>(Mesh(mesh)));
+	// return SharedMeshPtrList.back();
+ //}
 
- SharedPtr<SpriteBatchLayer> MemoryManager::AddSpriteBatchLayer(SpriteBatchLayer spriteBatchLayer)
- {
-	 SpriteBatchLayerList.emplace_back(spriteBatchLayer);
-	 SharedSpriteBatchLayerPtrList.emplace_back(std::make_shared<SpriteBatchLayer>(SpriteBatchLayer(spriteBatchLayer)));
-	 return SharedSpriteBatchLayerPtrList.back();
- }
+ //SharedPtr<SpriteBatchLayer> MemoryManager::AddSpriteBatchLayer(SpriteBatchLayer spriteBatchLayer)
+ //{
+	// SpriteBatchLayerList.emplace_back(spriteBatchLayer);
+	// SharedSpriteBatchLayerPtrList.emplace_back(std::make_shared<SpriteBatchLayer>(SpriteBatchLayer(spriteBatchLayer)));
+	// return SharedSpriteBatchLayerPtrList.back();
+ //}
 
- SharedPtr<Sprite> MemoryManager::AddSprite(Sprite sprite)
- {
-	 SpriteList.emplace_back(sprite);
-	 SharedSpritePtrList.emplace_back(std::make_shared<Sprite>(Sprite(sprite)));
-	 return SharedSpritePtrList.back();
- }
+ //SharedPtr<Sprite> MemoryManager::AddSprite(Sprite sprite)
+ //{
+	// SpriteList.emplace_back(sprite);
+	// SharedSpritePtrList.emplace_back(std::make_shared<Sprite>(Sprite(sprite)));
+	// return SharedSpritePtrList.back();
+ //}
 
-const Vector<VkDescriptorImageInfo> MemoryManager::GetTexturePropertiesBuffer()
-{
-	Vector<VkDescriptorImageInfo>	texturePropertiesBuffer;
-	if (TextureList.size() == 0)
-	{
-		VkSamplerCreateInfo NullSamplerInfo = {};
-		NullSamplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-		NullSamplerInfo.magFilter = VK_FILTER_NEAREST;
-		NullSamplerInfo.minFilter = VK_FILTER_NEAREST;
-		NullSamplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		NullSamplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		NullSamplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		NullSamplerInfo.anisotropyEnable = VK_TRUE;
-		NullSamplerInfo.maxAnisotropy = 16.0f;
-		NullSamplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-		NullSamplerInfo.unnormalizedCoordinates = VK_FALSE;
-		NullSamplerInfo.compareEnable = VK_FALSE;
-		NullSamplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-		NullSamplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-		NullSamplerInfo.minLod = 0;
-		NullSamplerInfo.maxLod = 0;
-		NullSamplerInfo.mipLodBias = 0;
-
-		VkSampler nullSampler = VK_NULL_HANDLE;
-		if (vkCreateSampler(cRenderer.Device, &NullSamplerInfo, nullptr, &nullSampler))
-		{
-			throw std::runtime_error("Failed to create Sampler.");
-		}
-
-		VkDescriptorImageInfo nullBuffer;
-		nullBuffer.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		nullBuffer.imageView = VK_NULL_HANDLE;
-		nullBuffer.sampler = nullSampler;
-		texturePropertiesBuffer.emplace_back(nullBuffer);
-	}
-	else
-	{
-		for (auto& texture : TextureList)
-		{
-			texture.GetTexturePropertiesBuffer(texturePropertiesBuffer);
-		}
-	}
-
-	return texturePropertiesBuffer;
-}
-
-const Vector<VkDescriptorBufferInfo> MemoryManager::GetMaterialPropertiesBuffer()
-{
-	std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
-		for (auto& material : MaterialList)
-		{
-			material.GetMaterialPropertiesBuffer(materialPropertiesBuffer);
-		}
-	return materialPropertiesBuffer;
-}
+//const Vector<VkDescriptorImageInfo> MemoryManager::GetTexturePropertiesBuffer()
+//{
+//	Vector<VkDescriptorImageInfo>	texturePropertiesBuffer;
+//	if (TextureList.size() == 0)
+//	{
+//		VkSamplerCreateInfo NullSamplerInfo = {};
+//		NullSamplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+//		NullSamplerInfo.magFilter = VK_FILTER_NEAREST;
+//		NullSamplerInfo.minFilter = VK_FILTER_NEAREST;
+//		NullSamplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+//		NullSamplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+//		NullSamplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+//		NullSamplerInfo.anisotropyEnable = VK_TRUE;
+//		NullSamplerInfo.maxAnisotropy = 16.0f;
+//		NullSamplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+//		NullSamplerInfo.unnormalizedCoordinates = VK_FALSE;
+//		NullSamplerInfo.compareEnable = VK_FALSE;
+//		NullSamplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+//		NullSamplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+//		NullSamplerInfo.minLod = 0;
+//		NullSamplerInfo.maxLod = 0;
+//		NullSamplerInfo.mipLodBias = 0;
+//
+//		VkSampler nullSampler = VK_NULL_HANDLE;
+//		if (vkCreateSampler(cRenderer.Device, &NullSamplerInfo, nullptr, &nullSampler))
+//		{
+//			throw std::runtime_error("Failed to create Sampler.");
+//		}
+//
+//		VkDescriptorImageInfo nullBuffer;
+//		nullBuffer.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+//		nullBuffer.imageView = VK_NULL_HANDLE;
+//		nullBuffer.sampler = nullSampler;
+//		texturePropertiesBuffer.emplace_back(nullBuffer);
+//	}
+//	else
+//	{
+//		for (auto& texture : TextureList)
+//		{
+//			texture.GetTexturePropertiesBuffer(texturePropertiesBuffer);
+//		}
+//	}
+//
+//	return texturePropertiesBuffer;
+//}
+//
+//const Vector<VkDescriptorBufferInfo> MemoryManager::GetMaterialPropertiesBuffer()
+//{
+//	std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
+//		for (auto& material : MaterialList)
+//		{
+//			material.GetMaterialPropertiesBuffer(materialPropertiesBuffer);
+//		}
+//	return materialPropertiesBuffer;
+//}
 
 
 // std::vector<VkDescriptorBufferInfo>  MemoryManager::GetGameObjectTransformBuffer()
