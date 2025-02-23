@@ -29,25 +29,24 @@ protected:
     std::string GetCSNameSpacePath(ComponentTypeEnum componentType);
 
 public:
-    WeakPtr<GameObject> ParentGameObjectPtr;
+    WeakPtr<GameObject> ParentGameObject;
     ComponentTypeEnum ComponentType;
     SharedPtr<Coral::String> Name = nullptr;
     size_t MemorySize = 0;
 
     GameObjectComponent();
-    GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, ComponentTypeEnum componentType);
-    GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType);
+    GameObjectComponent(uint32 gameObjectId, ComponentTypeEnum componentType);
+    GameObjectComponent(uint32 gameObjectId, const String& name, ComponentTypeEnum componentType);
     virtual ~GameObjectComponent();
 
-    virtual void Input(float deltaTime);
-    virtual void Update(float deltaTime);
-    virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
+    virtual void Input(const float& deltaTime);
+    virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
     virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
     virtual void Destroy();
     virtual SharedPtr<GameObjectComponent> Clone() const;
     virtual size_t GetMemorySize() const;
 
-    WeakPtr<GameObject> GetParentGameObject() { return ParentGameObjectPtr; }
+    WeakPtr<GameObject> GetParentGameObject() { return ParentGameObject; }
     void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
     const GameObjectComponent* GetCPPObjectHandle() { return this; }
 };

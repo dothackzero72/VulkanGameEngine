@@ -5,12 +5,12 @@ InputComponent::InputComponent() : GameObjectComponent()
 {
 }
 
-InputComponent::InputComponent(SharedPtr<GameObject> parentGameObjectPtr) : GameObjectComponent(this, parentGameObjectPtr, kInputComponent)
+InputComponent::InputComponent(uint32 gameObjectId) : GameObjectComponent(gameObjectId, kInputComponent)
 {
    // transform2DComponentRef = SharedPtr<Transform2DComponent>(CSobject->InvokeMethod<Transform2DComponent*>("GetCPPComponentPtr"));
 }
 
-InputComponent::InputComponent(SharedPtr<GameObject> parentGameObjectPtr, String& name) : GameObjectComponent(this, parentGameObjectPtr, name, kInputComponent)
+InputComponent::InputComponent(uint32 gameObjectId, String& name) : GameObjectComponent(gameObjectId, name, kInputComponent)
 {
     //auto adfd = this;
     //auto fds4 = static_cast<Transform2DComponent*>(parentGameObjectPtr->GameObjectComponentList[0].get())->GetCPPObjectHandle();
@@ -24,19 +24,14 @@ InputComponent::~InputComponent()
 {
 }
 
-void InputComponent::Input(float deltaTime)
+void InputComponent::Input(const float& deltaTime)
 {
     GameObjectComponent::Input(deltaTime);
 }
 
-void InputComponent::Update(float deltaTime)
+void InputComponent::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
-    GameObjectComponent::Update(deltaTime);
-}
-
-void InputComponent::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
-{
-    GameObjectComponent::BufferUpdate(commandBuffer, deltaTime);
+    GameObjectComponent::Update(commandBuffer, deltaTime);
 }
 
 void InputComponent::Destroy()

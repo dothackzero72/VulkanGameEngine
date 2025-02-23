@@ -27,9 +27,8 @@ struct MaterialProperitiesBuffer
 class Material
 {
 private:
-	static uint64_t MaterialIDCounter;
-
-	uint64_t MaterialID = 0;
+	static uint32 NextMaterialId;
+	uint32 MaterialID = 0;
 	uint MaterialBufferIndex = 0;
 
 	VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;

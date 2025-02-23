@@ -12,13 +12,12 @@ public:
     mat4 GameObjectMatrixTransform = mat4(0.0f);
 
     Transform2DComponent();
-    Transform2DComponent(SharedPtr<GameObject> parentGameObjectPtr);
-    Transform2DComponent(SharedPtr<GameObject> parentGameObjectPtr, String& name);
+    Transform2DComponent(uint32 gameObjectId);
+    Transform2DComponent(uint32 gameObjectId, String& name);
     virtual ~Transform2DComponent();
 
-    virtual void Input(float deltaTime) override;
-    virtual void Update(float deltaTime) override;
-    virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime) override;
+    virtual void Input(const float& deltaTime) override;
+    virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime) override;
     virtual void Destroy() override;
     virtual SharedPtr<GameObjectComponent> Clone() const;
     virtual size_t GetMemorySize() const override;

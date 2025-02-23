@@ -19,25 +19,26 @@ class GameObject
 {
 private:
     const String NameSpace = "VulkanGameEngineGameObjectScripts.GameObject";
-
+    static uint32 NextGameObjectId;
+    uint32 GameObjectId = 0;
     size_t ObjectComponentMemorySize = 0;
 
     SharedPtr<Coral::Type> CSclass;
     SharedPtr<Coral::ManagedObject> CSobject;
 
 public:
+
     String Name;
     Vector<SharedPtr<GameObjectComponent>> GameObjectComponentList;
     bool GameObjectAlive = true;
 
     GameObject();
-    GameObject(String name);
-    GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList);
-    GameObject(String name, Vector<ComponentTypeEnum> gameObjectComponentList, SpriteSheet& spriteSheet);
+    GameObject(const String& name);
+    GameObject(const String& name, Vector<ComponentTypeEnum> gameObjectComponentList);
+    GameObject(const String& name, Vector<ComponentTypeEnum> gameObjectComponentList, SpriteSheet& spriteSheet);
 
-    virtual void Input(float deltaTime);
-    virtual void Update(float deltaTime);
-    virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime);
+    virtual void Input(const float& deltaTime);
+    virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
     virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
     virtual void Destroy();
     void AddComponent(SharedPtr<GameObjectComponent> newComponent);
@@ -48,4 +49,5 @@ public:
     void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
 
     std::shared_ptr<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type);
+    const uint32 GetId() { return GameObjectId; }
 };

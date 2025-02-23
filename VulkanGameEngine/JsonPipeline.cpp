@@ -372,110 +372,7 @@ void JsonPipeline::Destroy()
     }
 }
 
-//const Vector<VkDescriptorBufferInfo>  JsonPipeline::GetVertexPropertiesBuffer()
-//{
-//	std::vector<VkDescriptorBufferInfo>	VertexPropertiesBuffer;
-//	if (GameObjectList.size() == 0)
-//	{
-//		std::vector<VkDescriptorBufferInfo>	VertexPropertiesBuffer;
-//		VkDescriptorBufferInfo nullBuffer;
-//		nullBuffer.buffer = VK_NULL_HANDLE;
-//		nullBuffer.offset = 0;
-//		nullBuffer.range = VK_WHOLE_SIZE;
-//		VertexPropertiesBuffer.emplace_back(nullBuffer);
-//	}
-//	else
-//	{
-//		
-//		for (auto& mesh : RenderMesh2DComponentList)
-//		{
-//			VkDescriptorBufferInfo MeshProperitesBufferInfo = {};
-//			MeshProperitesBufferInfo.buffer = mesh->GetVertexPropertiesBuffer().buffer;
-//			MeshProperitesBufferInfo.offset = 0;
-//			MeshProperitesBufferInfo.range = VK_WHOLE_SIZE;
-//			VertexPropertiesBuffer.emplace_back(MeshProperitesBufferInfo);
-//		}
-//	}
-//	return VertexPropertiesBuffer;
-//}
-//
-//const Vector<VkDescriptorBufferInfo>  JsonPipeline::GetIndexPropertiesBuffer()
-//{
-//	std::vector<VkDescriptorBufferInfo>	IndexPropertiesBuffer;
-//	if (GameObjectList.size() == 0)
-//	{
-//		VkDescriptorBufferInfo nullBuffer;
-//		nullBuffer.buffer = VK_NULL_HANDLE;
-//		nullBuffer.offset = 0;
-//		nullBuffer.range = VK_WHOLE_SIZE;
-//		IndexPropertiesBuffer.emplace_back(nullBuffer);
-//	}
-//	else
-//	{
-//		for (auto& gameObject : GameObjectList)
-//		{
-//			VkDescriptorBufferInfo MeshProperitesBufferInfo = {};
-//			MeshProperitesBufferInfo.buffer = gameObject->GetIndexPropertiesBuffer().buffer;
-//			MeshProperitesBufferInfo.offset = 0;
-//			MeshProperitesBufferInfo.range = VK_WHOLE_SIZE;
-//			IndexPropertiesBuffer.emplace_back(MeshProperitesBufferInfo);
-//		}
-//	}
-//	return IndexPropertiesBuffer;
-//}
-//
-//const Vector<VkDescriptorBufferInfo> JsonPipeline::GetGameObjectTransformBuffer()
-//{
-//	std::vector<VkDescriptorBufferInfo>	TransformPropertiesBuffer;
-//	if (GameObjectList.size() == 0)
-//	{
-//		VkDescriptorBufferInfo nullBuffer;
-//		nullBuffer.buffer = VK_NULL_HANDLE;
-//		nullBuffer.offset = 0;
-//		nullBuffer.range = VK_WHOLE_SIZE;
-//		TransformPropertiesBuffer.emplace_back(nullBuffer);
-//	}
-//	else
-//	{
-//		for (auto& gameObject : GameObjectList)
-//		{
-//			for (int x = 0; x < gameObject->GetGameObjectTransformMatrixBuffer().size(); x++)
-//			{
-//				VkDescriptorBufferInfo TransformBufferInfo = {};
-//				TransformBufferInfo.buffer = gameObject->GetGameObjectTransformMatrixBuffer()[x].buffer;
-//				TransformBufferInfo.offset = 0;
-//				TransformBufferInfo.range = VK_WHOLE_SIZE;
-//				TransformPropertiesBuffer.emplace_back(TransformBufferInfo);
-//			}
-//		}
-//	}
-//
-//	return TransformPropertiesBuffer;
-//}
-
-const Vector<VkDescriptorBufferInfo> JsonPipeline::GetMeshPropertiesBuffer(Vector<SharedPtr<Mesh<Vertex2D>>> meshList)
-{
-    Vector<VkDescriptorBufferInfo> meshPropertiesBuffer;
-    if (meshList.size() == 0)
-    {
-        VkDescriptorBufferInfo nullBuffer;
-        nullBuffer.buffer = VK_NULL_HANDLE;
-        nullBuffer.offset = 0;
-        nullBuffer.range = VK_WHOLE_SIZE;
-        meshPropertiesBuffer.emplace_back(nullBuffer);
-    }
-    else
-    {
-        for (auto& mesh : meshList)
-        {
-            mesh->GetMeshPropertiesBuffer(meshPropertiesBuffer);
-        }
-    }
-
-    return meshPropertiesBuffer;
-}
-
-const Vector<VkDescriptorImageInfo> JsonPipeline::GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>> textureList)
+const Vector<VkDescriptorImageInfo> JsonPipeline::GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>>& textureList)
 {
     Vector<VkDescriptorImageInfo>	texturePropertiesBuffer;
     if (textureList.size() == 0)
@@ -525,7 +422,7 @@ const Vector<VkDescriptorImageInfo> JsonPipeline::GetTexturePropertiesBuffer(Vec
     return texturePropertiesBuffer;
 }
 
-const Vector<VkDescriptorBufferInfo> JsonPipeline::GetMaterialPropertiesBuffer(Vector<SharedPtr<Material>> materialList)
+const Vector<VkDescriptorBufferInfo> JsonPipeline::GetMaterialPropertiesBuffer(Vector<SharedPtr<Material>>& materialList)
 {
     std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
     for (auto& material : materialList)

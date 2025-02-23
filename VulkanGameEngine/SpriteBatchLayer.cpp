@@ -15,7 +15,7 @@ SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList
 	{
 		if (SharedPtr spriteComponent = gameObject->GetComponentByComponentType(kSpriteComponent)) {
 			SharedPtr sprite = std::dynamic_pointer_cast<SpriteComponent>(spriteComponent);
-			if (sprite) {
+			if (sprite->GetSprite()) {
 				SpriteList.emplace_back(sprite->GetSprite());
 				SpriteInstanceList.emplace_back(*sprite->GetSprite()->GetSpriteInstance().get());
 			}
@@ -47,7 +47,7 @@ void SpriteBatchLayer::RemoveSprite(SharedPtr<Sprite> sprite)
 		SpriteList.end());
 }
 
-void SpriteBatchLayer::Update(float deltaTime)
+void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
 	SpriteInstanceList.clear();
 	SpriteInstanceList.reserve(SpriteList.size());
@@ -56,7 +56,7 @@ void SpriteBatchLayer::Update(float deltaTime)
 	{
 		const SharedPtr sprite = spritePtr.lock();
 		{
-			sprite->Update(deltaTime);
+			sprite->Update(commandBuffer, deltaTime);
 			SpriteInstanceList.emplace_back(*sprite->GetSpriteInstance().get());
 		}
 	}

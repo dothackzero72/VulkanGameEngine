@@ -1,7 +1,7 @@
 #include "Material.h"
 #include "MemoryManager.h"
 
-uint64_t Material::MaterialIDCounter = 0;
+uint32 Material::NextMaterialId = 0;
 
 Material::Material()
 {
@@ -10,7 +10,7 @@ Material::Material()
 Material::Material(const String& materialName)
 {
 	Name = materialName;
-	MaterialIDCounter++;
+	MaterialID = ++NextMaterialId;
 	MaterialBufferIndex = 0;
 	MaterialBuffer = VulkanBuffer<MaterialProperitiesBuffer>(MaterialInfo,  VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
 																			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 
@@ -20,12 +20,6 @@ Material::Material(const String& materialName)
 
 Material::~Material()
 {
-}
-
-void Material::GenerateID()
-{
-	MaterialIDCounter++;
-	MaterialID = MaterialIDCounter;
 }
 
 void Material::UpdateMaterialBufferIndex(uint64 bufferIndex)

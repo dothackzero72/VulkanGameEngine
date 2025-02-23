@@ -1,11 +1,14 @@
 #include "Level2DRenderer.h"
 #include "MemoryManager.h"
+#include "InputComponent.h"
+
+SharedPtr<Level2DRenderer> Level2DRenderer::LevelRenderer = nullptr;
 
 Level2DRenderer::Level2DRenderer() : JsonRenderPass()
 {
 }
 
-Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : JsonRenderPass()
+Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution)
 {
     RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -25,9 +28,9 @@ Level2DRenderer::Level2DRenderer(String jsonPath, ivec2 renderPassResolution) : 
     ivec2 size = ivec2(32);
     SpriteSheet spriteSheet = SpriteSheet(MaterialList[0], size, 0);
 
-    AddGameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 40.0f));
-    AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 20.0f));
-    AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 80.0f));
+    AddGameObject(0, "Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 40.0f));
+    AddGameObject(1, "Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 20.0f));
+    AddGameObject(2, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 80.0f));
 
     GPUImport gpuImport =
     {
@@ -46,10 +49,25 @@ Level2DRenderer::~Level2DRenderer()
 {
 }
 
-void Level2DRenderer::AddGameObject(const String& name, Vector<ComponentTypeEnum> gameObjectComponentList, SpriteSheet& spriteSheet, vec2 objectPosition)
+void Level2DRenderer::AddGameObject(uint32 Id, const String& name, Vector<ComponentTypeEnum> gameObjectComponentList, SpriteSheet& spriteSheet, vec2 objectPosition)
 {
-    GameObjectList.emplace_back(std::make_shared<GameObject>(GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet)));
+    SharedPtr<GameObject> gameObject = std::make_shared<GameObject>(GameObject());
+    new (gameObject.get()) GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet);
+    GameObjectList.emplace_back(gameObject);
+
+    Name = name;
+    String asdf = "adsfasd";
+    for (auto component : gameObjectComponentList)
+    {
+        switch (component)
+        {
+        case kTransform2DComponent: gameObject->AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(gameObject->GetId(), asdf))); break;
+        case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject->GetId(), asdf))); break;
+        }
+    }
+
     std::dynamic_pointer_cast<Transform2DComponent>(GameObjectList.back()->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent))->GameObjectPosition = objectPosition;
+    gameObject->AddComponent(std::make_shared<SpriteComponent>(SpriteComponent(asdf, gameObject->GetId(), spriteSheet)));
 }
 
 void Level2DRenderer::RemoveGameObject(SharedPtr<GameObject> gameObject)
@@ -67,19 +85,15 @@ void Level2DRenderer::Input(const float& deltaTime)
 
 void Level2DRenderer::Update(const float& deltaTime)
 {
-    for (auto gameObject : GameObjectList)
+    DestroyDeadGameObjects();
+    VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
+    for (auto gameObj : GameObjectList)
     {
-        gameObject->Update(deltaTime);
+        gameObj->Update(commandBuffer, deltaTime);
     }
     for (auto& spriteLayer : SpriteLayerList)
     {
-        spriteLayer->Update(deltaTime);
-    }
-
-    VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-    for (auto drawLayer : GetMeshFromGameObjects())
-    {
-        drawLayer->Update(commandBuffer, deltaTime);
+        spriteLayer->Update(commandBuffer, deltaTime);
     }
     renderer.EndSingleTimeCommands(commandBuffer);
 }
@@ -223,4 +237,15 @@ Vector<SharedPtr<Mesh<Vertex2D>>> Level2DRenderer::GetMeshFromGameObjects()
     }
 
     return meshList;
+}
+
+SharedPtr<GameObject> Level2DRenderer::SeachGameObjectsById(uint32 id)
+{
+    auto it = std::find_if(GameObjectList.begin(), GameObjectList.end(),
+        [id](const std::shared_ptr<GameObject>& obj) 
+        { 
+            const uint32 gameObjId = obj->GetId();
+            return gameObjId == id; });
+
+    return (it != GameObjectList.end()) ? *it : nullptr;
 }

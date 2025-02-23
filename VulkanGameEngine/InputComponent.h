@@ -26,13 +26,12 @@ private:
 public:
 
     InputComponent();
-    InputComponent(SharedPtr<GameObject> parentGameObjectPtr);
-    InputComponent(SharedPtr<GameObject> parentGameObjectPtr, String& name);
+    InputComponent(uint32 gameObjectId);
+    InputComponent(uint32 gameObjectId, String& name);
     virtual ~InputComponent();
 
-    virtual void Input(float deltaTime) override;
-    virtual void Update(float deltaTime) override;
-    virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime) override;
+    virtual void Input(const float& deltaTime) override;
+    virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime) override;
     virtual void Destroy() override;
     virtual SharedPtr<GameObjectComponent> Clone() const;
     virtual size_t GetMemorySize() const override;

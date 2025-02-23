@@ -22,7 +22,9 @@ enum ColorChannelUsed
 class Texture
 {
 private:
-	uint64 TextureBufferIndex;
+	static uint32 NextTextureId;
+	uint32 TextureId = 0;
+	uint32 TextureBufferIndex;
 
 	void	 TextureSetUp();
 	VkResult GenerateMipmaps();

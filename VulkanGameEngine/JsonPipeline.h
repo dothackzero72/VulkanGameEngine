@@ -24,16 +24,102 @@ private:
     void LoadPipeline(RenderPipelineModel& model, VkRenderPass renderPass, uint ConstBufferSize);
 
     template<class T>
-    const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer()
+    const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
     {
+        Vector<VkDescriptorBufferInfo> vertexPropertiesBuffer;
+        if (meshList.size() == 0)
+        {
+            vertexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+                {
+                    .buffer = VK_NULL_HANDLE,
+                    .offset = 0,
+                    .range = VK_WHOLE_SIZE
+                });
+        }
+        else
+        {
+            for (auto& mesh : meshList)
+            {
+                mesh->GetVertexBuffer(vertexPropertiesBuffer);
+            }
+        }
 
+        return vertexPropertiesBuffer;
     }
 
-    const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer();
-    const Vector<VkDescriptorBufferInfo> GetGameObjectTransformBuffer();
-    const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer(Vector<SharedPtr<Mesh<Vertex2D>>> meshList);
-    const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>> textureList);
-    const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer(Vector<SharedPtr<Material>> materialList);
+    template<class T>
+    const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
+    {
+        std::vector<VkDescriptorBufferInfo>	indexPropertiesBuffer;
+        if (meshList.size() == 0)
+        {
+            indexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+                {
+                    .buffer = VK_NULL_HANDLE,
+                    .offset = 0,
+                    .range = VK_WHOLE_SIZE
+                });
+        }
+        else
+        {
+            for (auto& mesh : meshList)
+            {
+                mesh->GetIndexBuffer(indexPropertiesBuffer);
+            }
+        }
+        return indexPropertiesBuffer;
+    }
+
+    template<class T>
+    const Vector<VkDescriptorBufferInfo> GetGameObjectTransformBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
+    {
+        std::vector<VkDescriptorBufferInfo>	transformPropertiesBuffer;
+        if (meshList.size() == 0)
+        {
+            transformPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+                {
+                    .buffer = VK_NULL_HANDLE,
+                    .offset = 0,
+                    .range = VK_WHOLE_SIZE
+                });
+        }
+        else
+        {
+            for (auto& mesh : meshList)
+            {
+                mesh->GetTransformBuffer(transformPropertiesBuffer);
+            }
+        }
+
+        return transformPropertiesBuffer;
+    }
+
+    template<class T>
+    const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
+    {
+        Vector<VkDescriptorBufferInfo> meshPropertiesBuffer;
+        if (meshList.size() == 0)
+        {
+            meshPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+                {
+                    .buffer = VK_NULL_HANDLE,
+                    .offset = 0,
+                    .range = VK_WHOLE_SIZE
+                });
+        }
+        else
+        {
+            for (auto& mesh : meshList)
+            {
+                meshPropertiesBuffer.emplace_back(mesh->GetMeshPropertiesBuffer());
+            }
+        }
+
+        return meshPropertiesBuffer;
+    }
+
+    const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>>& textureList);
+    const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer(Vector<SharedPtr<Material>>& materialList);
 
 public:
     String Name;

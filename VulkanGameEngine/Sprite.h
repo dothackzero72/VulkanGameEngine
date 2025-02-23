@@ -15,8 +15,8 @@ private:
 	vec2 SpriteSize = vec2(50.0f);
 	vec4 SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	SharedPtr<GameObject> ParentGameObject;
-	SharedPtr<Transform2DComponent> Transform2D;
+	WeakPtr<GameObject> ParentGameObject;
+	WeakPtr<Transform2DComponent> Transform2D;
 
 	SpriteSheet Spritesheet;
 	SharedPtr<Material> SpriteMaterial;
@@ -36,13 +36,11 @@ public:
 	vec2 SpriteScale = vec2(1.0f);
 
 	Sprite();
-	Sprite(SharedPtr<GameObject> parentGameObject, SpriteSheet& spriteSheet);
+	Sprite(uint32 id, SpriteSheet& spriteSheet);
 	virtual ~Sprite();
 
 	virtual void Input(const float& deltaTime);
-	virtual void Update(const float& deltaTime);
-	virtual void BufferUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime);
-	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
+	virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
 	virtual void Destroy();
 
 	SharedPtr<SpriteInstanceStruct> GetSpriteInstance() { return SpriteInstance; }

@@ -48,7 +48,7 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 
 void Scene::BuildRenderPasses()
 {
-	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("../RenderPass/DefaultRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
+	levelRenderer = Level2DRenderer::CreateLevel2DRenderer("../RenderPass/DefaultRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
 	frameRenderPass.BuildRenderPass(levelRenderer->RenderedColorTextureList[0]);
 }
 

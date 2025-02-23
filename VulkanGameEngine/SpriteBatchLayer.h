@@ -3,7 +3,9 @@
 #include "Sprite.h"
 #include "Mesh2D.h"
 #include "JsonPipeline.h"
+#include "Level2DRenderer.h"
 
+class Level2DRenderer;
 class SpriteBatchLayer
 {
 private:
@@ -39,7 +41,7 @@ public:
 	SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, SharedPtr<JsonPipeline> spriteRenderPipeline);
 	virtual ~SpriteBatchLayer();
 
-	void Update(float deltaTime);
+	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
 	void Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneProperties);
 	void Destroy();
 

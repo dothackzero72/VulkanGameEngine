@@ -10,6 +10,8 @@
 #endif
 #include "MemoryManager.h"
 
+uint32 Texture::NextTextureId = 0;
+
 Texture::Texture()
 {
 	TextureSetUp();
@@ -69,6 +71,7 @@ Texture::~Texture()
 void Texture::TextureSetUp()
 {
 	Name = "Texture";
+	TextureId = ++NextTextureId;
 	TextureBufferIndex = 0;
 	Width = 1;
 	Height = 1;

@@ -9,12 +9,11 @@ private:
 
 public:
 	SpriteComponent();
-	SpriteComponent(String& name, SharedPtr<GameObject> parentGameObjectPtr, SpriteSheet& spriteSheet);
+	SpriteComponent(String& name, uint32 gameObjectId, SpriteSheet& spriteSheet);
 	virtual ~SpriteComponent() override;
 
-	virtual void Input(float deltaTime) override;
-	virtual void Update(float deltaTime) override;
-	virtual void BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime) override;
+	virtual void Input(const float& deltaTime) override;
+	virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime) override;
 	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties) override;
 	virtual void Destroy() override;
 	virtual SharedPtr<GameObjectComponent> Clone() const override;

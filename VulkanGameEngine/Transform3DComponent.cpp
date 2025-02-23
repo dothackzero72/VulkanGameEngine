@@ -5,7 +5,7 @@ Transform3DComponent::Transform3DComponent() : GameObjectComponent()
 {
 }
 
-Transform3DComponent::Transform3DComponent(SharedPtr<GameObject> parentGameObjectPtr) : GameObjectComponent(this, parentGameObjectPtr, kTransform3DComponent)
+Transform3DComponent::Transform3DComponent(uint32 gameObjectId) : GameObjectComponent(gameObjectId, kTransform3DComponent)
 {
     //GameObjectPosition = SharedPtr<vec2>(CSobject->InvokeMethod<vec2*>("GetPositionPtr"));
     //GameObjectRotation = SharedPtr<vec2>(CSobject->InvokeMethod<vec2*>("GetRotationPtr"));
@@ -13,7 +13,7 @@ Transform3DComponent::Transform3DComponent(SharedPtr<GameObject> parentGameObjec
     //GameObjectMatrixTransform = SharedPtr<mat4>(CSobject->InvokeMethod<mat4*>("GetTransformMatrixPtr"));
 }
 
-Transform3DComponent::Transform3DComponent(SharedPtr<GameObject> parentGameObjectPtr, String& name) : GameObjectComponent(this, parentGameObjectPtr, name, kTransform3DComponent)
+Transform3DComponent::Transform3DComponent(uint32 gameObjectId, String& name) : GameObjectComponent(gameObjectId, name, kTransform3DComponent)
 {
     //GameObjectPosition = SharedPtr<vec2>(CSobject->InvokeMethod<vec2*>("GetPositionPtr"));
     //GameObjectRotation = SharedPtr<vec2>(CSobject->InvokeMethod<vec2*>("GetRotationPtr"));
@@ -25,19 +25,14 @@ Transform3DComponent::~Transform3DComponent()
 {
 }
 
-void Transform3DComponent::Input(float deltaTime)
+void Transform3DComponent::Input(const float& deltaTime)
 {
     GameObjectComponent::Input(deltaTime);
 }
 
-void Transform3DComponent::Update(float deltaTime)
+void Transform3DComponent::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
-    GameObjectComponent::Update(deltaTime);
-}
-
-void Transform3DComponent::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
-{
-    GameObjectComponent::BufferUpdate(commandBuffer, deltaTime);
+    GameObjectComponent::Update(commandBuffer, deltaTime);
 }
 
 void Transform3DComponent::Destroy()

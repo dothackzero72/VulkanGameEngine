@@ -17,8 +17,9 @@ GameObjectComponent::GameObjectComponent()
 
 }
 
-GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(uint32 gameObjectId, ComponentTypeEnum componentType)
 {
+    ParentGameObject = Level2DRenderer::LevelRenderer->SeachGameObjectsById(gameObjectId);
     //void* reqw = this;
     //Name = std::make_shared<Coral::String>(Coral::String().New("component"));
     ComponentType = componentType;
@@ -32,8 +33,9 @@ GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parent
     //}
 }
 
-GameObjectComponent::GameObjectComponent(void* ptr, SharedPtr<GameObject> parentGameObjectPtr, String name, ComponentTypeEnum componentType)
+GameObjectComponent::GameObjectComponent(uint32 gameObjectId, const String& name, ComponentTypeEnum componentType)
 {
+    ParentGameObject = Level2DRenderer::LevelRenderer->SeachGameObjectsById(gameObjectId);
     //Name = std::make_shared<Coral::String>(Coral::String().New(name));
     ComponentType = componentType;
     //ParentGameObjectPtr = parentGameObjectPtr;
@@ -50,17 +52,12 @@ GameObjectComponent::~GameObjectComponent()
 {
 }
 
-void GameObjectComponent::Input(float deltaTime)
+void GameObjectComponent::Input(const float& deltaTime)
 {
     //CSobject->InvokeMethod("Input", KeyboardKeyCode::KEY_D, deltaTime);
 }
 
-void GameObjectComponent::Update(float deltaTime)
-{
-    //CSobject->InvokeMethod("Update", deltaTime);
-}
-
-void GameObjectComponent::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
+void GameObjectComponent::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
     //CSobject->InvokeMethod("BufferUpdate", commandBuffer, deltaTime);
 }

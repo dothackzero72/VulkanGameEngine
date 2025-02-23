@@ -5,33 +5,27 @@ SpriteComponent::SpriteComponent()
 {
 }
 
-SpriteComponent::SpriteComponent(String& name, SharedPtr<GameObject> parentGameObjectPtr, SpriteSheet& spriteSheet) : GameObjectComponent(this, parentGameObjectPtr, kSpriteComponent)
+SpriteComponent::SpriteComponent(String& name, uint32 gameObjectId, SpriteSheet& spriteSheet) : GameObjectComponent(gameObjectId, kSpriteComponent)
 {
-	SpriteObj = std::make_shared<Sprite>(Sprite(parentGameObjectPtr, spriteSheet));
+	SpriteObj = std::make_shared<Sprite>(Sprite(gameObjectId, spriteSheet));
 }
 
 SpriteComponent::~SpriteComponent()
 {
 }
 
-void SpriteComponent::Input(float deltaTime)
+void SpriteComponent::Input(const float& deltaTime)
 {
 	SpriteObj->Input(deltaTime);
 }
 
-void SpriteComponent::Update(float deltaTime)
+void SpriteComponent::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
-	SpriteObj->Update(deltaTime);
-}
-
-void SpriteComponent::BufferUpdate(VkCommandBuffer& commandBuffer, float deltaTime)
-{
-	SpriteObj->BufferUpdate(commandBuffer, deltaTime);
+	SpriteObj->Update(commandBuffer, deltaTime);
 }
 
 void SpriteComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
 {
-	SpriteObj->Draw(commandBuffer, pipeline, pipelineLayout, descriptorSet, sceneProperties);
 }
 
 void SpriteComponent::Destroy()

@@ -42,8 +42,8 @@ private:
 	
 protected:
 	SharedPtr<Material>		  MeshMaterial;
-	SharedPtr<Vector<T>>      MeshVertexList;
-	SharedPtr<Vector<uint32>> MeshIndexList;
+	Vector<T>				  MeshVertexList;
+	Vector<uint32>			  MeshIndexList;
 
 public:
 	uint64 MeshBufferIndex;
@@ -96,11 +96,14 @@ public:
 	void MeshStartUp(Vector<T>& vertexList, Vector<uint32>& indexList, uint32 meshBufferIndex)
 	{
 		MeshBufferIndex = meshBufferIndex;
+		MeshVertexList = vertexList;
+		MeshIndexList = indexList;
 		VertexCount = vertexList.size();
 		IndexCount = indexList.size();
 
 		MeshVertexBuffer = VulkanBuffer<T>(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		MeshTransformBuffer = TransformBuffer(static_cast<void*>(&MeshTransform), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
 		SharedPtr parentGameObject = ParentGameObject.lock();
@@ -117,12 +120,15 @@ public:
 	void MeshStartUp(Vector<T>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material)
 	{
 		MeshMaterial = material;
+		MeshVertexList = vertexList;
+		MeshIndexList = indexList;
 		VertexCount = vertexList.size();
 		IndexCount = indexList.size();
 
 		MeshVertexBuffer = VulkanBuffer<T>(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		PropertiesBuffer = MeshPropertiesBuffer(MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+		MeshTransformBuffer = TransformBuffer(static_cast<void*>(&MeshTransform), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
 		SharedPtr parentGameObject = ParentGameObject.lock();
 		if (parentGameObject)
@@ -150,9 +156,10 @@ public:
 		MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.y), vec3(0.0f, 1.0f, 0.0f));
 		MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.z), vec3(0.0f, 0.0f, 1.0f));
 		MeshMatrix = glm::scale(MeshMatrix, MeshScale);
+		MeshTransform = GameObjectMatrix * MeshMatrix;
 
 		MeshProperties.MaterialIndex = (MeshMaterial) ? MeshMaterial->GetMaterialBufferIndex() : 0;
-		MeshProperties.MeshTransform = GameObjectMatrix * MeshMatrix;
+		MeshProperties.MeshTransform = MeshTransform;
 		PropertiesBuffer.UpdateBufferMemory(MeshProperties);
 	}
 
@@ -169,48 +176,44 @@ public:
 		PropertiesBuffer.DestroyBuffer();
 	}
 
-	//void GetMeshPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList)
-	//{
-	//	VkDescriptorBufferInfo meshBufferInfo =
-	//	{
-	//		.buffer = VertexBuffer.Buffer,
-	//		.offset = 0,
-	//		.range = VK_WHOLE_SIZE
-	//	};
-	//	meshBufferList.emplace_back(meshBufferInfo);
-	//}
-
-	//void GetVertexPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList)
-	//{
-	//	VkDescriptorBufferInfo meshBufferInfo =
-	//	{
-	//		.buffer = IndexBuffer.Buffer,
-	//		.offset = 0,
-	//		.range = VK_WHOLE_SIZE
-	//	};
-	//	meshBufferList.emplace_back(meshBufferInfo);
-	//}
-
-	//void GetIndexPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList)
-	//{
-	//	VkDescriptorBufferInfo meshBufferInfo =
-	//	{
-	//		.buffer = TransformBuffer.Buffer,
-	//		.offset = 0,
-	//		.range = VK_WHOLE_SIZE
-	//	};
-	//	meshBufferList.emplace_back(meshBufferInfo);
-	//}
-
-	void GetMeshPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& meshBufferList)
+	VkDescriptorBufferInfo GetVertexPropertiesBuffer()
 	{
-		VkDescriptorBufferInfo meshBufferInfo =
-		{
-			.buffer = PropertiesBuffer.Buffer,
-			.offset = 0,
-			.range = VK_WHOLE_SIZE
-		};
-		meshBufferList.emplace_back(meshBufferInfo);
+		return VkDescriptorBufferInfo
+			{
+				.buffer = MeshVertexBuffer.Buffer,
+				.offset = 0,
+				.range = VK_WHOLE_SIZE
+			};
+	}
+
+	VkDescriptorBufferInfo GetIndexPropertiesBuffer()
+	{
+		return VkDescriptorBufferInfo
+			{
+				.buffer = MeshIndexBuffer.Buffer,
+				.offset = 0,
+				.range = VK_WHOLE_SIZE
+			};
+	}
+
+	VkDescriptorBufferInfo GetTransformBuffer()
+	{
+		return VkDescriptorBufferInfo
+			{
+				.buffer = MeshTransformBuffer.Buffer,
+				.offset = 0,
+				.range = VK_WHOLE_SIZE
+			};
+	}
+
+	VkDescriptorBufferInfo GetMeshPropertiesBuffer()
+	{
+		return VkDescriptorBufferInfo
+			{
+				.buffer = PropertiesBuffer.Buffer,
+				.offset = 0,
+				.range = VK_WHOLE_SIZE
+			};
 	}
 
 	const VkBufferUsageFlags GetMeshBufferUsageSettings() { return MeshBufferUsageSettings; }

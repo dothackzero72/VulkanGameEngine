@@ -3,11 +3,11 @@
 
 Coral::HostInstance MemoryManager::hostInstance;
 SharedPtr<Coral::ManagedAssembly> MemoryManager::ECSassembly = nullptr;
-
-Vector<JsonRenderPass> MemoryManager::JsonRenderPassList;
-Vector<JsonPipeline> MemoryManager::JsonPipelineList;
-Vector<SharedPtr<JsonRenderPass>> MemoryManager::SharedJsonRenderPassPtrList;
-Vector<SharedPtr<JsonPipeline>> MemoryManager::SharedJsonPipelinePtrList;
+//
+//Vector<JsonRenderPass> MemoryManager::JsonRenderPassList;
+//Vector<JsonPipeline> MemoryManager::JsonPipelineList;
+//Vector<SharedPtr<JsonRenderPass>> MemoryManager::SharedJsonRenderPassPtrList;
+//Vector<SharedPtr<JsonPipeline>> MemoryManager::SharedJsonPipelinePtrList;
 
 void ExceptionCallback(std::string_view InMessage)
 {
@@ -165,28 +165,28 @@ void MemoryManager::SetUpMemoryManager(uint32 EstObjectCount)
 //	}
 //}
 
-void MemoryManager::Destroy()
-{
-	//GameObjectList.clear();
-	//RenderMesh2DComponentList.clear();
-	//TextureList.clear();
-	//MaterialList.clear();
-	//JsonRenderPassList.clear();
-	//JsonPipelineList.clear();
-	//MeshList.clear();
-	//Mesh2DList.clear();
-	//SpriteBatchLayerList.clear();
-
-	//GameObjectMemoryPool.Destroy();
-	//SpriteComponentMemoryPool.Destroy();
-	//SpriteBatchLayerMemeryPool.Destroy();
-	//MaterialMemoryPool.Destroy();
-	//TextureMemoryPool.Destroy();
-	//JsonPipelineMemoryPool.Destroy();
-	//JsonRenderPassMemoryPool.Destroy();
-
-	hostInstance.Shutdown();
-}
+//void MemoryManager::Destroy()
+//{
+//	//GameObjectList.clear();
+//	//RenderMesh2DComponentList.clear();
+//	//TextureList.clear();
+//	//MaterialList.clear();
+//	//JsonRenderPassList.clear();
+//	//JsonPipelineList.clear();
+//	//MeshList.clear();
+//	//Mesh2DList.clear();
+//	//SpriteBatchLayerList.clear();
+//
+//	//GameObjectMemoryPool.Destroy();
+//	//SpriteComponentMemoryPool.Destroy();
+//	//SpriteBatchLayerMemeryPool.Destroy();
+//	//MaterialMemoryPool.Destroy();
+//	//TextureMemoryPool.Destroy();
+//	//JsonPipelineMemoryPool.Destroy();
+//	//JsonRenderPassMemoryPool.Destroy();
+//
+//	hostInstance.Shutdown();
+//}
 
 //const Vector<VkDescriptorBufferInfo> MemoryManager::GetMeshPropertiesBuffer()
 //{
@@ -236,19 +236,19 @@ void MemoryManager::Destroy()
 	// return SharedMaterialPtrList.back();
  //}
 
- SharedPtr<JsonRenderPass> MemoryManager::AddJsonRenderPass(JsonRenderPass jsonRenderPass)
- {
-	 JsonRenderPassList.emplace_back(jsonRenderPass);
-	 SharedJsonRenderPassPtrList.emplace_back(std::make_shared<JsonRenderPass>(JsonRenderPass(jsonRenderPass)));
-	 return SharedJsonRenderPassPtrList.back();
- }
+ //SharedPtr<JsonRenderPass> MemoryManager::AddJsonRenderPass(JsonRenderPass jsonRenderPass)
+ //{
+	// JsonRenderPassList.emplace_back(jsonRenderPass);
+	// SharedJsonRenderPassPtrList.emplace_back(std::make_shared<JsonRenderPass>(JsonRenderPass(jsonRenderPass)));
+	// return SharedJsonRenderPassPtrList.back();
+ //}
 
- SharedPtr<JsonPipeline> MemoryManager::AddJsonPipeline(JsonPipeline jsonPipeline)
- {
-	 JsonPipelineList.emplace_back(jsonPipeline);
-	 SharedJsonPipelinePtrList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline(jsonPipeline)));
-	 return SharedJsonPipelinePtrList.back();
- }
+ //SharedPtr<JsonPipeline> MemoryManager::AddJsonPipeline(JsonPipeline jsonPipeline)
+ //{
+	// JsonPipelineList.emplace_back(jsonPipeline);
+	// SharedJsonPipelinePtrList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline(jsonPipeline)));
+	// return SharedJsonPipelinePtrList.back();
+ //}
 
  //SharedPtr<Mesh> MemoryManager::AddMesh(Mesh mesh)
  //{
