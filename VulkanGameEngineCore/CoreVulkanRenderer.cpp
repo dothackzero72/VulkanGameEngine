@@ -717,36 +717,9 @@ Vector<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<V
 
 VkResult Renderer_SetUpSemaphores(VkDevice device, Vector<VkFence>& inFlightFences, Vector<VkSemaphore>& acquireImageSemaphores, Vector<VkSemaphore>& presentImageSemaphores)
 {
-
-    VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
-        .pNext = NULL,
-        .semaphoreType = VK_SEMAPHORE_TYPE_BINARY,
-        .initialValue = 0,
-    };
-
-    VkSemaphoreCreateInfo semaphoreCreateInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
-        .pNext = &semaphoreTypeCreateInfo
-    };
-
-    VkFenceCreateInfo fenceInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-        .flags = VK_FENCE_CREATE_SIGNALED_BIT
-    };
-
     inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
     acquireImageSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     presentImageSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-    for (size_t x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
-    {
-        VULKAN_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &acquireImageSemaphores[x]));
-        VULKAN_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &presentImageSemaphores[x]));
-        VULKAN_RESULT(vkCreateFence(device, &fenceInfo, nullptr, &inFlightFences[x]));
-    }
 
-    return VK_SUCCESS;
+    return Renderer_CreateSemaphores(device, inFlightFences.data(), acquireImageSemaphores.data(), presentImageSemaphores.data(), MAX_FRAMES_IN_FLIGHT);
 }

@@ -27,8 +27,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             RenderPassResolution = new ivec2
             {
-                x = (int)VulkanRenderer.swapChain.swapchainExtent.Width,
-                y = (int)VulkanRenderer.swapChain.swapchainExtent.Height
+                x = (int)VulkanRenderer.swapChain.SwapChainResolution.width,
+                y = (int)VulkanRenderer.swapChain.SwapChainResolution.height
             };
             sampleCount = SampleCountFlags.Count1Bit;
 

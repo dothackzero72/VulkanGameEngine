@@ -35,9 +35,9 @@ VkResult DLL_Buffer_UpdateBufferSize(VkDevice device, VkPhysicalDevice physicalD
     return Buffer_UpdateBufferSize(device, physicalDevice, buffer, bufferMemory, bufferData, oldBufferSize, newBufferSize, bufferUsageFlags, propertyFlags);
 }
 
-void DLL_Buffer_UpdateBufferData(VkDevice device, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize, bool IsStagingBuffer)
+void DLL_Buffer_UpdateBufferData(VkDevice device, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize)
 {
-    Buffer_UpdateBufferData(device, stagingBufferMemory, bufferMemory, dataToCopy, bufferSize, IsStagingBuffer);
+     Buffer_UpdateBufferData( device, bufferMemory,  dataToCopy,  bufferSize);
 }
 
 VkResult DLL_Buffer_DestroyBuffer(VkDevice device, VkBuffer* buffer, VkBuffer* stagingBuffer, VkDeviceMemory* bufferMemory, VkDeviceMemory* stagingBufferMemory, void* bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsageFlags, VkMemoryPropertyFlags* propertyFlags)

@@ -51,7 +51,6 @@ private:
 	SharedPtr<Texture> EmissionMap = nullptr;
 	SharedPtr<Texture> HeightMap = nullptr;
 
-	void GenerateID();
 	void UpdateBuffer();
 
 public:

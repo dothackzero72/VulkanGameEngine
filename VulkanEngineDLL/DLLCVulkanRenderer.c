@@ -214,3 +214,8 @@
 	{
 		return  DLL_Renderer_DestroyPipelineCache(device, pipelineCache);
 	}
+
+	VkResult DLL_Renderer_CreateSemaphores(VkDevice device, VkFence* inFlightFences, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, int maxFramesInFlight)
+	{
+		return Renderer_CreateSemaphores(device, inFlightFences, acquireImageSemaphores, presentImageSemaphores, maxFramesInFlight);
+	}

@@ -101,6 +101,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 });
                                 break;
                             }
+                        case DescriptorBindingPropertiesEnum.kMaterialDescriptor:
+                            {
+                                descriptorPoolSizeList.Add(new DescriptorPoolSize()
+                                {
+                                    Type = DescriptorType.CombinedImageSampler,
+                                    DescriptorCount = textures.UCount()
+                                });
+                                break;
+                            }
                         default:
                             {
                                 throw new Exception($"{binding} case hasn't been handled yet");
@@ -150,6 +159,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                     Binding = binding.BindingNumber,
                                     DescriptorCount = textures.UCount(),
                                     DescriptorType = DescriptorType.CombinedImageSampler,
+                                    PImmutableSamplers = null,
+                                    StageFlags = ShaderStageFlags.FragmentBit | ShaderStageFlags.VertexBit
+                                });
+                                break;
+                            }
+                        case DescriptorBindingPropertiesEnum.kMaterialDescriptor:
+                            {
+                                descriptorSetLayoutBindingList.Add(new DescriptorSetLayoutBinding()
+                                {
+                                    Binding = binding.BindingNumber,
+                                    DescriptorCount = meshProperties.UCount(),
+                                    DescriptorType = DescriptorType.StorageBuffer,
                                     PImmutableSamplers = null,
                                     StageFlags = ShaderStageFlags.FragmentBit | ShaderStageFlags.VertexBit
                                 });
@@ -235,6 +256,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                             DstArrayElement = 0,
                                             DstSet = descriptorSet,
                                             PImageInfo = texturesPtr
+                                        });
+                                    }
+                                    break;
+                                }
+                            case DescriptorBindingPropertiesEnum.kMaterialDescriptor:
+                                {
+                                    fixed (DescriptorBufferInfo* meshInfo = meshProperties.ToArray())
+                                    {
+                                        descriptorSetList.Add(new WriteDescriptorSet()
+                                        {
+                                            SType = StructureType.WriteDescriptorSet,
+                                            DescriptorCount = meshProperties.UCount(),
+                                            DescriptorType = DescriptorType.StorageBuffer,
+                                            DstBinding = binding.BindingNumber,
+                                            DstArrayElement = 0,
+                                            DstSet = descriptorSet,
+                                            PBufferInfo = meshInfo,
                                         });
                                     }
                                     break;

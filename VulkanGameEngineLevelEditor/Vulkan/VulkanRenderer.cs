@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -21,11 +22,30 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.Models;
 using static System.Net.Mime.MediaTypeNames;
+using Image = Silk.NET.Vulkan.Image;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
+    public struct SwapChainState
+    {
+        public uint SwapChainImageCount;
+        public uint GraphicsFamily;
+        public uint PresentFamily;
+        public VkQueue GraphicsQueue;
+        public VkQueue PresentQueue;
+        public VkFormat Format;
+        public VkColorSpaceKHR ColorSpace;
+        public VkPresentModeKHR PresentMode;
+
+        public VkImage[] SwapChainImages;
+        public VkImageView[] SwapChainImageViews;
+        public VkExtent2D SwapChainResolution;
+        public VkSwapchainKHR Swapchain;
+    }
 
     public unsafe static class VulkanRenderer
     {
@@ -45,7 +65,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static Fence[] InFlightFences { get; private set; }
         public static Silk.NET.Vulkan.Semaphore[] AcquireImageSemaphores { get; private set; }
         public static Silk.NET.Vulkan.Semaphore[] PresentImageSemaphores { get; private set; }
-        public static VulkanSwapChain swapChain { get; private set; } = new VulkanSwapChain();
+        public static SwapChainState swapChain { get; private set; } = new SwapChainState();
         public static UInt32 ImageIndex { get; private set; } = new UInt32();
         public static UInt32 CommandIndex { get; private set; } = new UInt32();
         public static KhrSurface khrSurface { get; private set; }
@@ -59,14 +79,38 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static void CreateVulkanRenderer(IntPtr window, Extent2D swapChainResolution)
         {
             windowPtr = window;
-            CreateInstance();
+            instance = new Instance(GameEngineImport.DLL_Renderer_CreateVulkanInstance());
+            debugMessenger = new DebugUtilsMessengerEXT(GameEngineImport.DLL_Renderer_SetupDebugMessenger(instance.Handle));
             CreateSurface(windowPtr);
-            CreatePhysicalDevice();
-            CreateDevice();
+            physicalDevice = new PhysicalDevice(GameEngineImport.DLL_Renderer_SetUpPhysicalDevice(instance.Handle, surface.Handle, GraphicsFamily, PresentFamily));
+            device = new Device(GameEngineImport.DLL_Renderer_SetUpDevice(physicalDevice.Handle, GraphicsFamily, PresentFamily));
             CreateDeviceQueue();
             CreateSemaphores();
-            swapChain.CreateSwapChain(windowPtr);
+            CreateSwapChain(windowPtr);
             CreateCommandPool();
+        }
+
+        public static void CreateSwapChain(IntPtr window)
+        {
+            uint width = 0;
+            uint height = 0;
+            uint surfaceFormatCount = 0;
+            uint presentModeCount = 0;
+
+            VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities();
+            VkSurfaceFormatKHR[] compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats();
+            SwapChain_GetQueueFamilies();
+            VkPresentModeKHR[] compatiblePresentModesList = SwapChain_GetPhysicalDeviceFormats();
+            VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
+            VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
+            //vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
+
+            SwapChainState swapChainState = new SwapChainState();
+            swapChainState.Swapchain = SwapChain_SetUpSwapChain();
+            swapChainState.SwapChainImages = SwapChain_SetUpSwapChainImages();
+            swapChainState.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews();
+            swapChainState.SwapChainResolution.width = width;
+            swapChainState.SwapChainResolution.height = height;
         }
 
         public static void CreateCommandBuffers(CommandBuffer[] commandBufferList)
@@ -108,7 +152,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             vk.ResetFences(device, 1, &fence);
 
             var imageIndex = ImageIndex;
-            Result result = swapChain.khrSwapchain.AcquireNextImage(device, swapChain.swapChain, ulong.MaxValue, imageSemaphore, fence, &imageIndex);
+            Result result = swapChain.khrSwapchain.AcquireNextImage(device, swapChain.Swapchain, ulong.MaxValue, imageSemaphore, fence, &imageIndex);
             ImageIndex = imageIndex;
 
             if (result == Result.ErrorOutOfDateKhr)
@@ -166,7 +210,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     }
 
                     var imageIndex = ImageIndex;
-                    var swapchain = swapChain.swapChain;
+                    var swapchain = swapChain.Swapchain;
                     PresentInfoKHR presentInfo = new PresentInfoKHR()
                     {
                         SType = StructureType.PresentInfoKhr,
@@ -231,38 +275,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return shaderModule;
         }
 
-        public static void CreateInstance()
-        {
-            instance = new Instance(GameEngineImport.DLL_Renderer_CreateVulkanInstance());
-
-            var debugInfo = new DebugUtilsMessengerCreateInfoEXT
-            (
-                messageSeverity: DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt |
-                                 DebugUtilsMessageSeverityFlagsEXT.InfoBitExt |
-                                 DebugUtilsMessageSeverityFlagsEXT.WarningBitExt |
-                                 DebugUtilsMessageSeverityFlagsEXT.ErrorBitExt,
-                messageType: DebugUtilsMessageTypeFlagsEXT.GeneralBitExt |
-                             DebugUtilsMessageTypeFlagsEXT.ValidationBitExt |
-                             DebugUtilsMessageTypeFlagsEXT.PerformanceBitExt,
-                pfnUserCallback: new PfnDebugUtilsMessengerCallbackEXT(VulkanDebug.MessageCallback)
-            );
-
-            ExtDebugUtils debugUtils;
-            if (!vk.TryGetInstanceExtension(instance, out debugUtils))
-            {
-                throw new Exception("Failed to create debug messenger.");
-            }
-
-            if (debugUtils.CreateDebugUtilsMessenger(instance, &debugInfo, null,
-                out DebugUtilsMessengerEXT DebugMessenger) != Result.Success)
-            {
-                throw new Exception("Failed to create debug messenger.");
-            }
-
-            debugMessenger = DebugMessenger;
-
-        }
-
         public static uint GetMemoryType(uint typeFilter, MemoryPropertyFlags properties)
         {
             PhysicalDeviceMemoryProperties memProperties;
@@ -299,16 +311,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
 
             surface = surfacePtr;
-        }
-
-        public static void CreatePhysicalDevice()
-        {
-            physicalDevice = new PhysicalDevice(GameEngineImport.DLL_Renderer_SetUpPhysicalDevice(instance.Handle, surface.Handle, GraphicsFamily, PresentFamily));
-        }
-
-        public static void CreateDevice()
-        {
-            device = new Device(GameEngineImport.DLL_Renderer_SetUpDevice(physicalDevice.Handle, GraphicsFamily, PresentFamily));
         }
 
         public static void CreateCommandPool()
@@ -360,197 +362,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static void CreateDeviceQueue()
         {
-            vk.GetDeviceQueue(device, GraphicsFamily, 0, out Silk.NET.Vulkan.Queue graphicsQueuePtr);
-            vk.GetDeviceQueue(device, PresentFamily, 0, out Silk.NET.Vulkan.Queue presentQueuePtr);
-            graphicsQueue = graphicsQueuePtr;
-            presentQueue = presentQueuePtr;
-        }
-
-        public static string[] CheckAvailableValidationLayers(string[] layers)
-        {
-            uint nrLayers = 0;
-            vk.EnumerateInstanceLayerProperties(&nrLayers, null);
-
-            LayerProperties[] availableLayers = new LayerProperties[nrLayers];
-
-            vk.EnumerateInstanceLayerProperties(&nrLayers, availableLayers);
-
-            var availableLayerNames = availableLayers.Select(availableLayer => Marshal.PtrToStringAnsi((nint)availableLayer.LayerName)).ToArray();
-
-            if (layers.All(validationLayerName => availableLayerNames.Contains(validationLayerName)))
-            {
-                return layers;
-            }
-
-            return null;
-        }
-
-        public static string[] GetExtensionProperteis(PhysicalDevice device)
-        {
-            uint extensionCount = 0;
-            vk.EnumerateDeviceExtensionProperties(device, (byte*)null, &extensionCount, null);
-            ExtensionProperties[] availableExtensions = new ExtensionProperties[extensionCount];
-            vk.EnumerateDeviceExtensionProperties(device, (byte*)null, &extensionCount, availableExtensions);
-
-            var extensions = new string[extensionCount];
-            for (int x = 0; x < extensionCount; x++)
-            {
-                var extension = availableExtensions[x];
-                extensions[x] = Marshal.PtrToStringAnsi((nint)extension.ExtensionName);
-            }
-
-            return extensions;
-        }
-
-        public static uint FindGraphicsQueueFamily(PhysicalDevice tempPhysicalDevice)
-        {
-            uint queueFamilyCount = 0;
-            vk.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, null);
-            QueueFamilyProperties[] graphicsFamily = new QueueFamilyProperties[queueFamilyCount];
-            vk.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, graphicsFamily);
-
-            uint tempGraphicsFamily = 0;
-            for (uint x = 0; x < graphicsFamily.Length; x++)
-            {
-                if (graphicsFamily[x].QueueFlags.HasFlag(QueueFlags.GraphicsBit))
-                {
-                    tempGraphicsFamily = x;
-                    break;
-                }
-            }
-
-            return tempGraphicsFamily;
-        }
-
-        public static uint FindPresentQueueFamily(PhysicalDevice tempPhysicalDevice)
-        {
-            uint queueFamilyCount = 0;
-            vk.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, null);
-            QueueFamilyProperties[] presentFamily = new QueueFamilyProperties[queueFamilyCount];
-            vk.GetPhysicalDeviceQueueFamilyProperties(tempPhysicalDevice, &queueFamilyCount, presentFamily);
-
-            uint tempPresentFamily = 0;
-            for (uint x = 0; x < presentFamily.Length; x++)
-            {
-                bool isPresentSupport = GetSurfaceSupport(tempPhysicalDevice, x);
-                if (isPresentSupport)
-                {
-                    tempPresentFamily = x;
-                    break;
-                }
-            }
-
-            return tempPresentFamily;
-        }
-
-        [DllImport("vulkan-1.dll")]
-        public static extern int vkGetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice physicalDevice, SurfaceKHR surface, ref uint pSurfaceFormatCount, IntPtr pSurfaceFormats);
-        public static SurfaceFormatKHR[] GetSurfaceFormatsKHR(PhysicalDevice physicalDevice)
-        {
-            uint formatCount = 0;
-            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, ref formatCount, IntPtr.Zero);
-
-            var formats = new SurfaceFormatKHR[formatCount];
-            int structureSize = Marshal.SizeOf<SurfaceFormatKHR>();
-            IntPtr formatPtr = Marshal.AllocHGlobal(structureSize * (int)formatCount);
-            try
-            {
-                vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, ref formatCount, formatPtr);
-                for (int x = 0; x < formatCount; x++)
-                {
-                    formats[x] = Marshal.PtrToStructure<SurfaceFormatKHR>(formatPtr + x * Marshal.SizeOf<SurfaceFormatKHR>());
-                    Console.WriteLine($"Format: {formats[x].Format}, Color Space: {formats[x].ColorSpace}");
-                }
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(formatPtr);
-            }
-            return formats;
-        }
-
-
-        [DllImport("vulkan-1.dll")]
-        public static extern int vkGetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice physicalDevice, SurfaceKHR surface, ref uint pPresentModeCount, IntPtr pPresentModes);
-        public static PresentModeKHR[] GetSurfacePresentModesKHR(PhysicalDevice physicalDevice)
-        {
-            uint presentModeCount = 0;
-            vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, ref presentModeCount, IntPtr.Zero);
-
-            var presentModes = new PresentModeKHR[presentModeCount];
-            IntPtr presentModePtr = Marshal.AllocHGlobal((int)presentModeCount * sizeof(int));
-            try
-            {
-                vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, ref presentModeCount, presentModePtr);
-                for (int x = 0; x < presentModeCount; x++)
-                {
-                    presentModes[x] = (PresentModeKHR)Marshal.ReadInt32(presentModePtr + x * sizeof(int));
-                    Console.WriteLine($"Present Mode: {presentModes[x]}");
-                }
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(presentModePtr);
-            }
-            return presentModes;
-        }
-
-
-        public static bool GetSurfaceSupport(PhysicalDevice tempPhysicalDevice, uint presentFamilyIndex)
-        {
-            Bool32 bool32 = false;
-            // khrSurface.GetPhysicalDeviceSurfaceSupport(tempPhysicalDevice, presentFamilyIndex, surface, out true);
-            return true;
-        }
-
-        [DllImport("vulkan-1.dll")]
-        public static extern Result vkEnumerateInstanceExtensionProperties(IntPtr pLayerName, ref uint pPropertyCount, IntPtr pProperties);
-        public static void GetWin32Extensions(ref uint extensionCount, ref string[] enabledExtensions)
-        {
-            uint startCount = extensionCount;
-            string[] startExtenstions = enabledExtensions;
-
-            Result result = vkEnumerateInstanceExtensionProperties(IntPtr.Zero, ref extensionCount, IntPtr.Zero);
-            if (result != Result.Success)
-            {
-                MessageBox.Show($"Failed to enumerate instance extension properties. Error: {result}");
-                return;
-            }
-
-            IntPtr extensionsPtr = Marshal.AllocHGlobal(Marshal.SizeOf<ExtensionProperties>() * (int)extensionCount);
-            try
-            {
-                result = vkEnumerateInstanceExtensionProperties(IntPtr.Zero, ref extensionCount, extensionsPtr);
-                if (result != Result.Success)
-                {
-                    MessageBox.Show($"Failed to retrieve instance extension properties. Error: {result}");
-                    return;
-                }
-
-                string[] extensionNames = new string[extensionCount];
-                for (uint x = 0; x < startExtenstions.Count(); x++)
-                {
-                    extensionNames[x] = startExtenstions[x];
-                }
-                for (uint x = startCount; x < extensionCount; x++)
-                {
-                    ExtensionProperties extProps = Marshal.PtrToStructure<ExtensionProperties>(
-                        IntPtr.Add(extensionsPtr, (int)(x * Marshal.SizeOf<ExtensionProperties>())));
-
-                    string name = BytePtrToString(extProps.ExtensionName);
-                    extensionNames[x] = name;
-
-                    byte[] nameBytes = Encoding.UTF8.GetBytes(name);
-                    IntPtr ptr = Marshal.AllocHGlobal(nameBytes.Length + 1);
-                    Marshal.Copy(nameBytes, 0, ptr, nameBytes.Length);
-                    Marshal.WriteByte(ptr, nameBytes.Length, 0);
-                }
-                enabledExtensions = extensionNames;
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(extensionsPtr);
-            }
+            GameEngineImport.DLL_Renderer_GetDeviceQueue(device.Handle, GraphicsFamily, PresentFamily, out VkQueue graphicsQueuePtr, out VkQueue presentQueuePtr);
+            graphicsQueue = new Silk.NET.Vulkan.Queue(graphicsQueuePtr);
+            presentQueue = new Silk.NET.Vulkan.Queue(presentQueuePtr);
         }
 
         public static CommandBuffer BeginSingleUseCommandBuffer()
@@ -591,73 +405,45 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return Result.Success;
         }
 
-        public static unsafe string BytePtrToString(byte* bytePtr)
+        //SwapChain
+        public static VkSurfaceCapabilitiesKHR SwapChain_GetSurfaceCapabilities()
         {
-            if (bytePtr == null)
-            {
-                throw new ArgumentNullException(nameof(bytePtr));
-            }
-
-            int length = 0;
-            while (bytePtr[length] != 0)
-            {
-                length++;
-                if (length > 256)
-                    throw new InvalidOperationException("String length exceeds expected limit");
-            }
-
-            byte[] bytes = new byte[length];
-            for (int i = 0; i < length; i++)
-            {
-                bytes[i] = bytePtr[i];
-            }
-
-            return Encoding.UTF8.GetString(bytes);
+            return GameEngineImport.DLL_SwapChain_GetSurfaceCapabilities(VulkanRenderer.physicalDevice.Handle, VulkanRenderer.surface.Handle);
         }
 
-        private static unsafe byte** CreateStringPointerArray(string[] strings)
+        public static VkResult SwapChain_GetQueueFamilies()
         {
-            int count = strings.Length;
-            byte** pointerArray = (byte**)Marshal.AllocHGlobal(count * sizeof(byte*));
-
-            for (int i = 0; i < count; i++)
-            {
-                byte* stringPointer = CreateBytePointerForStrings(new[] { strings[i] });
-                pointerArray[i] = stringPointer;
-            }
-            return pointerArray;
+            return GameEngineImport.DLL_SwapChain_GetQueueFamilies(physicalDevice.Handle, surface.Handle, swapChain.GraphicsFamily, swapChain.PresentFamily);
         }
 
-        private static unsafe byte* CreateBytePointerForStrings(string[] strings)
+        public static VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR[] availableFormats)
         {
-            int totalLength = 0;
-            foreach (var str in strings)
-            {
-                totalLength += Encoding.UTF8.GetByteCount(str) + 1;
-            }
-
-            byte* byteArray = (byte*)Marshal.AllocHGlobal(totalLength);
-            byte* currentPointer = byteArray;
-
-            foreach (var str in strings)
-            {
-                byte[] stringBytes = Encoding.UTF8.GetBytes(str);
-                Marshal.Copy(stringBytes, 0, new IntPtr(currentPointer), stringBytes.Length);
-                currentPointer[stringBytes.Length] = 0;
-                currentPointer += stringBytes.Length + 1;
-            }
-
-            return byteArray;
+            return GameEngineImport.DLL_SwapChain_FindSwapSurfaceFormat(availableFormats);
         }
 
-        private static unsafe void FreeStringPointerArray(byte** pointerArray, int count)
+        public static VkPresentModeKHR SwapChain_FindSwapPresentMode(VkPresentModeKHR[] availablePresentModes)
         {
-            for (int i = 0; i < count; i++)
-            {
-                Marshal.FreeHGlobal((IntPtr)pointerArray[i]);
-            }
-            Marshal.FreeHGlobal((IntPtr)pointerArray);
+            return GameEngineImport.DLL_SwapChain_FindSwapPresentMode(availablePresentModes);
         }
 
+        public static VkSwapchainKHR SwapChain_SetUpSwapChain()
+        {
+            return GameEngineImport.DLL_SwapChain_SetUpSwapChain(device.Handle, physicalDevice.Handle, surface.Handle, swapChain.GraphicsFamily, swapChain.PresentFamily, swapChain.SwapChainResolution.width, swapChain.SwapChainResolution.height, out uint swapChainImageCount);
+        }
+
+        public static VkImage[] SwapChain_SetUpSwapChainImages()
+        {
+            return GameEngineImport.DLL_SwapChain_SetUpSwapChainImages(device.Handle, swapChain.Swapchain);
+        }
+
+        public static VkImageView[] SwapChain_SetUpSwapChainImageViews()
+        {
+            return GameEngineImport.DLL_SwapChain_SetUpSwapChainImageViews(device.Handle, swapChainImageList, out VkSurfaceFormatKHR swapChainImageFormat);
+        }
+
+        public static VkSurfaceFormatKHR[] SwapChain_GetPhysicalDeviceFormats()
+        {
+            return GameEngineImport.DLL_SwapChain_GetPhysicalDeviceFormats(physicalDevice.Handle, surface.Handle);
+        }
     }
 }

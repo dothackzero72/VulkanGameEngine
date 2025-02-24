@@ -55,8 +55,8 @@ VkResult VulkanRenderer::StartFrame()
 {
 	return Renderer_StartFrame(cRenderer.Device, 
                                cRenderer.SwapChain.Swapchain,
-                               &cRenderer.InFlightFences[0],
-                               &cRenderer.AcquireImageSemaphores[0],
+                               cRenderer.InFlightFences.data(),
+                               cRenderer.AcquireImageSemaphores.data(),
                                &cRenderer.ImageIndex, 
                                &cRenderer.CommandIndex,
                                &cRenderer.RebuildRendererFlag);
@@ -65,9 +65,9 @@ VkResult VulkanRenderer::StartFrame()
 VkResult VulkanRenderer::EndFrame(Vector<VkCommandBuffer> commandBufferSubmitList)
 {
     return Renderer_EndFrame(cRenderer.SwapChain.Swapchain,
-                             &cRenderer.AcquireImageSemaphores[0],
-                             &cRenderer.PresentImageSemaphores[0],
-                             &cRenderer.InFlightFences[0],
+                             cRenderer.AcquireImageSemaphores.data(),
+                             cRenderer.PresentImageSemaphores.data(),
+                             cRenderer.InFlightFences.data(),
                              cRenderer.SwapChain.GraphicsQueue, 
                              cRenderer.SwapChain.PresentQueue,
                              cRenderer.CommandIndex,

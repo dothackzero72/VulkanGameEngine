@@ -84,7 +84,7 @@ VkPhysicalDevice DLL_Renderer_SetUpPhysicalDevice(VkInstance instance, VkSurface
 	return Renderer_SetUpPhysicalDevice(instance, surface, graphicsFamily, presentFamily);
 }
 
-VkResult DLL_Renderer_SetUpSemaphores(VkDevice device, std::vector<VkFence>& inFlightFences, std::vector<VkSemaphore>& acquireImageSemaphores, std::vector<VkSemaphore>& presentImageSemaphores)
+ VkResult DLL_Renderer_SetUpSemaphores(VkDevice device, Vector<VkFence>& inFlightFences, Vector<VkSemaphore>& acquireImageSemaphores, Vector<VkSemaphore>& presentImageSemaphores)
 {
 	return Renderer_SetUpSemaphores(device, inFlightFences, acquireImageSemaphores, presentImageSemaphores);
 }
@@ -104,48 +104,43 @@ VkResult DLL_Renderer_GetDeviceQueue(VkDevice device, uint32 graphicsFamily, uin
 	return Renderer_GetDeviceQueue(device, graphicsFamily, presentFamily, graphicsQueue, presentQueue);
 }
 
-VkResult DLL_SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32& graphicsFamily, uint32& presentFamily)
-{
-	return SwapChain_GetQueueFamilies(physicalDevice, surface, graphicsFamily, presentFamily);
-}
-
+////SwapChain
 VkSurfaceCapabilitiesKHR DLL_SwapChain_GetSurfaceCapabilities(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
 {
-	return SwapChain_GetSurfaceCapabilities(physicalDevice, surface);
+    return SwapChain_GetSurfaceCapabilities(physicalDevice, surface);
 }
 
-std::vector<VkSurfaceFormatKHR> DLL_SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+Vector<VkSurfaceFormatKHR> DLL_SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
 {
-	return SwapChain_GetPhysicalDeviceFormats(physicalDevice, surface);
+    return SwapChain_GetPhysicalDeviceFormats(physicalDevice, surface);
 }
 
-std::vector<VkPresentModeKHR> DLL_SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+VkResult DLL_SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32& graphicsFamily, uint32& presentFamily)
 {
-	return SwapChain_GetPhysicalDevicePresentModes(physicalDevice, surface);
+    return SwapChain_GetQueueFamilies(physicalDevice, surface, graphicsFamily, presentFamily);
+}
+
+VkSurfaceFormatKHR DLL_SwapChain_FindSwapSurfaceFormat(Vector<VkSurfaceFormatKHR>& availableFormats)
+{
+    return SwapChain_FindSwapSurfaceFormat(availableFormats);
+}
+
+VkPresentModeKHR DLL_SwapChain_FindSwapPresentMode(Vector<VkPresentModeKHR>& availablePresentModes)
+{
+    return SwapChain_FindSwapPresentMode(availablePresentModes);
 }
 
 VkSwapchainKHR DLL_SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, uint32 width, uint32 height, uint32* swapChainImageCount)
 {
-	return SwapChain_SetUpSwapChain(device, physicalDevice, surface, graphicsFamily, presentFamily, width, height, swapChainImageCount);
+    return SwapChain_SetUpSwapChain(device, physicalDevice, surface, graphicsFamily, presentFamily, width, height, swapChainImageCount);
 }
 
-std::vector<VkImage> DLL_SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain)
+Vector<VkImage> DLL_SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain)
 {
-	return SwapChain_SetUpSwapChainImages(device, swapChain);
+    return SwapChain_SetUpSwapChainImages( device,  swapChain);
 }
 
-std::vector<VkImageView> DLL_SwapChain_SetUpSwapChainImageViews(VkDevice device, std::vector<VkImage> swapChainImageList, VkSurfaceFormatKHR& swapChainImageFormat)
+Vector<VkImageView> DLL_SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<VkImage> swapChainImageList, VkSurfaceFormatKHR& swapChainImageFormat)
 {
-	return SwapChain_SetUpSwapChainImageViews(device, swapChainImageList, swapChainImageFormat);
+    return SwapChain_SetUpSwapChainImageViews(device, swapChainImageList, swapChainImageFormat);
 }
-
-VkSurfaceFormatKHR DLL_SwapChain_FindSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR>& availableFormats)
-{
-	return SwapChain_FindSwapSurfaceFormat(availableFormats);
-}
-
-VkPresentModeKHR DLL_SwapChain_FindSwapPresentMode(std::vector<VkPresentModeKHR>& availablePresentModes)
-{
-	return SwapChain_FindSwapPresentMode(availablePresentModes);
-}
-

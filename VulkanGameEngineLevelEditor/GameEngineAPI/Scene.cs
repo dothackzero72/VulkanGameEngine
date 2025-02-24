@@ -48,7 +48,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }));
 
             // MemoryManager.ViewMemoryMap();
-            renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.swapChain.swapchainExtent.Width, (int)VulkanRenderer.swapChain.swapchainExtent.Height));
+            renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.swapChain.SwapChainResolution.width, (int)VulkanRenderer.swapChain.SwapChainResolution.height));
             frameBufferRenderPass.BuildRenderPass(renderPass3D.RenderedColorTextureList[0]);
         }
 

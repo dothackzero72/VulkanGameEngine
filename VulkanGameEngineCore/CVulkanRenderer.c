@@ -129,54 +129,30 @@ VkResult Renderer_GetWin32Extensions(uint32_t* extensionCount, char*** enabledEx
     return VK_SUCCESS;
 }
 
-VkResult Renderer_SetUpSemaphores(VkDevice device, VkFence** inFlightFences, VkSemaphore** acquireImageSemaphores, VkSemaphore** presentImageSemaphores, int maxFramesInFlight)
+VkResult Renderer_CreateSemaphores(VkDevice device, VkFence* inFlightFences, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, int maxFramesInFlight)
 {
-    *inFlightFences = malloc(sizeof(VkFence) * maxFramesInFlight);
-    if (*inFlightFences == NULL)
-    {
-        return VK_ERROR_OUT_OF_HOST_MEMORY;
-    }
-
-    *acquireImageSemaphores = malloc(sizeof(VkSemaphore) * maxFramesInFlight);
-    if (*acquireImageSemaphores == NULL)
-    {
-        free(*inFlightFences);
-        return VK_ERROR_OUT_OF_HOST_MEMORY;
-    }
-
-    *presentImageSemaphores = malloc(sizeof(VkSemaphore) * maxFramesInFlight);
-    if (*presentImageSemaphores == NULL)
-    {
-        free(*inFlightFences);
-        free(*acquireImageSemaphores);
-        return VK_ERROR_OUT_OF_HOST_MEMORY;
-    }
-
-    VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo =
-    {
+    VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
         .pNext = NULL,
         .semaphoreType = VK_SEMAPHORE_TYPE_BINARY,
         .initialValue = 0,
     };
 
-    VkSemaphoreCreateInfo semaphoreCreateInfo =
-    {
+    VkSemaphoreCreateInfo semaphoreCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
         .pNext = &semaphoreTypeCreateInfo
     };
 
-    VkFenceCreateInfo fenceInfo =
-    {
+    VkFenceCreateInfo fenceInfo = {
         .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
         .flags = VK_FENCE_CREATE_SIGNALED_BIT
     };
 
-    for (size_t x = 0; x < maxFramesInFlight; x++)
+    for (int x = 0; x < maxFramesInFlight; x++) 
     {
-        VULKAN_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, NULL, &(*acquireImageSemaphores)[x]));
-        VULKAN_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, NULL, &(*presentImageSemaphores)[x]));
-        VULKAN_RESULT(vkCreateFence(device, &fenceInfo, NULL, &(*inFlightFences)[x]));
+        VULKAN_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, NULL, &acquireImageSemaphores[x]));
+        VULKAN_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, NULL, &presentImageSemaphores[x]));
+        VULKAN_RESULT(vkCreateFence(device, &fenceInfo, NULL, &inFlightFences[x]));
     }
 
     return VK_SUCCESS;

@@ -20,10 +20,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static Vk vk = Vk.GetApi();
        // public static Assembly GameObjectComponentDLL { get; set; }
         public static List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
+        public static List<Texture> TextureList { get; set; } = new List<Texture>();
+        public static List<Material> MaterialList { get; set; } = new List<Material>();
         public static List<MeshRenderer2DComponent> RenderMesh2DComponentList { get; set; } = new List<MeshRenderer2DComponent>();
         //public static List<InputComponent> InputComponentList { get; set; } = new List<InputComponent>();
         // public static List<MeshRenderer3DComponent> RenderMesh3DComponentList = new List<MeshRenderer3DComponent>();
-        public static List<Texture> TextureList { get; set; } = new List<Texture>();
+
         public static MemoryPool<GameObject> GameObjectMemoryPool { get; set; } = new MemoryPool<GameObject>();
        // public static MemoryPool<InputComponent> InputComponentMemoryPool { get; set; } = new MemoryPool<InputComponent>();
         public static MemoryPool<MeshRenderer2DComponent> RenderMesh2DComponentMemoryPool { get; set; } = new MemoryPool<MeshRenderer2DComponent>();
@@ -177,7 +179,34 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return TexturePropertiesBuffer;
         }
 
+        public static List<DescriptorBufferInfo> GetMaterialPropertiesBuffer()
+        {
+            List<DescriptorBufferInfo> MeshPropertiesBuffer = new List<DescriptorBufferInfo>();
+            if (RenderMesh2DComponentList.Count == 0)
+            {
+                DescriptorBufferInfo nullBuffer = new DescriptorBufferInfo();
+                nullBuffer.Buffer = new Silk.NET.Vulkan.Buffer();
+                nullBuffer.Offset = 0;
+                nullBuffer.Range = Vk.WholeSize;
+                MeshPropertiesBuffer.Add(nullBuffer);
+            }
+            else
+            {
+                //foreach (var mesh in Material)
+                //{
+                //    if (mesh != null)
+                //    {
+                //        DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
+                //        MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
+                //        MeshProperitesBufferInfo.Offset = 0;
+                //        MeshProperitesBufferInfo.Range = Vk.WholeSize;
+                //        MeshPropertiesBuffer.Add(MeshProperitesBufferInfo);
+                //    }
+                //}
+            }
 
+            return MeshPropertiesBuffer;
+        }
         public static void ViewMemoryMap()
         {
             var gameObjectMemoryList = GameObjectMemoryPool.ViewMemoryPool();
