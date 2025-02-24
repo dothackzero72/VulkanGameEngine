@@ -10,7 +10,7 @@ InputComponent::InputComponent(uint32 gameObjectId) : GameObjectComponent(gameOb
    // transform2DComponentRef = SharedPtr<Transform2DComponent>(CSobject->InvokeMethod<Transform2DComponent*>("GetCPPComponentPtr"));
 }
 
-InputComponent::InputComponent(uint32 gameObjectId, String& name) : GameObjectComponent(gameObjectId, name, kInputComponent)
+InputComponent::InputComponent(uint32 gameObjectId, const String& name) : GameObjectComponent(gameObjectId, name, kInputComponent)
 {
     //auto adfd = this;
     //auto fds4 = static_cast<Transform2DComponent*>(parentGameObjectPtr->GameObjectComponentList[0].get())->GetCPPObjectHandle();

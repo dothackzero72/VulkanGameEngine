@@ -9,7 +9,7 @@ private:
 
 public:
 	SpriteComponent();
-	SpriteComponent(String& name, uint32 gameObjectId, SpriteSheet& spriteSheet);
+	SpriteComponent(uint32 gameObjectId, const String& name, SpriteSheet& spriteSheet);
 	virtual ~SpriteComponent() override;
 
 	virtual void Input(const float& deltaTime) override;

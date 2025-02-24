@@ -13,7 +13,7 @@ public:
 
     Transform2DComponent();
     Transform2DComponent(uint32 gameObjectId);
-    Transform2DComponent(uint32 gameObjectId, String& name);
+    Transform2DComponent(uint32 gameObjectId, const String& name);
     virtual ~Transform2DComponent();
 
     virtual void Input(const float& deltaTime) override;

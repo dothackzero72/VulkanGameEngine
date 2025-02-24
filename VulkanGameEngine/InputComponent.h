@@ -27,7 +27,7 @@ public:
 
     InputComponent();
     InputComponent(uint32 gameObjectId);
-    InputComponent(uint32 gameObjectId, String& name);
+    InputComponent(uint32 gameObjectId, const String& name);
     virtual ~InputComponent();
 
     virtual void Input(const float& deltaTime) override;

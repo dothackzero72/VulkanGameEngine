@@ -235,8 +235,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         {
             instance = new Instance(GameEngineImport.DLL_Renderer_CreateVulkanInstance());
 
-
-
             var debugInfo = new DebugUtilsMessengerCreateInfoEXT
             (
                 messageSeverity: DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt |
