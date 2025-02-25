@@ -215,7 +215,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return VkResult.Success;
         }
 
-        public static Result QuickTransitionImageLayout(Image image, VkImageLayout oldLayout, VkImageLayout newLayout, uint MipMapLevels, VkImageAspectFlags imageAspectFlags)
+        public static VkResult QuickTransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, uint MipMapLevels, VkImageAspectFlagBits imageAspectFlags)
         {
             VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             CTexture.TransitionImageLayout(commandBuffer, image, MipMapLevels, ref oldLayout, newLayout, imageAspectFlags);
@@ -224,31 +224,31 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return result;
         }
 
-        public static Result CopyBufferToTexture(ref VkBuffer buffer, VkImage image, VkTextureUsageEnum textureType, vec3 textureSize, VkExtent3D extent, VkImageAspectFlags imageAspectFlags)
+        public static VkResult CopyBufferToTexture(ref VkBuffer buffer, VkImage image, VkTextureUsageEnum textureType, vec3 textureSize, VkExtent3D extent, VkImageAspectFlagBits imageAspectFlags)
         {
             VkBufferImageCopy BufferImage = new VkBufferImageCopy()
             {
-                BufferOffset = 0,
-                BufferRowLength = 0,
-                BufferImageHeight = 0,
-                ImageExtent = new VkExtent3D()
+                bufferOffset = 0,
+                bufferRowLength = 0,
+                bufferImageHeight = 0,
+                imageExtent = new VkExtent3D()
                 {
-                    Width = (uint)extent.Width,
-                    Height = (uint)extent.Height,
-                    Depth = (uint)extent.Depth,
+                    width = (uint)extent.width,
+                    height = (uint)extent.height,
+                    depth = (uint)extent.depth,
                 },
-                ImageOffset = new VkOffset3D()
+                imageOffset = new VkOffset3D()
                 {
-                    X = 0,
-                    Y = 0,
-                    Z = 0,
+                    x = 0,
+                    y = 0,
+                    z = 0,
                 },
-                ImageSubresource = new VkImageSubresourceLayers()
+                imageSubresource = new VkImageSubresourceLayers()
                 {
-                    AspectMask = imageAspectFlags,
-                    MipLevel = 0,
-                    BaseArrayLayer = 0,
-                    LayerCount = 1,
+                    aspectMask = imageAspectFlags,
+                    mipLevel = 0,
+                    baseArrayLayer = 0,
+                    layerCount = 1,
                 }
 
             };
@@ -257,7 +257,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 BufferImage.ImageSubresource.LayerCount = 6;
             }
             VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
-            VkFunc.vkCmdCopyBufferToImage(commandBuffer, buffer, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &BufferImage);
+            VkFunc.vkCmdCopyBufferToImage(commandBuffer, buffer, image, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &BufferImage);
             return VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
         }
 
@@ -273,65 +273,65 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
-            Vk ImageMemoryBarrier imageMemoryBarrier = new ImageMemoryBarrier
+            VkImageMemoryBarrier imageMemoryBarrier = new VkImageMemoryBarrier
             {
-                SType = StructureType.ImageMemoryBarrier,
-                Image = image,
-                SrcQueueFamilyIndex = uint.MaxValue,
-                DstQueueFamilyIndex = uint.MaxValue,
-                SubresourceRange = new ImageSubresourceRange
+                sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                image = image,
+                srcQueueFamilyIndex = uint.MaxValue,
+                dstQueueFamilyIndex = uint.MaxValue,
+                subresourceRange = new VkImageSubresourceRange
                 {
-                    AspectMask = imageAspectFlags,
-                    BaseArrayLayer = 0,
-                    LayerCount = 1,
-                    LevelCount = 1
+                    aspectMask = imageAspectFlags,
+                    baseArrayLayer = 0,
+                    layerCount = 1,
+                    levelCount = 1
                 }
             };
 
             for (uint x = 1; x < mipLevels; x++)
             {
-                imageMemoryBarrier.SubresourceRange.BaseMipLevel = x - 1;
-                imageMemoryBarrier.OldLayout = Silk.NET.Vulkan.ImageLayout.TransferDstOptimal;
-                imageMemoryBarrier.NewLayout = Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal;
-                imageMemoryBarrier.SrcAccessMask = AccessFlags.TransferWriteBit;
-                imageMemoryBarrier.DstAccessMask = AccessFlags.TransferReadBit;
-                vk.CmdPipelineBarrier(commandBuffer, VkPipelineStageFlags.TransferBit, VkPipelineStageFlags.TransferBit, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
+                imageMemoryBarrier.subresourceRange.baseMipLevel = x - 1;
+                imageMemoryBarrier.oldLayout = VkImageLayout.TransferDstOptimal;
+                imageMemoryBarrier.newLayout = VkImageLayout.TransferSrcOptimal;
+                imageMemoryBarrier.srcAccessMask = VkAccessFlagBits.TransferWriteBit;
+                imageMemoryBarrier.dstAccessMask = VkAccessFlagBits.TransferReadBit;
+                VkFunc.vkCmdPipelineBarrier(commandBuffer, VkPipelineStageFlags.TransferBit, VkPipelineStageFlags.TransferBit, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
 
                 VkImageBlit imageBlit = new VkImageBlit
                 {
-                    SrcOffsets = new VkImageBlit.SrcOffsetsBuffer()
+                    srcOffsets = new VkImageBlit.SrcOffsetsBuffer()
                     {
                         Element0 = new VkOffset3D(0, 0, 0),
                         Element1 = new VkOffset3D((int)mipWidth, (int)mipHeight, 1)
                     },
-                    DstOffsets = new VkImageBlit.DstOffsetsBuffer()
+                    dstOffsets = new VkImageBlit.DstOffsetsBuffer()
                     {
                         Element0 = new VkOffset3D(0, 0, 0),
                         Element1 = new VkOffset3D((int)mipWidth > 1 ? (int)mipWidth / 2 : 1, (int)mipHeight > 1 ? (int)mipHeight / 2 : 1, 1)
                     },
-                    SrcSubresource = new VkImageSubresourceLayers
+                   srcSubresource = new VkImageSubresourceLayers
                     {
-                        AspectMask = imageAspectFlags,
-                        MipLevel = x - 1,
-                        BaseArrayLayer = 0,
-                        LayerCount = 1
+                        aspectMask = imageAspectFlags,
+                        mipLevel = x - 1,
+                        baseArrayLayer = 0,
+                        layerCount = 1
                     },
-                    DstSubresource = new VkImageSubresourceLayers
+                    dstSubresource = new VkImageSubresourceLayers
                     {
-                        AspectMask = imageAspectFlags,
-                        MipLevel = x,
-                        BaseArrayLayer = 0,
-                        LayerCount = 1
+                        aspectMask = imageAspectFlags,
+                        mipLevel = x,
+                        baseArrayLayer = 0,
+                        layerCount = 1
                     }
                 };
-                VkFunc.vkCmdBlitImage(commandBuffer, image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, ref imageBlit, Filter.Linear);
+                VkFunc.vkCmdBlitImage(commandBuffer, image, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, ref imageBlit, VkFilter.VK_FILTER_LINEAR);
 
-                imageMemoryBarrier.OldLayout = Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal;
-                imageMemoryBarrier.NewLayout = Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal;
-                imageMemoryBarrier.SrcAccessMask = AccessFlags.TransferReadBit;
-                imageMemoryBarrier.DstAccessMask = AccessFlags.ShaderReadBit;
+                imageMemoryBarrier.oldLayout = VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+                imageMemoryBarrier.newLayout = VkImageLayout.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageMemoryBarrier.srcAccessMask = VkAccessFlags.TRANSFER_READ_BIT;
+                imageMemoryBarrier.dstAccessMask = VkAccessFlags.SHADER_READ_BIT;
 
-                VkFunc.vkCmdPipelineBarrier(commandBuffer, PipelineStageFlags.TransferBit, PipelineStageFlags.FragmentShaderBit, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
+                VkFunc.vkCmdPipelineBarrier(commandBuffer, VkPipelineStageFlagBits.VK_PIPELINE_STAGE_TRANSFER_BIT, VkPipelineStageFlagBits.FRAGMENT_SHADER_BIT, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
 
                 if (mipWidth > 1)
                 {
@@ -343,13 +343,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             }
 
-            imageMemoryBarrier.SubresourceRange.BaseMipLevel = mipLevels - 1;
-            imageMemoryBarrier.OldLayout = Silk.NET.Vulkan.ImageLayout.TransferDstOptimal;
-            imageMemoryBarrier.NewLayout = Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal;
-            imageMemoryBarrier.SrcAccessMask = AccessFlags.TransferWriteBit;
-            imageMemoryBarrier.DstAccessMask = AccessFlags.ShaderReadBit;
+            imageMemoryBarrier.dubresourceRange.baseMipLevel = mipLevels - 1;
+            imageMemoryBarrier.oldLayout = VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+            imageMemoryBarrier.newLayout = VkImageLayout.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            imageMemoryBarrier.drcAccessMask = VkAccessFlags.TRANSFER_WRITE_BIT;
+            imageMemoryBarrier.fstAccessMask = VkAccessFlags.SHADER_READ_BIT;
 
-            VkFunc.vkCmdPipelineBarrier(commandBuffer, PipelineStageFlags.TransferBit, PipelineStageFlags.FragmentShaderBit, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
+            VkFunc.vkCmdPipelineBarrier(commandBuffer, PipelineStageFlags.TransferBit, VkPipelineStageFlagBits.FRAGMENT_SHADER_BIT, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
             return VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
         }
     }

@@ -21,8 +21,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkColorSpaceKHR ColorSpace { get;  set; }
         public VkPresentModeKHR PresentMode { get;  set; }
 
-        public VkImage[] SwapChainImages { get;  set; }
-        public VkImageView[] SwapChainImageViews { get;  set; }
+        public VkImage[] Images { get;  set; }
+        public VkImageView[] imageViews { get;  set; }
         public VkExtent2D SwapChainResolution { get;  set; }
         public VkSwapchainKHR Swapchain { get;  set; }
     }

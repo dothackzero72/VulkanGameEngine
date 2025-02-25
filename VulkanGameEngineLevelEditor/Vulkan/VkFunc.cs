@@ -97,7 +97,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static extern void vkGetImageMemoryRequirements(
             VkDevice device,
             VkImage image,
-            VkMemoryRequirements* pMemoryRequirements);
+            out VkMemoryRequirements pMemoryRequirements);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkGetImageSparseMemoryRequirements(
@@ -360,9 +360,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern VkResult vkCreateSampler(
             VkDevice device,
-            VkSamplerCreateInfo* pCreateInfo,
+            ref VkSamplerCreateInfo pCreateInfo,
             VkAllocationCallbacks* pAllocator,
-            VkSampler* pSampler);
+            out VkSampler pSampler);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroySampler(

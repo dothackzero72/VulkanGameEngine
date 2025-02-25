@@ -474,14 +474,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct VkExtent3D
-    {
-        public uint width;  // Width of the image or buffer
-        public uint height; // Height of the image or buffer
-        public uint depth;  // Depth of the image or buffer
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct VkImageBlit
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
@@ -597,7 +589,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public void* pNext;                                // Pointer to extension-specific structures (NULL for none)
         public uint waitSemaphoreCount;                     // Number of wait semaphores
         public VkSemaphore* pWaitSemaphores;                     // Array of wait semaphores
-        public VkPipelineStageFlags* pWaitDstStageMask;                   // Stage masks for the wait semaphores
+        public VkPipelineStageFlagBits* pWaitDstStageMask;                   // Stage masks for the wait semaphores
         public uint commandBufferCount;                     // Number of command buffers to execute
         public VkCommandBuffer* pCommandBuffers;                      // Array of command buffers
         public uint signalSemaphoreCount;                   // Number of signal semaphores

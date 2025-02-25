@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
     [Flags]
-    public enum VkPipelineStageFlags : uint
+    public enum VkPipelineStageFlagBits : uint
     {
         TOP_OF_PIPE_BIT = 0x00000001,
         DRAW_INDIRECT_BIT = 0x00000002,

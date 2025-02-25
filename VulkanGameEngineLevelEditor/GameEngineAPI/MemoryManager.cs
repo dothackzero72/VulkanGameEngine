@@ -152,7 +152,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 NullSamplerInfo.MipLodBias = 0;
 
                 Sampler nullSampler = new Sampler();
-                var result = vk.CreateSampler(VulkanRenderer.device, &NullSamplerInfo, null, &nullSampler);
+                var result = VkFunc.vkCreateSampler(VulkanRenderer.device, &NullSamplerInfo, null, &nullSampler);
 
 
                 DescriptorImageInfo nullBuffer = new DescriptorImageInfo();

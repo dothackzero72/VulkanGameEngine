@@ -83,19 +83,19 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 ArrayLayers = 1,
                 Samples = SampleCountFlags.Count1Bit,
                 Tiling = ImageTiling.Linear,
-                Usage = ImageUsageFlags.ImageUsageTransferSrcBit |
-                        ImageUsageFlags.ImageUsageSampledBit |
-                        ImageUsageFlags.ImageUsageTransferDstBit,
+                Usage = VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                            VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
+                            VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_DST_BIT,
                 SharingMode = SharingMode.Exclusive,
                 InitialLayout = ImageLayout.Undefined
             };
 
-            var result = vk.CreateImage(VulkanRenderer.device, &imageInfo, null, &textureImage);
+            var result = VkFunc.vkCreateImage(VulkanRenderer.device, &imageInfo, null, &textureImage);
             if (result != Result.Success)
             {
             }
 
-            vk.GetImageMemoryRequirements(VulkanRenderer.device, textureImage, out MemoryRequirements memRequirements);
+            VkFunc.vkGetImageMemoryRequirements(VulkanRenderer.device, textureImage, out MemoryRequirements memRequirements);
 
             var allocInfo = new MemoryAllocateInfo
             {
@@ -104,12 +104,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.DeviceLocalBit)
             };
 
-            result = vk.AllocateMemory(VulkanRenderer.device, &allocInfo, null, &textureMemory);
+            result = VkFunc.vkAllocateMemory(VulkanRenderer.device, &allocInfo, null, &textureMemory);
             if (result != Result.Success)
             {
             }
 
-            result = vk.BindImageMemory(VulkanRenderer.device, textureImage, textureMemory, 0);
+            result = VkFunc.vkBindImageMemory(VulkanRenderer.device, textureImage, textureMemory, 0);
             if (result != Result.Success)
             {
             }
@@ -136,7 +136,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
 
-            Result result = vk.CreateImageView(VulkanRenderer.device, &textureImageViewInfo, null, out var view);
+            Result result = VkFunc.vkCreateImageView(VulkanRenderer.device, &textureImageViewInfo, null, out var view);
             if (result != Result.Success)
             {
             }
@@ -164,7 +164,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 BorderColor = BorderColor.FloatOpaqueWhite,
             };
 
-            vk.CreateSampler(VulkanRenderer.device, &textureImageSamplerInfo, null, out var sampler);
+            VkFunc.vkCreateSampler(VulkanRenderer.device, &textureImageSamplerInfo, null, out var sampler);
             Sampler = sampler;
         }
 

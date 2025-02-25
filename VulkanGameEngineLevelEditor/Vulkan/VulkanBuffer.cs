@@ -17,22 +17,22 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     public unsafe class VulkanBuffer<T> : IDisposable where T : unmanaged
     {
         protected Vk vk = Vk.GetApi();
-        protected Device _device { get; set; }
-        protected PhysicalDevice _physicalDevice { get; set; }
-        protected CommandPool _commandPool { get; set; }
-        protected Silk.NET.Vulkan.Queue _graphicsQueue { get; set; }
-        public Silk.NET.Vulkan.Buffer StagingBuffer;
-        public DeviceMemory StagingBufferMemory;
-        public DeviceMemory BufferMemory;
+        protected VkDevice _device { get; set; }
+        protected VkPhysicalDevice _physicalDevice { get; set; }
+        protected VkCommandPool _commandPool { get; set; }
+        protected VkQueue _graphicsQueue { get; set; }
+        public VkBuffer StagingBuffer;
+        public VkDeviceMemory StagingBufferMemory;
+        public VkDeviceMemory BufferMemory;
         public ulong BufferSize = 0;
-        public BufferUsageFlags BufferUsage;
-        public MemoryPropertyFlags BufferProperties;
+        public VkBufferUsageFlagBits BufferUsage;
+        public VkMemoryPropertyFlagBits BufferProperties;
         public ulong BufferDeviceAddress = 0;
         public IntPtr BufferData;
         public bool IsMapped = false;
         public bool IsStagingBuffer = false;
-        public Silk.NET.Vulkan.Buffer Buffer;
-        public DescriptorBufferInfo DescriptorBufferInfo;
+        public VkBuffer Buffer;
+        public VkDescriptorBufferInfo DescriptorBufferInfo;
 
         public VulkanBuffer()
         {
@@ -42,7 +42,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             _graphicsQueue = VulkanRenderer.graphicsQueue;
         }
 
-        public VulkanBuffer(void* bufferData, uint bufferElementCount, BufferUsageFlags usage, MemoryPropertyFlags properties, bool isStagingBuffer)
+        public VulkanBuffer(void* bufferData, uint bufferElementCount, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool isStagingBuffer)
         {
             _device = VulkanRenderer.device;
             _physicalDevice = VulkanRenderer.physicalDevice;
@@ -86,15 +86,15 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         }
         protected Result CreateBuffer(void* bufferData)
         {
-            CBuffer.CreateBuffer(out Silk.NET.Vulkan.Buffer buffer, out DeviceMemory bufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
+            CBuffer.CreateBuffer(out VkBuffer buffer, out VkDeviceMemory bufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
             Buffer = buffer;
             BufferMemory = bufferMemory;
             return Result.Success;
         }
 
-        private DeviceMemory AllocateBufferMemory(Silk.NET.Vulkan.Buffer bufferHandle)
+        private DeviceMemory AllocateBufferMemory(VkBuffer bufferHandle)
         {
-            vk.GetBufferMemoryRequirements(VulkanRenderer.device, bufferHandle, out var memRequirements);
+            VkFunc.vkGetBufferMemoryRequirements(VulkanRenderer.device, bufferHandle, out var memRequirements);
             var allocInfo = new MemoryAllocateInfo
             {
                 SType = StructureType.MemoryAllocateInfo,
@@ -102,22 +102,22 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, BufferProperties)
             };
 
-            vk.AllocateMemory(VulkanRenderer.device, &allocInfo, null, out DeviceMemory bufferMemory);
+            VkFunc.vkAllocateMemory(VulkanRenderer.device, &allocInfo, null, out VkDeviceMemory bufferMemory);
             return bufferMemory;
         }
-        protected Result CreateStagingBuffer(void* bufferData)
+        protected VkResult CreateStagingBuffer(void* bufferData)
         {
             return DLL_Buffer_CreateStagingBuffer(_device, _physicalDevice, _commandPool, _graphicsQueue, ref StagingBuffer, ref Buffer, ref StagingBufferMemory, ref BufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
         }
 
-        private Result UpdateBufferSize(Silk.NET.Vulkan.Buffer buffer, ref DeviceMemory bufferMemory, ulong newBufferSize)
+        private Result UpdateBufferSize(VkBuffer buffer, ref VkDeviceMemory bufferMemory, ulong newBufferSize)
         {
             var result = DLL_Buffer_UpdateBufferSize(_device, _physicalDevice, buffer, ref bufferMemory, BufferData, ref BufferSize, newBufferSize, BufferUsage, BufferProperties);
             DestroyBuffer();
             return result;
         }
 
-        public static Result CopyBuffer(ref Silk.NET.Vulkan.Buffer srcBuffer, ref Silk.NET.Vulkan.Buffer dstBuffer, ulong size)
+        public static Result CopyBuffer(ref VkBuffer srcBuffer, ref VkBuffer dstBuffer, ulong size)
         {
             return DLL_Buffer_CopyBuffer(srcBuffer, dstBuffer, size);
         }
@@ -128,19 +128,19 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             {
                 void* stagingMappedData;
                 void* mappedData;
-                Result result = vk.MapMemory(_device, StagingBufferMemory, 0, BufferSize, 0, &stagingMappedData);
-                result = vk.MapMemory(_device, BufferMemory, 0, BufferSize, 0, &mappedData);
+                Result result = VkFunc.vkMapMemory(_device, StagingBufferMemory, 0, BufferSize, 0, &stagingMappedData);
+                result = VkFunc.vkMapMemory(_device, BufferMemory, 0, BufferSize, 0, &mappedData);
                 System.Buffer.MemoryCopy(dataToCopy, stagingMappedData, BufferSize, BufferSize);
                 System.Buffer.MemoryCopy(stagingMappedData, mappedData, BufferSize, BufferSize);
-                vk.UnmapMemory(_device, BufferMemory);
-                vk.UnmapMemory(_device, StagingBufferMemory);
+                VkFunc.vkUnmapMemory(_device, BufferMemory);
+                VkFunc.vkUnmapMemory(_device, StagingBufferMemory);
             }
             else
             {
                 void* mappedData;
-                var result = vk.MapMemory(_device, BufferMemory, 0, BufferSize, 0, &mappedData);
+                var result = VkFunc.vkMapMemory(_device, BufferMemory, 0, BufferSize, 0, &mappedData);
                 System.Buffer.MemoryCopy(dataToCopy, mappedData, BufferSize, BufferSize);
-                vk.UnmapMemory(_device, BufferMemory);
+                VkFunc.vkUnmapMemory(_device, BufferMemory);
             }
         }
 
@@ -166,9 +166,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return dataList;
         }
 
-        public DescriptorBufferInfo* GetDescriptorBuffer()
+        public VkDescriptorBufferInfo* GetDescriptorBuffer()
         {
-            DescriptorBufferInfo = new DescriptorBufferInfo
+            DescriptorBufferInfo = new VkDescriptorBufferInfo
             {
                 Buffer = Buffer,
                 Offset = 0,

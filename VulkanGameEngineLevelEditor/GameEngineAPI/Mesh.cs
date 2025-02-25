@@ -58,13 +58,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class Mesh
     {
         Vk vk = Vk.GetApi();
-        private const BufferUsageFlags MeshBufferUsageSettings = BufferUsageFlags.VertexBufferBit |
-                                                                 BufferUsageFlags.IndexBufferBit |
-                                                                 BufferUsageFlags.StorageBufferBit |
-                                                                 BufferUsageFlags.TransferDstBit;
+        private const VkBufferUsageFlagBits MeshBufferUsageSettings = VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+                                                                 VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
+                                                                 VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+                                                                 VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
-        private const MemoryPropertyFlags MeshBufferPropertySettings = MemoryPropertyFlags.HostVisibleBit |
-                                                                       MemoryPropertyFlags.HostCoherentBit;
+        private const VkMemoryPropertyFlagBits MeshBufferPropertySettings = VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                                                       VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
         protected IntPtr mesh;
         protected IntPtr ParentGameObject { get; private set; }
@@ -121,15 +121,27 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle vhandle = GCHandle.Alloc(vertexList, GCHandleType.Pinned);
             IntPtr vpointer = vhandle.AddrOfPinnedObject();
-            MeshVertexBuffer = new VulkanBuffer<Vertex2D>((void*)vpointer, (uint)vertexList.Count(), BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
+            MeshVertexBuffer = new VulkanBuffer<Vertex2D>((void*)vpointer, (uint)vertexList.Count(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
+                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT | 
+                VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
 
             GCHandle fhandle = GCHandle.Alloc(indexList, GCHandleType.Pinned);
             IntPtr fpointer = fhandle.AddrOfPinnedObject();
-            MeshIndexBuffer = new VulkanBuffer<UInt32>((void*)fpointer, (uint)indexList.Count(), BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit | BufferUsageFlags.IndexBufferBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
+            MeshIndexBuffer = new VulkanBuffer<UInt32>((void*)fpointer, (uint)indexList.Count(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
+                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT | 
+                VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
 
             GCHandle uhandle = GCHandle.Alloc(UniformBuffers, GCHandleType.Pinned);
             IntPtr upointer = uhandle.AddrOfPinnedObject();
-            UniformBuffers = new VulkanBuffer<MeshProperitiesStruct>((void*)upointer, 1, BufferUsageFlags.StorageBufferBit | BufferUsageFlags.TransferSrcBit | BufferUsageFlags.TransferDstBit, MemoryPropertyFlags.HostVisibleBit | MemoryPropertyFlags.HostCoherentBit, true);
+            UniformBuffers = new VulkanBuffer<MeshProperitiesStruct>((void*)upointer, 1, VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
+                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
+                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
         }
 
         public void Update(float deltaTime)
@@ -174,13 +186,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             uint sceneDataSize = (uint)sizeof(SceneDataBuffer);
 
             var meshBuffer = MeshVertexBuffer.Buffer;
-            var descriptorSetRef = new DescriptorSet(descriptorSet);
-            vk.CmdPushConstants(new CommandBuffer(commandBuffer), new PipelineLayout(pipelineLayout), ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(SceneDataBuffer), &sceneProperties);
-            vk.CmdBindPipeline(new CommandBuffer(commandBuffer), PipelineBindPoint.Graphics, new Pipeline(pipeline));
-            vk.CmdBindDescriptorSets(new CommandBuffer(commandBuffer), PipelineBindPoint.Graphics, new PipelineLayout(pipelineLayout), 0, 1, &descriptorSetRef, 0, null);
-            vk.CmdBindVertexBuffers(new CommandBuffer(commandBuffer), 0, 1, &meshBuffer, &offsets);
-            vk.CmdBindIndexBuffer(new CommandBuffer(commandBuffer), MeshIndexBuffer.Buffer, 0, IndexType.Uint32);
-            vk.CmdDrawIndexed(new CommandBuffer(commandBuffer), (uint)IndexCount, 1, 0, 0, 0);
+            var descriptorSetRef = descriptorSet;
+            VkFunc.vkCmdPushConstants(new VkCommandBuffer(commandBuffer), pipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneProperties);
+            VkFunc.vkCmdBindPipeline(new VkCommandBuffer(commandBuffer), VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+            VkFunc.vkCmdBindDescriptorSets(new VkCommandBuffer(commandBuffer), VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSetRef, 0, null);
+            VkFunc.vkCmdBindVertexBuffers(new VkCommandBuffer(commandBuffer), 0, 1, &meshBuffer, &offsets);
+            VkFunc.vkCmdBindIndexBuffer(new VkCommandBuffer(commandBuffer), MeshIndexBuffer.Buffer, 0, VkIndexType.VK_INDEX_TYPE_UINT32);
+            VkFunc.vkCmdDrawIndexed(new VkCommandBuffer(commandBuffer), (uint)IndexCount, 1, 0, 0, 0);
         }
 
         public void Destroy()
