@@ -360,7 +360,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 framebuffer: FrameBufferList[imageIndex],
                 clearValueCount: 2,
                 pClearValues: clearValues,
-                renderArea: new(new Offset2D(0, 0), VulkanRenderer.swapChain.swapchainExtent)
+                renderArea: new(new Offset2D(0, 0), VulkanRenderer.swapChain.SwapchainExtent)
             );
 
             var viewport = new Viewport(0.0f, 0.0f, VulkanRenderer.swapChain.swapchainExtent.Width, VulkanRenderer.swapChain.swapchainExtent.Height, 0.0f, 1.0f);

@@ -7,27 +7,29 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
     public unsafe class VkAttachmentDescription : RenderPassEditorBaseModel
     {
-        private StructureType _structureType;
-        private AttachmentDescriptionFlags _flags;
+        private VkStructureType _structureType;
+        private VkAttachmentDescriptionFlags _flags;
         private void* _pNext;
-        private Format _format;
-        private SampleCountFlags _samples;
-        private AttachmentLoadOp _loadOp;
-        private AttachmentStoreOp _storeOp;
-        private AttachmentLoadOp _stencilLoadOp;
-        private AttachmentStoreOp _stencilStoreOp;
-        private ImageLayout _initialLayout;
-        private ImageLayout _finalLayout;
+        private VkFormat _format;
+        private VkSampleCountFlags _samples;
+        private VkAttachmentLoadOp _loadOp;
+        private VkAttachmentStoreOp _storeOp;
+        private VkAttachmentLoadOp _stencilLoadOp;
+        private VkAttachmentStoreOp _stencilStoreOp;
+        private VkImageLayout _initialLayout;
+        private VkImageLayout _finalLayout;
 
         [Category("Attachment Description")]
-        public AttachmentDescriptionFlags flags
+        public VkAttachmentDescriptionFlags flags
         {
             get => _flags;
             set
@@ -41,7 +43,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Attachment Description")]
-        public Format format
+        public VkFormat format
         {
             get => _format;
             set
@@ -55,7 +57,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Attachment Description")]
-        public SampleCountFlags samples
+        public VkSampleCountFlags samples
         {
             get => _samples;
             set
@@ -69,7 +71,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Load/Store Operations")]
-        public AttachmentLoadOp loadOp
+        public VkAttachmentLoadOp loadOp
         {
             get => _loadOp;
             set
@@ -83,7 +85,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Load/Store Operations")]
-        public AttachmentStoreOp storeOp
+        public VkAttachmentStoreOp storeOp
         {
             get => _storeOp;
             set
@@ -97,7 +99,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Load/Store Operations")]
-        public AttachmentLoadOp stencilLoadOp
+        public VkAttachmentLoadOp stencilLoadOp
         {
             get => _stencilLoadOp;
             set
@@ -111,7 +113,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Load/Store Operations")]
-        public AttachmentStoreOp stencilStoreOp
+        public VkAttachmentStoreOp stencilStoreOp
         {
             get => _stencilStoreOp;
             set
@@ -125,7 +127,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Attachment Description")]
-        public ImageLayout initialLayout
+        public VkImageLayout initialLayout
         {
             get => _initialLayout;
             set
@@ -139,7 +141,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Attachment Description")]
-        public ImageLayout finalLayout
+        public VkImageLayout finalLayout
         {
             get => _finalLayout;
             set
@@ -166,7 +168,7 @@ namespace VulkanGameEngineLevelEditor.Models
             LoadJsonComponent(ConstConfig.DefaultColorAttachmentDescriptionModel);
         }
 
-        public VkAttachmentDescription(AttachmentDescription other)
+        public VkAttachmentDescription(VkAttachmentDescription other)
         {
             flags = other.Flags;
             format = other.Format;
@@ -179,9 +181,9 @@ namespace VulkanGameEngineLevelEditor.Models
             finalLayout = other.FinalLayout;
         }
 
-        public AttachmentDescription Convert()
+        public VkAttachmentDescription Convert()
         {
-            return new AttachmentDescription
+            return new VkAttachmentDescription
             {
                 Flags = flags,
                 Format = format,
@@ -195,9 +197,9 @@ namespace VulkanGameEngineLevelEditor.Models
             };
         }
 
-        public AttachmentDescription* ConvertPtr()
+        public VkAttachmentDescription* ConvertPtr()
         {
-            AttachmentDescription* attachmentDescription = (AttachmentDescription*)Marshal.AllocHGlobal(sizeof(AttachmentDescription));
+            VkAttachmentDescription* attachmentDescription = (VkAttachmentDescription*)Marshal.AllocHGlobal(sizeof(VkAttachmentDescription));
             attachmentDescription->Flags = flags;
             attachmentDescription->Format = format;
             attachmentDescription->Samples = samples;

@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Core;
+using Silk.NET.SDL;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -6,23 +7,24 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     public unsafe class VkPipelineColorBlendAttachmentState
     {
         public Bool32 blendEnable { get; set; }
-        public BlendFactor srcColorBlendFactor { get; set; }
-        public BlendFactor dstColorBlendFactor { get; set; }
-        public BlendOp colorBlendOp { get; set; }
-        public BlendFactor srcAlphaBlendFactor { get; set; }
-        public BlendFactor dstAlphaBlendFactor { get; set; }
-        public BlendOp alphaBlendOp { get; set; }
-        public ColorComponentFlags colorWriteMask { get; set; }
+        public VkBlendFactor srcColorBlendFactor { get; set; }
+        public VkBlendFactor dstColorBlendFactor { get; set; }
+        public VkBlendOp colorBlendOp { get; set; }
+        public VkBlendFactor srcAlphaBlendFactor { get; set; }
+        public VkBlendFactor dstAlphaBlendFactor { get; set; }
+        public VkBlendOp alphaBlendOp { get; set; }
+        public VkColorComponentFlags colorWriteMask { get; set; }
 
         public VkPipelineColorBlendAttachmentState() { }
 
-        public VkPipelineColorBlendAttachmentState(PipelineColorBlendAttachmentState other)
+        public VkPipelineColorBlendAttachmentState(VkPipelineColorBlendAttachmentState other)
         {
             blendEnable = other.BlendEnable;
             srcColorBlendFactor = other.SrcColorBlendFactor;
@@ -34,9 +36,9 @@ namespace VulkanGameEngineLevelEditor.Models
             colorWriteMask = other.ColorWriteMask;
         }
 
-        public PipelineColorBlendAttachmentState Convert()
+        public VkPipelineColorBlendAttachmentState Convert()
         {
-            return new PipelineColorBlendAttachmentState
+            return new VkPipelineColorBlendAttachmentState
             {
                 BlendEnable = blendEnable,
                 SrcColorBlendFactor = srcColorBlendFactor,
@@ -49,9 +51,9 @@ namespace VulkanGameEngineLevelEditor.Models
             };
         }
 
-        public PipelineColorBlendAttachmentState* ConvertPtr()
+        public VkPipelineColorBlendAttachmentState* ConvertPtr()
         {
-            PipelineColorBlendAttachmentState* ptr = (PipelineColorBlendAttachmentState*)Marshal.AllocHGlobal(sizeof(PipelineColorBlendAttachmentState));
+            VkPipelineColorBlendAttachmentState* ptr = (VkPipelineColorBlendAttachmentState*)Marshal.AllocHGlobal(sizeof(VkPipelineColorBlendAttachmentState));
             ptr->BlendEnable = blendEnable;
             ptr->SrcColorBlendFactor = srcColorBlendFactor;
             ptr->DstColorBlendFactor = dstColorBlendFactor;
@@ -63,7 +65,7 @@ namespace VulkanGameEngineLevelEditor.Models
             return ptr;
         }
 
-        static public PipelineColorBlendAttachmentState[] ConvertPtrArray(List<VkPipelineColorBlendAttachmentState> list)
+        static public VkPipelineColorBlendAttachmentState[] ConvertPtrArray(List<VkPipelineColorBlendAttachmentState> list)
         {
             return list.Select(x => x.Convert()).ToArray();
         }

@@ -14,7 +14,7 @@ namespace VulkanGameEngineLevelEditor.Models
 {
     public unsafe class VkPipelineRasterizationStateCreateInfo
     {
-        public StructureType stype { get; set; } = StructureType.PipelineRasterizationConservativeStateCreateInfoExt;
+        public StructureType sType { get; set; } = StructureType.PipelineRasterizationConservativeStateCreateInfoExt;
         public bool depthClampEnable { get; set; }
         public bool rasterizerDiscardEnable { get; set; }
         public PolygonMode polygonMode { get; set; }

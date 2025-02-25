@@ -11,10 +11,16 @@ namespace VulkanGameEngineLevelEditor.Models
     public unsafe class VkAttachmentReference
     {
         public uint attachment { get; set; }
-        public Silk.NET.Vulkan.ImageLayout layout { get; set; }
+        public VkImageLayout layout { get; set; }
 
         public VkAttachmentReference()
         { }
+
+        public VkAttachmentRefrence(uint attachment, VkImageLayout layout)
+        {
+            this.attachment = attachment;
+            this.layout = layout;
+        }
 
         public VkAttachmentReference(AttachmentReference other)
         {

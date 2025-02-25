@@ -2,15 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
+    [StructLayout(LayoutKind.Sequential)]
     public struct VkSurfaceCapabilitiesKHR
     {
-       public uint minImageCount;
+        public uint minImageCount;
         public uint maxImageCount;
         public VkExtent2D currentExtent;
         public VkExtent2D minImageExtent;
@@ -22,16 +25,804 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkImageUsageFlags supportedUsageFlags;
     };
 
-    public unsafe struct VkFramebufferCreateInfo 
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkFramebufferCreateInfo
     {
         public VkStructureType sType;
         public void* pNext;
         public VkFramebufferCreateFlags flags;
         public VkRenderPass renderPass;
-        public  uint attachmentCount;
+        public uint attachmentCount;
         public VkImageView* pAttachments;
         public uint width;
         public uint height;
         public uint layers;
     };
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkCommandBufferBeginInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkCommandBufferUsageFlags flags;
+        public VkCommandBufferInheritanceInfo* pInheritanceInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkCommandBufferInheritanceInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkRenderPass renderPass;
+        public uint subpass;
+        public Framebuffer framebuffer;
+        public VkBool32 occlusionQueryEnable;
+        public VkQueryControlFlags queryFlags;
+        public VkQueryPipelineStatisticFlags pipelineStatistics;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkRenderPassBeginInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkRenderPass renderPass;
+        public VkFramebuffer framebuffer;
+        public VkRect2D renderArea;
+        public uint clearValueCount;
+        public VkClearValue* pClearValues;
+    }
+
+    [StructLayout(LayoutKind.Explicit)]
+    public struct VkClearColorValue
+    {
+        [FieldOffset(0)] public float[] float32;
+        [FieldOffset(0)] public int[] int32;
+        [FieldOffset(0)] public uint[] uint32;
+
+        public VkClearColorValue(float r, float g, float b, float a)
+        {
+            float32 = new float[4];
+            float32[0] = r;
+            float32[1] = g;
+            float32[2] = b;
+            float32[3] = a;
+
+            int32 = null;
+            uint32 = null;
+        }
+
+        public VkClearColorValue(int r, int g, int b, int a)
+        {
+            int32 = new int[4];
+            int32[0] = r;
+            int32[1] = g;
+            int32[2] = b;
+            int32[3] = a;
+
+            float32 = null;
+            uint32 = null;
+        }
+
+        public VkClearColorValue(uint r, uint g, uint b, uint a)
+        {
+            uint32 = new uint[4];
+            uint32[0] = r;
+            uint32[1] = g;
+            uint32[2] = b;
+            uint32[3] = a;
+
+            float32 = null;
+            int32 = null;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkClearDepthStencilValue
+    {
+        public float depth;
+        public uint stencil;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkSparseImageFormatProperties
+    {
+        VkImageAspectFlagBits aspectMask;
+        VkExtent3D imageGranularity;
+        VkSparseImageFormatFlagBits flags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkFenceCreateInfo
+    {
+        VkStructureType sType;
+         void* pNext;
+        VkFenceCreateFlagBits flags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkAllocationCallbacks
+    {
+        void* pUserData;
+        IntPtr pfnAllocation;
+        IntPtr pfnReallocation;
+        IntPtr pfnFree;
+        IntPtr pfnInternalAllocation;
+        IntPtr pfnInternalFree;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkSparseMemoryBind
+    {
+        VkDeviceSize resourceOffset;
+        VkDeviceSize size;
+        VkDeviceMemory memory;
+        VkDeviceSize memoryOffset;
+        VkSparseMemoryBindFlagBits flags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkSparseBufferMemoryBindInfo
+    {
+        VkBuffer buffer;
+        uint bindCount;
+        VkSparseMemoryBind* pBinds;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkSparseImageOpaqueMemoryBindInfo
+    {
+        VkImage image;
+        uint bindCount;
+         VkSparseMemoryBind* pBinds;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkSparseImageMemoryBindInfo
+    {
+        VkImage image;
+        uint bindCount;
+        VkSparseImageMemoryBind* pBinds;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkOffset3D
+    {
+        int x;
+        int y;
+        int z;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkSparseImageMemoryBind
+    {
+        VkImageSubresource subresource;
+        VkOffset3D offset;
+        VkExtent3D extent;
+        VkDeviceMemory memory;
+        VkDeviceSize memoryOffset;
+        VkSparseMemoryBindFlagBits flags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkImageSubresource
+    {
+        VkImageAspectFlagBits aspectMask;
+        uint mipLevel;
+        uint arrayLayer;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkBindSparseInfo
+    {
+        VkStructureType sType;
+         void* pNext;
+        uint waitSemaphoreCount;
+         VkSemaphore* pWaitSemaphores;
+        uint bufferBindCount;
+         VkSparseBufferMemoryBindInfo* pBufferBinds;
+        uint imageOpaqueBindCount;
+         VkSparseImageOpaqueMemoryBindInfo* pImageOpaqueBinds;
+        uint imageBindCount;
+         VkSparseImageMemoryBindInfo* pImageBinds;
+        uint signalSemaphoreCount;
+         VkSemaphore* pSignalSemaphores;
+    }
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkSparseImageMemoryRequirements
+    {
+        VkSparseImageFormatProperties formatProperties;
+        uint imageMipTailFirstLod;
+        VkDeviceSize imageMipTailSize;
+        VkDeviceSize imageMipTailOffset;
+        VkDeviceSize imageMipTailStride;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkClearValue
+    {
+        public VkClearColorValue color;
+        public VkClearDepthStencilValue depthStencil;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkMemoryRequirements
+    {
+        VkDeviceSize size;
+        VkDeviceSize alignment;
+        uint memoryTypeBits;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkSubpassDescription
+    {
+        public VkSubpassDescriptionFlags flags;
+        public VkPipelineBindPoint pipelineBindPoint;
+        public uint inputAttachmentCount;
+        public VkAttachmentReference* pInputAttachments;
+        public uint colorAttachmentCount;
+        public VkAttachmentReference* pColorAttachments;
+        public VkAttachmentReference* pResolveAttachments;
+        public VkAttachmentReference* pDepthStencilAttachment;
+        public uint preserveAttachmentCount;
+        public uint* pPreserveAttachments;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkRenderPassCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkRenderPassCreateFlags flags;
+        public uint attachmentCount;
+        public VkAttachmentDescription* pAttachments;
+        public uint subpassCount;
+        public VkSubpassDescription* pSubpasses;
+        public uint dependencyCount;
+        public VkSubpassDependency* pDependencies;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkDescriptorPoolSize
+    {
+        public VkDescriptorType type;
+        public uint descriptorCount;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkDescriptorPoolCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public DescriptorPoolCreateFlags flags;
+        public uint maxSets;
+        public uint poolSizeCount;
+        public VkDescriptorPoolSize* pPoolSizes;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineViewportStateCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkCullModeFlagBits flags;
+        public uint viewportCount;
+        public VkViewport* pViewports;
+        public uint scissorCount;
+        public VkRect2D* pScissors;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkVertexInputAttributeDescription
+    {
+        public uint location;
+        public uint binding;
+        public VkFormat format;
+        public uint offset;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineVertexInputStateCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkCullModeFlagBits flags;
+        public uint vertexBindingDescriptionCount;
+        public VkVertexInputBindingDescription* pVertexBindingDescriptions;
+        public uint vertexAttributeDescriptionCount;
+        public VkVertexInputAttributeDescription* pVertexAttributeDescriptions;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineDynamicStateCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkPipelineColorBlendStateCreateFlagBits flags;
+        public uint dynamicStateCount;
+        public VkDynamicState* pDynamicStates;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkShaderModuleCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkImageViewCreateFlagBits flags;
+        public size_t codeSize;
+        public uint* pCode;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkSpecializationMapEntry
+    {
+        public uint constantID;
+        public uint offset;
+        public size_t size;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkSpecializationInfo
+    {
+        public uint mapEntryCount;
+        public VkSpecializationMapEntry* pMapEntries;
+        public size_t dataSize;
+        public void* pData;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineShaderStageCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkPipelineShaderStageCreateFlagBits flags;
+        public VkShaderStageFlagBits stage;
+        public VkShaderModule module;
+        public char* pName;
+        public VkSpecializationInfo* pSpecializationInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineTessellationStateCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkCullModeFlagBits flags;
+        public uint patchControlPoints;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkGraphicsPipelineCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkPipelineCreateFlagBits flags;
+        public uint stageCount;
+        public VkPipelineShaderStageCreateInfo* pStages;
+        public VkPipelineVertexInputStateCreateInfo* pVertexInputState;
+        public VkPipelineInputAssemblyStateCreateInfo* pInputAssemblyState;
+        public VkPipelineTessellationStateCreateInfo* pTessellationState;
+        public VkPipelineViewportStateCreateInfo* pViewportState;
+        public VkPipelineRasterizationStateCreateInfo* pRasterizationState;
+        public VkPipelineMultisampleStateCreateInfo* pMultisampleState;
+        public VkPipelineDepthStencilStateCreateInfo* pDepthStencilState;
+        public VkPipelineColorBlendStateCreateInfo* pColorBlendState;
+        public VkPipelineDynamicStateCreateInfo* pDynamicState;
+        public VkPipelineLayout layout;
+        public VkRenderPass renderPass;
+        public uint subpass;
+        public VkPipeline basePipelineHandle;
+        public int basePipelineIndex;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkSemaphoreCreateInfo
+    {
+        VkStructureType sType;
+         void* pNext;
+        VkFenceCreateFlagBits flags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkBufferCopy
+    {
+        public ulong srcOffset;  // Byte offset into the source buffer
+        public ulong dstOffset;  // Byte offset into the destination buffer
+        public ulong size;       // Size in bytes to copy
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkImageCopy
+    {
+        public VkImageSubresourceLayers srcSubresource; // Source image subresource
+        public VkOffset3D srcOffset;               // Offset in the source image
+        public VkImageSubresourceLayers dstSubresource; // Destination image subresource
+        public VkOffset3D dstOffset;               // Offset in the destination image
+        public VkExtent3D extent;                   // Width, height, and depth of the region to copy
+    }
+
+    // Additional structs you may need
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkImageSubresourceLayers
+    {
+        public VkImageAspectFlagBits aspectMask;     // Which aspects are being referenced
+        public uint mipLevel;                      // Mip level of the image
+        public uint baseArrayLayer;                // Base array layer for the copy operation
+        public uint layerCount;                    // Number of layers for the copy operation
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkExtent3D
+    {
+        public uint width;  // Width of the image or buffer
+        public uint height; // Height of the image or buffer
+        public uint depth;  // Depth of the image or buffer
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkImageBlit
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public VkImageSubresourceLayers[] srcSubresource; // Source image subresource
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public VkOffset3D[] srcOffsets;                   // 3D coordinates offset for source image (2 offsets required)
+        public VkImageSubresourceLayers dstSubresource;    // Destination image subresource
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+        public VkOffset3D[] dstOffsets;                   // 3D coordinates offset for destination image (2 offsets required)
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkBufferImageCopy
+    {
+        public ulong bufferOffset;                // Byte offset into the buffer
+        public uint bufferRowLength;              // Number of pixels per row in the buffer (0 means tightly packed)
+        public uint bufferImageHeight;            // Number of rows in the buffer (0 means tightly packed)
+        public VkImageSubresourceLayers imageSubresource; // Subresource details for the image
+        public VkOffset3D imageOffset;            // Offset in the destination image
+        public VkExtent3D imageExtent;            // Width, height, and depth of the image region
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkImageSubresourceRange
+    {
+        public VkImageAspectFlagBits aspectMask;    // Aspect(s) of the image to operate on
+        public uint baseMipLevel;                 // Base mip level (level 0 is the highest resolution)
+        public uint levelCount;                   // Number of mip levels (0 means all levels)
+        public uint baseArrayLayer;               // Base array layer
+        public uint layerCount;                   // Number of layers (0 means all layers)
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkClearAttachment
+    {
+        public VkImageAspectFlagBits aspectMask; // Aspect of the image to clear (e.g., color, depth)
+        public uint colorAttachment;            // Index of the color attachment (if aspectMask has color bits)
+        public VkClearValue clearValue;        // The value to clear to (color, depth, etc.)
+    }
+
+    // VkClearRect is used to specify a rectangle to clear in an image.
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkClearRect
+    {
+        public VkRect2D rect;                   // The rectangular area to clear
+        public uint baseArrayLayer;              // Index of the first layer (useful for array layers)
+        public uint layerCount;                  // Number of layers to clear
+    }
+
+    // VkImageResolve is used for resolving multisampled images.
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkImageResolve
+    {
+        public VkImageSubresourceLayers srcSubresource; // Source image subresource (multisampled)
+        public VkOffset3D srcOffset;                    // Offset in the source image
+        public VkImageSubresourceLayers dstSubresource; // Destination image subresource (single-sampled)
+        public VkOffset3D dstOffset;                    // Offset in the destination image
+        public VkExtent3D extent;                        // Width, height, and depth of the resolve region
+    }
+
+    // VkEvent is used for synchronization between command buffers.
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkEvent
+    {
+        // Note: In C#, this struct may work as a placeholder for the actual Vulkan event handle.
+        // Since Vulkan events are not represented as structs, you would typically deal with them as IntPtr or similar.
+        public IntPtr handle; // Placeholder for the Vulkan event handle
+    }
+
+    // VkMemoryBarrier is used to synchronize memory accesses.
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkMemoryBarrier
+    {
+        public VkAccessFlags srcAccessMask; // Access mask specifying which accesses occur before the barrier
+        public VkAccessFlags dstAccessMask; // Access mask specifying which accesses occur after the barrier
+    }
+
+    // VkBufferMemoryBarrier is used to synchronize access to buffer resources.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkBufferMemoryBarrier
+    {
+        public VkStructureType sType;           // Structure type (Vulkan versioning)
+        public void* pNext;                    // Pointer to extension-specific structure (if any)
+        public VkAccessFlags srcAccessMask;     // Source access mask
+        public VkAccessFlags dstAccessMask;     // Destination access mask
+        public uint srcQueueFamilyIndex;        // Source queue family (0xFFFFFFFF for no sharing)
+        public uint dstQueueFamilyIndex;        // Destination queue family (0xFFFFFFFF for no sharing)
+        public VkBuffer buffer;                  // Buffer being accessed
+        public ulong offset;                     // Offset in the buffer
+        public ulong size;                       // Size of the buffer range (VK_WHOLE_SIZE for all)
+    }
+
+    // VkImageMemoryBarrier is used to synchronize access to image resources.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkImageMemoryBarrier
+    {
+        public VkStructureType sType;                  // Structure type (Vulkan versioning)
+        public void* pNext;                           // Pointer to extension-specific structure (if any)
+        public VkAccessFlags srcAccessMask;            // Source access mask
+        public VkAccessFlags dstAccessMask;            // Destination access mask
+        public VkImageLayout oldLayout;                // Old layout of the image
+        public VkImageLayout newLayout;                // New layout of the image
+        public uint srcQueueFamilyIndex;               // Source queue family (0xFFFFFFFF for no sharing)
+        public uint dstQueueFamilyIndex;               // Destination queue family (0xFFFFFFFF for no sharing)
+        public VkImage image;                           // Image being accessed
+        public VkImageSubresourceRange subresourceRange; // Range of image subresources affected
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkSubmitInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structures (NULL for none)
+        public uint waitSemaphoreCount;                     // Number of wait semaphores
+        public VkSemaphore* pWaitSemaphores;                     // Array of wait semaphores
+        public VkPipelineStageFlags* pWaitDstStageMask;                   // Stage masks for the wait semaphores
+        public uint commandBufferCount;                     // Number of command buffers to execute
+        public VkCommandBuffer* pCommandBuffers;                      // Array of command buffers
+        public uint signalSemaphoreCount;                   // Number of signal semaphores
+        public VkSemaphore* pSignalSemaphores;                    // Array of signal semaphores
+    }
+
+    // VkMemoryAllocateInfo structure is used to allocate memory.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkMemoryAllocateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void pNext;                                // Pointer to extension-specific structures (NULL for none)
+        public ulong allocationSize;                         // Size of the allocation in bytes
+        public uint memoryTypeIndex;                        // Index of the memory type from which to allocate
+    }
+
+    // VkMappedMemoryRange structure is used to define a range of memory that may be mapped.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkMappedMemoryRange
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structures (NULL for none)
+        public VkDeviceMemory memory;                                // Memory to be mapped
+        public ulong offset;                                // Offset into the memory
+        public ulong size;                                  // Size of the mapped range (VK_WHOLE_SIZE to map the whole memory)
+    }
+
+    // VkEventCreateInfo structure is used to create an event.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkEventCreateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structures (NULL for none)
+        public VkEventCreateFlagBits flags;                    // Event creation flags
+    }
+
+    // VkSubresourceLayout structure describes the layout of a subresource of an image.
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkSubresourceLayout
+    {
+        public ulong offset;                                // Offset in bytes from the start of the memory
+        public ulong size;                                  // Size in bytes of the subresource
+        public uint rowPitch;                               // Row pitch in bytes
+        public uint arrayPitch;                             // Array pitch in bytes
+        public uint depthPitch;                             // Depth pitch in bytes
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkCommandBufferAllocateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structure
+        public VkCommandPool commandPool;                   // Command pool from which the command buffers are allocated
+        public VkCommandBufferLevel level;                  // Level of command buffer (primary or secondary)
+        public uint commandBufferCount;                     // Number of command buffers to allocate
+    }
+
+    // VkCommandPoolCreateInfo is used to create a command pool.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkCommandPoolCreateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structure
+        public VkCommandPoolCreateFlagBits flags;              // Command pool creation flags
+        public uint queueFamilyIndex;                        // Queue family index
+    }
+
+    // VkWriteDescriptorSet is used to update descriptor sets.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkWriteDescriptorSet
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structure
+        public VkDescriptorSet dstSet;                      // Destination descriptor set
+        public uint dstBinding;                             // Binding within the descriptor set
+        public uint dstArrayElement;                        // Array element within the binding
+        public uint descriptorCount;                        // Number of descriptors to update
+        public VkDescriptorType descriptorType;            // Type of descriptors to update
+        public VkDescriptorImageInfo* pImageInfo;                          // Pointer to image info (VkDescriptorImageInfo)
+        public VkDescriptorBufferInfo* pBufferInfo;                         // Pointer to buffer info (VkDescriptorBufferInfo)
+        public VkBufferView* pTexelBufferView;                    // Pointer to buffer views for texel buffers
+    }
+
+    // VkCopyDescriptorSet is used to copy descriptors from one set to another.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkCopyDescriptorSet
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structure
+        public VkDescriptorSet srcSet;                      // Source descriptor set
+        public uint srcBinding;                             // Binding within the source descriptor set
+        public uint srcArrayElement;                        // Array element within the source binding
+        public VkDescriptorSet dstSet;                      // Destination descriptor set
+        public uint dstBinding;                             // Binding within the destination descriptor set
+        public uint dstArrayElement;                        // Array element within the destination binding
+        public uint descriptorCount;                        // Number of descriptors to copy
+    }
+
+    // VkDescriptorSetAllocateInfo is used to allocate descriptor sets.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkDescriptorSetAllocateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structure
+        public VkDescriptorPool descriptorPool;             // Descriptor pool from which to allocate
+        public uint descriptorSetCount;                     // Number of descriptor sets to allocate
+        public VkDescriptorSet* pSetLayouts;                          // Pointer to array of descriptor set layouts
+    }
+
+    // VkDescriptorSetLayoutCreateInfo is used to create a descriptor set layout.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkDescriptorSetLayoutCreateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structures
+        public VkDescriptorSetLayoutCreateFlagBits flags;      // Descriptor set layout creation flags
+        public uint bindingCount;                           // Number of bindings in the layout
+        public VkDescriptorSetLayoutBinding* pBindings;                            // Pointer to array of descriptor set layout bindings
+    }
+
+    // VkPipelineLayoutCreateInfo is used to create a pipeline layout.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineLayoutCreateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structures
+        public VkPipelineLayoutCreateFlagBits flags;           // Pipeline layout creation flags
+        public uint setLayoutCount;                         // Number of descriptor set layouts
+        public void* pSetLayouts;                          // Pointer to array of descriptor set layouts
+        public uint pushConstantRangeCount;                 // Number of push constant ranges
+        public void* pPushConstantRanges;                  // Pointer to array of push constant ranges
+    }
+
+    // VkComputePipelineCreateInfo is used to create compute pipelines.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkComputePipelineCreateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structures
+        public VkPipelineCreateFlagBits flags;                 // Pipeline creation flags
+        public VkPipelineShaderStageCreateInfo stage;      // Shader stage for the compute pipeline
+        public VkPipelineLayout layout;                     // Pipeline layout
+        public VkPipeline basePipelineHandle;               // Handle to the base pipeline
+        public int basePipelineIndex;                       // Index of the base pipeline
+    }
+
+    // VkPipelineCacheCreateInfo is used to create a pipeline cache.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineCacheCreateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structures
+        public VkPipelineCacheCreateFlagBits flags;           // Pipeline cache creation flags
+        public ulong initialSize;                           // Initial size of the pipeline cache
+        public void* pInitialData;                         // Pointer to initial data for the pipeline cache
+    }
+
+    // VkImageViewCreateInfo is used to create image views.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkImageViewCreateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structures
+        public VkImageViewCreateFlagBits flags;                // Image view creation flags
+        public VkImage image;                               // Image to create a view for
+        public VkImageViewType viewType;                   // Type of image view (1D, 2D, 3D, etc.)
+        public VkFormat format;                             // Format of the image data
+        public VkComponentMapping components;              // Component mapping for the image view
+        public VkImageSubresourceRange subresourceRange;   // Subresource range for the image view
+    }
+
+    // VkBufferViewCreateInfo is used to create buffer views.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkBufferViewCreateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structures
+        public VkBufferUsageFlagBits flags;              // Buffer view creation flags
+        public VkBuffer buffer;                             // Buffer to create a view for
+        public VkFormat format;                             // Format for the buffer view
+        public ulong offset;                                // Offset within the buffer
+        public ulong range;                                 // Size of the buffer view range
+    }
+
+    // VkBufferCreateInfo is used to create buffer objects.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkBufferCreateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structures
+        public VkBufferCreateFlagBits flags;                   // Buffer creation flags
+        public ulong size;                                  // Size of the buffer
+        public VkBufferUsageFlagBits usage;                   // Buffer usage flags
+        public uint queueFamilyIndexCount;                  // Number of queue families
+        public uint pQueueFamilyIndices;                  // Pointer to array of queue family indices
+    }
+
+    // VkQueryPoolCreateInfo is used to create query pools.
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkQueryPoolCreateInfo
+    {
+        public VkStructureType sType;                       // Structure type
+        public void* pNext;                                // Pointer to extension-specific structures
+        public VkQueryPoolCreateFlags flags;                // Query pool creation flags
+        public VkQueryType queryType;                       // Type of queries (occlusion, timestamp, etc.)
+        public uint queryCount;                             // Number of queries
+        public uint pipelineStatistics;                      // Pipeline statistics to query
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkComponentMapping
+    {
+        public VkComponentSwizzle r;                       // Swizzle component for red
+        public VkComponentSwizzle g;                       // Swizzle component for green
+        public VkComponentSwizzle b;                       // Swizzle component for blue
+        public VkComponentSwizzle a;                       // Swizzle component for alpha
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkDescriptorImageInfo
+    {
+        public VkSampler sampler;       // A handle to a sampler object
+        public VkImageView imageView;     // A handle to an image view
+        public VkImageLayout imageLayout; // The layout the image is in for access by shaders
+
+        public VkDescriptorImageInfo(VkSampler sampler, VkImageView imageView, VkImageLayout imageLayout)
+        {
+            this.sampler = sampler;
+            this.imageView = imageView;
+            this.imageLayout = imageLayout;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkDescriptorBufferInfo
+    {
+        public VkBuffer buffer;      // A handle to the buffer
+        public ulong offset;       // Offset in the buffer where the data begins
+        public ulong range;        // Size of the buffer data referred to by the descriptor (can be VK_WHOLE_SIZE)
+
+        public VkDescriptorBufferInfo(VkBuffer buffer, ulong offset, ulong range)
+        {
+            this.buffer = buffer;
+            this.offset = offset;
+            this.range = range;
+        }
+    }
 }

@@ -113,7 +113,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             swapChainState.SwapChainResolution.height = height;
         }
 
-        public static void CreateCommandBuffers(CommandBuffer[] commandBufferList)
+        public static void CreateCommandBuffers(VkCommandBuffer[] commandBufferList)
         {
             for (int x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
             {

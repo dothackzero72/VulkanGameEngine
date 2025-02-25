@@ -14,6 +14,11 @@ namespace VulkanGameEngineLevelEditor.Models
         public int y { get; set; }
 
         public VkOffset2D() { }
+        public VkOffset2D(int x, int y) 
+        {
+            this.x = x;
+            this.y = y;
+        }
 
         public VkOffset2D(Offset2D other)
         {

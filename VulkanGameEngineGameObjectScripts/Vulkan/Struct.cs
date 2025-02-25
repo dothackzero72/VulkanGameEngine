@@ -15,12 +15,4 @@ namespace VulkanGameEngineGameObjectScripts.Vulkan
         public VkVertexInputRate inputRate;
     };
 
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkVertexInputAttributeDescription
-    {
-        public UInt32 location;
-        public UInt32 binding;
-        public VkFormat format;
-        public UInt32 offset;
-    };
 }
