@@ -31,8 +31,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var pos = new vec3(0.0f, 0.0f, 5.0f);
             orthographicCamera = new OrthographicCamera(res, pos);
 
-            textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
-            textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\container2.png", Format.R8G8B8A8Unorm, TextureTypeEnum.kType_DiffuseTextureMap));
+            textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", VkFormat.R8G8B8A8Unorm, VkTextureTypeEnum.kType_DiffuseTextureMap));
+            textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\container2.png", VkFormat.R8G8B8A8Unorm, VkTextureTypeEnum.kType_DiffuseTextureMap));
 
             GameObjectList.Add(MemoryManager.CreateGameObject("object1", new List<ComponentTypeEnum>()
             {
@@ -63,11 +63,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void Update()
         {
-            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             foreach (var gameObject in GameObjectList)
             {
                 gameObject.Update(startTime);
-                gameObject.BufferUpdate(commandBuffer.Handle, startTime);
+                gameObject.BufferUpdate(commandBuffer, startTime);
             }
             VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
@@ -76,7 +76,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void DrawFrame()
         {
-            List<CommandBuffer> commandBufferList = new List<CommandBuffer>();
+            List<VkCommandBuffer> commandBufferList = new List<VkCommandBuffer>();
             VulkanRenderer.StartFrame();
             commandBufferList.Add(renderPass3D.Draw(GameObjectList, sceneProperties));
             commandBufferList.Add(frameBufferRenderPass.Draw());

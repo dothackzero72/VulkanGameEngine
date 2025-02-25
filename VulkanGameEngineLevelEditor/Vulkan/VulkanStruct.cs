@@ -44,8 +44,28 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     {
         public VkStructureType sType;
         public void* pNext;
-        public VkCommandBufferUsageFlags flags;
+        public VkCommandBufferUsageFlagBits flags;
         public VkCommandBufferInheritanceInfo* pInheritanceInfo;
+    }
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkSemaphoreTypeCreateInfo
+    {
+        public VkStructureType sType;                     // Structure type
+        public void* pNext;                              // Pointer to extension-specific structures (NULL for none)
+        public VkSemaphoreType semaphoreType;             // Type of semaphore (binary or timeline)
+        public ulong initialValue;                         // Initial value for the semaphore (only relevant for timeline semaphores)
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkWin32SurfaceCreateInfoKHR
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkWin32SurfaceCreateFlagsKHR flags;
+        public HINSTANCE hinstance;
+        public HWND hwnd;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -57,8 +77,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public uint subpass;
         public Framebuffer framebuffer;
         public VkBool32 occlusionQueryEnable;
-        public VkQueryControlFlags queryFlags;
-        public VkQueryPipelineStatisticFlags pipelineStatistics;
+        public VkQueryControlFlagBits queryFlags;
+        public VkQueryPipelineStatisticFlagBits pipelineStatistics;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -127,117 +147,117 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSparseImageFormatProperties
     {
-        VkImageAspectFlagBits aspectMask;
-        VkExtent3D imageGranularity;
-        VkSparseImageFormatFlagBits flags;
+        public VkImageAspectFlagBits aspectMask;
+        public VkExtent3D imageGranularity;
+        public VkSparseImageFormatFlagBits flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkFenceCreateInfo
     {
-        VkStructureType sType;
-         void* pNext;
-        VkFenceCreateFlagBits flags;
+        public VkStructureType sType;
+        public void* pNext;
+        public VkFenceCreateFlagBits flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkAllocationCallbacks
     {
-        void* pUserData;
-        IntPtr pfnAllocation;
-        IntPtr pfnReallocation;
-        IntPtr pfnFree;
-        IntPtr pfnInternalAllocation;
-        IntPtr pfnInternalFree;
+        public void* pUserData;
+        public IntPtr pfnAllocation;
+        public IntPtr pfnReallocation;
+        public IntPtr pfnFree;
+        public IntPtr pfnInternalAllocation;
+        public IntPtr pfnInternalFree;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSparseMemoryBind
     {
-        VkDeviceSize resourceOffset;
-        VkDeviceSize size;
-        VkDeviceMemory memory;
-        VkDeviceSize memoryOffset;
-        VkSparseMemoryBindFlagBits flags;
+        public VkDeviceSize resourceOffset;
+        public VkDeviceSize size;
+        public VkDeviceMemory memory;
+        public VkDeviceSize memoryOffset;
+        public VkSparseMemoryBindFlagBits flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkSparseBufferMemoryBindInfo
     {
-        VkBuffer buffer;
-        uint bindCount;
-        VkSparseMemoryBind* pBinds;
+        public VkBuffer buffer;
+        public uint bindCount;
+        public VkSparseMemoryBind* pBinds;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkSparseImageOpaqueMemoryBindInfo
     {
-        VkImage image;
-        uint bindCount;
-         VkSparseMemoryBind* pBinds;
+        public VkImage image;
+        public uint bindCount;
+        public VkSparseMemoryBind* pBinds;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkSparseImageMemoryBindInfo
     {
-        VkImage image;
-        uint bindCount;
-        VkSparseImageMemoryBind* pBinds;
+        public VkImage image;
+        public uint bindCount;
+        public VkSparseImageMemoryBind* pBinds;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkOffset3D
     {
-        int x;
-        int y;
-        int z;
+        public int x;
+        public int y;
+        public int z;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSparseImageMemoryBind
     {
-        VkImageSubresource subresource;
-        VkOffset3D offset;
-        VkExtent3D extent;
-        VkDeviceMemory memory;
-        VkDeviceSize memoryOffset;
-        VkSparseMemoryBindFlagBits flags;
+        public VkImageSubresource subresource;
+        public VkOffset3D offset;
+        public VkExtent3D extent;
+        public VkDeviceMemory memory;
+        public VkDeviceSize memoryOffset;
+        public VkSparseMemoryBindFlagBits flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageSubresource
     {
-        VkImageAspectFlagBits aspectMask;
-        uint mipLevel;
-        uint arrayLayer;
+        public VkImageAspectFlagBits aspectMask;
+        public uint mipLevel;
+        public uint arrayLayer;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkBindSparseInfo
     {
-        VkStructureType sType;
-         void* pNext;
-        uint waitSemaphoreCount;
-         VkSemaphore* pWaitSemaphores;
-        uint bufferBindCount;
-         VkSparseBufferMemoryBindInfo* pBufferBinds;
-        uint imageOpaqueBindCount;
-         VkSparseImageOpaqueMemoryBindInfo* pImageOpaqueBinds;
-        uint imageBindCount;
-         VkSparseImageMemoryBindInfo* pImageBinds;
-        uint signalSemaphoreCount;
-         VkSemaphore* pSignalSemaphores;
+        public VkStructureType sType;
+        public void* pNext;
+        public uint waitSemaphoreCount;
+        public VkSemaphore* pWaitSemaphores;
+        public uint bufferBindCount;
+        public VkSparseBufferMemoryBindInfo* pBufferBinds;
+        public uint imageOpaqueBindCount;
+        public VkSparseImageOpaqueMemoryBindInfo* pImageOpaqueBinds;
+        public uint imageBindCount;
+        public VkSparseImageMemoryBindInfo* pImageBinds;
+        public uint signalSemaphoreCount;
+        public VkSemaphore* pSignalSemaphores;
     }
 
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSparseImageMemoryRequirements
     {
-        VkSparseImageFormatProperties formatProperties;
-        uint imageMipTailFirstLod;
-        VkDeviceSize imageMipTailSize;
-        VkDeviceSize imageMipTailOffset;
-        VkDeviceSize imageMipTailStride;
+        public VkSparseImageFormatProperties formatProperties;
+        public uint imageMipTailFirstLod;
+        public VkDeviceSize imageMipTailSize;
+        public VkDeviceSize imageMipTailOffset;
+        public VkDeviceSize imageMipTailStride;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -250,9 +270,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkMemoryRequirements
     {
-        VkDeviceSize size;
-        VkDeviceSize alignment;
-        uint memoryTypeBits;
+        public VkDeviceSize size;
+        public VkDeviceSize alignment;
+        public uint memoryTypeBits;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -420,9 +440,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkSemaphoreCreateInfo
     {
-        VkStructureType sType;
-         void* pNext;
-        VkFenceCreateFlagBits flags;
+        public VkStructureType sType;
+        public void* pNext;
+        public VkFenceCreateFlagBits flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -584,12 +604,25 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkSemaphore* pSignalSemaphores;                    // Array of signal semaphores
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPresentInfoKHR
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public uint waitSemaphoreCount;
+        public VkSemaphore* pWaitSemaphores;
+        public uint swapchainCount;
+        public VkSwapchainKHR* pSwapchains;
+        public uint* pImageIndices;
+        public VkResult* pResults;
+    }
+
     // VkMemoryAllocateInfo structure is used to allocate memory.
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkMemoryAllocateInfo
     {
         public VkStructureType sType;                       // Structure type
-        public void pNext;                                // Pointer to extension-specific structures (NULL for none)
+        public void* pNext;                                // Pointer to extension-specific structures (NULL for none)
         public ulong allocationSize;                         // Size of the allocation in bytes
         public uint memoryTypeIndex;                        // Index of the memory type from which to allocate
     }
@@ -698,6 +731,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkDescriptorSetLayoutBinding* pBindings;                            // Pointer to array of descriptor set layout bindings
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkPushConstantRange
+    {
+        public VkPipelineLayoutCreateFlagBits stageFlags;
+        public uint offset;
+        public uint size;
+    }
+
     // VkPipelineLayoutCreateInfo is used to create a pipeline layout.
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkPipelineLayoutCreateInfo
@@ -706,9 +747,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public void* pNext;                                // Pointer to extension-specific structures
         public VkPipelineLayoutCreateFlagBits flags;           // Pipeline layout creation flags
         public uint setLayoutCount;                         // Number of descriptor set layouts
-        public void* pSetLayouts;                          // Pointer to array of descriptor set layouts
+        public VkDescriptorSetLayout* pSetLayouts;                          // Pointer to array of descriptor set layouts
         public uint pushConstantRangeCount;                 // Number of push constant ranges
-        public void* pPushConstantRanges;                  // Pointer to array of push constant ranges
+        public VkPushConstantRange* pPushConstantRanges;                  // Pointer to array of push constant ranges
     }
 
     // VkComputePipelineCreateInfo is used to create compute pipelines.
@@ -824,5 +865,32 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             this.offset = offset;
             this.range = range;
         }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkPhysicalDeviceMemoryProperties
+    {
+        public uint memoryTypeCount;
+        public VkMemoryType[] memoryTypes = new VkMemoryType[VulkanConst.VK_MAX_MEMORY_TYPES];
+        public uint memoryHeapCount;
+        public VkMemoryHeap[] memoryHeaps = new VkMemoryHeap[VulkanConst.VK_MAX_MEMORY_HEAPS];
+
+        public VkPhysicalDeviceMemoryProperties()
+        {
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkMemoryHeap
+    {
+        public VkDeviceSize size;
+        public VkMemoryHeapFlagBits flags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkMemoryType
+    {
+        public VkMemoryPropertyFlagBits propertyFlags;
+        public uint heapIndex;
     }
 }

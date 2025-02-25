@@ -9,17 +9,18 @@ using System.Threading.Tasks;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     public unsafe class VkPipelineRasterizationStateCreateInfo
     {
-        public StructureType sType { get; set; } = StructureType.PipelineRasterizationConservativeStateCreateInfoExt;
+        public VkStructureType sType { get; set; } = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         public bool depthClampEnable { get; set; }
         public bool rasterizerDiscardEnable { get; set; }
-        public PolygonMode polygonMode { get; set; }
-        public CullModeFlags cullMode { get; set; }
-        public FrontFace frontFace { get; set; }
+        public VkPolygonMode polygonMode { get; set; }
+        public VkCullModeFlags cullMode { get; set; }
+        public VkFrontFace frontFace { get; set; }
         public bool depthBiasEnable { get; set; }
         public float depthBiasConstantFactor { get; set; }
         public float depthBiasClamp { get; set; }

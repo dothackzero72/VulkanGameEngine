@@ -13,17 +13,18 @@ using System.Windows.Forms;
 using Silk.NET.SDL;
 using Silk.NET.Core.Native;
 using System.Numerics;
+using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
     public unsafe class VulkanSwapChain
     {
         Vk vk = Vk.GetApi();
-        public Format colorFormat { get; private set; }
-        public Extent2D swapchainExtent { get; set; }
-        public SwapchainKHR swapChain { get; private set; }
-        public Image[] images { get; private set; }
-        public ImageView[] imageViews { get; private set; }
+        public VkFormat colorFormat { get; private set; }
+        public VkExtent2D swapchainExtent { get; set; }
+        public VkSwapchainKHR swapChain { get; private set; }
+        public VkImage[] images { get; private set; }
+        public VkImageView[] imageViews { get; private set; }
         public KhrSwapchain khrSwapchain { get; private set; }
         public uint ImageCount { get; private set; } = VulkanRenderer.MAX_FRAMES_IN_FLIGHT;
 
@@ -140,7 +141,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             //return swapChain;
         }
 
-        public Image[] GetImagesKHR(SwapchainKHR swapchain2, KhrSwapchain swapC)
+        public Image[] GetImagesKHR(SwapchainKHR swapchain2, VkKhrSwapchain swapC)
         {
             uint imageCount = 0;
             swapC.GetSwapchainImages(VulkanRenderer.device, swapchain2, &imageCount, null);
@@ -151,23 +152,21 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public SurfaceCapabilitiesKHR GetSurfaceCapabilitiesKHR(PhysicalDevice physicalDevice)
         {
-            Result result = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, VulkanRenderer.surface, out SurfaceCapabilitiesKHR surfaceCapabilities);
+            Result result = VkFunc.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, VulkanRenderer.surface, out SurfaceCapabilitiesKHR surfaceCapabilities);
             return surfaceCapabilities;
         }
 
-        [DllImport("vulkan-1.dll")]
-        public static extern int vkGetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice physicalDevice, SurfaceKHR surface, ref uint pSurfaceFormatCount, IntPtr pSurfaceFormats);
         public static SurfaceFormatKHR[] GetSurfaceFormatsKHR(PhysicalDevice physicalDevice)
         {
             uint formatCount = 0;
-            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, VulkanRenderer.surface, ref formatCount, IntPtr.Zero);
+            VkFunc.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, VulkanRenderer.surface, ref formatCount, IntPtr.Zero);
 
             var formats = new SurfaceFormatKHR[formatCount];
             int structureSize = Marshal.SizeOf<SurfaceFormatKHR>();
             IntPtr formatPtr = Marshal.AllocHGlobal(structureSize * (int)formatCount);
             try
             {
-                vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, VulkanRenderer.surface, ref formatCount, formatPtr);
+                VkFunc.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, VulkanRenderer.surface, ref formatCount, formatPtr);
                 for (int x = 0; x < formatCount; x++)
                 {
                     formats[x] = Marshal.PtrToStructure<SurfaceFormatKHR>(formatPtr + x * Marshal.SizeOf<SurfaceFormatKHR>());
@@ -183,8 +182,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
 
         [DllImport("vulkan-1.dll")]
-        public static extern int vkGetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice physicalDevice, SurfaceKHR surface, ref uint pPresentModeCount, IntPtr pPresentModes);
-        public static PresentModeKHR[] GetSurfacePresentModesKHR(PhysicalDevice physicalDevice)
+        public static extern int vkGetPhysicalDeviceSurfacePresentModesKHR(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, ref uint pPresentModeCount, IntPtr pPresentModes);
+        public static PresentModeKHR[] GetSurfacePresentModesKHR(VkPhysicalDevice physicalDevice)
         {
             uint presentModeCount = 0;
             vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, VulkanRenderer.surface, ref presentModeCount, IntPtr.Zero);

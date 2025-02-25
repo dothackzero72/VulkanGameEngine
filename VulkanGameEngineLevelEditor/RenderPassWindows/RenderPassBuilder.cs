@@ -57,7 +57,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                         IsRenderedToSwapchain = true,
                         RenderedTextureInfoName = "ColorRenderTexture",
                         AttachmentDescription = new VkAttachmentDescription(ConstConfig.DefaultColorAttachmentDescriptionModel),
-                        ImageCreateInfo = new VkImageCreateInfo(ConstConfig.DefaultCreateColorImageInfo, SwapChainResuloution, Format.R8G8B8A8Unorm),
+                        ImageCreateInfo = new VkImageCreateInfo(ConstConfig.DefaultCreateColorImageInfo, SwapChainResuloution, VkFormat.VK_FORMAT_R8G8B8A8_UNORM),
                         SamplerCreateInfo = new VkSamplerCreateInfo(ConstConfig.DefaultColorSamplerCreateInfo),
                         TextureType = RenderedTextureType.ColorRenderedTexture
                     },
@@ -66,7 +66,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                         IsRenderedToSwapchain = false,
                         RenderedTextureInfoName = "DepthRenderedTexture",
                         AttachmentDescription = new VkAttachmentDescription(ConstConfig.DefaultDepthAttachmentDescriptionModel),
-                        ImageCreateInfo = new VkImageCreateInfo(ConstConfig.DefaultCreateDepthImageInfo, SwapChainResuloution, Format.D32Sfloat),
+                        ImageCreateInfo = new VkImageCreateInfo(ConstConfig.DefaultCreateDepthImageInfo, SwapChainResuloution, VkFormat.VK_FORMAT_D32_SFLOAT),
                         SamplerCreateInfo = new VkSamplerCreateInfo(ConstConfig.DefaultDepthSamplerCreateInfo),
                         TextureType = RenderedTextureType.DepthRenderedTexture
                     }

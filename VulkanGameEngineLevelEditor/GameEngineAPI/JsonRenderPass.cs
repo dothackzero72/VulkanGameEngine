@@ -29,9 +29,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
         public DepthTexture depthTexture { get; private set; }
         public ivec2 RenderPassResolution { get; set; }
-        public RenderPass renderPass { get; protected set; }
-        public CommandBuffer[] commandBufferList { get; protected set; }
-        public Framebuffer[] FrameBufferList { get; protected set; }
+        public VkRenderPass renderPass { get; protected set; }
+        public VkCommandBuffer[] commandBufferList { get; protected set; }
+        public VkFramebuffer[] FrameBufferList { get; protected set; }
         JsonPipeline jsonPipeline { get; set; }
         public JsonRenderPass() : base()
         {
@@ -44,8 +44,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             string jsonContent2 = File.ReadAllText(ConstConfig.Default2DRenderPass);
             RenderPassBuildInfoModel model2 = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent2);
 
-            FrameBufferList = new Framebuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
-            commandBufferList = new CommandBuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
+            FrameBufferList = new VkFramebuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
+            commandBufferList = new VkCommandBuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
 
             CreateRenderPass(model2);
@@ -55,12 +55,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public RenderPass CreateRenderPass(RenderPassBuildInfoModel model2)
         {
-            List<AttachmentDescription> attachmentDescriptionList = new List<AttachmentDescription>();
-            List<AttachmentReference> inputAttachmentReferenceList = new List<AttachmentReference>();
-            List<AttachmentReference> colorAttachmentReferenceList = new List<AttachmentReference>();
-            List<AttachmentReference> resolveAttachmentReferenceList = new List<AttachmentReference>();
-            List<SubpassDescription> preserveAttachmentReferenceList = new List<SubpassDescription>();
-            List<AttachmentReference> depthReferenceList = new List<AttachmentReference>();
+            List<VkAttachmentDescription> attachmentDescriptionList = new List<VkAttachmentDescription>();
+            List<VkAttachmentReference> inputAttachmentReferenceList = new List<VkAttachmentReference>();
+            List<VkAttachmentReference> colorAttachmentReferenceList = new List<VkAttachmentReference>();
+            List<VkAttachmentReference> resolveAttachmentReferenceList = new List<VkAttachmentReference>();
+            List<VkSubpassDescription> preserveAttachmentReferenceList = new List<VkSubpassDescription>();
+            List<VkAttachmentReference> depthReferenceList = new List<VkAttachmentReference>();
             foreach (RenderedTextureInfoModel renderedTextureInfoModel in model2.RenderedTextureInfoModelList)
             {
                 attachmentDescriptionList.Add(renderedTextureInfoModel.AttachmentDescription.Convert());
@@ -69,7 +69,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     case RenderedTextureType.ColorRenderedTexture:
                         {
                             RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
-                            colorAttachmentReferenceList.Add(new AttachmentReference
+                            colorAttachmentReferenceList.Add(new VkAttachmentReference
                             {
                                 Attachment = colorAttachmentReferenceList.UCount(),
                                 Layout = Silk.NET.Vulkan.ImageLayout.ColorAttachmentOptimal
@@ -79,7 +79,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     case RenderedTextureType.DepthRenderedTexture:
                         {
                             depthTexture = new DepthTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo);
-                            depthReferenceList.Add(new AttachmentReference
+                            depthReferenceList.Add(new VkAttachmentReference
                             {
                                 Attachment = (uint)(colorAttachmentReferenceList.Count + resolveAttachmentReferenceList.Count),
                                 Layout = Silk.NET.Vulkan.ImageLayout.DepthAttachmentOptimal
@@ -89,7 +89,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     case RenderedTextureType.InputAttachmentTexture:
                         {
                             RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
-                            inputAttachmentReferenceList.Add(new AttachmentReference
+                            inputAttachmentReferenceList.Add(new VkAttachmentReference
                             {
                                 Attachment = (uint)(inputAttachmentReferenceList.Count()),
                                 Layout = Silk.NET.Vulkan.ImageLayout.ColorAttachmentOptimal
@@ -99,7 +99,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     case RenderedTextureType.ResolveAttachmentTexture:
                         {
                             RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
-                            resolveAttachmentReferenceList.Add(new AttachmentReference
+                            resolveAttachmentReferenceList.Add(new VkAttachmentReference
                             {
                                 Attachment = (uint)(colorAttachmentReferenceList.UCount() + 1),
                                 Layout = Silk.NET.Vulkan.ImageLayout.ColorAttachmentOptimal
@@ -114,12 +114,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             }
 
-            List<SubpassDescription> subpassDescriptionList = new List<SubpassDescription>();
-            fixed (AttachmentReference* depthAttachment = depthReferenceList.ToArray())
-            fixed (AttachmentReference* colorAttachments = colorAttachmentReferenceList.ToArray())
-            fixed (AttachmentReference* inputAttachments = inputAttachmentReferenceList.ToArray())
-            fixed (AttachmentReference* resolveAttachments = resolveAttachmentReferenceList.ToArray())
-            fixed (SubpassDescription* preserveAttachments = preserveAttachmentReferenceList.ToArray())
+            List<VkSubpassDescription> subpassDescriptionList = new List<VkSubpassDescription>();
+            fixed (VkAttachmentReference* depthAttachment = depthReferenceList.ToArray())
+            fixed (VkAttachmentReference* colorAttachments = colorAttachmentReferenceList.ToArray())
+            fixed (VkAttachmentReference* inputAttachments = inputAttachmentReferenceList.ToArray())
+            fixed (VkAttachmentReference* resolveAttachments = resolveAttachmentReferenceList.ToArray())
+            fixed (VkSubpassDescription* preserveAttachments = preserveAttachmentReferenceList.ToArray())
             {
                 subpassDescriptionList.Add(new SubpassDescription
                 {
@@ -160,7 +160,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
                 };
 
-                var tempRenderPass = new RenderPass();
+                var tempRenderPass = new VkRenderPass();
                 vk.CreateRenderPass(VulkanRenderer.device, &renderPassCreateInfo, null, &tempRenderPass);
                 renderPass = tempRenderPass;
             }
@@ -169,7 +169,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void CreateFramebuffer()
         {
-            Framebuffer[] frameBufferList = new Framebuffer[VulkanRenderer.swapChain.ImageCount];
+            VkFramebuffer[] frameBufferList = new VkFramebuffer[VulkanRenderer.swapChain.ImageCount];
             for (int x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
             {
                 List<ImageView> TextureAttachmentList = new List<ImageView>();
@@ -182,9 +182,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     TextureAttachmentList.Add(depthTexture.View);
                 }
 
-                fixed (ImageView* imageViewPtr = TextureAttachmentList.ToArray())
+                fixed (VkImageView* imageViewPtr = TextureAttachmentList.ToArray())
                 {
-                    FramebufferCreateInfo framebufferInfo = new FramebufferCreateInfo()
+                    VkFramebufferCreateInfo framebufferInfo = new VkFramebufferCreateInfo()
                     {
                         SType = StructureType.FramebufferCreateInfo,
                         RenderPass = renderPass,
@@ -197,7 +197,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         PNext = null
                     };
 
-                    Framebuffer frameBuffer = FrameBufferList[x];
+                    VkFramebuffer frameBuffer = FrameBufferList[x];
                     vk.CreateFramebuffer(VulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
                     frameBufferList[x] = frameBuffer;
                 }
@@ -206,18 +206,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             FrameBufferList = frameBufferList;
         }
 
-        public CommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
+        public VkCommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
             var commandBuffer = commandBufferList[commandIndex];
-            ClearValue* clearValues = stackalloc[]
+            VkClearValue* clearValues = stackalloc[]
 {
-                new ClearValue(new ClearColorValue(1, 0, 0, 1)),
-                new ClearValue(null, new ClearDepthStencilValue(1.0f))
+                new VkClearValue(new VkClearColorValue(1, 0, 0, 1)),
+                new VkClearValue(null, new VkClearDepthStencilValue(1.0f))
             };
 
-            RenderPassBeginInfo renderPassInfo = new
+            VkRenderPassBeginInfo renderPassInfo = new
             (
                 renderPass: renderPass,
                 framebuffer: FrameBufferList[imageIndex],
@@ -233,10 +233,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var commandInfo = new CommandBufferBeginInfo(flags: 0);
 
             vk.BeginCommandBuffer(commandBuffer, &commandInfo);
-            vk.CmdBeginRenderPass(commandBuffer, &renderPassInfo, SubpassContents.Inline);
+            vk.CmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.Inline);
             vk.CmdSetViewport(commandBuffer, 0, 1, &viewport);
             vk.CmdSetScissor(commandBuffer, 0, 1, &scissor);
-            vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, jsonPipeline.pipeline);
+            vk.CmdBindPipeline(commandBuffer, VkPipelineBindPoint.Graphics, jsonPipeline.pipeline);
             foreach (var obj in gameObjectList)
             {
                 obj.Draw(commandBuffer.Handle, jsonPipeline.pipeline.Handle, jsonPipeline.pipelineLayout.Handle, descSet.Handle, sceneDataBuffer);
@@ -292,14 +292,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         },
                         AttachmentDescription = new VkAttachmentDescription()
                         {
-                            format = Format.R8G8B8A8Unorm,
-                            samples = SampleCountFlags.SampleCount1Bit,
-                            loadOp = AttachmentLoadOp.Clear,
-                            storeOp = AttachmentStoreOp.Store,
-                            stencilLoadOp = AttachmentLoadOp.DontCare,
-                            stencilStoreOp = AttachmentStoreOp.DontCare,
-                            initialLayout = ImageLayout.Undefined,
-                            finalLayout = ImageLayout.ShaderReadOnlyOptimal,
+                            format = VkFormat.R8G8B8A8Unorm,
+                            samples = VkSampleCountFlags.SampleCount1Bit,
+                            loadOp = VkAttachmentLoadOp.Clear,
+                            storeOp = VkAttachmentStoreOp.Store,
+                            stencilLoadOp = VkAttachmentLoadOp.DontCare,
+                            stencilStoreOp = VkAttachmentStoreOp.DontCare,
+                            initialLayout = VkImageLayout.Undefined,
+                            finalLayout = VkImageLayout.ShaderReadOnlyOptimal,
                             _name = string.Empty
                         },
                         IsRenderedToSwapchain = true,
@@ -317,10 +317,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             arrayLayers = 1,
                             samples = (SampleCountFlags)1,
                             tiling = 0,
-                            usage =  ImageUsageFlags.ImageUsageTransferSrcBit |
-                                    ImageUsageFlags.SampledBit |
-                                    ImageUsageFlags.DepthStencilAttachmentBit |
-                                    ImageUsageFlags.ImageUsageTransferDstBit,
+                            usage =  VkImageUsageFlags.ImageUsageTransferSrcBit |
+                                    VkImageUsageFlags.SampledBit |
+                                    VkImageUsageFlags.DepthStencilAttachmentBit |
+                                    VkImageUsageFlags.ImageUsageTransferDstBit,
                             sharingMode = 0,
                             queueFamilyIndexCount = 0,
                             pQueueFamilyIndices = null,
@@ -348,14 +348,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         },
                         AttachmentDescription = new VkAttachmentDescription()
                         {
-                            format = Format.D32Sfloat,
-                            samples = SampleCountFlags.SampleCount1Bit,
-                            loadOp = AttachmentLoadOp.Clear,
-                            storeOp = AttachmentStoreOp.DontCare,
-                            stencilLoadOp = AttachmentLoadOp.DontCare,
-                            stencilStoreOp = AttachmentStoreOp.DontCare,
-                            initialLayout = ImageLayout.Undefined,
-                            finalLayout = ImageLayout.DepthStencilAttachmentOptimal,
+                            format = VkFormat.D32Sfloat,
+                            samples = VkSampleCountFlags.SampleCount1Bit,
+                            loadOp = VkAttachmentLoadOp.Clear,
+                            storeOp = VkAttachmentStoreOp.DontCare,
+                            stencilLoadOp = VkAttachmentLoadOp.DontCare,
+                            stencilStoreOp = VkAttachmentStoreOp.DontCare,
+                            initialLayout = VkImageLayout.Undefined,
+                            finalLayout = VkImageLayout.DepthStencilAttachmentOptimal,
                             _name = string.Empty
                         },
                         IsRenderedToSwapchain = false,

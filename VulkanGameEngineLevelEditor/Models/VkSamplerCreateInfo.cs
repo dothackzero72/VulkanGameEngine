@@ -10,42 +10,43 @@ using System.ComponentModel;
 using System.Reflection;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.EditorEnhancements;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
     public unsafe class VkSamplerCreateInfo : RenderPassEditorBaseModel
     {
-        private StructureType _structureType = StructureType.SamplerCreateInfo;
-        private SamplerCreateFlags _flags = 0;
+        private VkStructureType _sType = VkStructureType.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        private VkSamplerCreateFlagBits _flags = 0;
         private void* _pNext = null;
-        private Filter _magFilter;
-        private Filter _minFilter;
-        private SamplerMipmapMode _mipmapMode;
-        private SamplerAddressMode _addressModeU;
-        private SamplerAddressMode _addressModeV;
-        private SamplerAddressMode _addressModeW;
+        private VkFilter _magFilter;
+        private VkFilter _minFilter;
+        private VkSamplerMipmapMode _mipmapMode;
+        private VkSamplerAddressMode _addressModeU;
+        private VkSamplerAddressMode _addressModeV;
+        private VkSamplerAddressMode _addressModeW;
         private float _mipLodBias;
         private bool _anisotropyEnable;
         private float _maxAnisotropy;
         private bool _compareEnable;
-        private CompareOp _compareOp;
+        private VkCompareOp _compareOp;
         private float _minLod;
         private float _maxLod;
-        private BorderColor _borderColor;
+        private VkBorderColor _borderColor;
         private bool _unnormalizedCoordinates;
 
         [Browsable(false)]
         [Newtonsoft.Json.JsonIgnore]
-        public StructureType structureType
+        public VkStructureType sType
         {
-            get => _structureType;
+            get => _sType;
             set
             {
-                if (_structureType != value)
+                if (_sType != value)
                 {
-                    _structureType = value;
-                    OnPropertyChanged(nameof(structureType));
+                    _sType = value;
+                    OnPropertyChanged(nameof(sType));
                 }
             }
         }
@@ -53,7 +54,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [Category("Sampler Properties")]
         [Browsable(false)]
         [Newtonsoft.Json.JsonIgnore]
-        public SamplerCreateFlags flags
+        public VkSamplerCreateFlagBits flags
         {
             get => _flags;
             set
@@ -83,7 +84,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Sampler Properties")]
-        public Filter magFilter
+        public VkFilter magFilter
         {
             get => _magFilter;
             set
@@ -97,7 +98,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Sampler Properties")]
-        public Filter minFilter
+        public VkFilter minFilter
         {
             get => _minFilter;
             set
@@ -111,7 +112,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Sampler Properties")]
-        public SamplerMipmapMode mipmapMode
+        public VkSamplerMipmapMode mipmapMode
         {
             get => _mipmapMode;
             set
@@ -125,7 +126,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Address Modes")]
-        public SamplerAddressMode addressModeU
+        public VkSamplerAddressMode addressModeU
         {
             get => _addressModeU;
             set
@@ -139,7 +140,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Address Modes")]
-        public SamplerAddressMode addressModeV
+        public VkSamplerAddressMode addressModeV
         {
             get => _addressModeV;
             set
@@ -153,7 +154,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Address Modes")]
-        public SamplerAddressMode addressModeW
+        public VkSamplerAddressMode addressModeW
         {
             get => _addressModeW;
             set
@@ -223,7 +224,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Comparison")]
-        public CompareOp compareOp
+        public VkCompareOp compareOp
         {
             get => _compareOp;
             set
@@ -265,7 +266,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Border Color")]
-        public BorderColor borderColor
+        public VkBorderColor borderColor
         {
             get => _borderColor;
             set
@@ -305,31 +306,7 @@ namespace VulkanGameEngineLevelEditor.Models
         {
            // LoadJsonComponent(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\  \DefaultSubpassDependency.json");
         }
-        public SamplerCreateInfo Convert()
-        {
-            return new SamplerCreateInfo
-            {
-                SType = StructureType.SamplerCreateInfo,
-                AddressModeU = addressModeU,
-                AddressModeV = addressModeV,
-                AddressModeW = addressModeW,
-                AnisotropyEnable = (uint)(_anisotropyEnable ? 1 : 0),
-                MaxAnisotropy = maxAnisotropy,
-                CompareEnable = (uint)(_compareEnable ? 1 : 0),
-                MinLod = minLod,
-                MaxLod = maxLod,
-                BorderColor = borderColor,
-                UnnormalizedCoordinates = (uint)(_unnormalizedCoordinates ? 1 : 0),
-                CompareOp = compareOp,
-                Flags = flags,
-                MagFilter = magFilter,
-                MinFilter = minFilter,
-                MipLodBias = mipLodBias,
-                MipmapMode = mipmapMode,
-                PNext = null
-            };
-        }
-
+       
         public void LoadJsonComponent(string jsonPath)
         {
             var obj = base.LoadJsonComponent<VkSamplerCreateInfo>(jsonPath);

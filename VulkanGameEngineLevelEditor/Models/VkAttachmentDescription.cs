@@ -17,10 +17,10 @@ namespace VulkanGameEngineLevelEditor.Models
     public unsafe class VkAttachmentDescription : RenderPassEditorBaseModel
     {
         private VkStructureType _structureType;
-        private VkAttachmentDescriptionFlags _flags;
+        private VkAttachmentDescriptionFlagBits _flags;
         private void* _pNext;
         private VkFormat _format;
-        private VkSampleCountFlags _samples;
+        private VkSampleCountFlagBits _samples;
         private VkAttachmentLoadOp _loadOp;
         private VkAttachmentStoreOp _storeOp;
         private VkAttachmentLoadOp _stencilLoadOp;
@@ -29,7 +29,7 @@ namespace VulkanGameEngineLevelEditor.Models
         private VkImageLayout _finalLayout;
 
         [Category("Attachment Description")]
-        public VkAttachmentDescriptionFlags flags
+        public VkAttachmentDescriptionFlagBits flags
         {
             get => _flags;
             set
@@ -57,7 +57,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Attachment Description")]
-        public VkSampleCountFlags samples
+        public VkSampleCountFlagBits samples
         {
             get => _samples;
             set
@@ -166,50 +166,6 @@ namespace VulkanGameEngineLevelEditor.Models
         public VkAttachmentDescription(string name, string jsonFilePath) : base(name)
         {
             LoadJsonComponent(ConstConfig.DefaultColorAttachmentDescriptionModel);
-        }
-
-        public VkAttachmentDescription(VkAttachmentDescription other)
-        {
-            flags = other.Flags;
-            format = other.Format;
-            samples = other.Samples;
-            loadOp = other.LoadOp;
-            storeOp = other.StoreOp;
-            stencilLoadOp = other.StencilLoadOp;
-            stencilStoreOp = other.StencilStoreOp;
-            initialLayout = other.InitialLayout;
-            finalLayout = other.FinalLayout;
-        }
-
-        public VkAttachmentDescription Convert()
-        {
-            return new VkAttachmentDescription
-            {
-                Flags = flags,
-                Format = format,
-                Samples = samples,
-                LoadOp = loadOp,
-                StoreOp = storeOp,
-                StencilLoadOp = stencilLoadOp,
-                StencilStoreOp = stencilStoreOp,
-                InitialLayout = initialLayout,
-                FinalLayout = finalLayout
-            };
-        }
-
-        public VkAttachmentDescription* ConvertPtr()
-        {
-            VkAttachmentDescription* attachmentDescription = (VkAttachmentDescription*)Marshal.AllocHGlobal(sizeof(VkAttachmentDescription));
-            attachmentDescription->Flags = flags;
-            attachmentDescription->Format = format;
-            attachmentDescription->Samples = samples;
-            attachmentDescription->LoadOp = loadOp;
-            attachmentDescription->StoreOp = storeOp;
-            attachmentDescription->StencilLoadOp = stencilLoadOp;
-            attachmentDescription->StencilStoreOp = stencilStoreOp;
-            attachmentDescription->InitialLayout = initialLayout;
-            attachmentDescription->FinalLayout = finalLayout;
-            return attachmentDescription;
         }
 
         public void LoadJsonComponent(string jsonPath)

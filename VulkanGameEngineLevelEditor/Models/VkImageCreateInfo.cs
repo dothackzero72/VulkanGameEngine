@@ -14,32 +14,33 @@ using VulkanGameEngineLevelEditor.EditorEnhancements;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using Newtonsoft.Json;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
     public unsafe class VkImageCreateInfo : RenderPassEditorBaseModel
     {
-        private StructureType _sType = StructureType.ImageCreateInfo;
-        private ImageCreateFlags _flags = 0;
+        private VkStructureType _sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+        private VkImageCreateFlagBits _flags = 0;
         private void* _pNext;
-        private ImageType _imageType;
-        private Format _format;
+        private VkImageType _imageType;
+        private VkFormat _format;
         private VkExtent3D _extent = new VkExtent3D();
         private uint _mipLevels;
         private uint _arrayLayers;
-        private SampleCountFlags _samples;
-        private ImageTiling _tiling;
-        private ImageUsageFlags _usage;
-        private SharingMode _sharingMode;
+        private VkSampleCountFlagBits _samples;
+        private VkImageTiling _tiling;
+        private VkImageUsageFlagBits _usage;
+        private VkSharingMode _sharingMode;
         private uint _queueFamilyIndexCount;
         private unsafe uint* _pQueueFamilyIndices;
-        private ImageLayout _initialLayout;
+        private VkImageLayout _initialLayout;
 
 
         [Browsable(false)]
         [Newtonsoft.Json.JsonIgnore]
-        public StructureType sType
+        public VkStructureType sType
         {
             get => _sType;
             set
@@ -56,7 +57,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [Browsable(false)]
         [Newtonsoft.Json.JsonIgnore]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public ImageCreateFlags flags
+        public VkImageCreateFlagBits flags
         {
             get => _flags;
             set
@@ -86,7 +87,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Image Properties")]
-        public ImageType imageType
+        public VkImageType imageType
         {
             get => _imageType;
             set
@@ -100,7 +101,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Image Properties")]
-        public Format format
+        public VkFormat format
         {
             get => _format;
             set
@@ -158,7 +159,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Image Properties")]
-        public SampleCountFlags samples
+        public VkSampleCountFlags samples
         {
             get => _samples;
             set
@@ -172,7 +173,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Image Properties")]
-        public ImageTiling tiling
+        public VkImageTiling tiling
         {
             get => _tiling;
             set
@@ -187,7 +188,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         [Category("Image Properties")]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public ImageUsageFlags usage
+        public VkImageUsageFlags usage
         {
             get => _usage;
             set
@@ -201,7 +202,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Image Properties")]
-        public SharingMode sharingMode
+        public VkSharingMode sharingMode
         {
             get => _sharingMode;
             set
@@ -247,7 +248,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Image Layout")]
-        public ImageLayout initialLayout
+        public VkImageLayout initialLayout
         {
             get => _initialLayout;
             set
@@ -264,7 +265,7 @@ namespace VulkanGameEngineLevelEditor.Models
         {
         }
 
-        public VkImageCreateInfo(string jsonPath, ivec2 swapChainResoultion, Format format2) : base()
+        public VkImageCreateInfo(string jsonPath, ivec2 swapChainResoultion, VkFormat format2) : base()
         {
             LoadJsonComponent(jsonPath);
             extent.width = (uint)swapChainResoultion.x;
@@ -273,33 +274,11 @@ namespace VulkanGameEngineLevelEditor.Models
             format = format2;
         }
 
-        public VkImageCreateInfo(ivec2 swapChainResoultion, Format format) : base()
+        public VkImageCreateInfo(ivec2 swapChainResoultion, VkFormat format) : base()
         {
             LoadJsonComponent(ConstConfig.DefaultColorAttachmentDescriptionModel);
             _extent = new VkExtent3D((uint)swapChainResoultion.x, (uint)swapChainResoultion.y, 1);
             _format = format;
-        }
-
-        public ImageCreateInfo Convert()
-        {
-            return new ImageCreateInfo()
-            {
-                SType = StructureType.ImageCreateInfo,
-                PNext = null,
-                Flags = flags,
-                ImageType = imageType,
-                Format = format,
-                Extent = extent.Convert(),
-                MipLevels = mipLevels,
-                ArrayLayers = arrayLayers,
-                Samples = samples,
-                Tiling = tiling,
-                Usage = usage,
-                SharingMode = sharingMode,
-                QueueFamilyIndexCount = queueFamilyIndexCount,
-                PQueueFamilyIndices = null,
-                InitialLayout = initialLayout
-            };
         }
 
         public void LoadJsonComponent(string jsonPath)

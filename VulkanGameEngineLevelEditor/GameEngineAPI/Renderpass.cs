@@ -13,9 +13,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     {
         public ivec2 RenderPassResolution { get; set; }
         public SampleCountFlags sampleCount { get; set; }
-        public RenderPass renderPass { get; protected set; }
-        public CommandBuffer[] commandBufferList { get; protected set; }
-        public Framebuffer[] FrameBufferList { get; protected set; }
+        public VkRenderPass renderPass { get; protected set; }
+        public VkCommandBuffer[] commandBufferList { get; protected set; }
+        public VkFramebuffer[] FrameBufferList { get; protected set; }
         //public DescriptorPool descriptorpool { get; protected set; }
         //public List<DescriptorSetLayout> descriptorSetLayoutList { get; protected set; } = new List<DescriptorSetLayout>();
         //public DescriptorSet descriptorset { get; protected set; }
@@ -32,8 +32,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
             sampleCount = SampleCountFlags.Count1Bit;
 
-            FrameBufferList = new Framebuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
-            commandBufferList = new CommandBuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
+            FrameBufferList = new VkFramebuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
+            commandBufferList = new VkCommandBuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
         }
     }

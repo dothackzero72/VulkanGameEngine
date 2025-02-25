@@ -127,9 +127,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern VkResult vkCreateFence(
             VkDevice device,
-            VkFenceCreateInfo* pCreateInfo,
+            in VkFenceCreateInfo pCreateInfo,
             VkAllocationCallbacks* pAllocator,
-            VkFence* pFence);
+            out VkFence pFence);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyFence(
@@ -159,9 +159,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern VkResult vkCreateSemaphore(
             VkDevice device,
-            VkSemaphoreCreateInfo* pCreateInfo,
+            in VkSemaphoreCreateInfo pCreateInfo,
             VkAllocationCallbacks* pAllocator,
-            VkSemaphore* pSemaphore);
+            out VkSemaphore pSemaphore);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroySemaphore(
@@ -375,7 +375,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkDevice device,
             VkDescriptorSetLayoutCreateInfo* pCreateInfo,
             VkAllocationCallbacks* pAllocator,
-            VkDescriptorSetLayout* pSetLayout);
+            out VkDescriptorSetLayout pSetLayout);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyDescriptorSetLayout(
@@ -386,9 +386,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern VkResult vkCreateDescriptorPool(
             VkDevice device,
-            VkDescriptorPoolCreateInfo* pCreateInfo,
+            in VkDescriptorPoolCreateInfo pCreateInfo,
             VkAllocationCallbacks* pAllocator,
-            VkDescriptorPool* pDescriptorPool);
+            out VkDescriptorPool pDescriptorPool);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyDescriptorPool(
@@ -406,7 +406,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static extern VkResult vkAllocateDescriptorSets(
             VkDevice device,
             VkDescriptorSetAllocateInfo* pAllocateInfo,
-            VkDescriptorSet* pDescriptorSets);
+            out VkDescriptorSet pDescriptorSets);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern VkResult vkFreeDescriptorSets(
@@ -477,8 +477,24 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern VkResult vkAllocateCommandBuffers(
             VkDevice device,
-            VkCommandBufferAllocateInfo* pAllocateInfo,
-            VkCommandBuffer* pCommandBuffers);
+            in VkCommandBufferAllocateInfo pAllocateInfo,
+            out VkCommandBuffer pCommandBuffers);
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Winapi)]
+        public static extern VkResult vkAcquireNextImageKHR(
+              VkDevice device,
+              VkSwapchainKHR swapchain,
+              ulong timeout,
+              VkSemaphore semaphore,
+              VkFence fence,
+              out uint imageIndex);
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern VkResult vkCreateWin32SurfaceKHR(
+    VkInstance instance,
+     ref VkWin32SurfaceCreateInfoKHR pCreateInfo,
+     VkAllocationCallbacks* pAllocator,
+    out VkSurfaceKHR pSurface);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkFreeCommandBuffers(
@@ -839,5 +855,37 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkCommandBuffer commandBuffer,
             uint commandBufferCount,
             VkCommandBuffer* pCommandBuffers);
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Winapi)]
+        public static extern VkResult vkCreateShaderModule(
+        VkDevice device,
+        ref VkShaderModuleCreateInfo pCreateInfo,
+        IntPtr pAllocator,
+        out VkShaderModule pShaderModule);
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Winapi)]
+        public static extern void vkGetPhysicalDeviceMemoryProperties(
+            VkPhysicalDevice physicalDevice,
+            out VkPhysicalDeviceMemoryProperties pMemoryProperties);
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Winapi)]
+        public static extern VkResult vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+       VkPhysicalDevice physicalDevice,
+       VkSurfaceKHR surface,
+       out VkSurfaceCapabilitiesKHR pSurfaceCapabilities);
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Winapi)]
+        public static extern VkResult vkGetPhysicalDeviceSurfaceFormatsKHR(
+            VkPhysicalDevice physicalDevice,
+            VkSurfaceKHR surface,
+            ref uint pSurfaceFormatCount,
+            VkSurfaceFormatKHR* pSurfaceFormats); // Pointer to VkSurfaceFormatKHR or null
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Winapi)]
+        public static extern VkResult vkQueuePresentKHR(
+       VkQueue queue,
+       ref VkPresentInfoKHR pPresentInfo);
+
+
     }
 }

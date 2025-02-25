@@ -10,15 +10,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.Vulkan;
 using Image = Silk.NET.Vulkan.Image;
+using VulkanGameEngineLevelEditor.Models;
+using StbImageSharp;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public static unsafe class CTexture
     {
         static Vk vk = Vk.GetApi();
-        public static void CreateBuffer(uint size, BufferUsageFlags usage, MemoryPropertyFlags properties, Silk.NET.Vulkan.Buffer* buffer, DeviceMemory* bufferMemory)
+        public static void CreateBuffer(uint size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer* buffer, VkDeviceMemory* bufferMemory)
         {
-            BufferCreateInfo bufferInfo = new BufferCreateInfo
+            VkBufferCreateInfo bufferInfo = new VkBufferCreateInfo
             {
                 SType = StructureType.BufferCreateInfo,
                 Size = size,
@@ -26,10 +28,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 SharingMode = SharingMode.Exclusive
             };
             var BufferInfo = bufferInfo;
-            vk.CreateBuffer(VulkanRenderer.device, &BufferInfo, null, buffer);
+            VkFunc.vkCreateBuffer(VulkanRenderer.device, &BufferInfo, null, buffer);
 
             MemoryRequirements memRequirements;
-            vk.GetBufferMemoryRequirements(VulkanRenderer.device, *buffer, &memRequirements);
+            VkFunc.vkGetBufferMemoryRequirements(VulkanRenderer.device, *buffer, &memRequirements);
 
             MemoryAllocateInfo allocInfo = new MemoryAllocateInfo
             {
@@ -38,19 +40,19 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, properties)
             };
 
-            vk.AllocateMemory(VulkanRenderer.device, &allocInfo, null, bufferMemory);
-            vk.BindBufferMemory(VulkanRenderer.device, *buffer, *bufferMemory, 0);
+            VkFunc.vkAllocateMemory(VulkanRenderer.device, &allocInfo, null, bufferMemory);
+            VkFunc.vkBindBufferMemory(VulkanRenderer.device, *buffer, *bufferMemory, 0);
         }
 
 
-        public static void UpdateImageLayout(CommandBuffer commandBuffer, Silk.NET.Vulkan.Image image, ref Silk.NET.Vulkan.ImageLayout oldImageLayout, Silk.NET.Vulkan.ImageLayout newImageLayout, uint MipLevel, ImageAspectFlags imageAspectFlags)
+        public static void UpdateImageLayout(VkCommandBuffer commandBuffer, Silk.NET.Vulkan.Image image, ref VkImageLayout oldImageLayout, VkImageLayout newImageLayout, uint MipLevel, VkImageAspectFlags imageAspectFlags)
         {
-            ImageSubresourceRange ImageSubresourceRange = new ImageSubresourceRange();
+            VkImageSubresourceRange ImageSubresourceRange = new VkImageSubresourceRange();
             ImageSubresourceRange.AspectMask = imageAspectFlags;
             ImageSubresourceRange.LevelCount = Vk.RemainingMipLevels;
             ImageSubresourceRange.LayerCount = 1;
 
-            ImageMemoryBarrier barrier = new ImageMemoryBarrier();
+            VkImageMemoryBarrier barrier = new VkImageMemoryBarrier();
             barrier.SType = StructureType.ImageMemoryBarrier;
             barrier.OldLayout = oldImageLayout;
             barrier.NewLayout = newImageLayout;
@@ -59,7 +61,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             barrier.SrcAccessMask = 0;
             barrier.DstAccessMask = AccessFlags.TransferWriteBit;
 
-            vk.CmdPipelineBarrier(commandBuffer, PipelineStageFlags.AllCommandsBit, PipelineStageFlags.AllCommandsBit, 0, 0, null, 0, null, 1, &barrier);
+            VkFunc.vkCmdPipelineBarrier(commandBuffer, VkPipelineStageFlags.AllCommandsBit, VkPipelineStageFlags.AllCommandsBit, 0, 0, null, 0, null, 1, &barrier);
             oldImageLayout = newImageLayout;
         }
 
@@ -71,7 +73,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             var bitmap = new Bitmap((int)Width, (int)Height, PixelFormat.Format32bppArgb);
-            BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
+            BitmapData bmpData = bitmap.LockBits(new VkRectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
 
             byte* ptr = (byte*)bmpData.Scan0.ToPointer();
             for (int y = 0; y < Height; y++)
@@ -103,36 +105,36 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return data;
         }
 
-        public static Result CreateTextureImage(ImageCreateInfo createInfo, out Silk.NET.Vulkan.Image image, out DeviceMemory textureMemory, int Width, int Height, Format format, uint MipLevels)
+        public static VkResult CreateTextureImage(VkImageCreateInfo createInfo, out VkImage image, out VkDeviceMemory textureMemory, int Width, int Height, VkFormat format, uint MipLevels)
         {
-            image = new Silk.NET.Vulkan.Image();
-            textureMemory = new DeviceMemory();
+            image = new VkImage();
+            textureMemory = new VkDeviceMemory();
 
 
-            Silk.NET.Vulkan.Image tempImagePtr = new Silk.NET.Vulkan.Image();
-            Result result = vk.CreateImage(VulkanRenderer.device, &createInfo, null, &tempImagePtr);
-          
+            VkImage tempImagePtr = new VkImage();
+            VkResult result = VkFunc.vkCreateImage(VulkanRenderer.device, &createInfo, null, &tempImagePtr);
 
-            MemoryRequirements memRequirements;
-            vk.GetImageMemoryRequirements(VulkanRenderer.device, tempImagePtr, &memRequirements);
 
-            MemoryAllocateInfo allocInfo = new MemoryAllocateInfo
+            VkMemoryRequirements memRequirements;
+            VkFunc.vkGetImageMemoryRequirements(VulkanRenderer.device, tempImagePtr, &memRequirements);
+
+            VkMemoryAllocateInfo allocInfo = new VkMemoryAllocateInfo
             {
-                SType = StructureType.MemoryAllocateInfo,
+                SType = VkStructureType.MemoryAllocateInfo,
                 AllocationSize = memRequirements.Size,
-                MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, MemoryPropertyFlags.DeviceLocalBit)
+                MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, VkMemoryPropertyFlags.DeviceLocalBit)
             };
 
-            DeviceMemory textureMemoryPtr = new DeviceMemory();
-            result = vk.AllocateMemory(VulkanRenderer.device, &allocInfo, null, &textureMemoryPtr);
-            if (result != Result.Success)
+            VkDeviceMemory textureMemoryPtr = new VkDeviceMemory();
+            result = VkFunc.vkAllocateMemory(VulkanRenderer.device, &allocInfo, null, &textureMemoryPtr);
+            if (result != VkResult.Success)
             {
             }
 
             image = tempImagePtr;
             textureMemory = textureMemoryPtr;
-            result = vk.BindImageMemory(VulkanRenderer.device, image, textureMemory, 0);
-            if (result != Result.Success)
+            result = VkFunc.vkBindImageMemory(VulkanRenderer.device, image, textureMemory, 0);
+            if (result != VkResult.Success)
             {
             }
 
@@ -182,20 +184,20 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 destinationStage = PipelineStageFlags.FragmentShaderBit;
             }
 
-            vk.CmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, null, 0, null, 1, &barrier);
+            VkFunc.vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, null, 0, null, 1, &barrier);
             oldLayout = newLayout;
 
             return Result.Success;
         }
 
-        public static Result CopyBufferToTexture(ref Silk.NET.Vulkan.Buffer buffer, Silk.NET.Vulkan.Image image, Extent3D extent, TextureUsageEnum textureUsage, ImageAspectFlags imageAspectFlags)
+        public static VkResult CopyBufferToTexture(ref VkBuffer buffer, VkImage image, VkExtent3D extent, VkTextureUsageEnum textureUsage, VkImageAspectFlags imageAspectFlags)
         {
-            BufferImageCopy bufferImage = new BufferImageCopy()
+            VkBufferImageCopy bufferImage = new VkBufferImageCopy()
             {
                 BufferOffset = 0,
                 BufferRowLength = 0,
                 BufferImageHeight = 0,
-                ImageSubresource = new ImageSubresourceLayers
+                ImageSubresource = new VkImageSubresourceLayers
                 {
                     AspectMask = imageAspectFlags,
                     MipLevel = 0,
@@ -206,42 +208,42 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 ImageExtent = extent
             };
 
-            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
-            vk.CmdCopyBufferToImage(commandBuffer, buffer, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &bufferImage);
+            VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            VkFunc.vkCmdCopyBufferToImage(commandBuffer, buffer, image, VkImageLayout.TransferDstOptimal, 1, &bufferImage);
             VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
-            return Result.Success;
+            return VkResult.Success;
         }
 
-        public static Result QuickTransitionImageLayout(Image image, Silk.NET.Vulkan.ImageLayout oldLayout, Silk.NET.Vulkan.ImageLayout newLayout, uint MipMapLevels, ImageAspectFlags imageAspectFlags)
+        public static Result QuickTransitionImageLayout(Image image, VkImageLayout oldLayout, VkImageLayout newLayout, uint MipMapLevels, VkImageAspectFlags imageAspectFlags)
         {
-            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             CTexture.TransitionImageLayout(commandBuffer, image, MipMapLevels, ref oldLayout, newLayout, imageAspectFlags);
-            Result result = VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+            VkResult result = VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
             return result;
         }
 
-        public static Result CopyBufferToTexture(ref Silk.NET.Vulkan.Buffer buffer, Silk.NET.Vulkan.Image image, TextureUsageEnum textureType, vec3 textureSize, Extent3D extent, ImageAspectFlags imageAspectFlags)
+        public static Result CopyBufferToTexture(ref VkBuffer buffer, VkImage image, VkTextureUsageEnum textureType, vec3 textureSize, VkExtent3D extent, VkImageAspectFlags imageAspectFlags)
         {
-            BufferImageCopy BufferImage = new BufferImageCopy()
+            VkBufferImageCopy BufferImage = new VkBufferImageCopy()
             {
                 BufferOffset = 0,
                 BufferRowLength = 0,
                 BufferImageHeight = 0,
-                ImageExtent = new Extent3D()
+                ImageExtent = new VkExtent3D()
                 {
                     Width = (uint)extent.Width,
                     Height = (uint)extent.Height,
                     Depth = (uint)extent.Depth,
                 },
-                ImageOffset = new Offset3D()
+                ImageOffset = new VkOffset3D()
                 {
                     X = 0,
                     Y = 0,
                     Z = 0,
                 },
-                ImageSubresource = new ImageSubresourceLayers()
+                ImageSubresource = new VkImageSubresourceLayers()
                 {
                     AspectMask = imageAspectFlags,
                     MipLevel = 0,
@@ -254,24 +256,24 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 BufferImage.ImageSubresource.LayerCount = 6;
             }
-            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
-            vk.CmdCopyBufferToImage(commandBuffer, buffer, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &BufferImage);
+            VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            VkFunc.vkCmdCopyBufferToImage(commandBuffer, buffer, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, &BufferImage);
             return VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
         }
 
-        public static Result GenerateMipmaps(Silk.NET.Vulkan.Image image, int Width, int Height, Format format, uint mipLevels, ImageAspectFlags imageAspectFlags)
+        public static VkResult GenerateMipmaps(VkImage image, int Width, int Height, VkFormat format, uint mipLevels, VkImageAspectFlags imageAspectFlags)
         {
             uint mipWidth = (uint)Width;
             uint mipHeight = (uint)Height;
 
-            vk.GetPhysicalDeviceFormatProperties(VulkanRenderer.physicalDevice, format, out FormatProperties formatProperties);
+            VkFunc.vkGetPhysicalDeviceFormatProperties(VulkanRenderer.physicalDevice, format, out VkFormatProperties formatProperties);
             if ((formatProperties.OptimalTilingFeatures & FormatFeatureFlags.SampledImageFilterLinearBit) == 0)
             {
                 // Handle error if needed
             }
 
-            CommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
-            ImageMemoryBarrier imageMemoryBarrier = new ImageMemoryBarrier
+            VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            Vk ImageMemoryBarrier imageMemoryBarrier = new ImageMemoryBarrier
             {
                 SType = StructureType.ImageMemoryBarrier,
                 Image = image,
@@ -293,28 +295,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 imageMemoryBarrier.NewLayout = Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal;
                 imageMemoryBarrier.SrcAccessMask = AccessFlags.TransferWriteBit;
                 imageMemoryBarrier.DstAccessMask = AccessFlags.TransferReadBit;
-                vk.CmdPipelineBarrier(commandBuffer, PipelineStageFlags.TransferBit, PipelineStageFlags.TransferBit, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
+                vk.CmdPipelineBarrier(commandBuffer, VkPipelineStageFlags.TransferBit, VkPipelineStageFlags.TransferBit, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
 
-                ImageBlit imageBlit = new ImageBlit
+                VkImageBlit imageBlit = new VkImageBlit
                 {
-                    SrcOffsets = new ImageBlit.SrcOffsetsBuffer()
+                    SrcOffsets = new VkImageBlit.SrcOffsetsBuffer()
                     {
-                        Element0 = new Offset3D(0, 0, 0),
-                        Element1 = new Offset3D((int)mipWidth, (int)mipHeight, 1)
+                        Element0 = new VkOffset3D(0, 0, 0),
+                        Element1 = new VkOffset3D((int)mipWidth, (int)mipHeight, 1)
                     },
-                    DstOffsets = new ImageBlit.DstOffsetsBuffer()
+                    DstOffsets = new VkImageBlit.DstOffsetsBuffer()
                     {
-                        Element0 = new Offset3D(0, 0, 0),
-                        Element1 = new Offset3D((int)mipWidth > 1 ? (int)mipWidth / 2 : 1, (int)mipHeight > 1 ? (int)mipHeight / 2 : 1, 1)
+                        Element0 = new VkOffset3D(0, 0, 0),
+                        Element1 = new VkOffset3D((int)mipWidth > 1 ? (int)mipWidth / 2 : 1, (int)mipHeight > 1 ? (int)mipHeight / 2 : 1, 1)
                     },
-                    SrcSubresource = new ImageSubresourceLayers
+                    SrcSubresource = new VkImageSubresourceLayers
                     {
                         AspectMask = imageAspectFlags,
                         MipLevel = x - 1,
                         BaseArrayLayer = 0,
                         LayerCount = 1
                     },
-                    DstSubresource = new ImageSubresourceLayers
+                    DstSubresource = new VkImageSubresourceLayers
                     {
                         AspectMask = imageAspectFlags,
                         MipLevel = x,
@@ -322,14 +324,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         LayerCount = 1
                     }
                 };
-                vk.CmdBlitImage(commandBuffer, image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, ref imageBlit, Filter.Linear);
+                VkFunc.vkCmdBlitImage(commandBuffer, image, Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal, image, Silk.NET.Vulkan.ImageLayout.TransferDstOptimal, 1, ref imageBlit, Filter.Linear);
 
                 imageMemoryBarrier.OldLayout = Silk.NET.Vulkan.ImageLayout.TransferSrcOptimal;
                 imageMemoryBarrier.NewLayout = Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal;
                 imageMemoryBarrier.SrcAccessMask = AccessFlags.TransferReadBit;
                 imageMemoryBarrier.DstAccessMask = AccessFlags.ShaderReadBit;
 
-                vk.CmdPipelineBarrier(commandBuffer, PipelineStageFlags.TransferBit, PipelineStageFlags.FragmentShaderBit, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
+                VkFunc.vkCmdPipelineBarrier(commandBuffer, PipelineStageFlags.TransferBit, PipelineStageFlags.FragmentShaderBit, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
 
                 if (mipWidth > 1)
                 {
@@ -347,7 +349,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             imageMemoryBarrier.SrcAccessMask = AccessFlags.TransferWriteBit;
             imageMemoryBarrier.DstAccessMask = AccessFlags.ShaderReadBit;
 
-            vk.CmdPipelineBarrier(commandBuffer, PipelineStageFlags.TransferBit, PipelineStageFlags.FragmentShaderBit, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
+            VkFunc.vkCmdPipelineBarrier(commandBuffer, PipelineStageFlags.TransferBit, PipelineStageFlags.FragmentShaderBit, 0, 0, null, 0, null, 1, ref imageMemoryBarrier);
             return VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
         }
     }

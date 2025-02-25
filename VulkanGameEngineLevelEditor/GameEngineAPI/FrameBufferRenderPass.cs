@@ -65,11 +65,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 new VkAttachmentDescription
                 {
                     format = VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
-                    samples = (uint)VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
-                    loadOp = AttachmentLoadOp.Clear,
-                    storeOp = AttachmentStoreOp.Store,
-                    stencilLoadOp = AttachmentLoadOp.DontCare,
-                    stencilStoreOp = AttachmentStoreOp.DontCare,
+                    samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
+                    loadOp = VkAttachmentLoadOp.Clear,
+                    storeOp = VkAttachmentStoreOp.Store,
+                    stencilLoadOp = VkAttachmentLoadOp.DontCare,
+                    stencilStoreOp = VkAttachmentStoreOp.DontCare,
                     initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
                     finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
                 }
@@ -131,7 +131,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     pDependencies = dependency
                 };
 
-                Vulkan.vkCreateRenderPass(VulkanRenderer.device, &renderPassCreateInfo, null, &tempRenderPass);
+                VkFunc.vkCreateRenderPass(VulkanRenderer.device, &renderPassCreateInfo, null, &tempRenderPass);
                 renderPass = tempRenderPass;
             }
 
@@ -160,7 +160,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     };
 
                     VkFramebuffer frameBuffer = FrameBufferList[x];
-                    Vulkan.vkCreateFramebuffer(VulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
+                    VkFunc.vkCreateFramebuffer(VulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
                     frameBufferList[x] = frameBuffer;
                 }
             }
@@ -190,7 +190,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     poolSizeCount = (uint)DescriptorPoolBinding.Count,
                     pPoolSizes = ptr
                 };
-                Vulkan.vkCreateDescriptorPool(VulkanRenderer.device, in poolInfo, null, out tempDescriptorPool);
+                VkFunc.vkCreateDescriptorPool(VulkanRenderer.device, in poolInfo, null, out tempDescriptorPool);
             }
 
             descriptorPool = tempDescriptorPool;
@@ -205,9 +205,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             UpdateDescriptorSet(texture);
             pipelineLayout = CreatePipelineLayout();
 
-            var vertexShaderModule = VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/FrameBufferShaderVert.spv", ShaderStageFlags.VertexBit);
-            var fragmentShaderModule = VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/FrameBufferShaderFrag.spv", ShaderStageFlags.FragmentBit);
-            PipelineShaderStageCreateInfo* shadermoduleList = stackalloc[]
+            var vertexShaderModule = VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/FrameBufferShaderVert.spv", VkShaderStageFlags.VertexBit);
+            var fragmentShaderModule = VulkanRenderer.CreateShader("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Shaders/FrameBufferShaderFrag.spv", VkShaderStageFlags.FragmentBit);
+            VkPipelineShaderStageCreateInfo* shadermoduleList = stackalloc[]
             {
                 vertexShaderModule,
                 fragmentShaderModule
@@ -302,12 +302,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             VkPipelineRasterizationStateCreateInfo rasterizer = new VkPipelineRasterizationStateCreateInfo()
             {
-                sType = StructureType.PipelineRasterizationStateCreateInfo,
+                sType = VkStructureType.PipelineRasterizationStateCreateInfo,
                 depthClampEnable = false,
                 rasterizerDiscardEnable = false,
-                polygonMode = PolygonMode.Fill,
-                cullMode = CullModeFlags.CullModeNone,
-                frontFace = FrontFace.CounterClockwise,
+                polygonMode = VkPolygonMode.Fill,
+                cullMode = VkCullModeFlags.CullModeNone,
+                frontFace = VkFrontFace.CounterClockwise,
                 depthBiasEnable = false,
                 depthBiasConstantFactor = 0.0f,
                 depthBiasClamp = 0.0f,
@@ -332,10 +332,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     pAttachments = attachments
                 };
 
-                pipelineColorBlendStateCreateInfo.blendConstants[0] = 0.0f;
-                pipelineColorBlendStateCreateInfo.blendConstants[1] = 0.0f;
-                pipelineColorBlendStateCreateInfo.blendConstants[2] = 0.0f;
-                pipelineColorBlendStateCreateInfo.blendConstants[3] = 0.0f;
+                //pipelineColorBlendStateCreateInfo.blendConstants[0] = 0.0f;
+                //pipelineColorBlendStateCreateInfo.blendConstants[1] = 0.0f;
+                //pipelineColorBlendStateCreateInfo.blendConstants[2] = 0.0f;
+                //pipelineColorBlendStateCreateInfo.blendConstants[3] = 0.0f;
 
                 VkDynamicState* dynamicStates = stackalloc[] { VkDynamicState.VK_DYNAMIC_STATE_VIEWPORT, VkDynamicState.VK_DYNAMIC_STATE_SCISSOR };
                 VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo = new VkPipelineDynamicStateCreateInfo
@@ -347,7 +347,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
                 VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = new VkGraphicsPipelineCreateInfo
                 {
-                    sType = StructureType.GraphicsPipelineCreateInfo,
+                    sType = VkStructureType.GraphicsPipelineCreateInfo,
                     stageCount = 2,
                     pStages = shadermoduleList,
                     pVertexInputState = &vertexInputInfo,
@@ -361,7 +361,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     renderPass = renderPass
                 };
 
-                vk.CreateGraphicsPipelines(VulkanRenderer.device, new VkPipelineCache(null), 1, &graphicsPipelineCreateInfo, null, out VkPipeline shaderPipeline);
+                VkFunc.vkCreateGraphicsPipelines(VulkanRenderer.device, new VkPipelineCache(null), 1, &graphicsPipelineCreateInfo, null, out VkPipeline shaderPipeline);
                 pipeline = shaderPipeline;
             }
         }
@@ -390,7 +390,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     PBindings = ptr,
                 };
 
-                vk.CreateDescriptorSetLayout(VulkanRenderer.device, &layoutInfo, null, out VkDescriptorSetLayout descriptorsetLayout);
+                VkFunc.vkCreateDescriptorSetLayout(VulkanRenderer.device, &layoutInfo, null, out VkDescriptorSetLayout descriptorsetLayout);
                 descriptorSetLayout = descriptorsetLayout;
                 return descriptorSetLayout;
             }
@@ -412,7 +412,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 descriptorSetCount: (uint)VulkanRenderer.swapChain.SwapChainImageCount,
                 pSetLayouts: layouts
             );
-            vk.AllocateDescriptorSets(VulkanRenderer.device, &allocInfo, out VkDescriptorSet tempdescriptorSet);
+            VkFunc.vkAllocateDescriptorSets(VulkanRenderer.device, &allocInfo, out VkDescriptorSet tempdescriptorSet);
             descriptorSet = tempdescriptorSet;
             return descriptorSet;
         }
@@ -444,7 +444,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             fixed (VkWriteDescriptorSet* ptr = descriptorSetList.ToArray())
             {
-                vk.UpdateDescriptorSets(VulkanRenderer.device, (uint)descriptorSetList.UCount(), ptr, 0, null);
+                VkFunc.vkUpdateDescriptorSets(VulkanRenderer.device, (uint)descriptorSetList.UCount(), ptr, 0, null);
             }
         }
 
@@ -460,12 +460,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 pushConstantRangeCount: 0,
                 pPushConstantRanges: null
             );
-            vk.CreatePipelineLayout(VulkanRenderer.device, &pipelineLayoutInfo, null, out VkPipelineLayout pipelinelayout);
+            VkFunc.vkCreatePipelineLayout(VulkanRenderer.device, &pipelineLayoutInfo, null, out VkPipelineLayout pipelinelayout);
             return pipelinelayout;
 
         }
 
-        public CommandBuffer Draw()
+        public VkCommandBuffer Draw()
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
@@ -490,15 +490,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             var commandInfo = new VkCommandBufferBeginInfo(flags: 0);
-            Vulkan.vkBeginCommandBuffer(commandBuffer, &commandInfo);
-            Vulkan.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, SubpassContents.Inline);
-            Vulkan.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-            Vulkan.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-            Vulkan.vkCmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, pipeline);
-            Vulkan.vkCmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, pipelineLayout, 0, 1, descriptorSet, 0, null);
-            Vulkan.vkCmdDraw(commandBuffer, 6, 1, 0, 0);
-            Vulkan.vkCmdEndRenderPass(commandBuffer);
-            Vulkan.vkEndCommandBuffer(commandBuffer);
+            VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
+            VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, SubpassContents.Inline);
+            VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+            VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+            VkFunc.vkCmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, pipeline);
+            VkFunc.vkCmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, pipelineLayout, 0, 1, descriptorSet, 0, null);
+            VkFunc.vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+            VkFunc.vkCmdEndRenderPass(commandBuffer);
+            VkFunc.vkEndCommandBuffer(commandBuffer);
 
             return commandBuffer;
         }
