@@ -21,11 +21,11 @@ namespace VulkanGameEngineLevelEditor.Models
     {
         private uint _srcSubpass;
         private uint _dstSubpass;
-        private VkPipelineStageFlags _srcStageMask;
-        private VkPipelineStageFlags _dstStageMask;
+        private VkPipelineStageFlagBits _srcStageMask;
+        private VkPipelineStageFlagBits _dstStageMask;
         private VkAccessFlags _srcAccessMask;
         private VkAccessFlags _dstAccessMask;
-        private VkDependencyFlags _dependencyFlags;
+        private VkAccessFlagBits _dependencyFlags;
 
 
         [Category("Subpass Dependency")]
@@ -59,7 +59,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [Category("Pipeline Stages")]
         [Browsable(true)]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkPipelineStageFlags srcStageMask
+        public VkPipelineStageFlagBits srcStageMask
         {
             get => _srcStageMask;
             set
@@ -75,7 +75,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [Category("Pipeline Stages")]
         [Browsable(true)]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkPipelineStageFlags dstStageMask
+        public VkPipelineStageFlagBits dstStageMask
         {
             get => _dstStageMask;
             set
@@ -122,7 +122,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         [Category("Subpass Dependency")]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkDependencyFlags dependencyFlags
+        public VkAccessFlagBits dependencyFlags
         {
             get => _dependencyFlags;
             set
@@ -148,7 +148,7 @@ namespace VulkanGameEngineLevelEditor.Models
             LoadJsonComponent(ConstConfig.DefaultSubpassDependencyModel);
         }
 
-        public VkSubpassDependency(uint? srcSubpass = null, uint? dstSubpass = null, VkPipelineStageFlags? srcStageMask = null, VkPipelineStageFlags? dstStageMask = null, VkAccessFlags? srcAccessMask = null, VkAccessFlags? dstAccessMask = null, VkDependencyFlags? dependencyFlags = null)
+        public VkSubpassDependency(uint? srcSubpass = null, uint? dstSubpass = null, VkPipelineStageFlagBits? srcStageMask = null, VkPipelineStageFlagBits? dstStageMask = null, VkAccessFlags? srcAccessMask = null, VkAccessFlags? dstAccessMask = null, VkDependencyFlags? dependencyFlags = null)
         {
             if (srcSubpass.HasValue)
             {
@@ -182,22 +182,8 @@ namespace VulkanGameEngineLevelEditor.Models
 
             if (dependencyFlags.HasValue)
             {
-                this.dependencyFlags = dependencyFlags.Value;
+                this.dependencyFlags = dependencyFlag.Value;
             }
-        }
-
-        public SubpassDependency Convert()
-        {
-            return new SubpassDependency()
-            {
-                DstAccessMask = (AccessFlags)dstAccessMask,
-                SrcAccessMask = (AccessFlags)srcAccessMask,
-                SrcStageMask = (PipelineStageFlags)srcStageMask,
-                DstStageMask = (PipelineStageFlags)dstStageMask,
-                DependencyFlags = (DependencyFlags)dependencyFlags,
-                DstSubpass = dstSubpass,
-                SrcSubpass = srcSubpass
-            };
         }
 
         public void LoadJsonComponent(string jsonPath)

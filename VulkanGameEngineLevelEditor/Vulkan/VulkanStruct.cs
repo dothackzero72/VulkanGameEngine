@@ -19,10 +19,10 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkExtent2D minImageExtent;
         public VkExtent2D maxImageExtent;
         public uint maxImageArrayLayers;
-        public VkSurfaceTransformFlagsKHR supportedTransforms;
+        public VkSurfaceTransformFlagBitsKHR supportedTransforms;
         public VkSurfaceTransformFlagBitsKHR currentTransform;
-        public VkCompositeAlphaFlagsKHR supportedCompositeAlpha;
-        public VkImageUsageFlags supportedUsageFlags;
+        public VkCompositeAlphaFlagBitsKHR supportedCompositeAlpha;
+        public VkImageUsageFlagBits supportedUsageFlags;
     };
 
     [StructLayout(LayoutKind.Sequential)]
@@ -30,7 +30,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     {
         public VkStructureType sType;
         public void* pNext;
-        public VkFramebufferCreateFlags flags;
+        public VkFramebufferCreateFlagBits flags;
         public VkRenderPass renderPass;
         public uint attachmentCount;
         public VkImageView* pAttachments;
@@ -90,7 +90,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkFramebuffer framebuffer;
         public VkRect2D renderArea;
         public uint clearValueCount;
-        public VkClearValue* pClearValues;
+        public VkClearValue[] pClearValues;
     }
 
     [StructLayout(LayoutKind.Explicit)]
@@ -142,6 +142,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     {
         public float depth;
         public uint stencil;
+        private float v1;
+        private float v2;
+
+        public VkClearDepthStencilValue(float v1, float v2) : this()
+        {
+            this.v1 = v1;
+            this.v2 = v2;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -211,6 +219,13 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public int x;
         public int y;
         public int z;
+        public VkOffset3D() { }
+        public VkOffset3D(int x, int y, int z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -471,6 +486,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public uint mipLevel;                      // Mip level of the image
         public uint baseArrayLayer;                // Base array layer for the copy operation
         public uint layerCount;                    // Number of layers for the copy operation
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkFormatProperties
+    {
+        VkFormatFeatureFlagBits linearTilingFeatures;
+        VkFormatFeatureFlagBits optimalTilingFeatures;
+        VkFormatFeatureFlagBits bufferFeatures;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -808,13 +831,20 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public uint pQueueFamilyIndices;                  // Pointer to array of queue family indices
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkSurfaceFormatKHR
+    {
+        public VkFormat format;
+        public VkColorSpaceKHR colorSpace;
+    }
+
     // VkQueryPoolCreateInfo is used to create query pools.
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkQueryPoolCreateInfo
     {
         public VkStructureType sType;                       // Structure type
         public void* pNext;                                // Pointer to extension-specific structures
-        public VkQueryPoolCreateFlags flags;                // Query pool creation flags
+        public VkQueryPipelineStatisticFlagBits flags;                // Query pool creation flags
         public VkQueryType queryType;                       // Type of queries (occlusion, timestamp, etc.)
         public uint queryCount;                             // Number of queries
         public uint pipelineStatistics;                      // Pipeline statistics to query

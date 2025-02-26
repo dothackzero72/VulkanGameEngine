@@ -150,27 +150,27 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return swapChainImages;
         }
 
-        public SurfaceCapabilitiesKHR GetSurfaceCapabilitiesKHR(PhysicalDevice physicalDevice)
+        public SurfaceCapabilitiesKHR GetSurfaceCapabilitiesKHR(VkPhysicalDevice physicalDevice)
         {
-            Result result = VkFunc.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, VulkanRenderer.surface, out SurfaceCapabilitiesKHR surfaceCapabilities);
+            Result result = VkFunc.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, VulkanRenderer.surface, out VkSurfaceCapabilitiesKHR surfaceCapabilities);
             return surfaceCapabilities;
         }
 
-        public static SurfaceFormatKHR[] GetSurfaceFormatsKHR(PhysicalDevice physicalDevice)
+        public static VkSurfaceFormatKHR[] GetSurfaceFormatsKHR(VkPhysicalDevice physicalDevice)
         {
             uint formatCount = 0;
-            VkFunc.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, VulkanRenderer.surface, ref formatCount, IntPtr.Zero);
+            VkFunc.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, VulkanRenderer.surface, ref formatCount, null);
 
-            var formats = new SurfaceFormatKHR[formatCount];
-            int structureSize = Marshal.SizeOf<SurfaceFormatKHR>();
-            IntPtr formatPtr = Marshal.AllocHGlobal(structureSize * (int)formatCount);
+            var formats = new VkSurfaceFormatKHR[formatCount];
+            int structureSize = Marshal.SizeOf<VkSurfaceFormatKHR>();
+            VkSurfaceFormatKHR* formatPtr = Marshal.AllocHGlobal(structureSize * (int)formatCount);
             try
             {
                 VkFunc.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, VulkanRenderer.surface, ref formatCount, formatPtr);
                 for (int x = 0; x < formatCount; x++)
                 {
-                    formats[x] = Marshal.PtrToStructure<SurfaceFormatKHR>(formatPtr + x * Marshal.SizeOf<SurfaceFormatKHR>());
-                    Console.WriteLine($"Format: {formats[x].Format}, Color Space: {formats[x].ColorSpace}");
+                    formats[x] = Marshal.PtrToStructure<VkSurfaceFormatKHR>(formatPtr + x * Marshal.SizeOf<VkSurfaceFormatKHR>());
+                    Console.WriteLine($"Format: {formats[x].format}, Color Space: {formats[x].colorSpace}");
                 }
             }
             finally

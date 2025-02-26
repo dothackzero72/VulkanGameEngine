@@ -148,7 +148,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 var renderPassCreateInfo = new VkRenderPassCreateInfo()
                 {
-                    sType = StructureType.RenderPassCreateInfo,
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
                     pNext = null,
                     flags = 0,
                     attachmentCount = (uint)attachmentDescriptionList.Count(),
@@ -172,7 +172,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkFramebuffer[] frameBufferList = new VkFramebuffer[VulkanRenderer.swapChain.ImageCount];
             for (int x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
             {
-                List<ImageView> TextureAttachmentList = new List<ImageView>();
+                List<VkImageView> TextureAttachmentList = new List<VkImageView>();
                 foreach (var texture in RenderedColorTextureList)
                 {
                     TextureAttachmentList.Add(RenderedColorTextureList.First().View);
@@ -186,15 +186,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     VkFramebufferCreateInfo framebufferInfo = new VkFramebufferCreateInfo()
                     {
-                        SType = StructureType.FramebufferCreateInfo,
-                        RenderPass = renderPass,
-                        AttachmentCount = TextureAttachmentList.UCount(),
-                        PAttachments = imageViewPtr,
-                        Width = (uint)RenderPassResolution.x,
-                        Height = (uint)RenderPassResolution.y,
-                        Layers = 1,
-                        Flags = 0,
-                        PNext = null
+                        sType = VkStructureType.VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                        renderPass = renderPass,
+                        attachmentCount = TextureAttachmentList.UCount(),
+                        pAttachments = imageViewPtr,
+                        width = (uint)RenderPassResolution.x,
+                        height = (uint)RenderPassResolution.y,
+                        layers = 1,
+                        flags = 0,
+                        pNext = null
                     };
 
                     VkFramebuffer frameBuffer = FrameBufferList[x];
@@ -211,35 +211,53 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
             var commandBuffer = commandBufferList[commandIndex];
-            VkClearValue* clearValues = stackalloc[]
-{
-                new VkClearValue(new VkClearColorValue(1, 0, 0, 1)),
-                new VkClearValue(null, new VkClearDepthStencilValue(1.0f))
+            List<VkClearValue> clearValues = new List<VkClearValue>
+            {
+                new VkClearValue
+                {
+                    color = new VkClearColorValue(1, 0, 0, 1),
+                },
+                new VkClearValue
+                {
+                    depthStencil = new VkClearDepthStencilValue(0.0f, 1.0f)
+                }
             };
 
-            VkRenderPassBeginInfo renderPassInfo = new
-            (
-                renderPass: renderPass,
-                framebuffer: FrameBufferList[imageIndex],
-                clearValueCount: 2,
-                pClearValues: clearValues,
-                renderArea: new(new Offset2D(0, 0), VulkanRenderer.swapChain.swapchainExtent)
-            );
+            VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
+            {
+                renderPass = renderPass,
+                framebuffer = FrameBufferList[imageIndex],
+                clearValueCount = 2,
+                pClearValues = clearValues,
+                renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.swapChain.SwapChainResolution)
+            };
 
-            var viewport = new Viewport(0.0f, 0.0f, VulkanRenderer.swapChain.swapchainExtent.Width, VulkanRenderer.swapChain.swapchainExtent.Height, 0.0f, 1.0f);
-            var scissor = new Rect2D(new Offset2D(0, 0), VulkanRenderer.swapChain.swapchainExtent);
+            var viewport = new VkViewport
+            {
+                x = 0.0f,
+                y = 0.0f,
+                width = VulkanRenderer.swapChain.SwapChainResolution.width,
+                height = VulkanRenderer.swapChain.SwapChainResolution.height,
+                minDepth = 0.0f,
+                maxDepth = 1.0f
+            };
+            var scissor = new VkRect2D
+            {
+                offset = new VkOffset2D(0, 0),
+                extent = VulkanRenderer.swapChain.SwapChainResolution
+            };
 
             var descSet = jsonPipeline.descriptorSet;
-            var commandInfo = new CommandBufferBeginInfo(flags: 0);
+            var commandInfo = new VkCommandBufferBeginInfo { flags = 0};
 
             VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
-            VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.Inline);
+            VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
             VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
             VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.Graphics, jsonPipeline.pipeline);
+            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipeline.pipeline);
             foreach (var obj in gameObjectList)
             {
-                obj.Draw(commandBuffer.Handle, jsonPipeline.pipeline.Handle, jsonPipeline.pipelineLayout.Handle, descSet.Handle, sceneDataBuffer);
+                obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, descSet, sceneDataBuffer);
             }
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);
@@ -257,11 +275,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     {
                         ImageCreateInfo = new VkImageCreateInfo()
                         {
-                            imageType = VkImageType.ImageType2D,
-                            format= VkFormat.R8G8B8A8Unorm,
+                            imageType = VkImageType.VK_IMAGE_TYPE_2D,
+                            format= VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
                             mipLevels = 1,
                             arrayLayers = 1,
-                            samples = VkSampleCountFlags.Count1Bit,
+                            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
                             tiling = 0,
                             usage = VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                             VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
@@ -275,7 +293,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         {
                             magFilter = 0,
                             minFilter = 0,
-                            mipmapMode = (SamplerMipmapMode)1,
+                            mipmapMode = (VkSamplerMipmapMode)1,
                             addressModeU = 0,
                             addressModeV = 0,
                             addressModeW = 0,
@@ -283,23 +301,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             anisotropyEnable = true,
                             maxAnisotropy = 16.0f,
                             compareEnable = false,
-                            compareOp = (CompareOp)7,
+                            compareOp = (VkCompareOp)7,
                             minLod = 0.0f,
                             maxLod = 1.0f,
-                            borderColor = (BorderColor)3,
+                            borderColor = (VkBorderColor)3,
                             unnormalizedCoordinates = false,
                             _name = string.Empty
                         },
                         AttachmentDescription = new VkAttachmentDescription()
                         {
                             format = VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
-                            samples = VkSampleCountFlags.SampleCount1Bit,
-                            loadOp = VkAttachmentLoadOp.Clear,
-                            storeOp = VkAttachmentStoreOp.Store,
-                            stencilLoadOp = VkAttachmentLoadOp.DontCare,
-                            stencilStoreOp = VkAttachmentStoreOp.DontCare,
-                            initialLayout = VkImageLayout.Undefined,
-                            finalLayout = VkImageLayout.ShaderReadOnlyOptimal,
+                            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
+                            loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
+                            storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_STORE,
+                            stencilLoadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                            stencilStoreOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                            initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
+                            finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL,
                             _name = string.Empty
                         },
                         IsRenderedToSwapchain = true,
@@ -311,16 +329,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     {
                         ImageCreateInfo = new VkImageCreateInfo()
                         {
-                            imageType = (ImageType)1,
-                            format = Format.D32Sfloat,
+                            imageType = (VkImageType)1,
+                            format = VkFormat.VK_FORMAT_D32_SFLOAT,
                             mipLevels = 1,
                             arrayLayers = 1,
-                            samples = (SampleCountFlags)1,
+                            samples = (VkSampleCountFlagBits)1,
                             tiling = 0,
-                            usage =  VkImageUsageFlags.ImageUsageTransferSrcBit |
-                                    VkImageUsageFlags.SampledBit |
-                                    VkImageUsageFlags.DepthStencilAttachmentBit |
-                                    VkImageUsageFlags.ImageUsageTransferDstBit,
+                            usage =  VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                                    VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
+                                    VkImageUsageFlagBits.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
+                                    VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_DST_BIT,
                             sharingMode = 0,
                             queueFamilyIndexCount = 0,
                             pQueueFamilyIndices = null,
@@ -348,14 +366,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         },
                         AttachmentDescription = new VkAttachmentDescription()
                         {
-                            format = VkFormat.D32Sfloat,
-                            samples = VkSampleCountFlagBits.SampleCount1Bit,
-                            loadOp = VkAttachmentLoadOp.Clear,
-                            storeOp = VkAttachmentStoreOp.DontCare,
-                            stencilLoadOp = VkAttachmentLoadOp.DontCare,
-                            stencilStoreOp = VkAttachmentStoreOp.DontCare,
-                            initialLayout = VkImageLayout.Undefined,
-                            finalLayout = VkImageLayout.DepthStencilAttachmentOptimal,
+                            format = VkFormat.VK_FORMAT_D32_SFLOAT,
+                            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
+                            loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
+                            storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                            stencilLoadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                            stencilStoreOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                            initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
+                            finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                             _name = string.Empty
                         },
                         IsRenderedToSwapchain = false,
@@ -373,7 +391,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 srcStageMask = VkPipelineStageFlagBits.ColorAttachmentOutputBit,
                                 dstStageMask = VkPipelineStageFlagBits.ColorAttachmentOutputBit, // Changed to Early Fragment Tests
                                 srcAccessMask = 0,
-                                dstAccessMask = VkAccessFlagBits.ColorAttachmentWriteBit, // Ensure this access mask is relevant to the chosen stage mask,
+                                dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // Ensure this access mask is relevant to the chosen stage mask,
                                 _name = string.Empty
                             },
                 },

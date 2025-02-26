@@ -23,9 +23,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Width = textureResolution.x;
             Height = textureResolution.y;
             Depth = 1;
-            TextureImageLayout = ImageLayout.Undefined;
-            SampleCount = SampleCountFlags.Count1Bit;
-            TextureByteFormat = Format.D32Sfloat;
+            TextureImageLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED;
+            SampleCount = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT;
+            TextureByteFormat = VkFormat.VK_FORMAT_D32_SFLOAT;
 
             CreateImageTexture();
             CreateTextureView();
@@ -44,29 +44,29 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             TextureImageLayout = createInfo.initialLayout;
             SampleCount = createInfo.samples;
 
-            CreateTextureImage(createInfo.Convert());
+            CreateTextureImage(createInfo);
             CreateTextureView();
-            CreateTextureSampler(samplerCreateInfo.Convert());
+            CreateTextureSampler(samplerCreateInfo);
         }
 
         protected override void CreateImageTexture()
         {
-            ImageCreateInfo imageInfo = new ImageCreateInfo
-            {
-                SType = StructureType.ImageCreateInfo,
-                ImageType = ImageType.ImageType2D,
-                Format = TextureByteFormat,
-                Extent = new Extent3D { Width = (uint)Width, Height = (uint)Height, Depth = 1 },
-                MipLevels = MipMapLevels,
-                ArrayLayers = 1,
-                Samples = SampleCountFlags.Count1Bit,
-                Tiling = ImageTiling.Optimal,
-                Usage = VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+           VkImageCreateInfo imageInfo = new VkImageCreateInfo
+           {
+                sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                imageType = VkImageType.VK_IMAGE_TYPE_2D,
+                format = TextureByteFormat,
+                extent = new VkExtent3D { width = (uint)Width, height = (uint)Height, depth = 1 },
+                mipLevels = MipMapLevels,
+                arrayLayers = 1,
+                samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
+                tiling = VkImageTiling.VK_IMAGE_TILING_OPTIMAL,
+                usage = VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                             VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
                             VkImageUsageFlagBits.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
                             VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-                SharingMode = SharingMode.Exclusive,
-                InitialLayout = Silk.NET.Vulkan.ImageLayout.Undefined
+                sharingMode = VkSharingMode.VK_SHARING_MODE_EXCLUSIVE,
+                initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED
             };
 
             CTexture.CreateTextureImage(imageInfo,out var tempImage, out  var memory, Width, Height, TextureByteFormat, MipMapLevels);
@@ -74,29 +74,25 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Image = tempImage;
         }
 
-        public override Result CreateTextureView()
+        public override VkResult CreateTextureView()
         {
-            var textureImageViewInfo = new ImageViewCreateInfo
+            var textureImageViewInfo = new VkImageViewCreateInfo
             {
-                SType = StructureType.ImageViewCreateInfo,
-                ViewType = ImageViewType.ImageViewType2D,
-                Image = Image,
-                Format = TextureByteFormat,
-                SubresourceRange = new ImageSubresourceRange
+                sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                viewType = VkImageViewType.VK_IMAGE_VIEW_TYPE_2D,
+                image = Image,
+                format = TextureByteFormat,
+                subresourceRange = new VkImageSubresourceRange
                 {
-                    BaseMipLevel = 0,
-                    LevelCount = 1,
-                    BaseArrayLayer = 0,
-                    LayerCount = 1,
-                    AspectMask = ImageAspectFlags.DepthBit
+                    baseMipLevel = 0,
+                    levelCount = 1,
+                    baseArrayLayer = 0,
+                    layerCount = 1,
+                    aspectMask = VkImageAspectFlagBits.VK_IMAGE_ASPECT_DEPTH_BIT
                 }
             };
 
-            Result result = VkFunc.vkCreateImageView(VulkanRenderer.device, &textureImageViewInfo, null, out var view);
-            if (result != Result.Success)
-            {
-            }
-
+            VkResult result = VkFunc.vkCreateImageView(VulkanRenderer.device, &textureImageViewInfo, null, out VkImageView view);
             View = view;
 
             return result;
@@ -104,23 +100,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         protected override void CreateTextureSampler()
         {
-            var textureImageSamplerInfo = new SamplerCreateInfo
+            var textureImageSamplerInfo = new VkSamplerCreateInfo
             {
-                SType = StructureType.SamplerCreateInfo,
-                MagFilter = Filter.Nearest,              
-                MinFilter = Filter.Nearest,              
-                MipmapMode = SamplerMipmapMode.Nearest, 
-                AddressModeU = SamplerAddressMode.ClampToEdge,
-                AddressModeV = SamplerAddressMode.ClampToEdge,
-                AddressModeW = SamplerAddressMode.ClampToEdge,
-                MipLodBias = 0.0f,
-                MaxAnisotropy = 1.0f,                     
-                MinLod = 0.0f,
-                MaxLod = 0.0f,                           
-                BorderColor = BorderColor.FloatOpaqueWhite,
+                sType = VkStructureType.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+                magFilter = VkFilter.VK_FILTER_NEAREST,              
+                minFilter = VkFilter.VK_FILTER_NEAREST,              
+                mipmapMode = VkSamplerMipmapMode.VK_SAMPLER_MIPMAP_MODE_LINEAR, 
+                addressModeU = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE,
+                addressModeV = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE,
+                addressModeW = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+                mipLodBias = 0.0f,
+                maxAnisotropy = 1.0f,                     
+                minLod = 0.0f,
+                maxLod = 0.0f,                           
+                borderColor = VkBorderColor.VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,
             };
 
-            VkFunc.vkCreateSampler(VulkanRenderer.device, &textureImageSamplerInfo, null, out var sampler);
+            VkFunc.vkCreateSampler(VulkanRenderer.device, ref textureImageSamplerInfo, null, out var sampler);
             Sampler = sampler;
         }
 

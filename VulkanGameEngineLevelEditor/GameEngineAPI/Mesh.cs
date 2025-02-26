@@ -189,7 +189,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var descriptorSetRef = descriptorSet;
             VkFunc.vkCmdPushConstants(new VkCommandBuffer(commandBuffer), pipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneProperties);
             VkFunc.vkCmdBindPipeline(new VkCommandBuffer(commandBuffer), VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-            VkFunc.vkCmdBindDescriptorSets(new VkCommandBuffer(commandBuffer), VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSetRef, 0, null);
+            VkFunc.vkCmdBindDescriptorSets(new VkCommandBuffer(commandBuffer), VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, ref descriptorSetRef, 0, null);
             VkFunc.vkCmdBindVertexBuffers(new VkCommandBuffer(commandBuffer), 0, 1, &meshBuffer, &offsets);
             VkFunc.vkCmdBindIndexBuffer(new VkCommandBuffer(commandBuffer), MeshIndexBuffer.Buffer, 0, VkIndexType.VK_INDEX_TYPE_UINT32);
             VkFunc.vkCmdDrawIndexed(new VkCommandBuffer(commandBuffer), (uint)IndexCount, 1, 0, 0, 0);

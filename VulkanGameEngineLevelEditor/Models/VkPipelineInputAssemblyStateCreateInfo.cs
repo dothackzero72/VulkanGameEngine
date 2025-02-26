@@ -8,27 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     public unsafe class VkPipelineInputAssemblyStateCreateInfo
     {
-        public StructureType sType { get; set; } = StructureType.PipelineInputAssemblyStateCreateInfo;
-        public PrimitiveTopology topology { get; set; }
+        public VkStructureType sType { get; set; } = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        public VkPrimitiveTopology topology { get; set; }
         public bool primitiveRestartEnable { get; set; }
         public uint flags { get; set; } = 0;
         [JsonIgnore]
         public void* pNext { get; set; } = null;
         public VkPipelineInputAssemblyStateCreateInfo() { }
-        public PipelineInputAssemblyStateCreateInfo* ConvertPtr()
-        {
-            PipelineInputAssemblyStateCreateInfo* ptr = (PipelineInputAssemblyStateCreateInfo*)Marshal.AllocHGlobal(sizeof(PipelineInputAssemblyStateCreateInfo));
-            ptr->SType = sType;
-            ptr->Topology = topology;
-            ptr->PrimitiveRestartEnable = primitiveRestartEnable;
-            ptr->Flags = 0;
-            ptr->PNext = null;
-            return ptr;
-        }
     }
 }

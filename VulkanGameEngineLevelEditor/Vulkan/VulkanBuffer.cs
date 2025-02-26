@@ -92,14 +92,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return Result.Success;
         }
 
-        private DeviceMemory AllocateBufferMemory(VkBuffer bufferHandle)
+        private VkDeviceMemory AllocateBufferMemory(VkBuffer bufferHandle)
         {
             VkFunc.vkGetBufferMemoryRequirements(VulkanRenderer.device, bufferHandle, out var memRequirements);
-            var allocInfo = new MemoryAllocateInfo
+            var allocInfo = new VkMemoryAllocateInfo
             {
-                SType = StructureType.MemoryAllocateInfo,
-                AllocationSize = memRequirements.Size,
-                MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.MemoryTypeBits, BufferProperties)
+                sType = VkStructureType.VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO,
+                allocationSize = memRequirements.size,
+                memoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.memoryTypeBits, BufferProperties)
             };
 
             VkFunc.vkAllocateMemory(VulkanRenderer.device, &allocInfo, null, out VkDeviceMemory bufferMemory);
@@ -128,7 +128,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             {
                 void* stagingMappedData;
                 void* mappedData;
-                Result result = VkFunc.vkMapMemory(_device, StagingBufferMemory, 0, BufferSize, 0, &stagingMappedData);
+                VkResult result = VkFunc.vkMapMemory(_device, StagingBufferMemory, 0, BufferSize, 0, &stagingMappedData);
                 result = VkFunc.vkMapMemory(_device, BufferMemory, 0, BufferSize, 0, &mappedData);
                 System.Buffer.MemoryCopy(dataToCopy, stagingMappedData, BufferSize, BufferSize);
                 System.Buffer.MemoryCopy(stagingMappedData, mappedData, BufferSize, BufferSize);
@@ -170,9 +170,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         {
             DescriptorBufferInfo = new VkDescriptorBufferInfo
             {
-                Buffer = Buffer,
-                Offset = 0,
-                Range = Vk.WholeSize
+                buffer = Buffer,
+                offset = 0,
+                range = Vk.WholeSize
             };
 
             var bufferInfo = DescriptorBufferInfo;

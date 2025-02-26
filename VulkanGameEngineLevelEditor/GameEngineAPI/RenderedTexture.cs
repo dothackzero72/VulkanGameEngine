@@ -86,9 +86,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         protected VkResult CreateTextureImage()
         {
-            VkImage textureImage;
-            VkDeviceMemory textureMemory;
-
             var imageInfo = new VkImageCreateInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -107,16 +104,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED
             };
 
-            var result = VkFunc.vkCreateImage(VulkanRenderer.device, &imageInfo, null, &textureImage);
+            var result = VkFunc.vkCreateImage(VulkanRenderer.device, ref imageInfo, null, out VkImage textureImage);
             VkFunc.vkGetImageMemoryRequirements(VulkanRenderer.device, textureImage, out VkMemoryRequirements memRequirements);
 
-            var allocInfo = new MemoryAllocateInfo
+            var allocInfo = new VkMemoryAllocateInfo
             {
-                SType = StructureType.MemoryAllocateInfo,
-                AllocationSize = memRequirements.size,
-                MemoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.memoryTypeBits, VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+                sType = VkStructureType.VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO,
+                allocationSize = memRequirements.size,
+                memoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.memoryTypeBits, VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
             };
-            result = VkFunc.vkAllocateMemory(VulkanRenderer.device, &allocInfo, null, &textureMemory);
+            result = VkFunc.vkAllocateMemory(VulkanRenderer.device, &allocInfo, null, out VkDeviceMemory textureMemory);
             result = VkFunc.vkBindImageMemory(VulkanRenderer.device, textureImage, textureMemory, 0);
 
             Image = textureImage;
@@ -161,7 +158,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 format = TextureByteFormat,
                 subresourceRange = imageSubresourceRange
             };
-            VkResult result = VkFunc.vkCreateImageView(VulkanRenderer.device, &TextureImageViewInfo, null, out ImageView textureView);
+            VkResult result = VkFunc.vkCreateImageView(VulkanRenderer.device, &TextureImageViewInfo, null, out VkImageView textureView);
             View = textureView;
             return result;
         }

@@ -33,7 +33,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkDevice device,
             VkMemoryAllocateInfo* pAllocateInfo,
             VkAllocationCallbacks* pAllocator,
-            VkDeviceMemory* pMemory);
+            out VkDeviceMemory pMemory);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkFreeMemory(
@@ -91,7 +91,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static extern void vkGetBufferMemoryRequirements(
             VkDevice device,
             VkBuffer buffer,
-            VkMemoryRequirements* pMemoryRequirements);
+            out VkMemoryRequirements pMemoryRequirements);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkGetImageMemoryRequirements(
@@ -112,7 +112,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkFormat format,
             VkImageType type,
             uint samples,
-            VkImageUsageFlags usage,
+            VkImageUsageFlagBits usage,
             VkImageTiling tiling,
             uint* pPropertyCount,
             VkSparseImageFormatProperties* pProperties);
@@ -250,9 +250,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern VkResult vkCreateImage(
             VkDevice device,
-            VkImageCreateInfo* pCreateInfo,
+            ref VkImageCreateInfo pCreateInfo,
             VkAllocationCallbacks* pAllocator,
-            VkImage* pImage);
+            out VkImage pImage);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyImage(
@@ -272,7 +272,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkDevice device,
             VkImageViewCreateInfo* pCreateInfo,
             VkAllocationCallbacks* pAllocator,
-            VkImageView* pView);
+            out VkImageView pView);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyImageView(
@@ -323,11 +323,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern VkResult vkCreateGraphicsPipelines(
             VkDevice device,
-            VkPipelineCache pipelineCache,
+            VkPipelineCache* pipelineCache,
             uint createInfoCount,
             VkGraphicsPipelineCreateInfo* pCreateInfos,
             VkAllocationCallbacks* pAllocator,
-            VkPipeline* pPipelines);
+            out VkPipeline pPipelines);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern VkResult vkCreateComputePipelines(
@@ -349,7 +349,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkDevice device,
             VkPipelineLayoutCreateInfo* pCreateInfo,
             VkAllocationCallbacks* pAllocator,
-            VkPipelineLayout* pPipelineLayout);
+            out VkPipelineLayout pPipelineLayout);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyPipelineLayout(
@@ -585,7 +585,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkPipelineLayout layout,
             uint firstSet,
             uint descriptorSetCount,
-            VkDescriptorSet* pDescriptorSets,
+            ref VkDescriptorSet pDescriptorSets,
             uint dynamicOffsetCount,
             uint* pDynamicOffsets);
 
@@ -689,6 +689,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkBufferImageCopy* pRegions);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void vkGetPhysicalDeviceFormatProperties(
+            VkPhysicalDevice physicalDevice,
+            VkFormat format,
+            out VkFormatProperties[] pFormatProperties);
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkCmdCopyImageToBuffer(
             VkCommandBuffer commandBuffer,
             VkImage srcImage,
@@ -766,8 +772,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkCommandBuffer commandBuffer,
             uint eventCount,
             VkEvent* pEvents,
-            VkPipelineStageFlags srcStageMask,
-            VkPipelineStageFlags dstStageMask,
+            VkPipelineStageFlagBits srcStageMask,
+            VkPipelineStageFlagBits dstStageMask,
             uint memoryBarrierCount,
             VkMemoryBarrier* pMemoryBarriers,
             uint bufferMemoryBarrierCount,
@@ -778,8 +784,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkCmdPipelineBarrier(
             VkCommandBuffer commandBuffer,
-            VkPipelineStageFlags srcStageMask,
-            VkPipelineStageFlags dstStageMask,
+            VkPipelineStageFlagBits srcStageMask,
+            VkPipelineStageFlagBits dstStageMask,
             VkDependencyFlags dependencyFlags,
             uint memoryBarrierCount,
             VkMemoryBarrier* pMemoryBarriers,
@@ -830,7 +836,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static extern void vkCmdPushConstants(
             VkCommandBuffer commandBuffer,
             VkPipelineLayout layout,
-            VkPipelineLayoutCreateFlagBits stageFlags,
+            VkShaderStageFlagBits stageFlags,
             uint offset,
             uint size,
             void* pValues);
@@ -879,12 +885,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkPhysicalDevice physicalDevice,
             VkSurfaceKHR surface,
             ref uint pSurfaceFormatCount,
-            VkSurfaceFormatKHR* pSurfaceFormats); // Pointer to VkSurfaceFormatKHR or null
+            VkSurfaceFormatKHR* pSurfaceFormats);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Winapi)]
         public static extern VkResult vkQueuePresentKHR(
        VkQueue queue,
-       ref VkPresentInfoKHR pPresentInfo);
+       in VkPresentInfoKHR pPresentInfo);
 
 
     }

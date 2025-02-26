@@ -2,7 +2,9 @@
 using Silk.NET.Vulkan;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -20,47 +22,47 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Color = color;
         }
 
-        public static List<VertexInputBindingDescription> GetBindingDescriptions()
+        public static List<VkVertexInputBindingDescription> GetBindingDescriptions()
         {
-            var bindingDescriptions = new List<VertexInputBindingDescription>
+            var bindingDescriptions = new List<VkVertexInputBindingDescription>
             {
-                new VertexInputBindingDescription
+                new VkVertexInputBindingDescription
                 {
-                    Binding = 0,
-                    Stride = (uint)Marshal.SizeOf(typeof(Vertex2D)),
-                    InputRate = VertexInputRate.Vertex
+                    binding = 0,
+                    stride = (uint)Marshal.SizeOf(typeof(Vertex2D)),
+                    inputRate = VkVertexInputRate.VK_VERTEX_INPUT_RATE_VERTEX
                 }
             };
 
             return bindingDescriptions;
         }
 
-        public static List<VertexInputAttributeDescription> GetAttributeDescriptions()
+        public static List<VkVertexInputAttributeDescription> GetAttributeDescriptions()
         {
-            var attributeDescriptions = new List<VertexInputAttributeDescription>();
+            var attributeDescriptions = new List<VkVertexInputAttributeDescription>();
 
-            attributeDescriptions.Add(new VertexInputAttributeDescription
+            attributeDescriptions.Add(new VkVertexInputAttributeDescription
             {
-                Binding = 0,
-                Location = 0,
-                Format = Format.R32G32Sfloat,
-                Offset = (uint)Marshal.OffsetOf(typeof(Vertex2D), nameof(Position)).ToInt32()
+                binding = 0,
+                location = 0,
+                format = VkFormat.VK_FORMAT_R32G32_SFLOAT,
+                offset = (uint)Marshal.OffsetOf(typeof(Vertex2D), nameof(Position)).ToInt32()
             });
 
-            attributeDescriptions.Add(new VertexInputAttributeDescription
+            attributeDescriptions.Add(new VkVertexInputAttributeDescription
             {
-                Binding = 0,
-                Location = 1,
-                Format = Format.R32G32Sfloat,
-                Offset = (uint)Marshal.OffsetOf(typeof(Vertex2D), nameof(UV)).ToInt32()
+                binding = 0,
+                location = 1,
+                format = VkFormat.VK_FORMAT_R32G32_SFLOAT,
+                offset = (uint)Marshal.OffsetOf(typeof(Vertex2D), nameof(UV)).ToInt32()
             });
 
-            attributeDescriptions.Add(new VertexInputAttributeDescription
+            attributeDescriptions.Add(new VkVertexInputAttributeDescription
             {
-                Binding = 0,
-                Location = 2,
-                Format = Format.R32G32B32A32Sfloat,
-                Offset = (uint)Marshal.OffsetOf(typeof(Vertex2D), nameof(Color)).ToInt32()
+                binding = 0,
+                location = 2,
+                format = VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                offset = (uint)Marshal.OffsetOf(typeof(Vertex2D), nameof(Color)).ToInt32()
             });
 
             return attributeDescriptions;
@@ -82,47 +84,47 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public static List<VertexInputBindingDescription> GetBindingDescriptions()
+        public static List<VkVertexInputBindingDescription> GetBindingDescriptions()
         {
-            var bindingDescriptions = new List<VertexInputBindingDescription>
+            var bindingDescriptions = new List<VkVertexInputBindingDescription>
             {
-                new VertexInputBindingDescription
+                new VkVertexInputBindingDescription
                 {
-                    Binding = 0,
-                    Stride = (uint)Marshal.SizeOf(typeof(Vertex3D)),
-                    InputRate = VertexInputRate.Vertex
+                    binding = 0,
+                    stride = (uint)Marshal.SizeOf(typeof(Vertex3D)),
+                    inputRate = VkVertexInputRate.VK_VERTEX_INPUT_RATE_VERTEX
                 }
             };
 
             return bindingDescriptions;
         }
 
-        public static List<VertexInputAttributeDescription> GetAttributeDescriptions()
+        public static List<VkVertexInputAttributeDescription> GetAttributeDescriptions()
         {
-            var attributeDescriptions = new List<VertexInputAttributeDescription>();
+            var attributeDescriptions = new List<VkVertexInputAttributeDescription>();
 
-            attributeDescriptions.Add(new VertexInputAttributeDescription
+            attributeDescriptions.Add(new VkVertexInputAttributeDescription
             {
-                Binding = 0,
-                Location = 0,
-                Format = Format.R32G32B32Sfloat,
-                Offset = (uint)Marshal.OffsetOf(typeof(Vertex3D), nameof(Position)).ToInt32()
+                binding = 0,
+                location = 0,
+                format = VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                offset = (uint)Marshal.OffsetOf(typeof(Vertex3D), nameof(Position)).ToInt32()
             });
 
-            attributeDescriptions.Add(new VertexInputAttributeDescription
+            attributeDescriptions.Add(new VkVertexInputAttributeDescription
             {
-                Binding = 0,
-                Location = 1,
-                Format = Format.R32G32B32Sfloat,
-                Offset = (uint)Marshal.OffsetOf(typeof(Vertex3D), nameof(Color)).ToInt32()
+                binding = 0,
+                location = 1,
+                format = VkFormat.VK_FORMAT_R32G32B32_SFLOAT,
+                offset = (uint)Marshal.OffsetOf(typeof(Vertex3D), nameof(Color)).ToInt32()
             });
 
-            attributeDescriptions.Add(new VertexInputAttributeDescription
+            attributeDescriptions.Add(new VkVertexInputAttributeDescription
             {
-                Binding = 0,
-                Location = 2,
-                Format = Format.R32G32Sfloat,
-                Offset = (uint)Marshal.OffsetOf(typeof(Vertex3D), nameof(UV)).ToInt32()
+                binding = 0,
+                location = 2,
+                format = VkFormat.VK_FORMAT_R32G32_SFLOAT,
+                offset = (uint)Marshal.OffsetOf(typeof(Vertex3D), nameof(UV)).ToInt32()
             });
 
             return attributeDescriptions;

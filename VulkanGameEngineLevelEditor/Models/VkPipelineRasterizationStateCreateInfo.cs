@@ -19,7 +19,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public bool depthClampEnable { get; set; }
         public bool rasterizerDiscardEnable { get; set; }
         public VkPolygonMode polygonMode { get; set; }
-        public VkCullModeFlags cullMode { get; set; }
+        public VkCullModeFlagBits cullMode { get; set; }
         public VkFrontFace frontFace { get; set; }
         public bool depthBiasEnable { get; set; }
         public float depthBiasConstantFactor { get; set; }
@@ -32,23 +32,5 @@ namespace VulkanGameEngineLevelEditor.Models
 
        public VkPipelineRasterizationStateCreateInfo() { }
 
-        public PipelineRasterizationStateCreateInfo* ConvertPtr()
-        {
-            PipelineRasterizationStateCreateInfo* ptr = (PipelineRasterizationStateCreateInfo*)Marshal.AllocHGlobal(sizeof(PipelineRasterizationStateCreateInfo));
-            ptr->SType = stype;
-            ptr->DepthClampEnable = depthClampEnable;
-            ptr->RasterizerDiscardEnable = depthClampEnable;
-            ptr->PolygonMode = polygonMode;
-            ptr->CullMode = cullMode;
-            ptr->FrontFace = frontFace;
-            ptr->DepthBiasEnable = depthBiasEnable;
-            ptr->DepthBiasConstantFactor = depthBiasConstantFactor;
-            ptr->DepthBiasClamp = depthBiasClamp;
-            ptr->DepthBiasSlopeFactor = depthBiasSlopeFactor;
-            ptr->LineWidth = lineWidth;
-            ptr->Flags  = 0;
-            ptr->PNext  = null;
-            return ptr;
-        }
     }
 }

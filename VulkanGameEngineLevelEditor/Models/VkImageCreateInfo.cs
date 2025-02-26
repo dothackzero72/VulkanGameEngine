@@ -159,7 +159,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Image Properties")]
-        public VkSampleCountFlags samples
+        public VkSampleCountFlagBits samples
         {
             get => _samples;
             set
@@ -188,7 +188,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         [Category("Image Properties")]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkImageUsageFlags usage
+        public VkImageUsageFlagBits usage
         {
             get => _usage;
             set

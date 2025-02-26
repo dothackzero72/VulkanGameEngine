@@ -60,7 +60,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             format = VkFormat.VK_FORMAT_R8G8B8A8_SNORM,
                             mipLevels = 1,
                             arrayLayers = 1,
-                            samples = SampleCountFlags.Count1Bit,
+                            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
                             tiling = 0,
                             usage = VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                             VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
@@ -113,7 +113,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             format = VkFormat.VK_FORMAT_D32_SFLOAT,
                             mipLevels = 1,
                             arrayLayers = 1,
-                            samples = (SampleCountFlags)1,
+                            samples = (VkSampleCountFlagBits)1,
                             tiling = 0,
                             usage =  VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                                      VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
@@ -175,7 +175,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
 
-            string jsonString = JsonConvert.SerializeObject(modelInfo, VkFormatting.Indented);
+            string jsonString = JsonConvert.SerializeObject(modelInfo, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(ConstConfig.Default2DRenderPass, jsonString);
 
             string jsonContent2 = File.ReadAllText(ConstConfig.Default2DRenderPass);
@@ -344,15 +344,21 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             FrameBufferList = frameBufferList;
         }
 
-        public VkCommandBuffer Draw(List<GameObject> gameObjectList, VkSceneDataBuffer sceneDataBuffer)
+        public VkCommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
             var commandBuffer = commandBufferList[commandIndex];
-            VkClearValue* clearValues = stackalloc[]
+            List<VkClearValue> clearValues = new List<VkClearValue>
 {
-                new VkClearValue(new VkClearColorValue(1, 0, 0, 1)),
-                new VkClearValue(null, new VkClearDepthStencilValue(1.0f))
+                new VkClearValue
+                { 
+                    color = new VkClearColorValue(1, 0, 0, 1) 
+                },
+                new VkClearValue
+                { 
+                    depthStencil = new VkClearDepthStencilValue(0.0f, 1.0f) 
+                }
             };
 
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
@@ -360,15 +366,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 renderPass = renderPass,
                 framebuffer = FrameBufferList[imageIndex],
                 clearValueCount = 2,
-                pClearValues = clearValues,
+                pClearValues = &clearValues,
                 renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.swapChain.SwapChainResolution)
             };
 
-            var viewport = new VkViewport(0.0f, 0.0f, VulkanRenderer.swapChain.SwapChainResolution.width, VulkanRenderer.swapChain.SwapChainResolution.height, 0.0f, 1.0f);
+            var viewport = new VkViewport
+            {
+                x = 0.0f,
+                y = 0.0f,
+                width = VulkanRenderer.swapChain.SwapChainResolution.width,
+                height = VulkanRenderer.swapChain.SwapChainResolution.height,
+                minDepth = 0.0f,
+                maxDepth = 1.0f
+            };
             var scissor = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.swapChain.SwapChainResolution);
 
             var descSet = jsonPipeline.descriptorSet;
-            var commandInfo = new VkCommandBufferBeginInfo(flags: 0);
+            var commandInfo = new VkCommandBufferBeginInfo { flags = 0};
 
             VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);

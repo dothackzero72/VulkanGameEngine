@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineGameObjectScripts.Component;
+using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -128,37 +129,41 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return MeshPropertiesBuffer;
         }
 
-        public static List<DescriptorImageInfo> GetTexturePropertiesBuffer()
+        public static List<VkDescriptorImageInfo> GetTexturePropertiesBuffer()
         {
-            List<DescriptorImageInfo> TexturePropertiesBuffer = new List<DescriptorImageInfo>();
+            List<VkDescriptorImageInfo> TexturePropertiesBuffer = new List<VkDescriptorImageInfo>();
             if (TextureList.Count == 0)
             {
-                SamplerCreateInfo NullSamplerInfo = new SamplerCreateInfo();
-                NullSamplerInfo.SType = StructureType.SamplerCreateInfo;
-                NullSamplerInfo.MagFilter = Filter.Nearest;
-                NullSamplerInfo.MinFilter = Filter.Nearest;
-                NullSamplerInfo.AddressModeU = SamplerAddressMode.Repeat;
-                NullSamplerInfo.AddressModeV = SamplerAddressMode.Repeat;
-                NullSamplerInfo.AddressModeW = SamplerAddressMode.Repeat;
-                NullSamplerInfo.AnisotropyEnable = Vk.True;
-                NullSamplerInfo.MaxAnisotropy = 16.0f;
-                NullSamplerInfo.BorderColor = BorderColor.FloatOpaqueBlack;
-                NullSamplerInfo.UnnormalizedCoordinates = Vk.False;
-                NullSamplerInfo.CompareEnable = Vk.False;
-                NullSamplerInfo.CompareOp = CompareOp.Always;
-                NullSamplerInfo.MipmapMode = SamplerMipmapMode.Linear;
-                NullSamplerInfo.MinLod = 0;
-                NullSamplerInfo.MaxLod = 0;
-                NullSamplerInfo.MipLodBias = 0;
+                VkSamplerCreateInfo NullSamplerInfo = new VkSamplerCreateInfo
+                {
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+                    magFilter = VkFilter.VK_FILTER_NEAREST,
+                    minFilter = VkFilter.VK_FILTER_NEAREST,
+                    addressModeU = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
+                    addressModeV = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
+                    addressModeW = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
+                    anisotropyEnable = true,
+                    maxAnisotropy = 16.0f,
+                    borderColor = VkBorderColor.VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
+                    unnormalizedCoordinates = false,
+                    compareEnable = false,
+                    compareOp = VkCompareOp.VK_COMPARE_OP_ALWAYS,
+                    mipmapMode = VkSamplerMipmapMode.VK_SAMPLER_MIPMAP_MODE_LINEAR,
+                    minLod = 0,
+                    maxLod = 0,
+                    mipLodBias = 0
+                };
 
-                Sampler nullSampler = new Sampler();
+                VkSampler nullSampler = new VkSampler();
                 var result = VkFunc.vkCreateSampler(VulkanRenderer.device, &NullSamplerInfo, null, &nullSampler);
 
 
-                DescriptorImageInfo nullBuffer = new DescriptorImageInfo();
-                nullBuffer.ImageLayout = ImageLayout.ShaderReadOnlyOptimal;
-                nullBuffer.ImageView = new ImageView();
-                nullBuffer.Sampler = nullSampler;
+                VkDescriptorImageInfo nullBuffer = new VkDescriptorImageInfo
+                {
+                    imageLayout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL,
+                    imageView = new VkImageView(),
+                    sampler = nullSampler
+                };
                 TexturePropertiesBuffer.Add(nullBuffer);
             }
             else
@@ -167,10 +172,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     if (texture != null)
                     {
-                        DescriptorImageInfo textureDescriptor = new DescriptorImageInfo();
-                        textureDescriptor.ImageLayout = ImageLayout.ShaderReadOnlyOptimal;
-                        textureDescriptor.ImageView = texture.View;
-                        textureDescriptor.Sampler = texture.Sampler;
+                        VkDescriptorImageInfo textureDescriptor = new VkDescriptorImageInfo
+                        {
+                            imageLayout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL,
+                            imageView = texture.View,
+                            sampler = texture.Sampler
+                        };
                         TexturePropertiesBuffer.Add(textureDescriptor);
                     }
                 }

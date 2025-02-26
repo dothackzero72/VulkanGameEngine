@@ -27,7 +27,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             MemoryManager.StartUp(30);
 
-            var res = new vec2((float)VulkanRenderer.swapChain.swapchainExtent.Width, (float)VulkanRenderer.swapChain.swapchainExtent.Height);
+            var res = new vec2((float)VulkanRenderer.swapChain.SwapChainResolution.width, (float)VulkanRenderer.swapChain.SwapChainResolution.height);
             var pos = new vec3(0.0f, 0.0f, 5.0f);
             orthographicCamera = new OrthographicCamera(res, pos);
 

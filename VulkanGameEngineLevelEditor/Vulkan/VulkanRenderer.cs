@@ -79,12 +79,17 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
             //vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
 
-            SwapChainState swapChainState = new SwapChainState();
-            swapChainState.Swapchain = SwapChain_SetUpSwapChain();
-            swapChainState.SwapChainImages = SwapChain_SetUpSwapChainImages();
-            swapChainState.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews();
-            swapChainState.SwapChainResolution.width = width;
-            swapChainState.SwapChainResolution.height = height;
+            SwapChainState swapChainState = new SwapChainState
+            {
+                Swapchain = SwapChain_SetUpSwapChain(),
+                Images = SwapChain_SetUpSwapChainImages(),
+                imageViews = SwapChain_SetUpSwapChainImageViews(),
+                SwapChainResolution = new VkExtent2D
+                {
+                    height = height,
+                    width = width
+                }
+            };
         }
 
         public static void CreateCommandBuffers(VkCommandBuffer[] commandBufferList)
@@ -125,8 +130,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkFunc.vkWaitForFences(device, 1, &fence, true, ulong.MaxValue);
             VkFunc.vkResetFences(device, 1, &fence);
 
-            var imageIndex = ImageIndex;
-            VkResult result = VkFunc.vkAcquireNextImageKHR(device, swapChain.Swapchain, ulong.MaxValue, imageSemaphore, fence, &imageIndex);
+            VkResult result = VkFunc.vkAcquireNextImageKHR(device, swapChain.Swapchain, ulong.MaxValue, imageSemaphore, fence, out var imageIndex);
             ImageIndex = imageIndex;
 
             if (result == VkResult.VK_ERROR_OUT_OF_DATE_KHR)
@@ -148,12 +152,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkFunc.vkResetFences(device, 1, &fence);
             InFlightFences[(int)CommandIndex] = fence;
 
-            VkPipelineStageFlags[] waitStages = new VkPipelineStageFlags[]
+            VkPipelineStageFlagBits[] waitStages = new VkPipelineStageFlagBits[]
             {
-                VkPipelineStageFlags.COLOR_ATTACHMENT_OUTPUT_BIT
+                VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT
             };
 
-            fixed (VkPipelineStageFlags* pWaitStages = waitStages)
+            fixed (VkPipelineStageFlagBits* pWaitStages = waitStages)
             {
                 var commandBufferCount = commandBufferSubmitList.Count;
                 var commandBuffersPtr = (VkCommandBuffer*)Marshal.AllocHGlobal(commandBufferCount * sizeof(VkCommandBuffer));
