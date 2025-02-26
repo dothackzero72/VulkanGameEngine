@@ -90,7 +90,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkFramebuffer framebuffer;
         public VkRect2D renderArea;
         public uint clearValueCount;
-        public VkClearValue[] pClearValues;
+        public VkClearValue* pClearValues;
     }
 
     [StructLayout(LayoutKind.Explicit)]
@@ -491,21 +491,29 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     [StructLayout(LayoutKind.Sequential)]
     public struct VkFormatProperties
     {
-        VkFormatFeatureFlagBits linearTilingFeatures;
-        VkFormatFeatureFlagBits optimalTilingFeatures;
-        VkFormatFeatureFlagBits bufferFeatures;
+        public VkFormatFeatureFlagBits linearTilingFeatures;
+        public VkFormatFeatureFlagBits optimalTilingFeatures;
+        public VkFormatFeatureFlagBits bufferFeatures;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageBlit
     {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public VkImageSubresourceLayers[] srcSubresource; // Source image subresource
+        public VkImageSubresourceLayers srcSubresource; // Source image subresource
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
         public VkOffset3D[] srcOffsets;                   // 3D coordinates offset for source image (2 offsets required)
         public VkImageSubresourceLayers dstSubresource;    // Destination image subresource
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
         public VkOffset3D[] dstOffsets;                   // 3D coordinates offset for destination image (2 offsets required)
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkMemoryAllocateFlagsInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkMemoryAllocateFlagBits flags;
+        public uint deviceMask;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -595,8 +603,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     {
         public VkStructureType sType;                  // Structure type (Vulkan versioning)
         public void* pNext;                           // Pointer to extension-specific structure (if any)
-        public VkAccessFlags srcAccessMask;            // Source access mask
-        public VkAccessFlags dstAccessMask;            // Destination access mask
+        public VkAccessFlagBits srcAccessMask;            // Source access mask
+        public VkAccessFlagBits dstAccessMask;            // Destination access mask
         public VkImageLayout oldLayout;                // Old layout of the image
         public VkImageLayout newLayout;                // New layout of the image
         public uint srcQueueFamilyIndex;               // Source queue family (0xFFFFFFFF for no sharing)
@@ -749,7 +757,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPushConstantRange
     {
-        public VkPipelineLayoutCreateFlagBits stageFlags;
+        public VkShaderStageFlagBits stageFlags;
         public uint offset;
         public uint size;
     }
@@ -827,6 +835,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkBufferCreateFlagBits flags;                   // Buffer creation flags
         public ulong size;                                  // Size of the buffer
         public VkBufferUsageFlagBits usage;                   // Buffer usage flags
+        public VkSharingMode sharingMode;
         public uint queueFamilyIndexCount;                  // Number of queue families
         public uint pQueueFamilyIndices;                  // Pointer to array of queue family indices
     }

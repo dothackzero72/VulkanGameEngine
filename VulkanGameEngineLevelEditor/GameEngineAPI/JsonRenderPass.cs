@@ -223,46 +223,50 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
 
-            VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
+            fixed (VkClearValue* pClearValue = clearValues.ToArray())
             {
-                renderPass = renderPass,
-                framebuffer = FrameBufferList[imageIndex],
-                clearValueCount = 2,
-                pClearValues = clearValues,
-                renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.swapChain.SwapChainResolution)
-            };
+                VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
+                {
+                    renderPass = renderPass,
+                    framebuffer = FrameBufferList[imageIndex],
+                    clearValueCount = 2,
+                    pClearValues = pClearValue,
+                    renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.swapChain.SwapChainResolution)
+                };
 
-            var viewport = new VkViewport
-            {
-                x = 0.0f,
-                y = 0.0f,
-                width = VulkanRenderer.swapChain.SwapChainResolution.width,
-                height = VulkanRenderer.swapChain.SwapChainResolution.height,
-                minDepth = 0.0f,
-                maxDepth = 1.0f
-            };
-            var scissor = new VkRect2D
-            {
-                offset = new VkOffset2D(0, 0),
-                extent = VulkanRenderer.swapChain.SwapChainResolution
-            };
 
-            var descSet = jsonPipeline.descriptorSet;
-            var commandInfo = new VkCommandBufferBeginInfo { flags = 0};
+                var viewport = new VkViewport
+                {
+                    x = 0.0f,
+                    y = 0.0f,
+                    width = VulkanRenderer.swapChain.SwapChainResolution.width,
+                    height = VulkanRenderer.swapChain.SwapChainResolution.height,
+                    minDepth = 0.0f,
+                    maxDepth = 1.0f
+                };
+                var scissor = new VkRect2D
+                {
+                    offset = new VkOffset2D(0, 0),
+                    extent = VulkanRenderer.swapChain.SwapChainResolution
+                };
 
-            VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
-            VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
-            VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-            VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipeline.pipeline);
-            foreach (var obj in gameObjectList)
-            {
-                obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, descSet, sceneDataBuffer);
+                var descSet = jsonPipeline.descriptorSet;
+                var commandInfo = new VkCommandBufferBeginInfo { flags = 0 };
+
+                VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
+                VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
+                VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+                VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+                VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipeline.pipeline);
+                foreach (var obj in gameObjectList)
+                {
+                    obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, descSet, sceneDataBuffer);
+                }
+                VkFunc.vkCmdEndRenderPass(commandBuffer);
+                VkFunc.vkEndCommandBuffer(commandBuffer);
+
+                return commandBuffer;
             }
-            VkFunc.vkCmdEndRenderPass(commandBuffer);
-            VkFunc.vkEndCommandBuffer(commandBuffer);
-
-            return commandBuffer;
         }
 
         private void SaveRenderPass()
@@ -388,10 +392,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             {
                                 srcSubpass = uint.MaxValue,
                                 dstSubpass = 0,
-                                srcStageMask = VkPipelineStageFlagBits.ColorAttachmentOutputBit,
-                                dstStageMask = VkPipelineStageFlagBits.ColorAttachmentOutputBit, // Changed to Early Fragment Tests
+                                srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                                dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT, // Changed to Early Fragment Tests
                                 srcAccessMask = 0,
-                                dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // Ensure this access mask is relevant to the chosen stage mask,
+                                dstAccessMask = VkAccessFlags.COLOR_ATTACHMENT_WRITE_BIT, // Ensure this access mask is relevant to the chosen stage mask,
                                 _name = string.Empty
                             },
                 },

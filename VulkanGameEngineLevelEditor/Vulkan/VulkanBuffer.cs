@@ -60,7 +60,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
             else
             {
-                Result result = DLLCreateBuffer(bufferData);
+                VkResult result = DLLCreateBuffer(bufferData);
             }
         }
 
@@ -80,7 +80,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             DestroyBuffer();
         }
 
-        protected Result DLLCreateBuffer(void* bufferData)
+        protected VkResult DLLCreateBuffer(void* bufferData)
         {
             return DLL_Buffer_CreateBuffer(_device, _physicalDevice, ref Buffer, ref BufferMemory, (IntPtr)bufferData, BufferSize, BufferUsage, BufferProperties);
         }
@@ -110,14 +110,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return DLL_Buffer_CreateStagingBuffer(_device, _physicalDevice, _commandPool, _graphicsQueue, ref StagingBuffer, ref Buffer, ref StagingBufferMemory, ref BufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
         }
 
-        private Result UpdateBufferSize(VkBuffer buffer, ref VkDeviceMemory bufferMemory, ulong newBufferSize)
+        private VkResult UpdateBufferSize(VkBuffer buffer, ref VkDeviceMemory bufferMemory, ulong newBufferSize)
         {
             var result = DLL_Buffer_UpdateBufferSize(_device, _physicalDevice, buffer, ref bufferMemory, BufferData, ref BufferSize, newBufferSize, BufferUsage, BufferProperties);
             DestroyBuffer();
             return result;
         }
 
-        public static Result CopyBuffer(ref VkBuffer srcBuffer, ref VkBuffer dstBuffer, ulong size)
+        public static VkResult CopyBuffer(ref VkBuffer srcBuffer, ref VkBuffer dstBuffer, ulong size)
         {
             return DLL_Buffer_CopyBuffer(srcBuffer, dstBuffer, size);
         }

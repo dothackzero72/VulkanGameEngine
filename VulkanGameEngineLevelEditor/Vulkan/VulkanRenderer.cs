@@ -74,7 +74,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities();
             VkSurfaceFormatKHR[] compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats();
             SwapChain_GetQueueFamilies();
-            VkPresentModeKHR[] compatiblePresentModesList = SwapChain_GetPhysicalDeviceFormats();
+            VkPresentModeKHR[] compatiblePresentModesList = Renderer_GetSurfacePresentModes();
             VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
             VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
             //vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
@@ -308,7 +308,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo = new VkSemaphoreTypeCreateInfo
             {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO,
+                sType = VkStructureType.VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
                 semaphoreType = VkSemaphoreType.VK_SEMAPHORE_TYPE_BINARY,
                 initialValue = 0,
                 pNext = null
@@ -316,13 +316,13 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             VkSemaphoreCreateInfo semaphoreCreateInfo = new VkSemaphoreCreateInfo
             {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO,
+                sType = VkStructureType.VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
                 pNext = &semaphoreTypeCreateInfo
             };
 
             VkFenceCreateInfo fenceInfo = new VkFenceCreateInfo
             {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO,
+                sType = VkStructureType.VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
                 flags = VkFenceCreateFlagBits.VK_FENCE_CREATE_SIGNALED_BIT
             };
 
@@ -412,12 +412,17 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static VkImageView[] SwapChain_SetUpSwapChainImageViews()
         {
-            return GameEngineImport.DLL_SwapChain_SetUpSwapChainImageViews(device, swapChainImageList, out VkSurfaceFormatKHR swapChainImageFormat);
+            return GameEngineImport.DLL_SwapChain_SetUpSwapChainImageViews(device, swapChain.imageViews, out VkSurfaceFormatKHR swapChainImageFormat);
         }
 
         public static VkSurfaceFormatKHR[] SwapChain_GetPhysicalDeviceFormats()
         {
             return GameEngineImport.DLL_SwapChain_GetPhysicalDeviceFormats(physicalDevice, surface);
+        }
+
+        public static VkPresentModeKHR[] Renderer_GetSurfacePresentModes()
+        {
+            return GameEngineImport.DLL_Renderer_GetSurfacePresentModes(physicalDevice, surface);
         }
     }
 }

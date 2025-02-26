@@ -29,7 +29,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkImage[] DLL_SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkImageView[] DLL_SwapChain_SetUpSwapChainImageViews(VkDevice device, VkImage[] swapChainImageList, out VkSurfaceFormatKHR swapChainImageFormat);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkSurfaceFormatKHR[] DLL_SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
-
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkPresentModeKHR[] DLL_Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkPhysicalDevice DLL_Renderer_SetUpPhysicalDevice(VkInstance instance, VkSurfaceKHR surface, uint graphicsFamily, uint presentFamily);
@@ -41,7 +41,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         //VkExtensionProperties_C* DLL_Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice, int* count);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkSurfaceFormatKHR[] DLL_Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, out VkSurfaceKHR[] surface, out int count);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkPresentModeKHR DLL_Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, out VkSurfaceKHR[] surface, out int count);
+
+
     }
 }

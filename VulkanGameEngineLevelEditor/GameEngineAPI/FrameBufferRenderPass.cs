@@ -470,7 +470,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
             var commandBuffer = CommandBufferList[(int)commandIndex];
-            List<VkClearValue> clearValues = List<VkClearValue>
+            VkClearValue[] clearValues = new VkClearValue[]
             {
                 new VkClearValue
                 {
@@ -489,29 +489,32 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
             var scissor = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.swapChain.SwapChainResolution);
 
-            VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
+            fixed (VkClearValue* pClearValue = clearValues.ToArray())
             {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_DEVICE_GROUP_RENDER_PASS_BEGIN_INFO,
-                renderPass = renderPass,
-                renderArea = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.swapChain.SwapChainResolution),
-                clearValueCount = 1,
-                framebuffer = FrameBufferList[imageIndex],
-                pClearValues = clearValues,
-                pNext = null
-            };
+                VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
+                {
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_DEVICE_GROUP_RENDER_PASS_BEGIN_INFO,
+                    renderPass = renderPass,
+                    renderArea = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.swapChain.SwapChainResolution),
+                    clearValueCount = 1,
+                    framebuffer = FrameBufferList[imageIndex],
+                    pClearValues = pClearValue,
+                    pNext = null
+                };
 
-            var commandInfo = new VkCommandBufferBeginInfo { flags = 0};
-            VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
-            VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
-            VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-            VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, ref descriptorSet, 0, null);
-            VkFunc.vkCmdDraw(commandBuffer, 6, 1, 0, 0);
-            VkFunc.vkCmdEndRenderPass(commandBuffer);
-            VkFunc.vkEndCommandBuffer(commandBuffer);
+                var commandInfo = new VkCommandBufferBeginInfo { flags = 0 };
+                VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
+                VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
+                VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+                VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+                VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+                VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, ref descriptorSet, 0, null);
+                VkFunc.vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+                VkFunc.vkCmdEndRenderPass(commandBuffer);
+                VkFunc.vkEndCommandBuffer(commandBuffer);
 
-            return commandBuffer;
+                return commandBuffer;
+            }
         }
     }
 }

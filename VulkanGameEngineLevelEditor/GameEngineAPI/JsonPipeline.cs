@@ -380,7 +380,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = new VkPipelineColorBlendStateCreateInfo();
-            fixed (VkPipelineColorBlendAttachmentState* attachments = VkPipelineColorBlendAttachmentState.ConvertPtrArray(model.PipelineColorBlendAttachmentStateList))
+            fixed (VkPipelineColorBlendAttachmentState* attachments = model.PipelineColorBlendAttachmentStateList.ToArray())
             {
                 pipelineColorBlendStateCreateInfo = model.PipelineColorBlendStateCreateInfoModel;
                 pipelineColorBlendStateCreateInfo.attachmentCount = model.PipelineColorBlendAttachmentStateList.UCount();
@@ -416,16 +416,19 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = new VkGraphicsPipelineCreateInfo();
             fixed (VkPipelineShaderStageCreateInfo* pipelineShaderStageCreateInfo = pipelineShaderStageCreateInfoList.ToArray())
             {
+                var pipelineInputAssemblyStateCreateInfov = model.PipelineInputAssemblyStateCreateInfo;
+                var pipelineRasterizationStateCreateInfo = model.PipelineRasterizationStateCreateInfo;
+                var pipelineDepthStencilStateCreateInfo = model.PipelineDepthStencilStateCreateInfo;
                 graphicsPipelineCreateInfo = new VkGraphicsPipelineCreateInfo()
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
                     pStages = pipelineShaderStageCreateInfo,
                     pVertexInputState = &vertexInputInfo,
-                    pInputAssemblyState = &model.PipelineInputAssemblyStateCreateInfo,
+                    pInputAssemblyState = &pipelineInputAssemblyStateCreateInfov,
                     pViewportState = &pipelineViewportStateCreateInfo,
-                    pRasterizationState = &model.PipelineRasterizationStateCreateInfo,
+                    pRasterizationState = &pipelineRasterizationStateCreateInfo,
                     pMultisampleState = &pipelineMultisampleStateCreateInfo,
-                    pDepthStencilState = &model.PipelineDepthStencilStateCreateInfo,
+                    pDepthStencilState = &pipelineDepthStencilStateCreateInfo,
                     pColorBlendState = &pipelineColorBlendStateCreateInfo,
                     pDynamicState = &pipelineDynamicStateCreateInfo,
                     pTessellationState = null,

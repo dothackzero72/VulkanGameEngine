@@ -153,9 +153,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     maxLod = 0,
                     mipLodBias = 0
                 };
-
-                VkSampler nullSampler = new VkSampler();
-                var result = VkFunc.vkCreateSampler(VulkanRenderer.device, &NullSamplerInfo, null, &nullSampler);
+                var result = VkFunc.vkCreateSampler(VulkanRenderer.device, &NullSamplerInfo, null, out VkSampler nullSampler);
 
 
                 VkDescriptorImageInfo nullBuffer = new VkDescriptorImageInfo

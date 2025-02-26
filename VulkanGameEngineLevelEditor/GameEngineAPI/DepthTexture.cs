@@ -116,7 +116,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 borderColor = VkBorderColor.VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,
             };
 
-            VkFunc.vkCreateSampler(VulkanRenderer.device, ref textureImageSamplerInfo, null, out var sampler);
+            VkFunc.vkCreateSampler(VulkanRenderer.device, &textureImageSamplerInfo, null, out var sampler);
             Sampler = sampler;
         }
 

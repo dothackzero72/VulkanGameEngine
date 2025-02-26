@@ -16,11 +16,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         private const string DLLPath = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanEngineDLL.dll";
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Result DLL_Buffer_AllocateMemory(VkDevice device, VkPhysicalDevice physicalDevice, ref VkBuffer bufferData, ref VkDeviceMemory bufferMemory, VkMemoryPropertyFlagBits properties);
+        public static extern VkResult DLL_Buffer_AllocateMemory(VkDevice device, VkPhysicalDevice physicalDevice, ref VkBuffer bufferData, ref VkDeviceMemory bufferMemory, VkMemoryPropertyFlagBits properties);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Result DLL_Buffer_CreateBuffer(VkDevice device, VkPhysicalDevice physicalDevice, ref VkBuffer buffer, ref VkDeviceMemory bufferMemory, IntPtr bufferData, ulong bufferSize, VkBufferUsageFlagBits bufferUsage, VkMemoryPropertyFlagBits properties);
+        public static extern VkResult DLL_Buffer_CreateBuffer(VkDevice device, VkPhysicalDevice physicalDevice, ref VkBuffer buffer, ref VkDeviceMemory bufferMemory, IntPtr bufferData, ulong bufferSize, VkBufferUsageFlagBits bufferUsage, VkMemoryPropertyFlagBits properties);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Result DLL_Buffer_CreateStagingBuffer(VkDevice device,
+        public static extern VkResult DLL_Buffer_CreateStagingBuffer(VkDevice device,
                                                                     VkPhysicalDevice physicalDevice,
                                                                     VkCommandPool commandPool,
                                                                     VkQueue graphicsQueue, 
@@ -34,13 +34,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                                                     VkMemoryPropertyFlagBits properties);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Result DLL_Buffer_CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, ulong size);
+        public static extern VkResult DLL_Buffer_CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, ulong size);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Result DLL_Buffer_UpdateBufferSize(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer buffer, ref VkDeviceMemory bufferMemory, IntPtr bufferData, ref ulong oldBufferSize, ulong newBufferSize, VkBufferUsageFlagBits bufferUsageFlags, VkMemoryPropertyFlagBits propertyFlags);
+        public static extern VkResult DLL_Buffer_UpdateBufferSize(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer buffer, ref VkDeviceMemory bufferMemory, IntPtr bufferData, ref ulong oldBufferSize, ulong newBufferSize, VkBufferUsageFlagBits bufferUsageFlags, VkMemoryPropertyFlagBits propertyFlags);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Result Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, IntPtr dataToCopy, ulong bufferSize);
+        public static extern VkResult Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, IntPtr dataToCopy, ulong bufferSize);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Result DLL_Buffer_UnmapBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, ref bool isMapped);
+        public static extern VkResult DLL_Buffer_UnmapBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, ref bool isMapped);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern IntPtr DLL_Buffer_MapBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, ulong bufferSize, ref bool isMapped);
 
@@ -51,10 +51,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static extern void DLL_Buffer_UpdateBufferData(VkDevice device, ref VkDeviceMemory stagingBufferMemory, ref VkDeviceMemory bufferMemory, void* dataToCopy, ulong bufferSize, bool IsStagingBuffer);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Result DLL_Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, out VkSurfaceFormatKHR surfaceFormats, out uint surfaceFormatCount);
+        public static extern VkResult DLL_Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, out VkSurfaceFormatKHR surfaceFormats, out uint surfaceFormatCount);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Result DLL_SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, out VkPresentModeKHR compatiblePresentModesList, out uint presentModeCount);
+        public static extern VkResult DLL_SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, out VkPresentModeKHR compatiblePresentModesList, out uint presentModeCount);
 
     }
 }

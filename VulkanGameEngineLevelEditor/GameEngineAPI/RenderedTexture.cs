@@ -104,7 +104,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED
             };
 
-            var result = VkFunc.vkCreateImage(VulkanRenderer.device, ref imageInfo, null, out VkImage textureImage);
+            var result = VkFunc.vkCreateImage(VulkanRenderer.device, &imageInfo, null, out VkImage textureImage);
             VkFunc.vkGetImageMemoryRequirements(VulkanRenderer.device, textureImage, out VkMemoryRequirements memRequirements);
 
             var allocInfo = new VkMemoryAllocateInfo
@@ -186,7 +186,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             VkSampler sampler = new VkSampler();
-            VkResult result = VkFunc.vkCreateSampler(VulkanRenderer.device, ref textureImageSamplerInfo, null, out sampler);
+            VkResult result = VkFunc.vkCreateSampler(VulkanRenderer.device, &textureImageSamplerInfo, null, out sampler);
             Sampler = sampler;
         }
 
