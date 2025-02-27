@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
-    public struct SwapChainState
+    public class SwapChainState
     {
         public uint ImageCount { get;  set; }
         public uint GraphicsFamily { get;  set; }
@@ -20,7 +21,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkFormat Format { get;  set; }
         public VkColorSpaceKHR ColorSpace { get;  set; }
         public VkPresentModeKHR PresentMode { get;  set; }
-
         public VkImage[] Images { get;  set; }
         public VkImageView[] imageViews { get;  set; }
         public VkExtent2D SwapChainResolution { get;  set; }
@@ -66,29 +66,21 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static void CreateSwapChain(IntPtr window)
         {
-            uint width = 0;
-            uint height = 0;
-            uint surfaceFormatCount = 0;
-            uint presentModeCount = 0;
-
-            VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities();
             VkSurfaceFormatKHR[] compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats();
-            SwapChain_GetQueueFamilies();
+            GameEngineImport.DLL_SwapChain_GetQueueFamilies(physicalDevice, surface, out uint graphicsFamily, out uint presentFamily);
             VkPresentModeKHR[] compatiblePresentModesList = Renderer_GetSurfacePresentModes();
             VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
             VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
-            //vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
+            VkSurfaceCapabilitiesKHR SurfaceCapabilities = GameEngineImport.DLL_SwapChain_GetSurfaceCapabilities(physicalDevice, surface, out uint width, out uint height);
 
-            //SwapChain2.Swapchain = SwapChain_SetUpSwapChain();
-            //SwapChain2.Images = SwapChain_SetUpSwapChainImages();
-            //SwapChain2.imageViews = SwapChain_SetUpSwapChainImageViews();
-            //SwapChain2.SwapChainResolution = new VkExtent2D
-            //{
-            //    height = height,
-            //    width = width
-            //};
-
-
+            SwapChain.SwapChainResolution = new VkExtent2D
+            {
+                height = height,
+                width = width
+            };
+            SwapChain.Swapchain = GameEngineImport.DLL_SwapChain_SetUpSwapChain(device, physicalDevice, surface, SwapChain.GraphicsFamily, SwapChain.PresentFamily, SwapChain.SwapChainResolution.width, SwapChain.SwapChainResolution.height, out uint swapChainImageCount);
+            SwapChain.Images = SwapChain_SetUpSwapChainImages(swapChainImageCount);
+            SwapChain.imageViews = SwapChain_SetUpSwapChainImageViews();
         }
 
         public static void CreateCommandBuffers(VkCommandBuffer[] commandBufferList)
@@ -379,38 +371,52 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         }
 
         //SwapChain
-        public static VkSurfaceCapabilitiesKHR SwapChain_GetSurfaceCapabilities()
-        {
-            return GameEngineImport.DLL_SwapChain_GetSurfaceCapabilities(physicalDevice, surface);
-        }
-
-        public static VkResult SwapChain_GetQueueFamilies()
-        {
-            var result = GameEngineImport.DLL_SwapChain_GetQueueFamilies(physicalDevice, surface, out uint graphicsFamily, out uint presentFamily);
-           // VulkanRenderer.SwapChain.GraphicsFamily = graphicsFamily;
-           // VulkanRenderer.SwapChain.PresentFamily =  presentFamily;
-
-            return result;
-        }
 
         public static VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR[] availableFormats)
         {
-            return GameEngineImport.DLL_SwapChain_FindSwapSurfaceFormat(availableFormats);
+            if (availableFormats == null || 
+                availableFormats.Length == 0)
+            {
+                throw new ArgumentException("Available formats cannot be null or empty.");
+            }
+
+            fixed (VkSurfaceFormatKHR* ptr = availableFormats)
+            {
+                return GameEngineImport.DLL_SwapChain_FindSwapSurfaceFormat(ptr, (uint)availableFormats.Length);
+            }
         }
 
         public static VkPresentModeKHR SwapChain_FindSwapPresentMode(VkPresentModeKHR[] availablePresentModes)
         {
-            return GameEngineImport.DLL_SwapChain_FindSwapPresentMode(availablePresentModes);
+            if (availablePresentModes == null ||
+                availablePresentModes.Length == 0)
+            {
+                throw new ArgumentException("Available formats cannot be null or empty.");
+            }
+
+            fixed (VkPresentModeKHR* ptr = availablePresentModes)
+            {
+                return GameEngineImport.DLL_SwapChain_FindSwapPresentMode(ptr, (uint)availablePresentModes.Length);
+            }
         }
 
-        public static VkSwapchainKHR SwapChain_SetUpSwapChain()
+        public static VkImage[] SwapChain_SetUpSwapChainImages(uint swapChainImageCount)
         {
-            return GameEngineImport.DLL_SwapChain_SetUpSwapChain(device, physicalDevice, surface, SwapChain.GraphicsFamily, SwapChain.PresentFamily, SwapChain.SwapChainResolution.width, SwapChain.SwapChainResolution.height, out uint swapChainImageCount);
-        }
+            VkImage* swapChainImagePtr = GameEngineImport.DLL_SwapChain_SetUpSwapChainImages(device, SwapChain.Swapchain, swapChainImageCount);
+            if (swapChainImagePtr == null)
+            {
+                return Array.Empty<VkImage>();
+            }
 
-        public static VkImage[] SwapChain_SetUpSwapChainImages()
-        {
-            return GameEngineImport.DLL_SwapChain_SetUpSwapChainImages(device, SwapChain.Swapchain);
+            VkImage[] formats = new VkImage[swapChainImageCount];
+            IntPtr ptr = (IntPtr)swapChainImagePtr;
+            for (uint x = 0; x < swapChainImageCount; x++)
+            {
+                formats[x] = Marshal.PtrToStructure<VkImage>(ptr + (int)(x * Marshal.SizeOf<VkImage>()));
+            }
+
+            GameEngineImport.DLL_DeleteAllocatedPtr(swapChainImagePtr);
+            return formats;
         }
 
         public static VkImageView[] SwapChain_SetUpSwapChainImageViews()
@@ -433,27 +439,27 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 formats[x] = Marshal.PtrToStructure<VkSurfaceFormatKHR>(ptr + (int)(x * Marshal.SizeOf<VkSurfaceFormatKHR>()));
             }
 
-            GameEngineImport.DLL_SwapChain_DeletePhysicalDeviceFormats(surfaceFormatListPtr);
+            GameEngineImport.DLL_DeleteAllocatedPtr(surfaceFormatListPtr);
             return formats;
         }
 
         public static VkPresentModeKHR[] Renderer_GetSurfacePresentModes()
         {
-            VkPresentModeKHR* presentModeListPtr =  GameEngineImport.DLL_SwapChain_GetSurfacePresentModes(physicalDevice, surface, out uint count);
+            VkPresentModeKHR* presentModeListPtr =  GameEngineImport.DLL_Renderer_GetSurfacePresentModes(physicalDevice, surface, out uint count);
             if (presentModeListPtr == null || count == 0)
             {
                 return Array.Empty<VkPresentModeKHR>();
             }
 
-            VkPresentModeKHR[] formats = new VkPresentModeKHR[count];
+            VkPresentModeKHR[] presentModes = new VkPresentModeKHR[count];
             IntPtr ptr = (IntPtr)presentModeListPtr;
             for (uint x = 0; x < count; x++)
             {
-                formats[x] = Marshal.PtrToStructure<VkPresentModeKHR>(ptr + (int)(x * Marshal.SizeOf<VkPresentModeKHR>()));
+                presentModes[x] = *(presentModeListPtr + x);
             }
 
-            GameEngineImport.DLL_SwapChain_DeleteSurfacePresentModes(presentModeListPtr);
-            return formats;
+            GameEngineImport.DLL_DeleteAllocatedPtr(presentModeListPtr);
+            return presentModes;
         }
     }
 }

@@ -15,8 +15,8 @@ VkResult VulkanRenderer::SetUpSwapChain()
     VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
     VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
     vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
-    cRenderer.SwapChain.Swapchain = SwapChain_SetUpSwapChain(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.Surface, cRenderer.SwapChain.GraphicsFamily, cRenderer.SwapChain.PresentFamily, width, height, &cRenderer.SwapChain.SwapChainImageCount);
-    cRenderer.SwapChain.SwapChainImages = SwapChain_SetUpSwapChainImages(cRenderer.Device, cRenderer.SwapChain.Swapchain);
+    cRenderer.SwapChain.Swapchain = SwapChain_SetUpSwapChain(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.Surface, cRenderer.SwapChain.GraphicsFamily, cRenderer.SwapChain.PresentFamily, width, height, cRenderer.SwapChain.SwapChainImageCount);
+    cRenderer.SwapChain.SwapChainImages = SwapChain_SetUpSwapChainImages(cRenderer.Device, cRenderer.SwapChain.Swapchain, MAX_FRAMES_IN_FLIGHT);
     cRenderer.SwapChain.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(cRenderer.Device, cRenderer.SwapChain.SwapChainImages, swapChainImageFormat);
 
     cRenderer.SwapChain.SwapChainResolution.width = width;

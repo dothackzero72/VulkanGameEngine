@@ -2798,7 +2798,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         VK_PRIMITIVE_TOPOLOGY_MAX_ENUM = 0x7FFFFFFF
     }
 
-    public enum VkPresentModeKHR
+    public enum VkPresentModeKHR : uint
     {
         VK_PRESENT_MODE_IMMEDIATE_KHR = 0,
         VK_PRESENT_MODE_MAILBOX_KHR = 1,

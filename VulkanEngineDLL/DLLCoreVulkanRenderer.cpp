@@ -17,13 +17,13 @@ VkExtensionProperties_C* DLL_Renderer_GetDeviceExtensions(VkPhysicalDevice physi
     return result;
 }
 
-VkSurfaceFormatKHR* DLL_Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, int* count) 
+VkSurfaceFormatKHR* DLL_Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, int& count) 
 {
     std::vector<VkSurfaceFormatKHR> formats = Renderer_GetSurfaceFormats(physicalDevice, surface);
-    *count = static_cast<int>(formats.size());
+    count = static_cast<int>(formats.size());
 
-    VkSurfaceFormatKHR* result = new VkSurfaceFormatKHR[*count];
-    std::memcpy(result, formats.data(), *count * sizeof(VkSurfaceFormatKHR));
+    VkSurfaceFormatKHR* result = new VkSurfaceFormatKHR[count];
+    std::memcpy(result, formats.data(), count * sizeof(VkSurfaceFormatKHR));
 
     return result;
 }
@@ -89,15 +89,18 @@ VkResult DLL_Renderer_GetDeviceQueue(VkDevice device, uint32 graphicsFamily, uin
 }
 
 ////SwapChain
-VkSurfaceCapabilitiesKHR DLL_SwapChain_GetSurfaceCapabilities(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+VkSurfaceCapabilitiesKHR DLL_SwapChain_GetSurfaceCapabilities(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint& width, uint& height)
 {
+    VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities(physicalDevice, surface);
+    width = surfaceCapabilities.maxImageExtent.width;
+    height = surfaceCapabilities.maxImageExtent.height;
     return SwapChain_GetSurfaceCapabilities(physicalDevice, surface);
 }
 
 VkSurfaceFormatKHR* DLL_SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32& count)
 {
     Vector<VkSurfaceFormatKHR> surfaces = SwapChain_GetPhysicalDeviceFormats(physicalDevice, surface);
-    count = surfaces.size();
+    count = static_cast<int>(surfaces.size());
 
     VkSurfaceFormatKHR* result = new VkSurfaceFormatKHR[count];
     for (uint32_t x = 0; x < count; x++) 
@@ -107,25 +110,15 @@ VkSurfaceFormatKHR* DLL_SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice phys
     return result;
 }
 
-void DLL_SwapChain_DeletePhysicalDeviceFormats(VkSurfaceFormatKHR* ptr)
-{
-    delete[] ptr;
-}
-
-VkPresentModeKHR* DLL_SwapChain_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint* count)
+VkPresentModeKHR* DLL_Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32& count)
 {
     std::vector<VkPresentModeKHR> presentModes = Renderer_GetSurfacePresentModes(physicalDevice, surface);
-    *count = static_cast<int>(presentModes.size());
+    count = static_cast<int>(presentModes.size());
 
-    VkPresentModeKHR* result = new VkPresentModeKHR[*count];
-    std::memcpy(result, presentModes.data(), *count * sizeof(VkPresentModeKHR));
+    VkPresentModeKHR* result = new VkPresentModeKHR[count];
+    std::memcpy(result, presentModes.data(), count * sizeof(VkPresentModeKHR));
 
     return result;
-}
-
-void DLL_SwapChain_DeleteSurfacePresentModes(VkPresentModeKHR* ptr)
-{
-    delete[] ptr;
 }
 
 VkResult DLL_SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32& graphicsFamily, uint32& presentFamily)
@@ -133,24 +126,37 @@ VkResult DLL_SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfa
     return SwapChain_GetQueueFamilies(physicalDevice, surface, graphicsFamily, presentFamily);
 }
 
-VkSurfaceFormatKHR DLL_SwapChain_FindSwapSurfaceFormat(Vector<VkSurfaceFormatKHR>& availableFormats)
+VkSurfaceFormatKHR DLL_SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR* availableFormats, uint count)
 {
-    return SwapChain_FindSwapSurfaceFormat(availableFormats);
+    Vector<VkSurfaceFormatKHR> availableFormatList;
+    for (int x = 0; x < count; x++)
+    {
+        availableFormatList.emplace_back(availableFormats[x]);
+    }
+    return SwapChain_FindSwapSurfaceFormat(availableFormatList);
 }
 
-VkPresentModeKHR DLL_SwapChain_FindSwapPresentMode(Vector<VkPresentModeKHR>& availablePresentModes)
+VkPresentModeKHR DLL_SwapChain_FindSwapPresentMode(VkPresentModeKHR* availablePresentModes, uint count)
 {
-    return SwapChain_FindSwapPresentMode(availablePresentModes);
+    Vector<VkPresentModeKHR> availablePresentModeList;
+    for (int x = 0; x < count; x++)
+    {
+        availablePresentModeList.emplace_back(availablePresentModes[x]);
+    }
+    return SwapChain_FindSwapPresentMode(availablePresentModeList);
 }
 
-VkSwapchainKHR DLL_SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, uint32 width, uint32 height, uint32* swapChainImageCount)
+VkSwapchainKHR DLL_SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, uint32 width, uint32 height, uint32& swapChainImageCount)
 {
     return SwapChain_SetUpSwapChain(device, physicalDevice, surface, graphicsFamily, presentFamily, width, height, swapChainImageCount);
 }
 
-Vector<VkImage> DLL_SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain)
+VkImage* DLL_SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32 swapChainImageCount)
 {
-    return SwapChain_SetUpSwapChainImages( device,  swapChain);
+    Vector<VkImage> swapChainImageList = SwapChain_SetUpSwapChainImages(device, swapChain, swapChainImageCount);
+    VkImage* result = new VkImage[swapChainImageCount];
+    std::memcpy(result, swapChainImageList.data(), swapChainImageCount * sizeof(VkImage));
+    return result;
 }
 
 Vector<VkImageView> DLL_SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<VkImage> swapChainImageList, VkSurfaceFormatKHR& swapChainImageFormat, uint32& count)
@@ -159,4 +165,9 @@ Vector<VkImageView> DLL_SwapChain_SetUpSwapChainImageViews(VkDevice device, Vect
     count = views.size();
 
     return views;
+}
+
+void DLL_DeleteAllocatedPtr(void* ptr)
+{
+    delete[] ptr;
 }
