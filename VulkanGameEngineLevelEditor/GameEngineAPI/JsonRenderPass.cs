@@ -169,8 +169,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void CreateFramebuffer()
         {
-            VkFramebuffer[] frameBufferList = new VkFramebuffer[VulkanRenderer.swapChain.ImageCount];
-            for (int x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
+            VkFramebuffer[] frameBufferList = new VkFramebuffer[VulkanRenderer.SwapChain.ImageCount];
+            for (int x = 0; x < VulkanRenderer.SwapChain.ImageCount; x++)
             {
                 List<VkImageView> TextureAttachmentList = new List<VkImageView>();
                 foreach (var texture in RenderedColorTextureList)
@@ -231,7 +231,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     framebuffer = FrameBufferList[imageIndex],
                     clearValueCount = 2,
                     pClearValues = pClearValue,
-                    renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.swapChain.SwapChainResolution)
+                    renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution)
                 };
 
 
@@ -239,15 +239,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     x = 0.0f,
                     y = 0.0f,
-                    width = VulkanRenderer.swapChain.SwapChainResolution.width,
-                    height = VulkanRenderer.swapChain.SwapChainResolution.height,
+                    width = VulkanRenderer.SwapChain.SwapChainResolution.width,
+                    height = VulkanRenderer.SwapChain.SwapChainResolution.height,
                     minDepth = 0.0f,
                     maxDepth = 1.0f
                 };
                 var scissor = new VkRect2D
                 {
                     offset = new VkOffset2D(0, 0),
-                    extent = VulkanRenderer.swapChain.SwapChainResolution
+                    extent = VulkanRenderer.SwapChain.SwapChainResolution
                 };
 
                 var descSet = jsonPipeline.descriptorSet;

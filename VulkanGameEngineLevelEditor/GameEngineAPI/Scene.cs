@@ -27,7 +27,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             MemoryManager.StartUp(30);
 
-            var res = new vec2((float)VulkanRenderer.swapChain.SwapChainResolution.width, (float)VulkanRenderer.swapChain.SwapChainResolution.height);
+            var res = new vec2((float)VulkanRenderer.SwapChain.SwapChainResolution.width, (float)VulkanRenderer.SwapChain.SwapChainResolution.height);
             var pos = new vec3(0.0f, 0.0f, 5.0f);
             orthographicCamera = new OrthographicCamera(res, pos);
 
@@ -48,7 +48,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }));
 
             // MemoryManager.ViewMemoryMap();
-            renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.swapChain.SwapChainResolution.width, (int)VulkanRenderer.swapChain.SwapChainResolution.height));
+            renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
             frameBufferRenderPass.BuildRenderPass(renderPass3D.RenderedColorTextureList[0]);
         }
 

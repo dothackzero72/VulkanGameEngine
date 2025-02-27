@@ -122,7 +122,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     };
 
     [Flags]
-    public enum VkSurfaceTransformFlagBitsKHR
+    public enum VkSurfaceTransformFlagBitsKHR : uint
     {
         VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR = 0x00000001,
         VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR = 0x00000002,
@@ -2617,6 +2617,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     }
 
     [Flags]
+    public enum VkSurfaceCounterFlagBitsEXT
+    {
+        VK_SURFACE_COUNTER_VBLANK_BIT_EXT = 0x00000001,
+        VK_SURFACE_COUNTER_VBLANK_EXT = VK_SURFACE_COUNTER_VBLANK_BIT_EXT,
+        VK_SURFACE_COUNTER_FLAG_BITS_MAX_ENUM_EXT = 0x7FFFFFFF
+    }
+
+    [Flags]
     public enum VkMemoryHeapFlagBits
     {
         VK_MEMORY_HEAP_DEVICE_LOCAL_BIT = 0x00000001,
@@ -2758,7 +2766,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     }
 
     [Flags]
-    public enum VkCompositeAlphaFlagBitsKHR
+    public enum VkCompositeAlphaFlagBitsKHR : uint
     {
         VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR = 0x00000001,
         VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR = 0x00000002,

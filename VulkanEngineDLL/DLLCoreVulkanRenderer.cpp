@@ -1,5 +1,6 @@
 #include "DLLCoreVulkanRenderer.h"
 #include <vector>
+#include <iostream>
 
 VkExtensionProperties_C* DLL_Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice, int* count) 
 {
@@ -27,18 +28,6 @@ VkSurfaceFormatKHR* DLL_Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevi
     return result;
 }
 
-VkPresentModeKHR* DLL_Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, int* count)
-{
-    std::vector<VkPresentModeKHR> presentModes = Renderer_GetSurfacePresentModes(physicalDevice, surface);
-    *count = static_cast<int>(presentModes.size());
-
-    VkPresentModeKHR* result = new VkPresentModeKHR[*count];
-    std::memcpy(result, presentModes.data(), *count * sizeof(VkPresentModeKHR));
-
-    return result;
-}
-
-
 Vector<VkExtensionProperties> DLL_Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice)
 {
 	return Renderer_GetDeviceExtensions(physicalDevice);
@@ -47,11 +36,6 @@ Vector<VkExtensionProperties> DLL_Renderer_GetDeviceExtensions(VkPhysicalDevice 
 Vector<VkSurfaceFormatKHR> DLL_Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
 {
 	return Renderer_GetSurfaceFormats(physicalDevice, surface);
-}
-
-Vector<VkPresentModeKHR> DLL_Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
-{
-	return Renderer_GetSurfacePresentModes(physicalDevice, surface);
 }
 
 bool DLL_Renderer_GetRayTracingSupport()
@@ -110,9 +94,38 @@ VkSurfaceCapabilitiesKHR DLL_SwapChain_GetSurfaceCapabilities(VkPhysicalDevice p
     return SwapChain_GetSurfaceCapabilities(physicalDevice, surface);
 }
 
-Vector<VkSurfaceFormatKHR> DLL_SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+VkSurfaceFormatKHR* DLL_SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32& count)
 {
-    return SwapChain_GetPhysicalDeviceFormats(physicalDevice, surface);
+    Vector<VkSurfaceFormatKHR> surfaces = SwapChain_GetPhysicalDeviceFormats(physicalDevice, surface);
+    count = surfaces.size();
+
+    VkSurfaceFormatKHR* result = new VkSurfaceFormatKHR[count];
+    for (uint32_t x = 0; x < count; x++) 
+    {
+        result[x] = surfaces[x];
+    }
+    return result;
+}
+
+void DLL_SwapChain_DeletePhysicalDeviceFormats(VkSurfaceFormatKHR* ptr)
+{
+    delete[] ptr;
+}
+
+VkPresentModeKHR* DLL_SwapChain_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint* count)
+{
+    std::vector<VkPresentModeKHR> presentModes = Renderer_GetSurfacePresentModes(physicalDevice, surface);
+    *count = static_cast<int>(presentModes.size());
+
+    VkPresentModeKHR* result = new VkPresentModeKHR[*count];
+    std::memcpy(result, presentModes.data(), *count * sizeof(VkPresentModeKHR));
+
+    return result;
+}
+
+void DLL_SwapChain_DeleteSurfacePresentModes(VkPresentModeKHR* ptr)
+{
+    delete[] ptr;
 }
 
 VkResult DLL_SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32& graphicsFamily, uint32& presentFamily)
@@ -140,7 +153,10 @@ Vector<VkImage> DLL_SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainK
     return SwapChain_SetUpSwapChainImages( device,  swapChain);
 }
 
-Vector<VkImageView> DLL_SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<VkImage> swapChainImageList, VkSurfaceFormatKHR& swapChainImageFormat)
+Vector<VkImageView> DLL_SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<VkImage> swapChainImageList, VkSurfaceFormatKHR& swapChainImageFormat, uint32& count)
 {
-    return SwapChain_SetUpSwapChainImageViews(device, swapChainImageList, swapChainImageFormat);
+    Vector<VkImageView> views = SwapChain_SetUpSwapChainImageViews(device, swapChainImageList, swapChainImageFormat);
+    count = views.size();
+
+    return views;
 }

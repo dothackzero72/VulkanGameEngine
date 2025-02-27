@@ -45,7 +45,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static VkFence[] InFlightFences { get; private set; }
         public static VkSemaphore[] AcquireImageSemaphores { get; private set; }
         public static VkSemaphore[] PresentImageSemaphores { get; private set; }
-        public static SwapChainState swapChain { get; private set; } = new SwapChainState();
+        public static SwapChainState SwapChain { get; set; } = new SwapChainState();
         public static UInt32 ImageIndex { get; private set; } = new UInt32();
         public static UInt32 CommandIndex { get; private set; } = new UInt32();
         public static bool RebuildRendererFlag { get; private set; }
@@ -79,17 +79,16 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
             //vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
 
-            SwapChainState swapChainState = new SwapChainState
-            {
-                Swapchain = SwapChain_SetUpSwapChain(),
-                Images = SwapChain_SetUpSwapChainImages(),
-                imageViews = SwapChain_SetUpSwapChainImageViews(),
-                SwapChainResolution = new VkExtent2D
-                {
-                    height = height,
-                    width = width
-                }
-            };
+            //SwapChain2.Swapchain = SwapChain_SetUpSwapChain();
+            //SwapChain2.Images = SwapChain_SetUpSwapChainImages();
+            //SwapChain2.imageViews = SwapChain_SetUpSwapChainImageViews();
+            //SwapChain2.SwapChainResolution = new VkExtent2D
+            //{
+            //    height = height,
+            //    width = width
+            //};
+
+
         }
 
         public static void CreateCommandBuffers(VkCommandBuffer[] commandBufferList)
@@ -130,7 +129,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkFunc.vkWaitForFences(device, 1, &fence, true, ulong.MaxValue);
             VkFunc.vkResetFences(device, 1, &fence);
 
-            VkResult result = VkFunc.vkAcquireNextImageKHR(device, swapChain.Swapchain, ulong.MaxValue, imageSemaphore, fence, out var imageIndex);
+            VkResult result = VkFunc.vkAcquireNextImageKHR(device, SwapChain.Swapchain, ulong.MaxValue, imageSemaphore, fence, out var imageIndex);
             ImageIndex = imageIndex;
 
             if (result == VkResult.VK_ERROR_OUT_OF_DATE_KHR)
@@ -188,7 +187,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     }
 
                     var imageIndex = ImageIndex;
-                    var swapchain = swapChain.Swapchain;
+                    var swapchain = SwapChain.Swapchain;
                     VkPresentInfoKHR presentInfo = new VkPresentInfoKHR()
                     {
                         sType = VkStructureType.VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR,
@@ -387,7 +386,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static VkResult SwapChain_GetQueueFamilies()
         {
-            return GameEngineImport.DLL_SwapChain_GetQueueFamilies(physicalDevice, surface, swapChain.GraphicsFamily, swapChain.PresentFamily);
+            var result = GameEngineImport.DLL_SwapChain_GetQueueFamilies(physicalDevice, surface, out uint graphicsFamily, out uint presentFamily);
+           // VulkanRenderer.SwapChain.GraphicsFamily = graphicsFamily;
+           // VulkanRenderer.SwapChain.PresentFamily =  presentFamily;
+
+            return result;
         }
 
         public static VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR[] availableFormats)
@@ -402,27 +405,55 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static VkSwapchainKHR SwapChain_SetUpSwapChain()
         {
-            return GameEngineImport.DLL_SwapChain_SetUpSwapChain(device, physicalDevice, surface, swapChain.GraphicsFamily, swapChain.PresentFamily, swapChain.SwapChainResolution.width, swapChain.SwapChainResolution.height, out uint swapChainImageCount);
+            return GameEngineImport.DLL_SwapChain_SetUpSwapChain(device, physicalDevice, surface, SwapChain.GraphicsFamily, SwapChain.PresentFamily, SwapChain.SwapChainResolution.width, SwapChain.SwapChainResolution.height, out uint swapChainImageCount);
         }
 
         public static VkImage[] SwapChain_SetUpSwapChainImages()
         {
-            return GameEngineImport.DLL_SwapChain_SetUpSwapChainImages(device, swapChain.Swapchain);
+            return GameEngineImport.DLL_SwapChain_SetUpSwapChainImages(device, SwapChain.Swapchain);
         }
 
         public static VkImageView[] SwapChain_SetUpSwapChainImageViews()
         {
-            return GameEngineImport.DLL_SwapChain_SetUpSwapChainImageViews(device, swapChain.imageViews, out VkSurfaceFormatKHR swapChainImageFormat);
+            return GameEngineImport.DLL_SwapChain_SetUpSwapChainImageViews(device, SwapChain.imageViews, out VkSurfaceFormatKHR swapChainImageFormat);
         }
 
         public static VkSurfaceFormatKHR[] SwapChain_GetPhysicalDeviceFormats()
         {
-            return GameEngineImport.DLL_SwapChain_GetPhysicalDeviceFormats(physicalDevice, surface);
+            VkSurfaceFormatKHR* surfaceFormatListPtr = GameEngineImport.DLL_SwapChain_GetPhysicalDeviceFormats(physicalDevice, surface, out uint count);
+            if (surfaceFormatListPtr == null || count == 0)
+            {
+                return Array.Empty<VkSurfaceFormatKHR>();
+            }
+
+            VkSurfaceFormatKHR[] formats = new VkSurfaceFormatKHR[count];
+            IntPtr ptr = (IntPtr)surfaceFormatListPtr;
+            for (uint x = 0; x < count; x++)
+            {
+                formats[x] = Marshal.PtrToStructure<VkSurfaceFormatKHR>(ptr + (int)(x * Marshal.SizeOf<VkSurfaceFormatKHR>()));
+            }
+
+            GameEngineImport.DLL_SwapChain_DeletePhysicalDeviceFormats(surfaceFormatListPtr);
+            return formats;
         }
 
         public static VkPresentModeKHR[] Renderer_GetSurfacePresentModes()
         {
-            return GameEngineImport.DLL_Renderer_GetSurfacePresentModes(physicalDevice, surface);
+            VkPresentModeKHR* presentModeListPtr =  GameEngineImport.DLL_SwapChain_GetSurfacePresentModes(physicalDevice, surface, out uint count);
+            if (presentModeListPtr == null || count == 0)
+            {
+                return Array.Empty<VkPresentModeKHR>();
+            }
+
+            VkPresentModeKHR[] formats = new VkPresentModeKHR[count];
+            IntPtr ptr = (IntPtr)presentModeListPtr;
+            for (uint x = 0; x < count; x++)
+            {
+                formats[x] = Marshal.PtrToStructure<VkPresentModeKHR>(ptr + (int)(x * Marshal.SizeOf<VkPresentModeKHR>()));
+            }
+
+            GameEngineImport.DLL_SwapChain_DeleteSurfacePresentModes(presentModeListPtr);
+            return formats;
         }
     }
 }

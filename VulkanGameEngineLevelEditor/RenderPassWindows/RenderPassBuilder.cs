@@ -36,7 +36,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             InitializeComponent();
             this.FormClosing += OnClose;
 
-            SwapChainResuloution = new ivec2((int)VulkanRenderer.swapChain.SwapChainResolution.width, (int)VulkanRenderer.swapChain.SwapChainResolution.height);
+            SwapChainResuloution = new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height);
 
             RenderPassMessager = new MessengerModel()
             {

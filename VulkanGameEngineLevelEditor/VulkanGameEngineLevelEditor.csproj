@@ -103,6 +103,7 @@
     <Folder Include="Components\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\VulkanEngineDLL\VulkanEngineDLL.vcxproj" />
     <ProjectReference Include="..\VulkanGameEngineGameObjectScripts\VulkanGameEngineGameObjectScripts.csproj" />
   </ItemGroup>
   <ItemGroup>

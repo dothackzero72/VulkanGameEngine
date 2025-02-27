@@ -45,11 +45,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void BuildRenderPass(Texture texture)
         {
-            RenderPassResolution = new ivec2((int)VulkanRenderer.swapChain.SwapChainResolution.width, (int)VulkanRenderer.swapChain.SwapChainResolution.height);
+            RenderPassResolution = new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height);
             SampleCount = SampleCountFlags.Count1Bit;
 
-            CommandBufferList = new VkCommandBuffer[(int)VulkanRenderer.swapChain.ImageCount];
-            FrameBufferList = new VkFramebuffer[(int)VulkanRenderer.swapChain.ImageCount];
+            CommandBufferList = new VkCommandBuffer[(int)VulkanRenderer.SwapChain.ImageCount];
+            FrameBufferList = new VkFramebuffer[(int)VulkanRenderer.SwapChain.ImageCount];
 
             renderPass = CreateRenderPass();
             FrameBufferList = CreateFramebuffer();
@@ -140,11 +140,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public VkFramebuffer[] CreateFramebuffer()
         {
-            VkFramebuffer[] frameBufferList = new VkFramebuffer[(int)VulkanRenderer.swapChain.ImageCount];
-            for (int x = 0; x < (int)VulkanRenderer.swapChain.ImageCount; x++)
+            VkFramebuffer[] frameBufferList = new VkFramebuffer[(int)VulkanRenderer.SwapChain.ImageCount];
+            for (int x = 0; x < (int)VulkanRenderer.SwapChain.ImageCount; x++)
             {
                 List<VkImageView> TextureAttachmentList = new List<VkImageView>();
-                TextureAttachmentList.Add(VulkanRenderer.swapChain.imageViews[x]);
+                TextureAttachmentList.Add(VulkanRenderer.SwapChain.imageViews[x]);
 
                 fixed (VkImageView* imageViewPtr = TextureAttachmentList.ToArray())
                 {
@@ -154,8 +154,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         renderPass = renderPass,
                         attachmentCount = TextureAttachmentList.UCount(),
                         pAttachments = imageViewPtr,
-                        width = VulkanRenderer.swapChain.SwapChainResolution.width,
-                        height = VulkanRenderer.swapChain.SwapChainResolution.height,
+                        width = VulkanRenderer.SwapChain.SwapChainResolution.width,
+                        height = VulkanRenderer.SwapChain.SwapChainResolution.height,
                         layers = 1
                     };
 
@@ -177,7 +177,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 new VkDescriptorPoolSize
                 {
                     type = VkDescriptorType.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                    descriptorCount = VulkanRenderer.swapChain.ImageCount
+                    descriptorCount = VulkanRenderer.SwapChain.ImageCount
                 };
             };
 
@@ -186,7 +186,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VkDescriptorPoolCreateInfo poolInfo = new VkDescriptorPoolCreateInfo()
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-                    maxSets = VulkanRenderer.swapChain.ImageCount,
+                    maxSets = VulkanRenderer.SwapChain.ImageCount,
                     poolSizeCount = (uint)DescriptorPoolBinding.Count,
                     pPoolSizes = ptr
                 };
@@ -253,7 +253,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         x = 0,
                         y = 0,
                     },
-                    extent =
+                    extent =new VkExtent2D
                     {
                         width = (uint)RenderPassResolution.x,
                         height = (uint)RenderPassResolution.y
@@ -399,9 +399,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public VkDescriptorSet CreateDescriptorSets()
         {
 
-            VkDescriptorSetLayout* layouts = stackalloc VkDescriptorSetLayout[(int)VulkanRenderer.swapChain.ImageCount];
+            VkDescriptorSetLayout* layouts = stackalloc VkDescriptorSetLayout[(int)VulkanRenderer.SwapChain.ImageCount];
 
-            for (int i = 0; i < (int)VulkanRenderer.swapChain.ImageCount; i++)
+            for (int i = 0; i < (int)VulkanRenderer.SwapChain.ImageCount; i++)
             {
                 layouts[i] = descriptorSetLayout;
             }
@@ -409,7 +409,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkDescriptorSetAllocateInfo allocInfo = new VkDescriptorSetAllocateInfo
             {
                 descriptorPool = descriptorPool,
-                descriptorSetCount = (uint)VulkanRenderer.swapChain.ImageCount,
+                descriptorSetCount = (uint)VulkanRenderer.SwapChain.ImageCount,
                 pSetLayouts = layouts
             };
             VkFunc.vkAllocateDescriptorSets(VulkanRenderer.device, &allocInfo, out VkDescriptorSet tempdescriptorSet);
@@ -482,12 +482,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 x = 0.0f,
                 y = 0.0f,
-                width = VulkanRenderer.swapChain.SwapChainResolution.width,
-                height = VulkanRenderer.swapChain.SwapChainResolution.height,
+                width = VulkanRenderer.SwapChain.SwapChainResolution.width,
+                height = VulkanRenderer.SwapChain.SwapChainResolution.height,
                 minDepth = 0.0f,
                 maxDepth = 1.0f
             };
-            var scissor = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.swapChain.SwapChainResolution);
+            var scissor = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution);
 
             fixed (VkClearValue* pClearValue = clearValues.ToArray())
             {
@@ -495,7 +495,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_DEVICE_GROUP_RENDER_PASS_BEGIN_INFO,
                     renderPass = renderPass,
-                    renderArea = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.swapChain.SwapChainResolution),
+                    renderArea = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution),
                     clearValueCount = 1,
                     framebuffer = FrameBufferList[imageIndex],
                     pClearValues = pClearValue,

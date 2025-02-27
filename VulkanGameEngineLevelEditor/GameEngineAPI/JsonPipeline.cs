@@ -221,7 +221,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             //UpdateDescriptorSets
             {
                 List<VkWriteDescriptorSet> descriptorSetList = new List<VkWriteDescriptorSet>();
-                for (uint x = 0; x < VulkanRenderer.swapChain.ImageCount; x++)
+                for (uint x = 0; x < VulkanRenderer.SwapChain.ImageCount; x++)
                 {
                     foreach (var binding in model.PipelineDescriptorModelsList)
                     {
