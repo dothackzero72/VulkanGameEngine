@@ -15,27 +15,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DLLCoreVulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DLLCVulkanRenderer.h">
+    <ClInclude Include="VulkanRendererDLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DLLVulkanBuffer.h">
+    <ClInclude Include="VulkanBufferDLL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapChainDLL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureDLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DLLCoreVulkanRenderer.cpp">
+    <ClCompile Include="VulkanRendererDLL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DLLCVulkanRenderer.c">
+    <ClCompile Include="VulkanBufferDLL.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DLLVulkanBuffer.c">
+    <ClCompile Include="SwapChainDLL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureDLL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

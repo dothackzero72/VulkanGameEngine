@@ -1,4 +1,4 @@
-#include "DLLVulkanBuffer.h"
+#include "VulkanBufferDLL.h"
 
 VkResult DLL_Buffer_AllocateMemory(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer* bufferData, VkDeviceMemory* bufferMemory, VkMemoryPropertyFlags properties)
 {

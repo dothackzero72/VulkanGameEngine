@@ -104,7 +104,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VulkanEngineDLL\VulkanEngineDLL.vcxproj" />
+    <ProjectReference Include="..\VulkanGameEngineCore\VulkanGameEngineCore.vcxproj" />
     <ProjectReference Include="..\VulkanGameEngineGameObjectScripts\VulkanGameEngineGameObjectScripts.csproj" />
+    <ProjectReference Include="..\VulkanGameEngine\VulkanGameEngine.vcxproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Coral.Managed">

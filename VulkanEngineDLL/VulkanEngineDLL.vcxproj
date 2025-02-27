@@ -134,14 +134,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DLL.h" />
-    <ClInclude Include="DLLCoreVulkanRenderer.h" />
-    <ClInclude Include="DLLCVulkanRenderer.h" />
-    <ClInclude Include="DLLVulkanBuffer.h" />
+    <ClInclude Include="SwapChainDLL.h" />
+    <ClInclude Include="TextureDLL.h" />
+    <ClInclude Include="VulkanRendererDLL.h" />
+    <ClInclude Include="VulkanBufferDLL.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DLLCoreVulkanRenderer.cpp" />
-    <ClCompile Include="DLLCVulkanRenderer.c" />
-    <ClCompile Include="DLLVulkanBuffer.c" />
+    <ClCompile Include="SwapChainDLL.cpp" />
+    <ClCompile Include="TextureDLL.cpp" />
+    <ClCompile Include="VulkanRendererDLL.cpp" />
+    <ClCompile Include="VulkanBufferDLL.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

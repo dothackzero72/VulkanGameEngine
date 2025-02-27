@@ -80,7 +80,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             };
             SwapChain.Swapchain = GameEngineImport.DLL_SwapChain_SetUpSwapChain(device, physicalDevice, surface, SwapChain.GraphicsFamily, SwapChain.PresentFamily, SwapChain.SwapChainResolution.width, SwapChain.SwapChainResolution.height, out uint swapChainImageCount);
             SwapChain.Images = SwapChain_SetUpSwapChainImages(swapChainImageCount);
-            SwapChain.imageViews = SwapChain_SetUpSwapChainImageViews();
+            SwapChain.imageViews = SwapChain_SetUpSwapChainImageViews(swapChainImageFormat, swapChainImageCount);
         }
 
         public static void CreateCommandBuffers(VkCommandBuffer[] commandBufferList)
@@ -419,9 +419,26 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return formats;
         }
 
-        public static VkImageView[] SwapChain_SetUpSwapChainImageViews()
+        public static VkImageView[] SwapChain_SetUpSwapChainImageViews(VkSurfaceFormatKHR swapChainImageFormat, uint swapChainImageCount)
         {
-            return GameEngineImport.DLL_SwapChain_SetUpSwapChainImageViews(device, SwapChain.imageViews, out VkSurfaceFormatKHR swapChainImageFormat);
+            fixed (VkImage* imagePtr = SwapChain.Images)
+            {
+                VkImageView* swapChainImagePtr = GameEngineImport.DLL_SwapChain_SetUpSwapChainImageViews(device, imagePtr, swapChainImageFormat, swapChainImageCount);
+                if (swapChainImagePtr == null)
+                {
+                    return Array.Empty<VkImageView>();
+                }
+
+                VkImageView[] imageViewList = new VkImageView[swapChainImageCount];
+                IntPtr ptr = (IntPtr)swapChainImagePtr;
+                for (uint x = 0; x < swapChainImageCount; x++)
+                {
+                    imageViewList[x] = Marshal.PtrToStructure<VkImageView>(ptr + (int)(x * Marshal.SizeOf<VkImageView>()));
+                }
+
+                GameEngineImport.DLL_DeleteAllocatedPtr(swapChainImagePtr);
+                return imageViewList;
+            }
         }
 
         public static VkSurfaceFormatKHR[] SwapChain_GetPhysicalDeviceFormats()

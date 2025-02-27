@@ -687,7 +687,7 @@ Vector<VkImage> SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR s
     return swapChainImageList;
 }
 
-Vector<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<VkImage> swapChainImageList, VkSurfaceFormatKHR& swapChainImageFormat)
+Vector<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<VkImage> swapChainImageList, VkSurfaceFormatKHR swapChainImageFormat)
 {
     std::vector<VkImageView> swapChainImageViewList(swapChainImageList.size());
     for (uint32_t x = 0; x < swapChainImageList.size(); x++)
