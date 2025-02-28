@@ -111,81 +111,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return data;
         }
 
-        public static VkResult CreateTextureImage(VkImageCreateInfo createInfo, out VkImage image, out VkDeviceMemory textureMemory, int Width, int Height, VkFormat format, uint MipLevels)
+        public static VkResult BaseCreateImageTexture(VkImageCreateInfo createInfo,  ref VkImage image,  ref VkDeviceMemory textureMemory, int Width, int Height, VkFormat format, uint MipLevels)
         {
-            image = new VkImage();
-            textureMemory = new VkDeviceMemory();
-
-
-            VkResult result = VkFunc.vkCreateImage(VulkanRenderer.device, &createInfo, null, out VkImage tempImagePtr);
-            VkFunc.vkGetImageMemoryRequirements(VulkanRenderer.device, tempImagePtr, out VkMemoryRequirements memRequirements);
-
-            VkMemoryAllocateInfo allocInfo = new VkMemoryAllocateInfo
-            {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO,
-                allocationSize = memRequirements.size,
-                memoryTypeIndex = VulkanRenderer.GetMemoryType(memRequirements.memoryTypeBits, VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-            };
-
-            result = VkFunc.vkAllocateMemory(VulkanRenderer.device, &allocInfo, null, out VkDeviceMemory textureMemoryPtr);
-            if (result != VkResult.VK_SUCCESS)
-            {
-            }
-
-            image = tempImagePtr;
-            textureMemory = textureMemoryPtr;
-            result = VkFunc.vkBindImageMemory(VulkanRenderer.device, image, textureMemory, 0);
-            if (result != VkResult.VK_SUCCESS)
-            {
-            }
-
-            return result;
+            return GameEngineImport.DLL_Texture_BaseCreateTextureImage(VulkanRenderer.device, VulkanRenderer.physicalDevice, ref image, ref textureMemory, createInfo);
         }
 
-        public static VkResult TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint mipmapLevels, ref VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlagBits colorFlags)
+        public static VkResult TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint mipmapLevels, ref VkImageLayout oldLayout, VkImageLayout newLayout)
         {
-            VkPipelineStageFlagBits sourceStage = VkPipelineStageFlagBits.ALL_COMMANDS_BIT;
-            VkPipelineStageFlagBits destinationStage = VkPipelineStageFlagBits.ALL_COMMANDS_BIT;
-            VkImageMemoryBarrier barrier = new VkImageMemoryBarrier()
-            {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-                oldLayout = oldLayout,
-                newLayout = newLayout,
-                srcQueueFamilyIndex = Vk.QueueFamilyIgnored,
-                dstQueueFamilyIndex = Vk.QueueFamilyIgnored,
-                image = image,
-                subresourceRange = new VkImageSubresourceRange()
-                {
-                    aspectMask = colorFlags,
-                    levelCount = mipmapLevels,
-                    baseArrayLayer = 0,
-                    baseMipLevel = 0,
-                    layerCount = Vk.RemainingArrayLayers,
-                }
-            };
-            if (oldLayout == VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED &&
-                newLayout == VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-            {
-                barrier.srcAccessMask = 0;
-                barrier.dstAccessMask = VkAccessFlagBits.VK_ACCESS_TRANSFER_WRITE_BIT;
-
-                sourceStage = VkPipelineStageFlagBits.TOP_OF_PIPE_BIT;
-                destinationStage = VkPipelineStageFlagBits.TRANSFER_BIT;
-            }
-            else if (oldLayout == VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-                     newLayout == VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL)
-            {
-                barrier.srcAccessMask = VkAccessFlagBits.VK_ACCESS_TRANSFER_WRITE_BIT;
-                barrier.dstAccessMask = VkAccessFlagBits.VK_ACCESS_MEMORY_READ_BIT;
-
-                sourceStage = VkPipelineStageFlagBits.TRANSFER_BIT;
-                destinationStage = VkPipelineStageFlagBits.FRAGMENT_SHADER_BIT;
-            }
-
-            VkFunc.vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, null, 0, null, 1, &barrier);
-            oldLayout = newLayout;
-
-            return VkResult.VK_SUCCESS;
+            return GameEngineImport.DLL_Texture_CommandBufferTransitionImageLayout(commandBuffer, image, mipmapLevels, oldLayout, newLayout);
         }
 
         public static VkResult CopyBufferToTexture(ref VkBuffer buffer, VkImage image, VkExtent3D extent, TextureUsageEnum textureUsage, VkImageAspectFlagBits imageAspectFlags)
@@ -216,7 +149,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static VkResult QuickTransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, uint MipMapLevels, VkImageAspectFlagBits imageAspectFlags)
         {
             VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
-            CTexture.TransitionImageLayout(commandBuffer, image, MipMapLevels, ref oldLayout, newLayout, imageAspectFlags);
+            CTexture.TransitionImageLayout(commandBuffer, image, MipMapLevels, ref oldLayout, newLayout);
             VkResult result = VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
             return result;

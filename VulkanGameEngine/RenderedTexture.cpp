@@ -113,12 +113,12 @@ void RenderedTexture::RecreateRendererTexture(glm::vec2 TextureResolution)
 
 SharedPtr<BakedTexture> RenderedTexture::BakeColorTexture(const char* filename, BakeTextureFormat textureFormat)
 {
-	SharedPtr<BakedTexture> BakeTexture = std::make_shared<BakedTexture>(BakedTexture(Pixel(255, 0, 0, 255), glm::ivec2(1280, 720), VkFormat::VK_FORMAT_R8G8B8A8_UNORM));
+	SharedPtr<BakedTexture> bakeTexture = std::make_shared<BakedTexture>(BakedTexture(Pixel(255, 0, 0, 255), glm::ivec2(1280, 720), VkFormat::VK_FORMAT_R8G8B8A8_UNORM));
 
 	VkCommandBuffer commandBuffer = VulkanRenderer::BeginSingleTimeCommands();
 
-	BakeTexture->UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	bakeTexture->UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
 	VkImageCopy copyImage{};
 	copyImage.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -135,30 +135,21 @@ SharedPtr<BakedTexture> RenderedTexture::BakeColorTexture(const char* filename, 
 	copyImage.extent.height = this->Height;
 	copyImage.extent.depth = 1;
 
-	vkCmdCopyImage(commandBuffer, this->Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, BakeTexture->Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyImage);
+	vkCmdCopyImage(commandBuffer, this->Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, bakeTexture->Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyImage);
 
-	BakeTexture->UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_GENERAL);
-	UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+	bakeTexture->UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_GENERAL);
+	UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 	VulkanRenderer::EndSingleTimeCommands(commandBuffer);
 
 	VkImageSubresource subResource{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 0 };
 	VkSubresourceLayout subResourceLayout;
-	vkGetImageSubresourceLayout(cRenderer.Device, BakeTexture->Image, &subResource, &subResourceLayout);
+	vkGetImageSubresourceLayout(cRenderer.Device, bakeTexture->Image, &subResource, &subResourceLayout);
 
 	const char* data;
-	vkMapMemory(cRenderer.Device, BakeTexture->Memory, 0, VK_WHOLE_SIZE, 0, (void**)&data);
+	vkMapMemory(cRenderer.Device, bakeTexture->Memory, 0, VK_WHOLE_SIZE, 0, (void**)&data);
 
-	switch (textureFormat)
-	{
-	case BakeTextureFormat::Bake_BMP: stbi_write_bmp(filename, BakeTexture->Width, BakeTexture->Height, STBI_rgb_alpha, data); break;
-	case BakeTextureFormat::Bake_JPG: stbi_write_jpg(filename, BakeTexture->Width, BakeTexture->Height, STBI_rgb_alpha, data, 100); break;
-	case BakeTextureFormat::Bake_PNG: stbi_write_png(filename, BakeTexture->Width, BakeTexture->Height, STBI_rgb_alpha, data, STBI_rgb_alpha * Width); break;
-	case BakeTextureFormat::Bake_TGA: stbi_write_tga(filename, BakeTexture->Width, BakeTexture->Height, STBI_rgb_alpha, data); break;
-	}
-
-
-	BakeTexture->Destroy();
-	return BakeTexture;
+	bakeTexture->Destroy();
+	return bakeTexture;
 }
 
 std::vector<byte> ExportColorTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, const char* filename, SharedPtr<Texture> texture, BakeTextureFormat textureFormat, uint32 channels)
@@ -180,8 +171,8 @@ std::vector<byte> ExportColorTexture(VkDevice device, VkCommandPool commandPool,
 
 	vkBeginCommandBuffer(commandBuffer, &beginInfo);
 
-	bakeTexture->UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	texture->UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	bakeTexture->UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	texture->UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
 	VkImageCopy copyImage{};
 	copyImage.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -195,8 +186,8 @@ std::vector<byte> ExportColorTexture(VkDevice device, VkCommandPool commandPool,
 
 	vkCmdCopyImage(commandBuffer, texture->Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, bakeTexture->Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyImage);
 
-	bakeTexture->UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_GENERAL);
-	texture->UpdateImageLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	bakeTexture->UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_GENERAL);
+	texture->UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	vkEndCommandBuffer(commandBuffer);
 

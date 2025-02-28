@@ -1,14 +1,67 @@
 #include "CTexture.h"
 #include "CVulkanRenderer.h"
 
-VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* image, uint32 mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout)
+
+
+void Texture_UpdateTextureLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkImageLayout* oldImageLayout, VkImageLayout* newImageLayout, uint32 mipLevel)
+{
+	VkImageMemoryBarrier imageMemoryBarrier =
+	{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+		.oldLayout = *oldImageLayout,
+		.newLayout = *newImageLayout,
+		.image = image,
+		.srcAccessMask = 0,
+		.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
+		.subresourceRange =
+		{
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			.baseMipLevel = mipLevel,
+			.levelCount = VK_REMAINING_MIP_LEVELS,
+			.layerCount = 1
+		}
+	};
+
+	auto singleCommand = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
+	vkCmdPipelineBarrier(singleCommand, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, NULL, 0, NULL, 1, &imageMemoryBarrier);
+	VkResult result = Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, singleCommand);
+	if (result == VK_SUCCESS)
+	{
+		*oldImageLayout = *newImageLayout;
+	}
+}
+
+void Texture_UpdateCmdTextureLayout(VkCommandBuffer* commandBuffer, VkImage image, VkImageLayout* oldImageLayout, VkImageLayout* newImageLayout, uint32 mipLevel)
+{
+	VkImageMemoryBarrier imageMemoryBarrier =
+	{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+		.oldLayout = *oldImageLayout,
+		.newLayout = *newImageLayout,
+		.image = image,
+		.srcAccessMask = 0,
+		.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
+		.subresourceRange =
+		{
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			.baseMipLevel = mipLevel,
+			.levelCount = VK_REMAINING_MIP_LEVELS,
+			.layerCount = 1
+		}
+	};
+
+	vkCmdPipelineBarrier(*commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, NULL, 0, NULL, 1, &imageMemoryBarrier);
+	*oldImageLayout = *newImageLayout;
+}
+
+VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* image, uint32 mipmapLevels, VkImageLayout* oldLayout, VkImageLayout newLayout)
 {
 	VkPipelineStageFlags sourceStage = VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM;
 	VkPipelineStageFlags destinationStage = VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM;
 	VkImageMemoryBarrier barrier =
 	{
 		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-		.oldLayout = oldLayout,
+		.oldLayout = *oldLayout,
 		.newLayout = newLayout,
 		.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
 		.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -19,7 +72,7 @@ VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* i
 		.subresourceRange.baseArrayLayer = 0,
 		.subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS,
 	};
-	if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
+	if (*oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
 		newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
 	{
 		barrier.srcAccessMask = 0;
@@ -28,7 +81,7 @@ VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* i
 		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 	}
-	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+	else if (*oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
 			 newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 	{
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -39,6 +92,7 @@ VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* i
 	}
 
 	vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, NULL, 0, NULL, 1, &barrier);
+	*oldLayout = newLayout;
 	return VK_SUCCESS;
 }
 
@@ -66,12 +120,6 @@ VkResult Texture_NewTextureImage(VkDevice device, VkPhysicalDevice physicalDevic
 		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
 		.imageType = VK_IMAGE_TYPE_2D,
 		.format = textureByteFormat,
-		.extent =
-		{
-			.width = width,
-			.height = height,
-			.depth = 1
-		},
 		.mipLevels = mipmapLevels,
 		.arrayLayers = 1,
 		.samples = VK_SAMPLE_COUNT_1_BIT,
@@ -79,6 +127,12 @@ VkResult Texture_NewTextureImage(VkDevice device, VkPhysicalDevice physicalDevic
 		.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+		.extent =
+		{
+			.width = width,
+			.height = height,
+			.depth = 1
+		}
 	};
 	VULKAN_RESULT(vkCreateImage(device, &ImageCreateInfo, NULL, image));
 
@@ -102,12 +156,6 @@ VkResult Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDe
 		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
 		.imageType = VK_IMAGE_TYPE_2D,
 		.format = textureByteFormat,
-		.extent = 
-		{
-			.width = width,
-			.height = height,
-			.depth = 1
-		},
 		.mipLevels = mipmapLevels,
 		.arrayLayers = 1,
 		.samples = VK_SAMPLE_COUNT_1_BIT,
@@ -115,6 +163,12 @@ VkResult Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDe
 		.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+		.extent =
+		{
+			.width = width,
+			.height = height,
+			.depth = 1
+		},
 	};
 	VULKAN_RESULT(vkCreateImage(device, &ImageCreateInfo, NULL, image));
 
@@ -134,7 +188,7 @@ VkResult Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDe
 VkResult Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, uint32 mipmapLevels, VkImageLayout* oldLayout, VkImageLayout* newLayout)
 {
 	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
-	Texture_TransitionImageLayout(commandBuffer, &image, mipmapLevels, *oldLayout, *newLayout);
+	Texture_TransitionImageLayout(commandBuffer, &image, mipmapLevels, oldLayout, *newLayout);
 	VkResult result = Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);
 	if (result == VK_SUCCESS)
 	{
@@ -143,7 +197,7 @@ VkResult Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool comma
 	return result;
 }
 
-VkResult Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint32 mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout)
+VkResult Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint32 mipmapLevels, VkImageLayout* oldLayout, VkImageLayout newLayout)
 {
 	Texture_TransitionImageLayout(commandBuffer, &image, mipmapLevels, oldLayout, newLayout);
 	return VK_SUCCESS;

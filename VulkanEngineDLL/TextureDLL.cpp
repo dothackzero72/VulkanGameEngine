@@ -1,7 +1,16 @@
 #include "TextureDLL.h"
 
+	void DLL_Texture_UpdateTextureLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkImageLayout* oldImageLayout, VkImageLayout* newImageLayout, uint32 mipLevel)
+	{
+		return Texture_UpdateTextureLayout(device, commandPool, graphicsQueue, image, oldImageLayout, newImageLayout, mipLevel);
+	}
 
-	VkResult DLL_Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* image, uint32 mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout)
+	void DLL_Texture_UpdateCmdTextureLayout(VkCommandBuffer* commandBuffer, VkImage image, VkImageLayout oldImageLayout, VkImageLayout* newImageLayout, uint32 mipLevel)
+	{
+		return Texture_UpdateCmdTextureLayout(commandBuffer, image, oldImageLayout, newImageLayout, mipLevel);
+	}
+
+	VkResult DLL_Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* image, uint32 mipmapLevels, VkImageLayout* oldLayout, VkImageLayout newLayout)
 	{
 		return Texture_TransitionImageLayout(commandBuffer, image, mipmapLevels, oldLayout, newLayout);
 	}

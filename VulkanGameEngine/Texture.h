@@ -72,16 +72,16 @@ public:
 	virtual void Destroy();
 
 	VkResult TransitionImageLayout(VkImageLayout newLayout);
-	VkResult TransitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout);
+	VkResult TransitionImageLayout(VkImageLayout& oldLayout, VkImageLayout newLayout);
 	VkResult TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout);
-	VkResult TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout);
+	VkResult TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout& oldLayout, VkImageLayout newLayout);
 
-	void UpdateImageLayout(VkImageLayout newImageLayout);
-	void UpdateImageLayout(VkImageLayout newImageLayout, uint32_t MipLevel);
-	void UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout);
-	void UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout, uint32_t MipLevel);
-	void UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout);
-	void UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, uint32_t MipLevel);
+	void UpdateTextureLayout(VkImageLayout newImageLayout);
+	void UpdateTextureLayout(VkImageLayout newImageLayout, uint32_t mipLevel);
+	void UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout);
+	void UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout, uint32_t mipLevel);
+	void UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout);
+	void UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, uint32_t mipLevel);
 
 	void GetTexturePropertiesBuffer(std::vector<VkDescriptorImageInfo>& textureDescriptorList);
 	void ImGuiShowTexture(const ImVec2& TextureDisplaySize);

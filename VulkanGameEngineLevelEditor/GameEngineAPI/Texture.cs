@@ -282,7 +282,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED
                 };
 
-                CTexture.CreateTextureImage(imageInfo, out VkImage tempImage, out VkDeviceMemory memory, Width, Height, TextureByteFormat, MipMapLevels);
+                VkDeviceMemory memory = new VkDeviceMemory();
+                VkImage tempImage = new VkImage();
+                CTexture.BaseCreateImageTexture(imageInfo, ref tempImage, ref memory, Width, Height, TextureByteFormat, MipMapLevels);
                 CTexture.QuickTransitionImageLayout(tempImage, VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, MipMapLevels, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT);
                 CTexture.CopyBufferToTexture(ref tempBuffer, tempImage, new VkExtent3D { width = (uint)Width, height = (uint)Height, depth = 1 }, TextureUsage, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT);
 
@@ -334,7 +336,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED
                 };
 
-                CTexture.CreateTextureImage(imageInfo, out VkImage tempImage, out VkDeviceMemory memory, Width, Height, TextureByteFormat, MipMapLevels);
+                VkDeviceMemory memory = new VkDeviceMemory();
+                VkImage tempImage = new VkImage();
+                CTexture.BaseCreateImageTexture(imageInfo, ref tempImage, ref memory, Width, Height, TextureByteFormat, MipMapLevels);
                 CTexture.QuickTransitionImageLayout(tempImage, TextureImageLayout, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, MipMapLevels, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT);
                 CTexture.CopyBufferToTexture(ref tempBuffer, tempImage, new VkExtent3D { width = (uint)Width, height = (uint)Height, depth = 1 }, TextureUsage, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT);
 

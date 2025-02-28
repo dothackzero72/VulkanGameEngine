@@ -154,17 +154,17 @@ void Texture::CreateTextureSampler()
 		.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
 		.magFilter = VK_FILTER_NEAREST,
 		.minFilter = VK_FILTER_NEAREST,
-		.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST, // Disable mipmaps, pixel perfect
-		.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, // Prevent wrapping.
+		.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST,
+		.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 
 		.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-		.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, //Usually not important
+		.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
 		.mipLodBias = 0,
-		.anisotropyEnable = VK_FALSE, // Disable for pixel-perfect rendering, to avoid blur.
-		.maxAnisotropy = 1.0f,  // No anisotropy
+		.anisotropyEnable = VK_FALSE,
+		.maxAnisotropy = 1.0f, 
 		.compareEnable = VK_FALSE,
 		.compareOp = VK_COMPARE_OP_ALWAYS,
 		.minLod = 0,
-		.maxLod = 0.0f, // No mipmaps, LOD is 0
+		.maxLod = 0.0f,
 		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
 		.unnormalizedCoordinates = VK_FALSE,
 	};
@@ -187,142 +187,35 @@ void Texture::ImGuiShowTexture(const ImVec2& TextureDisplaySize)
 	ImGui::Image(ImGuiDescriptorSet, TextureDisplaySize);
 }
 
-void Texture::UpdateImageLayout(VkImageLayout newImageLayout)
+void Texture::UpdateTextureLayout(VkImageLayout newImageLayout)
 {
-	VkImageSubresourceRange ImageSubresourceRange{};
-	ImageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	ImageSubresourceRange.baseMipLevel = 0;
-	ImageSubresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
-	ImageSubresourceRange.layerCount = 1;
-
-	VkImageMemoryBarrier ImageMemoryBarrier = {};
-	ImageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	ImageMemoryBarrier.oldLayout = TextureImageLayout;
-	ImageMemoryBarrier.newLayout = newImageLayout;
-	ImageMemoryBarrier.image = Image;
-	ImageMemoryBarrier.subresourceRange = ImageSubresourceRange;
-	ImageMemoryBarrier.srcAccessMask = 0;
-	ImageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-	auto SingleCommand = Renderer_BeginSingleUseCommandBuffer(cRenderer.Device, cRenderer.CommandPool);
-	vkCmdPipelineBarrier(SingleCommand, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &ImageMemoryBarrier);
-	VkResult result = Renderer_EndSingleUseCommandBuffer(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, SingleCommand);
-	if (result == VK_SUCCESS)
-	{
-		TextureImageLayout = newImageLayout;
-	}
+	Texture_UpdateTextureLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, &TextureImageLayout, &newImageLayout, MipMapLevels);
 }
 
-void Texture::UpdateImageLayout(VkImageLayout newImageLayout, uint32_t MipLevel)
+void Texture::UpdateTextureLayout(VkImageLayout newImageLayout, uint32_t mipLevel)
 {
-	VkImageSubresourceRange ImageSubresourceRange{};
-	ImageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	ImageSubresourceRange.baseMipLevel = MipLevel;
-	ImageSubresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
-	ImageSubresourceRange.layerCount = 1;
-
-	VkImageMemoryBarrier ImageMemoryBarrier = {};
-	ImageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	ImageMemoryBarrier.oldLayout = TextureImageLayout;
-	ImageMemoryBarrier.newLayout = newImageLayout;
-	ImageMemoryBarrier.image = Image;
-	ImageMemoryBarrier.subresourceRange = ImageSubresourceRange;
-	ImageMemoryBarrier.srcAccessMask = 0;
-	ImageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-	auto SingleCommand = Renderer_BeginSingleUseCommandBuffer(cRenderer.Device, cRenderer.CommandPool);
-	vkCmdPipelineBarrier(SingleCommand, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &ImageMemoryBarrier);
-	VkResult result = Renderer_EndSingleUseCommandBuffer(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, SingleCommand);
-	if (result == VK_SUCCESS)
-	{
-		TextureImageLayout = newImageLayout;
-	}
+	Texture_UpdateTextureLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, &TextureImageLayout, &newImageLayout, mipLevel);
 }
 
-void Texture::UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout)
+void Texture::UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout)
 {
-	VkImageSubresourceRange ImageSubresourceRange{};
-	ImageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	ImageSubresourceRange.baseMipLevel = 0;
-	ImageSubresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
-	ImageSubresourceRange.layerCount = 1;
-
-	VkImageMemoryBarrier barrier = {};
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.oldLayout = oldImageLayout;
-	barrier.newLayout = newImageLayout;
-	barrier.image = Image;
-	barrier.subresourceRange = ImageSubresourceRange;
-	barrier.srcAccessMask = 0;
-	barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
-	TextureImageLayout = newImageLayout;
+	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, oldImageLayout, &newImageLayout, MipMapLevels);
 }
 
-void Texture::UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, uint32_t MipLevel)
+void Texture::UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, uint32_t mipLevel)
 {
-	VkImageSubresourceRange ImageSubresourceRange{};
-	ImageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	ImageSubresourceRange.baseMipLevel = MipLevel;
-	ImageSubresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
-	ImageSubresourceRange.layerCount = 1;
-
-	VkImageMemoryBarrier barrier = {};
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.oldLayout = oldImageLayout;
-	barrier.newLayout = newImageLayout;
-	barrier.image = Image;
-	barrier.subresourceRange = ImageSubresourceRange;
-	barrier.srcAccessMask = 0;
-	barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
-	TextureImageLayout = newImageLayout;
+	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, oldImageLayout, &newImageLayout, mipLevel);
 }
 
-void Texture::UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout)
+void Texture::UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout)
 {
-	VkImageSubresourceRange ImageSubresourceRange{};
-	ImageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	ImageSubresourceRange.baseMipLevel = 0;
-	ImageSubresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
-	ImageSubresourceRange.layerCount = 1;
-
-	VkImageMemoryBarrier barrier = {};
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.oldLayout = TextureImageLayout;
-	barrier.newLayout = newImageLayout;
-	barrier.image = Image;
-	barrier.subresourceRange = ImageSubresourceRange;
-	barrier.srcAccessMask = 0;
-	barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
-	TextureImageLayout = newImageLayout;
+	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, TextureImageLayout, &newImageLayout, MipMapLevels);
 }
 
-void Texture::UpdateImageLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout, uint32_t MipLevel)
+void Texture::UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout, uint32_t mipLevel)
 {
-	VkImageSubresourceRange ImageSubresourceRange{};
-	ImageSubresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	ImageSubresourceRange.baseMipLevel = MipLevel;
-	ImageSubresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
-	ImageSubresourceRange.layerCount = 1;
-
-	VkImageMemoryBarrier barrier = {};
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.oldLayout = TextureImageLayout;
-	barrier.newLayout = newImageLayout;
-	barrier.image = Image;
-	barrier.subresourceRange = ImageSubresourceRange;
-	barrier.srcAccessMask = 0;
-	barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
-	TextureImageLayout = newImageLayout;
+	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, TextureImageLayout, &newImageLayout, mipLevel);
 }
-
 
 VkResult Texture::NewTextureImage()
 {
@@ -344,7 +237,7 @@ VkResult Texture::TransitionImageLayout(VkImageLayout newLayout)
 	return Texture_QuickTransitionImageLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, MipMapLevels, &TextureImageLayout, &newLayout);
 }
 
-VkResult Texture::TransitionImageLayout(VkImageLayout oldLayout, VkImageLayout newLayout)
+VkResult Texture::TransitionImageLayout(VkImageLayout& oldLayout, VkImageLayout newLayout)
 {
 	return Texture_QuickTransitionImageLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, MipMapLevels, &oldLayout, &newLayout);
 }
@@ -354,7 +247,7 @@ VkResult Texture::TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLa
 	return Texture_CommandBufferTransitionImageLayout(commandBuffer, Image, MipMapLevels, TextureImageLayout, newLayout);
 }
 
-VkResult Texture::TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout)
+VkResult Texture::TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout& oldLayout, VkImageLayout newLayout)
 {
 	return Texture_CommandBufferTransitionImageLayout(commandBuffer, Image, MipMapLevels, oldLayout, newLayout);
 }

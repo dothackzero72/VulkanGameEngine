@@ -69,7 +69,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED
             };
 
-            CTexture.CreateTextureImage(imageInfo,out var tempImage, out  var memory, Width, Height, TextureByteFormat, MipMapLevels);
+            VkDeviceMemory memory = new VkDeviceMemory();
+            VkImage tempImage = new VkImage();
+            CTexture.BaseCreateImageTexture(imageInfo, ref tempImage, ref memory, Width, Height, TextureByteFormat, MipMapLevels);
             Memory = memory;
             Image = tempImage;
         }
