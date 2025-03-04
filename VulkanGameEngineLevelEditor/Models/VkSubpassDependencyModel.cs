@@ -17,15 +17,15 @@ using VulkanGameEngineLevelEditor.Vulkan;
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    public class VkSubpassDependency : RenderPassEditorBaseModel
+    public class VkSubpassDependencyModel : RenderPassEditorBaseModel
     {
         private uint _srcSubpass;
         private uint _dstSubpass;
         private VkPipelineStageFlagBits _srcStageMask;
         private VkPipelineStageFlagBits _dstStageMask;
-        private VkAccessFlags _srcAccessMask;
-        private VkAccessFlags _dstAccessMask;
-        private VkAccessFlagBits _dependencyFlags;
+        private VkAccessFlagBits _srcAccessMask;
+        private VkAccessFlagBits _dstAccessMask;
+        private VkDependencyFlagBits _dependencyFlags;
 
 
         [Category("Subpass Dependency")]
@@ -91,7 +91,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [Category("Access Masks")]
         [Browsable(true)]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkAccessFlags srcAccessMask
+        public VkAccessFlagBits srcAccessMask
         {
             get => _srcAccessMask;
             set
@@ -107,7 +107,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [Category("Access Masks")]
         [Browsable(true)]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkAccessFlags dstAccessMask
+        public VkAccessFlagBits dstAccessMask
         {
             get => _dstAccessMask;
             set
@@ -122,7 +122,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         [Category("Subpass Dependency")]
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public VkAccessFlagBits dependencyFlags
+        public VkDependencyFlagBits dependencyFlags
         {
             get => _dependencyFlags;
             set
@@ -135,20 +135,20 @@ namespace VulkanGameEngineLevelEditor.Models
             }
         }
 
-        public VkSubpassDependency() : base()
+        public VkSubpassDependencyModel() : base()
         {
         }
-        public VkSubpassDependency(string jsonFilePath) : base()
+        public VkSubpassDependencyModel(string jsonFilePath) : base()
         {
             LoadJsonComponent(jsonFilePath);
         }
 
-        public VkSubpassDependency(string name, string jsonFilePath) : base(name)
+        public VkSubpassDependencyModel(string name, string jsonFilePath) : base(name)
         {
             LoadJsonComponent(ConstConfig.DefaultSubpassDependencyModel);
         }
 
-        public VkSubpassDependency(uint? srcSubpass = null, uint? dstSubpass = null, VkPipelineStageFlagBits? srcStageMask = null, VkPipelineStageFlagBits? dstStageMask = null, VkAccessFlags? srcAccessMask = null, VkAccessFlags? dstAccessMask = null, VkAccessFlagBits? dependencyFlags = null)
+        public VkSubpassDependencyModel(uint? srcSubpass = null, uint? dstSubpass = null, VkPipelineStageFlagBits? srcStageMask = null, VkPipelineStageFlagBits? dstStageMask = null, VkAccessFlagBits? srcAccessMask = null, VkAccessFlagBits? dstAccessMask = null, VkDependencyFlagBits? dependencyFlags = null)
         {
             if (srcSubpass.HasValue)
             {
@@ -186,10 +186,24 @@ namespace VulkanGameEngineLevelEditor.Models
             }
         }
 
+        public VkSubpassDependency Convert()
+        {
+            return new VkSubpassDependency()
+            {
+                dstAccessMask = dstAccessMask,
+                srcAccessMask = srcAccessMask,
+                srcStageMask = srcStageMask,
+                dstStageMask = dstStageMask,
+                dependencyFlags = dependencyFlags,
+                dstSubpass = dstSubpass,
+                srcSubpass = srcSubpass
+            };
+        }
+
         public void LoadJsonComponent(string jsonPath)
         {
-            var obj = base.LoadJsonComponent<VkSubpassDependency>(jsonPath);
-            foreach (PropertyInfo property in typeof(VkSubpassDependency).GetProperties())
+            var obj = base.LoadJsonComponent<VkSubpassDependencyModel>(jsonPath);
+            foreach (PropertyInfo property in typeof(VkSubpassDependencyModel).GetProperties())
             {
                 if (property.CanWrite)
                 {

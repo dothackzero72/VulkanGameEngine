@@ -12,6 +12,8 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
+
+
     public unsafe class Scene
     {
         Vk vk = Vk.GetApi();
@@ -21,7 +23,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         static readonly long startTime = DateTime.Now.Ticks;
         public List<Texture> textureList { get; set; } = new List<Texture>();
         public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
-        JsonRenderPass renderPass3D { get; set; } = new JsonRenderPass();
+       // JsonRenderPass renderPass3D { get; set; } = new JsonRenderPass();
         FrameBufferRenderPass frameBufferRenderPass { get; set; } = new FrameBufferRenderPass();
         public void StartUp()
         {
@@ -48,8 +50,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }));
 
             // MemoryManager.ViewMemoryMap();
-            renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
-            frameBufferRenderPass.BuildRenderPass(renderPass3D.RenderedColorTextureList[0]);
+           // renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
+            frameBufferRenderPass.BuildRenderPass(textureList[0]);
         }
 
         public void Input(KeyEventArgs e)
@@ -78,7 +80,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             List<VkCommandBuffer> commandBufferList = new List<VkCommandBuffer>();
             VulkanRenderer.StartFrame();
-            commandBufferList.Add(renderPass3D.Draw(GameObjectList, sceneProperties));
+           // commandBufferList.Add(renderPass3D.Draw(GameObjectList, sceneProperties));
             commandBufferList.Add(frameBufferRenderPass.Draw());
             VulkanRenderer.EndFrame(commandBufferList);
         }

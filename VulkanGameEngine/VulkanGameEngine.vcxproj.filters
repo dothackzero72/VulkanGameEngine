@@ -36,12 +36,6 @@
     <ClCompile Include="RenderedColorTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderCompiler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -84,9 +78,6 @@
     <ClCompile Include="..\External\ImPlot\implot_items.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BakedTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -121,9 +112,6 @@
       <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="DepthTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="File.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FPSGraph.cpp">
@@ -177,6 +165,15 @@
     <ClCompile Include="Transform3DComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FrameBufferRenderPass.h">
@@ -203,25 +200,13 @@
     <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCompiler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SceneDataBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="json.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ProgramStats.h">
@@ -266,9 +251,6 @@
     <ClInclude Include="..\External\ImPlot\implot_internal.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BakedTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -276,9 +258,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JsonRenderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JsonStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DepthTexture.h">
@@ -300,9 +279,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JsonPipeline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="File.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Transform2DComponent.h">
@@ -343,6 +319,15 @@
     </ClInclude>
     <ClInclude Include="Transform3DComponent.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

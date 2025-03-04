@@ -14,7 +14,7 @@ using VulkanGameEngineLevelEditor.Vulkan;
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    public unsafe class VkAttachmentDescription : RenderPassEditorBaseModel
+    public unsafe class VkAttachmentDescriptionModel : RenderPassEditorBaseModel
     {
         private VkStructureType _structureType;
         private VkAttachmentDescriptionFlagBits _flags;
@@ -154,24 +154,55 @@ namespace VulkanGameEngineLevelEditor.Models
             }
         }
 
-        public VkAttachmentDescription() : base()
+        public VkAttachmentDescriptionModel() : base()
         {
         }
 
-        public VkAttachmentDescription(string jsonFilePath) : base()
+        public VkAttachmentDescriptionModel(string jsonFilePath) : base()
         {
             LoadJsonComponent(jsonFilePath);
         }
 
-        public VkAttachmentDescription(string name, string jsonFilePath) : base(name)
+        public VkAttachmentDescriptionModel(string name, string jsonFilePath) : base(name)
         {
             LoadJsonComponent(ConstConfig.DefaultColorAttachmentDescriptionModel);
         }
 
+        public VkAttachmentDescription Convert()
+        {
+            return new VkAttachmentDescription
+            {
+                flags = flags,
+                format = format,
+                samples = samples,
+                loadOp = loadOp,
+                storeOp = storeOp,
+                stencilLoadOp = stencilLoadOp,
+                stencilStoreOp = stencilStoreOp,
+                initialLayout = initialLayout,
+                finalLayout = finalLayout
+            };
+        }
+
+        public VkAttachmentDescription* ConvertPtr()
+        {
+            VkAttachmentDescription* attachmentDescription = (VkAttachmentDescription*)Marshal.AllocHGlobal(sizeof(VkAttachmentDescription));
+            attachmentDescription->flags = flags;
+            attachmentDescription->format = format;
+            attachmentDescription->samples = samples;
+            attachmentDescription->loadOp = loadOp;
+            attachmentDescription->storeOp = storeOp;
+            attachmentDescription->stencilLoadOp = stencilLoadOp;
+            attachmentDescription->stencilStoreOp = stencilStoreOp;
+            attachmentDescription->initialLayout = initialLayout;
+            attachmentDescription->finalLayout = finalLayout;
+            return attachmentDescription;
+        }
+
         public void LoadJsonComponent(string jsonPath)
         {
-            var obj = base.LoadJsonComponent<VkAttachmentDescription>(jsonPath);
-            foreach (PropertyInfo property in typeof(VkAttachmentDescription).GetProperties())
+            var obj = base.LoadJsonComponent<VkAttachmentDescriptionModel>(jsonPath);
+            foreach (PropertyInfo property in typeof(VkAttachmentDescriptionModel).GetProperties())
             {
                 if (property.CanWrite)
                 {

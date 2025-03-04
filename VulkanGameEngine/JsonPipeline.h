@@ -3,6 +3,8 @@
 #include "Typedef.h"
 #include "JsonRenderPass.h"
 #include "Mesh.h"
+#include "VulkanPipeline.h"
+#include "json.h"
 
 class Material;
 class Texture;

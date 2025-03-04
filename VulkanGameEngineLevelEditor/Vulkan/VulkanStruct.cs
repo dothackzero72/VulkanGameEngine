@@ -11,6 +11,261 @@ using VulkanGameEngineLevelEditor.Models;
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
     [StructLayout(LayoutKind.Sequential)]
+    public struct VkAttachmentReference
+    {
+        public uint attachment;
+        public VkImageLayout layout;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkStencilOpState
+    {
+        public VkStencilOp failOp;
+        public VkStencilOp passOp;
+        public VkStencilOp depthFailOp;
+        public VkCompareOp compareOp;
+        public uint compareMask;
+        public uint writeMask;
+        public uint reference;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkSubpassDependency
+    {
+        public uint srcSubpass;
+        public uint dstSubpass;
+        public VkPipelineStageFlagBits srcStageMask;
+        public VkPipelineStageFlagBits dstStageMask;
+        public VkAccessFlagBits srcAccessMask;
+        public VkAccessFlagBits dstAccessMask;
+        public VkDependencyFlagBits dependencyFlags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineDepthStencilStateCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkPipelineDepthStencilStateCreateFlagBits flags;
+        public bool depthTestEnable;
+        public bool depthWriteEnable;
+        public VkCompareOp depthCompareOp;
+        public bool depthBoundsTestEnable;
+        public bool stencilTestEnable;
+        public VkStencilOpState front;
+        public VkStencilOpState back;
+        public float minDepthBounds;
+        public float maxDepthBounds;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineColorBlendStateCreateInfo
+    {
+        public struct Blender
+        {
+            public float R { get; set; } = 0.0f;
+            public float G { get; set; } = 0.0f;
+            public float B { get; set; } = 0.0f;
+            public float A { get; set; } = 0.0f;
+            public Blender()
+            {
+            }
+        }
+
+        public VkStructureType sType;
+        public void* pNext;
+        public VkPipelineColorBlendStateCreateFlagBits flags;
+        public bool logicOpEnable;
+        public VkLogicOp logicOp;
+        public uint attachmentCount;
+        public VkPipelineColorBlendAttachmentState* pAttachments;
+        public Blender blendConstants;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkAttachmentDescription
+    {
+        public VkAttachmentDescriptionFlagBits flags;
+        public VkFormat format;
+        public VkSampleCountFlagBits samples;
+        public VkAttachmentLoadOp loadOp;
+        public VkAttachmentStoreOp storeOp;
+        public VkAttachmentLoadOp stencilLoadOp;
+        public VkAttachmentStoreOp stencilStoreOp;
+        public VkImageLayout initialLayout;
+        public VkImageLayout finalLayout;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineMultisampleStateCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkCullModeFlagBits flags;
+        public VkSampleCountFlagBits rasterizationSamples;
+        public bool sampleShadingEnable;
+        public float minSampleShading;
+        public VkSampleMask* pSampleMask;
+        public bool alphaToCoverageEnable;
+        public bool alphaToOneEnable;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkSamplerCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkSamplerCreateFlagBits flags;
+        public VkFilter magFilter;
+        public VkFilter minFilter;
+        public VkSamplerMipmapMode mipmapMode;
+        public VkSamplerAddressMode addressModeU;
+        public VkSamplerAddressMode addressModeV;
+        public VkSamplerAddressMode addressModeW;
+        public float mipLodBias;
+        public bool anisotropyEnable;
+        public float maxAnisotropy;
+        public bool compareEnable;
+        public VkCompareOp compareOp;
+        public float minLod;
+        public float maxLod;
+        public VkBorderColor borderColor;
+        public bool unnormalizedCoordinates;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkViewport
+    {
+        public float x;
+        public float y;
+        public float width;
+        public float height;
+        public float minDepth;
+        public float maxDepth;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkOffset2D
+    {
+        public int x;
+        public int y;
+
+        public VkOffset2D(int x, int y) : this()
+        {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkRect2D
+    {
+        public VkOffset2D offset;
+        public VkExtent2D extent;
+        private VkOffset2D vkOffset2D;
+        private VkExtent2D swapChainResolution;
+
+        public VkRect2D(VkOffset2D vkOffset2D, VkExtent2D swapChainResolution) : this()
+        {
+            this.vkOffset2D = vkOffset2D;
+            this.swapChainResolution = swapChainResolution;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkDescriptorSetLayoutBinding
+    {
+        public uint binding;
+        public VkDescriptorType descriptorType;
+        public uint descriptorCount;
+        public VkShaderStageFlagBits stageFlags;
+         public VkSampler* pImmutableSamplers;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineRasterizationStateCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkCullModeFlagBits flags;
+        public bool depthClampEnable;
+        public bool rasterizerDiscardEnable;
+        public VkPolygonMode polygonMode;
+        public VkCullModeFlagBits cullMode;
+        public VkFrontFace frontFace;
+        public bool depthBiasEnable;
+        public float depthBiasConstantFactor;
+        public float depthBiasClamp;
+        public float depthBiasSlopeFactor;
+        public float lineWidth;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkPipelineColorBlendAttachmentState
+    {
+        public bool blendEnable;
+        public VkBlendFactor srcColorBlendFactor;
+        public VkBlendFactor dstColorBlendFactor;
+        public VkBlendOp colorBlendOp;
+        public VkBlendFactor srcAlphaBlendFactor;
+        public VkBlendFactor dstAlphaBlendFactor;
+        public VkBlendOp alphaBlendOp;
+        public VkColorComponentFlagBits colorWriteMask;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkPipelineInputAssemblyStateCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkCullModeFlagBits flags;
+        public VkPrimitiveTopology topology;
+        public bool primitiveRestartEnable;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkExtent2D
+    {
+        public uint width;
+        public uint height;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkExtent3D
+    {
+        public uint width;
+        public uint height;
+        public uint depth;
+
+        public VkExtent3D(uint width, uint height, uint depth) : this()
+        {
+            this.width = width;
+            this.height = height;
+            this.depth = depth;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkImageCreateInfo
+    {
+        public VkStructureType sType;
+        public void* pNext;
+        public VkImageCreateFlagBits flags;
+        public VkImageType imageType;
+        public VkFormat format;
+        public VkExtent3D extent;
+        public uint mipLevels;
+        public uint arrayLayers;
+        public VkSampleCountFlagBits samples;
+        public VkImageTiling tiling;
+        public VkImageUsageFlagBits usage;
+        public VkSharingMode sharingMode;
+        public uint queueFamilyIndexCount;
+        public uint* pQueueFamilyIndices;
+        public VkImageLayout initialLayout;
+    };
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct VkSurfaceCapabilitiesKHR
     {
         public uint minImageCount;

@@ -45,7 +45,7 @@ namespace VulkanGameEngineGameObjectScripts.Component
 
         }
 
-        public override void Draw(nint commandBuffer, ulong pipeline, ulong pipelineLayout, ulong descriptorSet, SceneDataBuffer sceneProperties)
+        public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
 
         }

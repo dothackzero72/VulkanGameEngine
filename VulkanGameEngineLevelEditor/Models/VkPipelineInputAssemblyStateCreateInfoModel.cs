@@ -12,7 +12,7 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public unsafe class VkPipelineInputAssemblyStateCreateInfo
+    public unsafe class VkPipelineInputAssemblyStateCreateInfoModel
     {
         public VkStructureType sType { get; set; } = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
         public VkPrimitiveTopology topology { get; set; }
@@ -20,6 +20,17 @@ namespace VulkanGameEngineLevelEditor.Models
         public uint flags { get; set; } = 0;
         [JsonIgnore]
         public void* pNext { get; set; } = null;
-        public VkPipelineInputAssemblyStateCreateInfo() { }
+        public VkPipelineInputAssemblyStateCreateInfoModel() { }
+
+        public VkPipelineInputAssemblyStateCreateInfo* ConvertPtr()
+        {
+            VkPipelineInputAssemblyStateCreateInfo* ptr = (VkPipelineInputAssemblyStateCreateInfo*)Marshal.AllocHGlobal(sizeof(VkPipelineInputAssemblyStateCreateInfo));
+            ptr->sType = sType;
+            ptr->topology = topology;
+            ptr->primitiveRestartEnable = primitiveRestartEnable;
+            ptr->flags = 0;
+            ptr->pNext = null;
+            return ptr;
+        }
     }
 }

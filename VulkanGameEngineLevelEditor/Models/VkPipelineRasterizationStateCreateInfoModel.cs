@@ -13,7 +13,7 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public unsafe class VkPipelineRasterizationStateCreateInfo
+    public unsafe class VkPipelineRasterizationStateCreateInfoModel
     {
         public VkStructureType sType { get; set; } = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         public bool depthClampEnable { get; set; }
@@ -30,7 +30,25 @@ namespace VulkanGameEngineLevelEditor.Models
         [JsonIgnore]
         public void* pNext { get; set; } = null;
 
-       public VkPipelineRasterizationStateCreateInfo() { }
+       public VkPipelineRasterizationStateCreateInfoModel() { }
 
+        public VkPipelineRasterizationStateCreateInfo* ConvertPtr()
+        {
+            VkPipelineRasterizationStateCreateInfo* ptr = (VkPipelineRasterizationStateCreateInfo*)Marshal.AllocHGlobal(sizeof(VkPipelineRasterizationStateCreateInfo));
+            ptr->sType = sType;
+            ptr->depthClampEnable = depthClampEnable;
+            ptr->rasterizerDiscardEnable = depthClampEnable;
+            ptr->polygonMode = polygonMode;
+            ptr->cullMode = cullMode;
+            ptr->frontFace = frontFace;
+            ptr->depthBiasEnable = depthBiasEnable;
+            ptr->depthBiasConstantFactor = depthBiasConstantFactor;
+            ptr->depthBiasClamp = depthBiasClamp;
+            ptr->depthBiasSlopeFactor = depthBiasSlopeFactor;
+            ptr->lineWidth = lineWidth;
+            ptr->flags = 0;
+            ptr->pNext = null;
+            return ptr;
+        }
     }
 }

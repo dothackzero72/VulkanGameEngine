@@ -8,18 +8,19 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
     [TypeConverter(typeof(VkExtent3DConverter))]
-    public unsafe class VkExtent3D : RenderPassEditorBaseModel
+    public unsafe class VkExtent3DModel : RenderPassEditorBaseModel
     {
         public uint _width { get; set; }
         public uint _height { get; set; }
         public uint _depth { get; set; }
 
-        public VkExtent3D()
+        public VkExtent3DModel()
         {
         }
 
@@ -68,7 +69,7 @@ namespace VulkanGameEngineLevelEditor.Models
             }
         }
 
-        public VkExtent3D(uint? width = null, uint? height = null, uint? depth = null)
+        public VkExtent3DModel(uint? width = null, uint? height = null, uint? depth = null)
         {
             if (width.HasValue)
             {
@@ -86,7 +87,7 @@ namespace VulkanGameEngineLevelEditor.Models
             }
         }
 
-        public VkExtent3D(Extent3D other)
+        public VkExtent3DModel(Extent3D other)
         {
             _width = other.Width;
             _height = other.Height;
@@ -98,22 +99,22 @@ namespace VulkanGameEngineLevelEditor.Models
             return $"{width}, {height}, {depth}";
         }
 
-        public Extent3D Convert()
+        public VkExtent3D Convert()
         {
-            return new Extent3D
+            return new VkExtent3D
             {
-                Width = _width,
-                Height = _height,
-                Depth = _depth
+                width = _width,
+                height = _height,
+                depth = _depth
             };
         }
 
-        public Extent3D* ConvertPtr()
+        public VkExtent3D* ConvertPtr()
         {
-            Extent3D* extent = (Extent3D*)Marshal.AllocHGlobal(sizeof(Extent3D));
-            extent->Width = _width;
-            extent->Height = _height;
-            extent->Depth = _depth;
+            VkExtent3D* extent = (VkExtent3D*)Marshal.AllocHGlobal(sizeof(VkExtent3D));
+            extent->width = _width;
+            extent->height = _height;
+            extent->depth = _depth;
             return extent;
         }
 

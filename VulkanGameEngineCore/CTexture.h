@@ -7,6 +7,14 @@
 extern "C" {
 #endif
 
+    typedef enum ColorChannelUsed
+    {
+        ChannelR = 1,
+        ChannelRG,
+        ChannelRGB,
+        ChannelRGBA
+    };
+
     typedef enum TextureUsageEnum
 {
     kUse_Undefined,
@@ -50,10 +58,23 @@ typedef enum TextureTypeEnum
 void Texture_UpdateTextureLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkImageLayout* oldImageLayout, VkImageLayout* newImageLayout, uint32 MipLevel);
 void Texture_UpdateCmdTextureLayout(VkCommandBuffer* commandBuffer, VkImage image, VkImageLayout oldImageLayout, VkImageLayout* newImageLayout, uint32 MipLevel);
 
+void Texture_UploadTexture(VkDevice device,
+    VkPhysicalDevice physicalDevice,
+    VkCommandPool commandPool,
+    VkQueue graphicsQueue,
+    int* width,
+    int* height,
+    int* depth,
+    VkFormat* textureByteFormat,
+    uint* mipmapLevels,
+    void* textureData,
+    VkImage* textureImage,
+    VkDeviceMemory* textureMemory,
+    VkImageLayout* textureImageLayout,
+    enum ColorChannelUsed* colorChannelUsed,
+    const char* filePath);
 VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* image, uint32 mipmapLevels, VkImageLayout* oldLayout, VkImageLayout newLayout);
-VkResult Texture_BaseCreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, VkImageCreateInfo imageCreateInfo);
-VkResult Texture_NewTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat);
-VkResult Texture_CreateTextureImage(VkDevice Device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat);
+VkResult Texture_CreateImage(VkDevice Device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, VkImageCreateInfo imageCreateInfo);
 VkResult Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, uint32 mipmapLevels, VkImageLayout* oldLayout, VkImageLayout* newLayout);
 VkResult Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint32 mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout);
 VkResult Texture_CopyBufferToTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkBuffer buffer, enum TextureUsageEnum textureType, int width, int height, int depth);

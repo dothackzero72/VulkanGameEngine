@@ -1,4 +1,5 @@
 #include "TextureDLL.h"
+#include <TextureCPP.h>
 
 	void DLL_Texture_UpdateTextureLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkImageLayout* oldImageLayout, VkImageLayout* newImageLayout, uint32 mipLevel)
 	{
@@ -15,19 +16,9 @@
 		return Texture_TransitionImageLayout(commandBuffer, image, mipmapLevels, oldLayout, newLayout);
 	}
 
-	VkResult DLL_Texture_BaseCreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, VkImageCreateInfo imageCreateInfo)
+	VkResult DLL_Texture_CreateImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, VkImageCreateInfo ImageCreateInfo)
 	{
-		return Texture_BaseCreateTextureImage(device, physicalDevice, image, memory, imageCreateInfo);
-	}
-
-	VkResult DLL_Texture_NewTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat)
-	{
-		return Texture_NewTextureImage(device, physicalDevice, image, memory, width, height, mipmapLevels, textureByteFormat);
-	}
-
-	VkResult DLL_Texture_CreateTextureImage(VkDevice Device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat)
-	{
-		return Texture_CreateTextureImage(Device, physicalDevice, image, memory, width, height, mipmapLevels, textureByteFormat);
+		return Texture_CreateImage(device, physicalDevice, image, memory, ImageCreateInfo);
 	}
 
 	VkResult DLL_Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, uint32 mipmapLevels, VkImageLayout* oldLayout, VkImageLayout* newLayout)
@@ -58,4 +49,38 @@
 	VkResult DLL_Texture_CreateTextureSampler(VkDevice device, VkSamplerCreateInfo* samplerCreateInfo, VkSampler* smapler)
 	{
 		return Texture_CreateTextureSampler(device, samplerCreateInfo, smapler);
+	}
+
+	void DLL_Texture_CreateImageTexture(VkDevice device,
+		VkPhysicalDevice physicalDevice,
+		VkCommandPool commandPool,
+		VkQueue graphicsQueue,
+		int* width,
+		int* height,
+		int* depth,
+		VkFormat textureByteFormat,
+		uint mipmapLevels,
+		VkImage* textureImage,
+		VkDeviceMemory* textureMemory,
+		VkImageLayout* textureImageLayout,
+		enum ColorChannelUsed* colorChannelUsed,
+		enum TextureUsageEnum textureUsage,
+		const char* filePath)
+	{
+		const std::string path(filePath);
+		return Texture_CreateImageTexture(device,
+			physicalDevice,
+			commandPool,
+			graphicsQueue,
+			width,
+			height,
+			depth,
+			textureByteFormat,
+			mipmapLevels,
+			textureImage,
+			textureMemory,
+			textureImageLayout,
+			colorChannelUsed,
+			textureUsage,
+			path);
 	}

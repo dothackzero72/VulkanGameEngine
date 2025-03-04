@@ -1,7 +1,69 @@
 #include "CTexture.h"
 #include "CVulkanRenderer.h"
+#include "CBuffer.h"
 
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
+void Texture_UploadTexture(VkDevice device,
+	VkPhysicalDevice physicalDevice,
+	VkCommandPool commandPool,
+	VkQueue graphicsQueue,
+	int* width,
+	int* height,
+	int* depth,
+	VkFormat* textureByteFormat,
+	uint* mipmapLevels,
+	void* textureData,
+	VkImage* textureImage,
+	VkDeviceMemory* textureMemory,
+	VkImageLayout* textureImageLayout,
+	enum ColorChannelUsed* colorChannelUsed,
+	const char* filePath)
+{
+	if (!filePath || !width || !height || !colorChannelUsed) {
+		printf("Invalid parameters passed to Texture_UploadTexture\n");
+		return;
+	}
+
+	VkBufferUsageFlags bufferUsage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+	VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+
+	VkBuffer buffer = VK_NULL_HANDLE;
+	VkBuffer stagingBuffer = VK_NULL_HANDLE;
+	VkDeviceMemory bufferMemory = VK_NULL_HANDLE;
+	VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
+
+	Buffer_CreateStagingBuffer(device, physicalDevice, commandPool, graphicsQueue,
+		&stagingBuffer, &buffer, &stagingBufferMemory, &bufferMemory,
+		textureData, (*width) * (*height) * (*colorChannelUsed), bufferUsage, properties);
+
+	VkImageCreateInfo imageCreateInfo = {
+		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+		.imageType = VK_IMAGE_TYPE_2D,
+		.format = *textureByteFormat,
+		.extent = {.width = *width, .height = *height, .depth = 1 },
+		.mipLevels = *mipmapLevels,
+		.arrayLayers = 1,
+		.samples = VK_SAMPLE_COUNT_1_BIT,
+		.tiling = VK_IMAGE_TILING_OPTIMAL,
+		.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	};
+
+	VkImageLayout newTextureLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	VULKAN_RESULT(Texture_CreateImage(device, physicalDevice, textureImage, textureMemory, imageCreateInfo));
+	VULKAN_RESULT(Texture_QuickTransitionImageLayout(device, commandPool, graphicsQueue, *textureImage, mipmapLevels, textureImageLayout, &newTextureLayout));
+	VULKAN_RESULT(Texture_CopyBufferToTexture(device, commandPool, graphicsQueue, *textureImage, buffer, newTextureLayout, *width, *height, *depth));
+	VULKAN_RESULT(Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, *textureImage, textureByteFormat, *mipmapLevels, *width, *height));
+
+	// Cleanup
+	vkDestroyBuffer(device, stagingBuffer, NULL);
+	Renderer_FreeDeviceMemory(device, stagingBufferMemory);
+	//stbi_image_free(textureData2); // Free the loaded image data
+}
 
 void Texture_UpdateTextureLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkImageLayout* oldImageLayout, VkImageLayout* newImageLayout, uint32 mipLevel)
 {
@@ -96,81 +158,9 @@ VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* i
 	return VK_SUCCESS;
 }
 
-VkResult Texture_BaseCreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, VkImageCreateInfo imageCreateInfo)
+VkResult Texture_CreateImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, VkImageCreateInfo imageCreateInfo)
 {
 	VULKAN_RESULT(vkCreateImage(device, &imageCreateInfo, NULL, image));
-
-	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(device, *image, &memRequirements);
-
-	VkMemoryAllocateInfo allocInfo =
-	{
-		.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-		.allocationSize = memRequirements.size,
-		.memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-	};
-	VULKAN_RESULT(vkAllocateMemory(device, &allocInfo, NULL, memory));
-	return vkBindImageMemory(device, *image, *memory, 0);
-}
-
-VkResult Texture_NewTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat)
-{
-	VkImageCreateInfo ImageCreateInfo =
-	{
-		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-		.imageType = VK_IMAGE_TYPE_2D,
-		.format = textureByteFormat,
-		.mipLevels = mipmapLevels,
-		.arrayLayers = 1,
-		.samples = VK_SAMPLE_COUNT_1_BIT,
-		.tiling = VK_IMAGE_TILING_LINEAR,
-		.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		.extent =
-		{
-			.width = width,
-			.height = height,
-			.depth = 1
-		}
-	};
-	VULKAN_RESULT(vkCreateImage(device, &ImageCreateInfo, NULL, image));
-
-	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(device, *image, &memRequirements);
-
-	VkMemoryAllocateInfo allocInfo =
-	{
-		.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-		.allocationSize = memRequirements.size,
-		.memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
-	};
-	VULKAN_RESULT(vkAllocateMemory(device, &allocInfo, NULL, memory));
-	return vkBindImageMemory(device, *image, *memory, 0);
-}
-
-VkResult Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkImage* image, VkDeviceMemory* memory, int width, int height, uint32 mipmapLevels, VkFormat textureByteFormat)
-{
-	VkImageCreateInfo ImageCreateInfo =
-	{
-		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-		.imageType = VK_IMAGE_TYPE_2D,
-		.format = textureByteFormat,
-		.mipLevels = mipmapLevels,
-		.arrayLayers = 1,
-		.samples = VK_SAMPLE_COUNT_1_BIT,
-		.tiling = VK_IMAGE_TILING_OPTIMAL,
-		.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
-		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-		.extent =
-		{
-			.width = width,
-			.height = height,
-			.depth = 1
-		},
-	};
-	VULKAN_RESULT(vkCreateImage(device, &ImageCreateInfo, NULL, image));
 
 	VkMemoryRequirements memRequirements;
 	vkGetImageMemoryRequirements(device, *image, &memRequirements);

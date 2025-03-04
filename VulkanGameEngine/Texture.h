@@ -11,14 +11,6 @@ extern "C"
 #include "DynamicVulkanBuffer.h"
 #include "includes.h"
 
-enum ColorChannelUsed
-{
-	ChannelR = 1,
-	ChannelRG,
-	ChannelRGB,
-	ChannelRGBA
-};
-
 class Texture
 {
 private:
@@ -30,9 +22,7 @@ private:
 	VkResult GenerateMipmaps();
 
 protected:
-	VkResult NewTextureImage();
-	VkResult CreateTextureImage();
-	VkResult CreateTextureImage(VkImageCreateInfo& imageCreateInfo);
+	VkResult CreateImage(VkImageCreateInfo& imageCreateInfo);
 	virtual void CreateImageTexture(const Pixel& clearColor);
 	virtual void CreateImageTexture(const String& FilePath);
 	virtual void CreateTextureSampler();

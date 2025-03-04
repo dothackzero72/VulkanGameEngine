@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -15,7 +16,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public List<RenderPipelineModel> RenderPipelineList { get; set; } = new List<RenderPipelineModel>();
 
         public List<RenderedTextureInfoModel> RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>();
-        public List<VkSubpassDependency> SubpassDependencyList { get; set; } = new List<VkSubpassDependency>();
+        public List<VkSubpassDependencyModel> SubpassDependencyList { get; set; } = new List<VkSubpassDependencyModel>();
 
         public RenderPassBuildInfoModel() 
         {

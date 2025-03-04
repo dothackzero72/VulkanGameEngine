@@ -12,7 +12,7 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public unsafe class VkPipelineMultisampleStateCreateInfo
+    public unsafe class VkPipelineMultisampleStateCreateInfoModel
     {
         public VkStructureType sType { get; set; } = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
         public VkSampleCountFlagBits rasterizationSamples { get; set; }
@@ -25,7 +25,8 @@ namespace VulkanGameEngineLevelEditor.Models
         public uint flags { get; set; } = 0;
         [JsonIgnore]
         public void* pNext { get; set; } = null;
-        public VkPipelineMultisampleStateCreateInfo() { }
+        public VkPipelineMultisampleStateCreateInfoModel() { }
+
         public VkPipelineMultisampleStateCreateInfo* ConvertPtr()
         {
             VkPipelineMultisampleStateCreateInfo* ptr = (VkPipelineMultisampleStateCreateInfo*)Marshal.AllocHGlobal(sizeof(VkPipelineMultisampleStateCreateInfo));

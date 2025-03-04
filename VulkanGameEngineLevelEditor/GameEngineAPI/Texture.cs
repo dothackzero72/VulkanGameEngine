@@ -11,6 +11,8 @@ using Image = Silk.NET.Vulkan.Image;
 using System.Collections.Generic;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.Models;
+using static System.Windows.Forms.DataFormats;
+using Silk.NET.SDL;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -281,12 +283,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     sharingMode = VkSharingMode.VK_SHARING_MODE_EXCLUSIVE,
                     initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED
                 };
-
-                VkDeviceMemory memory = new VkDeviceMemory();
                 VkImage tempImage = new VkImage();
-                CTexture.BaseCreateImageTexture(imageInfo, ref tempImage, ref memory, Width, Height, TextureByteFormat, MipMapLevels);
-                CTexture.QuickTransitionImageLayout(tempImage, VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, MipMapLevels, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT);
-                CTexture.CopyBufferToTexture(ref tempBuffer, tempImage, new VkExtent3D { width = (uint)Width, height = (uint)Height, depth = 1 }, TextureUsage, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT);
+                VkDeviceMemory memory = new VkDeviceMemory();
+                CTexture.CreateImage(imageInfo, ref tempImage, ref memory, imageInfo);
+
+                VkImageLayout oldImageLayout = TextureImageLayout;
+                VkImageLayout newImageLayout = VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+                CTexture.QuickTransitionImageLayout(tempImage, ref oldImageLayout, ref newImageLayout, MipMapLevels);
+
+                GameEngineImport.DLL_Texture_CopyBufferToTexture(VulkanRenderer.device, VulkanRenderer.commandPool, VulkanRenderer.graphicsQueue, tempImage, tempBuffer, TextureUsageEnum.kUse_2DRenderedTexture, Width, Height, Depth);
 
                 Memory = memory;
                 Image = tempImage;
@@ -299,53 +304,47 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        virtual protected void CreateImageTexture(string FilePath)
+        virtual protected void CreateImageTexture(string filePath)
         {
-            using (var stream = File.OpenRead(FilePath))
-            {
-                ImageResult image = ImageResult.FromStream(stream);
-                Width = image.Width;
-                Height = image.Height;
-                ColorChannels = image.Comp;
+            int width = Width;
+            int height = Height;
+            int depth = Depth;
+            int colorChannels = 0;
+            MipMapLevels = 1;
 
-                var size = (ulong)(Width * Height * (uint)ColorChannels);
+            VkDeviceMemory textureMemory = Memory;
+            VkFormat textureByteFormat = TextureByteFormat;
+            VkImage textureImage = Image;
+            VkImageLayout textureImageLayout = TextureImageLayout;
+            ColorComponents colorChannelUsed = ColorChannels;
 
-                GCHandle handle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
-                IntPtr dataPtr = handle.AddrOfPinnedObject();
-                VulkanBuffer<byte> buffer = new VulkanBuffer<byte>((void*)dataPtr, (uint)size, VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
-                                                                                               VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT, 
-                                                                                               VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                                                                               VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
-                var tempBuffer = buffer.Buffer;
+            GameEngineImport.DLL_Texture_CreateImageTexture(
+                VulkanRenderer.device,
+                VulkanRenderer.physicalDevice,
+                VulkanRenderer.commandPool,
+                VulkanRenderer.graphicsQueue,
+                ref width,
+                ref height,
+                ref depth,
+                textureByteFormat,
+                MipMapLevels,
+                ref textureImage,
+                ref textureMemory,
+                ref textureImageLayout,
+                ref colorChannelUsed,
+                TextureUsageEnum.kUse_2DImageTexture,
+                filePath);
 
-                VkImageCreateInfo imageInfo = new VkImageCreateInfo
-                {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-                    imageType = VkImageType.VK_IMAGE_TYPE_2D,
-                    format = TextureByteFormat,
-                    extent = new VkExtent3D { width = (uint)Width, height = (uint)Height, depth = 1 },
-                    mipLevels = MipMapLevels,
-                    arrayLayers = 1,
-                    samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
-                    tiling = VkImageTiling.VK_IMAGE_TILING_OPTIMAL,
-                    usage = VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
-                            VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
-                            VkImageUsageFlagBits.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-                            VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-                    sharingMode = VkSharingMode.VK_SHARING_MODE_EXCLUSIVE,
-                    initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED
-                };
+            Width = width;
+            Height = height;
+            Depth = depth;
+            ColorChannels = 0;
+            MipMapLevels = 1;
 
-                VkDeviceMemory memory = new VkDeviceMemory();
-                VkImage tempImage = new VkImage();
-                CTexture.BaseCreateImageTexture(imageInfo, ref tempImage, ref memory, Width, Height, TextureByteFormat, MipMapLevels);
-                CTexture.QuickTransitionImageLayout(tempImage, TextureImageLayout, VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, MipMapLevels, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT);
-                CTexture.CopyBufferToTexture(ref tempBuffer, tempImage, new VkExtent3D { width = (uint)Width, height = (uint)Height, depth = 1 }, TextureUsage, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT);
-
-                Memory = memory;
-                Image = tempImage;
-                handle.Free();
-            }
+            Memory = textureMemory;
+            Image = textureImage;
+            TextureImageLayout = textureImageLayout;
+            ColorChannels = colorChannelUsed;
         }
 
         virtual protected VkResult CreateTextureImage(VkImageCreateInfo createInfo)

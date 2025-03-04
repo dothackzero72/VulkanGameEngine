@@ -111,14 +111,55 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return data;
         }
 
-        public static VkResult BaseCreateImageTexture(VkImageCreateInfo createInfo,  ref VkImage image,  ref VkDeviceMemory textureMemory, int Width, int Height, VkFormat format, uint MipLevels)
+        public static VkResult CreateImage(VkImageCreateInfo createInfo, ref VkImage image, ref VkDeviceMemory textureMemory, VkImageCreateInfo imageCreateInfo)
         {
-            return GameEngineImport.DLL_Texture_BaseCreateTextureImage(VulkanRenderer.device, VulkanRenderer.physicalDevice, ref image, ref textureMemory, createInfo);
+            return GameEngineImport.DLL_Texture_CreateImage(VulkanRenderer.device, VulkanRenderer.physicalDevice, ref image, ref textureMemory, imageCreateInfo);
         }
 
-        public static VkResult TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint mipmapLevels, ref VkImageLayout oldLayout, VkImageLayout newLayout)
+        public static VkResult TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint mipmapLevels, ref VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlagBits colorFlags)
         {
-            return GameEngineImport.DLL_Texture_CommandBufferTransitionImageLayout(commandBuffer, image, mipmapLevels, oldLayout, newLayout);
+            VkPipelineStageFlagBits sourceStage = VkPipelineStageFlagBits.ALL_COMMANDS_BIT;
+            VkPipelineStageFlagBits destinationStage = VkPipelineStageFlagBits.ALL_COMMANDS_BIT;
+            VkImageMemoryBarrier barrier = new VkImageMemoryBarrier()
+            {
+                sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                oldLayout = oldLayout,
+                newLayout = newLayout,
+                srcQueueFamilyIndex = Vk.QueueFamilyIgnored,
+                dstQueueFamilyIndex = Vk.QueueFamilyIgnored,
+                image = image,
+                subresourceRange = new VkImageSubresourceRange()
+                {
+                    aspectMask = colorFlags,
+                    levelCount = mipmapLevels,
+                    baseArrayLayer = 0,
+                    baseMipLevel = 0,
+                    layerCount = Vk.RemainingArrayLayers,
+                }
+            };
+            if (oldLayout == VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED &&
+                newLayout == VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+            {
+                barrier.srcAccessMask = 0;
+                barrier.dstAccessMask = VkAccessFlagBits.VK_ACCESS_TRANSFER_WRITE_BIT;
+
+                sourceStage = VkPipelineStageFlagBits.TOP_OF_PIPE_BIT;
+                destinationStage = VkPipelineStageFlagBits.TRANSFER_BIT;
+            }
+            else if (oldLayout == VkImageLayout.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+                     newLayout == VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL)
+            {
+                barrier.srcAccessMask = VkAccessFlagBits.VK_ACCESS_TRANSFER_WRITE_BIT;
+                barrier.dstAccessMask = VkAccessFlagBits.VK_ACCESS_MEMORY_READ_BIT;
+
+                sourceStage = VkPipelineStageFlagBits.TRANSFER_BIT;
+                destinationStage = VkPipelineStageFlagBits.FRAGMENT_SHADER_BIT;
+            }
+
+            VkFunc.vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, null, 0, null, 1, &barrier);
+            oldLayout = newLayout;
+
+            return VkResult.VK_SUCCESS;
         }
 
         public static VkResult CopyBufferToTexture(ref VkBuffer buffer, VkImage image, VkExtent3D extent, TextureUsageEnum textureUsage, VkImageAspectFlagBits imageAspectFlags)
@@ -146,13 +187,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return VkResult.VK_SUCCESS;
         }
 
-        public static VkResult QuickTransitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, uint MipMapLevels, VkImageAspectFlagBits imageAspectFlags)
+        public static VkResult QuickTransitionImageLayout(VkImage image, ref VkImageLayout oldLayout, ref VkImageLayout newLayout, uint mipMapLevels)
         {
-            VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
-            CTexture.TransitionImageLayout(commandBuffer, image, MipMapLevels, ref oldLayout, newLayout);
-            VkResult result = VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
-
-            return result;
+            return GameEngineImport.DLL_Texture_QuickTransitionImageLayout(VulkanRenderer.device, VulkanRenderer.commandPool, VulkanRenderer.graphicsQueue, image, mipMapLevels, ref oldLayout, ref newLayout);
         }
 
         public static VkResult CopyBufferToTexture(ref VkBuffer buffer, VkImage image, TextureUsageEnum textureType, vec3 textureSize, VkExtent3D extent, VkImageAspectFlagBits imageAspectFlags)
@@ -236,7 +273,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     new VkOffset3D() { x = 0, y = 0, z = 0 },
                     new VkOffset3D() { x = (int)mipWidth, y = (int)mipHeight, z = 1 }
                    },
- 
+
                     dstOffsets = new VkOffset3D[2]
                    {
                     new VkOffset3D() { x = 0, y = 0, z = 0 },

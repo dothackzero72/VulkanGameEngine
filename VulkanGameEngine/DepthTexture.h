@@ -1,5 +1,6 @@
 #pragma once
 #include "Texture.h"
+
 class DepthTexture : public Texture
 {
     private:

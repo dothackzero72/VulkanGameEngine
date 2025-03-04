@@ -15,7 +15,7 @@ using VulkanGameEngineLevelEditor.Vulkan;
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    public unsafe class VkSamplerCreateInfo : RenderPassEditorBaseModel
+    public unsafe class VkSamplerCreateInfoModel : RenderPassEditorBaseModel
     {
         private VkStructureType _sType = VkStructureType.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
         private VkSamplerCreateFlagBits _flags = 0;
@@ -293,24 +293,48 @@ namespace VulkanGameEngineLevelEditor.Models
             }
         }
 
-        public VkSamplerCreateInfo() : base()
+        public VkSamplerCreateInfoModel() : base()
         {
         }
 
-        public VkSamplerCreateInfo(string jsonFilePath) : base()
+        public VkSamplerCreateInfoModel(string jsonFilePath) : base()
         {
             LoadJsonComponent(jsonFilePath);
         }
 
-        public VkSamplerCreateInfo(string name, string jsonFilePath) : base(name)
+        public VkSamplerCreateInfoModel(string name, string jsonFilePath) : base(name)
         {
            // LoadJsonComponent(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\  \DefaultSubpassDependency.json");
         }
-       
+
+        public VkSamplerCreateInfo Convert()
+        {
+            return new VkSamplerCreateInfo
+            {
+                sType = VkStructureType.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+                addressModeU = addressModeU,
+                addressModeV = addressModeV,
+                addressModeW = addressModeW,
+                anisotropyEnable = anisotropyEnable,
+                maxAnisotropy = maxAnisotropy,
+                compareEnable = compareEnable,
+                minLod = minLod,
+                maxLod = maxLod,
+                borderColor = borderColor,
+                unnormalizedCoordinates = unnormalizedCoordinates,
+                compareOp = compareOp,
+                flags = flags,
+                magFilter = magFilter,
+                minFilter = minFilter,
+                mipLodBias = mipLodBias,
+                mipmapMode = mipmapMode,
+                pNext = null
+            };
+        }
         public void LoadJsonComponent(string jsonPath)
         {
-            var obj = base.LoadJsonComponent<VkSamplerCreateInfo>(jsonPath);
-            foreach (PropertyInfo property in typeof(VkSamplerCreateInfo).GetProperties())
+            var obj = base.LoadJsonComponent<VkSamplerCreateInfoModel>(jsonPath);
+            foreach (PropertyInfo property in typeof(VkSamplerCreateInfoModel).GetProperties())
             {
                 if (property.CanWrite)
                 {

@@ -75,6 +75,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
 
+            VkImageLayout initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED;
+            VkImageLayout finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            uint sdf = (uint)VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            int wer = (int)VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+
             List<VkAttachmentReference> colorRefsList = new List<VkAttachmentReference>()
             {
                 new VkAttachmentReference
@@ -105,12 +111,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 new VkSubpassDependency
                 {
-                                srcSubpass = uint.MaxValue,
-                                dstSubpass = 0,
-                                srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                                dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                                srcAccessMask = 0,
-                                dstAccessMask = VkAccessFlags.COLOR_ATTACHMENT_WRITE_BIT,
+                    srcSubpass = uint.MaxValue,
+                    dstSubpass = 0,
+                    srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                    dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                    srcAccessMask = 0,
+                    dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
                 }
             };
 

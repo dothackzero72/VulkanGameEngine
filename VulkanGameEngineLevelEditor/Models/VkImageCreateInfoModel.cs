@@ -15,18 +15,20 @@ using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.Vulkan;
+using System.Runtime.InteropServices;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    public unsafe class VkImageCreateInfo : RenderPassEditorBaseModel
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe class VkImageCreateInfoModel : RenderPassEditorBaseModel
     {
         private VkStructureType _sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         private VkImageCreateFlagBits _flags = 0;
         private void* _pNext;
         private VkImageType _imageType;
         private VkFormat _format;
-        private VkExtent3D _extent = new VkExtent3D();
+        private VkExtent3DModel _extent = new VkExtent3DModel();
         private uint _mipLevels;
         private uint _arrayLayers;
         private VkSampleCountFlagBits _samples;
@@ -117,7 +119,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [Category("Image Properties")]
         [Browsable(false)]
         [Newtonsoft.Json.JsonIgnore]
-        public VkExtent3D extent
+        public VkExtent3DModel extent
         {
             get => _extent;
             set
@@ -261,11 +263,11 @@ namespace VulkanGameEngineLevelEditor.Models
             }
         }
 
-        public VkImageCreateInfo() : base()
+        public VkImageCreateInfoModel() : base()
         {
         }
 
-        public VkImageCreateInfo(string jsonPath, ivec2 swapChainResoultion, VkFormat format2) : base()
+        public VkImageCreateInfoModel(string jsonPath, ivec2 swapChainResoultion, VkFormat format2) : base()
         {
             LoadJsonComponent(jsonPath);
             extent.width = (uint)swapChainResoultion.x;
@@ -274,17 +276,40 @@ namespace VulkanGameEngineLevelEditor.Models
             format = format2;
         }
 
-        public VkImageCreateInfo(ivec2 swapChainResoultion, VkFormat format) : base()
+        public VkImageCreateInfoModel(ivec2 swapChainResoultion, VkFormat format) : base()
         {
             LoadJsonComponent(ConstConfig.DefaultColorAttachmentDescriptionModel);
-            _extent = new VkExtent3D((uint)swapChainResoultion.x, (uint)swapChainResoultion.y, 1);
+            _extent = new VkExtent3DModel((uint)swapChainResoultion.x, (uint)swapChainResoultion.y, 1);
             _format = format;
+        }
+
+        public VkImageCreateInfo Convert()
+        {
+
+            return new VkImageCreateInfo()
+            {
+                sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+                pNext = null,
+                flags = flags,
+                imageType = imageType,
+                format = format,
+                extent = extent.Convert(),
+                mipLevels = mipLevels,
+                arrayLayers = arrayLayers,
+                samples = samples,
+                tiling = tiling,
+                usage = usage,
+                sharingMode = sharingMode,
+                queueFamilyIndexCount = queueFamilyIndexCount,
+                pQueueFamilyIndices = null,
+                initialLayout = initialLayout
+            };
         }
 
         public void LoadJsonComponent(string jsonPath)
         {
-            var obj = base.LoadJsonComponent<VkImageCreateInfo>(jsonPath);
-            foreach (PropertyInfo property in typeof(VkImageCreateInfo).GetProperties())
+            var obj = base.LoadJsonComponent<VkImageCreateInfoModel>(jsonPath);
+            foreach (PropertyInfo property in typeof(VkImageCreateInfoModel).GetProperties())
             {
                 if (property.CanWrite)
                 {

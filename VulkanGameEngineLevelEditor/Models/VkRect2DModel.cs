@@ -8,31 +8,31 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public unsafe class VkRect2D
+    public unsafe class VkRect2DModel
     {
-        public VkOffset2D offset { get; set; }
-        public VkExtent2D extent { get; set; }
+        public VkOffset2DModel offset { get; set; }
+        public VkExtent2DModel extent { get; set; }
 
-        public VkRect2D()
+        public VkRect2DModel()
         {
-            offset = new VkOffset2D();
-            extent = new VkExtent2D();
+            offset = new VkOffset2DModel();
+            extent = new VkExtent2DModel();
         }
 
-        public VkRect2D(VkOffset2D offset, VkExtent2D extent)
+        public VkRect2DModel(VkOffset2DModel offset, VkExtent2DModel extent)
         {
             this.offset = offset;
             this.extent = extent;
         }
 
-        public VkRect2D(Rect2D other)
+        public VkRect2DModel(Rect2D other)
         {
-            offset = new VkOffset2D()
+            offset = new VkOffset2DModel()
             {
                 x = other.Offset.X,
                 y = other.Offset.Y
             };
-            extent = new VkExtent2D()
+            extent = new VkExtent2DModel()
             {
                 width = other.Extent.Width,
                 height = other.Extent.Height

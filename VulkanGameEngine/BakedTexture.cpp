@@ -1,6 +1,7 @@
 #include "BakedTexture.h"
 #include "VulkanBuffer.h"
 #include <stb/stb_image.h>
+#include <VulkanPipeline.h>
 
 
 BakedTexture::BakedTexture()

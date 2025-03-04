@@ -54,7 +54,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     new RenderedTextureInfoModel
                     {
-                        ImageCreateInfo = new VkImageCreateInfo()
+                        ImageCreateInfo = new VkImageCreateInfoModel()
                         {
                             imageType = VkImageType.VK_IMAGE_TYPE_2D,
                             format = VkFormat.VK_FORMAT_R8G8B8A8_SNORM,
@@ -70,7 +70,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             initialLayout =  0,
                             _name = "bnvnb"
                         },
-                        SamplerCreateInfo = new VkSamplerCreateInfo()
+                        SamplerCreateInfo = new VkSamplerCreateInfoModel()
                         {
                             magFilter = 0,
                             minFilter = 0,
@@ -89,7 +89,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             unnormalizedCoordinates = false,
                             _name = "tyuiy"
                         },
-                        AttachmentDescription = new VkAttachmentDescription()
+                        AttachmentDescription = new VkAttachmentDescriptionModel()
                         {
                             format = VkFormat.VK_FORMAT_R8G8B8A8_SNORM,
                             samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
@@ -107,7 +107,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     },
                       new RenderedTextureInfoModel
                     {
-                        ImageCreateInfo = new VkImageCreateInfo()
+                        ImageCreateInfo = new VkImageCreateInfoModel()
                         {
                             imageType = (VkImageType)1,
                             format = VkFormat.VK_FORMAT_D32_SFLOAT,
@@ -125,7 +125,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             initialLayout = 0,
                             _name = "DefaultColorTextureCreateInfo"
                         },
-                        SamplerCreateInfo = new VkSamplerCreateInfo()
+                        SamplerCreateInfo = new VkSamplerCreateInfoModel()
                         {
                             magFilter = 0,
                             minFilter = 0,
@@ -144,7 +144,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             unnormalizedCoordinates = false,
                             _name = "DefaultColorSampleCreateInfo"
                         },
-                        AttachmentDescription = new VkAttachmentDescription()
+                        AttachmentDescription = new VkAttachmentDescriptionModel()
                         {
                             format = VkFormat.VK_FORMAT_D32_SFLOAT,
                             samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
@@ -161,16 +161,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         _name = "depthAttachment"
                     }
                 },
-                SubpassDependencyList = new List<VkSubpassDependency>()
+                SubpassDependencyList = new List<VkSubpassDependencyModel>()
                 {
-                     new VkSubpassDependency
+                     new VkSubpassDependencyModel
                             {
                                 srcSubpass = uint.MaxValue,
                                 dstSubpass = 0,
                                 srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                                dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT, // Changed to Early Fragment Tests
+                                dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
                                 srcAccessMask = 0,
-                                dstAccessMask = VkAccessFlags.COLOR_ATTACHMENT_WRITE_BIT, // Ensure this access mask is relevant to the chosen stage mask
+                                dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, 
                             }
                 }
             };
@@ -199,12 +199,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             List<VkAttachmentReference> depthReferenceList = new List<VkAttachmentReference>();
             foreach (RenderedTextureInfoModel renderedTextureInfoModel in model2.RenderedTextureInfoModelList)
             {
-                attachmentDescriptionList.Add(renderedTextureInfoModel.AttachmentDescription);
+                attachmentDescriptionList.Add(renderedTextureInfoModel.AttachmentDescription.Convert());
                 switch (renderedTextureInfoModel.TextureType)
                 {
                     case RenderedTextureType.ColorRenderedTexture:
                         {
-                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
+                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
                             colorAttachmentReferenceList.Add(new VkAttachmentReference
                             {
                                 attachment = colorAttachmentReferenceList.UCount(),
@@ -214,7 +214,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         }
                     case RenderedTextureType.DepthRenderedTexture:
                         {
-                            depthTexture = new DepthTexture(RenderPassResolution,renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo);
+                            depthTexture = new DepthTexture(RenderPassResolution,renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert());
                             depthReferenceList.Add(new VkAttachmentReference
                             {
                                 attachment = (uint)(colorAttachmentReferenceList.Count + resolveAttachmentReferenceList.Count),
@@ -224,7 +224,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         }
                     case RenderedTextureType.InputAttachmentTexture:
                         {
-                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
+                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
                             inputAttachmentReferenceList.Add(new VkAttachmentReference
                             {
                                 attachment = (uint)(inputAttachmentReferenceList.Count()),
@@ -234,7 +234,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         }
                     case RenderedTextureType.ResolveAttachmentTexture:
                         {
-                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
+                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
                             resolveAttachmentReferenceList.Add(new VkAttachmentReference
                             {
                                 attachment = (uint)(colorAttachmentReferenceList.UCount() + 1),
@@ -273,9 +273,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             List<VkSubpassDependency> subPassList = new List<VkSubpassDependency>();
-            foreach (VkSubpassDependency subpass in model2.SubpassDependencyList)
+            foreach (VkSubpassDependencyModel subpass in model2.SubpassDependencyList)
             {
-                subPassList.Add(subpass);
+                subPassList.Add(subpass.Convert());
             }
 
             fixed (VkAttachmentDescription* attachments = attachmentDescriptionList.ToArray())

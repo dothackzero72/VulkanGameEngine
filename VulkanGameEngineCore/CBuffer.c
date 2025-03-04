@@ -104,12 +104,10 @@ VkResult Buffer_CreateBuffer(VkDevice device, VkPhysicalDevice physicalDevice, V
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
 
-    VkResult result = vkCreateBuffer(device, &bufferCreateInfo, NULL, buffer);
-    result = Buffer_AllocateMemory(device, physicalDevice, buffer, bufferMemory, properties);
-    result = vkBindBufferMemory(device, *buffer, *bufferMemory, 0);
-    result = Buffer_UpdateBufferMemory(device, *bufferMemory, bufferData, bufferSize);
-
-    return VK_SUCCESS;
+    VULKAN_RESULT(vkCreateBuffer(device, &bufferCreateInfo, NULL, buffer));
+    VULKAN_RESULT(Buffer_AllocateMemory(device, physicalDevice, buffer, bufferMemory, properties));
+    VULKAN_RESULT(vkBindBufferMemory(device, *buffer, *bufferMemory, 0));
+    return Buffer_UpdateBufferMemory(device, *bufferMemory, bufferData, bufferSize);
 }
 
 VkResult Buffer_CreateStagingBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer* stagingBuffer, VkBuffer* buffer, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties)

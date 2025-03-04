@@ -1,9 +1,6 @@
 #include "Texture.h"
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb/stb_image.h>
-#include <stb/stb_image_write.h>
 #include <pixel.h>
+#include <TextureCPP.h>
 
 #ifdef max 
 #undef max
@@ -43,23 +40,6 @@ Texture::Texture(const String& filePath, VkFormat textureByteFormat, TextureType
 	CreateImageTexture(filePath);
 	CreateTextureView();
 	CreateTextureSampler();
-	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-}
-
-Texture::Texture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
-{
-	TextureSetUp();
-	Width = (int)createImageInfo.extent.width;
-	Height = (int)createImageInfo.extent.height;
-	Depth = (int)createImageInfo.extent.depth;
-	TextureByteFormat = createImageInfo.format;
-	TextureImageLayout = createImageInfo.initialLayout;
-	SampleCount = createImageInfo.samples;
-	TextureBufferIndex = 0;
-
-	CreateTextureImage(createImageInfo);
-	CreateTextureView();
-	CreateTextureSampler(samplerCreateInfo);
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
@@ -115,36 +95,78 @@ void Texture::Destroy()
 
 void Texture::CreateImageTexture(const Pixel& clearColor)
 {
-	ColorChannels = ColorChannelUsed::ChannelRGBA;
-	uint32 size = Width * Height * ColorChannels;
+	int* width = &Width;
+	int* height = &Height;
+	int* depth = &Depth;
+	int colorChannels = 0;
+	MipMapLevels = 1;
 
-	std::vector<Pixel> pixels(Width * Height, clearColor);
+	VkDeviceMemory* textureMemory = &Memory;
+	VkFormat* textureByteFormat = &TextureByteFormat;
+	VkImage* textureImage = &Image;
+	VkImageLayout* textureImageLayout = &TextureImageLayout;
+	ColorChannelUsed* colorChannelUsed = &ColorChannels;
+	TextureUsageEnum textureUsage = kUse_2DImageTexture;
 
-	VulkanBuffer<byte> stagingBuffer((void*)pixels.data(), pixels.size(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
+	Texture_CreateImageTexture(cRenderer.Device,
+							   cRenderer.PhysicalDevice,
+							   cRenderer.CommandPool,
+							   cRenderer.SwapChain.GraphicsQueue,
+							   width,
+							   height,
+							   depth,
+							   TextureByteFormat,
+							   MipMapLevels,
+							   textureImage,
+							   textureMemory,
+							   textureImageLayout,
+							   colorChannelUsed,
+							   textureUsage,
+							   clearColor);
 
-	VULKAN_RESULT(NewTextureImage());
-	VULKAN_RESULT(TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));
-	VULKAN_RESULT(CopyBufferToTexture(stagingBuffer.Buffer));
-	stagingBuffer.DestroyBuffer();
-
+	Memory = *textureMemory;
+	TextureByteFormat = *textureByteFormat;
+	Image = *textureImage;
+	TextureImageLayout = *textureImageLayout;
+	ColorChannels = *colorChannelUsed;
 }
 
-void Texture::CreateImageTexture(const String& FilePath)
+void Texture::CreateImageTexture(const String& filePath)
 {
 	int* width = &Width;
 	int* height = &Height;
+	int* depth = &Depth;
 	int colorChannels = 0;
-	byte* data = stbi_load(FilePath.c_str(), width, height, &colorChannels, 0);
-	VulkanBuffer<byte> stagingBuffer((void*)data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
+	MipMapLevels = 1;
 
-	VULKAN_RESULT(CreateTextureImage());
-	VULKAN_RESULT(TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));
-	VULKAN_RESULT(CopyBufferToTexture(stagingBuffer.Buffer));
-	VULKAN_RESULT(GenerateMipmaps());
-	stagingBuffer.DestroyBuffer();
+	VkDeviceMemory* textureMemory = &Memory;
+	VkFormat* textureByteFormat = &TextureByteFormat;
+	VkImage* textureImage = &Image;
+	VkImageLayout* textureImageLayout = &TextureImageLayout;
+	ColorChannelUsed* colorChannelUsed = &ColorChannels;
+	TextureUsageEnum textureUsage = kUse_2DImageTexture;
 
-	ColorChannels = (ColorChannelUsed)colorChannels;
-	stbi_image_free(data);
+	Texture_CreateImageTexture(cRenderer.Device,
+							   cRenderer.PhysicalDevice,
+							   cRenderer.CommandPool,
+							   cRenderer.SwapChain.GraphicsQueue,
+							   width,
+							   height,
+							   depth,
+							   TextureByteFormat,
+							   MipMapLevels,
+							   textureImage,
+							   textureMemory,
+							   textureImageLayout,
+							   colorChannelUsed,
+							   textureUsage,
+							   filePath);
+
+	Memory = *textureMemory;
+	TextureByteFormat = *textureByteFormat;
+	Image = *textureImage;
+	TextureImageLayout = *textureImageLayout;
+	ColorChannels = *colorChannelUsed;
 }
 
 void Texture::CreateTextureSampler()
@@ -217,19 +239,9 @@ void Texture::UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout 
 	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, TextureImageLayout, &newImageLayout, mipLevel);
 }
 
-VkResult Texture::NewTextureImage()
+VkResult Texture::CreateImage(VkImageCreateInfo& imageCreateInfo)
 {
-	return Texture_NewTextureImage(cRenderer.Device, cRenderer.PhysicalDevice, &Image, &Memory, Width, Height, 1, TextureByteFormat);
-}
-
-VkResult Texture::CreateTextureImage(VkImageCreateInfo& imageCreateInfo)
-{
-	return Texture_BaseCreateTextureImage(cRenderer.Device, cRenderer.PhysicalDevice, &Image, &Memory, imageCreateInfo);
-}
-
-VkResult Texture::CreateTextureImage()
-{
-	return Texture_CreateTextureImage(cRenderer.Device, cRenderer.PhysicalDevice, &Image, &Memory, Width, Height, MipMapLevels, TextureByteFormat);
+	return Texture_CreateImage(cRenderer.Device, cRenderer.PhysicalDevice, &Image, &Memory, imageCreateInfo);
 }
 
 VkResult Texture::TransitionImageLayout(VkImageLayout newLayout)

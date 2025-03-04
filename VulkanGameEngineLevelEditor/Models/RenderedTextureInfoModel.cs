@@ -23,9 +23,9 @@ namespace VulkanGameEngineLevelEditor.Models
     {
         public bool IsRenderedToSwapchain { get; set; } = false;
         private string _renderedTextureInfoName = string.Empty;
-        private VkImageCreateInfo _imageCreateInfo = new VkImageCreateInfo();
-        private VkSamplerCreateInfo _samplerCreateInfo = new VkSamplerCreateInfo();
-        private VkAttachmentDescription _attachmentDescription = new VkAttachmentDescription();
+        private VkImageCreateInfoModel _imageCreateInfo = new VkImageCreateInfoModel();
+        private VkSamplerCreateInfoModel _samplerCreateInfo = new VkSamplerCreateInfoModel();
+        private VkAttachmentDescriptionModel _attachmentDescription = new VkAttachmentDescriptionModel();
         private RenderedTextureType _textureType;
 
         public string RenderedTextureInfoName
@@ -42,7 +42,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Image")]
-        public VkImageCreateInfo ImageCreateInfo
+        public VkImageCreateInfoModel ImageCreateInfo
         {
             get => _imageCreateInfo;
             set
@@ -56,7 +56,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Sampler")]
-        public VkSamplerCreateInfo SamplerCreateInfo
+        public VkSamplerCreateInfoModel SamplerCreateInfo
         {
             get => _samplerCreateInfo;
             set
@@ -70,7 +70,7 @@ namespace VulkanGameEngineLevelEditor.Models
         }
 
         [Category("Attachment")]
-        public VkAttachmentDescription AttachmentDescription
+        public VkAttachmentDescriptionModel AttachmentDescription
         { 
             get => _attachmentDescription;
             set

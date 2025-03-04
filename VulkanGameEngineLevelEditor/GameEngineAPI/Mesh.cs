@@ -83,7 +83,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public VulkanBuffer<Vertex2D> MeshVertexBuffer { get; protected set; }
         public VulkanBuffer<UInt32> MeshIndexBuffer { get; protected set; }
-        public VulkanBuffer<MeshProperitiesStruct> UniformBuffers { get; set; }
+        public VulkanBuffer<MeshProperitiesStruct> MeshPropertiesBuffers { get; set; }
 
         public Mesh()
         {
@@ -118,7 +118,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             VertexCount = vertexList.Length;
             IndexCount = indexList.Length;
-
+            
             GCHandle vhandle = GCHandle.Alloc(vertexList, GCHandleType.Pinned);
             IntPtr vpointer = vhandle.AddrOfPinnedObject();
             MeshVertexBuffer = new VulkanBuffer<Vertex2D>((void*)vpointer, (uint)vertexList.Count(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
@@ -135,9 +135,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
 
-            GCHandle uhandle = GCHandle.Alloc(UniformBuffers, GCHandleType.Pinned);
+            GCHandle uhandle = GCHandle.Alloc(MeshProperties, GCHandleType.Pinned);
             IntPtr upointer = uhandle.AddrOfPinnedObject();
-            UniformBuffers = new VulkanBuffer<MeshProperitiesStruct>((void*)upointer, 1, VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
+            MeshPropertiesBuffers = new VulkanBuffer<MeshProperitiesStruct>((void*)upointer, 1, VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
                 VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
                 VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -175,7 +175,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             void* dataPtr = Unsafe.AsPointer(ref properties);
-            UniformBuffers.UpdateBufferData(dataPtr);
+            MeshPropertiesBuffers.UpdateBufferData(dataPtr);
         }
 
         public void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
@@ -199,12 +199,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             MeshVertexBuffer.DestroyBuffer();
             MeshIndexBuffer.DestroyBuffer();
-            UniformBuffers.DestroyBuffer();
+            MeshPropertiesBuffers.DestroyBuffer();
         }
 
         public VulkanBuffer<MeshProperitiesStruct> GetMeshPropertiesBuffer()
         {
-            return UniformBuffers;
+            return MeshPropertiesBuffers;
         }
     }
 }

@@ -22,7 +22,7 @@ private:
     {
         VkAttachmentDescription colorAttachment
         {
-            .format = VK_FORMAT_B8G8R8A8_UNORM,
+            .format = VK_FORMAT_R8G8B8A8_UNORM,
             .samples = VK_SAMPLE_COUNT_1_BIT,
             .loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
             .storeOp = VK_ATTACHMENT_STORE_OP_STORE,

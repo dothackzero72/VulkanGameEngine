@@ -16,8 +16,27 @@ RenderedTexture::RenderedTexture(glm::ivec2 TextureResolution)
 	TextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
+	VkImageCreateInfo imageCreateInfo =
+	{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+		.imageType = VK_IMAGE_TYPE_2D,
+		.format = TextureByteFormat,
+		.extent =
+		{
+			.width = static_cast<uint>(Width),
+			.height = static_cast<uint>(Height),
+			.depth = 1
+		},
+		.mipLevels = MipMapLevels,
+		.arrayLayers = 1,
+		.samples = VK_SAMPLE_COUNT_1_BIT,
+		.tiling = VK_IMAGE_TILING_OPTIMAL,
+		.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	};
 
-	CreateTextureImage();
+	CreateImage(imageCreateInfo);
 	CreateTextureView();
 	CreateTextureSampler();
 
@@ -33,7 +52,27 @@ RenderedTexture::RenderedTexture(glm::ivec2 TextureResolution, VkSampleCountFlag
 	TextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	SampleCount = sampleCount;
 
-	CreateTextureImage();
+	VkImageCreateInfo imageCreateInfo =
+	{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+		.imageType = VK_IMAGE_TYPE_2D,
+		.format = TextureByteFormat,
+		.extent =
+		{
+			.width = static_cast<uint>(Width),
+			.height = static_cast<uint>(Height),
+			.depth = 1
+		},
+		.mipLevels = MipMapLevels,
+		.arrayLayers = 1,
+		.samples = VK_SAMPLE_COUNT_1_BIT,
+		.tiling = VK_IMAGE_TILING_OPTIMAL,
+		.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	};
+
+	CreateImage(imageCreateInfo);
 	CreateTextureView();
 	CreateTextureSampler();
 
@@ -49,7 +88,27 @@ RenderedTexture::RenderedTexture(glm::ivec2 TextureResolution, VkSampleCountFlag
 	TextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	SampleCount = sampleCount;
 
-	CreateTextureImage();
+	VkImageCreateInfo imageCreateInfo =
+	{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+		.imageType = VK_IMAGE_TYPE_2D,
+		.format = TextureByteFormat,
+		.extent =
+		{
+			.width = static_cast<uint>(Width),
+			.height = static_cast<uint>(Height),
+			.depth = 1
+		},
+		.mipLevels = MipMapLevels,
+		.arrayLayers = 1,
+		.samples = VK_SAMPLE_COUNT_1_BIT,
+		.tiling = VK_IMAGE_TILING_OPTIMAL,
+		.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	};
+
+	CreateImage(imageCreateInfo);
 	CreateTextureView();
 	CreateTextureSampler();
 
@@ -65,7 +124,7 @@ RenderedTexture::RenderedTexture(VkImageCreateInfo& createImageInfo, VkSamplerCr
 	TextureImageLayout = createImageInfo.initialLayout;
 	SampleCount = createImageInfo.samples;
 
-	CreateTextureImage(createImageInfo);
+	CreateImage(createImageInfo);
 	CreateTextureView();
 	CreateTextureSampler(samplerCreateInfo);
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -104,7 +163,29 @@ void RenderedTexture::RecreateRendererTexture(glm::vec2 TextureResolution)
 	Height = TextureResolution.y;
 
 	Texture::Destroy();
-	CreateTextureImage();
+
+	VkImageCreateInfo imageCreateInfo =
+	{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+		.imageType = VK_IMAGE_TYPE_2D,
+		.format = TextureByteFormat,
+		.extent =
+		{
+			.width = static_cast<uint>(Width),
+			.height = static_cast<uint>(Height),
+			.depth = 1
+		},
+		.mipLevels = MipMapLevels,
+		.arrayLayers = 1,
+		.samples = VK_SAMPLE_COUNT_1_BIT,
+		.tiling = VK_IMAGE_TILING_OPTIMAL,
+		.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	};
+
+
+	CreateImage(imageCreateInfo);
 	CreateTextureView();
 	CreateTextureSampler();
 

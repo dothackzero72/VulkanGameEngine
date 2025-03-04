@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public class VkViewport
+    public class VkViewportModel
     {
         public float x { get; set; }
         public float y { get; set; }
@@ -16,10 +16,10 @@ namespace VulkanGameEngineLevelEditor.Models
         public float minDepth { get; set; }
         public float maxDepth { get; set; }
 
-        public VkViewport()
+        public VkViewportModel()
         { }
 
-        public VkViewport(Viewport other)
+        public VkViewportModel(Viewport other)
         {
             x = other.X;
             y = other.Y;

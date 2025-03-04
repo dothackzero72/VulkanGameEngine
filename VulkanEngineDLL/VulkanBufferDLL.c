@@ -44,8 +44,3 @@ VkResult DLL_Buffer_DestroyBuffer(VkDevice device, VkBuffer* buffer, VkBuffer* s
 {
     return Buffer_DestroyBuffer(device, buffer, stagingBuffer, bufferMemory, stagingBufferMemory, bufferData, bufferSize, bufferUsageFlags, propertyFlags);
 }
-
-int DLL_BUFFER_BufferTest()
-{
-    return 45;
-}

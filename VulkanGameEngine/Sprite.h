@@ -6,6 +6,7 @@
 #include "Vertex.h"
 #include "GameObject.h"
 #include "Transform2DComponent.h"
+
 class Sprite
 {
 	friend class SpriteSheet;

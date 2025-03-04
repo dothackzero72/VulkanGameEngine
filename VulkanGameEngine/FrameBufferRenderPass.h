@@ -1,5 +1,6 @@
 #pragma once
 #include "Texture.h"
+#include <ShaderCompiler.h>
 #include "vertex.h"
 
 class FrameBufferRenderPass

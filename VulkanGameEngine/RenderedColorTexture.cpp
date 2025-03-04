@@ -26,7 +26,28 @@ RenderedColorTexture::RenderedColorTexture(glm::ivec2& textureResolution, VkForm
     TextureType = TextureTypeEnum::kType_RenderedColorTexture;
     TextureByteFormat = format;
     
-	VULKAN_RESULT(CreateTextureImage());
+
+	VkImageCreateInfo ImageCreateInfo =
+	{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+		.imageType = VK_IMAGE_TYPE_2D,
+		.format = TextureByteFormat,
+		.extent =
+		{
+			.width = static_cast<uint>(Width),
+			.height = static_cast<uint>(Height),
+			.depth = 1
+		},
+		.mipLevels = MipMapLevels,
+		.arrayLayers = 1,
+		.samples = VK_SAMPLE_COUNT_1_BIT,
+		.tiling = VK_IMAGE_TILING_OPTIMAL,
+		.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	};
+
+	VULKAN_RESULT(CreateImage(ImageCreateInfo));
 	VULKAN_RESULT(CreateTextureView());
     CreateTextureSampler();
 
@@ -45,7 +66,27 @@ void RenderedColorTexture::CreateImageTexture(const String& FilePath)
 	byte* data = stbi_load(FilePath.c_str(), width, height, &colorChannels, 0);
 	VulkanBuffer<byte> stagingBuffer((void*)data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
 
-	VULKAN_RESULT(NewTextureImage());
+	VkImageCreateInfo ImageCreateInfo =
+	{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+		.imageType = VK_IMAGE_TYPE_2D,
+		.format = TextureByteFormat,
+		.extent =
+		{
+			.width = static_cast<uint>(Width),
+			.height = static_cast<uint>(Height),
+			.depth = 1
+		},
+		.mipLevels = MipMapLevels,
+		.arrayLayers = 1,
+		.samples = VK_SAMPLE_COUNT_1_BIT,
+		.tiling = VK_IMAGE_TILING_OPTIMAL,
+		.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+	};
+
+	VULKAN_RESULT(CreateImage(ImageCreateInfo));
 	VULKAN_RESULT(TransitionImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));
 	VULKAN_RESULT(CopyBufferToTexture(stagingBuffer.Buffer));
 	stagingBuffer.DestroyBuffer();

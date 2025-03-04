@@ -56,22 +56,22 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                     {
                         IsRenderedToSwapchain = true,
                         RenderedTextureInfoName = "ColorRenderTexture",
-                        AttachmentDescription = new VkAttachmentDescription(ConstConfig.DefaultColorAttachmentDescriptionModel),
-                        ImageCreateInfo = new VkImageCreateInfo(ConstConfig.DefaultCreateColorImageInfo, SwapChainResuloution, VkFormat.VK_FORMAT_R8G8B8A8_UNORM),
-                        SamplerCreateInfo = new VkSamplerCreateInfo(ConstConfig.DefaultColorSamplerCreateInfo),
+                        AttachmentDescription = new VkAttachmentDescriptionModel(ConstConfig.DefaultColorAttachmentDescriptionModel),
+                        ImageCreateInfo = new VkImageCreateInfoModel(ConstConfig.DefaultCreateColorImageInfo, SwapChainResuloution, VkFormat.VK_FORMAT_R8G8B8A8_UNORM),
+                        SamplerCreateInfo = new VkSamplerCreateInfoModel(ConstConfig.DefaultColorSamplerCreateInfo),
                         TextureType = RenderedTextureType.ColorRenderedTexture
                     },
                     new RenderedTextureInfoModel()
                     {
                         IsRenderedToSwapchain = false,
                         RenderedTextureInfoName = "DepthRenderedTexture",
-                        AttachmentDescription = new VkAttachmentDescription(ConstConfig.DefaultDepthAttachmentDescriptionModel),
-                        ImageCreateInfo = new VkImageCreateInfo(ConstConfig.DefaultCreateDepthImageInfo, SwapChainResuloution, VkFormat.VK_FORMAT_D32_SFLOAT),
-                        SamplerCreateInfo = new VkSamplerCreateInfo(ConstConfig.DefaultDepthSamplerCreateInfo),
+                        AttachmentDescription = new VkAttachmentDescriptionModel(ConstConfig.DefaultDepthAttachmentDescriptionModel),
+                        ImageCreateInfo = new VkImageCreateInfoModel(ConstConfig.DefaultCreateDepthImageInfo, SwapChainResuloution, VkFormat.VK_FORMAT_D32_SFLOAT),
+                        SamplerCreateInfo = new VkSamplerCreateInfoModel(ConstConfig.DefaultDepthSamplerCreateInfo),
                         TextureType = RenderedTextureType.DepthRenderedTexture
                     }
                 },
-                SubpassDependencyList = new List<VkSubpassDependency>() { new VkSubpassDependency(ConstConfig.DefaultSubpassDependencyModel) },
+                SubpassDependencyList = new List<VkSubpassDependencyModel>() { new VkSubpassDependencyModel(ConstConfig.DefaultSubpassDependencyModel) },
             };
 
             listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].AttachmentDescription);
@@ -207,19 +207,19 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private void SaveComponents_Click(object sender, EventArgs e)
         {
             object obj = propertyGrid1.SelectedObject;
-            if (listBox1.SelectedItem is VkSubpassDependency subpass)
+            if (listBox1.SelectedItem is VkSubpassDependencyModel subpass)
             {
                 subpass.SaveJsonComponent();
             }
-            if (listBox1.SelectedItem is VkImageCreateInfo imageCreateInfo)
+            if (listBox1.SelectedItem is VkImageCreateInfoModel imageCreateInfo)
             {
                 imageCreateInfo.SaveJsonComponent();
             }
-            if (listBox1.SelectedItem is VkSamplerCreateInfo samplerCreateInfo)
+            if (listBox1.SelectedItem is VkSamplerCreateInfoModel samplerCreateInfo)
             {
                 samplerCreateInfo.SaveJsonComponent();
             }
-            if (listBox1.SelectedItem is VkAttachmentDescription attachment)
+            if (listBox1.SelectedItem is VkAttachmentDescriptionModel attachment)
             {
                 attachment.SaveJsonComponent();
             }
