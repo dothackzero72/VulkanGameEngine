@@ -3,8 +3,9 @@
 #include "Typedef.h"
 #include "JsonRenderPass.h"
 #include "Mesh.h"
-#include "VulkanPipeline.h"
+#include <VulkanPipeline.h>
 #include "json.h"
+#include "vertex.h"
 
 class Material;
 class Texture;
@@ -42,7 +43,7 @@ private:
         {
             for (auto& mesh : meshList)
             {
-                mesh->GetVertexBuffer(vertexPropertiesBuffer);
+                mesh->GetVertexPropertiesBuffer();
             }
         }
 
@@ -66,7 +67,7 @@ private:
         {
             for (auto& mesh : meshList)
             {
-                mesh->GetIndexBuffer(indexPropertiesBuffer);
+                mesh->GetIndexPropertiesBuffer();
             }
         }
         return indexPropertiesBuffer;

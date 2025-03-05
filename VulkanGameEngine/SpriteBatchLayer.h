@@ -1,6 +1,7 @@
 #pragma once
 #include "TypeDef.h"
 #include "Sprite.h"
+#include "Mesh.h"
 #include "Mesh2D.h"
 #include "JsonPipeline.h"
 #include "Level2DRenderer.h"
@@ -27,7 +28,7 @@ private:
 	uint32                          SpriteLayerIndex;
 
 	Vector<WeakPtr<Sprite>>         SpriteList;
-	Vector<SpriteInstanceStruct>      SpriteInstanceList;
+	Vector<SpriteInstanceStruct>    SpriteInstanceList;
 	SpriteInstanceBuffer			SpriteBuffer;
 	SharedPtr<Mesh2D>		        SpriteLayerMesh;
 	SharedPtr<JsonPipeline>			SpriteRenderPipeline;

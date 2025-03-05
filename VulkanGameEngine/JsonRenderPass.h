@@ -3,8 +3,8 @@
 #include "json.h"
 #include "Typedef.h"
 #include "JsonStructs.h"
-#include "RenderedTexture.h"
-#include "DepthTexture.h"
+#include <RenderedTexture.h>
+#include <DepthTexture.h>
 #include "JsonPipeline.h"
 #include "GameObject.h"
 

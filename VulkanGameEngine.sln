@@ -39,6 +39,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RenderPasses", "RenderPasse
 	ProjectSection(SolutionItems) = preProject
 		RenderPass\Default2DRenderPass.json = RenderPass\Default2DRenderPass.json
 		RenderPass\DefaultRenderPass.json = RenderPass\DefaultRenderPass.json
+		RenderPass\FrameBufferRenderPass.json = RenderPass\FrameBufferRenderPass.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VulkanGameEngineGameObjectScripts", "VulkanGameEngineGameObjectScripts\VulkanGameEngineGameObjectScripts.csproj", "{1614928C-774C-4DD2-97C1-CAD5484B41E3}"

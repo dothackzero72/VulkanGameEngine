@@ -5,11 +5,12 @@ extern "C"
 	#include <CBuffer.h>
 }
 #include "GameObject.h"
-#include "VulkanBuffer.h"
+#include <VulkanBuffer.h>
 #include "SceneDataBuffer.h"
 #include "FrameTimer.h"
 #include "Transform2DComponent.h"
 #include "Material.h"
+#include "Vertex.h"
 
 struct MeshProperitiesStruct
 {

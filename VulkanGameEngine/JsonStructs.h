@@ -36,6 +36,9 @@ enum DescriptorBindingPropertiesEnum
     kRotatingPaletteTextureDescriptor,
     kMathOpperation1Descriptor,
     kMathOpperation2Descriptor,
+    kVertexDescsriptor,
+    kIndexDescriptor,
+    kTransformDescriptor
 };
 
 struct RenderPassEditorBaseModel

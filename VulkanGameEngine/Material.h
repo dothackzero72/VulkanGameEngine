@@ -1,7 +1,6 @@
 #pragma once
-#include "Texture.h"
+#include <TextureCPP.h>
 #include "VulkanBuffer.h"
-#include "Texture.h"
 
 struct MaterialProperitiesBuffer
 {

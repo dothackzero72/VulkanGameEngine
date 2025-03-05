@@ -1,5 +1,5 @@
 #pragma once
-#include "Texture.h"
+#include <TextureCPP.h>
 #include <ShaderCompiler.h>
 #include "vertex.h"
 

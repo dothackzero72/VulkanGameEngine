@@ -1,3 +1,4 @@
+#include <imgui/backends/imgui_impl_vulkan.h>
 #include "RenderedTexture.h"
 #include <stb/stb_image_write.h>
 #include <stb/stb_image.h>
@@ -7,7 +8,7 @@ RenderedTexture::RenderedTexture()
 
 }
 
-RenderedTexture::RenderedTexture(glm::ivec2 TextureResolution) 
+RenderedTexture::RenderedTexture(glm::ivec2 TextureResolution)
 {
 	Width = TextureResolution.x;
 	Height = TextureResolution.y;
@@ -43,7 +44,7 @@ RenderedTexture::RenderedTexture(glm::ivec2 TextureResolution)
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-RenderedTexture::RenderedTexture(glm::ivec2 TextureResolution, VkSampleCountFlagBits sampleCount) 
+RenderedTexture::RenderedTexture(glm::ivec2 TextureResolution, VkSampleCountFlagBits sampleCount)
 {
 	Width = TextureResolution.x;
 	Height = TextureResolution.y;

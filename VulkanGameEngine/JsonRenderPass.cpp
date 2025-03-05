@@ -1,5 +1,4 @@
 #include "JsonRenderPass.h"
-#include "MemoryManager.h"
 
 
 JsonRenderPass::JsonRenderPass()
@@ -103,6 +102,7 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
     Vector<VkAttachmentReference> resolveAttachmentReferenceList = Vector<VkAttachmentReference>();
     Vector<VkSubpassDescription> preserveAttachmentReferenceList = Vector<VkSubpassDescription>();
     Vector<VkAttachmentReference> depthReference = Vector<VkAttachmentReference>();
+
     for (RenderedTextureInfoModel renderedTextureInfoModel : renderPassBuildInfo.RenderedTextureInfoModelList)
     {
         attachmentDescriptionList.emplace_back(renderedTextureInfoModel.AttachmentDescription);
@@ -154,6 +154,7 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
             }
         }
     }
+
     Vector<VkSubpassDescription> subpassDescriptionList =
     {
         VkSubpassDescription
