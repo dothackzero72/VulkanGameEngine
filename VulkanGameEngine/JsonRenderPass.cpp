@@ -5,20 +5,38 @@ JsonRenderPass::JsonRenderPass()
 {
 }
 
-JsonRenderPass::JsonRenderPass(String jsonPath, ivec2 renderPassResolution)
+JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, ivec2 renderPassResolution)
 {
     RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
     FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
-
     VULKAN_RESULT(renderer.CreateCommandBuffer(CommandBuffer));
 
-    nlohmann::json json= Json::ReadJson("../RenderPass/Default2DRenderPass.json");
-    RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
+    nlohmann::json json= Json::ReadJson(jsonPath);
+    RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, RenderPassResolution);
+
     BuildRenderPass(renderPassBuildInfo);
-    BuildFrameBuffer();
+    BuildFrameBuffer(renderPassBuildInfo);
+    BuildRenderPipelines(renderPassBuildInfo, renderGraphics);
 }
+
+JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, VkExtent2D renderPassResolution)
+{
+    RenderPassResolution = ivec2(renderPassResolution.width, renderPassResolution.height);
+    SampleCount = VK_SAMPLE_COUNT_1_BIT;
+
+    FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
+    VULKAN_RESULT(renderer.CreateCommandBuffer(CommandBuffer));
+
+    nlohmann::json json = Json::ReadJson(jsonPath);
+    RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, RenderPassResolution);
+
+    BuildRenderPass(renderPassBuildInfo);
+    BuildFrameBuffer(renderPassBuildInfo);
+    BuildRenderPipelines(renderPassBuildInfo, renderGraphics);
+}
+
 
 JsonRenderPass::~JsonRenderPass()
 {
@@ -28,73 +46,15 @@ void JsonRenderPass::Update(const float& deltaTime)
 {
 }
 
-VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties)
+void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, GPUImport& renderGraphics)
 {
-    std::vector<VkClearValue> clearValues
+    for (int x = 0; x < renderPassBuildInfo.RenderPipelineList.size(); x++)
     {
-        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
-        VkClearValue{.depthStencil = { 1.0f, 0 } }
-    };
-
-    VkRenderPassBeginInfo renderPassInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .renderPass = RenderPass,
-        .framebuffer = FrameBufferList[cRenderer.ImageIndex],
-        .renderArea
-        {
-            .offset = {0, 0},
-            .extent =
-            {
-                .width = static_cast<uint32>(RenderPassResolution.x),
-                .height = static_cast<uint32>(RenderPassResolution.y)
-            }
-        },
-        .clearValueCount = static_cast<uint32>(clearValues.size()),
-        .pClearValues = clearValues.data()
-    };
-
-    VkViewport viewport = VkViewport
-    {
-        .x = 0.0f,
-        .y = 0.0f,
-        .width = static_cast<float>(RenderPassResolution.x),
-        .height = static_cast<float>(RenderPassResolution.y),
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f
-    };
-
-    VkRect2D scissor = VkRect2D
-    {
-        .offset =  VkOffset2D(0, 0),
-        .extent =  VkExtent2D
-        {
-          .width = static_cast<uint32>(RenderPassResolution.x),
-          .height = static_cast<uint32>(RenderPassResolution.y)
-        }
-    };
-
-    VkCommandBufferBeginInfo CommandBufferBeginInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-        .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
-    };
-
-    VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
-    VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
-    vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);
-    vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
-    for (auto mesh : meshList)
-    {
-        mesh->Draw(CommandBuffer, JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0], sceneProperties);
+        JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline(renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, sizeof(ScenePropertiesBuffer))));
     }
-    vkCmdEndRenderPass(CommandBuffer);
-    vkEndCommandBuffer(CommandBuffer);
-    return CommandBuffer;
 }
 
-void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInfo)
+void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
     Vector<VkAttachmentDescription> attachmentDescriptionList = Vector<VkAttachmentDescription>();
     Vector<VkAttachmentReference> inputAttachmentReferenceList = Vector<VkAttachmentReference>();
@@ -195,14 +155,21 @@ void JsonRenderPass::BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInf
     VULKAN_RESULT(vkCreateRenderPass(cRenderer.Device, &renderPassInfo, nullptr, &RenderPass));
 }
 
-void JsonRenderPass::BuildFrameBuffer()
+void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
     for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
     {
         std::vector<VkImageView> TextureAttachmentList;
-        for (auto texture : RenderedColorTextureList)
+        for (int x = 0; x < RenderedColorTextureList.size(); x++)
         {
-            TextureAttachmentList.emplace_back(texture->View);
+          /*  if (renderPassBuildInfo.IsRenderedToSwapchain)
+            {
+                TextureAttachmentList.emplace_back(cRenderer.SwapChain.SwapChainImageViews[0]);
+            }
+            else
+            {*/
+                TextureAttachmentList.emplace_back(RenderedColorTextureList[x]->View);
+            //}
         }
         if (depthTexture != nullptr)
         {
@@ -223,6 +190,71 @@ void JsonRenderPass::BuildFrameBuffer()
     }
 }
 
+VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList)
+{
+    std::vector<VkClearValue> clearValues
+    {
+        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
+        VkClearValue{.depthStencil = { 1.0f, 0 } }
+    };
+
+    VkRenderPassBeginInfo renderPassInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = RenderPass,
+        .framebuffer = FrameBufferList[cRenderer.ImageIndex],
+        .renderArea
+        {
+            .offset = {0, 0},
+            .extent =
+            {
+                .width = static_cast<uint32>(RenderPassResolution.x),
+                .height = static_cast<uint32>(RenderPassResolution.y)
+            }
+        },
+        .clearValueCount = static_cast<uint32>(clearValues.size()),
+        .pClearValues = clearValues.data()
+    };
+
+    VkViewport viewport = VkViewport
+    {
+        .x = 0.0f,
+        .y = 0.0f,
+        .width = static_cast<float>(RenderPassResolution.x),
+        .height = static_cast<float>(RenderPassResolution.y),
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f
+    };
+
+    VkRect2D scissor = VkRect2D
+    {
+        .offset = VkOffset2D(0, 0),
+        .extent = VkExtent2D
+        {
+          .width = static_cast<uint32>(RenderPassResolution.x),
+          .height = static_cast<uint32>(RenderPassResolution.y)
+        }
+    };
+
+    VkCommandBufferBeginInfo CommandBufferBeginInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+        .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
+    };
+
+    VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
+    VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
+    vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);
+    vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
+    for (auto mesh : meshList)
+    {
+        mesh->Draw(CommandBuffer, JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0]);
+    }
+    vkCmdEndRenderPass(CommandBuffer);
+    vkEndCommandBuffer(CommandBuffer);
+    return CommandBuffer;
+}
 
 void JsonRenderPass::Destroy()
 {

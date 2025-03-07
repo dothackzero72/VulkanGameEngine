@@ -41,7 +41,7 @@ public:
 
     virtual void Input(const float& deltaTime);
     virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
-    virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
+    virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet);
     virtual void Destroy();
     virtual SharedPtr<GameObjectComponent> Clone() const;
     virtual size_t GetMemorySize() const;

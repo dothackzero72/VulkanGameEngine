@@ -13,8 +13,8 @@ public:
 	virtual ~Mesh2D();
 
 	virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime) override;
-	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties) override;
-	virtual void InstanceDraw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties, VulkanBuffer<SpriteInstanceStruct>& InstanceBuffer);
+	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet) override;
+	virtual void InstanceDraw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, VulkanBuffer<SpriteInstanceStruct>& InstanceBuffer);
 	virtual void Destroy() override;
 };
 

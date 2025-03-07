@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.Models;
@@ -72,14 +73,20 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
         }
 
-        public VkStructureType sType;
-        public void* pNext;
-        public VkPipelineColorBlendStateCreateFlagBits flags;
-        public bool logicOpEnable;
-        public VkLogicOp logicOp;
-        public uint attachmentCount;
-        public VkPipelineColorBlendAttachmentState* pAttachments;
-        public Blender blendConstants;
+        public VkStructureType sType { get; set; }
+        [JsonIgnore]
+        public void* pNext { get; set; } = null;
+        [JsonIgnore]
+        public VkPipelineColorBlendStateCreateFlagBits flags { get; set; }
+        public bool logicOpEnable { get; set; }
+        public VkLogicOp logicOp { get; set; }
+        public uint attachmentCount { get; set; }
+        public VkPipelineColorBlendAttachmentState* pAttachments { get; set; }
+        public Blender blendConstants { get; set; } = new Blender();
+
+        public VkPipelineColorBlendStateCreateInfo()
+        {
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -100,7 +107,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     public unsafe struct VkPipelineMultisampleStateCreateInfo
     {
         public VkStructureType sType;
-        public void* pNext;
         public VkCullModeFlagBits flags;
         public VkSampleCountFlagBits rasterizationSamples;
         public bool sampleShadingEnable;

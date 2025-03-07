@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Newtonsoft.Json;
 using Silk.NET.SDL;
 using Silk.NET.Vulkan;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Runtime.CompilerServices;
@@ -16,6 +18,7 @@ using System.Xml.Linq;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -45,6 +48,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void BuildRenderPass(Texture texture)
         {
+        //    SaveRenderPass();
+            SavePipeline();
+
             RenderPassResolution = new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height);
             SampleCount = SampleCountFlags.Count1Bit;
 
@@ -520,6 +526,122 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VkFunc.vkEndCommandBuffer(commandBuffer);
 
                 return commandBuffer;
+            }
+        }
+
+        private void SaveRenderPass()
+        {
+            RenderPassBuildInfoModel modelInfo = new RenderPassBuildInfoModel()
+            {
+                SubpassDependencyList = new List<VkSubpassDependencyModel>()
+                {
+                      new VkSubpassDependencyModel
+                    {
+                        srcSubpass = uint.MaxValue,
+                        dstSubpass = 0,
+                        srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                        dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                        srcAccessMask = 0,
+                        dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                    },
+                },
+                _name = "Default2DRenderPass"
+            };
+
+            string jsonString = JsonConvert.SerializeObject(modelInfo, Formatting.Indented);
+
+            string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\FrameBufferRenderPass.json";
+            File.WriteAllText(finalfilePath, jsonString);
+        }
+
+        public void SavePipeline()
+        {
+            var jsonObj = new RenderPipelineModel
+            {
+                _name = "DefaultPipeline",
+                VertexShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DVert.spv",
+                FragmentShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DFrag.spv",
+                PipelineColorBlendAttachmentStateList = new List<VkPipelineColorBlendAttachmentState>()
+                {
+                     new VkPipelineColorBlendAttachmentState
+                            {
+                                blendEnable = true,
+                                srcColorBlendFactor = VkBlendFactor.VK_BLEND_FACTOR_SRC_ALPHA,
+                                dstColorBlendFactor = VkBlendFactor.VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+                                colorBlendOp = VkBlendOp.VK_BLEND_OP_ADD,
+                                srcAlphaBlendFactor = VkBlendFactor.VK_BLEND_FACTOR_ONE,
+                                dstAlphaBlendFactor = VkBlendFactor.VK_BLEND_FACTOR_ZERO,
+                                alphaBlendOp = VkBlendOp.VK_BLEND_OP_ADD,
+                                colorWriteMask = VkColorComponentFlagBits.VK_COLOR_COMPONENT_R_BIT | VkColorComponentFlagBits.VK_COLOR_COMPONENT_G_BIT | VkColorComponentFlagBits.VK_COLOR_COMPONENT_B_BIT | VkColorComponentFlagBits.VK_COLOR_COMPONENT_A_BIT
+                            }
+                },
+                PipelineDepthStencilStateCreateInfo = new VkPipelineDepthStencilStateCreateInfoModel()
+                {
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+                    depthTestEnable = true,
+                    depthWriteEnable = true,
+                    depthCompareOp = VkCompareOp.VK_COMPARE_OP_LESS_OR_EQUAL,
+                    depthBoundsTestEnable = false,
+                    stencilTestEnable = false
+                },
+                PipelineMultisampleStateCreateInfo = new VkPipelineMultisampleStateCreateInfoModel()
+                {
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+                    rasterizationSamples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT
+                },
+                PipelineRasterizationStateCreateInfo = new VkPipelineRasterizationStateCreateInfoModel()
+                {
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+                    depthClampEnable = false,
+                    rasterizerDiscardEnable = false,
+                    polygonMode = VkPolygonMode.VK_POLYGON_MODE_FILL,
+                    cullMode = VkCullModeFlagBits.VK_CULL_MODE_NONE,
+                    frontFace = VkFrontFace.VK_FRONT_FACE_COUNTER_CLOCKWISE,
+                    depthBiasEnable = false,
+                    depthBiasConstantFactor = 0.0f,
+                    depthBiasClamp = 0.0f,
+                    depthBiasSlopeFactor = 0.0f,
+                    lineWidth = 1.0f
+                },
+                ScissorList = new List<VkRect2D>(),
+                ViewportList = new List<VkViewport>(),
+                PipelineColorBlendStateCreateInfoModel = new VkPipelineColorBlendStateCreateInfoModel()
+                {
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+                    logicOpEnable = false,
+                    logicOp = VkLogicOp.VK_LOGIC_OP_NO_OP,
+                    attachmentCount = 1,
+                    pNext = null
+                },
+                PipelineInputAssemblyStateCreateInfo = new VkPipelineInputAssemblyStateCreateInfoModel()
+                {
+                    topology = VkPrimitiveTopology.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
+                },
+                PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
+                {
+
+                },
+                LayoutBindingList = new List<VkDescriptorSetLayoutBindingModel>()
+                {
+ 
+                }
+            };
+
+            string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\Pipelines\FrameBufferPipeline.json";
+            try
+            {
+                string jsonString = JsonConvert.SerializeObject(jsonObj, Formatting.Indented, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
+                Directory.CreateDirectory(Path.GetDirectoryName(finalfilePath)); // Ensure directory exists
+                File.WriteAllText(finalfilePath, jsonString);
+                Console.WriteLine("Pipeline saved successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to save pipeline: {ex.Message}");
+                throw;
             }
         }
     }

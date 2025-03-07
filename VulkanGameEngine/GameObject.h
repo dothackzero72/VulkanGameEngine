@@ -34,12 +34,13 @@ public:
 
     GameObject();
     GameObject(const String& name);
-    GameObject(const String& name, Vector<ComponentTypeEnum> gameObjectComponentList);
-    GameObject(const String& name, Vector<ComponentTypeEnum> gameObjectComponentList, SpriteSheet& spriteSheet);
+    GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList);
+    GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList, SpriteSheet& spriteSheet);
+    GameObject(const String& name, const Vector<GameObjectComponent>& gameObjectComponentList, SpriteSheet& spriteSheet);
 
     virtual void Input(const float& deltaTime);
     virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
-    virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
+    virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet);
     virtual void Destroy();
     void AddComponent(SharedPtr<GameObjectComponent> newComponent);
     void RemoveComponent(size_t index);

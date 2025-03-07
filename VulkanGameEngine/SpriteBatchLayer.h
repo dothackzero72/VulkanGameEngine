@@ -31,19 +31,19 @@ private:
 	Vector<SpriteInstanceStruct>    SpriteInstanceList;
 	SpriteInstanceBuffer			SpriteBuffer;
 	SharedPtr<Mesh2D>		        SpriteLayerMesh;
-	SharedPtr<JsonPipeline>			SpriteRenderPipeline;
 
 	void SortSpritesByLayer(std::vector<WeakPtr<Sprite>>& sprites);
 
 public:
 	String					        Name;
-
+	SharedPtr<JsonPipeline>			SpriteRenderPipeline;
 	SpriteBatchLayer();
 	SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, SharedPtr<JsonPipeline> spriteRenderPipeline);
 	virtual ~SpriteBatchLayer();
 
+	void LoadSprites();
 	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
-	void Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneProperties);
+	void Draw(VkCommandBuffer& commandBuffer);
 	void Destroy();
 
 	void AddSprite(SharedPtr<Sprite> sprite);

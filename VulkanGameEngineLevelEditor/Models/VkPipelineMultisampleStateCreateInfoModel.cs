@@ -27,20 +27,19 @@ namespace VulkanGameEngineLevelEditor.Models
         public void* pNext { get; set; } = null;
         public VkPipelineMultisampleStateCreateInfoModel() { }
 
-        public VkPipelineMultisampleStateCreateInfo* ConvertPtr()
+        public VkPipelineMultisampleStateCreateInfo ConvertPtr()
         {
-            VkPipelineMultisampleStateCreateInfo* ptr = (VkPipelineMultisampleStateCreateInfo*)Marshal.AllocHGlobal(sizeof(VkPipelineMultisampleStateCreateInfo));
-            ptr->sType = sType;
-            ptr->rasterizationSamples = rasterizationSamples;
-            ptr->sampleShadingEnable = sampleShadingEnable;
-            ptr->minSampleShading = minSampleShading;
-            ptr->pSampleMask = null;
-            ptr->alphaToCoverageEnable = alphaToCoverageEnable;
-            ptr->alphaToCoverageEnable = alphaToCoverageEnable;
-            ptr->alphaToOneEnable = alphaToOneEnable;
-            ptr->flags = 0;
-            ptr->pNext = null;
-            return ptr;
+            return new VkPipelineMultisampleStateCreateInfo()
+            {
+                sType = sType,
+                rasterizationSamples = rasterizationSamples,
+                sampleShadingEnable = sampleShadingEnable,
+                minSampleShading = minSampleShading,
+                pSampleMask = null,
+                alphaToCoverageEnable = alphaToCoverageEnable,
+                alphaToOneEnable = alphaToOneEnable,
+                flags = 0
+            };
         }
     }
 }

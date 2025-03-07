@@ -10,6 +10,7 @@ extern "C"
 #include "typedef.h"
 #include "VulkanBuffer.h"
 #include <imgui/imgui.h>
+#include <imgui/backends/imgui_impl_vulkan.h>
 
 class Texture
 {
@@ -74,7 +75,7 @@ public:
 	void UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, uint32_t mipLevel);
 
 	void GetTexturePropertiesBuffer(std::vector<VkDescriptorImageInfo>& textureDescriptorList);
-	void ImGuiShowTexture(const ImVec2& TextureDisplaySize);
+	//void ImGuiShowTexture(const ImVec2& TextureDisplaySize);
 
 	const VkFormat GetTextureByteFormat() { return TextureByteFormat; }
 	const VkSampleCountFlagBits GetSampleCount() { return SampleCount; }

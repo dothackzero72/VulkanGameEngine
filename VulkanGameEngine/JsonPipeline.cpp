@@ -5,11 +5,11 @@ JsonPipeline::JsonPipeline()
 {
 }
 
-JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport& gpuImport, uint constBufferSize)
+JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, uint constBufferSize)
 {
   //  ParentRenderPass = parentRenderPass;
-    nlohmann::json json = Json::ReadJson("../Pipelines/Default2DPipeline.json");
 
+    nlohmann::json json = Json::ReadJson(jsonPath);
     RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
 
     GPUIncludes include =
@@ -17,26 +17,26 @@ JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport& 
         .vertexProperties = GetVertexPropertiesBuffer(gpuImport.MeshList),
         .indexProperties = GetIndexPropertiesBuffer(gpuImport.MeshList),
         //        .transformProperties = GetTransformPropertiesBuffer(gpuImport.MeshList),
-                .meshProperties = GetMeshPropertiesBuffer(gpuImport.MeshList),
-                .texturePropertiesList = GetTexturePropertiesBuffer(gpuImport.TextureList),
-                .materialProperties = GetMaterialPropertiesBuffer(gpuImport.MaterialList)
+        .meshProperties = GetMeshPropertiesBuffer(gpuImport.MeshList),
+        .texturePropertiesList = GetTexturePropertiesBuffer(gpuImport.TextureList),
+        .materialProperties = GetMaterialPropertiesBuffer(gpuImport.MaterialList)
     };
 
-    Vector<VkVertexInputBindingDescription> vertexBinding = Vertex2D::GetBindingDescriptions();
+    Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
     for (auto& instanceVar : SpriteInstanceVertex2D::GetBindingDescriptions())
     {
         vertexBinding.emplace_back(instanceVar);
     }
 
-    Vector<VkVertexInputAttributeDescription> vertexAttribute = Vertex2D::GetAttributeDescriptions();
+    Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
     for (auto& instanceVar : SpriteInstanceVertex2D::GetAttributeDescriptions())
     {
         vertexAttribute.emplace_back(instanceVar);
     }
 
-
+    DescriptorSetLayoutList.resize(1);
     DescriptorPool = VkPipeline_CreateDescriptorPool(cRenderer.Device, renderPipelineModel, include);
-    DescriptorSetLayoutList = VkPipeline_CreateDescriptorSetLayout(cRenderer.Device, renderPipelineModel, include);
+    VkPipeline_CreateDescriptorSetLayout(cRenderer.Device, renderPipelineModel, include, DescriptorSetLayoutList);
     DescriptorSetList = VkPipeline_AllocateDescriptorSets(cRenderer.Device, DescriptorPool, DescriptorSetLayoutList);
     VkPipeline_UpdateDescriptorSets(cRenderer.Device, DescriptorSetList, renderPipelineModel, include);
     VkPipeline_CreatePipelineLayout(cRenderer.Device, DescriptorSetLayoutList, constBufferSize, PipelineLayout);
@@ -59,10 +59,15 @@ void JsonPipeline::Destroy()
     }
 }
 
-const Vector<VkDescriptorImageInfo> JsonPipeline::GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>>& textureList)
+const Vector<VkDescriptorImageInfo> JsonPipeline::GetTexturePropertiesBuffer(SharedPtr<Vector<SharedPtr<Texture>>> textureList)
 {
+    if (!textureList.get())
+    {
+        return Vector<VkDescriptorImageInfo>();
+    }
+
     Vector<VkDescriptorImageInfo>	texturePropertiesBuffer;
-    if (textureList.size() == 0)
+    if ((*textureList.get()).size() == 0)
     {
         VkSamplerCreateInfo NullSamplerInfo = 
         {
@@ -100,7 +105,7 @@ const Vector<VkDescriptorImageInfo> JsonPipeline::GetTexturePropertiesBuffer(Vec
     }
     else
     {
-        for (auto& texture : textureList)
+        for (auto& texture : *textureList.get())
         {
             texture->GetTexturePropertiesBuffer(texturePropertiesBuffer);
         }
@@ -109,12 +114,29 @@ const Vector<VkDescriptorImageInfo> JsonPipeline::GetTexturePropertiesBuffer(Vec
     return texturePropertiesBuffer;
 }
 
-const Vector<VkDescriptorBufferInfo> JsonPipeline::GetMaterialPropertiesBuffer(Vector<SharedPtr<Material>>& materialList)
+const Vector<VkDescriptorBufferInfo> JsonPipeline::GetMaterialPropertiesBuffer(SharedPtr<Vector<SharedPtr<Material>>> materialList)
 {
-    std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
-    for (auto& material : materialList)
+    if (!materialList.get())
     {
-        material->GetMaterialPropertiesBuffer(materialPropertiesBuffer);
+        return Vector<VkDescriptorBufferInfo>();
+    }
+
+    std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
+    if ((*materialList.get()).size() == 0)
+    {
+        materialPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+            {
+                .buffer = VK_NULL_HANDLE,
+                .offset = 0,
+                .range = VK_WHOLE_SIZE
+            });
+    }
+    else
+    {
+        for (auto& material : *materialList.get())
+        {
+            material->GetMaterialPropertiesBuffer(materialPropertiesBuffer);
+        }
     }
     return materialPropertiesBuffer;
 }

@@ -15,12 +15,12 @@ namespace VulkanGameEngineLevelEditor.Models
         public List<VkViewport> ViewportList { get; set; } = new List<VkViewport>();
         public List<VkRect2D> ScissorList { get; set; } = new List<VkRect2D>();
         public List<VkPipelineColorBlendAttachmentState> PipelineColorBlendAttachmentStateList { get; set; } = new List<VkPipelineColorBlendAttachmentState>();
-        public VkPipelineColorBlendStateCreateInfo PipelineColorBlendStateCreateInfoModel { get; set; } = new VkPipelineColorBlendStateCreateInfo();
-        public VkPipelineRasterizationStateCreateInfo PipelineRasterizationStateCreateInfo { get; set; } = new VkPipelineRasterizationStateCreateInfo();
-        public VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo { get; set; } = new VkPipelineMultisampleStateCreateInfo();
-        public VkPipelineDepthStencilStateCreateInfo PipelineDepthStencilStateCreateInfo { get; set; }
-        public VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo { get; set; } = new VkPipelineInputAssemblyStateCreateInfo();
-        public List<VkDescriptorSetLayoutBinding> LayoutBindingList { get; set; } = new List<VkDescriptorSetLayoutBinding>();
+        public VkPipelineColorBlendStateCreateInfoModel PipelineColorBlendStateCreateInfoModel { get; set; } = new VkPipelineColorBlendStateCreateInfoModel();
+        public VkPipelineRasterizationStateCreateInfoModel PipelineRasterizationStateCreateInfo { get; set; } = new VkPipelineRasterizationStateCreateInfoModel();
+        public VkPipelineMultisampleStateCreateInfoModel PipelineMultisampleStateCreateInfo { get; set; } = new VkPipelineMultisampleStateCreateInfoModel();
+        public VkPipelineDepthStencilStateCreateInfoModel PipelineDepthStencilStateCreateInfo { get; set; }
+        public VkPipelineInputAssemblyStateCreateInfoModel PipelineInputAssemblyStateCreateInfo { get; set; } = new VkPipelineInputAssemblyStateCreateInfoModel();
+        public List<VkDescriptorSetLayoutBindingModel> LayoutBindingList { get; set; } = new List<VkDescriptorSetLayoutBindingModel>();
         public List<PipelineDescriptorModel> PipelineDescriptorModelsList { get; set; } = new List<PipelineDescriptorModel>();
 
         public RenderPipelineModel()

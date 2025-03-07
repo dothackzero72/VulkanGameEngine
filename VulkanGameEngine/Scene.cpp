@@ -1,6 +1,6 @@
 #include "Scene.h"
 #include "VulkanRenderer.h"
-#include "Texture.h"
+#include <TextureCPP.h>
 #include "SceneDataBuffer.h"
 #include "implot.h"
 #include "BakedTexture.h"
@@ -29,7 +29,7 @@ void Scene::Update(const float& deltaTime)
 	{
 		UpdateRenderPasses();
 	}
-	orthographicCamera->Update(sceneProperties);
+	orthographicCamera->Update();
 	levelRenderer->Update(deltaTime);
 }
 
@@ -48,14 +48,16 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 
 void Scene::BuildRenderPasses()
 {
-	levelRenderer = Level2DRenderer::CreateLevel2DRenderer("../RenderPass/DefaultRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
-	frameRenderPass.BuildRenderPass(levelRenderer->RenderedColorTextureList[0]);
+	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("../RenderPass/DefaultRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
+	levelRenderer->StartLevelRenderer();
+
+	frameRenderPass = std::make_shared<FrameBufferRenderPass>(FrameBufferRenderPass("../RenderPass/FrameBufferRenderPass.json", levelRenderer->RenderedColorTextureList[0]));
 }
 
 void Scene::UpdateRenderPasses()
 {
 	renderer.RebuildSwapChain();
-	frameRenderPass.UpdateRenderPass(levelRenderer->RenderedColorTextureList[0]);
+	//frameRenderPass.UpdateRenderPass(levelRenderer->RenderedColorTextureList[0]);
 	InterfaceRenderPass::RebuildSwapChain();
 	cRenderer.RebuildRendererFlag = false;
 }
@@ -63,8 +65,8 @@ void Scene::UpdateRenderPasses()
 void Scene::Draw()
 {
 	VULKAN_RESULT(renderer.StartFrame());
-	CommandBufferSubmitList.emplace_back(levelRenderer->Draw(GameObjectList, sceneProperties));
-	CommandBufferSubmitList.emplace_back(frameRenderPass.Draw());
+	CommandBufferSubmitList.emplace_back(levelRenderer->Draw(GameObjectList));
+	CommandBufferSubmitList.emplace_back(frameRenderPass->Draw());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
 	VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
 	CommandBufferSubmitList.clear();
@@ -73,5 +75,5 @@ void Scene::Draw()
 void Scene::Destroy()
 {
 	levelRenderer->Destroy();
-	frameRenderPass.Destroy();
+	frameRenderPass->Destroy();
 }

@@ -82,7 +82,7 @@ VkDescriptorPool VkPipeline_CreateDescriptorPool(VkDevice device, const RenderPi
     return descriptorPool;
 }
 
-Vector<VkDescriptorSetLayout> VkPipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes)
+void VkPipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes, Vector<VkDescriptorSetLayout>& descriptorSetLayoutList)
 {
     Vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindingList = Vector<VkDescriptorSetLayoutBinding>();
     for (auto binding : model.PipelineDescriptorModelsList)
@@ -167,7 +167,6 @@ Vector<VkDescriptorSetLayout> VkPipeline_CreateDescriptorSetLayout(VkDevice devi
             }
         }
 
-        Vector<VkDescriptorSetLayout> descriptorSetLayoutList(1);
         for (auto& descriptorSetLayout : descriptorSetLayoutList)
         {
             VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = VkDescriptorSetLayoutCreateInfo
@@ -180,8 +179,6 @@ Vector<VkDescriptorSetLayout> VkPipeline_CreateDescriptorSetLayout(VkDevice devi
             };
             VULKAN_RESULT(vkCreateDescriptorSetLayout(cRenderer.Device, &descriptorSetLayoutCreateInfo, nullptr, &descriptorSetLayout));
         }
-
-        return descriptorSetLayoutList;
     }
 }
 

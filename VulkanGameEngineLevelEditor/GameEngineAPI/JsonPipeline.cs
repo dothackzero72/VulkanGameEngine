@@ -382,7 +382,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo = new VkPipelineColorBlendStateCreateInfo();
             fixed (VkPipelineColorBlendAttachmentState* attachments = model.PipelineColorBlendAttachmentStateList.ToArray())
             {
-                pipelineColorBlendStateCreateInfo = model.PipelineColorBlendStateCreateInfoModel;
+                pipelineColorBlendStateCreateInfo = model.PipelineColorBlendStateCreateInfoModel.Convert();
                 pipelineColorBlendStateCreateInfo.attachmentCount = model.PipelineColorBlendAttachmentStateList.UCount();
                 pipelineColorBlendStateCreateInfo.pAttachments = attachments;
             }
@@ -410,25 +410,25 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VulkanRenderer.CreateShader(model.FragmentShader, VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT)
             };
 
-            VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = model.PipelineMultisampleStateCreateInfo;
+            VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = model.PipelineMultisampleStateCreateInfo.ConvertPtr();
             pipelineMultisampleStateCreateInfo.pSampleMask = null;
 
             VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = new VkGraphicsPipelineCreateInfo();
             fixed (VkPipelineShaderStageCreateInfo* pipelineShaderStageCreateInfo = pipelineShaderStageCreateInfoList.ToArray())
             {
-                var pipelineInputAssemblyStateCreateInfov = model.PipelineInputAssemblyStateCreateInfo;
-                var pipelineRasterizationStateCreateInfo = model.PipelineRasterizationStateCreateInfo;
-                var pipelineDepthStencilStateCreateInfo = model.PipelineDepthStencilStateCreateInfo;
+                var pipelineInputAssemblyStateCreateInfov = model.PipelineInputAssemblyStateCreateInfo.ConvertPtr();
+                var pipelineRasterizationStateCreateInfo = model.PipelineRasterizationStateCreateInfo.ConvertPtr();
+                var pipelineDepthStencilStateCreateInfo = model.PipelineDepthStencilStateCreateInfo.ConvertPtr();
                 graphicsPipelineCreateInfo = new VkGraphicsPipelineCreateInfo()
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
                     pStages = pipelineShaderStageCreateInfo,
                     pVertexInputState = &vertexInputInfo,
-                    pInputAssemblyState = &pipelineInputAssemblyStateCreateInfov,
+                    pInputAssemblyState = pipelineInputAssemblyStateCreateInfov,
                     pViewportState = &pipelineViewportStateCreateInfo,
-                    pRasterizationState = &pipelineRasterizationStateCreateInfo,
+                    pRasterizationState = pipelineRasterizationStateCreateInfo,
                     pMultisampleState = &pipelineMultisampleStateCreateInfo,
-                    pDepthStencilState = &pipelineDepthStencilStateCreateInfo,
+                    pDepthStencilState = pipelineDepthStencilStateCreateInfo,
                     pColorBlendState = &pipelineColorBlendStateCreateInfo,
                     pDynamicState = &pipelineDynamicStateCreateInfo,
                     pTessellationState = null,
@@ -471,7 +471,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                          VkColorComponentFlagBits.VK_COLOR_COMPONENT_A_BIT
                     }
                 },
-                PipelineDepthStencilStateCreateInfo = new VkPipelineDepthStencilStateCreateInfo()
+                PipelineDepthStencilStateCreateInfo = new VkPipelineDepthStencilStateCreateInfoModel()
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
                     depthTestEnable = true,
@@ -480,12 +480,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     depthBoundsTestEnable = false,
                     stencilTestEnable = false
                 },
-                PipelineMultisampleStateCreateInfo = new VkPipelineMultisampleStateCreateInfo()
+                PipelineMultisampleStateCreateInfo = new VkPipelineMultisampleStateCreateInfoModel()
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
                     rasterizationSamples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT
                 },
-                PipelineRasterizationStateCreateInfo = new VkPipelineRasterizationStateCreateInfo()
+                PipelineRasterizationStateCreateInfo = new VkPipelineRasterizationStateCreateInfoModel()
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_LINE_STATE_CREATE_INFO,
                     depthClampEnable = false,
@@ -498,14 +498,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 },
                 ScissorList = new List<VkRect2D>(),
                 ViewportList = new List<VkViewport>(),
-                PipelineColorBlendStateCreateInfoModel = new VkPipelineColorBlendStateCreateInfo()
+                PipelineColorBlendStateCreateInfoModel = new VkPipelineColorBlendStateCreateInfoModel()
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
                     attachmentCount = 0,
                     pAttachments = null,
                     logicOpEnable = false
                 },
-                PipelineInputAssemblyStateCreateInfo = new VkPipelineInputAssemblyStateCreateInfo()
+                PipelineInputAssemblyStateCreateInfo = new VkPipelineInputAssemblyStateCreateInfoModel()
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
                     topology = VkPrimitiveTopology.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
@@ -526,9 +526,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             DescriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
                         }
                 },
-                LayoutBindingList = new List<VkDescriptorSetLayoutBinding>()
+                LayoutBindingList = new List<VkDescriptorSetLayoutBindingModel>()
                 {
-                        new VkDescriptorSetLayoutBinding()
+                        new VkDescriptorSetLayoutBindingModel()
                         {
                             binding = 0,
                             descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
@@ -536,7 +536,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             stageFlags = VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT,
                             pImmutableSamplers = null
                         },
-                        new VkDescriptorSetLayoutBinding()
+                        new VkDescriptorSetLayoutBindingModel()
                         {
                             binding = 1,
                             descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,

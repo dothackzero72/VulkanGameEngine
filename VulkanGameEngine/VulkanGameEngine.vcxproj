@@ -169,10 +169,8 @@
     <ClCompile Include="..\External\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
     <ClCompile Include="Animation2D.cpp" />
-    <ClCompile Include="BakedTexture.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GameObjectComponent.cpp" />
-    <ClCompile Include="DepthTexture.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameBufferRenderPass.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
@@ -197,7 +195,6 @@
     <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="SpriteSheet.cpp" />
     <ClCompile Include="SystemClock.cpp" />
-    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -216,10 +213,8 @@
     <ClInclude Include="..\External\ImPlot\implot.h" />
     <ClInclude Include="..\External\ImPlot\implot_internal.h" />
     <ClInclude Include="Animation2D.h" />
-    <ClInclude Include="BakedTexture.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GameObjectComponent.h" />
-    <ClInclude Include="DepthTexture.h" />
     <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="FrameBufferRenderPass.h" />
     <ClInclude Include="FrameTimer.h" />
@@ -247,7 +242,6 @@
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="SystemClock.h" />
-    <ClInclude Include="Texture.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="Timer.h" />

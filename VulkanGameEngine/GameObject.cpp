@@ -22,7 +22,7 @@ GameObject::GameObject(const String& name)
 //	CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
 }
 
-GameObject::GameObject(const String& name, Vector<ComponentTypeEnum> gameObjectComponentList)
+GameObject::GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList)
 {
 	GameObjectId = ++NextGameObjectId;
 	Name = name;
@@ -41,7 +41,24 @@ GameObject::GameObject(const String& name, Vector<ComponentTypeEnum> gameObjectC
 //	CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance());
 }
 
-GameObject::GameObject(const String& name, Vector<ComponentTypeEnum> gameObjectComponentList, SpriteSheet& spriteSheet)
+GameObject::GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList, SpriteSheet& spriteSheet)
+{
+	GameObjectId = ++NextGameObjectId;
+	Name = name;
+	//String asdf = "adsfasd";
+	//for (auto component : gameObjectComponentList)
+	//{
+	//	switch (component)
+	//	{
+	//	case kTransform2DComponent: AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(this, asdf))); break;
+	//	case kInputComponent: AddComponent(std::make_shared<InputComponent>(InputComponent(this, asdf))); break;
+	//	}
+	//}
+
+	//AddComponent(std::make_shared<SpriteComponent>(SpriteComponent(asdf, this, spriteSheet)));
+}
+
+GameObject::GameObject(const String& name, const Vector<GameObjectComponent>& gameObjectComponentList, SpriteSheet& spriteSheet)
 {
 	GameObjectId = ++NextGameObjectId;
 	Name = name;
@@ -74,11 +91,11 @@ void GameObject::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 	}
 }
 
-void GameObject::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
+void GameObject::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet)
 {
 	for (SharedPtr<GameObjectComponent> component : GameObjectComponentList)
 	{
-		component->Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSet, sceneProperties);
+		component->Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSet);
 	}
 }
 

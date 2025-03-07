@@ -110,5 +110,6 @@
       "_name": ""
     }
   ],
-  "_name": "Default2DRenderPass"
+  "_name": "Default2DRenderPass",
+  "IsRenderedToSwapchain": false
 }

@@ -24,7 +24,7 @@ void SpriteComponent::Update(VkCommandBuffer& commandBuffer, const float& deltaT
 	SpriteObj->Update(commandBuffer, deltaTime);
 }
 
-void SpriteComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
+void SpriteComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet)
 {
 }
 

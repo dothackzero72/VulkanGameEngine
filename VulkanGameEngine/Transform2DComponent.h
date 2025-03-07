@@ -12,8 +12,8 @@ public:
     mat4 GameObjectMatrixTransform = mat4(0.0f);
 
     Transform2DComponent();
-    Transform2DComponent(uint32 gameObjectId);
-    Transform2DComponent(uint32 gameObjectId, const String& name);
+    Transform2DComponent(uint32 gameObjectId, const vec2& position);
+    Transform2DComponent(uint32 gameObjectId, const vec2& position, const String& name);
     virtual ~Transform2DComponent();
 
     virtual void Input(const float& deltaTime) override;

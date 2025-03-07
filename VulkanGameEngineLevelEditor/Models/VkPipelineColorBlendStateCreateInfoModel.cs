@@ -54,45 +54,17 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public VkPipelineColorBlendStateCreateInfo Convert()
         {
-            VkPipelineColorBlendStateCreateInfo result = new VkPipelineColorBlendStateCreateInfo
+            return new VkPipelineColorBlendStateCreateInfo
             {
                 sType = sType,
-                pNext = pNext,
-                flags = flags,
-                logicOpEnable = logicOpEnable,
-                logicOp = logicOp,
+                pNext = null,
                 attachmentCount = attachmentCount,
                 pAttachments = pAttachments,
-                //blendConstants = new Blender()
-                //{
-                //    R = blendConstants.R,
-                //    G = blendConstants.G,
-                //    B = blendConstants.B,
-                //    A = blendConstants.A
-                //}
+               // blendConstants = blendConstants,
+                flags = flags,
+                logicOpEnable = logicOpEnable,
+                logicOp = logicOp
             };
-            result.blendConstants.R = blendConstants.R;
-            result.blendConstants.G = blendConstants.G;
-            result.blendConstants.B = blendConstants.B;
-            result.blendConstants.A = blendConstants.A;
-            return result;
-        }
-
-        public VkPipelineColorBlendStateCreateInfo* ConvertPtr()
-        {
-            VkPipelineColorBlendStateCreateInfo* ptr = (VkPipelineColorBlendStateCreateInfo*)Marshal.AllocHGlobal(sizeof(VkPipelineColorBlendStateCreateInfo));
-            ptr->sType = sType;
-            ptr->pNext = pNext;
-            ptr->flags = flags;
-            ptr->logicOpEnable = false;
-            //ptr->LogicOp = logicOp;
-            ptr->attachmentCount = attachmentCount;
-            ptr->pAttachments = pAttachments;
-            //ptr->BlendConstants[0] = blendConstants.R;
-            //ptr->BlendConstants[2] = blendConstants.G;
-            //ptr->BlendConstants[3] = blendConstants.B;
-            //ptr->BlendConstants[4] = blendConstants.A;
-            return ptr;
         }
 
         public void Dispose()

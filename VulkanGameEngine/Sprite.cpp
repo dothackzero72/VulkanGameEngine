@@ -7,7 +7,7 @@ Sprite::Sprite()
 
 Sprite::Sprite(uint32 gameObjectId, SpriteSheet& spriteSheet)
 {
-	ParentGameObject = Level2DRenderer::LevelRenderer->SeachGameObjectsById(gameObjectId);
+	ParentGameObject = Level2DRenderer::LevelRenderer->SearchGameObjectsById(gameObjectId);
 	if (SharedPtr parentGameObject = ParentGameObject.lock())
 	{
 		Transform2D = std::dynamic_pointer_cast<Transform2DComponent>(parentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent));

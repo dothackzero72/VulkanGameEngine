@@ -3,6 +3,7 @@
 #include "TypeDef.h"
 #include "JsonStructs.h"
 #include "ShaderCompiler.h"
+#include "TextureCPP.h"
 
 struct GPUIncludes
 {
@@ -15,7 +16,7 @@ struct GPUIncludes
 };
 
 VkDescriptorPool VkPipeline_CreateDescriptorPool(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes);
-Vector<VkDescriptorSetLayout> VkPipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes);
+void VkPipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes, Vector<VkDescriptorSetLayout>& descriptorSetLayoutList);
 Vector<VkDescriptorSet> VkPipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList);
 void VkPipeline_UpdateDescriptorSets(VkDevice device, const Vector<VkDescriptorSet>& descriptorSetList, const RenderPipelineModel& model, const GPUIncludes& includes);
 void VkPipeline_CreatePipelineLayout(VkDevice device, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout& pipelineLayout);

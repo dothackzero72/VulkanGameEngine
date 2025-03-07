@@ -6,6 +6,24 @@
 #include <vulkan/vulkan_core.h>
 #include <TypeDef.h>
 
+struct NullVertex
+{
+    NullVertex()
+    {
+
+    }
+
+    static std::vector<VkVertexInputBindingDescription> GetBindingDescriptions()
+    {
+        return std::vector<VkVertexInputBindingDescription>();
+    }
+
+    static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions()
+    {
+        return std::vector<VkVertexInputAttributeDescription>();
+    }
+};
+
 struct Vertex2D
 {
     vec2 Position = vec2(0.0f);

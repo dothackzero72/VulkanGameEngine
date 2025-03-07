@@ -21,7 +21,7 @@ public:
 	Camera();
 	virtual ~Camera();
 
-	virtual void Update(SceneDataBuffer& sceneProperties) = 0;
+	virtual void Update() = 0;
 	virtual void UpdateKeyboard(float deltaTime) = 0;
 	virtual void UpdateMouse() = 0;
 

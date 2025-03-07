@@ -3,7 +3,7 @@
 #include <VulkanError.h>
 #include <CBuffer.h>
 #include <pixel.h>
-#include <imgui/backends/imgui_impl_vulkan.h>
+
 #include <VulkanRenderer.h>
 #include <CoreVulkanRenderer.h>
 
@@ -36,7 +36,7 @@ Texture::Texture(const Pixel& clearColor, int width, int height, VkFormat textur
 	CreateImageTexture(clearColor);
 	CreateTextureView();
 	CreateTextureSampler();
-	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	//ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
 Texture::Texture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType)
@@ -50,7 +50,7 @@ Texture::Texture(const String& filePath, VkFormat textureByteFormat, TextureType
 	CreateImageTexture(filePath);
 	CreateTextureView();
 	CreateTextureSampler();
-	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	//ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
 Texture::~Texture()
@@ -87,7 +87,7 @@ void Texture::UpdateTextureSize(glm::vec2 TextureResolution)
 	renderer.DestroySampler(Sampler);
 	renderer.DestroyImage(Image);
 	renderer.FreeDeviceMemory(Memory);
-	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	//ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
 void Texture::UpdateTextureBufferIndex(uint64_t bufferIndex)
@@ -214,10 +214,10 @@ void Texture::GetTexturePropertiesBuffer(std::vector<VkDescriptorImageInfo>& tex
 	textureDescriptorList.emplace_back(textureDescriptor);
 }
 
-void Texture::ImGuiShowTexture(const ImVec2& TextureDisplaySize)
-{
-	ImGui::Image(ImGuiDescriptorSet, TextureDisplaySize);
-}
+//void Texture::ImGuiShowTexture(const ImVec2& TextureDisplaySize)
+//{
+//	ImGui::Image(ImGuiDescriptorSet, TextureDisplaySize);
+//}
 
 void Texture::UpdateTextureLayout(VkImageLayout newImageLayout)
 {

@@ -9,11 +9,13 @@
 
 class Material;
 class Texture;
+
+
 struct GPUImport
 {
-    Vector<SharedPtr<Mesh<Vertex2D>>> MeshList;
-    Vector<SharedPtr<Texture>> TextureList;
-    Vector<SharedPtr<Material>> MaterialList;
+    SharedPtr<Vector<SharedPtr<Mesh<Vertex2D>>>> MeshList;
+    SharedPtr<Vector<SharedPtr<Texture>>> TextureList;
+    SharedPtr<Vector<SharedPtr<Material>>> MaterialList;
 };
 
 class JsonPipeline
@@ -26,11 +28,18 @@ private:
     void LoadDescriptorSets(RenderPipelineModel& model, GPUImport& gpuImport);
     void LoadPipeline(RenderPipelineModel& model, VkRenderPass renderPass, uint ConstBufferSize);
 
+protected:
+
     template<class T>
-    const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
+    const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer(SharedPtr<Vector<SharedPtr<Mesh<T>>>> meshList)
     {
+        if (!meshList.get())
+        {
+            return Vector<VkDescriptorBufferInfo>();
+        }
+
         Vector<VkDescriptorBufferInfo> vertexPropertiesBuffer;
-        if (meshList.size() == 0)
+        if ((*meshList.get()).size() == 0)
         {
             vertexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
                 {
@@ -41,7 +50,7 @@ private:
         }
         else
         {
-            for (auto& mesh : meshList)
+            for (auto& mesh : *meshList.get())
             {
                 mesh->GetVertexPropertiesBuffer();
             }
@@ -51,10 +60,15 @@ private:
     }
 
     template<class T>
-    const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
+    const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer(SharedPtr<Vector<SharedPtr<Mesh<T>>>> meshList)
     {
+        if (!meshList.get())
+        {
+            return Vector<VkDescriptorBufferInfo>();
+        }
+
         std::vector<VkDescriptorBufferInfo>	indexPropertiesBuffer;
-        if (meshList.size() == 0)
+        if ((*meshList.get()).size() == 0)
         {
             indexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
                 {
@@ -65,7 +79,7 @@ private:
         }
         else
         {
-            for (auto& mesh : meshList)
+            for (auto& mesh : *meshList.get())
             {
                 mesh->GetIndexPropertiesBuffer();
             }
@@ -74,10 +88,15 @@ private:
     }
 
     template<class T>
-    const Vector<VkDescriptorBufferInfo> GetGameObjectTransformBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
+    const Vector<VkDescriptorBufferInfo> GetGameObjectTransformBuffer(SharedPtr<Vector<SharedPtr<Mesh<T>>>> meshList)
     {
+        if (!meshList.get())
+        {
+            return Vector<VkDescriptorBufferInfo>();
+        }
+
         std::vector<VkDescriptorBufferInfo>	transformPropertiesBuffer;
-        if (meshList.size() == 0)
+        if ((*meshList.get()).size() == 0)
         {
             transformPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
                 {
@@ -88,7 +107,7 @@ private:
         }
         else
         {
-            for (auto& mesh : meshList)
+            for (auto& mesh : *meshList.get())
             {
                 mesh->GetTransformBuffer(transformPropertiesBuffer);
             }
@@ -98,10 +117,15 @@ private:
     }
 
     template<class T>
-    const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
+    const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer(SharedPtr<Vector<SharedPtr<Mesh<T>>>> meshList)
     {
+        if (!meshList.get())
+        {
+            return Vector<VkDescriptorBufferInfo>();
+        }
+
         Vector<VkDescriptorBufferInfo> meshPropertiesBuffer;
-        if (meshList.size() == 0)
+        if ((*meshList.get()).size() == 0)
         {
             meshPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
                 {
@@ -112,7 +136,7 @@ private:
         }
         else
         {
-            for (auto& mesh : meshList)
+            for (auto& mesh : *meshList.get())
             {
                 meshPropertiesBuffer.emplace_back(mesh->GetMeshPropertiesBuffer());
             }
@@ -121,8 +145,8 @@ private:
         return meshPropertiesBuffer;
     }
 
-    const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>>& textureList);
-    const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer(Vector<SharedPtr<Material>>& materialList);
+    const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(SharedPtr<Vector<SharedPtr<Texture>>> textureList);
+    const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer(SharedPtr<Vector<SharedPtr<Material>>> materialList);
 
 public:
     String Name;
@@ -134,7 +158,7 @@ public:
     VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 
     JsonPipeline();
-    JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport& gpuImport, uint constBufferSize);
+    JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, uint constBufferSize);
     ~JsonPipeline();
 
     void Destroy();

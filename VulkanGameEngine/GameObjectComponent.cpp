@@ -19,7 +19,7 @@ GameObjectComponent::GameObjectComponent()
 
 GameObjectComponent::GameObjectComponent(uint32 gameObjectId, ComponentTypeEnum componentType)
 {
-    ParentGameObject = Level2DRenderer::LevelRenderer->SeachGameObjectsById(gameObjectId);
+    ParentGameObject = Level2DRenderer::LevelRenderer->SearchGameObjectsById(gameObjectId);
     //void* reqw = this;
     //Name = std::make_shared<Coral::String>(Coral::String().New("component"));
     ComponentType = componentType;
@@ -35,7 +35,7 @@ GameObjectComponent::GameObjectComponent(uint32 gameObjectId, ComponentTypeEnum 
 
 GameObjectComponent::GameObjectComponent(uint32 gameObjectId, const String& name, ComponentTypeEnum componentType)
 {
-    ParentGameObject = Level2DRenderer::LevelRenderer->SeachGameObjectsById(gameObjectId);
+    ParentGameObject = Level2DRenderer::LevelRenderer->SearchGameObjectsById(gameObjectId);
     //Name = std::make_shared<Coral::String>(Coral::String().New(name));
     ComponentType = componentType;
     //ParentGameObjectPtr = parentGameObjectPtr;
@@ -62,7 +62,7 @@ void GameObjectComponent::Update(VkCommandBuffer& commandBuffer, const float& de
     //CSobject->InvokeMethod("BufferUpdate", commandBuffer, deltaTime);
 }
 
-void GameObjectComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
+void GameObjectComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet)
 {
 
 }

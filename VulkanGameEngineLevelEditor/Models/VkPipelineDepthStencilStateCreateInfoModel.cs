@@ -29,6 +29,25 @@ namespace VulkanGameEngineLevelEditor.Models
         public void* pNext { get; set; } = null;
         public VkPipelineDepthStencilStateCreateInfoModel() { }
 
+        public VkPipelineDepthStencilStateCreateInfo Convert()
+        {
+            return new VkPipelineDepthStencilStateCreateInfo
+            {
+                sType = sType,
+                depthTestEnable = depthTestEnable,
+                depthWriteEnable = depthWriteEnable,
+                depthCompareOp = depthCompareOp,
+                depthBoundsTestEnable = depthBoundsTestEnable,
+                stencilTestEnable = stencilTestEnable,
+                minDepthBounds = minDepthBounds,
+                maxDepthBounds = maxDepthBounds,
+                front = front.Convert(),
+                back = back.Convert(),
+                flags = 0,
+                pNext = null
+            };
+        }
+
         public VkPipelineDepthStencilStateCreateInfo* ConvertPtr()
         {
             VkPipelineDepthStencilStateCreateInfo* ptr = (VkPipelineDepthStencilStateCreateInfo*)Marshal.AllocHGlobal(sizeof(VkPipelineDepthStencilStateCreateInfo));

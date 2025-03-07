@@ -8,6 +8,7 @@
 #include "JsonPipeline.h"
 #include "GameObject.h"
 
+struct GPUImport;
 class JsonRenderPass
 {
 	friend class JsonPipeline;
@@ -20,12 +21,12 @@ protected:
 	VkCommandBuffer CommandBuffer;
 	std::vector<VkFramebuffer> FrameBufferList;
 
-	virtual void BuildRenderPass(RenderPassBuildInfoModel renderPassBuildInfo);
-	virtual void BuildFrameBuffer();
-
 	Vector<SharedPtr<JsonPipeline>> JsonPipelineList;
+	Vector<SharedPtr<Texture>> InputTextureList;
 
-	JsonRenderPass(String jsonPath, ivec2 renderPassResolution);
+	virtual void BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, GPUImport& renderGraphics);
+	virtual void BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo);
+	virtual void BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
 
 public:
 	String Name;
@@ -33,11 +34,12 @@ public:
 	SharedPtr<DepthTexture> depthTexture;
 
 	JsonRenderPass();
-	static SharedPtr<JsonRenderPass> JsonCreateRenderPass(String JsonPath, ivec2 RenderPassResolution);
+	JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, ivec2 renderPassResolution);
+	JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, VkExtent2D renderPassResolution);
 	virtual ~JsonRenderPass();
 
 	virtual void Update(const float& deltaTime);
-	virtual VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneProperties);
+	virtual VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList);
 	virtual void Destroy();
 };
 
