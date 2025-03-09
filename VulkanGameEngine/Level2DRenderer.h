@@ -29,7 +29,7 @@ public:
 	virtual void Input(const float& deltaTime);
 	virtual void Update(const float& deltaTime) override;
 	void UpdateBufferIndex();
-	virtual VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList) override;
+	virtual VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer) override;
 	virtual void Destroy() override;
 
 	void SetRendererRefForSprites(std::shared_ptr<Level2DRenderer> self);

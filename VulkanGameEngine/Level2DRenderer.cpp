@@ -48,13 +48,13 @@ void Level2DRenderer::StartLevelRenderer()
     SpriteLayerList.emplace_back(std::make_shared<SpriteBatchLayer>(SpriteBatchLayer(GameObjectList, JsonPipelineList[1])));
     GPUImport gpuImport =
     {
-        .MeshList = std::make_shared<Vector<SharedPtr<Mesh<Vertex2D>>>>(Vector<SharedPtr<Mesh<Vertex2D>>>(GetMeshFromGameObjects())),
-        .TextureList = std::make_shared<Vector<SharedPtr<Texture>>>(Vector<SharedPtr<Texture>>(TextureList)),
-        .MaterialList = std::make_shared<Vector<SharedPtr<Material>>>(Vector<SharedPtr<Material>>(MaterialList))
+     .MeshList = Vector<SharedPtr<Mesh<Vertex2D>>>(GetMeshFromGameObjects()),
+        .TextureList = Vector<SharedPtr<Texture>>(TextureList),
+        .MaterialList = Vector<SharedPtr<Material>>(MaterialList)
     };
 
-    JsonPipelineList[0] = std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, sizeof(ScenePropertiesBuffer)));
-    JsonPipelineList[1] = std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/SpriteInstancePipeline.json", RenderPass, gpuImport, sizeof(ScenePropertiesBuffer)));
+    JsonPipelineList[0] = std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, sizeof(SceneDataBuffer)));
+    JsonPipelineList[1] = std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/SpriteInstancePipeline.json", RenderPass, gpuImport, sizeof(SceneDataBuffer)));
     SpriteLayerList[0]->SpriteRenderPipeline = JsonPipelineList[1];
 }
 
@@ -115,7 +115,7 @@ void Level2DRenderer::UpdateBufferIndex()
     }
 }
 
-VkCommandBuffer Level2DRenderer::Draw(Vector<SharedPtr<GameObject>> meshList)
+VkCommandBuffer Level2DRenderer::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
 {
     std::vector<VkClearValue> clearValues
     {
@@ -174,7 +174,7 @@ VkCommandBuffer Level2DRenderer::Draw(Vector<SharedPtr<GameObject>> meshList)
     vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
     for (auto spriteLayer : SpriteLayerList)
     {
-        spriteLayer->Draw(CommandBuffer);
+        spriteLayer->Draw(CommandBuffer, sceneDataBuffer);
     }
     vkCmdEndRenderPass(CommandBuffer);
     vkEndCommandBuffer(CommandBuffer);

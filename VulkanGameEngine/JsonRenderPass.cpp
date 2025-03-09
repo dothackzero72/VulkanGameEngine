@@ -5,7 +5,7 @@ JsonRenderPass::JsonRenderPass()
 {
 }
 
-JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, ivec2 renderPassResolution)
+JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, ivec2 renderPassResolution, SceneDataBuffer& sceneDataBuffer)
 {
     RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -18,10 +18,10 @@ JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics,
 
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
-    BuildRenderPipelines(renderPassBuildInfo, renderGraphics);
+    BuildRenderPipelines(renderPassBuildInfo, renderGraphics, sceneDataBuffer);
 }
 
-JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, VkExtent2D renderPassResolution)
+JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, VkExtent2D renderPassResolution, SceneDataBuffer& sceneDataBuffer)
 {
     RenderPassResolution = ivec2(renderPassResolution.width, renderPassResolution.height);
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -34,7 +34,7 @@ JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics,
 
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
-    BuildRenderPipelines(renderPassBuildInfo, renderGraphics);
+    BuildRenderPipelines(renderPassBuildInfo, renderGraphics, sceneDataBuffer);
 }
 
 
@@ -46,11 +46,11 @@ void JsonRenderPass::Update(const float& deltaTime)
 {
 }
 
-void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, GPUImport& renderGraphics)
+void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, GPUImport& renderGraphics, SceneDataBuffer& sceneDataBuffer)
 {
     for (int x = 0; x < renderPassBuildInfo.RenderPipelineList.size(); x++)
     {
-        JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline(renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, sizeof(ScenePropertiesBuffer))));
+        JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline(renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, sizeof(SceneDataBuffer))));
     }
 }
 
@@ -190,7 +190,7 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
     }
 }
 
-VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList)
+VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
 {
     std::vector<VkClearValue> clearValues
     {

@@ -164,7 +164,7 @@ public:
 		PropertiesBuffer.UpdateBufferMemory(MeshProperties);
 	}
 
-	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet)
+	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneDataBuffer)
 	{
 
 	}

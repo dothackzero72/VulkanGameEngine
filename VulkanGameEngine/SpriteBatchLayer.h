@@ -43,7 +43,7 @@ public:
 
 	void LoadSprites();
 	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
-	void Draw(VkCommandBuffer& commandBuffer);
+	void Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneDataBuffer);
 	void Destroy();
 
 	void AddSprite(SharedPtr<Sprite> sprite);

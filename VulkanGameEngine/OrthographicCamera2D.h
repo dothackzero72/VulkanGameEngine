@@ -9,7 +9,7 @@ public:
 	OrthographicCamera2D(const vec2& viewScreenSize, const vec2& position);
 	virtual ~OrthographicCamera2D();
 
-	virtual void Update();
+	virtual void Update(SceneDataBuffer& sceneDataBuffer);
 	virtual void UpdateKeyboard(float deltaTime) override;
 	virtual void UpdateMouse() override;
 };

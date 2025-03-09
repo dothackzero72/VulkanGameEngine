@@ -50,13 +50,13 @@ OrthographicCamera2D::~OrthographicCamera2D()
 
 }
 
-void OrthographicCamera2D::Update()
+void OrthographicCamera2D::Update(SceneDataBuffer& sceneDataBuffer)
 {
 	ProjectionMatrix = glm::ortho(0.0f, Width, Height, 0.0f);
 
-	scenePropertiesBuffer.CameraPosition = Position;
-	scenePropertiesBuffer.View = mat4(1.0f);
-	scenePropertiesBuffer.Projection = ProjectionMatrix;
+	sceneDataBuffer.CameraPosition = Position;
+	sceneDataBuffer.View = mat4(1.0f);
+	sceneDataBuffer.Projection = ProjectionMatrix;
 }
 
 void OrthographicCamera2D::UpdateKeyboard(float deltaTime)

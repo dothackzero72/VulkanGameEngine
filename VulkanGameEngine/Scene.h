@@ -13,16 +13,20 @@
 class Scene
 {
 private:
-	FrameTimer timer;
-	SharedPtr<OrthographicCamera2D>		orthographicCamera;
-	SharedPtr<FrameBufferRenderPass>    frameRenderPass;
-	SharedPtr<Level2DRenderer>			levelRenderer;
+	std::vector<Vertex2D> SpriteVertexList;
 
+	FrameTimer timer;
+	SceneDataBuffer				  sceneProperties;
+	SharedPtr<OrthographicCamera2D> orthographicCamera;
+	FrameBufferRenderPass		  frameRenderPass;
+	SharedPtr<Level2DRenderer>    levelRenderer;
 	Vector<SharedPtr<GameObject>>   GameObjectList;
-	Vector<SharedPtr<Sprite>>		SpriteList;
+	Vector<SharedPtr<Sprite>>		  SpriteList;
 	Vector<SharedPtr<Texture>>      TextureList;
 
-	Vector<VkCommandBuffer> CommandBufferSubmitList;
+	SharedPtr<Material>		        material;
+	SharedPtr<Material>		        Material2;
+	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 public:
 	void StartUp();
 	void Input(float deltaTime);
