@@ -162,30 +162,29 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
     for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
     {
         std::vector<VkImageView> TextureAttachmentList;
-        for (int x = 0; x < RenderedColorTextureList.size(); x++)
+        for (int i = 0; i < RenderedColorTextureList.size(); i++)
         {
-          /*  if (renderPassBuildInfo.IsRenderedToSwapchain)
+            if (renderPassBuildInfo.IsRenderedToSwapchain)
             {
-                TextureAttachmentList.emplace_back(cRenderer.SwapChain.SwapChainImageViews[0]);
+                TextureAttachmentList.emplace_back(cRenderer.SwapChain.SwapChainImageViews[x]);
             }
             else
-            {*/
-                TextureAttachmentList.emplace_back(RenderedColorTextureList[x]->View);
-            //}
+            {
+                TextureAttachmentList.emplace_back(RenderedColorTextureList[i]->View);
+            }
         }
         if (depthTexture != nullptr)
         {
             TextureAttachmentList.emplace_back(depthTexture->View);
         }
 
-        VkFramebufferCreateInfo framebufferInfo
-        {
+        VkFramebufferCreateInfo framebufferInfo = {
             .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
             .renderPass = RenderPass,
-            .attachmentCount = static_cast<uint32>(TextureAttachmentList.size()),
+            .attachmentCount = static_cast<uint32_t>(TextureAttachmentList.size()),
             .pAttachments = TextureAttachmentList.data(),
-            .width = static_cast<uint32>(RenderPassResolution.x),
-            .height = static_cast<uint32>(RenderPassResolution.y),
+            .width = static_cast<uint32_t>(RenderPassResolution.x),
+            .height = static_cast<uint32_t>(RenderPassResolution.y),
             .layers = 1,
         };
         VULKAN_RESULT(vkCreateFramebuffer(cRenderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]));

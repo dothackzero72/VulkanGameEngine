@@ -99,10 +99,11 @@
   ],
   "PipelineDescriptorModelsList": [
     {
-      "BindingNumber": 1,
+      "BindingNumber": 0,
       "BindingPropertiesList": 1,
       "DescriptorType": 1
     }
   ],
+  "IsRenderedToSwapchain": true,
   "_name": "DefaultPipeline"
 }

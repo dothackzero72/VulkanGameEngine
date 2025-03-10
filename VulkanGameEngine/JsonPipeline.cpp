@@ -10,7 +10,7 @@ JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport g
   //  ParentRenderPass = parentRenderPass;
 
     nlohmann::json json = Json::ReadJson(jsonPath);
-    RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
+    RenderPipelineModel model = RenderPipelineModel::from_json(json);
 
     GPUIncludes include =
     {
@@ -22,8 +22,23 @@ JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport g
         .materialProperties = GetMaterialPropertiesBuffer(gpuImport.MaterialList)
     };
 
-    LoadDescriptorSets(renderPipelineModel, gpuImport);
-    LoadPipeline(renderPipelineModel, renderPass, vertexBindings, vertexAttributes, constBufferSize);
+    Vector<VkVertexInputBindingDescription> vertexBindingList = vertexBindings; 
+    Vector<VkVertexInputAttributeDescription> vertexAttributesList = vertexAttributes;
+
+    DescriptorSetLayoutList.resize(1);
+    DescriptorPool = VkPipeline_CreateDescriptorPool(cRenderer.Device, model, include);
+     VkPipeline_CreateDescriptorSetLayout(cRenderer.Device, model, include, DescriptorSetLayoutList);
+     DescriptorSetList = VkPipeline_AllocateDescriptorSets(cRenderer.Device, DescriptorPool, DescriptorSetLayoutList);
+     VkPipeline_UpdateDescriptorSets(cRenderer.Device, DescriptorSetList, model, include);
+     VkPipeline_CreatePipelineLayout(cRenderer.Device, DescriptorSetLayoutList, constBufferSize, PipelineLayout);
+     VkPipeline_CreatePipeline(cRenderer.Device,
+         renderPass,
+         PipelineLayout,
+         PipelineCache,
+        model,
+         vertexBindingList,
+         vertexAttributesList,
+        Pipeline);
 }
 
 JsonPipeline::~JsonPipeline()

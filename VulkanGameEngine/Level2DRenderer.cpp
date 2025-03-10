@@ -44,8 +44,8 @@ void Level2DRenderer::StartLevelRenderer()
     AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 20.0f));
     AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 80.0f));
 
-    JsonPipelineList.resize(2);
-    SpriteLayerList.emplace_back(std::make_shared<SpriteBatchLayer>(SpriteBatchLayer(GameObjectList, JsonPipelineList[1])));
+    JsonPipelineList.resize(1);
+    SpriteLayerList.emplace_back(std::make_shared<SpriteBatchLayer>(SpriteBatchLayer(GameObjectList, JsonPipelineList[0])));
     GPUImport gpuImport =
     {
      .MeshList = Vector<SharedPtr<Mesh<Vertex2D>>>(GetMeshFromGameObjects()),

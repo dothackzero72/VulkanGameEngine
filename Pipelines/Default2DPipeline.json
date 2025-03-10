@@ -109,5 +109,6 @@
       "DescriptorType": 7
     }
   ],
+  "IsRenderedToSwapchain": false,
   "_name": "DefaultPipeline"
 }
