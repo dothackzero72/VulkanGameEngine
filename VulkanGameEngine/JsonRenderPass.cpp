@@ -50,7 +50,9 @@ void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& render
 {
     for (int x = 0; x < renderPassBuildInfo.RenderPipelineList.size(); x++)
     {
-        JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline(renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, sizeof(SceneDataBuffer))));
+        Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
+        Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
+        JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline(renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer))));
     }
 }
 

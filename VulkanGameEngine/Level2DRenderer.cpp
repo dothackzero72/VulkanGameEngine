@@ -53,9 +53,21 @@ void Level2DRenderer::StartLevelRenderer()
         .MaterialList = Vector<SharedPtr<Material>>(MaterialList)
     };
 
-    JsonPipelineList[0] = std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, sizeof(SceneDataBuffer)));
-    JsonPipelineList[1] = std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/SpriteInstancePipeline.json", RenderPass, gpuImport, sizeof(SceneDataBuffer)));
-    SpriteLayerList[0]->SpriteRenderPipeline = JsonPipelineList[1];
+    Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
+    for (auto& instanceVar : SpriteInstanceVertex2D::GetBindingDescriptions())
+    {
+        vertexBinding.emplace_back(instanceVar);
+    }
+
+    Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
+    for (auto& instanceVar : SpriteInstanceVertex2D::GetAttributeDescriptions())
+    {
+        vertexAttribute.emplace_back(instanceVar);
+    }
+
+
+    JsonPipelineList[0] = std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer)));
+    SpriteLayerList[0]->SpriteRenderPipeline = JsonPipelineList[0];
 }
 
 void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, SpriteSheet& spriteSheet, vec2 objectPosition)

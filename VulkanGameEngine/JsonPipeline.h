@@ -26,7 +26,7 @@ private:
     SharedPtr<JsonRenderPass> ParentRenderPass;
 
     void LoadDescriptorSets(RenderPipelineModel& model, GPUImport& gpuImport);
-    void LoadPipeline(RenderPipelineModel& model, VkRenderPass renderPass, uint ConstBufferSize);
+    void LoadPipeline(RenderPipelineModel& model, VkRenderPass renderPass, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint ConstBufferSize);
 
 protected:
 
@@ -138,7 +138,7 @@ public:
     VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 
     JsonPipeline();
-    JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, uint constBufferSize);
+    JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize);
     ~JsonPipeline();
 
     void Destroy();

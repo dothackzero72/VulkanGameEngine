@@ -5,11 +5,11 @@ JsonPipeline::JsonPipeline()
 {
 }
 
-JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, uint constBufferSize)
+JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize)
 {
   //  ParentRenderPass = parentRenderPass;
 
-    nlohmann::json json = Json::ReadJson("../Pipelines/Default2DPipeline.json");
+    nlohmann::json json = Json::ReadJson(jsonPath);
     RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
 
     GPUIncludes include =
@@ -22,20 +22,8 @@ JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport g
         .materialProperties = GetMaterialPropertiesBuffer(gpuImport.MaterialList)
     };
 
-    Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
-    for (auto& instanceVar : SpriteInstanceVertex2D::GetBindingDescriptions())
-    {
-        vertexBinding.emplace_back(instanceVar);
-    }
-
-    Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
-    for (auto& instanceVar : SpriteInstanceVertex2D::GetAttributeDescriptions())
-    {
-        vertexAttribute.emplace_back(instanceVar);
-    }
-
     LoadDescriptorSets(renderPipelineModel, gpuImport);
-    LoadPipeline(renderPipelineModel, renderPass, constBufferSize);
+    LoadPipeline(renderPipelineModel, renderPass, vertexBindings, vertexAttributes, constBufferSize);
 }
 
 JsonPipeline::~JsonPipeline()
@@ -256,7 +244,7 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel& model, GPUImport& gpu
     }
 }
 
-void JsonPipeline::LoadPipeline(RenderPipelineModel& model, VkRenderPass renderPass, uint constBufferSize)
+void JsonPipeline::LoadPipeline(RenderPipelineModel& model, VkRenderPass renderPass, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize)
 {
     //PipelineLayout
     {
@@ -286,27 +274,15 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel& model, VkRenderPass renderP
 
     //pipeline
     {
-        Vector<VkVertexInputBindingDescription> vertexBinding = Vertex2D::GetBindingDescriptions();
-        for (auto& instanceVar : SpriteInstanceVertex2D::GetBindingDescriptions())
-        {
-            vertexBinding.emplace_back(instanceVar);
-        }
-
-        Vector<VkVertexInputAttributeDescription> vertexAttribute = Vertex2D::GetAttributeDescriptions();
-        for (auto& instanceVar : SpriteInstanceVertex2D::GetAttributeDescriptions())
-        {
-            vertexAttribute.emplace_back(instanceVar);
-        }
-
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
             .pNext = nullptr,
             .flags = 0,
-            .vertexBindingDescriptionCount = static_cast<uint>(vertexBinding.size()),
-            .pVertexBindingDescriptions = vertexBinding.data(),
-            .vertexAttributeDescriptionCount = static_cast<uint>(vertexAttribute.size()),
-            .pVertexAttributeDescriptions = vertexAttribute.data()
+            .vertexBindingDescriptionCount = static_cast<uint>(vertexBindings.size()),
+            .pVertexBindingDescriptions = vertexBindings.data(),
+            .vertexAttributeDescriptionCount = static_cast<uint>(vertexAttributes.size()),
+            .pVertexAttributeDescriptions = vertexAttributes.data()
         };
 
         Vector<VkViewport> viewPortList = model.ViewportList;
