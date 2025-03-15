@@ -180,7 +180,7 @@
     <ClCompile Include="RenderedTexture.cpp" />
     <ClCompile Include="SDLWindow.c" />
     <ClCompile Include="ShaderCompiler.cpp" />
-    <ClCompile Include="TextureCPP.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VulkanError.c" />
     <ClCompile Include="CVulkanRenderer.c" />
     <ClCompile Include="VulkanPipeline.cpp" />
@@ -217,7 +217,7 @@
     <ClInclude Include="RenderedTexture.h" />
     <ClInclude Include="SDLWindow.h" />
     <ClInclude Include="ShaderCompiler.h" />
-    <ClInclude Include="TextureCPP.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="TypeDef.h" />
     <ClInclude Include="VulkanBuffer.h" />
     <ClInclude Include="VulkanError.h" />

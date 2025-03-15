@@ -12,14 +12,15 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public unsafe class VkPipelineDepthStencilStateCreateInfoModel
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public unsafe struct VkPipelineDepthStencilStateCreateInfoModel
     {
         public VkStructureType sType { get; set; } = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-        public bool depthTestEnable { get; set; }
-        public bool depthWriteEnable { get; set; }
+        public VkBool32 depthTestEnable { get; set; }
+        public VkBool32 depthWriteEnable { get; set; }
         public VkCompareOp depthCompareOp { get; set; }
-        public bool depthBoundsTestEnable { get; set; }
-        public bool stencilTestEnable { get; set; }
+        public VkBool32 depthBoundsTestEnable { get; set; }
+        public VkBool32 stencilTestEnable { get; set; }
         public VkStencilOpStateModel front { get; set; } = new VkStencilOpStateModel();
         public VkStencilOpStateModel back { get; set; } = new VkStencilOpStateModel();
         public float minDepthBounds { get; set; }
@@ -28,6 +29,25 @@ namespace VulkanGameEngineLevelEditor.Models
         [JsonIgnore]
         public void* pNext { get; set; } = null;
         public VkPipelineDepthStencilStateCreateInfoModel() { }
+
+        public VkPipelineDepthStencilStateCreateInfoDLL ConvertDLL()
+        {
+            return new VkPipelineDepthStencilStateCreateInfoDLL
+            {
+                sType = sType,
+                depthTestEnable = depthTestEnable,
+                depthWriteEnable = depthWriteEnable,
+                depthCompareOp = depthCompareOp,
+                depthBoundsTestEnable = depthBoundsTestEnable,
+                stencilTestEnable = stencilTestEnable,
+                minDepthBounds = minDepthBounds,
+                maxDepthBounds = maxDepthBounds,
+                front = front.ConvertDLL(),
+                back = back.ConvertDLL(),
+                flags = 0,
+                pNext = null
+            };
+        }
 
         public VkPipelineDepthStencilStateCreateInfo Convert()
         {
@@ -64,7 +84,7 @@ namespace VulkanGameEngineLevelEditor.Models
             ptr->flags = 0;
             ptr->pNext = null;
 
-            if (stencilTestEnable)
+            if (stencilTestEnable == Vk.True)
             {
                 ptr->front = front.Convert();
                 ptr->back = back.Convert();

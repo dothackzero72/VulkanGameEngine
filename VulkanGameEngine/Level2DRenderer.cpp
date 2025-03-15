@@ -131,7 +131,7 @@ VkCommandBuffer Level2DRenderer::Draw(Vector<SharedPtr<GameObject>> meshList, Sc
 {
     std::vector<VkClearValue> clearValues
     {
-        VkClearValue{.color = { {1.0f, 0.0f, 0.0f, 1.0f} } },
+        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
         VkClearValue{.depthStencil = { 1.0f, 0 } }
     };
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "TextureCPP.h"
+#include "Texture.h"
 #include <fstream>
 
 class BakedTexture : public Texture

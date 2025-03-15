@@ -1,8 +1,9 @@
 #pragma once
-#include <vulkan/vulkan_core.h>
-#include "json.h"
-#include "Typedef.h"
+#include "DepthTexture.h"
+#include "RenderedTexture.h"
 #include "JsonStructs.h"
+#include "VulkanPipeline.h"
+#include "CoreVulkanRenderer.h"
 
-void VkPipeline_BuildRenderPass(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes);
-void VkPipeline_BuildFrameBuffer(VkDevice device, VkDescriptorPool descriptorPool, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList);
+void RenderPass_BuildRenderPass(VkDevice device, VkRenderPass& renderPass, const RenderPassBuildInfoModel& renderPassBuildInfo, Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList, SharedPtr<DepthTexture>& depthTexture);
+void RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, const RenderPassBuildInfoModel& renderPassBuildInfo, Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList, Vector<VkFramebuffer>& frameBufferList, SharedPtr<DepthTexture> depthTexture, ivec2 renderPassResolution);

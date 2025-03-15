@@ -48,11 +48,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkStructureType sType;
         public void* pNext;
         public VkPipelineDepthStencilStateCreateFlagBits flags;
-        public bool depthTestEnable;
-        public bool depthWriteEnable;
+        public VkBool32 depthTestEnable;
+        public VkBool32 depthWriteEnable;
         public VkCompareOp depthCompareOp;
-        public bool depthBoundsTestEnable;
-        public bool stencilTestEnable;
+        public VkBool32 depthBoundsTestEnable;
+        public VkBool32 stencilTestEnable;
         public VkStencilOpState front;
         public VkStencilOpState back;
         public float minDepthBounds;
@@ -78,7 +78,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public void* pNext { get; set; } = null;
         [JsonIgnore]
         public VkPipelineColorBlendStateCreateFlagBits flags { get; set; }
-        public bool logicOpEnable { get; set; }
+        public VkBool32 logicOpEnable { get; set; }
         public VkLogicOp logicOp { get; set; }
         public uint attachmentCount { get; set; }
         public VkPipelineColorBlendAttachmentState* pAttachments { get; set; }
@@ -109,11 +109,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkStructureType sType;
         public VkCullModeFlagBits flags;
         public VkSampleCountFlagBits rasterizationSamples;
-        public bool sampleShadingEnable;
+        public VkBool32 sampleShadingEnable;
         public float minSampleShading;
         public VkSampleMask* pSampleMask;
-        public bool alphaToCoverageEnable;
-        public bool alphaToOneEnable;
+        public VkBool32 alphaToCoverageEnable;
+        public VkBool32 alphaToOneEnable;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -194,12 +194,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkStructureType sType;
         public void* pNext;
         public VkCullModeFlagBits flags;
-        public bool depthClampEnable;
-        public bool rasterizerDiscardEnable;
+        public VkBool32 depthClampEnable;
+        public VkBool32 rasterizerDiscardEnable;
         public VkPolygonMode polygonMode;
         public VkCullModeFlagBits cullMode;
         public VkFrontFace frontFace;
-        public bool depthBiasEnable;
+        public VkBool32 depthBiasEnable;
         public float depthBiasConstantFactor;
         public float depthBiasClamp;
         public float depthBiasSlopeFactor;
@@ -226,7 +226,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public void* pNext;
         public VkCullModeFlagBits flags;
         public VkPrimitiveTopology topology;
-        public bool primitiveRestartEnable;
+        public VkBool32 primitiveRestartEnable;
     }
 
     [StructLayout(LayoutKind.Sequential)]

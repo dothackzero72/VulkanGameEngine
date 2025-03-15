@@ -1,5 +1,5 @@
 #include "JsonRenderPass.h"
-
+#include "VulkanRenderPass.h"
 
 JsonRenderPass::JsonRenderPass()
 {
@@ -58,137 +58,18 @@ void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& render
 
 void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
-    Vector<VkAttachmentDescription> attachmentDescriptionList = Vector<VkAttachmentDescription>();
-    Vector<VkAttachmentReference> inputAttachmentReferenceList = Vector<VkAttachmentReference>();
-    Vector<VkAttachmentReference> colorAttachmentReferenceList = Vector<VkAttachmentReference>();
-    Vector<VkAttachmentReference> resolveAttachmentReferenceList = Vector<VkAttachmentReference>();
-    Vector<VkSubpassDescription> preserveAttachmentReferenceList = Vector<VkSubpassDescription>();
-    Vector<VkAttachmentReference> depthReference = Vector<VkAttachmentReference>();
-
-    for (RenderedTextureInfoModel renderedTextureInfoModel : renderPassBuildInfo.RenderedTextureInfoModelList)
-    {
-        attachmentDescriptionList.emplace_back(renderedTextureInfoModel.AttachmentDescription);
-        switch (renderedTextureInfoModel.TextureType)
-        {
-            case RenderedTextureType::ColorRenderedTexture:
-            {
-                RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
-                colorAttachmentReferenceList.emplace_back(VkAttachmentReference
-                    {
-                        .attachment = static_cast<uint32>(colorAttachmentReferenceList.size()),
-                        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                    });
-                break;
-            }
-            case RenderedTextureType::DepthRenderedTexture:
-            {
-                depthTexture = std::make_shared<DepthTexture>(DepthTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo));
-                depthReference.emplace_back(VkAttachmentReference
-                {
-                    .attachment = (uint)(colorAttachmentReferenceList.size() + resolveAttachmentReferenceList.size()),
-                    .layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
-                });
-                break;
-            }
-            case RenderedTextureType::InputAttachmentTexture:
-            {
-                RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
-                inputAttachmentReferenceList.emplace_back(VkAttachmentReference
-                    {
-                        .attachment = static_cast<uint32>(inputAttachmentReferenceList.size()),
-                        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                    });
-                break;
-            }
-            case RenderedTextureType::ResolveAttachmentTexture:
-            {
-                RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
-                resolveAttachmentReferenceList.emplace_back(VkAttachmentReference
-                    {
-                        .attachment = static_cast<uint32>(colorAttachmentReferenceList.size() + 1),
-                        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                    });
-                break;
-            }
-            default:
-            {
-                throw std::runtime_error("Case doesn't exist: RenderedTextureType");
-            }
-        }
-    }
-
-    Vector<VkSubpassDescription> subpassDescriptionList =
-    {
-        VkSubpassDescription
-        {
-            .flags = 0,
-            .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-            .inputAttachmentCount = static_cast<uint32>(inputAttachmentReferenceList.size()),
-            .pInputAttachments = inputAttachmentReferenceList.data(),
-            .colorAttachmentCount = static_cast<uint32>(colorAttachmentReferenceList.size()),
-            .pColorAttachments = colorAttachmentReferenceList.data(),
-            .pResolveAttachments = resolveAttachmentReferenceList.data(),
-            .pDepthStencilAttachment = nullptr,
-            .preserveAttachmentCount = static_cast<uint32>(inputAttachmentReferenceList.size()),
-            .pPreserveAttachments = nullptr,
-        }
-    };
-    if (depthReference.size() > 0)
-    {
-        subpassDescriptionList[0].pDepthStencilAttachment = &depthReference[0];
-    }
-
-    Vector<VkSubpassDependency> subPassList = Vector<VkSubpassDependency>();
-    for (VkSubpassDependency subpass : renderPassBuildInfo.SubpassDependencyModelList)
-    {
-        subPassList.emplace_back(subpass);
-    }
-
-    VkRenderPassCreateInfo renderPassInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-        .attachmentCount = static_cast<uint32>(attachmentDescriptionList.size()),
-        .pAttachments = attachmentDescriptionList.data(),
-        .subpassCount = static_cast<uint32>(subpassDescriptionList.size()),
-        .pSubpasses = subpassDescriptionList.data(),
-        .dependencyCount = static_cast<uint32>(subPassList.size()),
-        .pDependencies = subPassList.data()
-    };
-    VULKAN_RESULT(vkCreateRenderPass(cRenderer.Device, &renderPassInfo, nullptr, &RenderPass));
+    VkRenderPass& renderPass = RenderPass;
+    Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList = RenderedColorTextureList;
+    RenderPass_BuildRenderPass(cRenderer.Device, renderPass, renderPassBuildInfo, renderedColorTextureList, depthTexture);
 }
 
 void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
-    for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
-    {
-        std::vector<VkImageView> TextureAttachmentList;
-        for (int i = 0; i < RenderedColorTextureList.size(); i++)
-        {
-            if (renderPassBuildInfo.IsRenderedToSwapchain)
-            {
-                TextureAttachmentList.emplace_back(cRenderer.SwapChain.SwapChainImageViews[x]);
-            }
-            else
-            {
-                TextureAttachmentList.emplace_back(RenderedColorTextureList[i]->View);
-            }
-        }
-        if (depthTexture != nullptr)
-        {
-            TextureAttachmentList.emplace_back(depthTexture->View);
-        }
-
-        VkFramebufferCreateInfo framebufferInfo = {
-            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = RenderPass,
-            .attachmentCount = static_cast<uint32_t>(TextureAttachmentList.size()),
-            .pAttachments = TextureAttachmentList.data(),
-            .width = static_cast<uint32_t>(RenderPassResolution.x),
-            .height = static_cast<uint32_t>(RenderPassResolution.y),
-            .layers = 1,
-        };
-        VULKAN_RESULT(vkCreateFramebuffer(cRenderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]));
-    }
+    VkRenderPass& renderPass = RenderPass;
+    Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList = RenderedColorTextureList;
+    Vector<VkFramebuffer>& frameBufferList = FrameBufferList;
+    DepthTexture& depthTexturePtr = *depthTexture.get();
+    RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, renderedColorTextureList, frameBufferList, depthTexture, RenderPassResolution);
 }
 
 VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)

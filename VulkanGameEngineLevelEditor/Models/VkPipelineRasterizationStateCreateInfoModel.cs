@@ -13,15 +13,16 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public unsafe class VkPipelineRasterizationStateCreateInfoModel
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public unsafe struct VkPipelineRasterizationStateCreateInfoModel
     {
         public VkStructureType sType { get; set; } = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-        public bool depthClampEnable { get; set; }
-        public bool rasterizerDiscardEnable { get; set; }
+        public VkBool32 depthClampEnable { get; set; }
+        public VkBool32 rasterizerDiscardEnable { get; set; }
         public VkPolygonMode polygonMode { get; set; }
         public VkCullModeFlagBits cullMode { get; set; }
         public VkFrontFace frontFace { get; set; }
-        public bool depthBiasEnable { get; set; }
+        public VkBool32 depthBiasEnable { get; set; }
         public float depthBiasConstantFactor { get; set; }
         public float depthBiasClamp { get; set; }
         public float depthBiasSlopeFactor { get; set; }
@@ -49,6 +50,25 @@ namespace VulkanGameEngineLevelEditor.Models
                 lineWidth = lineWidth,
                 flags = 0,
                 pNext = null,
+            };
+        }
+
+        public VkPipelineRasterizationStateCreateInfoDLL ConvertDLL()
+        {
+            return new VkPipelineRasterizationStateCreateInfoDLL()
+            {
+                sType = sType,
+                depthClampEnable = (uint)depthClampEnable,
+                rasterizerDiscardEnable = depthClampEnable,
+                polygonMode = polygonMode,
+                cullMode = cullMode,
+                frontFace = frontFace,
+                depthBiasEnable = depthBiasEnable,
+                depthBiasConstantFactor = depthBiasConstantFactor,
+                depthBiasClamp = depthBiasClamp,
+                depthBiasSlopeFactor = depthBiasSlopeFactor,
+                lineWidth = lineWidth,
+                flags = 0
             };
         }
 

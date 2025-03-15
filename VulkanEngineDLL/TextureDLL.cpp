@@ -1,5 +1,6 @@
 #include "TextureDLL.h"
-#include <TextureCPP.h>
+#include <Texture.h>
+#include <imgui/backends/imgui_impl_vulkan.h>
 
 	void DLL_Texture_UpdateTextureLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkImageLayout* oldImageLayout, VkImageLayout* newImageLayout, uint32 mipLevel)
 	{

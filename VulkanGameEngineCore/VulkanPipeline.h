@@ -1,9 +1,10 @@
-#include "../VulkanGameEngine/JsonStructs.h"
+#pragma once
+#include "JsonStructs.h"
 #include "CoreVulkanRenderer.h"
 #include "TypeDef.h"
 #include "JsonStructs.h"
 #include "ShaderCompiler.h"
-#include "TextureCPP.h"
+#include "Texture.h"
 
 struct GPUIncludes
 {
@@ -15,12 +16,12 @@ struct GPUIncludes
 	Vector<VkDescriptorBufferInfo> materialProperties;
 };
 
-VkDescriptorPool VkPipeline_CreateDescriptorPool(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes);
-void VkPipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes, Vector<VkDescriptorSetLayout>& descriptorSetLayoutList);
-Vector<VkDescriptorSet> VkPipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList);
-void VkPipeline_UpdateDescriptorSets(VkDevice device, const Vector<VkDescriptorSet>& descriptorSetList, const RenderPipelineModel& model, const GPUIncludes& includes);
-void VkPipeline_CreatePipelineLayout(VkDevice device, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout& pipelineLayout);
-void VkPipeline_CreatePipeline(VkDevice device,
+VkDescriptorPool Pipeline_CreateDescriptorPool(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes);
+void Pipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes, Vector<VkDescriptorSetLayout>& descriptorSetLayoutList);
+Vector<VkDescriptorSet> Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList);
+void Pipeline_UpdateDescriptorSets(VkDevice device, const Vector<VkDescriptorSet>& descriptorSetList, const RenderPipelineModel& model, const GPUIncludes& includes);
+void Pipeline_CreatePipelineLayout(VkDevice device, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout& pipelineLayout);
+void Pipeline_CreatePipeline(VkDevice device,
 	VkRenderPass renderpass,
 	VkPipelineLayout pipelineLayout,
 	VkPipelineCache pipelineCache,

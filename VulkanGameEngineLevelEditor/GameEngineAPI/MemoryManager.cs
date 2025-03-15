@@ -184,34 +184,27 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return TexturePropertiesBuffer;
         }
 
-        public static List<DescriptorBufferInfo> GetMaterialPropertiesBuffer()
+        public static List<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer()
         {
-            List<DescriptorBufferInfo> MeshPropertiesBuffer = new List<DescriptorBufferInfo>();
+            List<VkDescriptorBufferInfo> MeshPropertiesBuffer = new List<VkDescriptorBufferInfo>();
             if (RenderMesh2DComponentList.Count == 0)
             {
-                DescriptorBufferInfo nullBuffer = new DescriptorBufferInfo();
-                nullBuffer.Buffer = new Silk.NET.Vulkan.Buffer();
-                nullBuffer.Offset = 0;
-                nullBuffer.Range = Vk.WholeSize;
+                VkDescriptorBufferInfo nullBuffer = new VkDescriptorBufferInfo();
+                nullBuffer.buffer = new VkBuffer();
+                nullBuffer.offset = 0;
+                nullBuffer.range = Vk.WholeSize;
                 MeshPropertiesBuffer.Add(nullBuffer);
             }
             else
             {
-                //foreach (var mesh in Material)
-                //{
-                //    if (mesh != null)
-                //    {
-                //        DescriptorBufferInfo MeshProperitesBufferInfo = new DescriptorBufferInfo();
-                //        MeshProperitesBufferInfo.Buffer = mesh.GetMeshPropertiesBuffer().Buffer;
-                //        MeshProperitesBufferInfo.Offset = 0;
-                //        MeshProperitesBufferInfo.Range = Vk.WholeSize;
-                //        MeshPropertiesBuffer.Add(MeshProperitesBufferInfo);
-                //    }
-                //}
+                foreach (var mesh in MaterialList)
+                {
+                    mesh.GetMaterialPropertiesBuffer(ref MeshPropertiesBuffer);
+                }
             }
-
             return MeshPropertiesBuffer;
         }
+
         public static void ViewMemoryMap()
         {
             var gameObjectMemoryList = GameObjectMemoryPool.ViewMemoryPool();

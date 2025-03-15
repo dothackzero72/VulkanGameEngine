@@ -2,13 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public class RenderPipelineModel : RenderPassEditorBaseModel
+    public unsafe class RenderPipelineModel : RenderPassEditorBaseModel
     {
         public String VertexShader { get; set; }
         public String FragmentShader { get; set; }
@@ -29,6 +32,43 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public RenderPipelineModel(string name) : base(name)
         {
+        }
+
+        public unsafe RenderPipelineDLL ToDLL()
+        {
+            List<VkDescriptorSetLayoutBinding> LayoutBindingListDLL = LayoutBindingList.Select(x => x.Convert()).ToList();
+
+            fixed (byte* namePtr = System.Text.Encoding.UTF8.GetBytes(_name + "\0"))
+            fixed (byte* vertexShaderPtr = System.Text.Encoding.UTF8.GetBytes(VertexShader + "\0"))
+            fixed (byte* fragmentShaderPtr = System.Text.Encoding.UTF8.GetBytes(FragmentShader + "\0"))
+            fixed (VkViewport* viewportPtr = ViewportList.ToArray())
+            fixed (VkRect2D* scissorPtr = ScissorList.ToArray())
+            fixed (VkPipelineColorBlendAttachmentState* blendAttachmentPtr = PipelineColorBlendAttachmentStateList.ToArray())
+            fixed (VkDescriptorSetLayoutBinding* layoutBindingPtr = LayoutBindingListDLL.ToArray())
+            fixed (PipelineDescriptorModel* descriptorPtr = PipelineDescriptorModelsList.ToArray())
+            {
+                return new RenderPipelineDLL
+                {
+                    Name = (IntPtr)namePtr,
+                    VertexShader = (IntPtr)vertexShaderPtr,
+                    FragmentShader = (IntPtr)fragmentShaderPtr,
+                    ViewportList = viewportPtr,
+                    ScissorList = scissorPtr,
+                    PipelineColorBlendAttachmentStateList = blendAttachmentPtr,
+                   // PipelineColorBlendStateCreateInfo = PipelineColorBlendStateCreateInfoModel.ConvertDLL(),
+                    PipelineRasterizationStateCreateInfo = PipelineRasterizationStateCreateInfo.ConvertDLL(),
+                    PipelineMultisampleStateCreateInfo = PipelineMultisampleStateCreateInfo.ConvertDLL(),
+                    PipelineDepthStencilStateCreateInfo = PipelineDepthStencilStateCreateInfo.ConvertDLL(),
+                    PipelineInputAssemblyStateCreateInfo = PipelineInputAssemblyStateCreateInfo.ConvertDLL(),
+                    LayoutBindingList = layoutBindingPtr,
+                    PipelineDescriptorList = descriptorPtr,
+                    ViewportListCount = (uint)ViewportList.Count,
+                    ScissorListCount = (uint)ScissorList.Count,
+                    PipelineColorBlendAttachmentStateListCount = (uint)PipelineColorBlendAttachmentStateList.Count,
+                    LayoutBindingListCount = (uint)LayoutBindingListDLL.Count,
+                    PipelineDescriptorListCount = (uint)PipelineDescriptorModelsList.Count
+                };
+            }
         }
     }
 }

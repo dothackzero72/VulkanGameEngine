@@ -1,6 +1,6 @@
 #include "Scene.h"
 #include "VulkanRenderer.h"
-#include <TextureCPP.h>
+#include <Texture.h>
 #include "SceneDataBuffer.h"
 #include "implot.h"
 #include "BakedTexture.h"
@@ -48,7 +48,7 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 
 void Scene::BuildRenderPasses()
 {
-	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("../RenderPass/DefaultRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
+	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
 	levelRenderer->StartLevelRenderer();
 
 	frameRenderPass = std::make_shared<FrameBufferRenderPass>(FrameBufferRenderPass("../RenderPass/FrameBufferRenderPass.json", levelRenderer->RenderedColorTextureList[0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));

@@ -2,7 +2,7 @@
 #include "MemoryPool.h"
 #include "GameObject.h"
 #include "RenderMesh2DComponent.h"
-#include <TextureCPP.h>
+#include <Texture.h>
 #include "JsonRenderPass.h"
 #include "JsonPipeline.h"
 #include "Material.h"

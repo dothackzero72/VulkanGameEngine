@@ -1,5 +1,5 @@
 #pragma once
-#include "TextureCPP.h"
+#include "Texture.h"
 #include <fstream>
 #include "BakedTexture.h"
 #include "VulkanRenderer.h"

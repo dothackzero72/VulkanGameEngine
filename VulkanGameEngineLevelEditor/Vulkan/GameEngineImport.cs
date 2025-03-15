@@ -1,13 +1,16 @@
-﻿using Silk.NET.Vulkan;
+﻿using GlmSharp;
+using Silk.NET.Vulkan;
 using StbImageSharp;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 
@@ -47,24 +50,44 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkFormat* textureByteFormat, uint mipmapLevels, int width, int height);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Texture_CreateTextureView(VkDevice device, VkImageView* view, VkImage image, VkFormat format, uint mipmapLevels);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Texture_CreateTextureSampler(VkDevice device, VkSamplerCreateInfo* samplerCreateInfo, VkSampler* smapler);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)] public static extern void DLL_Texture_CreateImageTexture(
-        VkDevice device,
-        VkPhysicalDevice physicalDevice,
-        VkCommandPool commandPool,
-        VkQueue graphicsQueue,
-        ref int width,
-        ref int height,
-        ref int depth,
-        VkFormat textureByteFormat,
-        uint mipmapLevels,
-        ref VkImage textureImage,
-        ref VkDeviceMemory textureMemory,
-        ref VkImageLayout textureImageLayout,
-        ref ColorComponents colorChannelUsed,
-        TextureUsageEnum textureUsage,
-        string filePath);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)] public static extern void DLL_Texture_CreateImageTexture(VkDevice device,
+                                                                                                                                                            VkPhysicalDevice physicalDevice,
+                                                                                                                                                            VkCommandPool commandPool,
+                                                                                                                                                            VkQueue graphicsQueue,
+                                                                                                                                                            ref int width,
+                                                                                                                                                            ref int height,
+                                                                                                                                                            ref int depth,
+                                                                                                                                                            VkFormat textureByteFormat,
+                                                                                                                                                            uint mipmapLevels,
+                                                                                                                                                            ref VkImage textureImage,
+                                                                                                                                                            ref VkDeviceMemory textureMemory,
+                                                                                                                                                            ref VkImageLayout textureImageLayout,
+                                                                                                                                                            ref ColorComponents colorChannelUsed,
+                                                                                                                                                            TextureUsageEnum textureUsage,
+                                                                                                                                                            string filePath);
 
+        //RenderPass
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_RenderPass_BuildRenderPass(VkDevice device, VkRenderPass* renderPass, RenderPassBuildInfoModel* renderPassBuildInfo, RenderedTexture* renderedColorTextureList, DepthTexture depthTexture);
+	    [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoModel renderPassBuildInfo, RenderedTexture* renderedColorTextureList, VkFramebuffer* frameBufferList, DepthTexture* depthTexture, ivec2 renderPassResolution);
 
+        //Pipeline
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern unsafe VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(
+     VkDevice device,
+     RenderPipelineDLL* renderPipelineModel,
+     GPUIncludes* includes);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineModel model, GPUIncludes includes, VkDescriptorSetLayout* descriptorSetLayoutList, uint descriptorSetCount);
+	    [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkDescriptorSet* DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout* descriptorSetLayoutList, out size_t outCount);
+	    [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet* descriptorSetList, RenderPipelineModel model, GPUIncludes includes);
+    	[DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout* pipelineLayout);
+    	[DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Pipeline_CreatePipeline(VkDevice device,
+                                                                                                                                  VkRenderPass renderpass,
+                                                                                                                                  VkPipelineLayout pipelineLayout,
+                                                                                                                                  VkPipelineCache pipelineCache,
+                                                                                                                                  RenderPipelineModel model,
+                                                                                                                                  VkVertexInputBindingDescription* vertexBindingList,
+                                                                                                                                  VkVertexInputAttributeDescription* vertexAttributeList,
+                                                                                                                                  VkPipeline pipeline);
         //Invoke Tools
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern uint DLL_Tools_GetMemoryType(VkPhysicalDevice physicalDevice, uint typeFilter, VkMemoryPropertyFlagBits properties);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Tools_DeleteAllocatedPtr(void* ptr);

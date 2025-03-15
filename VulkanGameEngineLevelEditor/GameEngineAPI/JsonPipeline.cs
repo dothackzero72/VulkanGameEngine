@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,6 +41,20 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         kRotatingPaletteTextureDescriptor,
         kMathOpperation1Descriptor,
         kMathOpperation2Descriptor,
+    };
+
+    public struct GPUImport<T>
+    {
+        public List<T> MeshList { get; }
+        public List<Texture> TextureList { get; }
+        public List<Material> MaterialList { get; }
+
+        public GPUImport(List<T> meshList, List<Texture> textureList, List<Material> materialList)
+        {
+            MeshList = meshList;
+            TextureList = textureList;
+            MaterialList = materialList;
+        }
     };
 
     public unsafe class JsonPipeline
@@ -410,7 +425,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VulkanRenderer.CreateShader(model.FragmentShader, VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT)
             };
 
-            VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = model.PipelineMultisampleStateCreateInfo.ConvertPtr();
+            VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = model.PipelineMultisampleStateCreateInfo.Convert();
             pipelineMultisampleStateCreateInfo.pSampleMask = null;
 
             VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = new VkGraphicsPipelineCreateInfo();
@@ -474,11 +489,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 PipelineDepthStencilStateCreateInfo = new VkPipelineDepthStencilStateCreateInfoModel()
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-                    depthTestEnable = true,
-                    depthWriteEnable = true,
+                    depthTestEnable = Vk.True,
+                    depthWriteEnable = Vk.True,
                     depthCompareOp = VkCompareOp.VK_COMPARE_OP_LESS,
-                    depthBoundsTestEnable = false,
-                    stencilTestEnable = false
+                    depthBoundsTestEnable = Vk.False,
+                    stencilTestEnable = Vk.False
                 },
                 PipelineMultisampleStateCreateInfo = new VkPipelineMultisampleStateCreateInfoModel()
                 {
@@ -488,12 +503,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 PipelineRasterizationStateCreateInfo = new VkPipelineRasterizationStateCreateInfoModel()
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_LINE_STATE_CREATE_INFO,
-                    depthClampEnable = false,
-                    rasterizerDiscardEnable = false,
+                    depthClampEnable = Vk.True,
+                    rasterizerDiscardEnable = Vk.False,
                     polygonMode = VkPolygonMode.VK_POLYGON_MODE_FILL,
                     cullMode = VkCullModeFlagBits.VK_CULL_MODE_NONE,
                     frontFace = VkFrontFace.VK_FRONT_FACE_COUNTER_CLOCKWISE,
-                    depthBiasEnable = false,
+                    depthBiasEnable = Vk.False,
                     lineWidth = 1.0f
                 },
                 ScissorList = new List<VkRect2D>(),
@@ -503,13 +518,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
                     attachmentCount = 0,
                     pAttachments = null,
-                    logicOpEnable = false
+                    logicOpEnable = Vk.False
                 },
                 PipelineInputAssemblyStateCreateInfo = new VkPipelineInputAssemblyStateCreateInfoModel()
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
                     topology = VkPrimitiveTopology.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-                    primitiveRestartEnable = false
+                    primitiveRestartEnable = Vk.False
                 },
                 PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
                 {

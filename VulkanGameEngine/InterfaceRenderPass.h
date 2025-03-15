@@ -1,9 +1,8 @@
 #pragma once
 #include "VulkanRenderer.h"
 #include "includes.h"
+#pragma once
 #include <../External/glfw/include/GLFW/glfw3.h>
-#include <ImGui/backends/imgui_impl_vulkan.h>
-//#include <ImGui/backends/imgui_impl_sdl3.h>
 #include <ImGui/backends/imgui_impl_glfw.h>
 #include <vector>
 #include <VulkanWindow.h>

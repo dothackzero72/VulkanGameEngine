@@ -19,12 +19,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class Texture
     {
         public Vk vk = Vk.GetApi();
-        public UInt64 TextureBufferIndex { get; protected set; }
+        public uint TextureBufferIndex { get; protected set; }
         public int Width { get; protected set; }
         public int Height { get; protected set; }
         public int Depth { get; protected set; }
         public ColorComponents ColorChannels { get; protected set; }
-        public UInt32 MipMapLevels { get; protected set; }
+        public uint MipMapLevels { get; protected set; }
         public TextureUsageEnum TextureUsage { get; protected set; }
         public TextureTypeEnum TextureType { get; protected set; }
         public VkFormat TextureByteFormat { get; protected set; }

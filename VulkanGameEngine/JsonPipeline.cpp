@@ -26,12 +26,12 @@ JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport g
     Vector<VkVertexInputAttributeDescription> vertexAttributesList = vertexAttributes;
 
     DescriptorSetLayoutList.resize(1);
-    DescriptorPool = VkPipeline_CreateDescriptorPool(cRenderer.Device, model, include);
-     VkPipeline_CreateDescriptorSetLayout(cRenderer.Device, model, include, DescriptorSetLayoutList);
-     DescriptorSetList = VkPipeline_AllocateDescriptorSets(cRenderer.Device, DescriptorPool, DescriptorSetLayoutList);
-     VkPipeline_UpdateDescriptorSets(cRenderer.Device, DescriptorSetList, model, include);
-     VkPipeline_CreatePipelineLayout(cRenderer.Device, DescriptorSetLayoutList, constBufferSize, PipelineLayout);
-     VkPipeline_CreatePipeline(cRenderer.Device,
+    DescriptorPool = Pipeline_CreateDescriptorPool(cRenderer.Device, model, include);
+     Pipeline_CreateDescriptorSetLayout(cRenderer.Device, model, include, DescriptorSetLayoutList);
+     DescriptorSetList = Pipeline_AllocateDescriptorSets(cRenderer.Device, DescriptorPool, DescriptorSetLayoutList);
+     Pipeline_UpdateDescriptorSets(cRenderer.Device, DescriptorSetList, model, include);
+     Pipeline_CreatePipelineLayout(cRenderer.Device, DescriptorSetLayoutList, constBufferSize, PipelineLayout);
+     Pipeline_CreatePipeline(cRenderer.Device,
          renderPass,
          PipelineLayout,
          PipelineCache,

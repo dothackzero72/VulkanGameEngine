@@ -1826,7 +1826,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         VK_FORMAT_MAX_ENUM = 0x7FFFFFFF
     }
 
-    public enum VkDescriptorType
+    public enum VkDescriptorType : uint
     {
         VK_DESCRIPTOR_TYPE_SAMPLER = 0,
         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER = 1,

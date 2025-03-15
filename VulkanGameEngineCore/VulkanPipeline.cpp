@@ -1,6 +1,6 @@
 #include "VulkanPipeline.h"
 
-VkDescriptorPool VkPipeline_CreateDescriptorPool(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes)
+VkDescriptorPool Pipeline_CreateDescriptorPool(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes)
 {
     Vector<VkDescriptorPoolSize> descriptorPoolSizeList = Vector<VkDescriptorPoolSize>();
     for (auto binding : model.PipelineDescriptorModelsList)
@@ -82,7 +82,7 @@ VkDescriptorPool VkPipeline_CreateDescriptorPool(VkDevice device, const RenderPi
     return descriptorPool;
 }
 
-void VkPipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes, Vector<VkDescriptorSetLayout>& descriptorSetLayoutList)
+void Pipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes, Vector<VkDescriptorSetLayout>& descriptorSetLayoutList)
 {
     Vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindingList = Vector<VkDescriptorSetLayoutBinding>();
     for (auto binding : model.PipelineDescriptorModelsList)
@@ -182,7 +182,7 @@ void VkPipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineM
     }
 }
 
-Vector<VkDescriptorSet> VkPipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList)
+Vector<VkDescriptorSet> Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList)
 {
     Vector<VkDescriptorSet> descriptorSetList(descriptorSetLayoutList.size());
     for (auto& descriptorSet : descriptorSetList)
@@ -200,7 +200,7 @@ Vector<VkDescriptorSet> VkPipeline_AllocateDescriptorSets(VkDevice device, VkDes
     return descriptorSetList;
 }
 
-void VkPipeline_UpdateDescriptorSets(VkDevice device, const Vector<VkDescriptorSet>& descriptorSetList, const RenderPipelineModel& model, const GPUIncludes& includes)
+void Pipeline_UpdateDescriptorSets(VkDevice device, const Vector<VkDescriptorSet>& descriptorSetList, const RenderPipelineModel& model, const GPUIncludes& includes)
 {
     for (auto& descriptorSet : descriptorSetList)
     {
@@ -323,7 +323,7 @@ void VkPipeline_UpdateDescriptorSets(VkDevice device, const Vector<VkDescriptorS
     }
 }
 
-void VkPipeline_CreatePipelineLayout(VkDevice device, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout& pipelineLayout)
+void Pipeline_CreatePipelineLayout(VkDevice device, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout& pipelineLayout)
 {
     Vector<VkPushConstantRange> pushConstantRangeList = Vector<VkPushConstantRange>();
     if (constBufferSize > 0)
@@ -349,7 +349,7 @@ void VkPipeline_CreatePipelineLayout(VkDevice device, const Vector<VkDescriptorS
     VULKAN_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout));
 }
 
-void VkPipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineModel& model, Vector<VkVertexInputBindingDescription>& vertexBindingList, Vector<VkVertexInputAttributeDescription>& vertexAttributeList, VkPipeline& pipeline)
+void Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineModel& model, Vector<VkVertexInputBindingDescription>& vertexBindingList, Vector<VkVertexInputAttributeDescription>& vertexAttributeList, VkPipeline& pipeline)
 {
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo
     {
