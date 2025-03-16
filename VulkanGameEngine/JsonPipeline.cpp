@@ -259,7 +259,7 @@ void JsonPipeline::LoadDescriptorSets(RenderPipelineModel& model, GPUImport& gpu
     }
 }
 
-void JsonPipeline::LoadPipeline(RenderPipelineModel& model, VkRenderPass renderPass, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize)
+void JsonPipeline::LoadPipeline(VkDevice device, RenderPipelineModel& model, VkRenderPass renderPass, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize)
 {
     //PipelineLayout
     {
@@ -335,8 +335,8 @@ void JsonPipeline::LoadPipeline(RenderPipelineModel& model, VkRenderPass renderP
 
         Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
         {
-            ShaderCompiler::CreateShader(model.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
-            ShaderCompiler::CreateShader(model.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
+            ShaderCompiler::CreateShader(device, model.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
+            ShaderCompiler::CreateShader(device, model.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
         };
 
         VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = model.PipelineMultisampleStateCreateInfo;

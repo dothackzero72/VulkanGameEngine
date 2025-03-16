@@ -397,8 +397,8 @@ void Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelin
 
     Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
     {
-        ShaderCompiler::CreateShader(model.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
-        ShaderCompiler::CreateShader(model.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
+        ShaderCompiler::CreateShader(device, model.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
+        ShaderCompiler::CreateShader(device, model.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
     };
 
     VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = model.PipelineMultisampleStateCreateInfo;

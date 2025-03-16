@@ -26,7 +26,7 @@ private:
     SharedPtr<JsonRenderPass> ParentRenderPass;
 
     void LoadDescriptorSets(RenderPipelineModel& model, GPUImport& gpuImport);
-    void LoadPipeline(RenderPipelineModel& model, VkRenderPass renderPass, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint ConstBufferSize);
+    void LoadPipeline(VkDevice device, RenderPipelineModel& model, VkRenderPass renderPass, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint ConstBufferSize);
 
 protected:
 

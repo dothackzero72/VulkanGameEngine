@@ -30,9 +30,9 @@ void ShaderCompiler::SetUpCompiler()
     //dxc_utils->CreateDefaultIncludeHandler(&DefaultIncludeHandler);
 }
 
-VkShaderModule ShaderCompiler::BuildGLSLShader(const char* path)
+VkShaderModule ShaderCompiler::BuildGLSLShader(VkDevice device, const char* path)
 {
-    return Shader_BuildGLSLShaderFile(cRenderer.Device, path);
+    return Shader_BuildGLSLShaderFile(device, path);
 }
 
 //Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::BuildHLSLShader(const String& filename, VkShaderStageFlagBits stage)
@@ -99,7 +99,7 @@ VkShaderModule ShaderCompiler::BuildGLSLShader(const char* path)
 //    return shader_obj;
 //}
 
-VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(const String& filename, VkShaderStageFlagBits shaderStages)
+VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(VkDevice device, const String& filename, VkShaderStageFlagBits shaderStages)
 {
     VkShaderModule shaderModule = VK_NULL_HANDLE;
     if (filename.c_str() == ".spv")
@@ -108,7 +108,7 @@ VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(const String& filen
     }
     else
     {
-        shaderModule = BuildGLSLShader(filename.c_str());
+        shaderModule = BuildGLSLShader(device, filename.c_str());
     }
     return Shader_CreateShader(shaderModule, shaderStages);
 }

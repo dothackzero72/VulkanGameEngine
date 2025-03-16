@@ -37,8 +37,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         VkFramebuffer[] FrameBufferList;
 
         VkDescriptorPool descriptorPool;
-        List<VkDescriptorSetLayout> descriptorSetLayoutList = new List<VkDescriptorSetLayout>();
-        List<VkDescriptorSet> descriptorSetLists = new List<VkDescriptorSet>();
+        VkDescriptorSetLayout[] descriptorSetLayoutList;
+        VkDescriptorSet[] descriptorSetList;
         VkPipeline pipeline;
         VkPipelineLayout pipelineLayout;
         VkPipelineCache pipelineCache;
@@ -222,13 +222,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var vertexProperties = new VkDescriptorBufferInfo[0];
             var indexProperties = new VkDescriptorBufferInfo[0];
             var transformProperties = new VkDescriptorBufferInfo[0];
+            VkVertexInputBindingDescription[] vertexBindingDescription = new VkVertexInputBindingDescription[0];
+            VkVertexInputAttributeDescription[] vertexAttributeDescription = new VkVertexInputAttributeDescription[0];
 
-            descriptorSetLayoutList.Add(new nint());
-            SceneDataBuffer dataBuffer = new SceneDataBuffer();
-
-
-           List<VkVertexInputBindingDescription> vertexBindingDescription = new List<VkVertexInputBindingDescription>();
-            List<VkVertexInputAttributeDescription> vertexAttributeDescription = new List<VkVertexInputAttributeDescription>();
+            uint descriptorSetCount = nativeModel.LayoutBindingListCount;
+            descriptorSetLayoutList = new VkDescriptorSetLayout[descriptorSetCount];
+            descriptorSetList = new VkDescriptorSet[descriptorSetCount];
 
             fixed (VkDescriptorBufferInfo* vertexPtr = vertexProperties)
             fixed (VkDescriptorBufferInfo* indexPtr = indexProperties)
@@ -236,11 +235,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             fixed (VkDescriptorBufferInfo* meshPtr = meshProperties)
             fixed (VkDescriptorImageInfo* texturePtr = texturePropertiesList)
             fixed (VkDescriptorBufferInfo* materialPtr = materialProperties)
-            fixed (VkDescriptorSetLayout* descriptorSetLayoutPtr = descriptorSetLayoutList.ToArray())
-            fixed (VkDescriptorSet* descriptorSetListPtr = descriptorSetLists.ToArray())
-            fixed (VkPipelineLayout* pipelineLayoutPtr = &pipelineLayout)
-            fixed (VkVertexInputBindingDescription* vertexBindingDescriptionPtr = vertexBindingDescription.ToArray())
-            fixed (VkVertexInputAttributeDescription* vertexAttributeDescriptionPtr = vertexAttributeDescription.ToArray())
+            fixed (VkVertexInputBindingDescription* vertexBindingDescriptionPtr = vertexBindingDescription)
+            fixed (VkVertexInputAttributeDescription* vertexAttributeDescriptionPtr = vertexAttributeDescription)
+            fixed (VkDescriptorSet* descriptorSetPtr = descriptorSetList)
+            fixed (VkDescriptorSetLayout* descriptorSetLayoutPtr = descriptorSetLayoutList)
             {
                 GPUIncludes includes = new GPUIncludes
                 {
@@ -258,26 +256,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     materialPropertiesCount = (uint)materialProperties.Length
                 };
 
-            
-                uint size = Convert.ToUInt32(sizeof(SceneDataBuffer));
-
                 descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, nativeModel, &includes);
-                GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, nativeModel, includes, descriptorSetLayoutPtr, descriptorSetLayoutList.UCount());
+                GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, nativeModel, includes, descriptorSetLayoutPtr, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutPtr, descriptorSetPtr, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetPtr, nativeModel, includes, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayoutPtr, 0, out VkPipelineLayout pipelineLayoutPtr, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_CreatePipeline(VulkanRenderer.device, renderPass, pipelineLayoutPtr, pipelineCache, nativeModel, vertexBindingDescriptionPtr, vertexAttributeDescriptionPtr, out VkPipeline pipelinePtr, 0, 0);
 
-                for (int x = 0; x < descriptorSetLayoutList.Count(); x++)
-                {
-                    descriptorSetLayoutList[x] = *descriptorSetLayoutPtr + (x * Marshal.SizeOf<VkDescriptorSetLayout>());
-                }
-
-                VkDescriptorSet* descriptorSetPtrArray = GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutPtr, descriptorSetLayoutList.UCount());
-                for (int x = 0; x < descriptorSetLayoutList.Count(); x++)
-                {
-                    descriptorSetLayoutPtr[x] = *descriptorSetPtrArray + (x * Marshal.SizeOf<VkDescriptorSet>());
-                }
-
-                GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetLayoutPtr, nativeModel, includes, descriptorSetLayoutList.UCount());
-                GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayoutPtr, size, pipelineLayoutPtr, descriptorSetLayoutList.UCount());
-                GameEngineImport.DLL_Pipeline_CreatePipeline(VulkanRenderer.device, renderPass, pipelineLayout, pipelineCache, nativeModel, vertexBindingDescriptionPtr, vertexAttributeDescriptionPtr, pipeline, vertexBindingDescription.UCount(), vertexAttributeDescription.UCount());
+                pipelineLayout = pipelineLayoutPtr;
+                pipeline = pipelinePtr;
             }
         }
 
@@ -319,7 +306,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 };
 
 
-                var descriptorSet =  descriptorSetLists[0];
+                var descriptorSet =  descriptorSetList[0];
                 var commandInfo = new VkCommandBufferBeginInfo { flags = 0 };
                 VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
                 VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);

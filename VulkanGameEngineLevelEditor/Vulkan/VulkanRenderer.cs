@@ -374,25 +374,18 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static void CreateSemaphores(uint swapChainImageCount)
         {
-            InFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
-            AcquireImageSemaphores = new VkFence[MAX_FRAMES_IN_FLIGHT];
-            PresentImageSemaphores = new VkFence[MAX_FRAMES_IN_FLIGHT];
+            InFlightFences = new VkFence[swapChainImageCount];
+            AcquireImageSemaphores = new VkSemaphore[swapChainImageCount];
+            PresentImageSemaphores = new VkSemaphore[swapChainImageCount];
 
             fixed (VkFence* inFlightFencesPtr = InFlightFences)
             fixed (VkSemaphore* acquireImageSemaphoresPtr = AcquireImageSemaphores)
             fixed (VkSemaphore* presentImageSemaphoresPtr = PresentImageSemaphores)
             {
-                GameEngineImport.DLL_Renderer_SetUpSemaphores(device, inFlightFencesPtr, acquireImageSemaphoresPtr, presentImageSemaphoresPtr, swapChainImageCount);
-
-                IntPtr inFlightFencesList = (IntPtr)inFlightFencesPtr;
-                IntPtr acquireImageSemaphoresList = (IntPtr)acquireImageSemaphoresPtr;
-                IntPtr presentImageSemaphoresList = (IntPtr)presentImageSemaphoresPtr;
-
-                for (uint x = 0; x < swapChainImageCount; x++)
+                VkResult result = GameEngineImport.DLL_Renderer_SetUpSemaphores(device, inFlightFencesPtr, acquireImageSemaphoresPtr, presentImageSemaphoresPtr,swapChainImageCount);
+                if (result != VkResult.VK_SUCCESS)
                 {
-                    InFlightFences[x] = inFlightFencesList + (int)(x * Marshal.SizeOf<VkFence>());
-                    acquireImageSemaphoresPtr[x] = acquireImageSemaphoresList + (int)(x * Marshal.SizeOf<VkSemaphore>());
-                    presentImageSemaphoresPtr[x] = presentImageSemaphoresList + (int)(x * Marshal.SizeOf<VkSemaphore>());
+                    throw new Exception($"Failed to set up semaphores: {result}");
                 }
             }
         }
