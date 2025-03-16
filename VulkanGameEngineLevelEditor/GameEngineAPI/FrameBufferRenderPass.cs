@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -213,9 +214,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public unsafe void BuildRenderPipeline(Texture texture)
         {
             string jsonContent = File.ReadAllText("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\FrameBufferPipeline.json");
-            RenderPipelineModel model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent);
-
-            RenderPipelineDLL nativeModel = model.ToDLL();
+            RenderPipelineDLL nativeModel = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
 
             var meshProperties = MemoryManager.GetGameObjectPropertiesBuffer().ToArray();
             var texturePropertiesList = new List<VkDescriptorImageInfo> { texture.GetTextureBuffer() }.ToArray();
@@ -227,15 +226,21 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             descriptorSetLayoutList.Add(new nint());
             SceneDataBuffer dataBuffer = new SceneDataBuffer();
 
+
+           List<VkVertexInputBindingDescription> vertexBindingDescription = new List<VkVertexInputBindingDescription>();
+            List<VkVertexInputAttributeDescription> vertexAttributeDescription = new List<VkVertexInputAttributeDescription>();
+
             fixed (VkDescriptorBufferInfo* vertexPtr = vertexProperties)
             fixed (VkDescriptorBufferInfo* indexPtr = indexProperties)
             fixed (VkDescriptorBufferInfo* transformPtr = transformProperties)
             fixed (VkDescriptorBufferInfo* meshPtr = meshProperties)
             fixed (VkDescriptorImageInfo* texturePtr = texturePropertiesList)
             fixed (VkDescriptorBufferInfo* materialPtr = materialProperties)
-            fixed (VkDescriptorSetLayout* descriptorSetLayout = descriptorSetLayoutList.ToArray())
-            fixed (VkDescriptorSet* descriptorSetList = descriptorSetLists.ToArray())
+            fixed (VkDescriptorSetLayout* descriptorSetLayoutPtr = descriptorSetLayoutList.ToArray())
+            fixed (VkDescriptorSet* descriptorSetListPtr = descriptorSetLists.ToArray())
             fixed (VkPipelineLayout* pipelineLayoutPtr = &pipelineLayout)
+            fixed (VkVertexInputBindingDescription* vertexBindingDescriptionPtr = vertexBindingDescription.ToArray())
+            fixed (VkVertexInputAttributeDescription* vertexAttributeDescriptionPtr = vertexAttributeDescription.ToArray())
             {
                 GPUIncludes includes = new GPUIncludes
                 {
@@ -253,16 +258,26 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     materialPropertiesCount = (uint)materialProperties.Length
                 };
 
-                VkVertexInputBindingDescription* vertexBindingDescription = null;
-                VkVertexInputAttributeDescription* vertexAttributeDescription = null;
+            
                 uint size = Convert.ToUInt32(sizeof(SceneDataBuffer));
 
-                descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, &nativeModel, &includes);
-                GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes, descriptorSetLayout, (uint)descriptorSetLayoutList.Count);
-                VkDescriptorSet* descriptorSetPtrArray = GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayout, out size_t count);
-                GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetList, model, includes);
-                GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayout, size, pipelineLayoutPtr);
-                GameEngineImport.DLL_Pipeline_CreatePipeline(VulkanRenderer.device, renderPass, pipelineLayout, pipelineCache, model, vertexBindingDescription, vertexAttributeDescription, pipeline);
+                descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, nativeModel, &includes);
+                GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, nativeModel, includes, descriptorSetLayoutPtr, descriptorSetLayoutList.UCount());
+
+                for (int x = 0; x < descriptorSetLayoutList.Count(); x++)
+                {
+                    descriptorSetLayoutList[x] = *descriptorSetLayoutPtr + (x * Marshal.SizeOf<VkDescriptorSetLayout>());
+                }
+
+                VkDescriptorSet* descriptorSetPtrArray = GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutPtr, descriptorSetLayoutList.UCount());
+                for (int x = 0; x < descriptorSetLayoutList.Count(); x++)
+                {
+                    descriptorSetLayoutPtr[x] = *descriptorSetPtrArray + (x * Marshal.SizeOf<VkDescriptorSet>());
+                }
+
+                GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetLayoutPtr, nativeModel, includes, descriptorSetLayoutList.UCount());
+                GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayoutPtr, size, pipelineLayoutPtr, descriptorSetLayoutList.UCount());
+                GameEngineImport.DLL_Pipeline_CreatePipeline(VulkanRenderer.device, renderPass, pipelineLayout, pipelineCache, nativeModel, vertexBindingDescriptionPtr, vertexAttributeDescriptionPtr, pipeline, vertexBindingDescription.UCount(), vertexAttributeDescription.UCount());
             }
         }
 
@@ -402,7 +417,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     logicOpEnable = Vk.False,
                     logicOp = VkLogicOp.VK_LOGIC_OP_NO_OP,
                     attachmentCount = 1,
-                    pNext = null
+                    pNext = IntPtr.Zero,
                 },
                 PipelineInputAssemblyStateCreateInfo = new VkPipelineInputAssemblyStateCreateInfoModel()
                 {

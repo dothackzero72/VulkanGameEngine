@@ -44,11 +44,11 @@ namespace VulkanGameEngineLevelEditor.Models
         public IntPtr pNext;
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkPipelineColorBlendStateCreateInfoDLL
     {
         public VkStructureType sType { get; set; }
-        public void* pNext { get; set; }
+        public IntPtr pNext { get; set; }
         public VkPipelineColorBlendStateCreateFlagBits flags { get; set; }
         public VkBool32 logicOpEnable { get; set; }
         public VkLogicOp logicOp { get; set; }
@@ -57,7 +57,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public fixed float blendConstants[4];
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkPipelineMultisampleStateCreateInfoDLL
     {
         public VkStructureType sType { get; set; }
@@ -71,7 +71,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public void* pNext { get; set; }
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkPipelineInputAssemblyStateCreateInfoDLL
     {
         public VkStructureType sType { get; set; }
@@ -93,7 +93,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public uint reference { get; set; }
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkPipelineDepthStencilStateCreateInfoDLL
     {
         public VkStructureType sType { get; set; }

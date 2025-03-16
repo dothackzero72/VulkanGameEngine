@@ -177,7 +177,7 @@ void Pipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineMod
                 .bindingCount = static_cast<uint32>(descriptorSetLayoutBindingList.size()),
                 .pBindings = descriptorSetLayoutBindingList.data()
             };
-            VULKAN_RESULT(vkCreateDescriptorSetLayout(cRenderer.Device, &descriptorSetLayoutCreateInfo, nullptr, &descriptorSetLayout));
+            VULKAN_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &descriptorSetLayout));
         }
     }
 }
@@ -195,7 +195,7 @@ Vector<VkDescriptorSet> Pipeline_AllocateDescriptorSets(VkDevice device, VkDescr
             .descriptorSetCount = static_cast<uint32>(descriptorSetLayoutList.size()),
             .pSetLayouts = descriptorSetLayoutList.data()
         };
-        VULKAN_RESULT(vkAllocateDescriptorSets(cRenderer.Device, &allocInfo, &descriptorSet));
+        VULKAN_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet));
     }
     return descriptorSetList;
 }

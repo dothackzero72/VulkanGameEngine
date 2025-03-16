@@ -5,9 +5,7 @@
   "ScissorList": [],
   "PipelineColorBlendAttachmentStateList": [
     {
-      "blendEnable": {
-        "Value": 1
-      },
+      "blendEnable": true,
       "srcColorBlendFactor": 6,
       "dstColorBlendFactor": 7,
       "colorBlendOp": 0,

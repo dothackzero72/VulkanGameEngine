@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using Silk.NET.Core.Native;
 using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.Vulkan;
+using System.Reflection;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -29,7 +30,7 @@ namespace VulkanGameEngineLevelEditor.Models
     {
         public VkStructureType sType { get; set; }
         [JsonIgnore]
-        public void* pNext { get; set; }
+        public IntPtr pNext { get; set; }
         public VkPipelineColorBlendStateCreateFlagBits flags { get; set; }
         public VkBool32 logicOpEnable { get; set; }
         public VkLogicOp logicOp { get; set; }
@@ -41,7 +42,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public VkPipelineColorBlendStateCreateInfoModel()
         {
             sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-            pNext = null;
+            pNext = IntPtr.Zero;
             flags = 0;
             logicOpEnable = Vk.False;
             logicOp = VkLogicOp.VK_LOGIC_OP_CLEAR;
@@ -55,17 +56,20 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public VkPipelineColorBlendStateCreateInfoDLL ConvertDLL()
         {
-            return new VkPipelineColorBlendStateCreateInfoDLL
+            VkPipelineColorBlendStateCreateInfoDLL dll = new VkPipelineColorBlendStateCreateInfoDLL
             {
                 sType = sType,
-                pNext = null,
-                attachmentCount = attachmentCount,
-                pAttachments = pAttachments,
-              //  blendConstants = blendConstants,
+                pNext = pNext,
                 flags = flags,
                 logicOpEnable = logicOpEnable,
-                logicOp = logicOp
+                logicOp = logicOp,
+                attachmentCount = (uint)attachmentCount // Ensure this exists
             };
+            fixed (float* blendPtr = blendConstants)
+            {
+                for (int i = 0; i < 4; i++) blendPtr[i] = blendConstants[i];
+            }
+            return dll;
         }
 
         public VkPipelineColorBlendStateCreateInfo Convert()

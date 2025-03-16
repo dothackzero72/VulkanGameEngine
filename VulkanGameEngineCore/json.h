@@ -533,7 +533,7 @@ public:
 	{
 		return VkPipelineColorBlendAttachmentState
 		{
-			.blendEnable = json["blendEnable"]["Value"],
+			.blendEnable = json["blendEnable"],
 			.srcColorBlendFactor = json["srcColorBlendFactor"],
 			.dstColorBlendFactor = json["dstColorBlendFactor"],
 			.colorBlendOp = json["colorBlendOp"],

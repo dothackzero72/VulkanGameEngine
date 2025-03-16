@@ -55,7 +55,7 @@ namespace VulkanGameEngineLevelEditor.Models
                     ViewportList = viewportPtr,
                     ScissorList = scissorPtr,
                     PipelineColorBlendAttachmentStateList = blendAttachmentPtr,
-                   // PipelineColorBlendStateCreateInfo = PipelineColorBlendStateCreateInfoModel.ConvertDLL(),
+                    PipelineColorBlendStateCreateInfo = PipelineColorBlendStateCreateInfoModel.ConvertDLL(),
                     PipelineRasterizationStateCreateInfo = PipelineRasterizationStateCreateInfo.ConvertDLL(),
                     PipelineMultisampleStateCreateInfo = PipelineMultisampleStateCreateInfo.ConvertDLL(),
                     PipelineDepthStencilStateCreateInfo = PipelineDepthStencilStateCreateInfo.ConvertDLL(),

@@ -74,20 +74,22 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern unsafe VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(
      VkDevice device,
-     RenderPipelineDLL* renderPipelineModel,
+     RenderPipelineDLL renderPipelineModel,
      GPUIncludes* includes);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineModel model, GPUIncludes includes, VkDescriptorSetLayout* descriptorSetLayoutList, uint descriptorSetCount);
-	    [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkDescriptorSet* DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout* descriptorSetLayoutList, out size_t outCount);
-	    [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet* descriptorSetList, RenderPipelineModel model, GPUIncludes includes);
-    	[DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout* pipelineLayout);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL model, GPUIncludes includes, VkDescriptorSetLayout* descriptorSetLayoutList, uint descriptorSetCount);
+	    [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkDescriptorSet* DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout* descriptorSetLayoutList, uint outCount);
+	    [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet* descriptorSetList, RenderPipelineDLL model, GPUIncludes includes, uint descriptorSetListCount);
+    	[DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout* pipelineLayout, uint descriptorSetLayoutListCount);
     	[DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Pipeline_CreatePipeline(VkDevice device,
                                                                                                                                   VkRenderPass renderpass,
                                                                                                                                   VkPipelineLayout pipelineLayout,
                                                                                                                                   VkPipelineCache pipelineCache,
-                                                                                                                                  RenderPipelineModel model,
+                                                                                                                                  RenderPipelineDLL model,
                                                                                                                                   VkVertexInputBindingDescription* vertexBindingList,
                                                                                                                                   VkVertexInputAttributeDescription* vertexAttributeList,
-                                                                                                                                  VkPipeline pipeline);
+                                                                                                                                  VkPipeline pipeline,
+        uint vertexBindingCount,
+        uint vertexAttributeCount);
         //Invoke Tools
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern uint DLL_Tools_GetMemoryType(VkPhysicalDevice physicalDevice, uint typeFilter, VkMemoryPropertyFlagBits properties);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Tools_DeleteAllocatedPtr(void* ptr);
