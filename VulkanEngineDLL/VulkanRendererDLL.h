@@ -26,5 +26,3 @@ extern "C"
 	DLL_EXPORT uint DLL_Tools_GetMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	DLL_EXPORT void DLL_Tools_DeleteAllocatedPtr(void* ptr);
 }
-
-

@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Microsoft.VisualBasic;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -79,24 +80,21 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void DrawFrame()
         {
-            // [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* fenceList, VkSemaphore* acquireImageSemaphoreList, uint pImageIndex, uint pCommandIndex, ref bool pRebuildRendererFlag);
-            // [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, uint commandIndex, uint imageIndex, VkCommandBuffer* pCommandBufferSubmitList, uint commandBufferCount, ref bool rebuildRendererFlag);
-
-            List<VkCommandBuffer> commandBufferList = new List<VkCommandBuffer>();
+            VkCommandBuffer[] commandBufferList = new VkCommandBuffer[1];
             uint imageIndex = VulkanRenderer.ImageIndex;
             uint commandIndex = VulkanRenderer.CommandIndex;
             bool rebuildRendererFlag = VulkanRenderer.RebuildRendererFlag;
 
-            fixed (VkFence* fenceList = VulkanRenderer.InFlightFences.ToArray())
-            fixed (VkSemaphore* acquireImageSemaphores = VulkanRenderer.AcquireImageSemaphores.ToArray())
-            fixed (VkSemaphore* presentImageSemaphores = VulkanRenderer.PresentImageSemaphores.ToArray())
-            fixed(VkCommandBuffer* commandBuffers = commandBufferList.ToArray())
+            fixed (VkFence* fenceList = VulkanRenderer.InFlightFences)
+            fixed (VkSemaphore* acquireImageSemaphores = VulkanRenderer.AcquireImageSemaphores)
+            fixed (VkSemaphore* presentImageSemaphores = VulkanRenderer.PresentImageSemaphores)
+            fixed (VkCommandBuffer* commandBuffers = commandBufferList)
             {
-                GameEngineImport.DLL_Renderer_StartFrame(VulkanRenderer.device, VulkanRenderer.SwapChain.Swapchain, fenceList, acquireImageSemaphores, &imageIndex, &commandIndex,  &rebuildRendererFlag);
+                GameEngineImport.DLL_Renderer_StartFrame(VulkanRenderer.device, VulkanRenderer.SwapChain.Swapchain, fenceList, acquireImageSemaphores, &imageIndex, &commandIndex, &rebuildRendererFlag);
                 // commandBufferList.Add(renderPass3D.Draw(GameObjectList, sceneProperties));
-                commandBufferList.Add(frameBufferRenderPass.Draw());
-                GameEngineImport.DLL_Renderer_EndFrame(VulkanRenderer.SwapChain.Swapchain, acquireImageSemaphores, presentImageSemaphores, fenceList, VulkanRenderer.graphicsQueue, VulkanRenderer.presentQueue, commandIndex, imageIndex, commandBuffers, commandBufferList.UCount(), &rebuildRendererFlag);
-               VulkanRenderer.EndFrame(commandBufferList);
+                commandBufferList[0] = frameBufferRenderPass.Draw();
+                GameEngineImport.DLL_Renderer_EndFrame(VulkanRenderer.SwapChain.Swapchain, acquireImageSemaphores, presentImageSemaphores, fenceList, VulkanRenderer.graphicsQueue, VulkanRenderer.presentQueue, commandIndex, imageIndex, commandBuffers, (uint)commandBufferList.Length, &rebuildRendererFlag);
+                VulkanRenderer.EndFrame(commandBufferList);
             }
         }
     }

@@ -584,7 +584,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkPipelineLayout layout,
             uint firstSet,
             uint descriptorSetCount,
-            ref VkDescriptorSet pDescriptorSets,
+             VkDescriptorSet* pDescriptorSets,
             uint dynamicOffsetCount,
             uint* pDynamicOffsets);
 
@@ -841,10 +841,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             void* pValues);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void vkCmdBeginRenderPass(
-            VkCommandBuffer commandBuffer,
-            VkRenderPassBeginInfo* pRenderPassBegin,
-            VkSubpassContents contents);
+        public static extern void vkCmdBeginRenderPass(VkCommandBuffer commandBuffer, VkRenderPassBeginInfo* pRenderPassBegin, VkSubpassContents contents);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkCmdNextSubpass(

@@ -131,7 +131,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return result;
         }
 
-        public static unsafe VkResult EndFrame(List<VkCommandBuffer> commandBufferSubmitList)
+        public static unsafe VkResult EndFrame(VkCommandBuffer[] commandBufferSubmitList)
         {
             var fence = InFlightFences[(int)CommandIndex];
             var presentSemaphore = PresentImageSemaphores[(int)CommandIndex];
@@ -148,7 +148,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             fixed (VkPipelineStageFlagBits* pWaitStages = waitStages)
             {
-                var commandBufferCount = commandBufferSubmitList.Count;
+                var commandBufferCount = commandBufferSubmitList.Length;
                 var commandBuffersPtr = (VkCommandBuffer*)Marshal.AllocHGlobal(commandBufferCount * sizeof(VkCommandBuffer));
 
                 try
@@ -164,7 +164,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                         waitSemaphoreCount = 1,
                         pWaitSemaphores = &imageSemaphore,
                         pWaitDstStageMask = pWaitStages,
-                        commandBufferCount = (uint)commandBufferSubmitList.Count,
+                        commandBufferCount = (uint)commandBufferSubmitList.Length,
                         pCommandBuffers = commandBuffersPtr,
                         signalSemaphoreCount = 1,
                         pSignalSemaphores = &presentSemaphore

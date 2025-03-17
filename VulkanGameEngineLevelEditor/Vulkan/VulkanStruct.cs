@@ -346,7 +346,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     public unsafe struct VkRenderPassBeginInfo
     {
         public VkStructureType sType;
-        public void* pNext;
+        public IntPtr pNext; 
         public VkRenderPass renderPass;
         public VkFramebuffer framebuffer;
         public VkRect2D renderArea;
@@ -354,47 +354,16 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkClearValue* pClearValues;
     }
 
-    [StructLayout(LayoutKind.Explicit)]
-    public struct VkClearColorValue
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct VkClearColorValue
     {
-        [FieldOffset(0)] public float[] float32;
-        [FieldOffset(0)] public int[] int32;
-        [FieldOffset(0)] public uint[] uint32;
-
+        public fixed float float32[4]; // 16 bytes
         public VkClearColorValue(float r, float g, float b, float a)
         {
-            float32 = new float[4];
             float32[0] = r;
             float32[1] = g;
             float32[2] = b;
             float32[3] = a;
-
-            int32 = null;
-            uint32 = null;
-        }
-
-        public VkClearColorValue(int r, int g, int b, int a)
-        {
-            int32 = new int[4];
-            int32[0] = r;
-            int32[1] = g;
-            int32[2] = b;
-            int32[3] = a;
-
-            float32 = null;
-            uint32 = null;
-        }
-
-        public VkClearColorValue(uint r, uint g, uint b, uint a)
-        {
-            uint32 = new uint[4];
-            uint32[0] = r;
-            uint32[1] = g;
-            uint32[2] = b;
-            uint32[3] = a;
-
-            float32 = null;
-            int32 = null;
         }
     }
 
