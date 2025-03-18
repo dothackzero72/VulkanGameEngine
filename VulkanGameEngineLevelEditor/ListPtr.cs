@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,80 +11,96 @@ namespace VulkanGameEngineLevelEditor
 {
     public sealed unsafe class ListPtr<T> : IDisposable where T : unmanaged
     {
-        private readonly List<T> _list;
-        private IntPtr _ptr;
+   
+        public T* _ptr { get; private set; }
+        private List<T> _list;
+        private uint count = 0;
+        private uint objectAllocationCount = 1;
         private bool _disposed;
 
-        public T* ptr => (T*)_ptr;
-        public List<T> List => _list;
-        public uint Count => (uint)_list.UCount();
-
-        public ListPtr()
+        public T* Ptr
         {
-            _list = new List<T>();
-            UpdatePointer();
-        }
-
-        public ListPtr(List<T> list)
-        {
-            if (list == null || list.Count == 0)
+            get
             {
-                throw new ArgumentException("List cannot be null or empty.");
+                return (T*)_ptr;
             }
-
-            _list = list;
-            UpdatePointer();
         }
 
         public ListPtr(uint size)
         {
-            if (size <= 0)
-            {
-                throw new ArgumentException("Size must be greater than 0.");
-            }
-
-            _list = new List<T>((int)size);
-            for (int x = 0; x < size; x++)
-            {
-                _list.Add(default(T));
-            }
-            UpdatePointer();
-        }
-
-        ~ListPtr()
-        {
-            Dispose(false);
-        }
-
-        public T* ToBasePtr()
-        {
-            return ptr;
+            if (size <= 0)  throw new ArgumentException("Size must be greater than 0.");
+            
+            count = size;
+            objectAllocationCount *= 2;
+            int elementSize = sizeof(T);
+            int totalSize = elementSize * (int)objectAllocationCount;
+            _ptr = (T*)Marshal.AllocHGlobal(totalSize);
+            UpdateList();
         }
 
         public T this[int index]
         {
-            get => _list[index];
+            get
+            {
+                if (_disposed) throw new ObjectDisposedException(nameof(ListPtr<T>));
+                if (index >= count) throw new Exception("Out of bounds");
+
+                return _ptr[index];
+            }
             set
             {
-                if (_disposed)
-                {
-                    throw new ObjectDisposedException(nameof(ListPtr<T>));
-                }
+                if (_disposed) throw new ObjectDisposedException(nameof(ListPtr<T>));
+                if (index >= count) throw new Exception("Out of bounds");
 
-                _list[index] = value;
-                UpdatePointer();
+                _ptr[index] = value;
+                UpdateList();
             }
         }
 
         public void Add(T item)
         {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(ListPtr<T>));
-            }
-            _list.Add(item);
-            UpdatePointer();
+            if (_disposed) throw new ObjectDisposedException(nameof(ListPtr<T>));
+            
+            count++;
+            UpdateList(item);
         }
+
+        private void UpdateList()
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(ListPtr<T>));
+            
+            _list = new List<T>();
+            for (int x = 0; x < count; x++)
+            {
+                _list.Add(_ptr[x]);
+            }
+        }
+
+        private void UpdateList(T item)
+        {
+            if (count == 0) return;
+            if (_disposed) throw new ObjectDisposedException(nameof(ListPtr<T>));
+            if (count >= objectAllocationCount)
+            {
+                objectAllocationCount = count * 2;
+                int elementSize = sizeof(T);
+                int totalSize = elementSize * (int)objectAllocationCount;
+                var tempPtr = (T*)Marshal.AllocHGlobal(totalSize);
+
+                byte* bytePtr = (byte*)_ptr;
+                Buffer.MemoryCopy(tempPtr, bytePtr, totalSize, totalSize);
+
+                Marshal.FreeHGlobal((IntPtr)_ptr);
+                _ptr = tempPtr;
+            }
+
+            _list = new List<T>();
+            for (int x = 0; x < count; x++)
+            {
+                _list.Add(_ptr[x]);
+            }
+        }
+
         public bool Remove(T item)
         {
             if (_disposed)
@@ -91,94 +108,61 @@ namespace VulkanGameEngineLevelEditor
                 throw new ObjectDisposedException(nameof(ListPtr<T>));
             }
 
-            bool removed = _list.Remove(item);
-            if (removed)
+            int index = _list.IndexOf(item);
+            if (index < 0)
             {
-                if (_list.Count == 0)
-                {
-                    Dispose(true);
-                }
-                else
-                {
-                    UpdatePointer(); 
-                }
+                return false;
             }
-            return removed;
+
+            if(_list.Count == 0)
+            {
+                return false;
+            }
+            else if (_list.Count <= 1)
+            {
+                _list.Remove(item);
+                Dispose();
+            }
+            else
+            {
+                var moveElemenets = objectAllocationCount - index;
+                var moveSize = sizeof(T) * moveElemenets;
+
+                byte* basePtr = (byte*)_ptr + (index * sizeof(T));            
+                byte* copyPtr = (byte*)_ptr + ((index + 1) * sizeof(T));
+                Buffer.MemoryCopy(copyPtr, basePtr, moveSize, moveSize);
+
+                byte* lastIndexPtr = (byte*)(_ptr + ((_list.Count) * sizeof(T)));
+                ClearMemory(lastIndexPtr, sizeof(T));
+                UpdateList();
+            }
+
+            return true;
         }
 
-        private void UpdatePointer()
+        unsafe void ClearMemory(byte* ptr, long size)
         {
-            if (_ptr != IntPtr.Zero)
+            if (ptr == null ||
+                size <= 0)
             {
-                lock (ListExtensions._lock)
-                {
-                    ListExtensions._allocatedPointers.Remove(_ptr);
-                    Marshal.FreeHGlobal(_ptr);
-                }
-            }
-
-            if (_list.Count == 0)
-            {
-                _ptr = IntPtr.Zero;
                 return;
             }
 
-            int elementSize = sizeof(T);
-            int totalSize = elementSize * _list.Count;
-            _ptr = Marshal.AllocHGlobal(totalSize);
-
-            T[] listArray = _list.ToArray();
-            byte* bytePtr = (byte*)_ptr;
-
-            for (int x = 0; x < listArray.Length; x++)
+            byte* memoryPtr = ptr;
+            for (long x = 0; x < size; x++)
             {
-                fixed (T* elementPtr = &listArray[x])
-                {
-                    Buffer.MemoryCopy(elementPtr, bytePtr + (x * elementSize), elementSize, elementSize);
-                }
+                *memoryPtr = 0;
+                memoryPtr++;
             }
-
-            lock (ListExtensions._lock)
-            {
-                ListExtensions.TrackPtrs(_ptr);
-            }
-        }
-
-        public void Clear()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(ListPtr<T>));
-            }
-
-            _list.Clear();
-            Dispose(true);
         }
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (_disposed)
+            if ((IntPtr)_ptr != IntPtr.Zero)
             {
-                return;
+                Marshal.FreeHGlobal((IntPtr)_ptr);
+                _ptr = null;
             }
-
-            if (_ptr != IntPtr.Zero)
-            {
-                lock (ListExtensions._lock)
-                {
-                    ListExtensions._allocatedPointers.Remove(_ptr); 
-                    Marshal.FreeHGlobal(_ptr);
-                    _ptr = IntPtr.Zero;
-                }
-            }
-
-            _disposed = true;
         }
     }
 }

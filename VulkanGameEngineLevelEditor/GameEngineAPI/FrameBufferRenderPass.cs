@@ -39,8 +39,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         VkFramebuffer[] FrameBufferList;
 
         VkDescriptorPool descriptorPool;
-        VkDescriptorSetLayout[] descriptorSetLayoutList;
-        VkDescriptorSet[] descriptorSetList;
+        ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList;
+        ListPtr<VkDescriptorSet> descriptorSetList;
         VkPipeline pipeline;
         VkPipelineLayout pipelineLayout;
         VkPipelineCache pipelineCache;
@@ -217,10 +217,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkVertexInputAttributeDescription[] vertexAttributeDescription = new VkVertexInputAttributeDescription[0];
 
             uint descriptorSetCount = nativeModel.LayoutBindingListCount;
-            descriptorSetLayoutList = new VkDescriptorSetLayout[descriptorSetCount];
+            //descriptorSetLayoutList = new VkDescriptorSetLayout[descriptorSetCount];
+            //descriptorSetList = new VkDescriptorSet[descriptorSetCount];
 
-
-            descriptorSetList = new VkDescriptorSet[descriptorSetCount];
+            descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(descriptorSetCount);
+            descriptorSetList = new ListPtr<VkDescriptorSet>(descriptorSetCount);
 
             fixed (VkDescriptorBufferInfo* vertexPtr = vertexProperties)
             fixed (VkDescriptorBufferInfo* indexPtr = indexProperties)
@@ -230,8 +231,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             fixed (VkDescriptorBufferInfo* materialPtr = materialProperties)
             fixed (VkVertexInputBindingDescription* vertexBindingDescriptionPtr = vertexBindingDescription)
             fixed (VkVertexInputAttributeDescription* vertexAttributeDescriptionPtr = vertexAttributeDescription)
-            fixed (VkDescriptorSetLayout* descriptorSetLayoutPtr = descriptorSetLayoutList)
-            fixed (VkDescriptorSetLayout* descriptorSetPtr = descriptorSetList)
             {
                 GPUIncludes includes = new GPUIncludes
                 {
@@ -250,10 +249,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 };
 
                 descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, nativeModel, &includes);
-                GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, nativeModel, includes, descriptorSetLayoutPtr, descriptorSetCount);
-                GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutPtr, descriptorSetPtr, descriptorSetCount);
-                GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetPtr, nativeModel, includes, descriptorSetCount);
-                GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayoutPtr, 0, out VkPipelineLayout pipelineLayoutPtr, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, nativeModel, includes, descriptorSetLayoutList.Ptr, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetList.Ptr, nativeModel, includes, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayoutList.Ptr, 0, out VkPipelineLayout pipelineLayoutPtr, descriptorSetCount);
                 GameEngineImport.DLL_Pipeline_CreatePipeline(VulkanRenderer.device, renderPass, pipelineLayoutPtr, pipelineCache, nativeModel, vertexBindingDescriptionPtr, vertexAttributeDescriptionPtr, out VkPipeline pipelinePtr, 0, 0);
 
                 pipelineLayout = pipelineLayoutPtr;
@@ -310,13 +309,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
             };
 
-            VkDescriptorSet descriptorSet = descriptorSetList[0];
             VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
             VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
             VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
             VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, null);
+            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, descriptorSetList.Ptr, 0, null);
             VkFunc.vkCmdDraw(commandBuffer, 6, 1, 0, 0);
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);

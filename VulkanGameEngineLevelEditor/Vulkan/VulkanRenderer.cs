@@ -38,9 +38,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static VkQueue graphicsQueue { get; private set; }
         public static VkQueue presentQueue { get; private set; }
         public static VkCommandPool commandPool { get; private set; }
-        public static VkFence[] InFlightFences { get; private set; } = new VkFence[MAX_FRAMES_IN_FLIGHT];
-        public static VkSemaphore[] AcquireImageSemaphores { get; private set; } = new VkFence[MAX_FRAMES_IN_FLIGHT];
-        public static VkSemaphore[] PresentImageSemaphores { get; private set; } = new VkFence[MAX_FRAMES_IN_FLIGHT];
+        public static ListPtr<VkFence> InFlightFences { get; private set; }
+        public static ListPtr<VkSemaphore> AcquireImageSemaphores { get; private set; }
+        public static ListPtr<VkSemaphore> PresentImageSemaphores { get; private set; } 
         public static SwapChainState SwapChain { get; set; } = new SwapChainState();
         public static UInt32 ImageIndex { get; private set; } = new UInt32();
         public static UInt32 CommandIndex { get; private set; } = new UInt32();
@@ -374,20 +374,28 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static void CreateSemaphores(uint swapChainImageCount)
         {
-            InFlightFences = new VkFence[swapChainImageCount];
-            AcquireImageSemaphores = new VkSemaphore[swapChainImageCount];
-            PresentImageSemaphores = new VkSemaphore[swapChainImageCount];
+            InFlightFences = new ListPtr<VkFence>(swapChainImageCount);
+            AcquireImageSemaphores = new ListPtr<VkSemaphore>(swapChainImageCount);
+            PresentImageSemaphores = new ListPtr<VkSemaphore>(swapChainImageCount);
 
-            fixed (VkFence* inFlightFencesPtr = InFlightFences)
-            fixed (VkSemaphore* acquireImageSemaphoresPtr = AcquireImageSemaphores)
-            fixed (VkSemaphore* presentImageSemaphoresPtr = PresentImageSemaphores)
+
+            VkResult result = GameEngineImport.DLL_Renderer_SetUpSemaphores(device, InFlightFences.Ptr, AcquireImageSemaphores.Ptr, PresentImageSemaphores.Ptr, swapChainImageCount);
+            //InFlightFences.Add(InFlightFences[0]);
+            //InFlightFences.Add(InFlightFences[1]);
+            //InFlightFences.Add(InFlightFences[2]);
+            //InFlightFences.Add(InFlightFences[0]);
+            //InFlightFences.Add(InFlightFences[1]);
+            //var b = InFlightFences[1];
+            //var c = InFlightFences[2];
+            //InFlightFences[0] = InFlightFences[2];
+            //InFlightFences.Remove(b);
+
+            if (result != VkResult.VK_SUCCESS)
             {
-                VkResult result = GameEngineImport.DLL_Renderer_SetUpSemaphores(device, inFlightFencesPtr, acquireImageSemaphoresPtr, presentImageSemaphoresPtr,swapChainImageCount);
-                if (result != VkResult.VK_SUCCESS)
-                {
-                    throw new Exception($"Failed to set up semaphores: {result}");
-                }
+                throw new Exception($"Failed to set up semaphores: {result}");
             }
+
+           // InFlightFences.UpdatePointer();
         }
 
         public static VkImageView[] SwapChain_SetUpSwapChainImageViews(VkSurfaceFormatKHR swapChainImageFormat, uint swapChainImageCount)
