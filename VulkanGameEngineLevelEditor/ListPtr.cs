@@ -14,8 +14,9 @@ namespace VulkanGameEngineLevelEditor
     public sealed unsafe class ListPtr<T> : IDisposable where T : unmanaged
     {
         private T* _ptr;
-        private T*[] _list;
+        private T*[] _debugList; //Just here to make debugging easier.
         private uint _count = 0;
+        private uint _size = 0;
         private uint _capacity = 1;
         private bool _disposed;
         private bool _ptrUpdatedExternally;
@@ -35,9 +36,10 @@ namespace VulkanGameEngineLevelEditor
         public ListPtr()
         {
             _ptr = null;
-            _list = new T*[_capacity];
             _count = 0;
+            _size = 0;
             _capacity = 1;
+            _debugList = new T*[_capacity];
             _disposed = false;
             _ptrUpdatedExternally = false;
         }
@@ -48,10 +50,11 @@ namespace VulkanGameEngineLevelEditor
 
             _count = size;
             _capacity = size;
-            int elementSize = sizeof(T);
-            int totalSize = elementSize * (int)_capacity;
-            _ptr = (T*)Marshal.AllocHGlobal(totalSize);
-            _list = new T*[_capacity];
+            _size = (uint)sizeof(T) * _capacity;
+            _debugList = new T*[_capacity];
+            _ptr = (T*)Marshal.AllocHGlobal((int)_size);
+
+            ClearMemory((byte*)_ptr, _size);
             UpdateList();
         }
 
@@ -61,10 +64,29 @@ namespace VulkanGameEngineLevelEditor
 
             _count = size;
             _capacity = size;
-            int elementSize = sizeof(T);
-            int totalSize = elementSize * (int)_capacity;
+            _size = (uint)sizeof(T) * _capacity;
             _ptr = ptr;
-            _list = new T*[_capacity];
+            _debugList = new T*[_capacity];
+
+            UpdateList();
+        }
+
+        public ListPtr(List<T> list)
+        {
+            if (list.Count <= 0) return;
+
+            _count = (uint)list.Count;
+            _capacity = (uint)list.Capacity;
+            _size = (uint)sizeof(T) * _capacity;
+            _debugList = new T*[_capacity];
+            _ptr = (T*)Marshal.AllocHGlobal((int)_size);
+
+            ClearMemory((byte*)_ptr, _size);
+            for(int x = 0; x < _count; x++)
+            {
+                _ptr[x] = list[x];
+            }
+
             UpdateList();
         }
 
@@ -102,23 +124,22 @@ namespace VulkanGameEngineLevelEditor
             if (_count >= _capacity)
             {
                 _capacity *= 2;
-                int elementSize = sizeof(T);
-                int totalSize = elementSize * (int)_capacity;
+                int totalSize = sizeof(T) * (int)_capacity;
                 T* newPtr = (T*)Marshal.AllocHGlobal(totalSize);
 
-                Buffer.MemoryCopy(_ptr, newPtr, elementSize * _count, elementSize * _count);
+                Buffer.MemoryCopy(_ptr, newPtr, sizeof(T) * _count, sizeof(T) * _count);
                 Marshal.FreeHGlobal((IntPtr)_ptr);
                 _ptr = newPtr;
 
                 T*[] newList = new T*[_capacity];
-                Array.Copy(_list, newList, _count);
-                _list = newList;
+                Array.Copy(_debugList, newList, _count);
+                _debugList = newList;
 
                 UpdateList();
             }
 
             _ptr[_count] = item;
-            _list[_count] = &_ptr[_count];
+            _debugList[_count] = &_ptr[_count];
             _count++;
         }
 
@@ -132,8 +153,8 @@ namespace VulkanGameEngineLevelEditor
                 {
                     if (x < _count - 1)
                     {
-                        int moveSize = sizeof(T) * (int)(_count - x - 1);
-                        Buffer.MemoryCopy(_ptr + x + 1, _ptr + x, moveSize, moveSize);
+                        int moveSize = sizeof(T) * (int)(_count - (x - 1));
+                        Buffer.MemoryCopy(_ptr + (x + 1), _ptr + x, moveSize, moveSize);
                     }
                     _count--;
                     ClearMemory((byte*)(_ptr + _count), sizeof(T));
@@ -144,18 +165,24 @@ namespace VulkanGameEngineLevelEditor
             return false;
         }
 
+        public void Clear()
+        {
+            ClearMemory((byte*)_ptr, _size);
+            UpdateList();
+        }
+
         private void UpdateList()
         {
             if (_disposed) throw new ObjectDisposedException(nameof(ListPtr<T>));
 
-            if (_list.Length < _count)
+            if (_debugList.Length < _count)
             {
-                _list = new T*[_capacity];
+                _debugList = new T*[_capacity];
             }
 
             for (uint x = 0; x < _count; x++)
             {
-                _list[x] = &_ptr[x];
+                _debugList[x] = &_ptr[x];
             }
             _ptrUpdatedExternally = false;
         }
@@ -195,16 +222,12 @@ namespace VulkanGameEngineLevelEditor
             {
                 AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
             }
-
-            Console.WriteLine($"Dispose triggered for ListPtr<{typeof(T).Name}>");
-            Debugger.Break();
         }
 
         private void OnProcessExit(object sender, EventArgs e)
         {
             if (!_disposed)
             {
-                Console.WriteLine($"ProcessExit: Disposing ListPtr<{typeof(T).Name}>");
                 Dispose(true);
             }
         }

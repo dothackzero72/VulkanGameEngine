@@ -130,7 +130,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return result;
         }
 
-        public static unsafe VkResult EndFrame(VkCommandBuffer[] commandBufferSubmitList)
+        public static unsafe VkResult EndFrame(ListPtr<VkCommandBuffer> commandBufferSubmitList)
         {
             var fence = InFlightFences[(int)CommandIndex];
             var presentSemaphore = PresentImageSemaphores[(int)CommandIndex];
@@ -147,58 +147,43 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             fixed (VkPipelineStageFlagBits* pWaitStages = waitStages)
             {
-                var commandBufferCount = commandBufferSubmitList.Length;
-                var commandBuffersPtr = (VkCommandBuffer*)Marshal.AllocHGlobal(commandBufferCount * sizeof(VkCommandBuffer));
-
-                try
+                VkSubmitInfo submitInfo = new VkSubmitInfo()
                 {
-                    for (int i = 0; i < commandBufferCount; i++)
-                    {
-                        commandBuffersPtr[i] = commandBufferSubmitList[i];
-                    }
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO,
+                    waitSemaphoreCount = 1,
+                    pWaitSemaphores = &imageSemaphore,
+                    pWaitDstStageMask = pWaitStages,
+                    commandBufferCount = commandBufferSubmitList.UCount,
+                    pCommandBuffers = commandBufferSubmitList.Ptr,
+                    signalSemaphoreCount = 1,
+                    pSignalSemaphores = &presentSemaphore
+                };
 
-                    VkSubmitInfo submitInfo = new VkSubmitInfo()
-                    {
-                        sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO,
-                        waitSemaphoreCount = 1,
-                        pWaitSemaphores = &imageSemaphore,
-                        pWaitDstStageMask = pWaitStages,
-                        commandBufferCount = (uint)commandBufferSubmitList.Length,
-                        pCommandBuffers = commandBuffersPtr,
-                        signalSemaphoreCount = 1,
-                        pSignalSemaphores = &presentSemaphore
-                    };
-
-                    VkResult submitResult = VkFunc.vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence);
-                    if (submitResult != VkResult.VK_SUCCESS)
-                    {
-                        return submitResult;
-                    }
-
-                    var imageIndex = ImageIndex;
-                    var swapchain = SwapChain.Swapchain;
-                    VkPresentInfoKHR presentInfo = new VkPresentInfoKHR()
-                    {
-                        sType = VkStructureType.VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR,
-                        waitSemaphoreCount = 1,
-                        pWaitSemaphores = &presentSemaphore,
-                        swapchainCount = 1,
-                        pSwapchains = &swapchain,
-                        pImageIndices = &imageIndex
-                    };
-
-                    VkResult result = VkFunc.vkQueuePresentKHR(presentQueue, in presentInfo);
-                    if (result == VkResult.VK_ERROR_OUT_OF_DATE_KHR || result == VkResult.VK_SUBOPTIMAL_KHR)
-                    {
-                        RebuildRendererFlag = true;
-                    }
-
-                    return result;
-                }
-                finally
+                VkResult submitResult = VkFunc.vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence);
+                if (submitResult != VkResult.VK_SUCCESS)
                 {
-                    Marshal.FreeHGlobal((IntPtr)commandBuffersPtr);
+                    return submitResult;
                 }
+
+                var imageIndex = ImageIndex;
+                var swapchain = SwapChain.Swapchain;
+                VkPresentInfoKHR presentInfo = new VkPresentInfoKHR()
+                {
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR,
+                    waitSemaphoreCount = 1,
+                    pWaitSemaphores = &presentSemaphore,
+                    swapchainCount = 1,
+                    pSwapchains = &swapchain,
+                    pImageIndices = &imageIndex
+                };
+
+                VkResult result = VkFunc.vkQueuePresentKHR(presentQueue, in presentInfo);
+                if (result == VkResult.VK_ERROR_OUT_OF_DATE_KHR || result == VkResult.VK_SUBOPTIMAL_KHR)
+                {
+                    RebuildRendererFlag = true;
+                }
+
+                return result;
             }
         }
 
@@ -323,7 +308,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         }
 
         //SwapChain
-
         public static VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(ListPtr<VkSurfaceFormatKHR> availableFormats)
         {
             if (availableFormats == null ||
@@ -363,7 +347,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             {
                 throw new Exception($"Failed to set up semaphores: {result}");
             }
-
         }
 
         public static void SwapChain_SetUpSwapChainImageViews(VkSurfaceFormatKHR swapChainImageFormat, uint swapChainImageCount)

@@ -213,51 +213,33 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var vertexProperties = new VkDescriptorBufferInfo[0];
             var indexProperties = new VkDescriptorBufferInfo[0];
             var transformProperties = new VkDescriptorBufferInfo[0];
-            VkVertexInputBindingDescription[] vertexBindingDescription = new VkVertexInputBindingDescription[0];
-            VkVertexInputAttributeDescription[] vertexAttributeDescription = new VkVertexInputAttributeDescription[0];
+            ListPtr<VkVertexInputBindingDescription> vertexBindingDescription = new ListPtr<VkVertexInputBindingDescription>();
+            ListPtr<VkVertexInputAttributeDescription> vertexAttributeDescription = new ListPtr<VkVertexInputAttributeDescription>();
 
             uint descriptorSetCount = nativeModel.LayoutBindingListCount;
-            //descriptorSetLayoutList = new VkDescriptorSetLayout[descriptorSetCount];
-            //descriptorSetList = new VkDescriptorSet[descriptorSetCount];
-
             descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(descriptorSetCount);
             descriptorSetList = new ListPtr<VkDescriptorSet>(descriptorSetCount);
 
-            fixed (VkDescriptorBufferInfo* vertexPtr = vertexProperties)
-            fixed (VkDescriptorBufferInfo* indexPtr = indexProperties)
-            fixed (VkDescriptorBufferInfo* transformPtr = transformProperties)
-            fixed (VkDescriptorBufferInfo* meshPtr = meshProperties)
-            fixed (VkDescriptorImageInfo* texturePtr = texturePropertiesList)
-            fixed (VkDescriptorBufferInfo* materialPtr = materialProperties)
-            fixed (VkVertexInputBindingDescription* vertexBindingDescriptionPtr = vertexBindingDescription)
-            fixed (VkVertexInputAttributeDescription* vertexAttributeDescriptionPtr = vertexAttributeDescription)
+
+            GPUIncludes includes = new GPUIncludes
             {
-                GPUIncludes includes = new GPUIncludes
-                {
-                    vertexProperties = vertexPtr,
-                    indexProperties = indexPtr,
-                    transformProperties = transformPtr,
-                    meshProperties = meshPtr,
-                    texturePropertiesList = texturePtr,
-                    materialProperties = materialPtr,
-                    vertexPropertiesCount = (uint)vertexProperties.Length,
-                    indexPropertiesCount = (uint)indexProperties.Length,
-                    transformPropertiesCount = (uint)transformProperties.Length,
-                    meshPropertiesCount = (uint)meshProperties.Length,
-                    texturePropertiesListCount = (uint)texturePropertiesList.Length,
-                    materialPropertiesCount = (uint)materialProperties.Length
-                };
+                vertexProperties = new ListPtr<VkDescriptorBufferInfo>(),
+                indexProperties = new ListPtr<VkDescriptorBufferInfo>(),
+                transformProperties = new ListPtr<VkDescriptorBufferInfo>(),
+                meshProperties = new ListPtr<VkDescriptorBufferInfo>(MemoryManager.GetGameObjectPropertiesBuffer()),
+                texturePropertiesList = new ListPtr<VkDescriptorImageInfo>(new List<VkDescriptorImageInfo> { texture.GetTextureBuffer() }),
+                materialProperties = new ListPtr<VkDescriptorBufferInfo>(MemoryManager.GetMaterialPropertiesBuffer()),
+            };
 
-                descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, nativeModel, &includes);
-                GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, nativeModel, includes, descriptorSetLayoutList.Ptr, descriptorSetCount);
-                GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, descriptorSetCount);
-                GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetList.Ptr, nativeModel, includes, descriptorSetCount);
-                GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayoutList.Ptr, 0, out VkPipelineLayout pipelineLayoutPtr, descriptorSetCount);
-                GameEngineImport.DLL_Pipeline_CreatePipeline(VulkanRenderer.device, renderPass, pipelineLayoutPtr, pipelineCache, nativeModel, vertexBindingDescriptionPtr, vertexAttributeDescriptionPtr, out VkPipeline pipelinePtr, 0, 0);
+            descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, nativeModel, &includes);
+            GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, nativeModel, includes, descriptorSetLayoutList.Ptr, descriptorSetCount);
+            GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, descriptorSetCount);
+            GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetList.Ptr, nativeModel, includes, descriptorSetCount);
+            GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayoutList.Ptr, 0, out VkPipelineLayout pipelineLayoutPtr, descriptorSetCount);
+            GameEngineImport.DLL_Pipeline_CreatePipeline(VulkanRenderer.device, renderPass, pipelineLayoutPtr, pipelineCache, nativeModel, vertexBindingDescription.Ptr, vertexAttributeDescription.Ptr, out VkPipeline pipelinePtr, 0, 0);
 
-                pipelineLayout = pipelineLayoutPtr;
-                pipeline = pipelinePtr;
-            }
+            pipelineLayout = pipelineLayoutPtr;
+            pipeline = pipelinePtr;
         }
 
         public unsafe VkCommandBuffer Draw()

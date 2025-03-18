@@ -113,10 +113,10 @@ public:
         RenderPassBuildInfoModel model;
         model._name = json["_name"];
         model.IsRenderedToSwapchain = json["IsRenderedToSwapchain"].get<bool>();
-        for (int x = 0; x < json["RenderPipelineList"].size(); x++)
+      /*  for (int x = 0; x < json["RenderPipelineList"].size(); x++)
         {
             model.RenderPipelineList.emplace_back(json["RenderPipelineList"][x]["Path"]);
-        }
+        }*/
         for (int x = 0; x < json["RenderedTextureInfoModelList"].size(); x++)
         {
             model.RenderedTextureInfoModelList.emplace_back(RenderedTextureInfoModel::from_json(json["RenderedTextureInfoModelList"][x], textureResolution));

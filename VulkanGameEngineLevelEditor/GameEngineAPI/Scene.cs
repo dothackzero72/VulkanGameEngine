@@ -27,6 +27,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
         JsonRenderPass renderPass3D { get; set; } = new JsonRenderPass();
         FrameBufferRenderPass frameBufferRenderPass { get; set; } = new FrameBufferRenderPass();
+        public ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>(1);
         public void StartUp()
         {
             MemoryManager.StartUp(30);
@@ -80,19 +81,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void DrawFrame()
         {
-            VkCommandBuffer[] commandBufferList = new VkCommandBuffer[1];
             uint imageIndex = VulkanRenderer.ImageIndex;
             uint commandIndex = VulkanRenderer.CommandIndex;
             bool rebuildRendererFlag = VulkanRenderer.RebuildRendererFlag;
 
-            fixed (VkCommandBuffer* commandBuffers = commandBufferList)
-            {
-                GameEngineImport.DLL_Renderer_StartFrame(VulkanRenderer.device, VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.AcquireImageSemaphores.Ptr, &imageIndex, &commandIndex, &rebuildRendererFlag);
-                // commandBufferList.Add(renderPass3D.Draw(GameObjectList, sceneProperties));
-                commandBufferList[0] = frameBufferRenderPass.Draw();
-                GameEngineImport.DLL_Renderer_EndFrame(VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.AcquireImageSemaphores.Ptr, VulkanRenderer.PresentImageSemaphores.Ptr, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.graphicsQueue, VulkanRenderer.presentQueue, commandIndex, imageIndex, commandBuffers, (uint)commandBufferList.Length, &rebuildRendererFlag);
-                VulkanRenderer.EndFrame(commandBufferList);
-            }
+            GameEngineImport.DLL_Renderer_StartFrame(VulkanRenderer.device, VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.AcquireImageSemaphores.Ptr, &imageIndex, &commandIndex, &rebuildRendererFlag);
+            // commandBufferList.Add(renderPass3D.Draw(GameObjectList, sceneProperties));
+            commandBufferList.Add(frameBufferRenderPass.Draw());
+            GameEngineImport.DLL_Renderer_EndFrame(VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.AcquireImageSemaphores.Ptr, VulkanRenderer.PresentImageSemaphores.Ptr, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.graphicsQueue, VulkanRenderer.presentQueue, commandIndex, imageIndex, commandBufferList.Ptr, commandBufferList.UCount, &rebuildRendererFlag);
+            VulkanRenderer.EndFrame(commandBufferList);
+            commandBufferList.Clear();
         }
 
         public void Destroy()
