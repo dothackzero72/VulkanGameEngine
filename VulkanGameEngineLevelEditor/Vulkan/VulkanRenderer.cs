@@ -17,8 +17,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkFormat Format { get;  set; }
         public VkColorSpaceKHR ColorSpace { get;  set; }
         public VkPresentModeKHR PresentMode { get;  set; }
-        public VkImage[] Images { get;  set; }
-        public VkImageView[] imageViews { get;  set; }
+        public ListPtr<VkImage> Images { get;  set; }
+        public ListPtr<VkImageView> imageViews { get;  set; }
         public VkExtent2D SwapChainResolution { get;  set; }
         public VkSwapchainKHR Swapchain { get;  set; }
     }
@@ -380,22 +380,10 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
 
             VkResult result = GameEngineImport.DLL_Renderer_SetUpSemaphores(device, InFlightFences.Ptr, AcquireImageSemaphores.Ptr, PresentImageSemaphores.Ptr, swapChainImageCount);
-            //InFlightFences.Add(InFlightFences[0]);
-            //InFlightFences.Add(InFlightFences[1]);
-            //InFlightFences.Add(InFlightFences[2]);
-            //InFlightFences.Add(InFlightFences[0]);
-            //InFlightFences.Add(InFlightFences[1]);
-            //var b = InFlightFences[1];
-            //var c = InFlightFences[2];
-            //InFlightFences[0] = InFlightFences[2];
-            //InFlightFences.Remove(b);
-
             if (result != VkResult.VK_SUCCESS)
             {
                 throw new Exception($"Failed to set up semaphores: {result}");
             }
-
-           // InFlightFences.UpdatePointer();
         }
 
         public static VkImageView[] SwapChain_SetUpSwapChainImageViews(VkSurfaceFormatKHR swapChainImageFormat, uint swapChainImageCount)
