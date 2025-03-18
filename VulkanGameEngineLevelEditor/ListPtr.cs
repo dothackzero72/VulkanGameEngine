@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -19,6 +20,8 @@ namespace VulkanGameEngineLevelEditor
         private bool _disposed;
         private bool _ptrUpdatedExternally;
 
+        public int Count => (int)_count;
+        public uint UCount => _count;
         public T* Ptr
         {
             get
@@ -29,14 +32,14 @@ namespace VulkanGameEngineLevelEditor
             }
         }
 
-        public T* ListObjs
+        public ListPtr()
         {
-            get
-            {
-                if (_disposed) throw new ObjectDisposedException(nameof(ListPtr<T>));
-                _ptrUpdatedExternally = true;
-                return _ptr;
-            }
+            _ptr = null;
+            _list = new T*[_capacity];
+            _count = 0;
+            _capacity = 1;
+            _disposed = false;
+            _ptrUpdatedExternally = false;
         }
 
         public ListPtr(uint size)
@@ -48,6 +51,19 @@ namespace VulkanGameEngineLevelEditor
             int elementSize = sizeof(T);
             int totalSize = elementSize * (int)_capacity;
             _ptr = (T*)Marshal.AllocHGlobal(totalSize);
+            _list = new T*[_capacity];
+            UpdateList();
+        }
+
+        public ListPtr(T* ptr, uint size)
+        {
+            if (size <= 0) throw new ArgumentException("Size must be greater than 0.");
+
+            _count = size;
+            _capacity = size;
+            int elementSize = sizeof(T);
+            int totalSize = elementSize * (int)_capacity;
+            _ptr = ptr;
             _list = new T*[_capacity];
             UpdateList();
         }
@@ -155,10 +171,41 @@ namespace VulkanGameEngineLevelEditor
 
         public void Dispose()
         {
-            if ((IntPtr)_ptr != IntPtr.Zero)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
             {
+                Console.WriteLine("ListPtr already disposed.");
+                return;
+            }
+
+            if (_ptr != null)
+            {
+                Console.WriteLine($"Disposing ListPtr<{typeof(T).Name}> at {(IntPtr)_ptr:X}");
                 Marshal.FreeHGlobal((IntPtr)_ptr);
                 _ptr = null;
+            }
+            _disposed = true;
+
+            if (disposing)
+            {
+                AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
+            }
+
+            Console.WriteLine($"Dispose triggered for ListPtr<{typeof(T).Name}>");
+            Debugger.Break();
+        }
+
+        private void OnProcessExit(object sender, EventArgs e)
+        {
+            if (!_disposed)
+            {
+                Console.WriteLine($"ProcessExit: Disposing ListPtr<{typeof(T).Name}>");
+                Dispose(true);
             }
         }
     }

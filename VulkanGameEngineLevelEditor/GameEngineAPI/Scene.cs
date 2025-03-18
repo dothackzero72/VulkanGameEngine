@@ -94,6 +94,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VulkanRenderer.EndFrame(commandBufferList);
             }
         }
+
+        public void Destroy()
+        {
+            VulkanRenderer.Destroy();
+        }
     }
 }
 

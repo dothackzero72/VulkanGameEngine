@@ -97,6 +97,8 @@ namespace VulkanGameEngineLevelEditor
                // scene.KeyUpdate();
                 scene.DrawFrame();
             }
+
+            scene.Destroy();
         }
 
     }

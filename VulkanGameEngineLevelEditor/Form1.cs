@@ -35,7 +35,6 @@ namespace VulkanGameEngineLevelEditor
 
         private Extent2D VulkanSwapChainResolution { get; set; }
         private Thread renderThread { get; set; }
-        private System.Windows.Forms.Timer renderTimer { get; set; }
         public RenderPassBuildInfoModel renderPass { get; private set; } = new RenderPassBuildInfoModel();
         public MessengerModel RenderPassMessager { get; set; }
 

@@ -62,9 +62,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static void CreateSwapChain(IntPtr window)
         {
-            VkSurfaceFormatKHR[] compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats();
+            ListPtr<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats();
             GameEngineImport.DLL_SwapChain_GetQueueFamilies(physicalDevice, surface, out uint graphicsFamily, out uint presentFamily);
-            VkPresentModeKHR[] compatiblePresentModesList = Renderer_GetSurfacePresentModes();
+            ListPtr<VkPresentModeKHR> compatiblePresentModesList = Renderer_GetSurfacePresentModes();
             VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
             VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
             VkSurfaceCapabilitiesKHR SurfaceCapabilities = GameEngineImport.DLL_SwapChain_GetSurfaceCapabilities(physicalDevice, surface, out uint width, out uint height);
@@ -75,9 +75,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 width = width
             };
             SwapChain.Swapchain = GameEngineImport.DLL_SwapChain_SetUpSwapChain(device, physicalDevice, surface, GraphicsFamily, PresentFamily, SwapChain.SwapChainResolution.width, SwapChain.SwapChainResolution.height, out uint swapChainImageCount);
-            SwapChain.Images = SwapChain_SetUpSwapChainImages(swapChainImageCount);
-            SwapChain.imageViews = SwapChain_SetUpSwapChainImageViews(swapChainImageFormat, swapChainImageCount);
-
+            SwapChain_SetUpSwapChainImages(swapChainImageCount);
+            SwapChain_SetUpSwapChainImageViews(swapChainImageFormat, swapChainImageCount);
             SwapChain.ImageCount = swapChainImageCount;
         }
 
@@ -325,51 +324,32 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         //SwapChain
 
-        public static VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR[] availableFormats)
+        public static VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(ListPtr<VkSurfaceFormatKHR> availableFormats)
         {
-            if (availableFormats == null || 
-                availableFormats.Length == 0)
+            if (availableFormats == null ||
+                availableFormats.UCount == 0)
             {
                 throw new ArgumentException("Available formats cannot be null or empty.");
             }
 
-            fixed (VkSurfaceFormatKHR* ptr = availableFormats)
-            {
-                return GameEngineImport.DLL_SwapChain_FindSwapSurfaceFormat(ptr, (uint)availableFormats.Length);
-            }
+            return GameEngineImport.DLL_SwapChain_FindSwapSurfaceFormat(availableFormats.Ptr, availableFormats.UCount);
         }
 
-        public static VkPresentModeKHR SwapChain_FindSwapPresentMode(VkPresentModeKHR[] availablePresentModes)
+        public static VkPresentModeKHR SwapChain_FindSwapPresentMode(ListPtr<VkPresentModeKHR> availablePresentModes)
         {
             if (availablePresentModes == null ||
-                availablePresentModes.Length == 0)
+                availablePresentModes.UCount == 0)
             {
                 throw new ArgumentException("Available formats cannot be null or empty.");
             }
 
-            fixed (VkPresentModeKHR* ptr = availablePresentModes)
-            {
-                return GameEngineImport.DLL_SwapChain_FindSwapPresentMode(ptr, (uint)availablePresentModes.Length);
-            }
+            return GameEngineImport.DLL_SwapChain_FindSwapPresentMode(availablePresentModes.Ptr, availablePresentModes.UCount);
         }
 
-        public static VkImage[] SwapChain_SetUpSwapChainImages(uint swapChainImageCount)
+        public static void SwapChain_SetUpSwapChainImages(uint swapChainImageCount)
         {
-            VkImage* swapChainImagePtr = GameEngineImport.DLL_SwapChain_SetUpSwapChainImages(device, SwapChain.Swapchain, swapChainImageCount);
-            if (swapChainImagePtr == null)
-            {
-                return Array.Empty<VkImage>();
-            }
-
-            VkImage[] formats = new VkImage[swapChainImageCount];
-            IntPtr ptr = (IntPtr)swapChainImagePtr;
-            for (uint x = 0; x < swapChainImageCount; x++)
-            {
-                formats[x] = Marshal.PtrToStructure<VkImage>(ptr + (int)(x * Marshal.SizeOf<VkImage>()));
-            }
-
-            GameEngineImport.DLL_Tools_DeleteAllocatedPtr(swapChainImagePtr);
-            return formats;
+            VkImage* images = GameEngineImport.DLL_SwapChain_SetUpSwapChainImages(device, SwapChain.Swapchain, swapChainImageCount);
+            SwapChain.Images = new ListPtr<VkImage>(images, swapChainImageCount);
         }
 
         public static void CreateSemaphores(uint swapChainImageCount)
@@ -378,72 +358,41 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             AcquireImageSemaphores = new ListPtr<VkSemaphore>(swapChainImageCount);
             PresentImageSemaphores = new ListPtr<VkSemaphore>(swapChainImageCount);
 
-
             VkResult result = GameEngineImport.DLL_Renderer_SetUpSemaphores(device, InFlightFences.Ptr, AcquireImageSemaphores.Ptr, PresentImageSemaphores.Ptr, swapChainImageCount);
             if (result != VkResult.VK_SUCCESS)
             {
                 throw new Exception($"Failed to set up semaphores: {result}");
             }
+
         }
 
-        public static VkImageView[] SwapChain_SetUpSwapChainImageViews(VkSurfaceFormatKHR swapChainImageFormat, uint swapChainImageCount)
+        public static void SwapChain_SetUpSwapChainImageViews(VkSurfaceFormatKHR swapChainImageFormat, uint swapChainImageCount)
         {
-            fixed (VkImage* imagePtr = SwapChain.Images)
-            {
-                VkImageView* swapChainImagePtr = GameEngineImport.DLL_SwapChain_SetUpSwapChainImageViews(device, imagePtr, swapChainImageFormat, swapChainImageCount);
-                if (swapChainImagePtr == null)
-                {
-                    return Array.Empty<VkImageView>();
-                }
-
-                VkImageView[] imageViewList = new VkImageView[swapChainImageCount];
-                IntPtr ptr = (IntPtr)swapChainImagePtr;
-                for (uint x = 0; x < swapChainImageCount; x++)
-                {
-                    imageViewList[x] = Marshal.PtrToStructure<VkImageView>(ptr + (int)(x * Marshal.SizeOf<VkImageView>()));
-                }
-
-                GameEngineImport.DLL_Tools_DeleteAllocatedPtr(swapChainImagePtr);
-                return imageViewList;
-            }
+            VkImageView* swapChainImagePtr = GameEngineImport.DLL_SwapChain_SetUpSwapChainImageViews(device, SwapChain.Images.Ptr, swapChainImageFormat, swapChainImageCount);
+            SwapChain.imageViews = new ListPtr<nint>(swapChainImagePtr, swapChainImageCount);
         }
 
-        public static VkSurfaceFormatKHR[] SwapChain_GetPhysicalDeviceFormats()
+        public static ListPtr<VkSurfaceFormatKHR> SwapChain_GetPhysicalDeviceFormats()
         {
             VkSurfaceFormatKHR* surfaceFormatListPtr = GameEngineImport.DLL_SwapChain_GetPhysicalDeviceFormats(physicalDevice, surface, out uint count);
-            if (surfaceFormatListPtr == null || count == 0)
-            {
-                return Array.Empty<VkSurfaceFormatKHR>();
-            }
-
-            VkSurfaceFormatKHR[] formats = new VkSurfaceFormatKHR[count];
-            IntPtr ptr = (IntPtr)surfaceFormatListPtr;
-            for (uint x = 0; x < count; x++)
-            {
-                formats[x] = Marshal.PtrToStructure<VkSurfaceFormatKHR>(ptr + (int)(x * Marshal.SizeOf<VkSurfaceFormatKHR>()));
-            }
-
-            GameEngineImport.DLL_Tools_DeleteAllocatedPtr(surfaceFormatListPtr);
-            return formats;
+            return new ListPtr<VkSurfaceFormatKHR>(surfaceFormatListPtr, count);
         }
 
-        public static VkPresentModeKHR[] Renderer_GetSurfacePresentModes()
+        public static ListPtr<VkPresentModeKHR> Renderer_GetSurfacePresentModes()
         {
             VkPresentModeKHR* presentModeListPtr =  GameEngineImport.DLL_Renderer_GetSurfacePresentModes(physicalDevice, surface, out uint count);
-            if (presentModeListPtr == null || count == 0)
-            {
-                return Array.Empty<VkPresentModeKHR>();
-            }
+            return new ListPtr<VkPresentModeKHR>(presentModeListPtr, count);
+        }
 
-            VkPresentModeKHR[] presentModes = new VkPresentModeKHR[count];
-            IntPtr ptr = (IntPtr)presentModeListPtr;
-            for (uint x = 0; x < count; x++)
-            {
-                presentModes[x] = *(presentModeListPtr + x);
-            }
+        public static void Destroy()
+        {
+            InFlightFences.Dispose();
+            AcquireImageSemaphores.Dispose();
+            PresentImageSemaphores.Dispose();
 
-            GameEngineImport.DLL_Tools_DeleteAllocatedPtr(presentModeListPtr);
-            return presentModes;
+            InFlightFences = null;
+            AcquireImageSemaphores = null;
+            PresentImageSemaphores = null;
         }
     }
 }
