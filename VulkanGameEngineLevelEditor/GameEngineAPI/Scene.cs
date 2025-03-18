@@ -25,7 +25,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         static readonly long startTime = DateTime.Now.Ticks;
         public List<Texture> textureList { get; set; } = new List<Texture>();
         public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
-       // JsonRenderPass renderPass3D { get; set; } = new JsonRenderPass();
+        JsonRenderPass renderPass3D { get; set; } = new JsonRenderPass();
         FrameBufferRenderPass frameBufferRenderPass { get; set; } = new FrameBufferRenderPass();
         public void StartUp()
         {
@@ -53,7 +53,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             // MemoryManager.ViewMemoryMap();
            // renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
-            frameBufferRenderPass.BuildRenderPass(textureList[0]);
+            frameBufferRenderPass.BuildRenderPass("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\FrameBufferRenderPass.json", textureList[0]);
         }
 
         public void Input(KeyEventArgs e)

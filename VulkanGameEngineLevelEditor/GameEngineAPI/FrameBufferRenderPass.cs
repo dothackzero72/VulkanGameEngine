@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Reflection;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -44,15 +45,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         VkPipelineLayout pipelineLayout;
         VkPipelineCache pipelineCache;
 
-        public RenderedTexture[] RenderedColorTextureList { get; private set; }
-        public DepthTexture depthTexture { get; private set; }
+        public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
+        public DepthTexture depthTexture { get; private set; } = new DepthTexture();
 
         public FrameBufferRenderPass()
         {
 
         }
 
-        public void BuildRenderPass(string jsonFile, Texture texture)
+        public void BuildRenderPass(String jsonFile, Texture texture)
         {
         //    SaveRenderPass();
           //  SavePipeline();
@@ -63,20 +64,24 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             CommandBufferList = new VkCommandBuffer[(int)VulkanRenderer.SwapChain.ImageCount];
             FrameBufferList = new VkFramebuffer[(int)VulkanRenderer.SwapChain.ImageCount];
 
-            string jsonContent = File.ReadAllText(jsonFile);
-            RenderPassBuildInfoModel model = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
+            RenderPassBuildInfoModel model = new RenderPassBuildInfoModel(jsonFile);
 
             renderPass = CreateRenderPass();
             FrameBufferList = CreateFramebuffer();
+            BuildRenderPipeline(texture);
+            VulkanRenderer.CreateCommandBuffers(CommandBufferList);
 
-            fixed (RenderedTexture* renderedColorTextureListPtr = RenderedColorTextureList)
-            fixed (DepthTexture* depthTexturePtr = &depthTexture)
-            fixed (VkFramebuffer* frameBufferListPtr = FrameBufferList)
-            {
-                GameEngineImport.DLL_RenderPass_BuildFrameBuffer(VulkanRenderer.device, renderPass, model, renderedColorTextureListPtr, frameBufferListPtr, &depthTexture, RenderPassResolution);
-                BuildRenderPipeline(texture);
-                VulkanRenderer.CreateCommandBuffers(CommandBufferList);
-            }
+            //fixed (RenderedTexture* renderedColorTextureListPtr = RenderedColorTextureList)
+            //fixed (VkFramebuffer* frameBufferListPtr = FrameBufferList)
+            //fixed(VkImageView* swapChainImageView = VulkanRenderer.SwapChain.imageViews)
+            //{
+            //    GCHandle handle = GCHandle.Alloc(depthTexture, GCHandleType.Pinned);
+            //    DepthTexture* depthTexturePtr = (DepthTexture*)handle.AddrOfPinnedObject();
+
+            //    GameEngineImport.DLL_RenderPass_BuildFrameBuffer(VulkanRenderer.device, renderPass, model, frameBufferListPtr, renderedColorTextureListPtr, depthTexturePtr, swapChainImageView, (uint)RenderedColorTextureList.UCount, RenderPassResolution);
+
+            //    handle.Free();
+            //}
         }
 
         public VkRenderPass CreateRenderPass()
@@ -213,6 +218,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             uint descriptorSetCount = nativeModel.LayoutBindingListCount;
             descriptorSetLayoutList = new VkDescriptorSetLayout[descriptorSetCount];
+
+
             descriptorSetList = new VkDescriptorSet[descriptorSetCount];
 
             fixed (VkDescriptorBufferInfo* vertexPtr = vertexProperties)
@@ -223,8 +230,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             fixed (VkDescriptorBufferInfo* materialPtr = materialProperties)
             fixed (VkVertexInputBindingDescription* vertexBindingDescriptionPtr = vertexBindingDescription)
             fixed (VkVertexInputAttributeDescription* vertexAttributeDescriptionPtr = vertexAttributeDescription)
-            fixed (VkDescriptorSet* descriptorSetPtr = descriptorSetList)
             fixed (VkDescriptorSetLayout* descriptorSetLayoutPtr = descriptorSetLayoutList)
+            fixed (VkDescriptorSetLayout* descriptorSetPtr = descriptorSetList)
             {
                 GPUIncludes includes = new GPUIncludes
                 {
@@ -321,18 +328,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             RenderPassBuildInfoModel modelInfo = new RenderPassBuildInfoModel()
             {
-                SubpassDependencyList = new List<VkSubpassDependencyModel>()
-                {
-                      new VkSubpassDependencyModel
-                    {
-                        srcSubpass = uint.MaxValue,
-                        dstSubpass = 0,
-                        srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                        dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                        srcAccessMask = 0,
-                        dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                    },
-                },
+                //SubpassDependencyList = new List<VkSubpassDependencyModel>()
+                //{
+                //      new VkSubpassDependencyModel
+                //    {
+                //        srcSubpass = uint.MaxValue,
+                //        dstSubpass = 0,
+                //        srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                //        dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                //        srcAccessMask = 0,
+                //        dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                //    },
+                //},
                 _name = "Default2DRenderPass"
             };
 

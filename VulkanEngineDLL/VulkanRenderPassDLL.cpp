@@ -5,9 +5,25 @@ void DLL_RenderPass_BuildRenderPass(VkDevice device, VkRenderPass& renderPass, R
 	RenderPass_BuildRenderPass( device, renderPass, renderPassBuildInfo, renderedColorTextureList, depthTexture);
 }
 
-void DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, const RenderPassBuildInfoModel& renderPassBuildInfo, Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList, Vector<VkFramebuffer>& frameBufferList, SharedPtr<DepthTexture> depthTexture, ivec2 renderPassResolution)
+void DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoModel renderPassBuildInfo, VkFramebuffer* frameBufferList, RenderedTexture* renderedColorTextureList, DepthTexture depthTexture, VkImageView* swapChainImageViewList, uint renderedTextureCount, ivec2 renderPassResolution)
 {
-	RenderPass_BuildFrameBuffer( device,  renderPass, renderPassBuildInfo, renderedColorTextureList, frameBufferList, depthTexture, renderPassResolution);
+	Vector<VkFramebuffer> frameBuffers;
+	Vector<VkImageView> swapChainImageViews;
+	for (int x = 0; x < frameBuffers.size(); x++)
+	{
+		frameBuffers.emplace_back(frameBufferList[x]);
+		swapChainImageViews.emplace_back(swapChainImageViewList[x]);
+	}
+
+	Vector<SharedPtr<RenderedTexture>> renderedTextures;
+	for (int x = 0; x < renderedTextureCount; x++)
+	{
+		renderedTextures.emplace_back(renderedTextures[x]);
+	}
+
+	SharedPtr<DepthTexture> depthTexturePtr = std::make_shared<DepthTexture>(depthTexture);
+
+	RenderPass_BuildFrameBuffer( device,  renderPass, renderPassBuildInfo, frameBuffers, renderedTextures, depthTexturePtr, swapChainImageViews, renderPassResolution);
 }
 
 VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipelineDLL renderPipelineModel, GPUIncludesDLL includePtr)

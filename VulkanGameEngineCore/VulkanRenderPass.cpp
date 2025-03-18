@@ -101,20 +101,20 @@ void RenderPass_BuildRenderPass(VkDevice device, VkRenderPass& renderPass, const
     VULKAN_RESULT(vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass));
 }
 
-void RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, const RenderPassBuildInfoModel& renderPassBuildInfo, Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList, Vector<VkFramebuffer>& frameBufferList, SharedPtr<DepthTexture> depthTexture, ivec2 renderPassResolution)
+void RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, const RenderPassBuildInfoModel& renderPassBuildInfo, Vector<VkFramebuffer>& frameBufferList, Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList, SharedPtr<DepthTexture> depthTexture, Vector<VkImageView>& swapChainImageViews, ivec2 renderPassResolution)
 {
-    for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
+    for (size_t x = 0; x < swapChainImageViews.size(); x++)
     {
         std::vector<VkImageView> TextureAttachmentList;
-        for (int i = 0; i < renderedColorTextureList.size(); i++)
+        for (int y = 0; y < renderedColorTextureList.size(); y++)
         {
             if (renderPassBuildInfo.IsRenderedToSwapchain)
             {
-                TextureAttachmentList.emplace_back(cRenderer.SwapChain.SwapChainImageViews[x]);
+                TextureAttachmentList.emplace_back(swapChainImageViews[x]);
             }
             else
             {
-                TextureAttachmentList.emplace_back(renderedColorTextureList[i]->View);
+                TextureAttachmentList.emplace_back(renderedColorTextureList[y]->View);
             }
         }
         if (depthTexture != nullptr)

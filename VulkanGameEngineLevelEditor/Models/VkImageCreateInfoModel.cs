@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    [StructLayout(LayoutKind.Sequential)]
+   // [StructLayout(LayoutKind.Sequential)]
     public unsafe class VkImageCreateInfoModel : RenderPassEditorBaseModel
     {
         private VkStructureType _sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;

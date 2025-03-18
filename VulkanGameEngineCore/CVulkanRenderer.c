@@ -295,7 +295,7 @@ VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSe
         .pSignalSemaphores = &presentImageSemaphoreList[imageIndex]
     };
 
-    VkResult submitResult = vkQueueSubmit(graphicsQueue, 1, &submitInfo, &fenceList[commandIndex]);
+    VkResult submitResult = vkQueueSubmit(graphicsQueue, 1, &submitInfo, fenceList[commandIndex]);
     if (submitResult != VK_SUCCESS)
     {
         fprintf(stderr, "Error: vkQueueSubmit failed with error code: %s\n", Renderer_GetError(submitResult));

@@ -13,10 +13,11 @@ namespace VulkanGameEngineLevelEditor.Models
     [Serializable]
     public class RenderPassBuildInfoModel : RenderPassEditorBaseModel
     {
-        public List<RenderPipelineModel> RenderPipelineList { get; set; } = new List<RenderPipelineModel>();
+        public List<string> RenderPipelineList { get; set; } = new List<string>();
 
         public List<RenderedTextureInfoModel> RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>();
         public List<VkSubpassDependencyModel> SubpassDependencyList { get; set; } = new List<VkSubpassDependencyModel>();
+        public bool IsRenderedToSwapchain { get; set; }
 
         public RenderPassBuildInfoModel() 
         {
@@ -40,13 +41,10 @@ namespace VulkanGameEngineLevelEditor.Models
         public void LoadJsonComponent(string jsonPath)
         {
             var obj = base.LoadJsonComponent<RenderPassBuildInfoModel>(jsonPath);
-            foreach (PropertyInfo property in typeof(RenderPassBuildInfoModel).GetProperties())
-            {
-                if (property.CanWrite)
-                {
-                    property.SetValue(this, property.GetValue(obj));
-                }
-            }
+            RenderPipelineList = obj.RenderPipelineList;
+            RenderedTextureInfoModelList = obj.RenderedTextureInfoModelList;
+            SubpassDependencyList = obj.SubpassDependencyList;
+            IsRenderedToSwapchain = obj.IsRenderedToSwapchain;
         }
     }
 }

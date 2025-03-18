@@ -61,58 +61,58 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             List<VkAttachmentReference> resolveAttachmentReferenceList = new List<VkAttachmentReference>();
             List<VkSubpassDescription> preserveAttachmentReferenceList = new List<VkSubpassDescription>();
             List<VkAttachmentReference> depthReferenceList = new List<VkAttachmentReference>();
-            foreach (RenderedTextureInfoModel renderedTextureInfoModel in model2.RenderedTextureInfoModelList)
-            {
-                attachmentDescriptionList.Add(renderedTextureInfoModel.AttachmentDescription.Convert());
-                switch (renderedTextureInfoModel.TextureType)
-                {
-                    case RenderedTextureType.ColorRenderedTexture:
-                        {
-                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
-                            colorAttachmentReferenceList.Add(new VkAttachmentReference
-                            {
-                                attachment = colorAttachmentReferenceList.UCount(),
-                                layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                            });
-                            break;
-                        }
-                    case RenderedTextureType.DepthRenderedTexture:
-                        {
-                            depthTexture = new DepthTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert());
-                            depthReferenceList.Add(new VkAttachmentReference
-                            {
-                                attachment = (uint)(colorAttachmentReferenceList.Count + resolveAttachmentReferenceList.Count),
-                                layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                            });
-                            break;
-                        }
-                    case RenderedTextureType.InputAttachmentTexture:
-                        {
-                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
-                            inputAttachmentReferenceList.Add(new VkAttachmentReference
-                            {
-                                attachment = (uint)(inputAttachmentReferenceList.Count()),
-                                layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                            });
-                            break;
-                        }
-                    case RenderedTextureType.ResolveAttachmentTexture:
-                        {
-                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
-                            resolveAttachmentReferenceList.Add(new VkAttachmentReference
-                            {
-                               attachment = (uint)(colorAttachmentReferenceList.UCount() + 1),
-                                layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-                            });
-                            break;
-                        }
-                    default:
-                        {
-                            MessageBox.Show("Something went wrong building render pass: Attachment Problems.");
-                            break;
-                        }
-                }
-            }
+            //foreach (RenderedTextureInfoModel renderedTextureInfoModel in model2.RenderedTextureInfoModelList)
+            //{
+            //    attachmentDescriptionList.Add(renderedTextureInfoModel.AttachmentDescription.Convert());
+            //    switch (renderedTextureInfoModel.TextureType)
+            //    {
+            //        case RenderedTextureType.ColorRenderedTexture:
+            //            {
+            //                RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
+            //                colorAttachmentReferenceList.Add(new VkAttachmentReference
+            //                {
+            //                    attachment = colorAttachmentReferenceList.UCount(),
+            //                    layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+            //                });
+            //                break;
+            //            }
+            //        case RenderedTextureType.DepthRenderedTexture:
+            //            {
+            //                depthTexture = new DepthTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert());
+            //                depthReferenceList.Add(new VkAttachmentReference
+            //                {
+            //                    attachment = (uint)(colorAttachmentReferenceList.Count + resolveAttachmentReferenceList.Count),
+            //                    layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+            //                });
+            //                break;
+            //            }
+            //        case RenderedTextureType.InputAttachmentTexture:
+            //            {
+            //                RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
+            //                inputAttachmentReferenceList.Add(new VkAttachmentReference
+            //                {
+            //                    attachment = (uint)(inputAttachmentReferenceList.Count()),
+            //                    layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+            //                });
+            //                break;
+            //            }
+            //        case RenderedTextureType.ResolveAttachmentTexture:
+            //            {
+            //                RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
+            //                resolveAttachmentReferenceList.Add(new VkAttachmentReference
+            //                {
+            //                   attachment = (uint)(colorAttachmentReferenceList.UCount() + 1),
+            //                    layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+            //                });
+            //                break;
+            //            }
+            //        default:
+            //            {
+            //                MessageBox.Show("Something went wrong building render pass: Attachment Problems.");
+            //                break;
+            //            }
+            //    }
+            //}
 
             List<VkSubpassDescription> subpassDescriptionList = new List<VkSubpassDescription>();
             fixed (VkAttachmentReference* depthAttachment = depthReferenceList.ToArray())
@@ -137,10 +137,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             List<VkSubpassDependency> subPassList = new List<VkSubpassDependency>();
-            foreach (VkSubpassDependencyModel subpass in model2.SubpassDependencyList)
-            {
-                subPassList.Add(subpass.Convert());
-            }
+            //foreach (VkSubpassDependencyModel subpass in model2.SubpassDependencyList)
+            //{
+            //    subPassList.Add(subpass.Convert());
+            //}
 
             fixed (VkAttachmentDescription* attachments = attachmentDescriptionList.ToArray())
             fixed (VkSubpassDescription* description = subpassDescriptionList.ToArray())
@@ -273,133 +273,133 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             RenderPassBuildInfoModel modelInfo = new RenderPassBuildInfoModel()
             {
-                RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>
-                {
-                    new RenderedTextureInfoModel
-                    {
-                        ImageCreateInfo = new VkImageCreateInfoModel()
-                        {
-                            imageType = VkImageType.VK_IMAGE_TYPE_2D,
-                            format= VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
-                            mipLevels = 1,
-                            arrayLayers = 1,
-                            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
-                            tiling = 0,
-                            usage = VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
-                            VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
-                            VkImageUsageFlagBits.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-                            VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-                            sharingMode = 0,
-                            initialLayout =  0,
-                            _name = string.Empty
-                        },
-                        SamplerCreateInfo = new VkSamplerCreateInfoModel()
-                        {
-                            magFilter = 0,
-                            minFilter = 0,
-                            mipmapMode = (VkSamplerMipmapMode)1,
-                            addressModeU = 0,
-                            addressModeV = 0,
-                            addressModeW = 0,
-                            mipLodBias = 0.0f,
-                            anisotropyEnable = true,
-                            maxAnisotropy = 16.0f,
-                            compareEnable = false,
-                            compareOp = (VkCompareOp)7,
-                            minLod = 0.0f,
-                            maxLod = 1.0f,
-                            borderColor = (VkBorderColor)3,
-                            unnormalizedCoordinates = false,
-                            _name = string.Empty
-                        },
-                        AttachmentDescription = new VkAttachmentDescriptionModel()
-                        {
-                            format = VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
-                            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
-                            loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
-                            storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_STORE,
-                            stencilLoadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                            stencilStoreOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                            initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
-                            finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL,
-                            _name = string.Empty
-                        },
-                        IsRenderedToSwapchain = true,
-                        TextureType = RenderedTextureType.ColorRenderedTexture,
-                        RenderedTextureInfoName = "texture",
-                        _name = string.Empty
-                    },
-                      new RenderedTextureInfoModel
-                    {
-                        ImageCreateInfo = new VkImageCreateInfoModel()
-                        {
-                            imageType = (VkImageType)1,
-                            format = VkFormat.VK_FORMAT_D32_SFLOAT,
-                            mipLevels = 1,
-                            arrayLayers = 1,
-                            samples = (VkSampleCountFlagBits)1,
-                            tiling = 0,
-                            usage =  VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
-                                    VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
-                                    VkImageUsageFlagBits.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
-                                    VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-                            sharingMode = 0,
-                            queueFamilyIndexCount = 0,
-                            pQueueFamilyIndices = null,
-                            initialLayout = 0,
-                            _name = string.Empty
-                        },
-                        SamplerCreateInfo = new VkSamplerCreateInfoModel()
-                        {
-                            magFilter = 0,
-                            minFilter = 0,
-                            mipmapMode = (VkSamplerMipmapMode)1,
-                            addressModeU = 0,
-                            addressModeV = 0,
-                            addressModeW = 0,
-                            mipLodBias = 0.0f,
-                            anisotropyEnable = true,
-                            maxAnisotropy = 16.0f,
-                            compareEnable = false,
-                            compareOp = (VkCompareOp)7,
-                            minLod = 0.0f,
-                            maxLod = 1.0f,
-                            borderColor = (VkBorderColor)2,
-                            unnormalizedCoordinates = false,
-                            _name = string.Empty
-                        },
-                        AttachmentDescription = new VkAttachmentDescriptionModel()
-                        {
-                            format = VkFormat.VK_FORMAT_D32_SFLOAT,
-                            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
-                            loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
-                            storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                            stencilLoadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                            stencilStoreOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                            initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
-                            finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-                            _name = string.Empty
-                        },
-                        IsRenderedToSwapchain = false,
-                        TextureType = RenderedTextureType.DepthRenderedTexture,
-                        RenderedTextureInfoName = "texture",
-                        _name = string.Empty
-                    }
-                },
-                SubpassDependencyList = new List<VkSubpassDependencyModel>()
-                {
-                     new VkSubpassDependencyModel
-                            {
-                                srcSubpass = uint.MaxValue,
-                                dstSubpass = 0,
-                                srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                                dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT, 
-                                srcAccessMask = 0,
-                                dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                                _name = string.Empty
-                            },
-                },
-                RenderPipelineList = new List<RenderPipelineModel>(),
+                //RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>
+                //{
+                //    new RenderedTextureInfoModel
+                //    {
+                //        ImageCreateInfo = new VkImageCreateInfoModel()
+                //        {
+                //            imageType = VkImageType.VK_IMAGE_TYPE_2D,
+                //            format= VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
+                //            mipLevels = 1,
+                //            arrayLayers = 1,
+                //            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
+                //            tiling = 0,
+                //            usage = VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                //            VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
+                //            VkImageUsageFlagBits.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                //            VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+                //            sharingMode = 0,
+                //            initialLayout =  0,
+                //            _name = string.Empty
+                //        },
+                //        SamplerCreateInfo = new VkSamplerCreateInfoModel()
+                //        {
+                //            magFilter = 0,
+                //            minFilter = 0,
+                //            mipmapMode = (VkSamplerMipmapMode)1,
+                //            addressModeU = 0,
+                //            addressModeV = 0,
+                //            addressModeW = 0,
+                //            mipLodBias = 0.0f,
+                //            anisotropyEnable = true,
+                //            maxAnisotropy = 16.0f,
+                //            compareEnable = false,
+                //            compareOp = (VkCompareOp)7,
+                //            minLod = 0.0f,
+                //            maxLod = 1.0f,
+                //            borderColor = (VkBorderColor)3,
+                //            unnormalizedCoordinates = false,
+                //            _name = string.Empty
+                //        },
+                //        AttachmentDescription = new VkAttachmentDescriptionModel()
+                //        {
+                //            format = VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
+                //            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
+                //            loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
+                //            storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_STORE,
+                //            stencilLoadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                //            stencilStoreOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                //            initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
+                //            finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL,
+                //            _name = string.Empty
+                //        },
+                //        IsRenderedToSwapchain = true,
+                //        TextureType = RenderedTextureType.ColorRenderedTexture,
+                //        RenderedTextureInfoName = "texture",
+                //        _name = string.Empty
+                //    },
+                //      new RenderedTextureInfoModel
+                //    {
+                //        ImageCreateInfo = new VkImageCreateInfoModel()
+                //        {
+                //            imageType = (VkImageType)1,
+                //            format = VkFormat.VK_FORMAT_D32_SFLOAT,
+                //            mipLevels = 1,
+                //            arrayLayers = 1,
+                //            samples = (VkSampleCountFlagBits)1,
+                //            tiling = 0,
+                //            usage =  VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                //                    VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
+                //                    VkImageUsageFlagBits.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
+                //                    VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+                //            sharingMode = 0,
+                //            queueFamilyIndexCount = 0,
+                //            pQueueFamilyIndices = null,
+                //            initialLayout = 0,
+                //            _name = string.Empty
+                //        },
+                //        SamplerCreateInfo = new VkSamplerCreateInfoModel()
+                //        {
+                //            magFilter = 0,
+                //            minFilter = 0,
+                //            mipmapMode = (VkSamplerMipmapMode)1,
+                //            addressModeU = 0,
+                //            addressModeV = 0,
+                //            addressModeW = 0,
+                //            mipLodBias = 0.0f,
+                //            anisotropyEnable = true,
+                //            maxAnisotropy = 16.0f,
+                //            compareEnable = false,
+                //            compareOp = (VkCompareOp)7,
+                //            minLod = 0.0f,
+                //            maxLod = 1.0f,
+                //            borderColor = (VkBorderColor)2,
+                //            unnormalizedCoordinates = false,
+                //            _name = string.Empty
+                //        },
+                //        AttachmentDescription = new VkAttachmentDescriptionModel()
+                //        {
+                //            format = VkFormat.VK_FORMAT_D32_SFLOAT,
+                //            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
+                //            loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
+                //            storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                //            stencilLoadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                //            stencilStoreOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                //            initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
+                //            finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                //            _name = string.Empty
+                //        },
+                //        IsRenderedToSwapchain = false,
+                //        TextureType = RenderedTextureType.DepthRenderedTexture,
+                //        RenderedTextureInfoName = "texture",
+                //        _name = string.Empty
+                //    }
+                //},
+                //SubpassDependencyList = new List<VkSubpassDependencyModel>()
+                //{
+                //     new VkSubpassDependencyModel
+                //            {
+                //                srcSubpass = uint.MaxValue,
+                //                dstSubpass = 0,
+                //                srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                //                dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT, 
+                //                srcAccessMask = 0,
+                //                dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                //                _name = string.Empty
+                //            },
+                //},
+                RenderPipelineList = new List<string>(),
                 _name = "Default2DRenderPass"
             };
 

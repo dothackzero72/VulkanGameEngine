@@ -50,37 +50,37 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             RenderPassModels = new RenderPassBuildInfoModel
             {
                 _name = "BasicRenderPass",
-                RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>
-                {
-                    new RenderedTextureInfoModel()
-                    {
-                        IsRenderedToSwapchain = true,
-                        RenderedTextureInfoName = "ColorRenderTexture",
-                        AttachmentDescription = new VkAttachmentDescriptionModel(ConstConfig.DefaultColorAttachmentDescriptionModel),
-                        ImageCreateInfo = new VkImageCreateInfoModel(ConstConfig.DefaultCreateColorImageInfo, SwapChainResuloution, VkFormat.VK_FORMAT_R8G8B8A8_UNORM),
-                        SamplerCreateInfo = new VkSamplerCreateInfoModel(ConstConfig.DefaultColorSamplerCreateInfo),
-                        TextureType = RenderedTextureType.ColorRenderedTexture
-                    },
-                    new RenderedTextureInfoModel()
-                    {
-                        IsRenderedToSwapchain = false,
-                        RenderedTextureInfoName = "DepthRenderedTexture",
-                        AttachmentDescription = new VkAttachmentDescriptionModel(ConstConfig.DefaultDepthAttachmentDescriptionModel),
-                        ImageCreateInfo = new VkImageCreateInfoModel(ConstConfig.DefaultCreateDepthImageInfo, SwapChainResuloution, VkFormat.VK_FORMAT_D32_SFLOAT),
-                        SamplerCreateInfo = new VkSamplerCreateInfoModel(ConstConfig.DefaultDepthSamplerCreateInfo),
-                        TextureType = RenderedTextureType.DepthRenderedTexture
-                    }
-                },
-                SubpassDependencyList = new List<VkSubpassDependencyModel>() { new VkSubpassDependencyModel(ConstConfig.DefaultSubpassDependencyModel) },
+                //RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>
+                //{
+                //    new RenderedTextureInfoModel()
+                //    {
+                //        IsRenderedToSwapchain = true,
+                //        RenderedTextureInfoName = "ColorRenderTexture",
+                //        AttachmentDescription = new VkAttachmentDescriptionModel(ConstConfig.DefaultColorAttachmentDescriptionModel),
+                //        ImageCreateInfo = new VkImageCreateInfoModel(ConstConfig.DefaultCreateColorImageInfo, SwapChainResuloution, VkFormat.VK_FORMAT_R8G8B8A8_UNORM),
+                //        SamplerCreateInfo = new VkSamplerCreateInfoModel(ConstConfig.DefaultColorSamplerCreateInfo),
+                //        TextureType = RenderedTextureType.ColorRenderedTexture
+                //    },
+                //    new RenderedTextureInfoModel()
+                //    {
+                //        IsRenderedToSwapchain = false,
+                //        RenderedTextureInfoName = "DepthRenderedTexture",
+                //        AttachmentDescription = new VkAttachmentDescriptionModel(ConstConfig.DefaultDepthAttachmentDescriptionModel),
+                //        ImageCreateInfo = new VkImageCreateInfoModel(ConstConfig.DefaultCreateDepthImageInfo, SwapChainResuloution, VkFormat.VK_FORMAT_D32_SFLOAT),
+                //        SamplerCreateInfo = new VkSamplerCreateInfoModel(ConstConfig.DefaultDepthSamplerCreateInfo),
+                //        TextureType = RenderedTextureType.DepthRenderedTexture
+                //    }
+                //},
+                //SubpassDependencyList = new List<VkSubpassDependencyModel>() { new VkSubpassDependencyModel(ConstConfig.DefaultSubpassDependencyModel) },
             };
 
-            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].AttachmentDescription);
-            //listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].AttachmentDescription);
-            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].ImageCreateInfo);
-            //listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].ImageCreateInfo);
-            listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].SamplerCreateInfo);
-            //listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].SamplerCreateInfo);
-            listBox1.Items.Add(RenderPassModels.SubpassDependencyList[0]);
+            //listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].AttachmentDescription);
+            ////listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].AttachmentDescription);
+            //listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].ImageCreateInfo);
+            ////listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].ImageCreateInfo);
+            //listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[0].SamplerCreateInfo);
+            ////listBox1.Items.Add(RenderPassModels.RenderedTextureInfoModelList[1].SamplerCreateInfo);
+            //listBox1.Items.Add(RenderPassModels.SubpassDependencyList[0]);
         }
 
         public void ShowRenderPassBuilder()
