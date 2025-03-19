@@ -337,18 +337,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
                     VkFramebuffer frameBuffer = FrameBufferList[x];
                     VkFunc.vkCreateFramebuffer(VulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
-                    frameBufferList[x] = frameBuffer;
+                    FrameBufferList[x] = frameBuffer;
                 }
             }
-
-            FrameBufferList = frameBufferList;
         }
 
         public VkCommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
-            var commandBuffer = commandBufferList[commandIndex];
+            var commandBuffer = commandBufferList[(int)commandIndex];
 
             List<VkClearValue> clearValues = new List<VkClearValue>
 {
@@ -367,7 +365,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
                 {
                     renderPass = renderPass,
-                    framebuffer = FrameBufferList[imageIndex],
+                    framebuffer = FrameBufferList[(int)imageIndex],
                     clearValueCount = 2,
                     pClearValues = pClearValue,
                     renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution)

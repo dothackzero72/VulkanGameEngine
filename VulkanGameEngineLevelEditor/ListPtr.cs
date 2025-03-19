@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.Vulkan;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -38,10 +39,12 @@ namespace VulkanGameEngineLevelEditor
             _ptr = null;
             _count = 0;
             _size = 0;
-            _capacity = 1;
+            _capacity = 0;
             _debugList = new T*[_capacity];
             _disposed = false;
             _ptrUpdatedExternally = false;
+
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
         }
 
         public ListPtr(uint size)
@@ -56,6 +59,8 @@ namespace VulkanGameEngineLevelEditor
 
             ClearMemory((byte*)_ptr, _size);
             UpdateList();
+
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
         }
 
         public ListPtr(T* ptr, uint size)
@@ -69,6 +74,8 @@ namespace VulkanGameEngineLevelEditor
             _debugList = new T*[_capacity];
 
             UpdateList();
+
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
         }
 
         public ListPtr(List<T> list)
@@ -88,6 +95,8 @@ namespace VulkanGameEngineLevelEditor
             }
 
             UpdateList();
+
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
         }
 
         ~ListPtr()
@@ -96,6 +105,27 @@ namespace VulkanGameEngineLevelEditor
             {
                 Console.WriteLine($"Warning: ListPtr<{typeof(T).Name}> was not disposed properly.");
                 Dispose();
+            }
+        }
+
+        public ListPtr(IEnumerable<T> collection)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            if (collection.Count() <= 0) throw new ArgumentException("Collection must not be empty.", nameof(collection));
+
+            _count = (uint)collection.Count();
+            _capacity = (uint)collection.Count();
+
+            int elementSize = sizeof(T);
+            int totalSize = elementSize * (int)_capacity;
+
+            _debugList = new T*[_capacity];
+            _ptr = (T*)Marshal.AllocHGlobal(totalSize);
+
+            for (int x = 0; x < collection.Count(); x++) 
+            {
+                _ptr[x] = collection.ToList()[x];
+                _debugList[x] = &_ptr[x];
             }
         }
 
@@ -123,11 +153,19 @@ namespace VulkanGameEngineLevelEditor
 
             if (_count >= _capacity)
             {
-                _capacity *= 2;
+                if (_capacity == 0)
+                {
+                    _capacity = 1;
+                }
+                else
+                {
+                    _capacity *= 2;
+                }
+
                 int totalSize = sizeof(T) * (int)_capacity;
                 T* newPtr = (T*)Marshal.AllocHGlobal(totalSize);
 
-                Buffer.MemoryCopy(_ptr, newPtr, sizeof(T) * _count, sizeof(T) * _count);
+                System.Buffer.MemoryCopy(_ptr, newPtr, sizeof(T) * _count, sizeof(T) * _count);
                 Marshal.FreeHGlobal((IntPtr)_ptr);
                 _ptr = newPtr;
 
@@ -154,7 +192,7 @@ namespace VulkanGameEngineLevelEditor
                     if (x < _count - 1)
                     {
                         int moveSize = sizeof(T) * (int)(_count - (x - 1));
-                        Buffer.MemoryCopy(_ptr + (x + 1), _ptr + x, moveSize, moveSize);
+                        System.Buffer.MemoryCopy(_ptr + (x + 1), _ptr + x, moveSize, moveSize);
                     }
                     _count--;
                     ClearMemory((byte*)(_ptr + _count), sizeof(T));

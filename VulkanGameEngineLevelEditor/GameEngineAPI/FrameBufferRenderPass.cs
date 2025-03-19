@@ -35,15 +35,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         SampleCountFlags SampleCount;
 
         VkRenderPass renderPass;
-        VkCommandBuffer[] CommandBufferList;
-        VkFramebuffer[] FrameBufferList;
-
-        VkDescriptorPool descriptorPool;
-        ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList;
-        ListPtr<VkDescriptorSet> descriptorSetList;
         VkPipeline pipeline;
         VkPipelineLayout pipelineLayout;
         VkPipelineCache pipelineCache;
+        VkDescriptorPool descriptorPool;
+
+        ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList;
+        ListPtr<VkDescriptorSet> descriptorSetList;
+        ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>();
+        ListPtr<VkFramebuffer> frameBufferList;
 
         public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
         public DepthTexture depthTexture { get; private set; } = new DepthTexture();
@@ -60,16 +60,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             RenderPassResolution = new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height);
             SampleCount = SampleCountFlags.Count1Bit;
-
-            CommandBufferList = new VkCommandBuffer[(int)VulkanRenderer.SwapChain.ImageCount];
-            FrameBufferList = new VkFramebuffer[(int)VulkanRenderer.SwapChain.ImageCount];
+           // frameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
 
             RenderPassBuildInfoModel model = new RenderPassBuildInfoModel(jsonFile);
 
             renderPass = CreateRenderPass();
-            FrameBufferList = CreateFramebuffer();
+            frameBufferList = CreateFramebuffer();
             BuildRenderPipeline(texture);
-            VulkanRenderer.CreateCommandBuffers(CommandBufferList);
+            VulkanRenderer.CreateCommandBuffers(commandBufferList);
 
             //fixed (RenderedTexture* renderedColorTextureListPtr = RenderedColorTextureList)
             //fixed (VkFramebuffer* frameBufferListPtr = FrameBufferList)
@@ -171,34 +169,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return renderPass;
         }
 
-        public VkFramebuffer[] CreateFramebuffer()
+        public new ListPtr<VkFramebuffer> CreateFramebuffer()
         {
-            VkFramebuffer[] frameBufferList = new VkFramebuffer[(int)VulkanRenderer.SwapChain.ImageCount];
+            ListPtr<VkFramebuffer> frameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
             for (int x = 0; x < (int)VulkanRenderer.SwapChain.ImageCount; x++)
             {
-                List<VkImageView> TextureAttachmentList = new List<VkImageView>();
-                TextureAttachmentList.Add(VulkanRenderer.SwapChain.imageViews[x]);
-
-                fixed (VkImageView* imageViewPtr = TextureAttachmentList.ToArray())
+                var attachment = VulkanRenderer.SwapChain.imageViews[x];
+                VkFramebufferCreateInfo framebufferInfo = new VkFramebufferCreateInfo()
                 {
-                    VkFramebufferCreateInfo framebufferInfo = new VkFramebufferCreateInfo()
-                    {
-                        sType = VkStructureType.VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-                        renderPass = renderPass,
-                        attachmentCount = TextureAttachmentList.UCount(),
-                        pAttachments = imageViewPtr,
-                        width = VulkanRenderer.SwapChain.SwapChainResolution.width,
-                        height = VulkanRenderer.SwapChain.SwapChainResolution.height,
-                        layers = 1
-                    };
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                    renderPass = renderPass,
+                    attachmentCount = 1,
+                    pAttachments = &attachment,
+                    width = VulkanRenderer.SwapChain.SwapChainResolution.width,
+                    height = VulkanRenderer.SwapChain.SwapChainResolution.height,
+                    layers = 1
+                };
 
-                    VkFramebuffer frameBuffer = FrameBufferList[x];
-                    VkFunc.vkCreateFramebuffer(VulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
-                    frameBufferList[x] = frameBuffer;
-                }
+                var frameBuffer = frameBufferList[x];
+                VkFunc.vkCreateFramebuffer(VulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
+                frameBufferList[x] = frameBuffer;
             }
 
-            FrameBufferList = frameBufferList;
             return frameBufferList;
         }
 
@@ -207,46 +199,60 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             string jsonContent = File.ReadAllText("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\FrameBufferPipeline.json");
             RenderPipelineDLL nativeModel = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
 
+            uint descriptorSetCount = nativeModel.LayoutBindingListCount;
+            descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(descriptorSetCount);
+            descriptorSetList = new ListPtr<VkDescriptorSet>(descriptorSetCount);
+
+            ListPtr<VkVertexInputBindingDescription> vertexBindingDescription = new ListPtr<VkVertexInputBindingDescription>();
+            ListPtr<VkVertexInputAttributeDescription> vertexAttributeDescription = new ListPtr<VkVertexInputAttributeDescription>();
+
             var meshProperties = MemoryManager.GetGameObjectPropertiesBuffer().ToArray();
             var texturePropertiesList = new List<VkDescriptorImageInfo> { texture.GetTextureBuffer() }.ToArray();
             var materialProperties = MemoryManager.GetMaterialPropertiesBuffer().ToArray();
             var vertexProperties = new VkDescriptorBufferInfo[0];
             var indexProperties = new VkDescriptorBufferInfo[0];
             var transformProperties = new VkDescriptorBufferInfo[0];
-            ListPtr<VkVertexInputBindingDescription> vertexBindingDescription = new ListPtr<VkVertexInputBindingDescription>();
-            ListPtr<VkVertexInputAttributeDescription> vertexAttributeDescription = new ListPtr<VkVertexInputAttributeDescription>();
 
-            uint descriptorSetCount = nativeModel.LayoutBindingListCount;
-            descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(descriptorSetCount);
-            descriptorSetList = new ListPtr<VkDescriptorSet>(descriptorSetCount);
-
-
-            GPUIncludes includes = new GPUIncludes
+            fixed (VkDescriptorBufferInfo* vertexPtr = vertexProperties)
+            fixed (VkDescriptorBufferInfo* indexPtr = indexProperties)
+            fixed (VkDescriptorBufferInfo* transformPtr = transformProperties)
+            fixed (VkDescriptorBufferInfo* meshPtr = meshProperties)
+            fixed (VkDescriptorImageInfo* texturePtr = texturePropertiesList)
+            fixed (VkDescriptorBufferInfo* materialPtr = materialProperties)
             {
-                vertexProperties = new ListPtr<VkDescriptorBufferInfo>(),
-                indexProperties = new ListPtr<VkDescriptorBufferInfo>(),
-                transformProperties = new ListPtr<VkDescriptorBufferInfo>(),
-                meshProperties = new ListPtr<VkDescriptorBufferInfo>(MemoryManager.GetGameObjectPropertiesBuffer()),
-                texturePropertiesList = new ListPtr<VkDescriptorImageInfo>(new List<VkDescriptorImageInfo> { texture.GetTextureBuffer() }),
-                materialProperties = new ListPtr<VkDescriptorBufferInfo>(MemoryManager.GetMaterialPropertiesBuffer()),
-            };
+                GPUIncludes includes = new GPUIncludes
+                {
+                    vertexProperties = vertexPtr,
+                    indexProperties = indexPtr,
+                    transformProperties = transformPtr,
+                    meshProperties = meshPtr,
+                    texturePropertiesList = texturePtr,
+                    materialProperties = materialPtr,
+                    vertexPropertiesCount = (uint)vertexProperties.Length,
+                    indexPropertiesCount = (uint)indexProperties.Length,
+                    transformPropertiesCount = (uint)transformProperties.Length,
+                    meshPropertiesCount = (uint)meshProperties.Length,
+                    texturePropertiesListCount = (uint)texturePropertiesList.Length,
+                    materialPropertiesCount = (uint)materialProperties.Length
+                };
 
-            descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, nativeModel, &includes);
-            GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, nativeModel, includes, descriptorSetLayoutList.Ptr, descriptorSetCount);
-            GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, descriptorSetCount);
-            GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetList.Ptr, nativeModel, includes, descriptorSetCount);
-            GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayoutList.Ptr, 0, out VkPipelineLayout pipelineLayoutPtr, descriptorSetCount);
-            GameEngineImport.DLL_Pipeline_CreatePipeline(VulkanRenderer.device, renderPass, pipelineLayoutPtr, pipelineCache, nativeModel, vertexBindingDescription.Ptr, vertexAttributeDescription.Ptr, out VkPipeline pipelinePtr, 0, 0);
+                descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, nativeModel, &includes);
+                GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, nativeModel, includes, descriptorSetLayoutList.Ptr, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetList.Ptr, nativeModel, includes, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayoutList.Ptr, 0, out VkPipelineLayout pipelineLayoutPtr, descriptorSetCount);
+                GameEngineImport.DLL_Pipeline_CreatePipeline(VulkanRenderer.device, renderPass, pipelineLayoutPtr, pipelineCache, nativeModel, vertexBindingDescription.Ptr, vertexAttributeDescription.Ptr, out VkPipeline pipelinePtr, 0, 0);
 
-            pipelineLayout = pipelineLayoutPtr;
-            pipeline = pipelinePtr;
+                pipelineLayout = pipelineLayoutPtr;
+                pipeline = pipelinePtr;
+            }
         }
 
         public unsafe VkCommandBuffer Draw()
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
-            var commandBuffer = CommandBufferList[(int)commandIndex];
+            var commandBuffer = commandBufferList[(int)commandIndex];
 
             VkClearValue* clearValues = stackalloc VkClearValue[1];
             clearValues[0].color = new VkClearColorValue(1.0f, 1.0f, 0.0f, 1.0f);
@@ -271,7 +277,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                 pNext = IntPtr.Zero,
                 renderPass = renderPass,
-                framebuffer = FrameBufferList[imageIndex],
+                framebuffer = frameBufferList[(int)imageIndex],
                 renderArea = new VkRect2D 
                 { 
                     offset = new VkOffset2D 

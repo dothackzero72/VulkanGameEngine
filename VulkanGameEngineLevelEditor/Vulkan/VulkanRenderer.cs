@@ -80,9 +80,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             SwapChain.ImageCount = swapChainImageCount;
         }
 
-        public static void CreateCommandBuffers(VkCommandBuffer[] commandBufferList)
+        public static void CreateCommandBuffers(ListPtr<VkCommandBuffer> commandBufferList)
         {
-            for (int x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
+            for (int x = 0; x < SwapChain.imageViews.Count; x++)
             {
                 VkCommandBufferAllocateInfo commandBufferAllocateInfo = new VkCommandBufferAllocateInfo()
                 {
@@ -92,20 +92,10 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     commandBufferCount = 1
                 };
 
-                VkFunc.vkAllocateCommandBuffers(device, in commandBufferAllocateInfo, out commandBufferList[x]);
+                VkCommandBuffer commandBuffer = new VkCommandBuffer();
+                VkFunc.vkAllocateCommandBuffers(device, in commandBufferAllocateInfo, out commandBuffer);
+                commandBufferList.Add(commandBuffer);
             }
-        }
-
-        public static void CreateCommandBuffers(VkCommandBuffer commandBuffer)
-        {
-            VkCommandBufferAllocateInfo commandBufferAllocateInfo = new VkCommandBufferAllocateInfo()
-            {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-                commandPool = commandPool,
-                level = VkCommandBufferLevel.VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-                commandBufferCount = 1
-            };
-            VkFunc.vkAllocateCommandBuffers(device, in commandBufferAllocateInfo, out commandBuffer);
         }
 
         public static VkResult StartFrame()

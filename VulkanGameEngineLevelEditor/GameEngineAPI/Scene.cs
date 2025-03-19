@@ -27,7 +27,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
         JsonRenderPass renderPass3D { get; set; } = new JsonRenderPass();
         FrameBufferRenderPass frameBufferRenderPass { get; set; } = new FrameBufferRenderPass();
-        public ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>(1);
+        public ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>();
         public void StartUp()
         {
             MemoryManager.StartUp(30);

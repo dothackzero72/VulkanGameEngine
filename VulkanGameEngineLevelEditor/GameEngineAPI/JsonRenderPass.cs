@@ -30,8 +30,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public DepthTexture depthTexture { get; private set; }
         public ivec2 RenderPassResolution { get; set; }
         public VkRenderPass renderPass { get; protected set; }
-        public VkCommandBuffer[] commandBufferList { get; protected set; }
-        public VkFramebuffer[] FrameBufferList { get; protected set; }
+        public ListPtr<VkCommandBuffer> commandBufferList { get; protected set; }
+        public ListPtr<VkFramebuffer> FrameBufferList { get; protected set; }
         JsonPipeline jsonPipeline { get; set; }
         public JsonRenderPass() : base()
         {
@@ -44,8 +44,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             string jsonContent2 = File.ReadAllText(ConstConfig.Default2DRenderPass);
             RenderPassBuildInfoModel model2 = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent2);
 
-            FrameBufferList = new VkFramebuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
-            commandBufferList = new VkCommandBuffer[VulkanRenderer.MAX_FRAMES_IN_FLIGHT];
+            FrameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
+            commandBufferList = new ListPtr<VkCommandBuffer>(VulkanRenderer.SwapChain.ImageCount);
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
 
             CreateRenderPass(model2);
@@ -169,10 +169,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void CreateFramebuffer()
         {
-            VkFramebuffer[] frameBufferList = new VkFramebuffer[VulkanRenderer.SwapChain.ImageCount];
+            ListPtr<VkFramebuffer> frameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
             for (int x = 0; x < VulkanRenderer.SwapChain.ImageCount; x++)
             {
-                List<VkImageView> TextureAttachmentList = new List<VkImageView>();
+                ListPtr<VkImageView> TextureAttachmentList = new ListPtr<VkImageView>(VulkanRenderer.SwapChain.ImageCount);
                 foreach (var texture in RenderedColorTextureList)
                 {
                     TextureAttachmentList.Add(RenderedColorTextureList.First().View);
@@ -182,25 +182,24 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     TextureAttachmentList.Add(depthTexture.View);
                 }
 
-                fixed (VkImageView* imageViewPtr = TextureAttachmentList.ToArray())
-                {
-                    VkFramebufferCreateInfo framebufferInfo = new VkFramebufferCreateInfo()
-                    {
-                        sType = VkStructureType.VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-                        renderPass = renderPass,
-                        attachmentCount = TextureAttachmentList.UCount(),
-                        pAttachments = imageViewPtr,
-                        width = (uint)RenderPassResolution.x,
-                        height = (uint)RenderPassResolution.y,
-                        layers = 1,
-                        flags = 0,
-                        pNext = null
-                    };
 
-                    VkFramebuffer frameBuffer = FrameBufferList[x];
-                    VkFunc.vkCreateFramebuffer(VulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
-                    frameBufferList[x] = frameBuffer;
-                }
+                VkFramebufferCreateInfo framebufferInfo = new VkFramebufferCreateInfo()
+                {
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                    renderPass = renderPass,
+                    attachmentCount = TextureAttachmentList.UCount,
+                    pAttachments = TextureAttachmentList.Ptr,
+                    width = (uint)RenderPassResolution.x,
+                    height = (uint)RenderPassResolution.y,
+                    layers = 1,
+                    flags = 0,
+                    pNext = null
+                };
+
+                VkFramebuffer frameBuffer = FrameBufferList[x];
+                VkFunc.vkCreateFramebuffer(VulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
+                frameBufferList[x] = frameBuffer;
+
             }
 
             FrameBufferList = frameBufferList;
@@ -210,65 +209,56 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
-            var commandBuffer = commandBufferList[commandIndex];
-            List<VkClearValue> clearValues = new List<VkClearValue>
+            var commandBuffer = commandBufferList[(int)commandIndex];
+
+            using ListPtr<VkClearValue> clearValues = new ListPtr<VkClearValue>();
+            clearValues.Add(new VkClearValue { color = new VkClearColorValue(1, 0, 0, 1) });
+            clearValues.Add(new VkClearValue { depthStencil = new VkClearDepthStencilValue(0.0f, 1.0f) });
+            
+
+            VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
-                new VkClearValue
-                {
-                    color = new VkClearColorValue(1, 0, 0, 1),
-                },
-                new VkClearValue
-                {
-                    depthStencil = new VkClearDepthStencilValue(0.0f, 1.0f)
-                }
+                renderPass = renderPass,
+                framebuffer = FrameBufferList[(int)imageIndex],
+                clearValueCount = clearValues.UCount,
+                pClearValues = clearValues.Ptr,
+                renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution)
             };
 
-            fixed (VkClearValue* pClearValue = clearValues.ToArray())
+
+            var viewport = new VkViewport
             {
-                VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
-                {
-                    renderPass = renderPass,
-                    framebuffer = FrameBufferList[imageIndex],
-                    clearValueCount = 2,
-                    pClearValues = pClearValue,
-                    renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution)
-                };
+                x = 0.0f,
+                y = 0.0f,
+                width = VulkanRenderer.SwapChain.SwapChainResolution.width,
+                height = VulkanRenderer.SwapChain.SwapChainResolution.height,
+                minDepth = 0.0f,
+                maxDepth = 1.0f
+            };
+            var scissor = new VkRect2D
+            {
+                offset = new VkOffset2D(0, 0),
+                extent = VulkanRenderer.SwapChain.SwapChainResolution
+            };
 
+            var descSet = jsonPipeline.descriptorSet;
+            var commandInfo = new VkCommandBufferBeginInfo { flags = 0 };
 
-                var viewport = new VkViewport
-                {
-                    x = 0.0f,
-                    y = 0.0f,
-                    width = VulkanRenderer.SwapChain.SwapChainResolution.width,
-                    height = VulkanRenderer.SwapChain.SwapChainResolution.height,
-                    minDepth = 0.0f,
-                    maxDepth = 1.0f
-                };
-                var scissor = new VkRect2D
-                {
-                    offset = new VkOffset2D(0, 0),
-                    extent = VulkanRenderer.SwapChain.SwapChainResolution
-                };
-
-                var descSet = jsonPipeline.descriptorSet;
-                var commandInfo = new VkCommandBufferBeginInfo { flags = 0 };
-
-                VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
-                VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
-                VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-                VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-                VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipeline.pipeline);
-                foreach (var obj in gameObjectList)
-                {
-                    obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, descSet, sceneDataBuffer);
-                }
-                VkFunc.vkCmdEndRenderPass(commandBuffer);
-                VkFunc.vkEndCommandBuffer(commandBuffer);
-
-                return commandBuffer;
+            VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
+            VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
+            VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+            VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipeline.pipeline);
+            foreach (var obj in gameObjectList)
+            {
+                obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, descSet, sceneDataBuffer);
             }
-        }
+            VkFunc.vkCmdEndRenderPass(commandBuffer);
+            VkFunc.vkEndCommandBuffer(commandBuffer);
 
+            return commandBuffer;
+
+        }
         private void SaveRenderPass()
         {
             RenderPassBuildInfoModel modelInfo = new RenderPassBuildInfoModel()

@@ -12,12 +12,18 @@ namespace VulkanGameEngineLevelEditor.Models
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct GPUIncludes
     {
-        public ListPtr<VkDescriptorBufferInfo> vertexProperties;
-        public ListPtr<VkDescriptorBufferInfo> indexProperties;
-        public ListPtr<VkDescriptorBufferInfo> transformProperties;
-        public ListPtr<VkDescriptorBufferInfo> meshProperties;
-        public ListPtr<VkDescriptorImageInfo> texturePropertiesList;
-        public ListPtr<VkDescriptorBufferInfo> materialProperties;
+        public VkDescriptorBufferInfo* vertexProperties;
+        public VkDescriptorBufferInfo* indexProperties;
+        public VkDescriptorBufferInfo* transformProperties;
+        public VkDescriptorBufferInfo* meshProperties;
+        public VkDescriptorImageInfo* texturePropertiesList;
+        public VkDescriptorBufferInfo* materialProperties;
+        public uint vertexPropertiesCount;
+        public uint indexPropertiesCount;
+        public uint transformPropertiesCount;
+        public uint meshPropertiesCount;
+        public uint texturePropertiesListCount;
+        public uint materialPropertiesCount;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
