@@ -60,26 +60,38 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             RenderPassResolution = new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height);
             SampleCount = SampleCountFlags.Count1Bit;
-           // frameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
 
-            RenderPassBuildInfoModel model = new RenderPassBuildInfoModel(jsonFile);
+            ListPtr<Texture> textureList = new ListPtr<Texture> { texture };
 
             renderPass = CreateRenderPass();
             frameBufferList = CreateFramebuffer();
             BuildRenderPipeline(texture);
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
 
-            //fixed (RenderedTexture* renderedColorTextureListPtr = RenderedColorTextureList)
-            //fixed (VkFramebuffer* frameBufferListPtr = FrameBufferList)
-            //fixed(VkImageView* swapChainImageView = VulkanRenderer.SwapChain.imageViews)
-            //{
-            //    GCHandle handle = GCHandle.Alloc(depthTexture, GCHandleType.Pinned);
-            //    DepthTexture* depthTexturePtr = (DepthTexture*)handle.AddrOfPinnedObject();
+            // ListPtr<RenderedTexture> textureList = new ListPtr<Texture>((RenderedTexture)texture);
+            // ListPtr<DepthTexture> depthTexture = new ListPtr<DepthTexture>();
+            // List<Texture> texture4 = new List<Texture>();
 
-            //    GameEngineImport.DLL_RenderPass_BuildFrameBuffer(VulkanRenderer.device, renderPass, model, frameBufferListPtr, renderedColorTextureListPtr, depthTexturePtr, swapChainImageView, (uint)RenderedColorTextureList.UCount, RenderPassResolution);
+            //// frameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
 
-            //    handle.Free();
-            //}
+            // RenderPassBuildInfoModel model = new RenderPassBuildInfoModel(jsonFile);
+
+            // renderPass = CreateRenderPass();
+            // GameEngineImport.DLL_RenderPass_BuildFrameBuffer(VulkanRenderer.device, renderPass, model, frameBufferList.Ptr, textureList.Ptr, depthTexture.Ptr, VulkanRenderer.SwapChain.imageViews.Ptr, frameBufferList.UCount, textureList.UCount, RenderPassResolution);
+
+            // BuildRenderPipeline(texture);
+            // VulkanRenderer.CreateCommandBuffers(commandBufferList);
+
+            // //fixed (RenderedTexture* renderedColorTextureListPtr = RenderedColorTextureList)
+            // //fixed (VkFramebuffer* frameBufferListPtr = FrameBufferList)
+            // //fixed(VkImageView* swapChainImageView = VulkanRenderer.SwapChain.imageViews)
+            // //{
+            // //    GCHandle handle = GCHandle.Alloc(depthTexture, GCHandleType.Pinned);
+            // //    DepthTexture* depthTexturePtr = (DepthTexture*)handle.AddrOfPinnedObject();
+
+
+            // //    handle.Free();
+            // //}
         }
 
         public VkRenderPass CreateRenderPass()

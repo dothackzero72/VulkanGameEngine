@@ -5,7 +5,7 @@ VkSurfaceCapabilitiesKHR DLL_SwapChain_GetSurfaceCapabilities(VkPhysicalDevice p
     VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities(physicalDevice, surface);
     width = surfaceCapabilities.maxImageExtent.width;
     height = surfaceCapabilities.maxImageExtent.height;
-    return SwapChain_GetSurfaceCapabilities(physicalDevice, surface);
+    return surfaceCapabilities;
 }
 
 VkSurfaceFormatKHR* DLL_SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32& count)
@@ -38,11 +38,7 @@ VkSurfaceFormatKHR DLL_SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR* avail
 
 VkPresentModeKHR DLL_SwapChain_FindSwapPresentMode(VkPresentModeKHR* availablePresentModes, uint count)
 {
-    Vector<VkPresentModeKHR> availablePresentModeList;
-    for (int x = 0; x < count; x++)
-    {
-        availablePresentModeList.emplace_back(availablePresentModes[x]);
-    }
+    Vector<VkPresentModeKHR> availablePresentModeList = Vector<VkPresentModeKHR>(availablePresentModes, availablePresentModes + count);
     return SwapChain_FindSwapPresentMode(availablePresentModeList);
 }
 
@@ -54,6 +50,7 @@ VkSwapchainKHR DLL_SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice ph
 VkImage* DLL_SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32 swapChainImageCount)
 {
     Vector<VkImage> swapChainImageList = SwapChain_SetUpSwapChainImages(device, swapChain, swapChainImageCount);
+
     VkImage* result = new VkImage[swapChainImageCount];
     std::memcpy(result, swapChainImageList.data(), swapChainImageCount * sizeof(VkImage));
     return result;

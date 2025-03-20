@@ -5,20 +5,15 @@ void DLL_RenderPass_BuildRenderPass(VkDevice device, VkRenderPass& renderPass, R
 	RenderPass_BuildRenderPass( device, renderPass, renderPassBuildInfo, renderedColorTextureList, depthTexture);
 }
 
-void DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoModel renderPassBuildInfo, VkFramebuffer* frameBufferList, RenderedTexture* renderedColorTextureList, DepthTexture depthTexture, VkImageView* swapChainImageViewList, uint renderedTextureCount, ivec2 renderPassResolution)
+void DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoModel renderPassBuildInfo, VkFramebuffer* frameBufferList, RenderedTexture* renderedColorTextureList, DepthTexture depthTexture, VkImageView* swapChainImageViewList, uint frameBufferCount, uint renderedTextureCount, ivec2 renderPassResolution)
 {
-	Vector<VkFramebuffer> frameBuffers;
-	Vector<VkImageView> swapChainImageViews;
-	for (int x = 0; x < frameBuffers.size(); x++)
-	{
-		frameBuffers.emplace_back(frameBufferList[x]);
-		swapChainImageViews.emplace_back(swapChainImageViewList[x]);
-	}
+	Vector<VkFramebuffer> frameBuffers(frameBufferList, frameBufferList + renderedTextureCount);
+	Vector<VkImageView> swapChainImageViews(swapChainImageViewList, swapChainImageViewList + renderedTextureCount);
 
 	Vector<SharedPtr<RenderedTexture>> renderedTextures;
 	for (int x = 0; x < renderedTextureCount; x++)
 	{
-		renderedTextures.emplace_back(renderedTextures[x]);
+		renderedTextures.emplace_back(std::make_shared<RenderedTexture>(renderedColorTextureList[x]));
 	}
 
 	SharedPtr<DepthTexture> depthTexturePtr = std::make_shared<DepthTexture>(depthTexture);
@@ -58,12 +53,8 @@ void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet* descrip
 {
 	RenderPipelineModel model = renderPipelineDLL.Convert();
 	GPUIncludes includes = includePtr.Convert();
-	Vector<VkDescriptorSet> descriptorLayoutSets;
-	for (int x = 0; x < descriptorSetListCount; x++)
-	{
-		descriptorLayoutSets.emplace_back(descriptorSetList[x]);
-	}
 
+	Vector<VkDescriptorSet> descriptorLayoutSets(descriptorSetList, descriptorSetList + descriptorSetListCount);
 	Pipeline_UpdateDescriptorSets( device, descriptorLayoutSets, model, includes);
 }
 
