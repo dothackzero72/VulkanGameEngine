@@ -266,8 +266,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var imageIndex = VulkanRenderer.ImageIndex;
             var commandBuffer = commandBufferList[(int)commandIndex];
 
-            VkClearValue* clearValues = stackalloc VkClearValue[1];
-            clearValues[0].color = new VkClearColorValue(1.0f, 1.0f, 0.0f, 1.0f);
+            VkClearValue* clearValues = stackalloc[]
+            {
+                new VkClearValue(new VkClearColorValue(1, 1, 0, 1))
+            };
 
             VkViewport viewport = new VkViewport
             {
@@ -284,23 +286,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 extent = VulkanRenderer.SwapChain.SwapChainResolution
             };
 
+
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-                pNext = IntPtr.Zero,
                 renderPass = renderPass,
-                framebuffer = frameBufferList[(int)imageIndex],
-                renderArea = new VkRect2D 
-                { 
-                    offset = new VkOffset2D 
-                    { 
-                        x = 0, 
-                        y = 0 
-                    }, 
-                    extent = VulkanRenderer.SwapChain.SwapChainResolution 
-                },
+                renderArea = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution),
                 clearValueCount = 1,
-                pClearValues = clearValues
+                framebuffer = frameBufferList[(int)imageIndex],
+                pClearValues = clearValues,
+                pNext = IntPtr.Zero
             };
 
             VkCommandBufferBeginInfo commandInfo = new VkCommandBufferBeginInfo
@@ -320,6 +315,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkFunc.vkEndCommandBuffer(commandBuffer);
 
             return commandBuffer;
+
         }
 
         private void SaveRenderPass()

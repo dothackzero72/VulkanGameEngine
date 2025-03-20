@@ -352,11 +352,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
                 new VkClearValue
                 { 
-                    color = new VkClearColorValue(1, 0, 0, 1) 
+                    Color = new VkClearColorValue(1, 0, 0, 1) 
                 },
                 new VkClearValue
                 { 
-                    depthStencil = new VkClearDepthStencilValue(0.0f, 1.0f) 
+                    DepthStencil = new VkClearDepthStencilValue(0.0f, 1.0f) 
                 }
             };
 

@@ -1,4 +1,5 @@
-﻿using Silk.NET.Vulkan;
+﻿using Silk.NET.Core.Attributes;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -168,13 +169,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     {
         public VkOffset2D offset;
         public VkExtent2D extent;
-        private VkOffset2D vkOffset2D;
-        private VkExtent2D swapChainResolution;
 
         public VkRect2D(VkOffset2D vkOffset2D, VkExtent2D swapChainResolution) : this()
         {
-            this.vkOffset2D = vkOffset2D;
-            this.swapChainResolution = swapChainResolution;
+            this.offset = vkOffset2D;
+            this.extent = swapChainResolution;
         }
     }
 
@@ -354,18 +353,150 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkClearValue* pClearValues;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct VkClearColorValue
+    [StructLayout(LayoutKind.Explicit)]
+    public unsafe partial struct VkClearColorValue
     {
-        public fixed float float32[4]; // 16 bytes
-        public VkClearColorValue(float r, float g, float b, float a)
+        public VkClearColorValue
+        (
+            float? float32_0 = null,
+            float? float32_1 = null,
+            float? float32_2 = null,
+            float? float32_3 = null,
+            int? int32_0 = null,
+            int? int32_1 = null,
+            int? int32_2 = null,
+            int? int32_3 = null,
+            uint? uint32_0 = null,
+            uint? uint32_1 = null,
+            uint? uint32_2 = null,
+            uint? uint32_3 = null
+        ) : this()
         {
-            float32[0] = r;
-            float32[1] = g;
-            float32[2] = b;
-            float32[3] = a;
+            if (float32_0 is not null)
+            {
+                Float32_0 = float32_0.Value;
+            }
+
+            if (float32_1 is not null)
+            {
+                Float32_1 = float32_1.Value;
+            }
+
+            if (float32_2 is not null)
+            {
+                Float32_2 = float32_2.Value;
+            }
+
+            if (float32_3 is not null)
+            {
+                Float32_3 = float32_3.Value;
+            }
+
+            if (int32_0 is not null)
+            {
+                Int32_0 = int32_0.Value;
+            }
+
+            if (int32_1 is not null)
+            {
+                Int32_1 = int32_1.Value;
+            }
+
+            if (int32_2 is not null)
+            {
+                Int32_2 = int32_2.Value;
+            }
+
+            if (int32_3 is not null)
+            {
+                Int32_3 = int32_3.Value;
+            }
+
+            if (uint32_0 is not null)
+            {
+                Uint32_0 = uint32_0.Value;
+            }
+
+            if (uint32_1 is not null)
+            {
+                Uint32_1 = uint32_1.Value;
+            }
+
+            if (uint32_2 is not null)
+            {
+                Uint32_2 = uint32_2.Value;
+            }
+
+            if (uint32_3 is not null)
+            {
+                Uint32_3 = uint32_3.Value;
+            }
         }
+
+        [FieldOffset(0)]
+        public float Float32_0;
+
+        [FieldOffset(4)]
+        public float Float32_1;
+
+        [FieldOffset(8)]
+        public float Float32_2;
+
+        [FieldOffset(12)]
+        public float Float32_3;
+
+        [FieldOffset(0)]
+        public int Int32_0;
+
+        [FieldOffset(4)]
+        public int Int32_1;
+
+        [FieldOffset(8)]
+        public int Int32_2;
+
+        [FieldOffset(12)]
+        public int Int32_3;
+
+        [FieldOffset(0)]
+        public uint Uint32_0;
+
+        [FieldOffset(4)]
+        public uint Uint32_1;
+
+        [FieldOffset(8)]
+        public uint Uint32_2;
+
+        [FieldOffset(12)]
+        public uint Uint32_3;
     }
+
+    [StructLayout(LayoutKind.Explicit)]
+    public unsafe partial struct VkClearValue
+    {
+        public VkClearValue
+        (
+            VkClearColorValue? color = null,
+            VkClearDepthStencilValue? depthStencil = null
+        ) : this()
+        {
+            if (color is not null)
+            {
+                Color = color.Value;
+            }
+
+            if (depthStencil is not null)
+            {
+                DepthStencil = depthStencil.Value;
+            }
+        }
+
+        [FieldOffset(0)]
+        public VkClearColorValue Color;
+
+        [FieldOffset(0)]
+        public VkClearDepthStencilValue DepthStencil;
+    }
+
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkClearDepthStencilValue
@@ -505,12 +636,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkDeviceSize imageMipTailStride;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct VkClearValue
-    {
-        public VkClearColorValue color;
-        public VkClearDepthStencilValue depthStencil;
-    }
+    //[StructLayout(LayoutKind.Sequential)]
+    //public unsafe struct VkClearValue
+    //{
+    //    public VkClearColorValue color;
+    //    public VkClearDepthStencilValue depthStencil;
+    //}
 
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkMemoryRequirements

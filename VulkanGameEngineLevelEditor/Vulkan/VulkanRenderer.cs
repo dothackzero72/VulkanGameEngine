@@ -140,7 +140,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             {
                 VkSubmitInfo submitInfo = new VkSubmitInfo()
                 {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO,
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_SUBMIT_INFO,
                     waitSemaphoreCount = 1,
                     pWaitSemaphores = &imageSemaphore,
                     pWaitDstStageMask = pWaitStages,
@@ -160,7 +160,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 var swapchain = SwapChain.Swapchain;
                 VkPresentInfoKHR presentInfo = new VkPresentInfoKHR()
                 {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR,
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
                     waitSemaphoreCount = 1,
                     pWaitSemaphores = &presentSemaphore,
                     swapchainCount = 1,
