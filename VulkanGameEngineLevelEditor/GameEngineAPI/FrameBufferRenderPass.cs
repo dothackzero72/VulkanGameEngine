@@ -61,8 +61,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             RenderPassResolution = new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height);
             SampleCount = SampleCountFlags.Count1Bit;
 
-            ListPtr<Texture> textureList = new ListPtr<Texture> { texture };
-            ListPtr<DepthTexture> depthTextureList = new ListPtr<DepthTexture>();
+            //ListPtr<Texture> textureList = new ListPtr<Texture> { texture };
+            //ListPtr<DepthTexture> depthTextureList = new ListPtr<DepthTexture>();
 
             RenderPassBuildInfoModel model = new RenderPassBuildInfoModel(jsonFile);
 
@@ -284,12 +284,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 minDepth = 0.0f,
                 maxDepth = 1.0f
             };
+
             VkRect2D scissor = new VkRect2D
             {
                 offset = new VkOffset2D { x = 0, y = 0 },
                 extent = VulkanRenderer.SwapChain.SwapChainResolution
             };
-
 
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {

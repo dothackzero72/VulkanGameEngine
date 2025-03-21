@@ -9,6 +9,40 @@ using VulkanGameEngineLevelEditor.Vulkan;
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     [StructLayout(LayoutKind.Sequential)]
+    public struct SpriteInstanceStruct
+    {
+        public vec2 SpritePosition;
+        public vec4 UVOffset;
+        public vec2 SpriteSize;
+        public ivec2 FlipSprite;
+        public vec4 Color;
+        public mat4 InstanceTransform;
+        public uint MaterialID;
+
+        public SpriteInstanceStruct()
+        {
+            SpritePosition = new vec2(0.0f);
+            UVOffset = new vec4(0.0f);
+            SpriteSize = new vec2(0.0f);
+            FlipSprite = new ivec2(0);
+            Color = new vec4(0.0f);
+            MaterialID = 0;
+            InstanceTransform = mat4.Identity;
+        }
+
+        public SpriteInstanceStruct(vec2 spritePosition, vec4 uv, vec2 spriteSize, ivec2 flipSprite, vec4 color, uint materialID, mat4 instanceTransform, uint spriteLayer)
+        {
+            SpritePosition = spritePosition;
+            UVOffset = uv;
+            SpriteSize = spriteSize;
+            FlipSprite = flipSprite;
+            Color = color;
+            MaterialID = materialID;
+            InstanceTransform = instanceTransform;
+        }
+    };
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct Vertex2D
     {
         public vec2 Position;

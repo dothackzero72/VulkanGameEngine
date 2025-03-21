@@ -334,6 +334,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             PresentImageSemaphores = new ListPtr<VkSemaphore>(swapChainImageCount);
 
             VkResult result = GameEngineImport.DLL_Renderer_SetUpSemaphores(device, InFlightFences.Ptr, AcquireImageSemaphores.Ptr, PresentImageSemaphores.Ptr, swapChainImageCount);
+            var a = InFlightFences[0];
+            var b = InFlightFences[1];
+            var c = InFlightFences[2];
             if (result != VkResult.VK_SUCCESS)
             {
                 throw new Exception($"Failed to set up semaphores: {result}");

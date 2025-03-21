@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineGameObjectScripts.Component;
 using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineGameObjectScripts.Interface;
@@ -132,6 +134,16 @@ namespace VulkanGameEngineGameObjectScripts
         public int GetGameObjectComponentCount()
         {
             return GameObjectComponentList.Count;
+        }
+
+        public GameObjectComponent GetComponentByName(string name)
+        {
+            return GameObjectComponentList.Where(x => x.Name == name).First();
+        }
+
+        public GameObjectComponent GetComponentByComponentType(ComponentTypeEnum type)
+        {
+            return GameObjectComponentList.Where(x => x.ComponentType == type).First();
         }
     }
 }

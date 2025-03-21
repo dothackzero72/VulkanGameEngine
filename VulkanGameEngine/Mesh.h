@@ -29,10 +29,10 @@ class Mesh
 private:
 
 	const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
-		VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
-		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
-		VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
-		VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+													   VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
+													   VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+													   VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+													   VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
 	const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
@@ -47,15 +47,15 @@ protected:
 	Vector<uint32>			  MeshIndexList;
 
 public:
-	uint64 MeshBufferIndex;
-	uint32 VertexCount;
-	uint32 IndexCount;
+	uint64 MeshBufferIndex = 0;
+	uint32 VertexCount = 0;
+	uint32 IndexCount = 0;
 
 	MeshProperitiesStruct MeshProperties;
-	mat4 MeshTransform;
-	vec3 MeshPosition;
-	vec3 MeshRotation;
-	vec3 MeshScale;
+	mat4 MeshTransform =  mat4(0.0f);
+	vec3 MeshPosition = vec3(0.0f);
+	vec3 MeshRotation = vec3(0.0f);
+	vec3 MeshScale = vec3(1.0f);
 
 	VulkanBuffer<T>		 MeshVertexBuffer;
 	IndexBuffer			 MeshIndexBuffer;
@@ -64,27 +64,10 @@ public:
 
 	Mesh()
 	{
-		MeshBufferIndex = 0;
-		MeshTransform = mat4(0.0f);
-		MeshPosition = vec3(0.0f);
-		MeshRotation = vec3(0.0f);
-		MeshScale = vec3(1.0f);
-
-		VertexCount = 0;
-		IndexCount = 0;
 	}
 
 	Mesh(SharedPtr<GameObjectComponent> parentGameObjectComponent)
 	{
-		MeshBufferIndex = 0;
-		MeshTransform = mat4(0.0f);
-		MeshPosition = vec3(0.0f);
-		MeshRotation = vec3(0.0f);
-		MeshScale = vec3(1.0f);
-
-		VertexCount = 0;
-		IndexCount = 0;
-
 		ParentGameObject = parentGameObjectComponent->GetParentGameObject();
 		ParentGameObjectComponent = parentGameObjectComponent;
 	}
