@@ -57,7 +57,7 @@
 		return Texture_SaveTexture(device, commandPool, graphicsQueue, filename, texture, textureFormat, channels);
 	}
 
-	 void DLL_Texture_CreateImageTexture(VkDevice device,
+	 void DLL_Texture_CreateImageTextureFromClearColor(VkDevice device,
 		VkPhysicalDevice physicalDevice,
 		VkCommandPool commandPool,
 		VkQueue graphicsQueue,
@@ -92,7 +92,7 @@
 			 usingMipMap);
 	}
 
-	 void DLL_Texture_CreateImageTexture(VkDevice device,
+	 void DLL_Texture_CreateImageTextureFromFile(VkDevice device,
 		VkPhysicalDevice physicalDevice,
 		VkCommandPool commandPool,
 		VkQueue graphicsQueue,
@@ -106,7 +106,7 @@
 		VkImageLayout* textureImageLayout,
 		enum ColorChannelUsed* colorChannelUsed,
 		enum TextureUsageEnum textureUsage,
-		const String& filePath,
+		const char* filePath,
 		bool usingMipMap)
 	{
 		 const std::string path(filePath);

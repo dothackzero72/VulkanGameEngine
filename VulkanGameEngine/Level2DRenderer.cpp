@@ -33,7 +33,7 @@ void Level2DRenderer::StartLevelRenderer()
         LevelRenderer = SharedPtr<Level2DRenderer>(this);
     }
 
-    TextureList.emplace_back(std::make_shared<Texture>(Texture("../Textures/MegaMan_diffuse.bmp", VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum::kType_DiffuseTextureMap, true)));
+    TextureList.emplace_back(std::make_shared<Texture>(Texture("../Textures/MegaMan_diffuse.bmp", VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum::kType_DiffuseTextureMap, false)));
     MaterialList.emplace_back(std::make_shared<Material>(Material("Material1")));
     MaterialList.back()->SetAlbedoMap(TextureList[0]);
 

@@ -27,7 +27,7 @@ RenderedTexture::~RenderedTexture()
 {
 }
 
-void RenderedTexture::RecreateRendererTexture(glm::vec2 TextureResolution)
+void RenderedTexture::RecreateRendererTexture(VkImageAspectFlags imageType, glm::vec2 TextureResolution)
 {
 	Width = TextureResolution.x;
 	Height = TextureResolution.y;
@@ -56,7 +56,7 @@ void RenderedTexture::RecreateRendererTexture(glm::vec2 TextureResolution)
 
 
 	CreateImage(imageCreateInfo);
-	Texture_CreateTextureView(cRenderer.Device, &View, Image, TextureByteFormat, VK_IMAGE_ASPECT_COLOR_BIT, MipMapLevels);
+	Texture_CreateTextureView(cRenderer.Device, &View, Image, TextureByteFormat, imageType, MipMapLevels);
 	CreateTextureSampler();
 
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

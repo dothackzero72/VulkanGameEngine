@@ -68,7 +68,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     case RenderedTextureType.ColorRenderedTexture:
                         {
-                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
+                            RenderedColorTextureList.Add(new RenderedTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
                             colorAttachmentReferenceList.Add(new VkAttachmentReference
                             {
                                 attachment = colorAttachmentReferenceList.UCount(),
@@ -78,7 +78,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         }
                     case RenderedTextureType.DepthRenderedTexture:
                         {
-                            depthTexture = new DepthTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert());
+                            depthTexture = new DepthTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert());
                             depthReferenceList.Add(new VkAttachmentReference
                             {
                                 attachment = (uint)(colorAttachmentReferenceList.Count + resolveAttachmentReferenceList.Count),
@@ -88,7 +88,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         }
                     case RenderedTextureType.InputAttachmentTexture:
                         {
-                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
+                            RenderedColorTextureList.Add(new RenderedTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
                             inputAttachmentReferenceList.Add(new VkAttachmentReference
                             {
                                 attachment = (uint)(inputAttachmentReferenceList.Count()),
@@ -98,7 +98,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         }
                     case RenderedTextureType.ResolveAttachmentTexture:
                         {
-                            RenderedColorTextureList.Add(new RenderedTexture(RenderPassResolution, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
+                            RenderedColorTextureList.Add(new RenderedTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()));
                             resolveAttachmentReferenceList.Add(new VkAttachmentReference
                             {
                                 attachment = (uint)(colorAttachmentReferenceList.UCount() + 1),

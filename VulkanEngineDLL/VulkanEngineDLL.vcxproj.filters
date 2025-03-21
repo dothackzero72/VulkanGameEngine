@@ -39,9 +39,6 @@
     <ClInclude Include="DLLStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderPassBuildInfoModelCS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VulkanRendererDLL.cpp">

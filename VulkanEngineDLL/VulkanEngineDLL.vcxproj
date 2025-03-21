@@ -135,7 +135,6 @@
   <ItemGroup>
     <ClInclude Include="DLL.h" />
     <ClInclude Include="DLLStructs.h" />
-    <ClInclude Include="RenderPassBuildInfoModelCS.h" />
     <ClInclude Include="SwapChainDLL.h" />
     <ClInclude Include="TextureDLL.h" />
     <ClInclude Include="VulkanRendererDLL.h" />

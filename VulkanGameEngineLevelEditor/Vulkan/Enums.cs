@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
-    enum ExportTextureFormat
+    public enum ExportTextureFormat : int
     {
         Export_BMP,
         Export_JPG,

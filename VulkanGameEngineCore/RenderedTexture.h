@@ -3,14 +3,6 @@
 #include <fstream>
 #include "VulkanRenderer.h"
 
-enum BakeTextureFormat
-{
-    Bake_BMP,
-    Bake_JPG,
-    Bake_PNG,
-    Bake_TGA
-};
-
 class RenderedTexture : public Texture
 {
 private:
@@ -20,5 +12,5 @@ public:
     RenderedTexture(VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
     ~RenderedTexture();
 
-    void RecreateRendererTexture(glm::vec2 TextureResolution);
+    void RecreateRendererTexture(VkImageAspectFlags imageType, vec2 TextureResolution);
 };

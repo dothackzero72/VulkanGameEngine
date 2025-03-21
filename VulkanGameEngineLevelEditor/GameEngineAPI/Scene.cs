@@ -36,8 +36,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var pos = new vec3(0.0f, 0.0f, 5.0f);
             orthographicCamera = new OrthographicCamera(res, pos);
 
-            textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", VkFormat.VK_FORMAT_R8G8B8A8_UNORM, TextureTypeEnum.kType_DiffuseTextureMap));
-            textureList.Add(Texture.CreateTexture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\container2.png", VkFormat.VK_FORMAT_R8G8B8A8_UNORM, TextureTypeEnum.kType_DiffuseTextureMap));
+            textureList.Add(new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
+            textureList.Add(new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\container2.png", VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
 
             GameObjectList.Add(MemoryManager.CreateGameObject("object1", new List<ComponentTypeEnum>()
             {

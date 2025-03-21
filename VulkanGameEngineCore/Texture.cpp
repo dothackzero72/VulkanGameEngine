@@ -144,7 +144,7 @@ void Texture::CreateImageTexture(const String& filePath, bool useMipMaps)
 
 void Texture::CreateTextureSampler()
 {
-	VkSamplerCreateInfo TextureImageSamplerInfo =
+	VkSamplerCreateInfo textureImageSamplerInfo =
 	{
 		.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
 		.magFilter = VK_FILTER_NEAREST,
@@ -159,11 +159,11 @@ void Texture::CreateTextureSampler()
 		.compareEnable = VK_FALSE,
 		.compareOp = VK_COMPARE_OP_ALWAYS,
 		.minLod = 0,
-		.maxLod = 0.0f,
+		.maxLod = (float)MipMapLevels,
 		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
 		.unnormalizedCoordinates = VK_FALSE,
 	};
-	VULKAN_RESULT(CreateTextureSampler(TextureImageSamplerInfo));
+	VULKAN_RESULT(CreateTextureSampler(textureImageSamplerInfo));
 }
 
 void Texture::UpdateTextureBufferIndex(uint64_t bufferIndex)
