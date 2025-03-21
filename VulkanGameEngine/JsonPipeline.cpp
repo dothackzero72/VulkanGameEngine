@@ -110,9 +110,21 @@ const Vector<VkDescriptorImageInfo> JsonPipeline::GetTexturePropertiesBuffer(Vec
 const Vector<VkDescriptorBufferInfo> JsonPipeline::GetMaterialPropertiesBuffer(Vector<SharedPtr<Material>>& materialList)
 {
     std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
-    for (auto& material : materialList)
+    if (materialList.size() == 0)
     {
-        material->GetMaterialPropertiesBuffer(materialPropertiesBuffer);
+        materialPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+            {
+                .buffer = VK_NULL_HANDLE,
+                .offset = 0,
+                .range = VK_WHOLE_SIZE
+            });
+    }
+    else
+    {
+        for (auto& material : materialList)
+        {
+            material->GetMaterialPropertiesBuffer(materialPropertiesBuffer);
+        }
     }
     return materialPropertiesBuffer;
 }

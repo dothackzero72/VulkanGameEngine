@@ -1,43 +1,38 @@
 ﻿using Coral.Managed.Interop;
-using GlmSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineGameObjectScripts.Interface;
+using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 
-namespace VulkanGameEngineGameObjectScripts.Component
+namespace VulkanGameEngineLevelEditor.Components
 {
     public unsafe class InputComponent : GameObjectComponent
     {
         Transform2DComponent transform;
-  
+
         public InputComponent() : base()
         {
             Name = "InputComponent";
             ComponentType = ComponentTypeEnum.kInputComponent;
         }
 
-        public InputComponent(IntPtr cppComponentPtr, IntPtr cppGameObjectPtr, IntPtr csParentGameObject) : 
+        public InputComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject) :
             base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, ComponentTypeEnum.kInputComponent)
         {
             Name = "InputComponent";
             transform = ParentGameObject.GameObjectComponentList.Where(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent).First() as Transform2DComponent;
         }
 
-        public InputComponent(IntPtr cppComponentPtr, IntPtr cppGameObjectPtr, IntPtr csParentGameObject, NativeString name) : 
+        public InputComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject, string name) :
             base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, name, ComponentTypeEnum.kInputComponent)
         {
             transform = ParentGameObject.GameObjectComponentList.Where(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent).First() as Transform2DComponent;
-        }
-
-        public override void BufferUpdate(IntPtr commandBuffer, float deltaTime)
-        {
-
         }
 
         public override void Destroy()
@@ -105,13 +100,14 @@ namespace VulkanGameEngineGameObjectScripts.Component
             }
             else
             {
-                Console.WriteLine($"Transform not found: GameObjectId: 0x{CPPcomponentPtr.ToString("x")} TransformID: 0x{CPPcomponentPtr.ToString("x")}");
+              //  Console.WriteLine($"Transform not found: GameObjectId: 0x{CPPcomponentPtr.ToString("x")} TransformID: 0x{CPPcomponentPtr.ToString("x")}");
             }
         }
 
-        public override void Update(float deltaTime)
+        public override void Update(VkCommandBuffer commandBuffer, float deltaTime)
         {
-      
+
         }
+
     }
 }

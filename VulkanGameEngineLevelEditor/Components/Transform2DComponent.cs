@@ -1,16 +1,16 @@
-﻿using GlmSharp;
+﻿using Coral.Managed.Interop;
+using GlmSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VulkanGameEngineGameObjectScripts;
-using Coral.Managed.Interop;
 using VulkanGameEngineGameObjectScripts.Import;
 using VulkanGameEngineGameObjectScripts.Input;
-using System.Windows.Forms;
+using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 
-namespace VulkanGameEngineGameObjectScripts.Component
+namespace VulkanGameEngineLevelEditor.Components
 {
     public unsafe class Transform2DComponent : GameObjectComponent
     {
@@ -29,7 +29,7 @@ namespace VulkanGameEngineGameObjectScripts.Component
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(IntPtr cppComponentPtr, IntPtr cppGameObjectPtr, IntPtr csParentGameObject) : 
+        public Transform2DComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject) :
             base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, ComponentTypeEnum.kGameObjectTransform2DComponent)
         {
             Name = "GameObjectTransform2DComponent";
@@ -40,8 +40,8 @@ namespace VulkanGameEngineGameObjectScripts.Component
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(IntPtr cppComponentPtr, IntPtr cppGameObjectPtr, IntPtr csParentGameObject, NativeString name) : 
-            base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, name, ComponentTypeEnum.kGameObjectTransform2DComponent) 
+        public Transform2DComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject, String name) :
+            base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, name, ComponentTypeEnum.kGameObjectTransform2DComponent)
         {
             GameObjectTransform = mat4.Identity;
             GameObjectPosition = new vec2(0.0f, 0.0f);
@@ -53,16 +53,7 @@ namespace VulkanGameEngineGameObjectScripts.Component
         {
         }
 
-        public override void Update(float deltaTime)
-        {
-            GameObjectTransform = mat4.Identity;
-            GameObjectTransform = mat4.Scale(new vec3(GameObjectScale, 0.0f));
-            GameObjectTransform = mat4.Rotate(CLIMath.DegreesToRadians(GameObjectRotation.x), new vec3(1.0f, 0.0f, 0.0f));
-            GameObjectTransform = mat4.Rotate(CLIMath.DegreesToRadians(GameObjectRotation.y), new vec3(0.0f, 1.0f, 0.0f));
-            GameObjectTransform = mat4.Translate(new vec3(GameObjectPosition, 0.0f));
-        }
-
-        public override void BufferUpdate(IntPtr commandBuffer, float deltaTime)
+        public override void Update(VkCommandBuffer commandBuffer, float deltaTime)
         {
             GameObjectTransform = mat4.Identity;
             GameObjectTransform = mat4.Scale(new vec3(GameObjectScale, 0.0f));

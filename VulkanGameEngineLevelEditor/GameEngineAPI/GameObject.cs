@@ -1,49 +1,43 @@
-﻿using Coral.Managed.Interop;
-using GlmSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml.Linq;
-using VulkanGameEngineGameObjectScripts;
-using VulkanGameEngineGameObjectScripts.Component;
 using VulkanGameEngineGameObjectScripts.Input;
-using VulkanGameEngineGameObjectScripts.Interface;
+using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineLevelEditor.Components;
 
-namespace VulkanGameEngineGameObjectScripts
+namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public unsafe class GameObject : IGameObject
+    public unsafe class GameObject
     {
-        public NativeString Name { get; protected set; }
+        static uint NextGameObjectId = 0;
+        uint GameObjectId = 0;
+        size_t ObjectComponentMemorySize = 0;
+
+        public string Name { get; protected set; }
         public List<GameObjectComponent> GameObjectComponentList { get; protected set; } = new List<GameObjectComponent>();
 
         public GameObject()
         {
         }
 
-        private GameObject(NativeString name)
+        public GameObject(string name)
         {
             Name = name;
         }
 
-        private GameObject(NativeString name, List<GameObjectComponent> gameObjectComponentList)
+        public GameObject(string name, List<GameObjectComponent> gameObjectComponentList)
         {
             Name = name;
             GameObjectComponentList = gameObjectComponentList;
         }
 
-        public void Initialize(NativeString name)
+        GameObject(string name, List<GameObjectComponent> gameObjectComponentList, SpriteSheet spriteSheet)
         {
+            GameObjectId = ++NextGameObjectId;
             Name = name;
-        }
-
-        public void Initialize(NativeString name, List<GameObjectComponent> componentTypeList)
-        {
-            Name = name;
-            GameObjectComponentList = componentTypeList;
         }
 
         static public List<GameObjectComponent> GetComponentFromGameObjects(List<GameObject> gameObjectList, ComponentTypeEnum componentType)
@@ -73,19 +67,11 @@ namespace VulkanGameEngineGameObjectScripts
         {
         }
 
-        public virtual void Update(float deltaTime)
+        public virtual void Update(VkCommandBuffer commandBuffer, float deltaTime)
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
-                component.Update(deltaTime);
-            }
-        }
-
-        public virtual void BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime)
-        {
-            foreach (GameObjectComponent component in GameObjectComponentList)
-            {
-                component.BufferUpdate(commandBuffer, deltaTime);
+                component.Update(commandBuffer, deltaTime);
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using GlmSharp;
 using Silk.NET.Maths;
 using Silk.NET.Vulkan;
+using SixLabors.ImageSharp.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,24 +41,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         }
     };
 
-
-    public unsafe static class MathHelper
+    public unsafe class Mesh<T>
     {
-        public static float ToRadians(float degrees)
-        {
-            return degrees * ((float)Math.PI / 180f);
-        }
-
-        public static float ToDegrees(float radians)
-        {
-            return radians * (180f / (float)Math.PI);
-        }
-    }
-
-
-    public unsafe class Mesh
-    {
-        Vk vk = Vk.GetApi();
         private const VkBufferUsageFlagBits MeshBufferUsageSettings = VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
                                                                  VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
                                                                  VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
@@ -83,7 +68,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public VulkanBuffer<Vertex2D> MeshVertexBuffer { get; protected set; }
         public VulkanBuffer<UInt32> MeshIndexBuffer { get; protected set; }
-        public VulkanBuffer<MeshProperitiesStruct> MeshPropertiesBuffers { get; set; }
+        public VulkanBuffer<mat4> MeshTransformBuffer { get; protected set; }
+        public VulkanBuffer<MeshProperitiesStruct> PropertiesBuffer { get; set; }
 
         public Mesh()
         {
@@ -118,27 +104,35 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             VertexCount = vertexList.Length;
             IndexCount = indexList.Length;
-            
+
             GCHandle vhandle = GCHandle.Alloc(vertexList, GCHandleType.Pinned);
             IntPtr vpointer = vhandle.AddrOfPinnedObject();
-            MeshVertexBuffer = new VulkanBuffer<Vertex2D>((void*)vpointer, (uint)vertexList.Count(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
-                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT | 
+            MeshVertexBuffer = new VulkanBuffer<Vertex2D>((void*)vpointer, (uint)vertexList.Count(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT |
                 VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
 
             GCHandle fhandle = GCHandle.Alloc(indexList, GCHandleType.Pinned);
             IntPtr fpointer = fhandle.AddrOfPinnedObject();
-            MeshIndexBuffer = new VulkanBuffer<UInt32>((void*)fpointer, (uint)indexList.Count(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
-                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT | 
+            MeshIndexBuffer = new VulkanBuffer<UInt32>((void*)fpointer, (uint)indexList.Count(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT |
                 VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
+
+            GCHandle thandle = GCHandle.Alloc(MeshProperties, GCHandleType.Pinned);
+            IntPtr tpointer = thandle.AddrOfPinnedObject();
+            MeshTransformBuffer = new VulkanBuffer<mat4>((void*)tpointer, 1, VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
 
             GCHandle uhandle = GCHandle.Alloc(MeshProperties, GCHandleType.Pinned);
             IntPtr upointer = uhandle.AddrOfPinnedObject();
-            MeshPropertiesBuffers = new VulkanBuffer<MeshProperitiesStruct>((void*)upointer, 1, VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
-                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT | 
+            PropertiesBuffer = new VulkanBuffer<MeshProperitiesStruct>((void*)upointer, 1, VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
                 VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
@@ -175,7 +169,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             void* dataPtr = Unsafe.AsPointer(ref properties);
-            MeshPropertiesBuffers.UpdateBufferData(dataPtr);
+            PropertiesBuffer.UpdateBufferData(dataPtr);
         }
 
         public void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
@@ -189,7 +183,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var descriptorSetRef = descriptorSet;
             VkFunc.vkCmdPushConstants(new VkCommandBuffer(commandBuffer), pipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneProperties);
             VkFunc.vkCmdBindPipeline(new VkCommandBuffer(commandBuffer), VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-            VkFunc.vkCmdBindDescriptorSets(new VkCommandBuffer(commandBuffer), VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1,  &descriptorSetRef, 0, null);
+            VkFunc.vkCmdBindDescriptorSets(new VkCommandBuffer(commandBuffer), VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSetRef, 0, null);
             VkFunc.vkCmdBindVertexBuffers(new VkCommandBuffer(commandBuffer), 0, 1, &meshBuffer, &offsets);
             VkFunc.vkCmdBindIndexBuffer(new VkCommandBuffer(commandBuffer), MeshIndexBuffer.Buffer, 0, VkIndexType.VK_INDEX_TYPE_UINT32);
             VkFunc.vkCmdDrawIndexed(new VkCommandBuffer(commandBuffer), (uint)IndexCount, 1, 0, 0, 0);
@@ -199,12 +193,52 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             MeshVertexBuffer.DestroyBuffer();
             MeshIndexBuffer.DestroyBuffer();
-            MeshPropertiesBuffers.DestroyBuffer();
+            PropertiesBuffer.DestroyBuffer();
+            MeshTransformBuffer.DestroyBuffer();
         }
 
-        public VulkanBuffer<MeshProperitiesStruct> GetMeshPropertiesBuffer()
+        public VkDescriptorBufferInfo GetVertexPropertiesBuffer()
         {
-            return MeshPropertiesBuffers;
+            return new VkDescriptorBufferInfo
+            {
+                buffer = MeshVertexBuffer.Buffer,
+                offset = 0,
+                range = VulkanConst.VK_WHOLE_SIZE
+
+            };
+        }
+
+        public VkDescriptorBufferInfo GetIndexPropertiesBuffer()
+        {
+            return new VkDescriptorBufferInfo
+            {
+                buffer = MeshIndexBuffer.Buffer,
+                offset = 0,
+                range = VulkanConst.VK_WHOLE_SIZE
+
+            };
+        }
+
+        public VkDescriptorBufferInfo GetTransformBuffer()
+        {
+            return new VkDescriptorBufferInfo
+            {
+                buffer = MeshTransformBuffer.Buffer,
+                offset = 0,
+                range = VulkanConst.VK_WHOLE_SIZE
+
+            };
+        }
+
+        public VkDescriptorBufferInfo GetMeshPropertiesBuffer()
+        {
+            return new VkDescriptorBufferInfo
+            {
+                buffer = PropertiesBuffer.Buffer,
+                offset = 0,
+                range = VulkanConst.VK_WHOLE_SIZE
+
+            };
         }
     }
 }

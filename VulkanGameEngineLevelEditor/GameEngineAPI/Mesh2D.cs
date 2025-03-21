@@ -9,7 +9,7 @@ using VulkanGameEngineGameObjectScripts;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public class Mesh2D : Mesh
+    public class Mesh2D : Mesh<Vertex2D>
     {
         public Mesh2D() : base()
         {
@@ -17,6 +17,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public Mesh2D(IntPtr gameObject) : base()
         {
+
             List<Vertex2D> spriteVertexList = new List<Vertex2D>
             {
                 new Vertex2D(new vec2(0.0f, 0.5f), new vec2(0.0f, 0.0f), new vec4(1.0f, 0.0f, 0.0f, 1.0f)),

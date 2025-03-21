@@ -30,8 +30,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>();
         public void StartUp()
         {
-            MemoryManager.StartUp(30);
-
             var res = new vec2((float)VulkanRenderer.SwapChain.SwapChainResolution.width, (float)VulkanRenderer.SwapChain.SwapChainResolution.height);
             var pos = new vec3(0.0f, 0.0f, 5.0f);
             orthographicCamera = new OrthographicCamera(res, pos);
@@ -39,13 +37,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             textureList.Add(new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
             textureList.Add(new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\container2.png", VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
 
-            GameObjectList.Add(MemoryManager.CreateGameObject("object1", new List<ComponentTypeEnum>()
+            GameObjectList.Add(new GameObject("object1", new List<ComponentTypeEnum>()
             {
                 ComponentTypeEnum.kGameObjectTransform2DComponent,
                 ComponentTypeEnum.kInputComponent,
                 ComponentTypeEnum.kRenderMesh2DComponent
             }));
-            GameObjectList.Add(MemoryManager.CreateGameObject("object2", new List<ComponentTypeEnum>()
+            GameObjectList.Add(new GameObject("object2", new List<ComponentTypeEnum>()
             {
                 ComponentTypeEnum.kGameObjectTransform2DComponent,
                 ComponentTypeEnum.kInputComponent,

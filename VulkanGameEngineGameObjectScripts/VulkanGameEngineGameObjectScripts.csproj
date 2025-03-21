@@ -48,11 +48,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Component\GameObjectComponent.cs" />
-    <Compile Include="Component\InputComponent.cs" />
-    <Compile Include="Component\MeshRenderer2DComponent.cs" />
-    <Compile Include="Component\Transform2DComponent.cs" />
-    <Compile Include="GameObject.cs" />
     <Compile Include="Import\CLIMath.cs" />
     <Compile Include="Import\ivec2.cs" />
     <Compile Include="Import\ivec3.cs" />
@@ -74,6 +69,8 @@
     <Compile Include="Vulkan\Struct.cs" />
     <Compile Include="Vulkan\TypeDef.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Component\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -129,17 +130,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             //EmissionMap.reset();
             //HeightMap.reset();
             MaterialBuffer.DestroyBuffer();
-        }
-
-        public void GetMaterialPropertiesBuffer(ref List<VkDescriptorBufferInfo> materialBufferList)
-        {
-            UpdateBuffer();
-            materialBufferList.Add(new VkDescriptorBufferInfo 
-            {
-                buffer = MaterialBuffer.Buffer,
-                offset = 0,
-                range = UInt64.MaxValue
-            });
         }
 
         public void SetAlbedo(vec3 color)
@@ -348,6 +338,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
             MaterialBuffer.UpdateBufferData(ptr);
+        }
+
+        public VkDescriptorBufferInfo GetMaterialPropertiesBuffer()
+        {
+            UpdateBuffer();
+            return new VkDescriptorBufferInfo
+            {
+                buffer = MaterialBuffer.Buffer,
+                offset = 0,
+                range = UInt64.MaxValue
+            };
         }
     }
 }

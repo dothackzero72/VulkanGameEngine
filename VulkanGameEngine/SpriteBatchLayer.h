@@ -12,10 +12,10 @@ class SpriteBatchLayer
 private:
 	Vector<Vertex2D> SpriteVertexList =
 	{
-		Vertex2D(vec2(0.0f, 1.0), vec2(0.0f, 0.0f)),
-		Vertex2D(vec2(1.0f, 0.0), vec2(1.0f, 0.0f)),
-		Vertex2D(vec2(1.0f, 0.0), vec2(1.0f, 1.0f)),
-		Vertex2D(vec2(0.0f, 0.0), vec2(0.0f, 1.0f)),
+		Vertex2D(vec2(0.0f, 1.0f), vec2(0.0f, 0.0f)),
+		Vertex2D(vec2(1.0f, 0.0f), vec2(1.0f, 0.0f)),
+		Vertex2D(vec2(1.0f, 0.0f), vec2(1.0f, 1.0f)),
+		Vertex2D(vec2(0.0f, 0.0f), vec2(0.0f, 1.0f)),
 	};
 
 	 Vector<uint32> SpriteIndexList =

@@ -4,6 +4,8 @@ using VulkanGameEngineLevelEditor.Vulkan;
 using VulkanGameEngineGameObjectScripts;
 using Silk.NET.SDL;
 using Silk.NET.Vulkan;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -214,6 +216,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Memory = memory;
 
             return result;
+        }
+
+        public VkDescriptorImageInfo GetTexturePropertiesBuffer()
+        {
+            return new VkDescriptorImageInfo
+            {
+                sampler = Sampler,
+                imageView = View,
+                imageLayout = VkImageLayout.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+            };
         }
 
         public void SaveTexture(string filename, ExportTextureFormat textureFormat)

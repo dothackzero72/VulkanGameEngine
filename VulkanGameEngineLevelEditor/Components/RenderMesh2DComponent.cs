@@ -1,17 +1,15 @@
 ﻿using Coral.Managed.Interop;
-using GlmSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VulkanGameEngineGameObjectScripts.Import;
 using VulkanGameEngineGameObjectScripts.Input;
+using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 
-namespace VulkanGameEngineGameObjectScripts.Component
+namespace VulkanGameEngineLevelEditor.Components
 {
-    //RenderMesh2DComponent is basically just a skeletion container for linking from C++ to C#. 
-    //Mesh and Draw calls are too diffrent to cleanly run them on C#.
     public unsafe class RenderMesh2DComponent : GameObjectComponent
     {
         public RenderMesh2DComponent() : base()
@@ -19,13 +17,13 @@ namespace VulkanGameEngineGameObjectScripts.Component
             Name = "RenderMesh2DComponent";
         }
 
-        public RenderMesh2DComponent(IntPtr cppComponentPtr, IntPtr cppGameObjectPtr, IntPtr csParentGameObject) :
+        public RenderMesh2DComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject) :
             base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, ComponentTypeEnum.kRenderMesh2DComponent)
         {
             Name = "RenderMesh2DComponent";
         }
 
-        public RenderMesh2DComponent(IntPtr cppComponentPtr, IntPtr cppGameObjectPtr, IntPtr csParentGameObject, NativeString name) :
+        public RenderMesh2DComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject, string name) :
             base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, name, ComponentTypeEnum.kRenderMesh2DComponent)
         {
 
@@ -35,19 +33,14 @@ namespace VulkanGameEngineGameObjectScripts.Component
         {
         }
 
-        public override void Update(float deltaTime)
-        {
-
-        }
-
-        public override void BufferUpdate(IntPtr commandBuffer, float deltaTime)
+        public override void Update(VkCommandBuffer commandBuffer, float deltaTime)
         {
 
         }
 
         public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
         {
-  
+
         }
 
         public override void Destroy()

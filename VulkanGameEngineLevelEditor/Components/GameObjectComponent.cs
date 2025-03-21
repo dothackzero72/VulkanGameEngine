@@ -1,51 +1,50 @@
 ﻿using Coral.Managed.Interop;
-using GlmSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml.Linq;
 using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineGameObjectScripts.Interface;
+using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 
-namespace VulkanGameEngineGameObjectScripts.Component
+namespace VulkanGameEngineLevelEditor.Components
 {
-    public unsafe class GameObjectComponent : IGameObjectComponent
+    public unsafe class GameObjectComponent
     {
-        public IntPtr CPPgameObjectPtr;
-        public IntPtr CPPcomponentPtr;
+        public GameObject CPPgameObjectPtr;
+        public GameObjectComponent CPPcomponentPtr;
 
         public GameObject ParentGameObject;
         public ComponentTypeEnum ComponentType { get; set; }
-        public NativeString Name { get; set; } = new NativeString();
+        public string Name { get; set; }
 
         public GameObjectComponent()
         {
 
         }
 
-        public GameObjectComponent(IntPtr cppComponentPtr, IntPtr cppGameObjectPtr, IntPtr csParentGameObject, ComponentTypeEnum componentType)
+        public GameObjectComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject, ComponentTypeEnum componentType)
         {
-            CPPcomponentPtr = cppComponentPtr;
-            CPPgameObjectPtr = cppGameObjectPtr;
+            //CPPcomponentPtr = cppComponentPtr;
+            //CPPgameObjectPtr = cppGameObjectPtr;
 
-            GCHandle handle = GCHandle.FromIntPtr(csParentGameObject);
-            ParentGameObject = (GameObject)handle.Target;
+            //GCHandle handle = GCHandle.FromIntPtr(csParentGameObject);
+            //ParentGameObject = (GameObject)handle.Target;
 
             Name = "GameObjectComponent";
             ComponentType = componentType;
         }
 
-        public GameObjectComponent(IntPtr cppComponentPtr, IntPtr cppGameObjectPtr, IntPtr csParentGameObject, NativeString nString, ComponentTypeEnum componentType)
+        public GameObjectComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject, string nString, ComponentTypeEnum componentType)
         {
-            CPPcomponentPtr = cppComponentPtr;
-            CPPgameObjectPtr = cppGameObjectPtr;
+            //CPPcomponentPtr = cppComponentPtr;
+            //CPPgameObjectPtr = cppGameObjectPtr;
 
-            GCHandle handle = GCHandle.FromIntPtr(csParentGameObject);
-            ParentGameObject = (GameObject)handle.Target;
+            //GCHandle handle = GCHandle.FromIntPtr(csParentGameObject);
+            //ParentGameObject = (GameObject)handle.Target;
 
             Name = nString;
             ComponentType = componentType;
@@ -55,12 +54,7 @@ namespace VulkanGameEngineGameObjectScripts.Component
         {
         }
 
-        public virtual void Update(float deltaTime)
-        {
-
-        }
-
-        public virtual void BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime)
+        public virtual void Update(VkCommandBuffer commandBuffer, float deltaTime)
         {
 
         }
@@ -80,15 +74,15 @@ namespace VulkanGameEngineGameObjectScripts.Component
             return sizeof(GameObjectComponent);
         }
 
-        public IntPtr GetCPPgameObjectPtr()
-        {
-            return CPPgameObjectPtr;
-        }
+        //public IntPtr GetCPPgameObjectPtr()
+        //{
+        //    return CPPgameObjectPtr;
+        //}
 
-        public IntPtr GetCPPComponentPtr()
-        {
-            return CPPcomponentPtr;
-        }
+        //public IntPtr GetCPPComponentPtr()
+        //{
+        //    return CPPcomponentPtr;
+        //}
 
         //public NativeString* GetPositionPtr()
         //{

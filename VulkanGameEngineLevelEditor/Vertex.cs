@@ -43,17 +43,44 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     };
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct NullVertex
+    {
+        public NullVertex()
+        {
+
+        }
+
+        public static List<VkVertexInputBindingDescription> GetBindingDescriptions()
+        {
+            return new List<VkVertexInputBindingDescription>();
+        }
+
+        public static List<VkVertexInputAttributeDescription> GetAttributeDescriptions()
+        {
+            return new List<VkVertexInputAttributeDescription>();
+        }
+    };
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct Vertex2D
     {
         public vec2 Position;
         public vec2 UV;
         public vec4 Color;
+        private vec2 vec21;
+        private vec2 vec22;
 
         public Vertex2D(vec2 position, vec2 uv, vec4 color)
         {
             Position = position;
             UV = uv;
             Color = color;
+        }
+
+        public Vertex2D(vec2 vec21, vec2 vec22) : this()
+        {
+            this.vec21 = vec21;
+            this.vec22 = vec22;
         }
 
         public static List<VkVertexInputBindingDescription> GetBindingDescriptions()
