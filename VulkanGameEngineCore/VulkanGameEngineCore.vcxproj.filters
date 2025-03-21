@@ -99,9 +99,6 @@
     <ClCompile Include="DepthTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BakedTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CVulkanRenderer.h">
@@ -201,9 +198,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DepthTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BakedTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JsonStructs.h">

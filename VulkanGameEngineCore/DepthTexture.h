@@ -8,7 +8,6 @@ private:
 
 public:
     DepthTexture();
-    DepthTexture(ivec2 TextureResolution);
     DepthTexture(VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
     virtual ~DepthTexture();
     void RecreateRendererTexture(vec2 textureResolution);

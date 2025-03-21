@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
@@ -49,9 +50,10 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, uint mipmapLevels, ref VkImageLayout oldLayout, ref VkImageLayout newLayout);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffer, VkImage image, uint mipmapLevels, VkImageLayout oldLayout, VkImageLayout newLayout);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Texture_CopyBufferToTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkBuffer buffer, TextureUsageEnum textureType, int width, int height, int depth);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkFormat* textureByteFormat, uint mipmapLevels, int width, int height);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkFormat* textureByteFormat, uint mipmapLevels, int width, int height, bool usingMipMaps);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Texture_CreateTextureView(VkDevice device, VkImageView* view, VkImage image, VkFormat format, uint mipmapLevels);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult DLL_Texture_CreateTextureSampler(VkDevice device, VkSamplerCreateInfo* samplerCreateInfo, VkSampler* smapler);
+      //  [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_Texture_SaveTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, string filename, Texture texture, ExportTextureFormat textureFormat, uint channels)
         [DllImport(DLLPath, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)] public static extern void DLL_Texture_CreateImageTexture(VkDevice device,
                                                                                                                                                             VkPhysicalDevice physicalDevice,
                                                                                                                                                             VkCommandPool commandPool,
@@ -66,8 +68,24 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                                                                                                                                                             ref VkImageLayout textureImageLayout,
                                                                                                                                                             ref ColorComponents colorChannelUsed,
                                                                                                                                                             TextureUsageEnum textureUsage,
-                                                                                                                                                            string filePath);
-
+                                                                                                                                                            string filePath,
+                                                                                                                                                            bool useMipMap);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)] public static extern void DLL_Texture_CreateImageTexture(VkDevice device,
+                                                                                                                                                    VkPhysicalDevice physicalDevice,
+                                                                                                                                                    VkCommandPool commandPool,
+                                                                                                                                                    VkQueue graphicsQueue,
+                                                                                                                                                    ref int width,
+                                                                                                                                                    ref int height,
+                                                                                                                                                    ref int depth,
+                                                                                                                                                    VkFormat textureByteFormat,
+                                                                                                                                                    uint mipmapLevels,
+                                                                                                                                                    ref VkImage textureImage,
+                                                                                                                                                    ref VkDeviceMemory textureMemory,
+                                                                                                                                                    ref VkImageLayout textureImageLayout,
+                                                                                                                                                    ref ColorComponents colorChannelUsed,
+                                                                                                                                                    TextureUsageEnum textureUsage,
+                                                                                                                                                    Pixel filePath,
+                                                                                                                                                    bool useMipMap);
         //RenderPass
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_RenderPass_BuildRenderPass(VkDevice device, VkRenderPass* renderPass, RenderPassBuildInfoModel* renderPassBuildInfo, RenderedTexture* renderedColorTextureList, DepthTexture depthTexture);
 	    [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoModel renderPassBuildInfo, VkFramebuffer* frameBufferList, RenderedTexture* renderedColorTextureList, DepthTexture* depthTexture, VkImageView* swapChainImageViewList, uint frameBufferCount, uint renderedTextureCount, ivec2 renderPassResolution);

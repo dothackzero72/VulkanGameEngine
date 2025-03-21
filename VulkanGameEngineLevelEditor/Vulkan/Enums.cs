@@ -7,6 +7,15 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
+    enum ExportTextureFormat
+    {
+        Export_BMP,
+        Export_JPG,
+        Export_PNG,
+        Export_TGA
+    };
+
+
     [Flags]
     public enum VkPipelineStageFlagBits : uint
     {

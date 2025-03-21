@@ -28,7 +28,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             TextureByteFormat = VkFormat.VK_FORMAT_D32_SFLOAT;
 
             CreateImageTexture();
-            CreateTextureView();
+            GameEngineImport.DLL_Texture_CreateTextureView(VulkanRenderer.device, VulkanRenderer.SwapChain.imageViews.Ptr, Image, TextureByteFormat, MipMapLevels);
             CreateTextureSampler();
         }
 
@@ -45,7 +45,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             SampleCount = createInfo.samples;
 
             CreateTextureImage(createInfo);
-            CreateTextureView();
+            GameEngineImport.DLL_Texture_CreateTextureView(VulkanRenderer.device, VulkanRenderer.SwapChain.imageViews.Ptr, Image, TextureByteFormat, MipMapLevels);
             CreateTextureSampler(samplerCreateInfo);
         }
 

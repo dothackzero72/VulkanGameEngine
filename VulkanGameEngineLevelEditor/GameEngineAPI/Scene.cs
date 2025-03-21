@@ -91,7 +91,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             commandBufferList.Add(frameBufferRenderPass.Draw());
             //GameEngineImport.DLL_Renderer_EndFrame(VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.AcquireImageSemaphores.Ptr, VulkanRenderer.PresentImageSemaphores.Ptr, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.graphicsQueue, VulkanRenderer.presentQueue, commandIndex, imageIndex, commandBufferList.Ptr, commandBufferList.UCount, &rebuildRendererFlag);
            VulkanRenderer.EndFrame(commandBufferList);
-            commandBufferList.Clear();
+            //commandBufferList.Clear();
         }
 
         public void Destroy()

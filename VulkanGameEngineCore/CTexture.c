@@ -2,7 +2,6 @@
 #include "CVulkanRenderer.h"
 #include "CBuffer.h"
 
-
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
@@ -20,7 +19,8 @@ void Texture_UploadTexture(VkDevice device,
 	VkDeviceMemory* textureMemory,
 	VkImageLayout* textureImageLayout,
 	enum ColorChannelUsed* colorChannelUsed,
-	const char* filePath)
+	const char* filePath,
+	bool usingMipMaps)
 {
 	if (!filePath || !width || !height || !colorChannelUsed) {
 		printf("Invalid parameters passed to Texture_UploadTexture\n");
@@ -57,12 +57,10 @@ void Texture_UploadTexture(VkDevice device,
 	VULKAN_RESULT(Texture_CreateImage(device, physicalDevice, textureImage, textureMemory, imageCreateInfo));
 	VULKAN_RESULT(Texture_QuickTransitionImageLayout(device, commandPool, graphicsQueue, *textureImage, mipmapLevels, textureImageLayout, &newTextureLayout));
 	VULKAN_RESULT(Texture_CopyBufferToTexture(device, commandPool, graphicsQueue, *textureImage, buffer, newTextureLayout, *width, *height, *depth));
-	VULKAN_RESULT(Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, *textureImage, textureByteFormat, *mipmapLevels, *width, *height));
+	VULKAN_RESULT(Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, *textureImage, textureByteFormat, *mipmapLevels, *width, *height, usingMipMaps));
 
-	// Cleanup
 	vkDestroyBuffer(device, stagingBuffer, NULL);
 	Renderer_FreeDeviceMemory(device, stagingBufferMemory);
-	//stbi_image_free(textureData2); // Free the loaded image data
 }
 
 void Texture_UpdateTextureLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkImageLayout* oldImageLayout, VkImageLayout* newImageLayout, uint32 mipLevel)
@@ -216,8 +214,13 @@ VkResult Texture_CopyBufferToTexture(VkDevice device, VkCommandPool commandPool,
 	return Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);
 }
 
-VkResult Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkFormat* textureByteFormat, uint32 mipmapLevels, int width, int height)
+VkResult Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkFormat* textureByteFormat, uint32 mipmapLevels, int width, int height, bool usingMipMaps)
 {
+	if (!usingMipMaps)
+	{
+		return VK_SUCCESS;
+	}
+
 	int32_t mipWidth = width;
 	int32_t mipHeight = height;
 
@@ -293,12 +296,12 @@ VkResult Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevic
 	return Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);
 }
 
-VkResult Texture_CreateTextureView(VkDevice device, VkImageView* view, VkImage image, VkFormat format, uint32 mipmapLevels)
+VkResult Texture_CreateTextureView(VkDevice device, VkImageView* view, VkImage image, VkFormat format, VkImageAspectFlags imageType, uint32 mipmapLevels)
 {
 
 	VkImageSubresourceRange imageSubresourceRange =
 	{
-		.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+		.aspectMask = imageType,
 		.baseMipLevel = 0,
 		.levelCount = mipmapLevels,
 		.baseArrayLayer = 0,
@@ -311,7 +314,7 @@ VkResult Texture_CreateTextureView(VkDevice device, VkImageView* view, VkImage i
 		.image = image,
 		.viewType = VK_IMAGE_VIEW_TYPE_2D,
 		.format = format,
-		.subresourceRange = imageSubresourceRange
+		.subresourceRange = imageSubresourceRange,
 	};
 	return vkCreateImageView(device, &TextureImageViewInfo, NULL, view);
 }

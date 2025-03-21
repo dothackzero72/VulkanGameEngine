@@ -18,45 +18,33 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class Texture
     {
-        public Vk vk = Vk.GetApi();
-        public uint TextureBufferIndex { get; protected set; }
-        public int Width { get; protected set; }
-        public int Height { get; protected set; }
-        public int Depth { get; protected set; }
-        public ColorComponents ColorChannels { get; protected set; }
-        public uint MipMapLevels { get; protected set; }
-        public TextureUsageEnum TextureUsage { get; protected set; }
-        public TextureTypeEnum TextureType { get; protected set; }
-        public VkFormat TextureByteFormat { get; protected set; }
-        public VkImageLayout TextureImageLayout { get; protected set; }
-        public VkSampleCountFlagBits SampleCount { get; protected set; }
-        public VkImage Image { get; protected set; }
-        public VkDeviceMemory Memory { get; protected set; }
-        public VkImageView View { get; protected set; }
-        public VkSampler Sampler { get; protected set; }
-        public VkDescriptorImageInfo textureBuffer { get; protected set; }
+        public static readonly IntPtr VK_NULL_HANDLE = IntPtr.Zero;
+
+        static private uint NextTextureId;
+        public uint TextureId { get; private set; } = 0;
+        public uint TextureBufferIndex { get; private set; } = 0;
+        public string Name { get; private set; } = "Texture";
+        public int Width { get; protected set; } = 1;
+        public int Height { get; protected set; } = 1;
+        public int Depth { get; protected set; } = 1;
+        public ColorComponents ColorChannels { get; protected set; } = ColorComponents.RedGreenBlueAlpha;
+        public uint MipMapLevels { get; protected set; } = 1;
+        public TextureUsageEnum TextureUsage { get; protected set; } = TextureUsageEnum.kUse_Undefined;
+        public TextureTypeEnum TextureType { get; protected set; } = TextureTypeEnum.kType_UndefinedTexture;
+        public VkFormat TextureByteFormat { get; protected set; } = VkFormat.VK_FORMAT_UNDEFINED;
+        public VkImageLayout TextureImageLayout { get; protected set; } = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED;
+        public VkSampleCountFlagBits SampleCount { get; protected set; } = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT;
+        public VkImage Image { get; protected set; } = VK_NULL_HANDLE;
+        public VkDeviceMemory Memory { get; protected set; } = VK_NULL_HANDLE;
+        public VkImageView View { get; protected set; } = VK_NULL_HANDLE;
+        public VkSampler Sampler { get; protected set; } = VK_NULL_HANDLE;
 
         public Texture()
         {
-            TextureBufferIndex = 0;
-            Width = 1;
-            Height = 1;
-            Depth = 1;
-            MipMapLevels = 1;
 
-            //Image = Vk.ha;
-            //Memory = VulkanConsts.VK_NULL_HANDLE;
-            //View = VulkanConsts.VK_NULL_HANDLE;
-            //Sampler = VulkanConsts.VK_NULL_HANDLE;
-
-            TextureUsage = TextureUsageEnum.kUse_Undefined;
-            TextureType = TextureTypeEnum.kType_UndefinedTexture;
-            TextureByteFormat = VkFormat.VK_FORMAT_UNDEFINED;
-            TextureImageLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED;
-            SampleCount = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT;
         }
 
-        public Texture(ivec2 TextureResolution)
+        public Texture(Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlagBits imageType, TextureTypeEnum textureType, bool useMipMaps)
         {
             Width = TextureResolution.x;
             Height = TextureResolution.y;

@@ -37,14 +37,14 @@
 		return Texture_CopyBufferToTexture(device, commandPool, graphicsQueue, image, buffer, textureType, width, height, depth);
 	}
 
-	VkResult DLL_Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkFormat* textureByteFormat, uint32 mipmapLevels, int width, int height)
+	VkResult DLL_Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkFormat* textureByteFormat, uint32 mipmapLevels, int width, int height, bool usingMipMaps)
 	{
-		return Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, image, textureByteFormat, mipmapLevels, width, height);
+		return Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, image, textureByteFormat, mipmapLevels, width, height, usingMipMaps);
 	}
 
-	VkResult DLL_Texture_CreateTextureView(VkDevice device, VkImageView* view, VkImage image, VkFormat format, uint32 mipmapLevels)
+	VkResult DLL_Texture_CreateTextureView(VkDevice device, VkImageView* view, VkImage image, VkFormat format, VkImageAspectFlags imageType, uint32 mipmapLevels)
 	{
-		return Texture_CreateTextureView(device, view, image, format, mipmapLevels);
+		return Texture_CreateTextureView(device, view, image, format, imageType, mipmapLevels);
 	}
 
 	VkResult DLL_Texture_CreateTextureSampler(VkDevice device, VkSamplerCreateInfo* samplerCreateInfo, VkSampler* smapler)
@@ -52,7 +52,12 @@
 		return Texture_CreateTextureSampler(device, samplerCreateInfo, smapler);
 	}
 
-	void DLL_Texture_CreateImageTexture(VkDevice device,
+	void DLL_Texture_SaveTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, const char* filename, SharedPtr<Texture> texture, ExportTextureFormat textureFormat, uint32 channels)
+	{
+		return Texture_SaveTexture(device, commandPool, graphicsQueue, filename, texture, textureFormat, channels);
+	}
+
+	 void DLL_Texture_CreateImageTexture(VkDevice device,
 		VkPhysicalDevice physicalDevice,
 		VkCommandPool commandPool,
 		VkQueue graphicsQueue,
@@ -66,22 +71,59 @@
 		VkImageLayout* textureImageLayout,
 		enum ColorChannelUsed* colorChannelUsed,
 		enum TextureUsageEnum textureUsage,
-		const char* filePath)
+		const Pixel& clearColor,
+		bool usingMipMap)
 	{
-		const std::string path(filePath);
-		return Texture_CreateImageTexture(device,
-			physicalDevice,
-			commandPool,
-			graphicsQueue,
-			width,
-			height,
-			depth,
-			textureByteFormat,
-			mipmapLevels,
-			textureImage,
-			textureMemory,
-			textureImageLayout,
-			colorChannelUsed,
-			textureUsage,
-			path);
+		 return Texture_CreateImageTexture(device,
+			 physicalDevice,
+			 commandPool,
+			 graphicsQueue,
+			 width,
+			 height,
+			 depth,
+			 textureByteFormat,
+			 mipmapLevels,
+			 textureImage,
+			 textureMemory,
+			 textureImageLayout,
+			 colorChannelUsed,
+			 textureUsage,
+			 clearColor,
+			 usingMipMap);
+	}
+
+	 void DLL_Texture_CreateImageTexture(VkDevice device,
+		VkPhysicalDevice physicalDevice,
+		VkCommandPool commandPool,
+		VkQueue graphicsQueue,
+		int* width,
+		int* height,
+		int* depth,
+		VkFormat textureByteFormat,
+		uint mipmapLevels,
+		VkImage* textureImage,
+		VkDeviceMemory* textureMemory,
+		VkImageLayout* textureImageLayout,
+		enum ColorChannelUsed* colorChannelUsed,
+		enum TextureUsageEnum textureUsage,
+		const String& filePath,
+		bool usingMipMap)
+	{
+		 const std::string path(filePath);
+		 return Texture_CreateImageTexture(device,
+			 physicalDevice,
+			 commandPool,
+			 graphicsQueue,
+			 width,
+			 height,
+			 depth,
+			 textureByteFormat,
+			 mipmapLevels,
+			 textureImage,
+			 textureMemory,
+			 textureImageLayout,
+			 colorChannelUsed,
+			 textureUsage,
+			 path,
+			 usingMipMap);
 	}

@@ -154,7 +154,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BakedTexture.cpp" />
     <ClCompile Include="CBuffer.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
     </ClCompile>
@@ -189,7 +188,6 @@
     <ClCompile Include="VulkanWindow.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BakedTexture.h" />
     <ClInclude Include="CBuffer.h" />
     <ClInclude Include="CoreVulkanRenderer.h" />
     <ClInclude Include="CShaderCompiler.h" />

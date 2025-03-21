@@ -16,7 +16,7 @@ void RenderPass_BuildRenderPass(VkDevice device, VkRenderPass& renderPass, const
         {
         case RenderedTextureType::ColorRenderedTexture:
         {
-            renderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
+            renderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
             colorAttachmentReferenceList.emplace_back(VkAttachmentReference
                 {
                     .attachment = static_cast<uint32>(colorAttachmentReferenceList.size()),
@@ -36,7 +36,7 @@ void RenderPass_BuildRenderPass(VkDevice device, VkRenderPass& renderPass, const
         }
         case RenderedTextureType::InputAttachmentTexture:
         {
-            renderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
+            renderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
             inputAttachmentReferenceList.emplace_back(VkAttachmentReference
                 {
                     .attachment = static_cast<uint32>(inputAttachmentReferenceList.size()),
@@ -46,7 +46,7 @@ void RenderPass_BuildRenderPass(VkDevice device, VkRenderPass& renderPass, const
         }
         case RenderedTextureType::ResolveAttachmentTexture:
         {
-            renderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
+            renderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, renderedTextureInfoModel.ImageCreateInfo, renderedTextureInfoModel.SamplerCreateInfo)));
             resolveAttachmentReferenceList.emplace_back(VkAttachmentReference
                 {
                     .attachment = static_cast<uint32>(colorAttachmentReferenceList.size() + 1),

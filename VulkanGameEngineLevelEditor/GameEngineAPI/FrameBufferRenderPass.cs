@@ -62,9 +62,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             SampleCount = SampleCountFlags.Count1Bit;
 
             ListPtr<Texture> textureList = new ListPtr<Texture> { texture };
+            ListPtr<DepthTexture> depthTextureList = new ListPtr<DepthTexture>();
+
+            RenderPassBuildInfoModel model = new RenderPassBuildInfoModel(jsonFile);
 
             renderPass = CreateRenderPass();
             frameBufferList = CreateFramebuffer();
+            //GameEngineImport.DLL_RenderPass_BuildFrameBuffer(VulkanRenderer.device, renderPass, model, frameBufferList.Ptr, textureList.Ptr, depthTextureList.Ptr, VulkanRenderer.SwapChain.imageViews.Ptr, frameBufferList.UCount, textureList.UCount, RenderPassResolution);
             BuildRenderPipeline(texture);
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
 
@@ -74,7 +78,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             //// frameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
 
-            // RenderPassBuildInfoModel model = new RenderPassBuildInfoModel(jsonFile);
+            
 
             // renderPass = CreateRenderPass();
             // GameEngineImport.DLL_RenderPass_BuildFrameBuffer(VulkanRenderer.device, renderPass, model, frameBufferList.Ptr, textureList.Ptr, depthTexture.Ptr, VulkanRenderer.SwapChain.imageViews.Ptr, frameBufferList.UCount, textureList.UCount, RenderPassResolution);

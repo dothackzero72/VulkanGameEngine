@@ -21,34 +21,40 @@ uint32 Texture::NextTextureId = 0;
 
 Texture::Texture()
 {
-	TextureSetUp();
+
 }
 
-Texture::Texture(const Pixel& clearColor, int width, int height, VkFormat textureByteFormat, TextureTypeEnum textureType)
+Texture::Texture(Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
 {
-	TextureSetUp();
 	Width = width;
 	Height = height;
 	TextureType = textureType;
 	TextureByteFormat = textureByteFormat;
-	TextureBufferIndex = 0;
 
-	CreateImageTexture(clearColor);
-	CreateTextureView();
+	if (useMipMaps)
+	{
+		MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
+	}
+
+
+	CreateImageTexture(clearColor, useMipMaps);
+	Texture_CreateTextureView(cRenderer.Device, &View, Image, TextureByteFormat, imageType, MipMapLevels);
 	CreateTextureSampler();
 	//ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-Texture::Texture(const String& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType)
+Texture::Texture(const String& filePath, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
 {
-	TextureSetUp();
-	MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
 	TextureType = textureType;
 	TextureByteFormat = textureByteFormat;
-	TextureBufferIndex = 0;
 
-	CreateImageTexture(filePath);
-	CreateTextureView();
+	if (useMipMaps)
+	{
+		MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
+	}
+
+	CreateImageTexture(filePath, useMipMaps);
+	Texture_CreateTextureView(cRenderer.Device, &View, Image, TextureByteFormat, imageType, MipMapLevels);
 	CreateTextureSampler();
 	//ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
@@ -58,52 +64,7 @@ Texture::~Texture()
 
 }
 
-void Texture::TextureSetUp()
-{
-	Name = "Texture";
-	TextureId = ++NextTextureId;
-	TextureBufferIndex = 0;
-	Width = 1;
-	Height = 1;
-	Depth = 1;
-	MipMapLevels = 1;
-
-	ImGuiDescriptorSet = VK_NULL_HANDLE;
-	Image = VK_NULL_HANDLE;
-	Memory = VK_NULL_HANDLE;
-	View = VK_NULL_HANDLE;
-	Sampler = VK_NULL_HANDLE;
-
-	TextureUsage = TextureUsageEnum::kUse_Undefined;
-	TextureType = TextureTypeEnum::kType_UndefinedTexture;
-	TextureByteFormat = VK_FORMAT_UNDEFINED;
-	TextureImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	SampleCount = VK_SAMPLE_COUNT_1_BIT;
-}
-
-void Texture::UpdateTextureSize(glm::vec2 TextureResolution)
-{
-	renderer.DestroyImageView(View);
-	renderer.DestroySampler(Sampler);
-	renderer.DestroyImage(Image);
-	renderer.FreeDeviceMemory(Memory);
-	//ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-}
-
-void Texture::UpdateTextureBufferIndex(uint64_t bufferIndex)
-{
-	TextureBufferIndex = bufferIndex;
-}
-
-void Texture::Destroy()
-{
-	renderer.DestroyImageView(View);
-	renderer.DestroySampler(Sampler);
-	renderer.DestroyImage(Image);
-	renderer.FreeDeviceMemory(Memory);
-}
-
-void Texture::CreateImageTexture(const Pixel& clearColor)
+void Texture::CreateImageTexture(const Pixel& clearColor, bool useMipMaps)
 {
 	int* width = &Width;
 	int* height = &Height;
@@ -132,7 +93,8 @@ void Texture::CreateImageTexture(const Pixel& clearColor)
 		textureImageLayout,
 		colorChannelUsed,
 		textureUsage,
-		clearColor);
+		clearColor,
+		useMipMaps);
 
 	Memory = *textureMemory;
 	TextureByteFormat = *textureByteFormat;
@@ -141,7 +103,7 @@ void Texture::CreateImageTexture(const Pixel& clearColor)
 	ColorChannels = *colorChannelUsed;
 }
 
-void Texture::CreateImageTexture(const String& filePath)
+void Texture::CreateImageTexture(const String& filePath, bool useMipMaps)
 {
 	int* width = &Width;
 	int* height = &Height;
@@ -170,7 +132,8 @@ void Texture::CreateImageTexture(const String& filePath)
 		textureImageLayout,
 		colorChannelUsed,
 		textureUsage,
-		filePath);
+		filePath,
+		useMipMaps);
 
 	Memory = *textureMemory;
 	TextureByteFormat = *textureByteFormat;
@@ -201,6 +164,19 @@ void Texture::CreateTextureSampler()
 		.unnormalizedCoordinates = VK_FALSE,
 	};
 	VULKAN_RESULT(CreateTextureSampler(TextureImageSamplerInfo));
+}
+
+void Texture::UpdateTextureBufferIndex(uint64_t bufferIndex)
+{
+	TextureBufferIndex = bufferIndex;
+}
+
+void Texture::Destroy()
+{
+	renderer.DestroyImageView(View);
+	renderer.DestroySampler(Sampler);
+	renderer.DestroyImage(Image);
+	renderer.FreeDeviceMemory(Memory);
 }
 
 void Texture::GetTexturePropertiesBuffer(std::vector<VkDescriptorImageInfo>& textureDescriptorList)
@@ -279,19 +255,15 @@ VkResult Texture::CopyBufferToTexture(VkBuffer buffer)
 	return Texture_CopyBufferToTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, buffer, TextureUsage, Width, Height, Depth);
 }
 
-VkResult Texture::GenerateMipmaps()
-{
-	return Texture_GenerateMipmaps(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, &TextureByteFormat, MipMapLevels, Width, Height);
-}
-
-VkResult Texture::CreateTextureView()
-{
-	return Texture_CreateTextureView(cRenderer.Device, &View, Image, TextureByteFormat, MipMapLevels);
-}
-
 VkResult Texture::CreateTextureSampler(VkSamplerCreateInfo samplerCreateInfo)
 {
 	return Texture_CreateTextureSampler(cRenderer.Device, &samplerCreateInfo, &Sampler);
+}
+
+
+void Texture::SaveTexture(const char* filename, ExportTextureFormat textureFormat)
+{
+	return Texture_SaveTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, filename, SharedPtr<Texture>(this), textureFormat, ColorChannels);
 }
 
 void Texture_CreateImageTexture(VkDevice device,
@@ -308,7 +280,8 @@ void Texture_CreateImageTexture(VkDevice device,
 	VkImageLayout* textureImageLayout,
 	enum ColorChannelUsed* colorChannelUsed,
 	enum TextureUsageEnum textureUsage,
-	const Pixel& clearColor)
+	const Pixel& clearColor,
+	bool usingMipMap)
 {
 	VkBuffer buffer = VK_NULL_HANDLE;
 	VkBuffer stagingBuffer = VK_NULL_HANDLE;
@@ -346,7 +319,7 @@ void Texture_CreateImageTexture(VkDevice device,
 	VULKAN_RESULT(Texture_CreateImage(device, physicalDevice, textureImage, textureMemory, imageCreateInfo));
 	VULKAN_RESULT(Texture_QuickTransitionImageLayout(device, commandPool, graphicsQueue, *textureImage, mipmapLevels, textureImageLayout, &newTextureLayout));
 	VULKAN_RESULT(Texture_CopyBufferToTexture(device, commandPool, graphicsQueue, *textureImage, buffer, textureUsage, *width, *height, *depth));
-	VULKAN_RESULT(Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, *textureImage, &textureByteFormat, mipmapLevels, *width, *height));
+	VULKAN_RESULT(Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, *textureImage, &textureByteFormat, mipmapLevels, *width, *height, usingMipMap));
 
 	if (stagingBuffer != VK_NULL_HANDLE)
 	{
@@ -375,7 +348,8 @@ void Texture_CreateImageTexture(VkDevice device,
 	VkImageLayout* textureImageLayout,
 	enum ColorChannelUsed* colorChannelUsed,
 	enum TextureUsageEnum textureUsage,
-	const String& filePath)
+	const String& filePath,
+	bool usingMipMap)
 {
 	VkBuffer buffer = VK_NULL_HANDLE;
 	VkBuffer stagingBuffer = VK_NULL_HANDLE;
@@ -414,7 +388,7 @@ void Texture_CreateImageTexture(VkDevice device,
 	VULKAN_RESULT(Texture_CreateImage(device, physicalDevice, textureImage, textureMemory, imageCreateInfo));
 	VULKAN_RESULT(Texture_QuickTransitionImageLayout(device, commandPool, graphicsQueue, *textureImage, mipmapLevels, textureImageLayout, &newTextureLayout));
 	VULKAN_RESULT(Texture_CopyBufferToTexture(device, commandPool, graphicsQueue, *textureImage, buffer, textureUsage, *width, *height, *depth));
-	VULKAN_RESULT(Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, *textureImage, &textureByteFormat, mipmapLevels, *width, *height));
+	VULKAN_RESULT(Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, *textureImage, &textureByteFormat, mipmapLevels, *width, *height, usingMipMap));
 
 	if (stagingBuffer != VK_NULL_HANDLE)
 	{
@@ -428,4 +402,110 @@ void Texture_CreateImageTexture(VkDevice device,
 		stagingBufferMemory = VK_NULL_HANDLE;
 	}
 	stbi_image_free(data);
+}
+
+void Texture_SaveTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, const char* filename, SharedPtr<Texture> texture, ExportTextureFormat textureFormat, uint32 channels)
+{
+	Texture exportTexture = Texture(Pixel(0x00, 0x00, 0x00, 0xFF), texture->Width, texture->Height, VkFormat::VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, kType_AlbedoTextureMap, false);
+
+	VkCommandBufferAllocateInfo allocInfo
+	{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+		.commandPool = commandPool,
+		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+		.commandBufferCount = 1
+	};
+
+	VkCommandBuffer commandBuffer;
+	vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
+
+	VkCommandBufferBeginInfo beginInfo
+	{
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+		.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
+	};
+
+	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+	exportTexture.UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	texture->UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+	VkImageCopy copyImage
+	{
+		.srcSubresource =
+		{
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			.layerCount = 1
+		},
+		.srcOffset = { 0, 0, 0 },
+		.dstSubresource =
+		{
+			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+			.layerCount = 1
+		},
+		.dstOffset = { 0, 0, 0 },
+		.extent =
+		{
+			.width = static_cast<uint>(texture->Width),
+			.height = static_cast<uint>(texture->Height),
+			.depth = 1,
+		},
+	};
+
+	vkCmdCopyImage(commandBuffer, texture->Image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, exportTexture.Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyImage);
+
+	exportTexture.UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_GENERAL);
+	texture->UpdateTextureLayout(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	vkEndCommandBuffer(commandBuffer);
+
+	VkSubmitInfo submitInfo =
+	{
+		.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+		.commandBufferCount = 1,
+		.pCommandBuffers = &commandBuffer
+	};
+
+	VkResult result = vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	result = vkQueueWaitIdle(graphicsQueue);
+	vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
+
+	const char* data = nullptr;
+	vkMapMemory(device, exportTexture.Memory, 0, VK_WHOLE_SIZE, 0, (void**)&data);
+
+	size_t dataSize = exportTexture.Width * exportTexture.Height * channels;
+	std::vector<uint8_t> pixelData(dataSize);
+	memcpy(pixelData.data(), data, dataSize);
+	vkUnmapMemory(device, exportTexture.Memory);
+
+	String outputFilename = String(filename);
+	switch (textureFormat)
+	{
+		case ExportTextureFormat::Export_BMP:
+		{
+			outputFilename += ".bmp";
+			stbi_write_bmp(outputFilename.c_str(), exportTexture.Width, exportTexture.Height, channels, pixelData.data());
+			break;
+		}
+		case ExportTextureFormat::Export_JPG:
+		{
+			outputFilename += ".jpg";
+			stbi_write_jpg(outputFilename.c_str(), exportTexture.Width, exportTexture.Height, channels, pixelData.data(), 100);
+			break;
+		}
+		case ExportTextureFormat::Export_PNG:
+		{
+			outputFilename += ".png";
+			stbi_write_png(outputFilename.c_str(), exportTexture.Width, exportTexture.Height, channels, pixelData.data(), channels * exportTexture.Width);
+			break;
+		}
+		case ExportTextureFormat::Export_TGA:
+		{
+			outputFilename += ".tga";
+			stbi_write_tga(outputFilename.c_str(), exportTexture.Width, exportTexture.Height, channels, pixelData.data());
+			break;
+		}
+	}
+
+	exportTexture.Destroy();
 }

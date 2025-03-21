@@ -3,7 +3,6 @@
 #include <Texture.h>
 #include "SceneDataBuffer.h"
 #include "implot.h"
-#include "BakedTexture.h"
 #include <stb/stb_image_write.h>
 #include <stb/stb_image.h>
 #include "MemoryManager.h"
