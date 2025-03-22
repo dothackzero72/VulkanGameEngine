@@ -1,20 +1,11 @@
 ﻿using GlmSharp;
-using Silk.NET.Maths;
-using Silk.NET.Vulkan;
-using SixLabors.ImageSharp.Memory;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using VulkanGameEngineGameObjectScripts;
-using VulkanGameEngineGameObjectScripts.Component;
 using VulkanGameEngineGameObjectScripts.Import;
+using VulkanGameEngineLevelEditor.Components;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -43,17 +34,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
     public unsafe class Mesh<T>
     {
-        private const VkBufferUsageFlagBits MeshBufferUsageSettings = VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+        protected const VkBufferUsageFlagBits MeshBufferUsageSettings = VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
                                                                  VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
                                                                  VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
                                                                  VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
-        private const VkMemoryPropertyFlagBits MeshBufferPropertySettings = VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+        protected const VkMemoryPropertyFlagBits MeshBufferPropertySettings = VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                                                                        VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
         protected IntPtr mesh;
-        protected IntPtr ParentGameObject { get; private set; }
-        protected IntPtr TransformRefrence { get; private set; }
+        protected GameObject ParentGameObject { get; private set; }
+        protected GameObjectComponent ParentGameObjectComponent { get; private set; }
+        protected Transform2DComponent TransformRefrence { get; private set; }
 
         public uint MeshBufferIndex { get; protected set; }
         public int VertexCount { get; protected set; }
@@ -66,9 +58,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public vec3 MeshRotation { get; protected set; }
         public vec3 MeshScale { get; protected set; }
 
-        public VulkanBuffer<Vertex2D> MeshVertexBuffer { get; protected set; }
-        public VulkanBuffer<UInt32> MeshIndexBuffer { get; protected set; }
-        public VulkanBuffer<mat4> MeshTransformBuffer { get; protected set; }
+        public VulkanBuffer<Vertex2D> MeshVertexBuffer { get;  set; }
+        public VulkanBuffer<UInt32> MeshIndexBuffer { get;  set; }
+        public VulkanBuffer<mat4> MeshTransformBuffer { get;  set; }
         public VulkanBuffer<MeshProperitiesStruct> PropertiesBuffer { get; set; }
 
         public Mesh()
@@ -83,23 +75,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             IndexCount = 0;
         }
 
-        public void MeshStartUp(nint parentGameObjectPtr, Vertex2D[] vertexList, uint[] indexList)
+        public Mesh(GameObjectComponent parentGameObjectComponent)
         {
-            GCHandle handle = GCHandle.FromIntPtr(parentGameObjectPtr);
-            var gameObject = handle.Target as GameObject;
+            ParentGameObject = parentGameObjectComponent.ParentGameObject;
+            ParentGameObjectComponent = parentGameObjectComponent;
+        }
 
-            ParentGameObject = parentGameObjectPtr;
 
-            var component = gameObject.GameObjectComponentList.FirstOrDefault(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent);
+        public void MeshStartUp(Vertex2D[] vertexList, uint[] indexList, Material material)
+        {
+            var component = ParentGameObject.GameObjectComponentList.FirstOrDefault(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent);
             if (component is Transform2DComponent transformComponent)
             {
-                GCHandle handle1 = GCHandle.Alloc(component, GCHandleType.Normal);
-                IntPtr transformComponentHandle = GCHandle.ToIntPtr(handle1);
-                TransformRefrence = transformComponentHandle;
+                TransformRefrence = component as Transform2DComponent;
             }
             else
             {
-                TransformRefrence = IntPtr.Zero;
+                TransformRefrence = null;
             }
 
             VertexCount = vertexList.Length;
@@ -138,20 +130,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
         }
 
-        public void Update(float deltaTime)
-        {
-
-        }
-
-        public void BufferUpdate(nint commandBuffer, float deltaTime)
+        public void Update(VkCommandBuffer commandBuffer, float deltaTime)
         {
             mat4 gameObjectTransform = mat4.Identity;
-            if (TransformRefrence != IntPtr.Zero)
+            if (TransformRefrence != null)
             {
-                GCHandle handle = GCHandle.FromIntPtr(TransformRefrence);
-                var goTransform = handle.Target as Transform2DComponent;
-                var transform = goTransform.GameObjectTransform;
-
+                var transform = TransformRefrence.GameObjectTransform;
                 gameObjectTransform = transform;
             }
 

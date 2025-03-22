@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public class Level2DRenderer : JsonRenderPass
+    public class Level2DRenderer : JsonRenderPass<Vertex2D>
     {
         public List<SpriteBatchLayer> SpriteLayerList { get; private set; }
         public List<GameObject> GameObjectList { get; private set; }

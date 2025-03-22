@@ -35,4 +35,3 @@ public:
 	void SetRendererRefForSprites(std::shared_ptr<Level2DRenderer> self);
 	SharedPtr<GameObject> SearchGameObjectsById(uint32 id);
 };
-

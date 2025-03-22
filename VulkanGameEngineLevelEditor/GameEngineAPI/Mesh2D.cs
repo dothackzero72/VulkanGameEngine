@@ -1,34 +1,55 @@
 ﻿using GlmSharp;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public class Mesh2D : Mesh<Vertex2D>
+    public unsafe class Mesh2D : Mesh<Vertex2D>
     {
         public Mesh2D() : base()
         {
         }
 
-        public Mesh2D(IntPtr gameObject) : base()
+        public Mesh2D(List<Vertex2D> vertexList, List<uint> indexList, List<Material> material) : base()
         {
+            MeshStartUp(vertexList.ToArray(), indexList.ToArray(), material.First());
+        }
 
-            List<Vertex2D> spriteVertexList = new List<Vertex2D>
-            {
-                new Vertex2D(new vec2(0.0f, 0.5f), new vec2(0.0f, 0.0f), new vec4(1.0f, 0.0f, 0.0f, 1.0f)),
-                new Vertex2D(new vec2(0.5f, 0.5f), new vec2(1.0f, 0.0f), new vec4(0.0f, 1.0f, 0.0f, 1.0f)),
-                new Vertex2D(new vec2(0.5f, 0.0f), new vec2(1.0f, 1.0f), new vec4(0.0f, 0.0f, 1.0f, 1.0f)),
-                new Vertex2D(new vec2(0.0f, 0.0f), new vec2(0.0f, 1.0f), new vec4(1.0f, 1.0f, 0.0f, 1.0f))
-            };
 
-            List<uint> spriteIndexList = new List<uint> { 0, 1, 3, 1, 2, 3 };
+        public void Update(VkCommandBuffer commandBuffer, float deltaTime)
+        {
+            base.Update(commandBuffer, deltaTime);
+        }
 
-            base.MeshStartUp(gameObject, spriteVertexList.ToArray(), spriteIndexList.ToArray());
+        public void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout shaderPipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneDataBuffer)
+        {
+            sceneDataBuffer.MeshBufferIndex = MeshBufferIndex;
+
+            ulong offsets = 0;
+            GCHandle vertexHandle = GCHandle.Alloc(MeshVertexBuffer.Buffer, GCHandleType.Pinned);
+            VkFunc.vkCmdPushConstants(commandBuffer, shaderPipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
+            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPipelineLayout, 0, 1, &descriptorSet, 0, null);
+            VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, (nint*)vertexHandle.AddrOfPinnedObject(), &offsets);
+            VkFunc.vkCmdBindIndexBuffer(commandBuffer, MeshIndexBuffer.Buffer, 0, VkIndexType.VK_INDEX_TYPE_UINT32);
+            VkFunc.vkCmdDrawIndexed(commandBuffer, (uint)IndexCount, 1, 0, 0, 0);
+        }
+
+        public void InstanceDraw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout shaderPipelineLayout, VkDescriptorSet descriptorSet, VulkanBuffer<SpriteInstanceStruct> InstanceBuffer)
+        {
+        }
+
+        public void Destroy()
+        {
+            base.Destroy();
         }
     }
 }

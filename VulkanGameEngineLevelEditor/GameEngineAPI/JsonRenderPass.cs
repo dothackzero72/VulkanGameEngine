@@ -23,7 +23,7 @@ using ImageLayout = Silk.NET.Vulkan.ImageLayout;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public unsafe class JsonRenderPass
+    public unsafe class JsonRenderPass<T>
     {
         Vk vk = Vk.GetApi();
         public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
@@ -32,7 +32,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public VkRenderPass renderPass { get; protected set; }
         public ListPtr<VkCommandBuffer> commandBufferList { get; protected set; }
         public ListPtr<VkFramebuffer> FrameBufferList { get; protected set; }
-        JsonPipeline jsonPipeline { get; set; }
+        JsonPipeline<T> jsonPipeline { get; set; }
         public JsonRenderPass() : base()
         {
         }
@@ -50,7 +50,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             CreateRenderPass(model2);
             CreateFramebuffer();
-            jsonPipeline = new JsonPipeline(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer));
+            jsonPipeline = new JsonPipeline<T>(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer), new GPUImport<T>());
         }
 
         public VkRenderPass CreateRenderPass(RenderPassBuildInfoModel model2)

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using GlmSharp;
 using Silk.NET.Vulkan;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineLevelEditor.Components;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -31,33 +33,38 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public uint SpriteLayerIndex { get; private set; }
 
         public List<Sprite> SpriteList { get; private set; }
-        public List<SpriteInstanceStruct> SpriteInstanceList { get; private set; }
-        public SpriteInstanceBuffer SpriteBuffer { get; private set; }
+        public ListPtr<SpriteInstanceStruct> SpriteInstanceList { get; private set; }
+        public VulkanBuffer<SpriteInstanceStruct> SpriteBuffer { get; private set; }
         public Mesh2D SpriteLayerMesh { get; private set; }
         public string Name;
-        public JsonPipeline SpriteRenderPipeline;
+        public JsonPipeline<Vertex2D> SpriteRenderPipeline;
 
         public SpriteBatchLayer()
         {
 
         }
 
-        public SpriteBatchLayer(List<GameObject> gameObjectList, JsonPipeline spriteRenderPipeline)
+        public SpriteBatchLayer(List<GameObject> gameObjectList, JsonPipeline<Vertex2D> spriteRenderPipeline)
         {
             SpriteRenderPipeline = spriteRenderPipeline;
             SpriteLayerMesh = new Mesh2D(SpriteVertexList, SpriteIndexList, null);
 
             foreach (var gameObject in gameObjectList)
             {
-                var sprite = (SpriteComponent)gameObject.GetComponentByComponentType(kSpriteComponent);
-                if (sprite->GetSprite())
+                var sprite = (SpriteComponent)gameObject.GetComponentByComponentType(ComponentTypeEnum.kSpriteComponent);
+                if (sprite.SpriteObj != null)
                 {
-                    SpriteList.Add(sprite->GetSprite());
-                    SpriteInstanceList.Add(*sprite->GetSprite()->GetSpriteInstance().get());
+                    SpriteList.Add(sprite.SpriteObj);
+                    SpriteInstanceList.Add(sprite.SpriteObj.SpriteInstance);
                 }
             }
 
-            SpriteBuffer = SpriteInstanceBuffer(SpriteInstanceList, SpriteLayerMesh.GetMeshBufferUsageSettings(), SpriteLayerMesh.GetMeshBufferPropertySettings(), false);
+            SpriteBuffer = new VulkanBuffer<SpriteInstanceStruct>(SpriteInstanceList.Ptr, SpriteIndexList.UCount(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+                                                                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
+                                                                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+                                                                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT, 
+                                                                                                                     VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                                                                                                     VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
             SortSpritesByLayer(SpriteList);
         }
 
@@ -77,20 +84,25 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             if (SpriteList.Any())
             {
-                SpriteBuffer.UpdateBufferMemory(SpriteInstanceList);
+                SpriteBuffer.UpdateBufferData(SpriteInstanceList.Ptr);
             }
         }
 
         public void Draw(VkCommandBuffer commandBuffer, SceneDataBuffer sceneDataBuffer)
         {
-            VkDeviceSize offsets[] = { 0 };
+            GCHandle vertexHandle = GCHandle.Alloc(SpriteLayerMesh.MeshVertexBuffer.Buffer, GCHandleType.Pinned);
+            GCHandle indexHandle = GCHandle.Alloc(SpriteLayerMesh.MeshBufferIndex, GCHandleType.Pinned);
+            GCHandle instanceHandle = GCHandle.Alloc(SpriteBuffer.Buffer, GCHandleType.Pinned);
+
+            ulong offsets = 0;
+            VkDescriptorSet descriptorSet = SpriteRenderPipeline.descriptorSet;
             VkFunc.vkCmdPushConstants(commandBuffer, SpriteRenderPipeline.pipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
             VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.pipeline);
-            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.pipelineLayout, 0, 1, &SpriteRenderPipeline.descriptorSetList[0], 0, null);
-            VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, SpriteLayerMesh.VertexBuffer, offsets);
-            VkFunc.vkCmdBindVertexBuffers(commandBuffer, 1, 1, &SpriteBuffer.Buffer, offsets);
-            VkFunc.vkCmdBindIndexBuffer(commandBuffer, SpriteLayerMesh.IndexBuffer.get(), 0, VkIndexType.VK_INDEX_TYPE_UINT32);
-            VkFunc.vkCmdDrawIndexed(commandBuffer, SpriteIndexList.UCount(), SpriteInstanceList.UCount(), 0, 0, 0);
+            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.pipelineLayout, 0, 1, &descriptorSet, 0, null);
+            VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, (nint*)vertexHandle.AddrOfPinnedObject(), &offsets);
+            VkFunc.vkCmdBindVertexBuffers(commandBuffer, 1, 1, (nint*)instanceHandle.AddrOfPinnedObject(), &offsets);
+            VkFunc.vkCmdBindIndexBuffer(commandBuffer, *(nint*)indexHandle.AddrOfPinnedObject(), 0, VkIndexType.VK_INDEX_TYPE_UINT32);
+            VkFunc.vkCmdDrawIndexed(commandBuffer, SpriteIndexList.UCount(), SpriteInstanceList.UCount, 0, 0, 0);
         }
 
         public void Destroy()

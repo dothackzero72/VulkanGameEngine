@@ -50,11 +50,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
     public struct GPUImport<T>
     {
-        public List<T> MeshList { get; }
+        public List<Mesh<T>> MeshList { get; }
         public List<Texture> TextureList { get; }
         public List<Material> MaterialList { get; }
 
-        public GPUImport(List<T> meshList, List<Texture> textureList, List<Material> materialList)
+        public GPUImport(List<Mesh<T>> meshList, List<Texture> textureList, List<Material> materialList)
         {
             MeshList = meshList;
             TextureList = textureList;
@@ -62,7 +62,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         }
     };
 
-    public unsafe class JsonPipeline
+    public unsafe class JsonPipeline<T>
     {
         Vk vk = Vk.GetApi();
         VkDevice _device { get; set; }
@@ -78,7 +78,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public JsonPipeline(String jsonPipelineFilePath, VkRenderPass renderPass, uint ConstBufferSize)
+        public JsonPipeline(String jsonPipelineFilePath, VkRenderPass renderPass, uint ConstBufferSize, GPUImport<T> gpuImport)
         {
             _device = VulkanRenderer.device;
 
@@ -87,14 +87,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             string jsonContent = File.ReadAllText(jsonPipelineFilePath);
             RenderPipelineModel model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent);
 
-            LoadDescriptorSets(model);
+            LoadDescriptorSets(model, gpuImport);
             LoadPipeline(model, renderPass, ConstBufferSize);
         }
 
-        private void LoadDescriptorSets(RenderPipelineModel model, GPUImport gpuImport)
+        private void LoadDescriptorSets(RenderPipelineModel model, GPUImport<T> gpuImport)
         {
-            var meshProperties = MemoryManager.GetGameObjectPropertiesBuffer();
-            var textures = MemoryManager.GetTexturePropertiesBuffer();
+            var meshProperties = GetMeshPropertiesBuffer<T>(gpuImport.MeshList);
+            var textures = GetTexturePropertiesBuffer(gpuImport.TextureList);
+            var material = GetMaterialPropertiesBuffer(gpuImport.MaterialList);
 
             //CreateDescriptorPool
             {
@@ -108,7 +109,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 descriptorPoolSizeList.Add(new VkDescriptorPoolSize()
                                 {
                                     type = VkDescriptorType.VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                                    descriptorCount = meshProperties.UCount()
+                                    descriptorCount = meshProperties.UCount
                                 });
                                 break;
                             }
@@ -117,7 +118,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 descriptorPoolSizeList.Add(new VkDescriptorPoolSize()
                                 {
                                     type = VkDescriptorType.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                    descriptorCount = textures.UCount()
+                                    descriptorCount = textures.UCount
                                 });
                                 break;
                             }
@@ -126,7 +127,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 descriptorPoolSizeList.Add(new VkDescriptorPoolSize()
                                 {
                                     type = VkDescriptorType.VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                                    descriptorCount = textures.UCount()
+                                    descriptorCount = textures.UCount
                                 });
                                 break;
                             }
@@ -165,7 +166,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 descriptorSetLayoutBindingList.Add(new VkDescriptorSetLayoutBinding
                                 {
                                     binding = binding.BindingNumber,
-                                    descriptorCount = meshProperties.UCount(),
+                                    descriptorCount = meshProperties.UCount,
                                     descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
                                     pImmutableSamplers = null,
                                     stageFlags = VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT
@@ -177,7 +178,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 descriptorSetLayoutBindingList.Add(new VkDescriptorSetLayoutBinding
                                 {
                                     binding = binding.BindingNumber,
-                                    descriptorCount = textures.UCount(),
+                                    descriptorCount = textures.UCount,
                                     descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                     pImmutableSamplers = null,
                                     stageFlags = VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT
@@ -189,7 +190,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                 descriptorSetLayoutBindingList.Add(new VkDescriptorSetLayoutBinding
                                 {
                                     binding = binding.BindingNumber,
-                                    descriptorCount = meshProperties.UCount(),
+                                    descriptorCount = meshProperties.UCount,
                                     descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
                                     pImmutableSamplers = null,
                                     stageFlags = VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT
@@ -254,7 +255,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                         descriptorSetList.Add(new VkWriteDescriptorSet()
                                         {
                                             sType = VkStructureType.VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                                            descriptorCount = meshProperties.UCount(),
+                                            descriptorCount = meshProperties.UCount,
                                             descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
                                             dstBinding = binding.BindingNumber,
                                             dstArrayElement = 0,
@@ -271,7 +272,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                         descriptorSetList.Add(new VkWriteDescriptorSet()
                                         {
                                             sType = VkStructureType.VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                                            descriptorCount = meshProperties.UCount(),
+                                            descriptorCount = meshProperties.UCount,
                                             descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                                             dstBinding = binding.BindingNumber,
                                             dstArrayElement = 0,
@@ -288,7 +289,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                         descriptorSetList.Add(new VkWriteDescriptorSet()
                                         {
                                             sType = VkStructureType.VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                                            descriptorCount = meshProperties.UCount(),
+                                            descriptorCount = meshProperties.UCount,
                                             descriptorType = VkDescriptorType.VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
                                             dstBinding = binding.BindingNumber,
                                             dstArrayElement = 0,

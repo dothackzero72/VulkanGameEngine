@@ -2,15 +2,9 @@
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using VulkanGameEngineGameObjectScripts;
-using VulkanGameEngineGameObjectScripts.Component;
 using VulkanGameEngineGameObjectScripts.Input;
-using VulkanGameEngineGameObjectScripts.Vulkan;
-using VulkanGameEngineLevelEditor.Vulkan;
+using VulkanGameEngineLevelEditor.Components;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -36,7 +30,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             List<uint> spriteIndexList = new List<uint> { 0, 1, 3, 1, 2, 3 };
 
-            mesh = new Mesh2D(parentGameObject);
+            mesh = new Mesh2D(spriteVertexList, spriteIndexList, null);
         }
 
         public override void Input(KeyBoardKeys key, float deltaTime)
@@ -44,15 +38,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public override void Update(float deltaTime)
+        public override void Update(VkCommandBuffer commandBuffer, float deltaTime)
         {
-            mesh.Update(deltaTime);
-        }
-
-        public override void BufferUpdate(VkCommandBuffer commandBuffer, float deltaTime)
-        {
-            mesh.BufferUpdate(commandBuffer, deltaTime);
-            mesh.Update(deltaTime);
+            mesh.Update(commandBuffer, deltaTime);
         }
 
         public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)

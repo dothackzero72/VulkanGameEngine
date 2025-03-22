@@ -108,7 +108,5 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
 
         }
-
-       public SpriteInstanceStruct GetSpriteInstance() { return SpriteInstance; }
     }
 }

@@ -206,9 +206,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ListPtr<VkVertexInputBindingDescription> vertexBindingDescription = new ListPtr<VkVertexInputBindingDescription>();
             ListPtr<VkVertexInputAttributeDescription> vertexAttributeDescription = new ListPtr<VkVertexInputAttributeDescription>();
             
-            var meshProperties = JsonPipeline.GetMeshPropertiesBuffer<NullVertex>(new List<Mesh<NullVertex>>());
+            var meshProperties = JsonPipeline<NullVertex>.GetMeshPropertiesBuffer<NullVertex>(new List<Mesh<NullVertex>>());
             var textureProperties = new ListPtr<VkDescriptorImageInfo> { texture.GetTextureBuffer() };
-            var materialProperties = JsonPipeline.GetMaterialPropertiesBuffer(new List<Material>());
+            var materialProperties = JsonPipeline<NullVertex>.GetMaterialPropertiesBuffer(new List<Material>());
             var vertexProperties = new ListPtr<VkDescriptorBufferInfo>();
             var indexProperties = new ListPtr<VkDescriptorBufferInfo>();
             var transformProperties = new ListPtr<VkDescriptorBufferInfo>();

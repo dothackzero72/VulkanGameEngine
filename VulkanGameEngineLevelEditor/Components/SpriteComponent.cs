@@ -11,7 +11,7 @@ namespace VulkanGameEngineLevelEditor.Components
 {
     public unsafe class SpriteComponent : GameObjectComponent
     {
-        public SpriteComponent SpriteObj { get; protected set; }
+        public Sprite SpriteObj { get; protected set; }
         public SpriteComponent()
         {
 

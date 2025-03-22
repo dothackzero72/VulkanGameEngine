@@ -1,7 +1,9 @@
 ﻿using GlmSharp;
+using System;
 using System.Numerics;
 using System.Runtime.InteropServices.ComTypes;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineGameObjectScripts.Import;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using vec2 = GlmSharp.vec2;
 
@@ -42,7 +44,7 @@ public class OrthographicCamera : Camera
 
     public override void Update(ref SceneDataBuffer sceneProperties)
     {
-        mat4 transform = mat4.Translate(Position) * mat4.Rotate(MathHelper.ToRadians(0.0f), new vec3(0, 0, 1));
+        mat4 transform = mat4.Translate(Position) * mat4.Rotate(CLIMath.DegreesToRadians(0.0f), new vec3(0, 0, 1));
         ViewMatrix = transform.Inverse;
 
         float Aspect = Width / Height;

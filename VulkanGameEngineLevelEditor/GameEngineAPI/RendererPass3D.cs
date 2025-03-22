@@ -32,7 +32,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         //public Texture texture { get; set; }
       //  public Texture renderedTexture { get; set; }
        // JsonRenderPass jsonRenderer { get; set; }
-        JsonPipeline jsonPipeline { get; set; }
+        JsonPipeline<Vertex3D> jsonPipeline { get; set; }
         public RendererPass3D() : base()
         {
         }
@@ -183,7 +183,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             CreateRenderPass(model2);
             CreateFramebuffer();
-            jsonPipeline = new JsonPipeline(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer));
+            jsonPipeline = new JsonPipeline<Vertex3D>(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer), new GPUImport<Vertex3D>());
             //LoadDescriptorSets(model);
             //CreateGraphicsPipeline();
 
