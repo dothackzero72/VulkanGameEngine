@@ -12,12 +12,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class GameObject
     {
-        static uint NextGameObjectId = 0;
-        uint GameObjectId = 0;
-        size_t ObjectComponentMemorySize = 0;
+        public static uint NextGameObjectId { get; private set; } = 0;
+        public uint GameObjectId { get; private set; } = 0;
+        public size_t ObjectComponentMemorySize { get; private set; } = 0;
 
         public string Name { get; protected set; }
         public List<GameObjectComponent> GameObjectComponentList { get; protected set; } = new List<GameObjectComponent>();
+        public bool GameObjectAlive { get; private set; } = true;
 
         public GameObject()
         {
@@ -115,6 +116,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 gCHandle.Free();
             }
+        }
+
+        public void RemoveComponent(GameObjectComponent component)
+        {
+            GameObjectComponentList.Remove(component);
         }
 
         public int GetGameObjectComponentCount()

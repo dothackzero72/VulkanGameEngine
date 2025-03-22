@@ -22,7 +22,8 @@ namespace VulkanGameEngineGameObjectScripts
         kRenderMesh2DComponent,
         kGameObjectTransform2DComponent,
         kInputComponent,
-        kSpriteComponent
+        kSpriteComponent,
+        kTransform2DComponent
     };
 
     [StructLayout(LayoutKind.Sequential)]

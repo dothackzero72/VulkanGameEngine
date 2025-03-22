@@ -233,6 +233,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             //Texture_SaveTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, filename, SharedPtr<Texture>(this), textureFormat, ColorChannels);
         }
 
+        public void UpdateTextureBufferIndex(uint bufferIndex)
+        {
+            TextureBufferIndex = bufferIndex;
+        }
+
         public void Destroy()
         {
 

@@ -22,6 +22,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public List<Texture> textureList { get; set; } = new List<Texture>();
         public List<GameObject> GameObjectList { get; set; } = new List<GameObject>();
         JsonRenderPass<Vertex3D> renderPass3D { get; set; } = new JsonRenderPass<Vertex3D>();
+        Level2DRenderer level2DRenderer { get; set; }
         FrameBufferRenderPass frameBufferRenderPass { get; set; } = new FrameBufferRenderPass();
         public ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>();
         public void StartUp()
@@ -47,8 +48,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             //}));
 
             // MemoryManager.ViewMemoryMap();
-           // renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
-            frameBufferRenderPass.BuildRenderPass("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\FrameBufferRenderPass.json", textureList[0]);
+            // renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
+            level2DRenderer = new Level2DRenderer("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json", new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
+            level2DRenderer.StartLeveleRenderer();
+
+            frameBufferRenderPass.BuildRenderPass("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\FrameBufferRenderPass.json", level2DRenderer.RenderedColorTextureList[0]);
         }
 
         public void Input(KeyEventArgs e)

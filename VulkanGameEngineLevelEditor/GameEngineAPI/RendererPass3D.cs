@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
@@ -183,7 +184,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             CreateRenderPass(model2);
             CreateFramebuffer();
-            jsonPipeline = new JsonPipeline<Vertex3D>(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer), new GPUImport<Vertex3D>());
+
+            List<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
+            List<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
+            jsonPipeline = new JsonPipeline<Vertex3D>(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, new GPUImport<Vertex3D>());
             //LoadDescriptorSets(model);
             //CreateGraphicsPipeline();
 

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -16,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VulkanGameEngineGameObjectScripts;
+using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
@@ -32,25 +34,39 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public VkRenderPass renderPass { get; protected set; }
         public ListPtr<VkCommandBuffer> commandBufferList { get; protected set; }
         public ListPtr<VkFramebuffer> FrameBufferList { get; protected set; }
-        JsonPipeline<T> jsonPipeline { get; set; }
+        protected List<JsonPipeline<T>> jsonPipelineList { get; set; } = new List<JsonPipeline<T>>();
+        public VkSampleCountFlagBits SampleCountFlags { get; protected set; }
         public JsonRenderPass() : base()
         {
         }
 
-        public void CreateJsonRenderPass(string jsonPath, ivec2 renderPassResolution, SampleCountFlags sampleCount = SampleCountFlags.Count1Bit)
+        public void CreateJsonRenderPass(string jsonPath, ivec2 renderPassResolution, VkSampleCountFlagBits sampleCount = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT)
         {
             RenderPassResolution = renderPassResolution;
-            //SaveRenderPass();
-            string jsonContent2 = File.ReadAllText(ConstConfig.Default2DRenderPass);
-            RenderPassBuildInfoModel model2 = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent2);
+            SampleCountFlags = sampleCount;
+
+            string jsonContent = File.ReadAllText(jsonPath);
+            RenderPassBuildInfoModel model = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
+            foreach (var item in model.RenderedTextureInfoModelList)
+            {
+                item.ImageCreateInfo.extent = new VkExtent3DModel
+                {
+                    width = (uint)renderPassResolution.x,
+                    height = (uint)renderPassResolution.y,
+                    depth = 1
+                };
+            }
 
             FrameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
             commandBufferList = new ListPtr<VkCommandBuffer>(VulkanRenderer.SwapChain.ImageCount);
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
 
-            CreateRenderPass(model2);
+            CreateRenderPass(model);
             CreateFramebuffer();
-            jsonPipeline = new JsonPipeline<T>(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer), new GPUImport<T>());
+
+            List<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
+            List<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
+            jsonPipelineList.Add(new JsonPipeline<T>(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, new GPUImport<T>()));
         }
 
         public VkRenderPass CreateRenderPass(RenderPassBuildInfoModel model2)
@@ -78,7 +94,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                         }
                     case RenderedTextureType.DepthRenderedTexture:
                         {
-                            depthTexture = new DepthTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert());
+                            depthTexture = new DepthTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_DEPTH_BIT, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert());
                             depthReferenceList.Add(new VkAttachmentReference
                             {
                                 attachment = (uint)(colorAttachmentReferenceList.Count + resolveAttachmentReferenceList.Count),
@@ -205,7 +221,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             FrameBufferList = frameBufferList;
         }
 
-        public VkCommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
+        public virtual void Update(float deltaTime)
+        {
+
+        }
+
+        public virtual VkCommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var imageIndex = VulkanRenderer.ImageIndex;
@@ -241,160 +262,26 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 extent = VulkanRenderer.SwapChain.SwapChainResolution,
             };
 
-            var descSet = jsonPipeline.descriptorSet;
+            var descSet = jsonPipelineList[0].descriptorSet;
             var commandInfo = new VkCommandBufferBeginInfo { flags = 0 };
 
             VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
             VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
             VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipeline.pipeline);
+            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelineList[0].pipeline);
             foreach (var obj in gameObjectList)
             {
-                obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, descSet, sceneDataBuffer);
+                obj.Draw(commandBuffer, jsonPipelineList[0].pipeline, jsonPipelineList[0].pipelineLayout, descSet, sceneDataBuffer);
             }
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);
 
             return commandBuffer;
-
         }
-        private void SaveRenderPass()
-        {
-            RenderPassBuildInfoModel modelInfo = new RenderPassBuildInfoModel()
-            {
-                RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>
-                {
-                    new RenderedTextureInfoModel
-                    {
-                        ImageCreateInfo = new VkImageCreateInfoModel()
-                        {
-                            imageType = VkImageType.VK_IMAGE_TYPE_2D,
-                            format= VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
-                            mipLevels = 1,
-                            arrayLayers = 1,
-                            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
-                            tiling = 0,
-                            usage = VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
-                            VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
-                            VkImageUsageFlagBits.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-                            VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-                            sharingMode = 0,
-                            initialLayout =  0,
-                            _name = string.Empty
-                        },
-                        SamplerCreateInfo = new VkSamplerCreateInfoModel()
-                        {
-                            magFilter = 0,
-                            minFilter = 0,
-                            mipmapMode = (VkSamplerMipmapMode)1,
-                            addressModeU = 0,
-                            addressModeV = 0,
-                            addressModeW = 0,
-                            mipLodBias = 0.0f,
-                            anisotropyEnable = true,
-                            maxAnisotropy = 16.0f,
-                            compareEnable = false,
-                            compareOp = (VkCompareOp)7,
-                            minLod = 0.0f,
-                            maxLod = 1.0f,
-                            borderColor = (VkBorderColor)3,
-                            unnormalizedCoordinates = false,
-                            _name = string.Empty
-                        },
-                        AttachmentDescription = new VkAttachmentDescriptionModel()
-                        {
-                            format = VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
-                            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
-                            loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
-                            storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_STORE,
-                            stencilLoadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                            stencilStoreOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                            initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
-                            finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL,
-                            _name = string.Empty
-                        },
-                        //IsRenderedToSwapchain = true,
-                        TextureType = RenderedTextureType.ColorRenderedTexture,
-                        RenderedTextureInfoName = "texture",
-                        _name = string.Empty
-                    },
-                      new RenderedTextureInfoModel
-                    {
-                        ImageCreateInfo = new VkImageCreateInfoModel()
-                        {
-                            imageType = (VkImageType)1,
-                            format = VkFormat.VK_FORMAT_D32_SFLOAT,
-                            mipLevels = 1,
-                            arrayLayers = 1,
-                            samples = (VkSampleCountFlagBits)1,
-                            tiling = 0,
-                            usage =  VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
-                                    VkImageUsageFlagBits.VK_IMAGE_USAGE_SAMPLED_BIT |
-                                    VkImageUsageFlagBits.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
-                                    VkImageUsageFlagBits.VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-                            sharingMode = 0,
-                            queueFamilyIndexCount = 0,
-                            pQueueFamilyIndices = null,
-                            initialLayout = 0,
-                            _name = string.Empty
-                        },
-                        SamplerCreateInfo = new VkSamplerCreateInfoModel()
-                        {
-                            magFilter = 0,
-                            minFilter = 0,
-                            mipmapMode = (VkSamplerMipmapMode)1,
-                            addressModeU = 0,
-                            addressModeV = 0,
-                            addressModeW = 0,
-                            mipLodBias = 0.0f,
-                            anisotropyEnable = true,
-                            maxAnisotropy = 16.0f,
-                            compareEnable = false,
-                            compareOp = (VkCompareOp)7,
-                            minLod = 0.0f,
-                            maxLod = 1.0f,
-                            borderColor = (VkBorderColor)2,
-                            unnormalizedCoordinates = false,
-                            _name = string.Empty
-                        },
-                        AttachmentDescription = new VkAttachmentDescriptionModel()
-                        {
-                            format = VkFormat.VK_FORMAT_D32_SFLOAT,
-                            samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
-                            loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
-                            storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                            stencilLoadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                            stencilStoreOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                            initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
-                            finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-                            _name = string.Empty
-                        },
-                        //IsRenderedToSwapchain = false,
-                        TextureType = RenderedTextureType.DepthRenderedTexture,
-                        RenderedTextureInfoName = "texture",
-                        _name = string.Empty
-                    }
-                },
-                SubpassDependencyList = new List<VkSubpassDependencyModel>()
-                {
-                     new VkSubpassDependencyModel
-                            {
-                                srcSubpass = uint.MaxValue,
-                                dstSubpass = 0,
-                                srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                                dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                                srcAccessMask = 0,
-                                dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                                _name = string.Empty
-                            },
-                },
-                RenderPipelineList = new List<string>(),
-                _name = "Default2DRenderPass"
-            };
 
-            string jsonString = JsonConvert.SerializeObject(modelInfo, Formatting.Indented);
-            File.WriteAllText(ConstConfig.Default2DRenderPass, jsonString);
+        public virtual void Destroy()
+        {
         }
     }
 }

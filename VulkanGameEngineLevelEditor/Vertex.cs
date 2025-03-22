@@ -1,10 +1,13 @@
 ﻿using GlmSharp;
+using Microsoft.CodeAnalysis;
 using Silk.NET.Vulkan;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
+using static System.Windows.Forms.DataFormats;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -189,6 +192,138 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             });
 
             return attributeDescriptions;
+        }
+    }
+
+    public unsafe struct SpriteInstanceVertex2D
+    {
+        public vec2 SpritePosition;
+        public vec4 UVOffset;
+        public vec2 SpriteSize;
+        public ivec2 FlipSprite;
+        public vec4 Color;
+        public mat4 InstanceTransform;
+        public uint MaterialID;
+
+        public SpriteInstanceVertex2D()
+        {
+            SpritePosition = new vec2(0.0f);
+            UVOffset = new vec4(0.0f);
+            SpriteSize = new vec2(0.0f);
+            FlipSprite = new ivec2(0);
+            Color = new vec4(0.0f);
+            MaterialID = 0;
+            InstanceTransform = mat4.Identity;
+        }
+
+        public SpriteInstanceVertex2D(vec2 spritePosition, vec4 uv, vec2 spriteSize, ivec2 flipSprite, vec4 color, uint materialID, mat4 instanceTransform, uint spriteLayer)
+        {
+            SpritePosition = spritePosition;
+            UVOffset = uv;
+            SpriteSize = spriteSize;
+            FlipSprite = flipSprite;
+            Color = color;
+            MaterialID = materialID;
+            InstanceTransform = instanceTransform;
+        }
+
+        static public List<VkVertexInputBindingDescription> GetBindingDescriptions()
+        {
+            return new List<VkVertexInputBindingDescription>
+            {
+                   new VkVertexInputBindingDescription
+                {
+                    binding = 1,
+                    stride = (uint)Marshal.SizeOf(typeof(SpriteInstanceVertex2D)),
+                    inputRate = VkVertexInputRate.VK_VERTEX_INPUT_RATE_INSTANCE
+                }
+            };
+        }
+
+        static public List<VkVertexInputAttributeDescription> GetAttributeDescriptions()
+        {
+            uint offsetInstanceTransform = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(SpriteInstanceVertex2D.InstanceTransform));
+
+            return new List<VkVertexInputAttributeDescription>
+            {
+                new VkVertexInputAttributeDescription
+                {
+                    location = 0,
+                    binding = 1,
+                    format = VkFormat.VK_FORMAT_R32G32_SFLOAT,
+                    offset = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(SpritePosition)).ToInt32()
+                },
+                new VkVertexInputAttributeDescription
+                {
+                    location = 1,
+                    binding = 1,
+                    format = VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    offset = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(UVOffset)).ToInt32()
+                },
+                new VkVertexInputAttributeDescription
+                {
+                    location = 2,
+                    binding = 1,
+                    format = VkFormat.VK_FORMAT_R32G32_SFLOAT,
+                    offset = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(SpriteSize)).ToInt32()
+                },
+                new VkVertexInputAttributeDescription
+                {
+                    location = 3,
+                    binding = 1,
+                    format = VkFormat.VK_FORMAT_R32G32_SINT,
+                    offset = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(FlipSprite)).ToInt32()
+                },
+                new VkVertexInputAttributeDescription
+                {
+                    location = 4,
+                    binding = 1,
+                    format = VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    offset = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(Color)).ToInt32()
+                },
+                new VkVertexInputAttributeDescription
+                {
+                    location = 5,
+                    binding = 1,
+                    format = VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    offset = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(InstanceTransform)).ToInt32()
+                },
+                new VkVertexInputAttributeDescription
+                {
+                    location = 6,
+                    binding = 1,
+                    format = VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    offset = offsetInstanceTransform + (uint)sizeof(vec4)
+                },
+                new VkVertexInputAttributeDescription
+                {
+                    location = 7,
+                    binding = 1,
+                    format = VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    offset = offsetInstanceTransform + (uint)sizeof(vec4) * 2
+                },
+                new VkVertexInputAttributeDescription
+                {
+                    location = 8,
+                    binding = 1,
+                    format = VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    offset = offsetInstanceTransform + (uint)sizeof(vec4) * 3
+                },
+                new VkVertexInputAttributeDescription
+                {
+                    location = 9,
+                    binding = 1,
+                    format = VkFormat.VK_FORMAT_R32_UINT,
+                    offset = offsetInstanceTransform + (uint)sizeof(vec4) * 4
+                },
+                new VkVertexInputAttributeDescription
+                {
+                    location = 10,
+                    binding = 1,
+                    format = VkFormat.VK_FORMAT_R32_UINT,
+                    offset = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(MaterialID)).ToInt32()
+                }
+            };
         }
     }
 }

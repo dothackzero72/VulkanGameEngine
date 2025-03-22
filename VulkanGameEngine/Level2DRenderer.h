@@ -32,6 +32,5 @@ public:
 	virtual VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer) override;
 	virtual void Destroy() override;
 
-	void SetRendererRefForSprites(std::shared_ptr<Level2DRenderer> self);
 	SharedPtr<GameObject> SearchGameObjectsById(uint32 id);
 };

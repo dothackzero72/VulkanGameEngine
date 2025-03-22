@@ -50,9 +50,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
     public struct GPUImport<T>
     {
-        public List<Mesh<T>> MeshList { get; }
-        public List<Texture> TextureList { get; }
-        public List<Material> MaterialList { get; }
+        public List<Mesh<T>> MeshList { get; set; }
+        public List<Texture> TextureList { get; set; }
+        public List<Material> MaterialList { get; set; }
 
         public GPUImport(List<Mesh<T>> meshList, List<Texture> textureList, List<Material> materialList)
         {
@@ -78,7 +78,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public JsonPipeline(String jsonPipelineFilePath, VkRenderPass renderPass, uint ConstBufferSize, GPUImport<T> gpuImport)
+        public JsonPipeline(String jsonPipelineFilePath, VkRenderPass renderPass, uint ConstBufferSize, List<VkVertexInputBindingDescription> vertexBindings, List<VkVertexInputAttributeDescription> vertexAttributes, GPUImport<T> gpuImport)
         {
             _device = VulkanRenderer.device;
 
