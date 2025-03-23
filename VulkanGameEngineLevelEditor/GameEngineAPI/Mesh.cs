@@ -151,9 +151,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 MaterialIndex = MeshBufferIndex,
                 MeshTransform = gameObjectTransform * MeshMatrix,
             };
-
-            void* dataPtr = Unsafe.AsPointer(ref properties);
-            PropertiesBuffer.UpdateBufferData(dataPtr);
+            PropertiesBuffer.UpdateBufferMemory(properties);
         }
 
         public void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)

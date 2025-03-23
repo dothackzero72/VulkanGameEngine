@@ -114,7 +114,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void Destroy()
@@ -142,7 +142,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetMetallic(float value)
@@ -155,7 +155,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetRoughness(float value)
@@ -168,7 +168,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetAmbientOcclusion(float value)
@@ -181,7 +181,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetEmission(vec3 color)
@@ -194,7 +194,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetAlpha(float value)
@@ -207,7 +207,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetAlbedoMap(Texture texture)
@@ -220,7 +220,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetMetallicRoughnessMap(Texture texture)
@@ -233,7 +233,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetMetallicMap(Texture texture)
@@ -246,7 +246,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetRoughnessMap(Texture texture)
@@ -259,7 +259,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetAmbientOcclusionMap(Texture texture)
@@ -272,7 +272,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetNormalMap(Texture texture)
@@ -285,7 +285,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetDepthMap(Texture texture)
@@ -298,7 +298,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetAlphaMap(Texture texture)
@@ -311,7 +311,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetEmissionMap(Texture texture)
@@ -324,7 +324,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public void SetHeightMap(Texture texture)
@@ -337,7 +337,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer.UpdateBufferData(ptr);
+            MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
         public VkDescriptorBufferInfo GetMaterialPropertiesBuffer()

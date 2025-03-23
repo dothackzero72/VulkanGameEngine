@@ -111,15 +111,15 @@ public:
 		UsingStagingBuffer = usingStagingBuffer;
 		BufferUsage = usage;
 
-		void* bufferData2 = static_cast<void*>(&bufferData);
+		void* bufferDataPtr = static_cast<void*>(&bufferData);
 
 		if (UsingStagingBuffer)
 		{
-			CreateStagingBuffer(bufferData2);
+			CreateStagingBuffer(bufferDataPtr);
 		}
 		else
 		{
-			CreateBuffer(bufferData2);
+			CreateBuffer(bufferDataPtr);
 		}
 	}
 
@@ -135,15 +135,15 @@ public:
 		UsingStagingBuffer = usingStagingBuffer;
 		BufferUsage = usage;
 
-		void* bufferData2 = static_cast<void*>(bufferDataList.data());
+		void* bufferDataPtr = static_cast<void*>(bufferDataList.data());
 
 		if (UsingStagingBuffer)
 		{
-			CreateStagingBuffer(bufferData2);
+			CreateStagingBuffer(bufferDataPtr);
 		}
 		else
 		{
-			CreateBuffer(bufferData2);
+			CreateBuffer(bufferDataPtr);
 		}
 	}
 
@@ -159,15 +159,15 @@ public:
 		UsingStagingBuffer = usingStagingBuffer;
 		BufferUsage = usage;
 
-		void* bufferData2 = static_cast<void*>(bufferDataList.data());
+		void* bufferDataPtr = static_cast<void*>(bufferDataList.data());
 
 		if (UsingStagingBuffer)
 		{
-			CreateStagingBuffer(bufferData2);
+			CreateStagingBuffer(bufferDataPtr);
 		}
 		else
 		{
-			CreateBuffer(bufferData2);
+			CreateBuffer(bufferDataPtr);
 		}
 	}
 
@@ -177,6 +177,10 @@ public:
 
 	static VkResult CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 	{
+		_device = std::make_shared<VkDevice>(cRenderer.Device);
+		_physicalDevice = std::make_shared<VkPhysicalDevice>(cRenderer.PhysicalDevice);
+		_commandPool = std::make_shared<VkCommandPool>(cRenderer.CommandPool);
+		_graphicsQueue = std::make_shared<VkQueue>(cRenderer.SwapChain.GraphicsQueue);
 		return Buffer_CopyBuffer(*_device.get(), *_commandPool.get(), cRenderer.SwapChain.GraphicsQueue, srcBuffer, dstBuffer, size);
 	}
 
@@ -229,7 +233,7 @@ public:
 		}
 	}
 
-	void UpdateBufferMemory(void* bufferData, uint32 totalBufferSize)
+	void UpdateBufferMemory(void* bufferData, VkDeviceSize totalBufferSize)
 	{
 		const VkDeviceSize newBufferSize = totalBufferSize;
 		if (UsingStagingBuffer)
@@ -243,7 +247,7 @@ public:
 				}
 			}
 
-			Buffer_UpdateStagingBufferData(*_device.get(), *_commandPool.get(), *_graphicsQueue.get(), StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData.data(), BufferSize);
+			Buffer_UpdateStagingBufferData(*_device.get(), *_commandPool.get(), *_graphicsQueue.get(), StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData, BufferSize);
 		}
 		else
 		{
@@ -256,7 +260,7 @@ public:
 				}
 			}
 
-			VkResult result = Buffer_UpdateBufferMemory(*_device.get(), BufferMemory, (void*)bufferData.data(), newBufferSize);
+			VkResult result = Buffer_UpdateBufferMemory(*_device.get(), BufferMemory, (void*)bufferData, newBufferSize);
 			if (result != VK_SUCCESS)
 			{
 				RENDERER_ERROR("Failed to update buffer memory.");
@@ -285,17 +289,6 @@ public:
 		Buffer_UnmapBufferMemory(*_device.get(), BufferMemory, &IsMapped);
 
 		return DataList;
-	}
-
-	VkDescriptorBufferInfo* GetDescriptorbuffer()
-	{
-		DescriptorBufferInfo = VkDescriptorBufferInfo
-		{
-			.buffer = Buffer,
-			.offset = 0,
-			.range = VK_WHOLE_SIZE
-		};
-		return &DescriptorBufferInfo;
 	}
 
 	void DestroyBuffer()

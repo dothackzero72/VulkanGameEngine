@@ -22,10 +22,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class Level2DRenderer : JsonRenderPass<Vertex2D>
     {
-        public List<SpriteBatchLayer> SpriteLayerList { get; private set; }
-        public List<GameObject> GameObjectList { get; private set; }
-        public List<Texture> TextureList { get; private set; }
-        public List<Material> MaterialList { get; private set; }
+        public List<SpriteBatchLayer> SpriteLayerList { get; private set; } = new List<SpriteBatchLayer>();
+        public List<GameObject> GameObjectList { get; private set; } = new List<GameObject>();
+        public List<Texture> TextureList { get; private set; } = new List<Texture>();
+        public List<Material> MaterialList { get; private set; } = new List<Material>();
 
         public Level2DRenderer()
         {
@@ -59,7 +59,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void StartLeveleRenderer()
         {
-            TextureList.Add(new Texture("../Textures/MegaMan_diffuse.bmp", VkFormat.VK_FORMAT_R8G8B8A8_SRGB, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
+            TextureList.Add(new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp", VkFormat.VK_FORMAT_R8G8B8A8_SRGB, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
             MaterialList.Add(new Material("Material1"));
             MaterialList.Last().SetAlbedoMap(TextureList[0]);
 
@@ -91,7 +91,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 vertexAttribute.Add(instanceVar);
             }
 
-            jsonPipelineList[0] = new JsonPipeline<Vertex2D>("../Pipelines/Default2DPipeline.json", renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, gpuImport);
+            jsonPipelineList[0] = new JsonPipeline<Vertex2D>("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\Default2DPipeline.json", renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, gpuImport);
             SpriteLayerList[0].SpriteRenderPipeline = jsonPipelineList[0];
         }
 

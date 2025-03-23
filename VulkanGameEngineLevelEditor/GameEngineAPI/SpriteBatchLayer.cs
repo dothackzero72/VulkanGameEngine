@@ -36,8 +36,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public ListPtr<SpriteInstanceStruct> SpriteInstanceList { get; private set; }
         public VulkanBuffer<SpriteInstanceStruct> SpriteBuffer { get; private set; }
         public Mesh2D SpriteLayerMesh { get; private set; }
-        public string Name;
-        public JsonPipeline<Vertex2D> SpriteRenderPipeline;
+        public string Name { get; private set; }
+        public JsonPipeline<Vertex2D> SpriteRenderPipeline { get; set; }
 
         public SpriteBatchLayer()
         {
@@ -84,7 +84,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             if (SpriteList.Any())
             {
-                SpriteBuffer.UpdateBufferData(SpriteInstanceList.Ptr);
+                SpriteBuffer.UpdateBufferMemory(SpriteInstanceList.ToList());
             }
         }
 

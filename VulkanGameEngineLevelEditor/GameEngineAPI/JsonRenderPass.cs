@@ -98,7 +98,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                             depthReferenceList.Add(new VkAttachmentReference
                             {
                                 attachment = (uint)(colorAttachmentReferenceList.Count + resolveAttachmentReferenceList.Count),
-                                layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+                                layout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL
                             });
                             break;
                         }
@@ -188,14 +188,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ListPtr<VkFramebuffer> frameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
             for (int x = 0; x < VulkanRenderer.SwapChain.ImageCount; x++)
             {
-                ListPtr<VkImageView> TextureAttachmentList = new ListPtr<VkImageView>(VulkanRenderer.SwapChain.ImageCount);
+                ListPtr<VkImageView> textureAttachmentList = new ListPtr<VkImageView>();
                 foreach (var texture in RenderedColorTextureList)
                 {
-                    TextureAttachmentList.Add(RenderedColorTextureList.First().View);
+                    textureAttachmentList.Add(RenderedColorTextureList.First().View);
                 }
                 if (depthTexture != null)
                 {
-                    TextureAttachmentList.Add(depthTexture.View);
+                    textureAttachmentList.Add(depthTexture.View);
                 }
 
 
@@ -203,8 +203,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
                     renderPass = renderPass,
-                    attachmentCount = TextureAttachmentList.UCount,
-                    pAttachments = TextureAttachmentList.Ptr,
+                    attachmentCount = textureAttachmentList.UCount,
+                    pAttachments = textureAttachmentList.Ptr,
                     width = (uint)RenderPassResolution.x,
                     height = (uint)RenderPassResolution.y,
                     layers = 1,

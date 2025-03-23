@@ -292,5 +292,15 @@ namespace VulkanGameEngineLevelEditor
         {
             return GetEnumerator();
         }
+
+        public List<T> ToList()
+        {
+            List<T> list = new List<T>();
+            for(int x  = 0; x < _count; x++)
+            {
+                list.Add(_ptr[x]);
+            }
+            return list;
+        }
     }
 }
