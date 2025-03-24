@@ -69,6 +69,23 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
         }
 
+        public VulkanBuffer(IntPtr bufferData, uint bufferElementCount, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer)
+        {
+            BufferSize = (ulong)sizeof(T) * bufferElementCount;
+            BufferProperties = properties;
+            UsingStagingBuffer = usingStagingBuffer;
+            BufferUsage = usage;
+
+            if (UsingStagingBuffer)
+            {
+                CreateStagingBuffer((void*)bufferData);
+            }
+            else
+            {
+                CreateBuffer((void*)bufferData);
+            }
+        }
+
         public VulkanBuffer(T bufferData, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer)
         {
             BufferSize = (ulong)sizeof(T);
@@ -87,15 +104,17 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 CreateBuffer(bufferDataPtr);
             }
         }
-
+                                    
         public VulkanBuffer(List<T> bufferDataList, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer)
         {
+            var arrayList = bufferDataList.ToArray();
+
             BufferSize = (ulong)(sizeof(T) * bufferDataList.UCount());
             BufferProperties = properties;
             UsingStagingBuffer = usingStagingBuffer;
             BufferUsage = usage;
 
-            GCHandle handle = GCHandle.Alloc(bufferDataList, GCHandleType.Pinned);
+            GCHandle handle = GCHandle.Alloc(arrayList, GCHandleType.Pinned);
             void* bufferDataPtr = (void*)handle.AddrOfPinnedObject();
 
             if (UsingStagingBuffer)
@@ -134,26 +153,20 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         private VkResult CreateBuffer(void* bufferData)
         {
-            GCHandle bufferHandle = GCHandle.Alloc(Buffer, GCHandleType.Pinned);
-            GCHandle bufferMemoryHandle = GCHandle.Alloc(BufferMemory, GCHandleType.Pinned);
-            VkResult result = GameEngineImport.DLL_Buffer_CreateBuffer(_device, _physicalDevice, (nint*)bufferHandle.AddrOfPinnedObject(), (nint*)bufferMemoryHandle.AddrOfPinnedObject(), bufferData, BufferSize, BufferProperties, BufferUsage);
-            bufferHandle.Free();
-            bufferMemoryHandle.Free();
+            VkResult result = GameEngineImport.DLL_Buffer_CreateBuffer(_device, _physicalDevice, out VkBuffer buffer, out VkDeviceMemory bufferMemory, bufferData, BufferSize, BufferProperties, BufferUsage);
+            Buffer = buffer;
+            BufferMemory = bufferMemory;
 
             return result;
         }
 
         private VkResult CreateStagingBuffer(void* bufferData)
         {
-            GCHandle stagingBufferHandle = GCHandle.Alloc(StagingBuffer, GCHandleType.Pinned);
-            GCHandle bufferHandle = GCHandle.Alloc(Buffer, GCHandleType.Pinned);
-            GCHandle stagingBufferMemoryHandle = GCHandle.Alloc(StagingBuffer, GCHandleType.Pinned);
-            GCHandle bufferMemoryHandle = GCHandle.Alloc(Buffer, GCHandleType.Pinned);
-            VkResult result = GameEngineImport.DLL_Buffer_CreateStagingBuffer(_device, _physicalDevice, _commandPool, _graphicsQueue, (nint*)stagingBufferHandle.AddrOfPinnedObject(), (nint*)bufferHandle.AddrOfPinnedObject(), (nint*)stagingBufferMemoryHandle.AddrOfPinnedObject(), (nint*)bufferMemoryHandle.AddrOfPinnedObject(), bufferData, BufferSize, BufferUsage, BufferProperties);
-            stagingBufferHandle.Free();
-            bufferHandle.Free();
-            stagingBufferMemoryHandle.Free();
-            bufferMemoryHandle.Free();
+            VkResult result = GameEngineImport.DLL_Buffer_CreateStagingBuffer(_device, _physicalDevice, _commandPool, _graphicsQueue, out VkBuffer stagingBuffer, out VkDeviceMemory stagingBufferMemory, out VkBuffer buffer, out VkDeviceMemory bufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
+            StagingBuffer = stagingBuffer;
+            Buffer = buffer;
+            BufferMemory = bufferMemory;
+            StagingBufferMemory = stagingBufferMemory;
             return result;
         }
 
@@ -176,27 +189,24 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public void UpdateBufferMemory(T bufferData)
         {
             GCHandle bufferDataHandle = GCHandle.Alloc(bufferData, GCHandleType.Pinned);
-            GCHandle stagingBufferMemoryHandle = GCHandle.Alloc(StagingBuffer, GCHandleType.Pinned);
-            GCHandle bufferMemoryHandle = GCHandle.Alloc(Buffer, GCHandleType.Pinned);
             if (UsingStagingBuffer)
             {
-                GameEngineImport.DLL_Buffer_UpdateStagingBufferData(_device, _commandPool, _graphicsQueue, StagingBuffer, Buffer, (nint*)stagingBufferMemoryHandle.AddrOfPinnedObject(), (nint*)bufferMemoryHandle.AddrOfPinnedObject(), (void*)bufferDataHandle.AddrOfPinnedObject(), BufferSize);
+                GameEngineImport.DLL_Buffer_UpdateStagingBufferData(_device, _commandPool, _graphicsQueue, StagingBuffer, Buffer, out VkBuffer stagingBufferMemory, out VkBuffer bufferMemory, (void*)bufferDataHandle.AddrOfPinnedObject(), BufferSize);
+                StagingBuffer = stagingBufferMemory;
+                Buffer = bufferMemory;
             }
             else
             {
-                GameEngineImport.DLL_Buffer_UpdateBufferData(_device, (nint*)bufferMemoryHandle.AddrOfPinnedObject(), (void*)bufferDataHandle.AddrOfPinnedObject(), BufferSize);
+                GameEngineImport.DLL_Buffer_UpdateBufferData(_device, out VkBuffer bufferMemory, (void*)bufferDataHandle.AddrOfPinnedObject(), BufferSize);
+                BufferMemory = bufferMemory;
             }
             bufferDataHandle.Free();
-            stagingBufferMemoryHandle.Free();
-            bufferMemoryHandle.Free();
         }
 
         public void UpdateBufferMemory(List<T> bufferData)
         {
             VkDeviceSize newBufferSize = (ulong)(sizeof(T) * bufferData.Count());
             GCHandle bufferDataHandle = GCHandle.Alloc(bufferData, GCHandleType.Pinned);
-            GCHandle stagingBufferMemoryHandle = GCHandle.Alloc(StagingBuffer, GCHandleType.Pinned);
-            GCHandle bufferMemoryHandle = GCHandle.Alloc(Buffer, GCHandleType.Pinned);
             if (UsingStagingBuffer)
             {
                 if (BufferSize != newBufferSize)
@@ -204,13 +214,13 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     if (UpdateBufferSize(StagingBuffer, StagingBufferMemory, newBufferSize) != VkResult.VK_SUCCESS)
                     {
                         bufferDataHandle.Free();
-                        stagingBufferMemoryHandle.Free();
-                        bufferMemoryHandle.Free();
                         throw new Exception("Failed to update staging buffer size.");
                     }
                 }
 
-                GameEngineImport.DLL_Buffer_UpdateStagingBufferData(_device, _commandPool, _graphicsQueue, StagingBuffer, Buffer, (nint*)stagingBufferMemoryHandle.AddrOfPinnedObject(), (nint*)bufferMemoryHandle.AddrOfPinnedObject(), (nint*)bufferDataHandle.AddrOfPinnedObject(), BufferSize);
+                GameEngineImport.DLL_Buffer_UpdateStagingBufferData(_device, _commandPool, _graphicsQueue, StagingBuffer, Buffer, out VkBuffer stagingBufferMemory, out VkBuffer bufferMemory, (nint*)bufferDataHandle.AddrOfPinnedObject(), BufferSize);
+                StagingBuffer = stagingBufferMemory;
+                Buffer = bufferMemory;
             }
             else
             {
@@ -219,8 +229,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     if (UpdateBufferSize(Buffer, BufferMemory, newBufferSize) != VkResult.VK_SUCCESS)
                     {
                         bufferDataHandle.Free();
-                        stagingBufferMemoryHandle.Free();
-                        bufferMemoryHandle.Free();
                         throw new Exception("Failed to update buffer size.");
                     }
                 }
@@ -229,34 +237,28 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 if (result != VkResult.VK_SUCCESS)
                 {
                     bufferDataHandle.Free();
-                    stagingBufferMemoryHandle.Free();
-                    bufferMemoryHandle.Free();
                     throw new Exception("Failed to update buffer memory.");
                 }
             }
             bufferDataHandle.Free();
-            stagingBufferMemoryHandle.Free();
-            bufferMemoryHandle.Free();
         }
 
         public void UpdateBufferMemory(void* bufferData, VkDeviceSize totalBufferSize)
         {
             VkDeviceSize newBufferSize = totalBufferSize;
-            GCHandle stagingBufferMemoryHandle = GCHandle.Alloc(StagingBuffer, GCHandleType.Pinned);
-            GCHandle bufferMemoryHandle = GCHandle.Alloc(Buffer, GCHandleType.Pinned);
             if (UsingStagingBuffer)
             {
                 if (BufferSize != newBufferSize)
                 {
                     if (UpdateBufferSize(StagingBuffer, StagingBufferMemory, newBufferSize) != VkResult.VK_SUCCESS)
                     {
-                        stagingBufferMemoryHandle.Free();
-                        bufferMemoryHandle.Free();
                         throw new Exception("Failed to update staging buffer size.");
                     }
                 }
 
-                GameEngineImport.DLL_Buffer_UpdateStagingBufferData(_device, _commandPool, _graphicsQueue, StagingBuffer, Buffer, (nint*)stagingBufferMemoryHandle.AddrOfPinnedObject(), (nint*)bufferMemoryHandle.AddrOfPinnedObject(), bufferData, BufferSize);
+                GameEngineImport.DLL_Buffer_UpdateStagingBufferData(_device, _commandPool, _graphicsQueue, StagingBuffer, Buffer, out VkBuffer stagingBufferMemory, out VkBuffer bufferMemory, bufferData, BufferSize);
+                StagingBuffer = stagingBufferMemory;
+                Buffer = bufferMemory;
             }
             else
             {
@@ -264,8 +266,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 {
                     if (UpdateBufferSize(Buffer, BufferMemory, newBufferSize) != VkResult.VK_SUCCESS)
                     {
-                        stagingBufferMemoryHandle.Free();
-                        bufferMemoryHandle.Free();
                         throw new Exception("Failed to update buffer size.");
                     }
                 }
@@ -273,13 +273,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 VkResult result = GameEngineImport.DLL_Buffer_UpdateBufferMemory(_device, BufferMemory, bufferData, newBufferSize);
                 if (result != VkResult.VK_SUCCESS)
                 {
-                    stagingBufferMemoryHandle.Free();
-                    bufferMemoryHandle.Free();
                     throw new Exception("Failed to update buffer memory.");
                 }
             }
-            stagingBufferMemoryHandle.Free();
-            bufferMemoryHandle.Free();
         }
 
         //public List<T> CheckBufferContents()

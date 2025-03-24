@@ -52,7 +52,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             level2DRenderer = new Level2DRenderer("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json", new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
             level2DRenderer.StartLeveleRenderer();
 
-            frameBufferRenderPass.BuildRenderPass("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\FrameBufferRenderPass.json", level2DRenderer.RenderedColorTextureList[0]);
+            GPUImport<NullVertex> imports = new GPUImport<NullVertex>()
+            {
+                TextureList = new List<Texture>() { level2DRenderer.RenderedColorTextureList[0] },
+                MaterialList = new List<Material>(),
+                MeshList = new List<Mesh<NullVertex>>()
+            };
+
+            frameBufferRenderPass.BuildRenderPass("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\FrameBufferRenderPass.json", imports);
         }
 
         public void Input(KeyEventArgs e)
@@ -84,7 +91,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             VulkanRenderer.StartFrame();
             //GameEngineImport.DLL_Renderer_StartFrame(VulkanRenderer.device, VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.AcquireImageSemaphores.Ptr, &imageIndex, &commandIndex, &rebuildRendererFlag);
-          //  commandBufferList.Add(renderPass3D.Draw(GameObjectList, sceneProperties));
+            commandBufferList.Add(level2DRenderer.Draw(GameObjectList, sceneProperties));
             commandBufferList.Add(frameBufferRenderPass.Draw());
             //GameEngineImport.DLL_Renderer_EndFrame(VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.AcquireImageSemaphores.Ptr, VulkanRenderer.PresentImageSemaphores.Ptr, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.graphicsQueue, VulkanRenderer.presentQueue, commandIndex, imageIndex, commandBufferList.Ptr, commandBufferList.UCount, &rebuildRendererFlag);
            VulkanRenderer.EndFrame(commandBufferList);

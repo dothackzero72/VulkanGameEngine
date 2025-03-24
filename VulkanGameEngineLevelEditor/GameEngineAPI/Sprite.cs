@@ -27,7 +27,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public SpriteInstanceStruct SpriteInstance;
         public Animation2D CurrentSpriteAnimation;
 
-        public List<Animation2D> AnimationList;
+        public List<Animation2D> AnimationList = new List<Animation2D>();
         public uint CurrentFrame = 0;
 
         public bool SpriteAlive = true;

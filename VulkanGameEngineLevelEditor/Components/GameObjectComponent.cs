@@ -26,7 +26,7 @@ namespace VulkanGameEngineLevelEditor.Components
 
         }
 
-        public GameObjectComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject, ComponentTypeEnum componentType)
+        public GameObjectComponent(uint gameObjectId, ComponentTypeEnum componentType)
         {
             //CPPcomponentPtr = cppComponentPtr;
             //CPPgameObjectPtr = cppGameObjectPtr;
@@ -38,15 +38,15 @@ namespace VulkanGameEngineLevelEditor.Components
             ComponentType = componentType;
         }
 
-        public GameObjectComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject, string nString, ComponentTypeEnum componentType)
+        public GameObjectComponent(uint gameObjectId,  string name, ComponentTypeEnum componentType)
         {
             //CPPcomponentPtr = cppComponentPtr;
             //CPPgameObjectPtr = cppGameObjectPtr;
 
-            //GCHandle handle = GCHandle.FromIntPtr(csParentGameObject);
-            //ParentGameObject = (GameObject)handle.Target;
+        //GCHandle handle = GCHandle.FromIntPtr(csParentGameObject);
+        //ParentGameObject = (GameObject)handle.Target;
 
-            Name = nString;
+            Name = name;
             ComponentType = componentType;
         }
 
@@ -59,7 +59,7 @@ namespace VulkanGameEngineLevelEditor.Components
 
         }
 
-        public virtual void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        public virtual void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, ListPtr<VkDescriptorSet> descriptorSetList, SceneDataBuffer sceneProperties)
         {
 
         }

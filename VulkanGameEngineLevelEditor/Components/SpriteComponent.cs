@@ -17,7 +17,7 @@ namespace VulkanGameEngineLevelEditor.Components
 
         }
 
-        public SpriteComponent(GameObject gameObjectId, string name, SpriteSheet spriteSheet)
+        public SpriteComponent(GameObject gameObjectId, string name, SpriteSheet spriteSheet) : base(gameObjectId.GameObjectId, ComponentTypeEnum.kSpriteComponent)
         {
             SpriteObj = new Sprite(gameObjectId, spriteSheet);
         }
@@ -32,7 +32,7 @@ namespace VulkanGameEngineLevelEditor.Components
 
         }
 
-        public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, ListPtr<VkDescriptorSet> descriptorSetList, SceneDataBuffer sceneProperties)
         {
 
         }

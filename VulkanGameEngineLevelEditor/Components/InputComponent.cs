@@ -9,6 +9,7 @@ using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineGameObjectScripts.Interface;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using GlmSharp;
 
 namespace VulkanGameEngineLevelEditor.Components
 {
@@ -22,15 +23,13 @@ namespace VulkanGameEngineLevelEditor.Components
             ComponentType = ComponentTypeEnum.kInputComponent;
         }
 
-        public InputComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject) :
-            base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, ComponentTypeEnum.kInputComponent)
+        public InputComponent(uint gameObjectId) : base(gameObjectId, ComponentTypeEnum.kInputComponent)
         {
             Name = "InputComponent";
             transform = ParentGameObject.GameObjectComponentList.Where(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent).First() as Transform2DComponent;
         }
 
-        public InputComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject, string name) :
-            base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, name, ComponentTypeEnum.kInputComponent)
+        public InputComponent(uint gameObjectId, string name) : base(gameObjectId, name, ComponentTypeEnum.kInputComponent)
         {
             transform = ParentGameObject.GameObjectComponentList.Where(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent).First() as Transform2DComponent;
         }
@@ -40,7 +39,7 @@ namespace VulkanGameEngineLevelEditor.Components
 
         }
 
-        public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, ListPtr<VkDescriptorSet> descriptorSetList, SceneDataBuffer sceneProperties)
         {
 
         }

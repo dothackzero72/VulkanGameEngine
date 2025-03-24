@@ -79,10 +79,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();
 
-            MaterialBuffer = new VulkanBuffer<MaterialProperitiesBuffer>(ptr, 1, VkBufferUsageFlagBits.VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
-                                                                                 VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-                                                                                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                                                                 VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
+            MaterialBuffer = new VulkanBuffer<MaterialProperitiesBuffer>(MaterialInfo, VkBufferUsageFlagBits.VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
+                                                                                       VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                                                                                       VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                                                                       VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
         }
 
         public void UpdateMaterialBufferIndex(uint bufferIndex)

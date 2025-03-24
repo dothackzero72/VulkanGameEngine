@@ -5,27 +5,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class FrameBufferRenderPass
     {
-        Vk vk = Vk.GetApi();
-
         ivec2 RenderPassResolution;
         SampleCountFlags SampleCount;
 
         VkRenderPass renderPass;
-        VkPipeline pipeline;
-        VkPipelineLayout pipelineLayout;
-        VkPipelineCache pipelineCache;
-        VkDescriptorPool descriptorPool;
-
-        ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList;
-        ListPtr<VkDescriptorSet> descriptorSetList;
+        List<JsonPipeline<NullVertex>> jsonPipelines = new List<JsonPipeline<NullVertex>>();
         ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>();
         ListPtr<VkFramebuffer> frameBufferList;
 
@@ -37,49 +31,20 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public void BuildRenderPass(String jsonFile, Texture texture)
+        public void BuildRenderPass(String jsonFile, GPUImport<NullVertex> renderGraphics)
         {
-        //    SaveRenderPass();
-          //  SavePipeline();
-
             RenderPassResolution = new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height);
             SampleCount = SampleCountFlags.Count1Bit;
 
-            //ListPtr<Texture> textureList = new ListPtr<Texture> { texture };
-            //ListPtr<DepthTexture> depthTextureList = new ListPtr<DepthTexture>();
-
             RenderPassBuildInfoModel model = new RenderPassBuildInfoModel(jsonFile);
+            ListPtr<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
+            ListPtr<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
 
             renderPass = CreateRenderPass();
             frameBufferList = CreateFramebuffer();
             //GameEngineImport.DLL_RenderPass_BuildFrameBuffer(VulkanRenderer.device, renderPass, model, frameBufferList.Ptr, textureList.Ptr, depthTextureList.Ptr, VulkanRenderer.SwapChain.imageViews.Ptr, frameBufferList.UCount, textureList.UCount, RenderPassResolution);
-            BuildRenderPipeline(texture);
+            jsonPipelines.Add(new JsonPipeline<NullVertex>(ConstConfig.DefaulFrameBufferPipeline, renderPass, 0, vertexBinding, vertexAttribute, renderGraphics));
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
-
-            // ListPtr<RenderedTexture> textureList = new ListPtr<Texture>((RenderedTexture)texture);
-            // ListPtr<DepthTexture> depthTexture = new ListPtr<DepthTexture>();
-            // List<Texture> texture4 = new List<Texture>();
-
-            //// frameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
-
-            
-
-            // renderPass = CreateRenderPass();
-            // GameEngineImport.DLL_RenderPass_BuildFrameBuffer(VulkanRenderer.device, renderPass, model, frameBufferList.Ptr, textureList.Ptr, depthTexture.Ptr, VulkanRenderer.SwapChain.imageViews.Ptr, frameBufferList.UCount, textureList.UCount, RenderPassResolution);
-
-            // BuildRenderPipeline(texture);
-            // VulkanRenderer.CreateCommandBuffers(commandBufferList);
-
-            // //fixed (RenderedTexture* renderedColorTextureListPtr = RenderedColorTextureList)
-            // //fixed (VkFramebuffer* frameBufferListPtr = FrameBufferList)
-            // //fixed(VkImageView* swapChainImageView = VulkanRenderer.SwapChain.imageViews)
-            // //{
-            // //    GCHandle handle = GCHandle.Alloc(depthTexture, GCHandleType.Pinned);
-            // //    DepthTexture* depthTexturePtr = (DepthTexture*)handle.AddrOfPinnedObject();
-
-
-            // //    handle.Free();
-            // //}
         }
 
         public VkRenderPass CreateRenderPass()
@@ -194,52 +159,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return frameBufferList;
         }
 
-        public unsafe void BuildRenderPipeline(Texture texture)
-        {
-            string jsonContent = File.ReadAllText("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\FrameBufferPipeline.json");
-            RenderPipelineDLL nativeModel = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
-
-            uint descriptorSetCount = nativeModel.LayoutBindingListCount;
-            descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(descriptorSetCount);
-            descriptorSetList = new ListPtr<VkDescriptorSet>(descriptorSetCount);
-
-            ListPtr<VkVertexInputBindingDescription> vertexBindingDescription = new ListPtr<VkVertexInputBindingDescription>();
-            ListPtr<VkVertexInputAttributeDescription> vertexAttributeDescription = new ListPtr<VkVertexInputAttributeDescription>();
-            
-            var meshProperties = JsonPipeline<NullVertex>.GetMeshPropertiesBuffer<NullVertex>(new List<Mesh<NullVertex>>());
-            var textureProperties = new ListPtr<VkDescriptorImageInfo> { texture.GetTextureBuffer() };
-            var materialProperties = JsonPipeline<NullVertex>.GetMaterialPropertiesBuffer(new List<Material>());
-            var vertexProperties = new ListPtr<VkDescriptorBufferInfo>();
-            var indexProperties = new ListPtr<VkDescriptorBufferInfo>();
-            var transformProperties = new ListPtr<VkDescriptorBufferInfo>();
-
-            GPUIncludes includes = new GPUIncludes
-            {
-                vertexProperties = vertexProperties.Ptr,
-                indexProperties = indexProperties.Ptr,
-                transformProperties = transformProperties.Ptr,
-                meshProperties = meshProperties.Ptr,
-                texturePropertiesList = textureProperties.Ptr,
-                materialProperties = materialProperties.Ptr,
-                vertexPropertiesCount = (uint)vertexProperties.Count,
-                indexPropertiesCount = (uint)indexProperties.Count,
-                transformPropertiesCount = (uint)transformProperties.Count,
-                meshPropertiesCount = (uint)meshProperties.Count,
-                texturePropertiesListCount = (uint)textureProperties.Count,
-                materialPropertiesCount = (uint)materialProperties.Count
-            };
-
-            descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, nativeModel, &includes);
-            GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, nativeModel, includes, descriptorSetLayoutList.Ptr, descriptorSetCount);
-            GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, descriptorSetCount);
-            GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetList.Ptr, nativeModel, includes, descriptorSetCount);
-            GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayoutList.Ptr, 0, out VkPipelineLayout pipelineLayoutPtr, descriptorSetCount);
-            GameEngineImport.DLL_Pipeline_CreatePipeline(VulkanRenderer.device, renderPass, pipelineLayoutPtr, pipelineCache, nativeModel, vertexBindingDescription.Ptr, vertexAttributeDescription.Ptr, out VkPipeline pipelinePtr, 0, 0);
-
-            pipelineLayout = pipelineLayoutPtr;
-            pipeline = pipelinePtr;
-        }
-
         public unsafe VkCommandBuffer Draw()
         {
             var commandIndex = VulkanRenderer.CommandIndex;
@@ -288,8 +207,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
             VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
             VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, descriptorSetList.Ptr, 0, null);
+            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelines.First().pipeline);
+            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelines.First().pipelineLayout, 0, 1, jsonPipelines.First().descriptorSetList.Ptr, 0, null);
             VkFunc.vkCmdDraw(commandBuffer, 6, 1, 0, 0);
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);
@@ -321,97 +240,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\FrameBufferRenderPass.json";
             File.WriteAllText(finalfilePath, jsonString);
-        }
-
-        public void SavePipeline()
-        {
-            var jsonObj = new RenderPipelineModel
-            {
-                _name = "DefaultPipeline",
-                VertexShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DVert.spv",
-                FragmentShader = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DFrag.spv",
-                PipelineColorBlendAttachmentStateList = new List<VkPipelineColorBlendAttachmentState>()
-                {
-                     new VkPipelineColorBlendAttachmentState
-                            {
-                                blendEnable = true,
-                                srcColorBlendFactor = VkBlendFactor.VK_BLEND_FACTOR_SRC_ALPHA,
-                                dstColorBlendFactor = VkBlendFactor.VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-                                colorBlendOp = VkBlendOp.VK_BLEND_OP_ADD,
-                                srcAlphaBlendFactor = VkBlendFactor.VK_BLEND_FACTOR_ONE,
-                                dstAlphaBlendFactor = VkBlendFactor.VK_BLEND_FACTOR_ZERO,
-                                alphaBlendOp = VkBlendOp.VK_BLEND_OP_ADD,
-                                colorWriteMask = VkColorComponentFlagBits.VK_COLOR_COMPONENT_R_BIT | VkColorComponentFlagBits.VK_COLOR_COMPONENT_G_BIT | VkColorComponentFlagBits.VK_COLOR_COMPONENT_B_BIT | VkColorComponentFlagBits.VK_COLOR_COMPONENT_A_BIT
-                            }
-                },
-                PipelineDepthStencilStateCreateInfo = new VkPipelineDepthStencilStateCreateInfoModel()
-                {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-                    depthTestEnable = Vk.True,
-                    depthWriteEnable = Vk.True,
-                    depthCompareOp = VkCompareOp.VK_COMPARE_OP_LESS_OR_EQUAL,
-                    depthBoundsTestEnable = Vk.False,
-                    stencilTestEnable = Vk.False
-                },
-                PipelineMultisampleStateCreateInfo = new VkPipelineMultisampleStateCreateInfoModel()
-                {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-                    rasterizationSamples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT
-                },
-                PipelineRasterizationStateCreateInfo = new VkPipelineRasterizationStateCreateInfoModel()
-                {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-                    depthClampEnable = Vk.False,
-                    rasterizerDiscardEnable = Vk.False,
-                    polygonMode = VkPolygonMode.VK_POLYGON_MODE_FILL,
-                    cullMode = VkCullModeFlagBits.VK_CULL_MODE_NONE,
-                    frontFace = VkFrontFace.VK_FRONT_FACE_COUNTER_CLOCKWISE,
-                    depthBiasEnable = Vk.False,
-                    depthBiasConstantFactor = 0.0f,
-                    depthBiasClamp = 0.0f,
-                    depthBiasSlopeFactor = 0.0f,
-                    lineWidth = 1.0f
-                },
-                ScissorList = new List<VkRect2D>(),
-                ViewportList = new List<VkViewport>(),
-                PipelineColorBlendStateCreateInfoModel = new VkPipelineColorBlendStateCreateInfoModel()
-                {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-                    logicOpEnable = Vk.False,
-                    logicOp = VkLogicOp.VK_LOGIC_OP_NO_OP,
-                    attachmentCount = 1,
-                    pNext = IntPtr.Zero,
-                },
-                PipelineInputAssemblyStateCreateInfo = new VkPipelineInputAssemblyStateCreateInfoModel()
-                {
-                    topology = VkPrimitiveTopology.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
-                },
-                PipelineDescriptorModelsList = new List<PipelineDescriptorModel>()
-                {
-
-                },
-                LayoutBindingList = new List<VkDescriptorSetLayoutBindingModel>()
-                {
- 
-                }
-            };
-
-            string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\Pipelines\FrameBufferPipeline.json";
-            try
-            {
-                string jsonString = JsonConvert.SerializeObject(jsonObj, Formatting.Indented, new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-                Directory.CreateDirectory(Path.GetDirectoryName(finalfilePath)); // Ensure directory exists
-                File.WriteAllText(finalfilePath, jsonString);
-                Console.WriteLine("Pipeline saved successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to save pipeline: {ex.Message}");
-                throw;
-            }
         }
     }
 }

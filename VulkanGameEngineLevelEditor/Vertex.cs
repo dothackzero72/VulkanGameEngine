@@ -53,14 +53,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public static List<VkVertexInputBindingDescription> GetBindingDescriptions()
+        public static ListPtr<VkVertexInputBindingDescription> GetBindingDescriptions()
         {
-            return new List<VkVertexInputBindingDescription>();
+            return new ListPtr<VkVertexInputBindingDescription>();
         }
 
-        public static List<VkVertexInputAttributeDescription> GetAttributeDescriptions()
+        public static ListPtr<VkVertexInputAttributeDescription> GetAttributeDescriptions()
         {
-            return new List<VkVertexInputAttributeDescription>();
+            return new ListPtr<VkVertexInputAttributeDescription>();
         }
     };
 
@@ -86,9 +86,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             this.vec22 = vec22;
         }
 
-        public static List<VkVertexInputBindingDescription> GetBindingDescriptions()
+        public static ListPtr<VkVertexInputBindingDescription> GetBindingDescriptions()
         {
-            var bindingDescriptions = new List<VkVertexInputBindingDescription>
+            var bindingDescriptions = new ListPtr<VkVertexInputBindingDescription>
             {
                 new VkVertexInputBindingDescription
                 {
@@ -101,9 +101,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return bindingDescriptions;
         }
 
-        public static List<VkVertexInputAttributeDescription> GetAttributeDescriptions()
+        public static ListPtr<VkVertexInputAttributeDescription> GetAttributeDescriptions()
         {
-            var attributeDescriptions = new List<VkVertexInputAttributeDescription>();
+            var attributeDescriptions = new ListPtr<VkVertexInputAttributeDescription>();
 
             attributeDescriptions.Add(new VkVertexInputAttributeDescription
             {
@@ -148,9 +148,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public static List<VkVertexInputBindingDescription> GetBindingDescriptions()
+        public static ListPtr<VkVertexInputBindingDescription> GetBindingDescriptions()
         {
-            var bindingDescriptions = new List<VkVertexInputBindingDescription>
+            var bindingDescriptions = new ListPtr<VkVertexInputBindingDescription>
             {
                 new VkVertexInputBindingDescription
                 {
@@ -163,9 +163,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return bindingDescriptions;
         }
 
-        public static List<VkVertexInputAttributeDescription> GetAttributeDescriptions()
+        public static ListPtr<VkVertexInputAttributeDescription> GetAttributeDescriptions()
         {
-            var attributeDescriptions = new List<VkVertexInputAttributeDescription>();
+            var attributeDescriptions = new ListPtr<VkVertexInputAttributeDescription>();
 
             attributeDescriptions.Add(new VkVertexInputAttributeDescription
             {
@@ -240,11 +240,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
         }
 
-        static public List<VkVertexInputAttributeDescription> GetAttributeDescriptions()
+        static public ListPtr<VkVertexInputAttributeDescription> GetAttributeDescriptions()
         {
             uint offsetInstanceTransform = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(SpriteInstanceVertex2D.InstanceTransform));
 
-            return new List<VkVertexInputAttributeDescription>
+            return new ListPtr<VkVertexInputAttributeDescription>
             {
                 new VkVertexInputAttributeDescription
                 {
@@ -312,13 +312,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 new VkVertexInputAttributeDescription
                 {
                     location = 9,
-                    binding = 1,
-                    format = VkFormat.VK_FORMAT_R32_UINT,
-                    offset = offsetInstanceTransform + (uint)sizeof(vec4) * 4
-                },
-                new VkVertexInputAttributeDescription
-                {
-                    location = 10,
                     binding = 1,
                     format = VkFormat.VK_FORMAT_R32_UINT,
                     offset = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(MaterialID)).ToInt32()

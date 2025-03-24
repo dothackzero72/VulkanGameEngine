@@ -55,7 +55,8 @@ namespace VulkanGameEngineLevelEditor.RenderPassEditor
 
         public static string Default2DPipeline =>
             $"{PipelineBasePath}Default2DPipeline.json";
-
+        public static string DefaulFrameBufferPipeline =>
+    $"{PipelineBasePath}FrameBufferPipeline.json";
         public static string Default3DPipeline =>
             $"{PipelineBasePath}Default3DPipeline.json";
     }

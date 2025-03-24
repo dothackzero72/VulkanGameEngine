@@ -45,7 +45,8 @@ void DLL_Pipeline_AllocateDescriptorSets(
 	VkDescriptorSet* descriptorSetListPtr,
 	uint descriptorSetLayoutCount)
 {
-	Vector<VkDescriptorSet> descriptorSets = Pipeline_AllocateDescriptorSets(device, descriptorPool, Vector<VkDescriptorSetLayout>(descriptorSetLayoutList, descriptorSetLayoutList + descriptorSetLayoutCount));
+	Vector<VkDescriptorSetLayout> descriptorLayoutSets(descriptorSetLayoutList, descriptorSetLayoutList + descriptorSetLayoutCount);
+	Vector<VkDescriptorSet> descriptorSets = Pipeline_AllocateDescriptorSets(device, descriptorPool, descriptorLayoutSets);
 	std::memcpy(descriptorSetListPtr, descriptorSets.data(), descriptorSetLayoutCount * sizeof(VkDescriptorSet));
 }
 
@@ -60,29 +61,14 @@ void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet* descrip
 
 void DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout& pipelineLayout, uint descriptorSetLayoutCount)
 {
-	Vector<VkDescriptorSetLayout> descriptorLayoutSets;
-	for (int x = 0; x < descriptorSetLayoutCount; x++)
-	{
-		descriptorLayoutSets.emplace_back(descriptorSetLayoutList[x]);
-	}
-
+	Vector<VkDescriptorSetLayout> descriptorLayoutSets(descriptorSetLayoutList, descriptorSetLayoutList + descriptorSetLayoutCount);
 	Pipeline_CreatePipelineLayout( device, descriptorLayoutSets, constBufferSize, pipelineLayout);
 }
 
 void DLL_Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineDLL& modelDLL, VkVertexInputBindingDescription* vertexBindingList, VkVertexInputAttributeDescription* vertexAttributeList, VkPipeline& pipeline, uint vertexBindingCount, uint vertexAttributeCount)
 {
 	RenderPipelineModel model = modelDLL.Convert();
-	Vector<VkVertexInputBindingDescription> vertexBindings;
-	for (int x = 0; x < vertexBindingCount; x++)
-	{
-		vertexBindings.emplace_back(vertexBindingList[x]);
-	}
-
-	Vector<VkVertexInputAttributeDescription> vertexAttributes;
-	for (int x = 0; x < vertexAttributeCount; x++)
-	{
-		vertexAttributes.emplace_back(vertexAttributeList[x]);
-	}
-
+	Vector<VkVertexInputBindingDescription> vertexBindings(vertexBindingList, vertexBindingList + vertexBindingCount);
+	Vector<VkVertexInputAttributeDescription> vertexAttributes(vertexAttributeList, vertexAttributeList + vertexAttributeCount);
 	Pipeline_CreatePipeline( device, renderpass, pipelineLayout, pipelineCache, model, vertexBindings, vertexAttributes, pipeline);
 }

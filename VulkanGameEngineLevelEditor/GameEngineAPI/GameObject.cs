@@ -29,13 +29,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Name = name;
         }
 
-        public GameObject(string name, List<GameObjectComponent> gameObjectComponentList)
+        public GameObject(string name, List<ComponentTypeEnum> gameObjectComponentList)
         {
+            GameObjectId = ++NextGameObjectId;
             Name = name;
-            GameObjectComponentList = gameObjectComponentList;
+        //    GameObjectComponentList = gameObjectComponentList;
         }
 
-        GameObject(string name, List<GameObjectComponent> gameObjectComponentList, SpriteSheet spriteSheet)
+        public GameObject(string name, List<ComponentTypeEnum> gameObjectComponentList, SpriteSheet spriteSheet)
         {
             GameObjectId = ++NextGameObjectId;
             Name = name;
@@ -76,11 +77,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        public virtual void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        public virtual void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, ListPtr<VkDescriptorSet> descriptorSetList, SceneDataBuffer sceneProperties)
         {
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
-                component.Draw(commandBuffer, pipeline, pipelineLayout, descriptorSet, sceneProperties);
+                component.Draw(commandBuffer, pipeline, pipelineLayout, descriptorSetList, sceneProperties);
             }
         }
 

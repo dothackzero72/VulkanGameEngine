@@ -84,50 +84,52 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void MeshStartUp(Vertex2D[] vertexList, uint[] indexList, Material material)
         {
-            var component = ParentGameObject.GameObjectComponentList.FirstOrDefault(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent);
-            if (component is Transform2DComponent transformComponent)
-            {
-                TransformRefrence = component as Transform2DComponent;
-            }
-            else
-            {
-                TransformRefrence = null;
-            }
+            //var component = ParentGameObject.GameObjectComponentList.FirstOrDefault(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent);
+            //if (component is Transform2DComponent transformComponent)
+            //{
+            //    TransformRefrence = component as Transform2DComponent;
+            //}
+            //else
+            //{
+            //    TransformRefrence = null;
+            //}
 
             VertexCount = vertexList.Length;
             IndexCount = indexList.Length;
 
-            GCHandle vhandle = GCHandle.Alloc(vertexList, GCHandleType.Pinned);
-            IntPtr vpointer = vhandle.AddrOfPinnedObject();
-            MeshVertexBuffer = new VulkanBuffer<Vertex2D>((void*)vpointer, (uint)vertexList.Count(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
-                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
+            GCHandle vertexListHandle = GCHandle.Alloc(vertexList, GCHandleType.Pinned);
+            GCHandle indexListHandle = GCHandle.Alloc(indexList, GCHandleType.Pinned);
+            GCHandle transformHandle = GCHandle.Alloc(MeshTransform, GCHandleType.Pinned);
+            GCHandle meshPropertiesHandle = GCHandle.Alloc(MeshProperties, GCHandleType.Pinned);
 
-            GCHandle fhandle = GCHandle.Alloc(indexList, GCHandleType.Pinned);
-            IntPtr fpointer = fhandle.AddrOfPinnedObject();
-            MeshIndexBuffer = new VulkanBuffer<UInt32>((void*)fpointer, (uint)indexList.Count(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
-                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
+            MeshVertexBuffer = new VulkanBuffer<Vertex2D>(vertexListHandle.AddrOfPinnedObject(), (uint)vertexList.Count(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                                                                                                                           VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                                                                                                                           VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                                                                                                           VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                                                                                                           VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
 
-            GCHandle thandle = GCHandle.Alloc(MeshProperties, GCHandleType.Pinned);
-            IntPtr tpointer = thandle.AddrOfPinnedObject();
-            MeshTransformBuffer = new VulkanBuffer<mat4>((void*)tpointer, 1, VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
-                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
-                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
+            MeshIndexBuffer = new VulkanBuffer<UInt32>(indexListHandle.AddrOfPinnedObject(), (uint)indexList.Count(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                                                                                                                      VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                                                                                                                      VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                                                                                                      VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                                                                                                      VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
 
-            GCHandle uhandle = GCHandle.Alloc(MeshProperties, GCHandleType.Pinned);
-            IntPtr upointer = uhandle.AddrOfPinnedObject();
-            PropertiesBuffer = new VulkanBuffer<MeshProperitiesStruct>((void*)upointer, 1, VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
-                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
-                VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, true);
+            MeshTransformBuffer = new VulkanBuffer<mat4>(transformHandle.AddrOfPinnedObject(), 1, VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                                                                                                  VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                                                                                                  VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                                                                                                  VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                                                                                  VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
+
+            PropertiesBuffer = new VulkanBuffer<MeshProperitiesStruct>(meshPropertiesHandle.AddrOfPinnedObject(), 1, VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                                                                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                                                                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                                                                                                                     VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                                                                                                     VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
+
+            vertexListHandle.Free();
+            indexListHandle.Free();
+            transformHandle.Free();
+            meshPropertiesHandle.Free();
         }
 
         public void Update(VkCommandBuffer commandBuffer, float deltaTime)

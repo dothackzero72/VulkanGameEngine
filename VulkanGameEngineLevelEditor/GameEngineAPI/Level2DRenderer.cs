@@ -50,7 +50,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
 
             FrameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
-            commandBufferList = new ListPtr<VkCommandBuffer>(VulkanRenderer.SwapChain.ImageCount);
 
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
             renderPass = CreateRenderPass(model);
@@ -79,13 +78,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 MaterialList = new List<Material>(MaterialList)
             };
 
-            List<VkVertexInputBindingDescription> vertexBinding = Vertex2D.GetBindingDescriptions();
+            ListPtr<VkVertexInputBindingDescription> vertexBinding = Vertex2D.GetBindingDescriptions();
             foreach (var instanceVar in SpriteInstanceVertex2D.GetBindingDescriptions())
             {
                 vertexBinding.Add(instanceVar);
             }
 
-            List<VkVertexInputAttributeDescription> vertexAttribute = Vertex2D.GetAttributeDescriptions();
+            ListPtr<VkVertexInputAttributeDescription> vertexAttribute = Vertex2D.GetAttributeDescriptions();
             foreach (var instanceVar in SpriteInstanceVertex2D.GetAttributeDescriptions())
             {
                 vertexAttribute.Add(instanceVar);
@@ -162,17 +161,20 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 extent = VulkanRenderer.SwapChain.SwapChainResolution,
             };
 
-            var descSet = jsonPipelineList[0].descriptorSet;
-            var commandInfo = new VkCommandBufferBeginInfo { flags = 0 };
+            VkCommandBufferBeginInfo commandInfo = new VkCommandBufferBeginInfo
+            {
+                sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+                flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
+            };
 
             VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
             VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
             VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
             VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelineList[0].pipeline);
-            foreach (var obj in GameObjectList)
+            foreach (var obj in SpriteLayerList)
             {
-                obj.Draw(commandBuffer, jsonPipelineList[0].pipeline, jsonPipelineList[0].pipelineLayout, descSet, sceneDataBuffer);
+                obj.Draw(commandBuffer, sceneDataBuffer);
             }
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);
@@ -202,7 +204,24 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         }
 
         private void AddGameObject(string name, List<ComponentTypeEnum> gameObjectComponentTypeList, SpriteSheet spriteSheet, vec2 objectPosition)
-        {
+        { 
+            GameObjectList.Add(new GameObject(name, new List<ComponentTypeEnum>
+                                             {
+                                                ComponentTypeEnum.kTransform2DComponent,
+                                                ComponentTypeEnum.kSpriteComponent
+                                             }, spriteSheet));
+            var gameObject = GameObjectList.Last();
+
+            List<GameObjectComponent> gameObjectComponentList = gameObject.GameObjectComponentList;
+            foreach (var component in gameObjectComponentTypeList)
+            {
+                switch (component)
+                {
+                    case ComponentTypeEnum.kTransform2DComponent: gameObject.AddComponent(new Transform2DComponent(gameObject.GameObjectId, objectPosition, name)); break;
+                    case ComponentTypeEnum.kInputComponent: gameObject.AddComponent(new InputComponent(gameObject.GameObjectId, name)); break;
+                    case ComponentTypeEnum.kSpriteComponent: gameObject.AddComponent(new SpriteComponent(gameObject, name, spriteSheet)); break;
+                }
+            }
         }
 
         private void AddTexture()

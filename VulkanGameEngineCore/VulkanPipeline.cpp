@@ -185,18 +185,21 @@ void Pipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineMod
 Vector<VkDescriptorSet> Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList)
 {
     Vector<VkDescriptorSet> descriptorSetList(descriptorSetLayoutList.size());
-    for (auto& descriptorSet : descriptorSetList)
+    if (descriptorSetLayoutList.empty()) 
     {
-        VkDescriptorSetAllocateInfo allocInfo =
-        {
-            .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-            .pNext = nullptr,
-            .descriptorPool = descriptorPool,
-            .descriptorSetCount = static_cast<uint32>(descriptorSetLayoutList.size()),
-            .pSetLayouts = descriptorSetLayoutList.data()
-        };
-        VULKAN_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet));
+        return descriptorSetList; 
     }
+
+    VkDescriptorSetAllocateInfo allocInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+        .pNext = nullptr,
+        .descriptorPool = descriptorPool,
+        .descriptorSetCount = static_cast<uint32_t>(descriptorSetLayoutList.size()),
+        .pSetLayouts = descriptorSetLayoutList.data()
+    };
+
+    VkResult result = vkAllocateDescriptorSets(device, &allocInfo, &descriptorSetList[0]);
+
     return descriptorSetList;
 }
 

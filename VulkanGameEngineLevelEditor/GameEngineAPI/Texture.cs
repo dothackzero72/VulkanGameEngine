@@ -199,16 +199,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Sampler = sampler;
         }
 
-        public VkDescriptorImageInfo GetTextureBuffer()
-        {
-            return new VkDescriptorImageInfo
-            {
-                sampler = Sampler,
-                imageView = View,
-                imageLayout = VkImageLayout.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-            };
-        }
-
         protected VkResult CreateImage(VkImageCreateInfo imageCreateInfo)
         {
             var result =  GameEngineImport.DLL_Texture_CreateImage(VulkanRenderer.device, VulkanRenderer.physicalDevice, out VkImage image, out VkDeviceMemory memory, imageCreateInfo);

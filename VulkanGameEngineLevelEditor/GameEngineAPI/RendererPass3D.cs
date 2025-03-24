@@ -185,8 +185,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             CreateRenderPass(model2);
             CreateFramebuffer();
 
-            List<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
-            List<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
+            ListPtr<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
+            ListPtr<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
             jsonPipeline = new JsonPipeline<Vertex3D>(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, new GPUImport<Vertex3D>());
             //LoadDescriptorSets(model);
             //CreateGraphicsPipeline();
@@ -386,9 +386,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 };
                 var scissor = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution);
 
-                var descSet = jsonPipeline.descriptorSet;
                 var commandInfo = new VkCommandBufferBeginInfo { flags = 0 };
-
                 VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
                 VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
                 VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
@@ -396,7 +394,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipeline.pipeline);
                 foreach (var obj in gameObjectList)
                 {
-                    obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, descSet, sceneDataBuffer);
+                    obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, jsonPipeline.descriptorSetList, sceneDataBuffer);
                 }
                 VkFunc.vkCmdEndRenderPass(commandBuffer);
                 VkFunc.vkEndCommandBuffer(commandBuffer);

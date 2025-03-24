@@ -32,9 +32,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public uint MaxSpritesPerSheet { get; private set; }
         public uint SpriteLayerIndex { get; private set; }
 
-        public List<Sprite> SpriteList { get; private set; }
-        public ListPtr<SpriteInstanceStruct> SpriteInstanceList { get; private set; }
-        public VulkanBuffer<SpriteInstanceStruct> SpriteBuffer { get; private set; }
+        public List<Sprite> SpriteList { get; private set; } = new List<Sprite>();
+        public ListPtr<SpriteInstanceStruct> SpriteInstanceList { get; private set; } = new ListPtr<SpriteInstanceStruct>();
+        public VulkanBuffer<SpriteInstanceStruct> SpriteBuffer { get; private set; } = new VulkanBuffer<SpriteInstanceStruct>();
         public Mesh2D SpriteLayerMesh { get; private set; }
         public string Name { get; private set; }
         public JsonPipeline<Vertex2D> SpriteRenderPipeline { get; set; }
@@ -51,7 +51,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             foreach (var gameObject in gameObjectList)
             {
-                var sprite = (SpriteComponent)gameObject.GetComponentByComponentType(ComponentTypeEnum.kSpriteComponent);
+                var sprite = gameObject.GetComponentByComponentType(ComponentTypeEnum.kSpriteComponent) as SpriteComponent;
                 if (sprite.SpriteObj != null)
                 {
                     SpriteList.Add(sprite.SpriteObj);
@@ -59,7 +59,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             }
 
-            SpriteBuffer = new VulkanBuffer<SpriteInstanceStruct>(SpriteInstanceList.Ptr, SpriteIndexList.UCount(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+            SpriteBuffer = new VulkanBuffer<SpriteInstanceStruct>(SpriteInstanceList.ToList(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
                                                                                                                      VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
                                                                                                                      VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
                                                                                                                      VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT, 
@@ -95,7 +95,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GCHandle instanceHandle = GCHandle.Alloc(SpriteBuffer.Buffer, GCHandleType.Pinned);
 
             ulong offsets = 0;
-            VkDescriptorSet descriptorSet = SpriteRenderPipeline.descriptorSet;
+            VkDescriptorSet descriptorSet = SpriteRenderPipeline.descriptorSetList[0];
             VkFunc.vkCmdPushConstants(commandBuffer, SpriteRenderPipeline.pipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
             VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.pipeline);
             VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.pipelineLayout, 0, 1, &descriptorSet, 0, null);

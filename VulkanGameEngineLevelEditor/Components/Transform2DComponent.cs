@@ -29,8 +29,7 @@ namespace VulkanGameEngineLevelEditor.Components
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject) :
-            base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, ComponentTypeEnum.kGameObjectTransform2DComponent)
+        public Transform2DComponent(uint gameObjectId, vec2 position) : base(gameObjectId, ComponentTypeEnum.kGameObjectTransform2DComponent)
         {
             Name = "GameObjectTransform2DComponent";
 
@@ -40,8 +39,7 @@ namespace VulkanGameEngineLevelEditor.Components
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(GameObjectComponent cppComponentPtr, GameObject cppGameObjectPtr, GameObject csParentGameObject, String name) :
-            base(cppComponentPtr, cppGameObjectPtr, csParentGameObject, name, ComponentTypeEnum.kGameObjectTransform2DComponent)
+        public Transform2DComponent(uint gameObjectId, vec2 position, string name) : base(gameObjectId, name, ComponentTypeEnum.kGameObjectTransform2DComponent)
         {
             GameObjectTransform = mat4.Identity;
             GameObjectPosition = new vec2(0.0f, 0.0f);
@@ -62,7 +60,7 @@ namespace VulkanGameEngineLevelEditor.Components
             GameObjectTransform = mat4.Translate(new vec3(GameObjectPosition, 0.0f));
         }
 
-        public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSet, SceneDataBuffer sceneProperties)
+        public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, ListPtr<VkDescriptorSet> descriptorSetList, SceneDataBuffer sceneProperties)
         {
 
         }
