@@ -109,6 +109,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkFunc.vkCmdBindVertexBuffers(commandBuffer, 1, 1, (nint*)instanceHandle.AddrOfPinnedObject(), &offsets);
             VkFunc.vkCmdBindIndexBuffer(commandBuffer, *(nint*)indexHandle.AddrOfPinnedObject(), 0, VkIndexType.VK_INDEX_TYPE_UINT32);
             VkFunc.vkCmdDrawIndexed(commandBuffer, SpriteIndexList.UCount(), SpriteInstanceList.UCount, 0, 0, 0);
+
+            vertexHandle.Free();
+            indexHandle.Free();
+            instanceHandle.Free();
         }
 
         public void Destroy()

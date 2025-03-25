@@ -1,4 +1,6 @@
-﻿namespace VulkanGameEngineLevelEditor
+﻿using System.Windows.Forms;
+
+namespace VulkanGameEngineLevelEditor
 {
     partial class GameWindow
     {
@@ -28,30 +30,36 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.SuspendLayout();
+            int width = 1920;
+            int height = 1080;
+
+
+            pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            SuspendLayout();
+
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(157, 39);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1280, 720);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            pictureBox1.Location = new System.Drawing.Point(0, 0);
+            pictureBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new System.Drawing.Size(width, height);
+            pictureBox1.TabIndex = 0;
+            pictureBox1.TabStop = false;
             // 
             // GameWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1258, 664);
-            this.Controls.Add(this.pictureBox1);
-            this.Name = "GameWindow";
-            this.Text = "GameWindow";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(width, height); // Logical 1920x1080
+            Controls.Add(pictureBox1);
+            Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            Name = "GameWindow";
+            Text = "GameWindow";
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ResumeLayout(false);
         }
 
         #endregion

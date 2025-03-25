@@ -65,7 +65,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ivec2 size = new ivec2(32);
             SpriteSheet spriteSheet = new SpriteSheet(MaterialList[0], size, 0);
 
-            AddGameObject("Obj1", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 40.0f));
+            AddGameObject("Obj1", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(960.0f, 540.0f));
             AddGameObject("Obj2", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 20.0f));
             AddGameObject("Obj3", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 80.0f));
 
@@ -135,7 +135,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             clearValues.Add(new VkClearValue { Color = new VkClearColorValue(0, 0, 0, 1) });
             clearValues.Add(new VkClearValue { DepthStencil = new VkClearDepthStencilValue(0.0f, 1.0f) });
 
-
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
@@ -168,11 +167,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
             };
 
+            VkFunc.vkResetCommandBuffer(commandBuffer, 0); // Add this
             VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
             VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
             VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelineList[0].pipeline);
+            // Remove this: VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelineList[0].pipeline);
             foreach (var obj in SpriteLayerList)
             {
                 obj.Draw(commandBuffer, sceneDataBuffer);

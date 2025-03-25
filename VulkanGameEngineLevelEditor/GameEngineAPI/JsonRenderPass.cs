@@ -191,7 +191,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 ListPtr<VkImageView> textureAttachmentList = new ListPtr<VkImageView>();
                 foreach (var texture in RenderedColorTextureList)
                 {
-                    textureAttachmentList.Add(VulkanRenderer.SwapChain.imageViews[x]);
+                    textureAttachmentList.Add(RenderedColorTextureList.First().View);
                 }
                 if (depthTexture != null)
                 {

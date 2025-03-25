@@ -1,8 +1,7 @@
 {
   "RenderedTextureInfoModelList": [
     {
-      "IsRenderedToSwapchain": true,
-      "RenderedTextureInfoName": "texture",
+      "RenderedTextureInfoName": "ColorRenderTexture",
       "ImageCreateInfo": {
         "imageType": 1,
         "format": 37,
@@ -13,55 +12,7 @@
         "usage": 23,
         "sharingMode": 0,
         "initialLayout": 0,
-        "_name": ""
-      },
-      "SamplerCreateInfo": {
-        "magFilter": 0,
-        "minFilter": 0,
-        "mipmapMode": 1,
-        "addressModeU": 0,
-        "addressModeV": 0,
-        "addressModeW": 0,
-        "mipLodBias": 0.0,
-        "anisotropyEnable": true,
-        "maxAnisotropy": 16.0,
-        "compareEnable": false,
-        "compareOp": 7,
-        "minLod": 0.0,
-        "maxLod": 1.0,
-        "borderColor": 3,
-        "unnormalizedCoordinates": false,
-        "_name": ""
-      },
-      "AttachmentDescription": {
-        "flags": 0,
-        "format": 37,
-        "samples": 1,
-        "loadOp": 1,
-        "storeOp": 0,
-        "stencilLoadOp": 2,
-        "stencilStoreOp": 1,
-        "initialLayout": 0,
-        "finalLayout": 5,
-        "_name": ""
-      },
-      "TextureType": 0,
-      "_name": ""
-    },
-    {
-      "IsRenderedToSwapchain": false,
-      "RenderedTextureInfoName": "texture",
-      "ImageCreateInfo": {
-        "imageType": 1,
-        "format": 126,
-        "mipLevels": 1,
-        "arrayLayers": 1,
-        "samples": 1,
-        "tiling": 0,
-        "usage": 39,
-        "sharingMode": 0,
-        "initialLayout": 0,
-        "_name": ""
+        "_name": "DefaultColorTextureCreateInfo"
       },
       "SamplerCreateInfo": {
         "magFilter": 0,
@@ -79,22 +30,22 @@
         "maxLod": 1.0,
         "borderColor": 2,
         "unnormalizedCoordinates": false,
-        "_name": ""
+        "_name": "DefaultColorSampleCreateInfo"
       },
       "AttachmentDescription": {
         "flags": 0,
-        "format": 126,
+        "format": 37,
         "samples": 1,
         "loadOp": 1,
-        "storeOp": 1,
+        "storeOp": 0,
         "stencilLoadOp": 2,
         "stencilStoreOp": 1,
         "initialLayout": 0,
-        "finalLayout": 3,
-        "_name": ""
+        "finalLayout": 1000001002,
+        "_name": "DefaultColorAttachment"
       },
-      "TextureType": 1,
-      "_name": ""
+      "TextureType": 0,
+      "_name": null
     }
   ],
   "RenderPipelineList": [],
