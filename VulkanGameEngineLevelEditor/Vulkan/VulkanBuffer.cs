@@ -186,8 +186,24 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             return GameEngineImport.DLL_Buffer_CopyBuffer(_device, _commandPool, _graphicsQueue, srcBuffer, dstBuffer, size);
         }
 
+        public void UpdateBufferMemory(IntPtr bufferData)
+        {
+            if (UsingStagingBuffer)
+            {
+                GameEngineImport.DLL_Buffer_UpdateStagingBufferData(_device, _commandPool, _graphicsQueue, StagingBuffer, Buffer, out VkBuffer stagingBufferMemory, out VkBuffer bufferMemory, (void*)bufferData, BufferSize);
+                StagingBuffer = stagingBufferMemory;
+                Buffer = bufferMemory;
+            }
+            else
+            {
+                var bufferMemory = BufferMemory;
+                GameEngineImport.DLL_Buffer_UpdateBufferData(_device, &bufferMemory, (void*)bufferData, BufferSize);
+            }
+        }
+
         public void UpdateBufferMemory(T bufferData)
         {
+         
             GCHandle bufferDataHandle = GCHandle.Alloc(bufferData, GCHandleType.Pinned);
             if (UsingStagingBuffer)
             {
@@ -197,8 +213,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
             else
             {
-                GameEngineImport.DLL_Buffer_UpdateBufferData(_device, out VkBuffer bufferMemory, (void*)bufferDataHandle.AddrOfPinnedObject(), BufferSize);
-                BufferMemory = bufferMemory;
+                var bufferMemory = BufferMemory;
+                GameEngineImport.DLL_Buffer_UpdateBufferData(_device, &bufferMemory, (void*)bufferDataHandle.AddrOfPinnedObject(), BufferSize);
             }
             bufferDataHandle.Free();
         }
@@ -278,28 +294,29 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
         }
 
-        //public List<T> CheckBufferContents()
-        //{
-        //    List<T> DataList;
-        //    size_t dataListSize = BufferSize / sizeof(T);
+        public List<T> CheckBufferContents()
+        {
+            List<T> DataList = new List<T>();
+            size_t dataListSize = (nint)(BufferSize / (ulong)sizeof(T));
 
-        //    void* data = GameEngineImport.DLL_Buffer_MapBufferMemory(_device, BufferMemory, BufferSize, &IsMapped);
-        //    if (data == nullptr)
-        //    {
-        //        throw new Exception("Failed to map buffer memory.");
-        //        return DataList;
-        //    }
+            var isMapped = IsMapped;
+            void* data = GameEngineImport.DLL_Buffer_MapBufferMemory(_device, BufferMemory, BufferSize, &isMapped);
+            if (data == null)
+            {
+                throw new Exception("Failed to map buffer memory.");
+            }
 
-        //    char* newPtr = static_cast<char*>(data);
-        //    for (size_t x = 0; x < dataListSize; ++x)
-        //    {
-        //        DataList.emplace_back(*reinterpret_cast<T*>(newPtr));
-        //        newPtr += sizeof(T);
-        //    }
-        //    GameEngineImport.DLL_Buffer_UnmapBufferMemory(_device, BufferMemory, &IsMapped);
+            char* newPtr = (char*)data;
+            for (size_t x = 0; x < dataListSize; ++x)
+            {
+                DataList.Add(*((T*)newPtr));
+                newPtr += sizeof(T);
+            }
+            GameEngineImport.DLL_Buffer_UnmapBufferMemory(_device, BufferMemory, &isMapped);
+            IsMapped = isMapped;
 
-        //    return DataList;
-        //}
+            return DataList;
+        }
 
         public void DestroyBuffer()
         {

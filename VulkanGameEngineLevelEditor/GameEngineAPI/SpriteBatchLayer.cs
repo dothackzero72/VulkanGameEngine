@@ -59,13 +59,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             }
 
-            SpriteBuffer = new VulkanBuffer<SpriteInstanceStruct>(SpriteInstanceList.ToList(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
-                                                                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
-                                                                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
-                                                                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT, 
-                                                                                                                     VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                                                                                                     VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
+            var spriteInstanceArray = SpriteInstanceList.ToArray();
+            GCHandle spriteInstanceListHandle = GCHandle.Alloc(spriteInstanceArray, GCHandleType.Pinned);
+            SpriteBuffer = new VulkanBuffer<SpriteInstanceStruct>(spriteInstanceListHandle.AddrOfPinnedObject(), SpriteInstanceList.UCount, VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+                                                                                                                                            VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
+                                                                                                                                            VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+                                                                                                                                            VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT, 
+                                                                                                                                            VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                                                                                                                            VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
             SortSpritesByLayer(SpriteList);
+            spriteInstanceListHandle.Free();
         }
 
         public void LoadSprites()
@@ -78,20 +81,23 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             SpriteInstanceList.Clear();
             foreach (var sprite in SpriteList)
             {
-                    sprite.Update(commandBuffer, deltaTime);
-                    SpriteInstanceList.Add(sprite.SpriteInstance);
+                sprite.Update(commandBuffer, deltaTime);
+                SpriteInstanceList.Add(sprite.SpriteInstance);
             }
 
             if (SpriteList.Any())
             {
-                SpriteBuffer.UpdateBufferMemory(SpriteInstanceList.ToList());
+                var spriteInstanceArray = SpriteInstanceList.ToArray();
+                GCHandle spriteInstanceListHandle = GCHandle.Alloc(spriteInstanceArray, GCHandleType.Pinned);
+                SpriteBuffer.UpdateBufferMemory(spriteInstanceListHandle.AddrOfPinnedObject());
+                spriteInstanceListHandle.Free();
             }
         }
 
         public void Draw(VkCommandBuffer commandBuffer, SceneDataBuffer sceneDataBuffer)
         {
             GCHandle vertexHandle = GCHandle.Alloc(SpriteLayerMesh.MeshVertexBuffer.Buffer, GCHandleType.Pinned);
-            GCHandle indexHandle = GCHandle.Alloc(SpriteLayerMesh.MeshBufferIndex, GCHandleType.Pinned);
+            GCHandle indexHandle = GCHandle.Alloc(SpriteLayerMesh.MeshIndexBuffer.Buffer, GCHandleType.Pinned);
             GCHandle instanceHandle = GCHandle.Alloc(SpriteBuffer.Buffer, GCHandleType.Pinned);
 
             ulong offsets = 0;

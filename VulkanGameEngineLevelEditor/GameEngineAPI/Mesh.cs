@@ -125,7 +125,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                                                                                                      VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
                                                                                                                      VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                                                                                                                      VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
-
+            
             vertexListHandle.Free();
             indexListHandle.Free();
             transformHandle.Free();

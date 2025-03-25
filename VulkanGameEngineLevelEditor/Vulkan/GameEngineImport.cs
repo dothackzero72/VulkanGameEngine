@@ -206,7 +206,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static extern VkResult DLL_Buffer_UpdateBufferSize(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize* oldBufferSize, VkDeviceSize newBufferSize, VkBufferUsageFlagBits bufferUsageFlags, VkMemoryPropertyFlagBits propertyFlags);
        
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern void DLL_Buffer_UpdateBufferData(VkDevice device, out VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize);
+        public static extern void DLL_Buffer_UpdateBufferData(VkDevice device, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize);
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern void DLL_Buffer_UpdateStagingBufferData(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer stagingBuffer, VkBuffer buffer, out VkDeviceMemory stagingBufferMemory, out VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize);

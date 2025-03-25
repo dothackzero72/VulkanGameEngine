@@ -167,7 +167,6 @@
     <ClCompile Include="CTimer.c" />
     <ClCompile Include="DepthTexture.cpp" />
     <ClCompile Include="File.cpp" />
-    <ClCompile Include="FrameBufferRenderPassCPP.cpp" />
     <ClCompile Include="FrameTime.c" />
     <ClCompile Include="GameController.c" />
     <ClCompile Include="GLFWWindow.c" />
@@ -196,7 +195,6 @@
     <ClInclude Include="CTypedef.h" />
     <ClInclude Include="DepthTexture.h" />
     <ClInclude Include="File.h" />
-    <ClInclude Include="FrameBufferRenderPassCPP.h" />
     <ClInclude Include="FrameTime.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="GLFWWindow.h" />

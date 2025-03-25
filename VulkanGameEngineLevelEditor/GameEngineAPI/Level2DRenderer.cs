@@ -78,13 +78,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 MaterialList = new List<Material>(MaterialList)
             };
 
-            ListPtr<VkVertexInputBindingDescription> vertexBinding = Vertex2D.GetBindingDescriptions();
+            ListPtr<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
             foreach (var instanceVar in SpriteInstanceVertex2D.GetBindingDescriptions())
             {
                 vertexBinding.Add(instanceVar);
             }
 
-            ListPtr<VkVertexInputAttributeDescription> vertexAttribute = Vertex2D.GetAttributeDescriptions();
+            ListPtr<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
             foreach (var instanceVar in SpriteInstanceVertex2D.GetAttributeDescriptions())
             {
                 vertexAttribute.Add(instanceVar);
@@ -132,19 +132,19 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var commandBuffer = commandBufferList[(int)commandIndex];
 
             using ListPtr<VkClearValue> clearValues = new ListPtr<VkClearValue>();
-            clearValues.Add(new VkClearValue { Color = new VkClearColorValue(1, 0, 0, 1) });
+            clearValues.Add(new VkClearValue { Color = new VkClearColorValue(0, 0, 0, 1) });
             clearValues.Add(new VkClearValue { DepthStencil = new VkClearDepthStencilValue(0.0f, 1.0f) });
 
 
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
+                sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                 renderPass = renderPass,
                 framebuffer = FrameBufferList[(int)imageIndex],
                 clearValueCount = clearValues.UCount,
                 pClearValues = clearValues.Ptr,
                 renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution)
             };
-
 
             var viewport = new VkViewport
             {
@@ -155,6 +155,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 minDepth = 0.0f,
                 maxDepth = 1.0f
             };
+
             var scissor = new VkRect2D
             {
                 offset = new VkOffset2D(0, 0),

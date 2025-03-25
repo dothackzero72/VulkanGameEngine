@@ -34,7 +34,7 @@ namespace VulkanGameEngineLevelEditor.Components
             Name = "GameObjectTransform2DComponent";
 
             GameObjectTransform = mat4.Identity;
-            GameObjectPosition = new vec2(0.0f, 0.0f);
+            GameObjectPosition = position;
             GameObjectRotation = new vec2(0.0f, 0.0f);
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
@@ -42,7 +42,7 @@ namespace VulkanGameEngineLevelEditor.Components
         public Transform2DComponent(uint gameObjectId, vec2 position, string name) : base(gameObjectId, name, ComponentTypeEnum.kGameObjectTransform2DComponent)
         {
             GameObjectTransform = mat4.Identity;
-            GameObjectPosition = new vec2(0.0f, 0.0f);
+            GameObjectPosition = position;
             GameObjectRotation = new vec2(0.0f, 0.0f);
             GameObjectScale = new vec2(1.0f, 1.0f);
         }

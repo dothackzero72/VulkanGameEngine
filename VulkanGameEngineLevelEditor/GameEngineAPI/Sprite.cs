@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineGameObjectScripts.Import;
 using VulkanGameEngineLevelEditor.Components;
@@ -78,11 +79,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             if (Transform2D != null)
 	{
                 mat4 spriteMatrix = mat4.Identity;
-                spriteMatrix = mat4.Scale(new vec3(SpriteScale.x, SpriteScale.y, 0.0f));
-                spriteMatrix = mat4.Rotate(CLIMath.DegreesToRadians(SpriteRotation.x), new vec3(1.0f, 0.0f, 0.0f));
-                spriteMatrix = mat4.Rotate(CLIMath.DegreesToRadians(SpriteRotation.y), new vec3(0.0f, 1.0f, 0.0f));
+                spriteMatrix = mat4.Translate(new vec3(Transform2D.GameObjectPosition.x, Transform2D.GameObjectPosition.y, 0.0f));
+                spriteMatrix = mat4.Rotate(CLIMath.DegreesToRadians(Transform2D.GameObjectRotation.x), new vec3(1.0f, 0.0f, 0.0f));
+                spriteMatrix = mat4.Rotate(CLIMath.DegreesToRadians(Transform2D.GameObjectRotation.y), new vec3(0.0f, 1.0f, 0.0f));
                 spriteMatrix = mat4.Rotate(CLIMath.DegreesToRadians(0.0f), new vec3(0.0f, 0.0f, 1.0f));
-                spriteMatrix = mat4.Translate(new vec3(SpritePosition.x, SpritePosition.y, 0.0f));
+                spriteMatrix = mat4.Scale(new vec3(Transform2D.GameObjectScale.x, Transform2D.GameObjectScale.y, 0.0f));
+
 
                 SpriteInstance.SpritePosition = Transform2D.GameObjectPosition;
                 SpriteInstance.SpriteSize = SpriteSize;

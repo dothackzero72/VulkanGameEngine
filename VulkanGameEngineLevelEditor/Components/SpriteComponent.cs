@@ -24,12 +24,12 @@ namespace VulkanGameEngineLevelEditor.Components
 
         public override void Input(KeyBoardKeys key, float deltaTime)
         {
-
+            SpriteObj.Input(deltaTime);
         }
 
         public override void Update(VkCommandBuffer commandBuffer, float deltaTime)
         {
-
+            SpriteObj.Update(commandBuffer, deltaTime);
         }
 
         public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, ListPtr<VkDescriptorSet> descriptorSetList, SceneDataBuffer sceneProperties)
@@ -39,12 +39,12 @@ namespace VulkanGameEngineLevelEditor.Components
 
         public override void Destroy()
         {
-
+            SpriteObj.Destroy();
         }
 
         public virtual int GetMemorySize()
         {
-            return (int)sizeof(GameObjectComponent);
+            return (int)sizeof(SpriteComponent);
         }
     }
 }

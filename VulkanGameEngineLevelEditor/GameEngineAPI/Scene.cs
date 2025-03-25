@@ -16,7 +16,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     {
         Vk vk = Vk.GetApi();
         SceneDataBuffer sceneProperties;
-        OrthographicCamera orthographicCamera;
+        OrthographicCamera2D orthographicCamera;
 
         static readonly long startTime = DateTime.Now.Ticks;
         public List<Texture> textureList { get; set; } = new List<Texture>();
@@ -28,8 +28,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public void StartUp()
         {
             var res = new vec2((float)VulkanRenderer.SwapChain.SwapChainResolution.width, (float)VulkanRenderer.SwapChain.SwapChainResolution.height);
-            var pos = new vec3(0.0f, 0.0f, 5.0f);
-            orthographicCamera = new OrthographicCamera(res, pos);
+            var pos = new vec2(0.0f, 0.0f);
+            orthographicCamera = new OrthographicCamera2D(res, pos);
 
             textureList.Add(new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\awesomeface.png", VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
             textureList.Add(new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\container2.png", VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
@@ -73,6 +73,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void Update()
         {
+            var deltaTime = 0;
             VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             foreach (var gameObject in GameObjectList)
             {
@@ -81,6 +82,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
 
             orthographicCamera.Update(ref sceneProperties);
+            level2DRenderer.Update(deltaTime);
         }
 
         public void DrawFrame()

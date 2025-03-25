@@ -7,7 +7,7 @@ JsonPipeline::JsonPipeline()
 
 JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize)
 {
-  //  ParentRenderPass = parentRenderPass;
+    //  ParentRenderPass = parentRenderPass;
 
     nlohmann::json json = Json::ReadJson(jsonPath);
     RenderPipelineModel model = RenderPipelineModel::from_json(json);
@@ -22,22 +22,22 @@ JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport g
         .materialProperties = GetMaterialPropertiesBuffer(gpuImport.MaterialList)
     };
 
-    Vector<VkVertexInputBindingDescription> vertexBindingList = vertexBindings; 
+    Vector<VkVertexInputBindingDescription> vertexBindingList = vertexBindings;
     Vector<VkVertexInputAttributeDescription> vertexAttributesList = vertexAttributes;
 
     DescriptorSetLayoutList.resize(1);
     DescriptorPool = Pipeline_CreateDescriptorPool(cRenderer.Device, model, include);
-     Pipeline_CreateDescriptorSetLayout(cRenderer.Device, model, include, DescriptorSetLayoutList);
-     DescriptorSetList = Pipeline_AllocateDescriptorSets(cRenderer.Device, DescriptorPool, DescriptorSetLayoutList);
-     Pipeline_UpdateDescriptorSets(cRenderer.Device, DescriptorSetList, model, include);
-     Pipeline_CreatePipelineLayout(cRenderer.Device, DescriptorSetLayoutList, constBufferSize, PipelineLayout);
-     Pipeline_CreatePipeline(cRenderer.Device,
-         renderPass,
-         PipelineLayout,
-         PipelineCache,
+    Pipeline_CreateDescriptorSetLayout(cRenderer.Device, model, include, DescriptorSetLayoutList);
+    DescriptorSetList = Pipeline_AllocateDescriptorSets(cRenderer.Device, DescriptorPool, DescriptorSetLayoutList);
+    Pipeline_UpdateDescriptorSets(cRenderer.Device, DescriptorSetList, model, include);
+    Pipeline_CreatePipelineLayout(cRenderer.Device, DescriptorSetLayoutList, constBufferSize, PipelineLayout);
+    Pipeline_CreatePipeline(cRenderer.Device,
+        renderPass,
+        PipelineLayout,
+        PipelineCache,
         model,
-         vertexBindingList,
-         vertexAttributesList,
+        vertexBindingList,
+        vertexAttributesList,
         Pipeline);
 }
 
