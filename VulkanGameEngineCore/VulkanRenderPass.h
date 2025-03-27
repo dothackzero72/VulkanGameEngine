@@ -6,4 +6,4 @@
 #include "CoreVulkanRenderer.h"
 
 void RenderPass_BuildRenderPass(VkDevice device, VkRenderPass& renderPass, const RenderPassBuildInfoModel& renderPassBuildInfo, Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList, SharedPtr<DepthTexture>& depthTexture);
-void RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, const RenderPassBuildInfoModel& renderPassBuildInfo, Vector<VkFramebuffer>& frameBufferList, Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList, SharedPtr<DepthTexture> depthTexture, Vector<VkImageView>& swapChainImageViews, ivec2 renderPassResolution);
+void RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, const RenderPassBuildInfoModel& renderPassBuildInfo, Vector<VkFramebuffer>& frameBufferList, Vector<VkImageView>& imageViewList, SharedPtr<VkImageView> depthImageView, Vector<VkImageView>& swapChainImageViews, ivec2 renderPassResolution);

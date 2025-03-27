@@ -65,11 +65,21 @@ void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassB
 
 void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
+    Vector<VkImageView> imageViewList;
+    for (int x = 0; x < RenderedColorTextureList.size(); x++)
+    {
+        imageViewList.emplace_back(RenderedColorTextureList[x]->View);
+    }
+
+    SharedPtr<VkImageView> depthTextureView = nullptr;
+    if (depthTexture)
+    {
+        depthTextureView = std::make_shared<VkImageView>(depthTexture->View);
+    }
+
     VkRenderPass& renderPass = RenderPass;
-    Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList = RenderedColorTextureList;
     Vector<VkFramebuffer>& frameBufferList = FrameBufferList;
-    DepthTexture& depthTexturePtr = *depthTexture.get();
-    RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, frameBufferList, renderedColorTextureList, depthTexture, cRenderer.SwapChain.SwapChainImageViews, RenderPassResolution);
+    RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, frameBufferList, imageViewList, depthTextureView, cRenderer.SwapChain.SwapChainImageViews, RenderPassResolution);
 }
 
 VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)

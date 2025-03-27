@@ -28,6 +28,7 @@ namespace VulkanGameEngineLevelEditor
 {
     public unsafe partial class Form1 : Form
     {
+
         private Vk vk = Vk.GetApi();
         private static Scene scene;
         private volatile bool running;
@@ -84,7 +85,7 @@ namespace VulkanGameEngineLevelEditor
                 VulkanRenderer.CreateVulkanRenderer(this.pictureBox1.Handle, VulkanSwapChainResolution);
             }));
 
-            scene = new Scene();
+           // scene = new Scene(_);
             scene.StartUp();
             while (running)
             {

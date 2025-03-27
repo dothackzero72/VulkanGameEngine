@@ -1,4 +1,5 @@
-﻿using Silk.NET.Vulkan;
+﻿using AutoMapper;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,7 +20,7 @@ namespace VulkanGameEngineLevelEditor.Models
     };
 
     [Serializable]
-    public class RenderedTextureInfoModel : RenderPassEditorBaseModel
+    public unsafe class RenderedTextureInfoModel : RenderPassEditorBaseModel
     {
         private string _renderedTextureInfoName = string.Empty;
         private VkImageCreateInfoModel _imageCreateInfo = new VkImageCreateInfoModel();
@@ -98,6 +99,9 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public RenderedTextureInfoModel() : base()
         {
+            _imageCreateInfo = new VkImageCreateInfoModel();
+            _samplerCreateInfo = new VkSamplerCreateInfoModel();
+            _attachmentDescription = new VkAttachmentDescriptionModel();
         }
 
         public RenderedTextureInfoModel(string jsonFilePath) : base()
@@ -108,6 +112,23 @@ namespace VulkanGameEngineLevelEditor.Models
         public RenderedTextureInfoModel(string name, string jsonFilePath) : base(name)
         {
             LoadJsonComponent(jsonFilePath);
+        }
+
+        public RenderedTextureInfoDLL ToDLL()
+        {
+            fixed (byte* namePtr = System.Text.Encoding.UTF8.GetBytes(_name + "\0"))
+            fixed (byte* textureInfoPtr = System.Text.Encoding.UTF8.GetBytes(_renderedTextureInfoName + "\0"))
+            {
+                return new RenderedTextureInfoDLL
+                {
+                  //  Name = (IntPtr)namePtr,
+                    _attachmentDescription = _attachmentDescription.Convert(),
+                    _textureType = _textureType,
+                    _imageCreateInfo = _imageCreateInfo.Convert(),
+                    //_renderedTextureInfoName = (IntPtr)textureInfoPtr,
+                    _samplerCreateInfo = _samplerCreateInfo.Convert()
+                };
+            }
         }
 
         public void LoadJsonComponent(string jsonPath)

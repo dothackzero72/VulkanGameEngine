@@ -1,4 +1,6 @@
-﻿using Silk.NET.Vulkan;
+﻿using AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,6 +22,9 @@ namespace VulkanGameEngineLevelEditor
 {
     public partial class GameWindow : Form
     {
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IMapper _mapper;
+
         private Vk vk = Vk.GetApi();
         private static Scene scene;
         private volatile bool running;
@@ -32,11 +37,15 @@ namespace VulkanGameEngineLevelEditor
         public MessengerModel RenderPassMessager { get; set; }
 
 
+
         [DllImport("kernel32.dll")]
         static extern bool AllocConsole();
 
         public GameWindow()
         {
+            _serviceProvider = ServiceConfig.ConfigureServices();
+            _mapper = _serviceProvider.GetRequiredService<IMapper>();
+
             InitializeComponent();
             AllocConsole();
 
@@ -44,7 +53,7 @@ namespace VulkanGameEngineLevelEditor
             this.KeyDown += KeyPress_Down;
             this.KeyUp += KeyPress_Up;
             // this.KeyDown += Form1_KeyDown;
-            Console.WriteLine("asdfasdf");
+
             VulkanSwapChainResolution = new Extent2D() { Width = 1280, Height = 720 };
             Thread.CurrentThread.Name = "LevelEditor";
         }
@@ -89,7 +98,7 @@ namespace VulkanGameEngineLevelEditor
                 VulkanRenderer.CreateVulkanRenderer(this.pictureBox1.Handle, VulkanSwapChainResolution);
             }));
 
-            scene = new Scene();
+            scene = new Scene(_mapper);
             scene.StartUp();
             while (running)
             {

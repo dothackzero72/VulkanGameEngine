@@ -17,7 +17,7 @@ using VulkanGameEngineLevelEditor.Vulkan;
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    public class VkSubpassDependencyModel : RenderPassEditorBaseModel
+    public unsafe class VkSubpassDependencyModel : RenderPassEditorBaseModel
     {
         private uint _srcSubpass;
         private uint _dstSubpass;
@@ -198,6 +198,24 @@ namespace VulkanGameEngineLevelEditor.Models
                 dstSubpass = dstSubpass,
                 srcSubpass = srcSubpass
             };
+        }
+
+        public VkSubpassDependencyDLL ToDLL()
+        {
+            fixed (byte* namePtr = System.Text.Encoding.UTF8.GetBytes(_name + "\0"))
+            {
+                return new VkSubpassDependencyDLL
+                {
+                    Name = (IntPtr)namePtr,
+                    _dependencyFlags = _dependencyFlags,
+                    _dstSubpass = _dstSubpass,
+                    _srcSubpass = _srcSubpass,
+                    _dstAccessMask = _dstAccessMask,
+                    _srcAccessMask = _srcAccessMask,
+                    _dstStageMask = _dstStageMask,
+                    _srcStageMask = _srcStageMask,
+                };
+            }
         }
 
         public void LoadJsonComponent(string jsonPath)

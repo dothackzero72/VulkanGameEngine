@@ -1,4 +1,5 @@
-﻿using GlmSharp;
+﻿using AutoMapper;
+using GlmSharp;
 using Newtonsoft.Json;
 using Silk.NET.Core.Native;
 using Silk.NET.Maths;
@@ -29,7 +30,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     {
         Vk vk = Vk.GetApi();
         public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
-        public DepthTexture depthTexture { get; private set; }
+        public DepthTexture depthTexture { get; private set; } = new DepthTexture();
         public ivec2 RenderPassResolution { get; set; }
         public VkRenderPass renderPass { get; protected set; }
         public ListPtr<VkCommandBuffer> commandBufferList { get; protected set; } = new ListPtr<VkCommandBuffer>();
@@ -185,6 +186,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void CreateFramebuffer()
         {
+           
             ListPtr<VkFramebuffer> frameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
             for (int x = 0; x < VulkanRenderer.SwapChain.ImageCount; x++)
             {

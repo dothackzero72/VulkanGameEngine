@@ -141,13 +141,23 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                                                                                                                                                                          bool useMipMap);
         //RenderPass
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_RenderPass_BuildRenderPass(VkDevice device, VkRenderPass* renderPass, RenderPassBuildInfoModel* renderPassBuildInfo, RenderedTexture* renderedColorTextureList, DepthTexture depthTexture);
-	   
+        public static extern void DLL_RenderPass_BuildRenderPass(VkDevice device, VkRenderPass* renderPass, RenderPassBuildInfoDLL* renderPassBuildInfo, RenderedTexture* renderedColorTextureList, DepthTexture depthTexture);
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern void DLL_RenderPass_BuildFrameBuffer(
+     VkDevice device,
+     VkRenderPass renderPass,
+     RenderPassBuildInfoDLL renderPassBuildInfo,
+     VkFramebuffer* frameBufferList,
+     VkImageView* renderedColorTextureList,
+     VkImageView* depthTextureView,
+     VkImageView* swapChainImageViewList,
+     uint frameBufferCount,
+     uint swapChainCount,
+     uint renderedTextureCount,
+     ivec2 renderPassResolution);
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoModel renderPassBuildInfo, VkFramebuffer* frameBufferList, RenderedTexture* renderedColorTextureList, DepthTexture* depthTexture, VkImageView* swapChainImageViewList, uint frameBufferCount, uint renderedTextureCount, ivec2 renderPassResolution);
-        
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoModel renderPassBuildInfo, VkFramebuffer* frameBufferList, Texture* renderedColorTextureList, DepthTexture* depthTexture, VkImageView* swapChainImageViewList, uint frameBufferCount, uint renderedTextureCount, ivec2 renderPassResolution);
+        public static extern void DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoDLL renderPassBuildInfo, VkFramebuffer* frameBufferList, Texture* renderedColorTextureList, DepthTexture* depthTexture, VkImageView* swapChainImageViewList, uint frameBufferCount, uint renderedTextureCount, ivec2 renderPassResolution);
 
         //Pipeline
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
@@ -220,6 +230,5 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
         public static extern void DLL_Tools_DeleteAllocatedPtr(void* ptr);
-
     }
 }

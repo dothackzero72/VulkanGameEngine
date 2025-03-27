@@ -1,4 +1,5 @@
-﻿using CSScripting;
+﻿using AutoMapper;
+using CSScripting;
 using GlmSharp;
 using Newtonsoft.Json;
 using Silk.NET.SDL;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineGameObjectScripts;
@@ -22,6 +24,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class Level2DRenderer : JsonRenderPass<Vertex2D>
     {
+        //private readonly IMapper _mapper;
         public List<SpriteBatchLayer> SpriteLayerList { get; private set; } = new List<SpriteBatchLayer>();
         public List<GameObject> GameObjectList { get; private set; } = new List<GameObject>();
         public List<Texture> TextureList { get; private set; } = new List<Texture>();
@@ -32,13 +35,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public Level2DRenderer(String jsonPath, ivec2 renderPassResolution, VkSampleCountFlagBits sampleCount = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT)
+        public Level2DRenderer(String jsonPath, ivec2 renderPassResolution, VkSampleCountFlagBits sampleCount)
         {
+            //_mapper = mapper;
             RenderPassResolution = renderPassResolution;
             SampleCountFlags = sampleCount;
 
             string jsonContent = File.ReadAllText(jsonPath);
             RenderPassBuildInfoModel model = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
+            RenderPassBuildInfoDLL modelDLL = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent).ToDLL();
             foreach (var item in model.RenderedTextureInfoModelList)
             {
                 item.ImageCreateInfo.extent = new VkExtent3DModel
@@ -48,12 +53,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     depth = 1
                 };
             }
-
-            FrameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
+            FrameBufferList = new ListPtr<nint>(3);
+            var depthView = depthTexture.View;
 
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
             renderPass = CreateRenderPass(model);
-            CreateFramebuffer();
+
+            VkImageView[] renderedImageViewsArray = RenderedColorTextureList.Select(x => x.View).ToArray();
+            GCHandle renderedImageViewsHandle = GCHandle.Alloc(renderedImageViewsArray, GCHandleType.Pinned);
+
+            VkFramebuffer[] frameBufferArray = new VkFramebuffer[VulkanRenderer.SwapChain.ImageCount];
+            GCHandle frameBufferHandle = GCHandle.Alloc(frameBufferArray, GCHandleType.Pinned);
+
+            VkImageView[] swapChainImageViewsArray = VulkanRenderer.SwapChain.imageViews.ToArray();
+            GCHandle swapChainImageViewsHandle = GCHandle.Alloc(swapChainImageViewsArray, GCHandleType.Pinned);
+
+            GameEngineImport.DLL_RenderPass_BuildFrameBuffer( VulkanRenderer.device, renderPass, modelDLL, (nint*)frameBufferHandle.AddrOfPinnedObject(), (nint*)renderedImageViewsHandle.AddrOfPinnedObject(), &depthView, VulkanRenderer.SwapChain.imageViews.Ptr, FrameBufferList.UCount, VulkanRenderer.SwapChain.imageViews.UCount, RenderedColorTextureList.UCount(), RenderPassResolution);
+            for (int i = 0; i < VulkanRenderer.SwapChain.ImageCount; i++)
+            {
+                FrameBufferList[i] = frameBufferArray[i];
+            }
+
+            //CreateFramebuffer();
         }
 
         public void StartLeveleRenderer()

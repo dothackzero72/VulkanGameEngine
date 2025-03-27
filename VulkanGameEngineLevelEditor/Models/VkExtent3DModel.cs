@@ -118,6 +118,20 @@ namespace VulkanGameEngineLevelEditor.Models
             return extent;
         }
 
+        public VkExtent3DDLL ToDLL()
+        {
+            fixed (byte* namePtr = System.Text.Encoding.UTF8.GetBytes(_name + "\0"))
+            {
+                return new VkExtent3DDLL
+                {
+                    Name = (IntPtr)namePtr,
+                    _depth = _depth,
+                    _width = _width,
+                    _height = _height,
+                };
+            }
+        }
+
         public void Dispose()
         {
             // Implement disposal logic if necessary

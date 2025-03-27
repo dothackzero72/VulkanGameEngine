@@ -4,6 +4,11 @@
 #include <CoreVulkanRenderer.h>
 #include <JsonStructs.h>
 
+struct RenderPassEditorBaseDLL
+{
+    String name;
+};
+
 struct GPUIncludesDLL
 {
 	VkDescriptorBufferInfo* vertexProperties = nullptr;
@@ -48,11 +53,6 @@ struct GPUIncludesDLL
         }
         return includes;
     }
-};
-
-struct RenderPassEditorBaseDLL
-{
-    String name;
 };
 
 struct Blender
@@ -429,40 +429,15 @@ struct VkAttachmentDescriptionDLL : RenderPassEditorBaseDLL
     }
 };
 
-struct RenderedTextureInfoDLL : RenderPassEditorBaseDLL
-{
-    bool IsRenderedToSwapchain;
-    String _renderedTextureInfoName;
-    VkImageCreateInfoDLL _imageCreateInfo;
-    VkSamplerCreateInfoDLL _samplerCreateInfo;
-    VkAttachmentDescriptionDLL _attachmentDescription;
-    RenderedTextureType _textureType;
-};
-
-struct VkSubpassDependencyDLL : RenderPassEditorBaseDLL
-{
-    uint _srcSubpass;
-    uint _dstSubpass;
-    VkPipelineStageFlags _srcStageMask;
-    VkPipelineStageFlags _dstStageMask;
-    VkAccessFlags _srcAccessMask;
-    VkAccessFlags _dstAccessMask;
-    VkDependencyFlags _dependencyFlags;
-
-    VkSubpassDependency Convert()
-    {
-        return VkSubpassDependency
-        {
-            .srcSubpass = _srcSubpass,
-            .dstSubpass = _dstSubpass,
-            .srcStageMask = _srcStageMask,
-            .dstStageMask = _dstStageMask,
-            .srcAccessMask = _srcAccessMask,
-            .dstAccessMask = _dstAccessMask,
-            .dependencyFlags = _dependencyFlags
-        };
-    }
-};
+//struct RenderedTextureInfoDLL : RenderPassEditorBaseDLL
+//{
+//    bool IsRenderedToSwapchain;
+//    String _renderedTextureInfoName;
+//    VkImageCreateInfo _imageCreateInfo;
+//    VkSamplerCreateInfo _samplerCreateInfo;
+//    VkAttachmentDescription _attachmentDescription;
+//    RenderedTextureType _textureType;
+//};
 
 struct RenderPipelineDLL
 {
@@ -524,12 +499,103 @@ struct RenderPipelineDLL
     }
 };
 
-struct RenderPassBuildInfoDLL : RenderPassEditorBaseDLL
+//struct VkExtent3DDLL : RenderPassEditorBaseDLL
+//{
+//    uint _width;
+//    uint _height;
+//    uint _depth;
+//};
+
+//struct VkAttachmentDescriptionDLL : RenderPassEditorBaseDLL
+//{
+//    VkStructureType _structureType;
+//    VkAttachmentDescriptionFlagBits _flags;
+//    void* _pNext;
+//    VkFormat _format;
+//    VkSampleCountFlagBits _samples;
+//    VkAttachmentLoadOp _loadOp;
+//    VkAttachmentStoreOp _storeOp;
+//    VkAttachmentLoadOp _stencilLoadOp;
+//    VkAttachmentStoreOp _stencilStoreOp;
+//    VkImageLayout _initialLayout;
+//    VkImageLayout _finalLayout;
+//};
+
+struct RenderedTextureInfoDLL : RenderPassEditorBaseDLL
 {
-    RenderPipelineDLL* RenderPipelineList;
-    RenderedTextureInfoDLL* RenderedTextureInfoDLLList;
-    VkSubpassDependencyDLL* SubpassDependencyList;
-    uint RenderPipelineListCount;
-    uint RenderedTextureInfoDLLListCount;
-    uint SubpassDependencyListCount;
+    //const char* renderedTextureInfoName;
+    VkImageCreateInfo imageCreateInfo;
+    VkSamplerCreateInfo samplerCreateInfo;
+    VkAttachmentDescription attachmentDescription;
+    RenderedTextureType textureType;
+
+    RenderedTextureInfoModel Convert()
+    {
+        RenderedTextureInfoModel model;
+      //  model.RenderedTextureInfoName = String(renderedTextureInfoName);
+       // model.RenderedTextureInfoName = renderedTextureInfoName;
+        model.ImageCreateInfo = imageCreateInfo;
+        model.SamplerCreateInfo = samplerCreateInfo;
+        model.TextureType = textureType;
+        return model;
+    }
+};
+
+struct TextureMemoryDLL
+{
+    uint TextureId;
+    uint TextureBufferIndex;
+    String Name;
+    int Width;
+    int Height;
+    int Depth;
+    ColorChannelUsed ColorChannels;
+    uint MipMapLevels;
+    TextureUsageEnum TextureUsage;
+    TextureTypeEnum TextureType;
+    VkFormat TextureByteFormat;
+    VkImageLayout TextureImageLayout;
+    VkSampleCountFlagBits SampleCount;
+    VkImage Image;
+    VkDeviceMemory Memory;
+    VkImageView View;
+    VkSampler Sampler;
+};
+
+
+struct RenderPassBuildInfoDLL
+{
+   // const char* name;
+//const char** RenderPipelineList;
+    RenderedTextureInfoDLL* RenderedTextureInfoModelList;
+    VkSubpassDependency* SubpassDependencyList;
+    bool IsRenderedToSwapchain;
+
+    uint RenderPipelineCount;
+    uint RenderedTextureInfoModeCount;
+    uint SubpassDependencyCount;
+
+    RenderPassBuildInfoModel Convert()
+    {
+        RenderPassBuildInfoModel model;
+       // model._name = String(name);
+        model.IsRenderedToSwapchain = IsRenderedToSwapchain;
+
+        for (uint32_t x = 0; x < RenderedTextureInfoModeCount; x++)
+        {
+            model.RenderedTextureInfoModelList.emplace_back(RenderedTextureInfoModelList[x].Convert());
+        }
+
+        for (uint32_t x = 0; x < SubpassDependencyCount; x++)
+        {
+            model.SubpassDependencyModelList.emplace_back(SubpassDependencyList[x]);
+        }
+
+      /*  for (uint32_t x = 0; x < RenderPipelineCount; x++)
+        {
+            model.RenderPipelineList.emplace_back(String(RenderPipelineList[x]));
+        }*/
+
+        return model;
+    }
 };

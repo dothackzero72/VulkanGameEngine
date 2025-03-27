@@ -1,4 +1,5 @@
-﻿using GlmSharp;
+﻿using AutoMapper;
+using GlmSharp;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
     public unsafe class Scene
     {
-        Vk vk = Vk.GetApi();
+        private readonly IMapper _mapper;
         SceneDataBuffer sceneProperties;
         OrthographicCamera2D orthographicCamera;
 
@@ -25,6 +26,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         Level2DRenderer level2DRenderer { get; set; }
         FrameBufferRenderPass frameBufferRenderPass { get; set; } = new FrameBufferRenderPass();
         public ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>();
+
+        public Scene(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
+
         public void StartUp()
         {
             var res = new vec2((float)VulkanRenderer.SwapChain.SwapChainResolution.width, (float)VulkanRenderer.SwapChain.SwapChainResolution.height);
@@ -49,7 +56,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             // MemoryManager.ViewMemoryMap();
             // renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
-            level2DRenderer = new Level2DRenderer("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json", new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
+            level2DRenderer = new Level2DRenderer("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json", new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height), VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT);
             level2DRenderer.StartLeveleRenderer();
 
             GPUImport<NullVertex> imports = new GPUImport<NullVertex>()

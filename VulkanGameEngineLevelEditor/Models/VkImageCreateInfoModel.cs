@@ -16,11 +16,11 @@ using VulkanGameEngineLevelEditor.RenderPassEditor;
 using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.Vulkan;
 using System.Runtime.InteropServices;
+using AutoMapper;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-   // [StructLayout(LayoutKind.Sequential)]
     public unsafe class VkImageCreateInfoModel : RenderPassEditorBaseModel
     {
         private VkStructureType _sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -38,7 +38,6 @@ namespace VulkanGameEngineLevelEditor.Models
         private uint _queueFamilyIndexCount;
         private unsafe uint* _pQueueFamilyIndices;
         private VkImageLayout _initialLayout;
-
 
         [Browsable(false)]
         [Newtonsoft.Json.JsonIgnore]
@@ -285,7 +284,6 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public VkImageCreateInfo Convert()
         {
-
             return new VkImageCreateInfo()
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -304,6 +302,32 @@ namespace VulkanGameEngineLevelEditor.Models
                 pQueueFamilyIndices = null,
                 initialLayout = initialLayout
             };
+        }
+
+        public VkImageCreateInfoDLL ToDLL()
+        {
+            fixed (byte* namePtr = System.Text.Encoding.UTF8.GetBytes(_name + "\0"))
+            {
+                return new VkImageCreateInfoDLL
+                {
+                    Name = (IntPtr)namePtr,
+                    _arrayLayers = _arrayLayers,
+                    _format = _format,
+                    _extent = _extent.ToDLL(),
+                    _mipLevels = _mipLevels,
+                    _flags = _flags,
+                    _imageType = _imageType,
+                    _initialLayout = _initialLayout,
+                    _pNext = _pNext,
+                    _pQueueFamilyIndices = _pQueueFamilyIndices,
+                    _queueFamilyIndexCount = _queueFamilyIndexCount,
+                    _samples = _samples,
+                    _tiling = _tiling,
+                    _sharingMode = _sharingMode,
+                    _sType = _sType,
+                    _usage = _usage
+                };
+            }
         }
 
         public void LoadJsonComponent(string jsonPath)
