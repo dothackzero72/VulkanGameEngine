@@ -155,6 +155,44 @@ namespace VulkanGameEngineLevelEditor
             _count++;
         }
 
+        public void Add(List<T> item)
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(ListPtr<T>));
+
+            if (_count >= _capacity)
+            {
+                if (_capacity == 0)
+                {
+                    _capacity = 1;
+                }
+                else
+                {
+                    _capacity *= 2;
+                }
+
+                int totalSize = sizeof(T) * (int)_capacity;
+                T* newPtr = (T*)Marshal.AllocHGlobal(totalSize);
+
+                System.Buffer.MemoryCopy(_ptr, newPtr, sizeof(T) * _count, sizeof(T) * _count);
+                Marshal.FreeHGlobal((IntPtr)_ptr);
+                _ptr = newPtr;
+
+                T*[] newList = new T*[_capacity];
+                Array.Copy(_debugList, newList, _count);
+                _debugList = newList;
+
+                UpdateList();
+            }
+
+            for (int x = 0; x < _count; x++)
+            {
+                _ptr[_count] = item[x];
+                _debugList[_count] = &_ptr[_count];
+                _count++;
+            }
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+        }
+
         public bool Remove(T item)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(ListPtr<T>));

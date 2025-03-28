@@ -50,7 +50,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             // MemoryManager.ViewMemoryMap();
             // renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
             level2DRenderer = new Level2DRenderer("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json", new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
-            level2DRenderer.StartLevelRenderer();
 
             GPUImport<NullVertex> imports = new GPUImport<NullVertex>()
             {
