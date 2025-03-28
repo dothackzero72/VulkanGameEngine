@@ -54,7 +54,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GPUImport<NullVertex> imports = new GPUImport<NullVertex>()
             {
-                TextureList = new List<Texture>() { textureList[0] },
+                TextureList = new List<Texture>() { level2DRenderer.texture },
                 MaterialList = new List<Material>(),
                 MeshList = new List<Mesh<NullVertex>>()
             };
@@ -96,7 +96,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             var s = level2DRenderer.Draw(GameObjectList, sceneProperties);
             commandBufferList.Add(s.Handle);
-       //     commandBufferList.Add(frameBufferRenderPass.Draw());
+            commandBufferList.Add(frameBufferRenderPass.Draw());
             //GameEngineImport.DLL_Renderer_EndFrame(VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.AcquireImageSemaphores.Ptr, VulkanRenderer.PresentImageSemaphores.Ptr, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.graphicsQueue, VulkanRenderer.presentQueue, commandIndex, imageIndex, commandBufferList.Ptr, commandBufferList.UCount, &rebuildRendererFlag);
            VulkanRenderer.EndFrame(commandBufferList);
             commandBufferList.Clear();

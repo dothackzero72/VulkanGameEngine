@@ -145,14 +145,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             for (int i = 0; i < VulkanRenderer.SwapChain.ImageCount; i++)
             {
-                ImageView[] attachments = new[] { new ImageView((ulong)VulkanRenderer.SwapChain.imageViews[i]) };
-                GCHandle attachmentsHandle = GCHandle.Alloc(attachments, GCHandleType.Pinned);
+                ListPtr<ImageView> attachments = new ListPtr<ImageView> { new ImageView((ulong?)texture.View), new ImageView((ulong?)depthTexture.View) };
                 FramebufferCreateInfo fbInfo = new FramebufferCreateInfo
                 {
                     SType = StructureType.FramebufferCreateInfo,
                     RenderPass = renderPass,
-                    AttachmentCount = 1,
-                    PAttachments = (ImageView*)attachmentsHandle.AddrOfPinnedObject(),
+                    AttachmentCount = attachments.UCount,
+                    PAttachments = attachments.Ptr,
                     Width = (uint)RenderPassResolution.x,
                     Height = (uint)RenderPassResolution.y,
                     Layers = 1
@@ -160,7 +159,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
                 vk.CreateFramebuffer(device, fbInfo, null, out Framebuffer fb);
                 FrameBufferList.Add(fb);
-                attachmentsHandle.Free();
             }
         }
 
