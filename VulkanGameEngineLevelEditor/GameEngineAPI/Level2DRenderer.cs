@@ -34,7 +34,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         // Pipeline-related fields
         private VkDescriptorPool descriptorPool;
-        private ListPtr<DescriptorSetLayout> descriptorSetLayoutList = new ListPtr<DescriptorSetLayout>();
+        private ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>();
         public ListPtr<DescriptorSet> descriptorSetList = new ListPtr<DescriptorSet>();
         public Pipeline pipeline;
         public PipelineLayout pipelineLayout;
@@ -229,7 +229,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             // Descriptor Set Layout
             DescriptorSetLayoutBinding[] bindings = new[]
-            {
+                 {
                 new DescriptorSetLayoutBinding
                 {
                     Binding = 0,
@@ -246,13 +246,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
             GCHandle bindingsHandle = GCHandle.Alloc(bindings, GCHandleType.Pinned);
-            DescriptorSetLayoutCreateInfo layoutInfo = new DescriptorSetLayoutCreateInfo
+            VkDescriptorSetLayoutCreateInfo layoutInfo = new VkDescriptorSetLayoutCreateInfo
             {
-                SType = StructureType.DescriptorSetLayoutCreateInfo,
-                BindingCount = (uint)bindings.Length,
-                PBindings = (DescriptorSetLayoutBinding*)bindingsHandle.AddrOfPinnedObject()
+                sType = (VkStructureType)StructureType.DescriptorSetLayoutCreateInfo,
+                bindingCount = (uint)bindings.Length,
+                pBindings = (VkDescriptorSetLayoutBinding*)bindingsHandle.AddrOfPinnedObject()
             };
-            vk.CreateDescriptorSetLayout(device, layoutInfo, null, out DescriptorSetLayout layout);
+            VkFunc.vkCreateDescriptorSetLayout(VulkanRenderer.device, &layoutInfo, null, out VkDescriptorSetLayout layout);
             descriptorSetLayoutList.Add(layout);
             bindingsHandle.Free();
 
@@ -309,11 +309,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Offset = 0,
                 Size = (uint)sizeof(SceneDataBuffer)
             };
+
+            var silkDescriptorSetLayoutList = new ListPtr<DescriptorSetLayout>();
+            foreach(var descriptorSetLayout in descriptorSetLayoutList)
+            {
+                silkDescriptorSetLayoutList.Add(new DescriptorSetLayout((ulong?)descriptorSetLayout));
+            }
+
             PipelineLayoutCreateInfo pipelineLayoutInfo = new PipelineLayoutCreateInfo
             {
                 SType = StructureType.PipelineLayoutCreateInfo,
-                SetLayoutCount = 1,
-                PSetLayouts = descriptorSetLayoutList.Ptr,
+                SetLayoutCount = silkDescriptorSetLayoutList.UCount,
+                PSetLayouts = silkDescriptorSetLayoutList.Ptr,
                 PushConstantRangeCount = 1,
                 PPushConstantRanges = &pushConstant
             };
@@ -712,7 +719,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             vk.DestroyPipelineLayout(device, pipelineLayout, null);
             foreach (var layout in descriptorSetLayoutList)
             {
-                vk.DestroyDescriptorSetLayout(device, layout, null);
+               // vk.DestroyDescriptorSetLayout(device, layout, null);
             }
            // vk.DestroyDescriptorPool(device, descriptorPool, null);
             foreach (var fb in FrameBufferList)
