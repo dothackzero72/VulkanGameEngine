@@ -521,8 +521,9 @@ struct RenderPipelineDLL
 //    VkImageLayout _finalLayout;
 //};
 
-struct RenderedTextureInfoDLL : RenderPassEditorBaseDLL
+struct RenderedTextureInfoDLL
 {
+    //const char name;
     //const char* renderedTextureInfoName;
     VkImageCreateInfo imageCreateInfo;
     VkSamplerCreateInfo samplerCreateInfo;

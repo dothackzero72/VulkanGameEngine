@@ -280,13 +280,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkAllocationCallbacks* pAllocator);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern VkResult vkCreateShaderModule(
-            VkDevice device,
-            VkShaderModuleCreateInfo* pCreateInfo,
-            VkAllocationCallbacks* pAllocator,
-            VkShaderModule* pShaderModule);
-
-        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyShaderModule(
             VkDevice device,
             VkShaderModule shaderModule,
@@ -322,11 +315,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern VkResult vkCreateGraphicsPipelines(
             VkDevice device,
-            VkPipelineCache* pipelineCache,
+            VkPipelineCache pipelineCache,
             uint createInfoCount,
             VkGraphicsPipelineCreateInfo* pCreateInfos,
             VkAllocationCallbacks* pAllocator,
-            out VkPipeline pPipelines);
+            VkPipeline* pPipelines);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern VkResult vkCreateComputePipelines(
@@ -430,6 +423,13 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkFramebuffer* pFramebuffer);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern VkResult vkCreateFramebuffer(
+     VkDevice device,
+     VkFramebufferCreateInfo* pCreateInfo,
+     VkAllocationCallbacks* pAllocator,
+     out VkFramebuffer pFramebuffer);
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyFramebuffer(
             VkDevice device,
             VkFramebuffer framebuffer,
@@ -441,6 +441,13 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkRenderPassCreateInfo* pCreateInfo,
             VkAllocationCallbacks* pAllocator,
             VkRenderPass* pRenderPass);
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern VkResult vkCreateRenderPass(
+        VkDevice device,
+        VkRenderPassCreateInfo* pCreateInfo,
+        VkAllocationCallbacks* pAllocator,
+        out VkRenderPass pRenderPass);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyRenderPass(

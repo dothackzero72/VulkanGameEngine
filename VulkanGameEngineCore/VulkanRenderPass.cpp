@@ -117,7 +117,7 @@ void RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, const
                 TextureAttachmentList.emplace_back(imageViewList[y]);
             }
         }
-        if (*depthImageView.get() != nullptr)
+        if (depthImageView)
         {
             TextureAttachmentList.emplace_back(*depthImageView.get());
         }

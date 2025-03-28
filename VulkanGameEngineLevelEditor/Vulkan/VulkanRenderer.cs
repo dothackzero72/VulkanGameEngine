@@ -198,7 +198,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static VkShaderModule CreateShaderModule(byte[] code)
         {
-            VkShaderModule shaderModule = new VkShaderModule();
             fixed (byte* codePtr = code)
             {
                 var createInfo = new VkShaderModuleCreateInfo
@@ -208,13 +207,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     pCode = (uint*)codePtr
                 };
 
-                VkResult result = VkFunc.vkCreateShaderModule(device, &createInfo, null, &shaderModule);
+                VkResult result = VkFunc.vkCreateShaderModule(device, ref createInfo, IntPtr.Zero, out nint shaderModule);
                 if (result != VkResult.VK_SUCCESS)
                 {
                     Console.WriteLine($"Failed to create shader module: {result}");
                 }
+                return shaderModule;
             }
-            return shaderModule;
+            
         }
 
         public static uint GetMemoryType(uint typeFilter, VkMemoryPropertyFlagBits properties)
