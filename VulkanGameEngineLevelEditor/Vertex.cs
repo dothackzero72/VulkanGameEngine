@@ -318,5 +318,131 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
         }
+        public unsafe struct SilkSpriteInstanceVertex2D
+        {
+            public vec2 SpritePosition;
+            public vec4 UVOffset;
+            public vec2 SpriteSize;
+            public ivec2 FlipSprite;
+            public vec4 Color;
+            public mat4 InstanceTransform;
+            public uint MaterialID;
+
+            public SilkSpriteInstanceVertex2D()
+            {
+                SpritePosition = new vec2(0.0f);
+                UVOffset = new vec4(0.0f);
+                SpriteSize = new vec2(0.0f);
+                FlipSprite = new ivec2(0);
+                Color = new vec4(0.0f);
+                MaterialID = 0;
+                InstanceTransform = mat4.Identity;
+            }
+
+            public SilkSpriteInstanceVertex2D(vec2 spritePosition, vec4 uv, vec2 spriteSize, ivec2 flipSprite, vec4 color, uint materialID, mat4 instanceTransform, uint spriteLayer)
+            {
+                SpritePosition = spritePosition;
+                UVOffset = uv;
+                SpriteSize = spriteSize;
+                FlipSprite = flipSprite;
+                Color = color;
+                MaterialID = materialID;
+                InstanceTransform = instanceTransform;
+            }
+
+            static public ListPtr<VertexInputBindingDescription> GetSilkBindingDescriptions()
+            {
+                return new ListPtr<VertexInputBindingDescription>
+            {
+                   new VertexInputBindingDescription
+                {
+                    Binding = 1,
+                    Stride = (uint)Marshal.SizeOf(typeof(SilkSpriteInstanceVertex2D)),
+                    InputRate = (VertexInputRate)VkVertexInputRate.VK_VERTEX_INPUT_RATE_INSTANCE
+                }
+            };
+            }
+
+            static public ListPtr<VertexInputAttributeDescription> GetSilkAttributeDescriptions()
+            {
+                uint offsetInstanceTransform = (uint)Marshal.OffsetOf(typeof(SilkSpriteInstanceVertex2D), nameof(SilkSpriteInstanceVertex2D.InstanceTransform));
+
+                return new ListPtr<VertexInputAttributeDescription>
+            {
+                new VertexInputAttributeDescription
+                {
+                    Location = 0,
+                    Binding = 1,
+                    Format = (Silk.NET.Vulkan.Format)VkFormat.VK_FORMAT_R32G32_SFLOAT,
+                    Offset = (uint)Marshal.OffsetOf(typeof(SilkSpriteInstanceVertex2D), nameof(SpritePosition)).ToInt32()
+                },
+                new VertexInputAttributeDescription
+                {
+                    Location = 1,
+                    Binding = 1,
+                    Format = (Silk.NET.Vulkan.Format)VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    Offset = (uint)Marshal.OffsetOf(typeof(SilkSpriteInstanceVertex2D), nameof(UVOffset)).ToInt32()
+                },
+                new VertexInputAttributeDescription
+                {
+                    Location = 2,
+                    Binding = 1,
+                    Format = (Silk.NET.Vulkan.Format)VkFormat.VK_FORMAT_R32G32_SFLOAT,
+                    Offset = (uint)Marshal.OffsetOf(typeof(SilkSpriteInstanceVertex2D), nameof(SpriteSize)).ToInt32()
+                },
+                new VertexInputAttributeDescription
+                {
+                    Location = 3,
+                    Binding = 1,
+                    Format = (Silk.NET.Vulkan.Format)VkFormat.VK_FORMAT_R32G32_SINT,
+                    Offset = (uint)Marshal.OffsetOf(typeof(SilkSpriteInstanceVertex2D), nameof(FlipSprite)).ToInt32()
+                },
+                new VertexInputAttributeDescription
+                {
+                    Location = 4,
+                    Binding = 1,
+                    Format = (Silk.NET.Vulkan.Format)VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    Offset = (uint)Marshal.OffsetOf(typeof(SilkSpriteInstanceVertex2D), nameof(Color)).ToInt32()
+                },
+                new VertexInputAttributeDescription
+                {
+                    Location = 5,
+                    Binding = 1,
+                    Format = (Silk.NET.Vulkan.Format)VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    Offset = (uint)Marshal.OffsetOf(typeof(SilkSpriteInstanceVertex2D), nameof(InstanceTransform)).ToInt32()
+                },
+                new VertexInputAttributeDescription
+                {
+                    Location = 6,
+                    Binding = 1,
+                    Format = (Silk.NET.Vulkan.Format)VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    Offset = offsetInstanceTransform + (uint)sizeof(vec4)
+                },
+                new VertexInputAttributeDescription
+                {
+                    Location = 7,
+                    Binding = 1,
+                    Format = (Silk.NET.Vulkan.Format)VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    Offset = offsetInstanceTransform + (uint)sizeof(vec4) * 2
+                },
+                new VertexInputAttributeDescription
+                {
+                    Location = 8,
+                    Binding = 1,
+                    Format = (Silk.NET.Vulkan.Format)VkFormat.VK_FORMAT_R32G32B32A32_SFLOAT,
+                    Offset = offsetInstanceTransform + (uint)sizeof(vec4) * 3
+                },
+                new VertexInputAttributeDescription
+                {
+                    Location = 9,
+                    Binding = 1,
+                    Format = (Silk.NET.Vulkan.Format)VkFormat.VK_FORMAT_R32_UINT,
+                    Offset = (uint)Marshal.OffsetOf(typeof(SilkSpriteInstanceVertex2D), nameof(MaterialID)).ToInt32()
+                }
+            };
+
+
+            }
+        }
     }
 }
