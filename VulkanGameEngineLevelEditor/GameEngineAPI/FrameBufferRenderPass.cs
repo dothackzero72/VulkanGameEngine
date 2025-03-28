@@ -127,7 +127,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     pDependencies = dependency
                 };
 
-                VkFunc.vkCreateRenderPass(VulkanRenderer.device, &renderPassCreateInfo, null, &tempRenderPass);
+                VkFunc.vkCreateRenderPass(VulkanRenderer.device, &renderPassCreateInfo, null, out tempRenderPass);
                 renderPass = tempRenderPass;
             }
 

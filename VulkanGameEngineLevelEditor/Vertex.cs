@@ -227,9 +227,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             InstanceTransform = instanceTransform;
         }
 
-        static public List<VkVertexInputBindingDescription> GetBindingDescriptions()
+        static public ListPtr<VkVertexInputBindingDescription> GetBindingDescriptions()
         {
-            return new List<VkVertexInputBindingDescription>
+            return new ListPtr<VkVertexInputBindingDescription>
             {
                    new VkVertexInputBindingDescription
                 {

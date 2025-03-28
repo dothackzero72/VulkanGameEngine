@@ -301,7 +301,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 };
 
                 var tempRenderPass = new VkRenderPass();
-                VkFunc.vkCreateRenderPass(VulkanRenderer.device, &renderPassCreateInfo, null, &tempRenderPass);
+                VkFunc.vkCreateRenderPass(VulkanRenderer.device, &renderPassCreateInfo, null, out tempRenderPass);
                 renderPass = tempRenderPass;
             }
             return renderPass;

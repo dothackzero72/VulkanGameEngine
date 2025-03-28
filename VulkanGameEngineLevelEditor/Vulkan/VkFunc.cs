@@ -440,7 +440,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkDevice device,
             VkRenderPassCreateInfo* pCreateInfo,
             VkAllocationCallbacks* pAllocator,
-            VkRenderPass* pRenderPass);
+            out VkRenderPass pRenderPass);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyRenderPass(
