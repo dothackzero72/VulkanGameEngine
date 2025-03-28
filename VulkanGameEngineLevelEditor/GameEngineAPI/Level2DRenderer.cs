@@ -11,6 +11,9 @@ using Silk.NET.Vulkan;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.Vulkan;
 using static VulkanGameEngineLevelEditor.GameEngineAPI.SpriteInstanceVertex2D;
+using Newtonsoft.Json;
+using VulkanGameEngineLevelEditor.RenderPassEditor;
+using System.IO;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -30,7 +33,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         private ivec2 RenderPassResolution;
 
         // Pipeline-related fields
-        private DescriptorPool descriptorPool;
+        private VkDescriptorPool descriptorPool;
         private ListPtr<DescriptorSetLayout> descriptorSetLayoutList = new ListPtr<DescriptorSetLayout>();
         public ListPtr<DescriptorSet> descriptorSetList = new ListPtr<DescriptorSet>();
         public Pipeline pipeline;
@@ -164,6 +167,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void StartLevelRenderer()
         {
+            string jsonContent = File.ReadAllText(ConstConfig.DefaulFrameBufferPipeline);
+            RenderPipelineDLL model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
+
             TextureList.Add(new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp", VkFormat.VK_FORMAT_R8G8B8A8_SRGB, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
             TransitionTextureLayout(TextureList[0]);
             MaterialList.Add(new Material("Material1"));
@@ -177,27 +183,49 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             AddGameObject("Obj3", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 80.0f));
 
             SpriteLayerList.Add(new SpriteBatchLayer(GameObjectList));
-            CreateHardcodedPipeline();
+            CreateHardcodedPipeline(model);
         }
 
-        private void CreateHardcodedPipeline()
+        private void CreateHardcodedPipeline(RenderPipelineDLL model)
         {
-            // Descriptor Pool
-            DescriptorPoolSize[] poolSizes = new[]
+            ListPtr<VkDescriptorBufferInfo> meshPropertiesBuffer = new ListPtr<VkDescriptorBufferInfo>();
+            foreach (var mesh in GetMeshFromGameObjects())
             {
-                new DescriptorPoolSize { Type = DescriptorType.StorageBuffer, DescriptorCount = (uint)GameObjectList.Count }, // For instance data
-                new DescriptorPoolSize { Type = DescriptorType.CombinedImageSampler, DescriptorCount = (uint)TextureList.Count }
-            };
-            GCHandle poolSizesHandle = GCHandle.Alloc(poolSizes, GCHandleType.Pinned);
-            DescriptorPoolCreateInfo poolInfo = new DescriptorPoolCreateInfo
+                var sdf = mesh.GetMeshPropertiesBuffer();
+                var a = new VkDescriptorBufferInfo
+                {
+                    buffer = new VkBuffer(sdf.buffer),
+                    offset = 0,
+                    range = VulkanConst.VK_WHOLE_SIZE
+
+                };
+                meshPropertiesBuffer.Add(a); 
+            }
+
+            var meshProperties = meshPropertiesBuffer;
+            var textureProperties = GetTexturePropertiesBuffer(TextureList);
+            var materialProperties = GetMaterialPropertiesBuffer(MaterialList);
+            var vertexProperties = new ListPtr<VkDescriptorBufferInfo>();
+            var indexProperties = new ListPtr<VkDescriptorBufferInfo>();
+            var transformProperties = new ListPtr<VkDescriptorBufferInfo>();
+
+            GPUIncludes includes = new GPUIncludes
             {
-                SType = StructureType.DescriptorPoolCreateInfo,
-                MaxSets = 1,
-                PoolSizeCount = (uint)poolSizes.Length,
-                PPoolSizes = (DescriptorPoolSize*)poolSizesHandle.AddrOfPinnedObject()
+                vertexProperties = vertexProperties.Ptr,
+                indexProperties = indexProperties.Ptr,
+                transformProperties = transformProperties.Ptr,
+                meshProperties = meshPropertiesBuffer.Ptr,
+                texturePropertiesList = (VkDescriptorImageInfo*)textureProperties.Ptr,
+                materialProperties = (VkDescriptorBufferInfo*)materialProperties.Ptr,
+                vertexPropertiesCount = vertexProperties.UCount,
+                indexPropertiesCount = indexProperties.UCount,
+                transformPropertiesCount = transformProperties.UCount,
+                meshPropertiesCount = meshProperties.UCount,
+                texturePropertiesListCount = textureProperties.UCount,
+                materialPropertiesCount = materialProperties.UCount
             };
-            vk.CreateDescriptorPool(device, poolInfo, null, out descriptorPool);
-            poolSizesHandle.Free();
+
+            descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, model, &includes);
 
             // Descriptor Set Layout
             DescriptorSetLayoutBinding[] bindings = new[]
@@ -233,7 +261,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             DescriptorSetAllocateInfo allocInfo = new DescriptorSetAllocateInfo
             {
                 SType = StructureType.DescriptorSetAllocateInfo,
-                DescriptorPool = descriptorPool,
+                DescriptorPool = new DescriptorPool((ulong?)descriptorPool),
                 DescriptorSetCount = 1,
                 PSetLayouts = (DescriptorSetLayout*)layoutsHandle.AddrOfPinnedObject()
             };
@@ -535,7 +563,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
                 };
                 meshPropertiesBuffer.Add(a); // Assumes updated to Silk.NET type
-
             }
             return meshPropertiesBuffer;
         }
@@ -552,8 +579,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     ImageView = new ImageView((ulong)texture.View),
                     ImageLayout = Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal
                 };
-                texturePropertiesBuffer.Add(a); // Assumes updated to Silk.NET type
-
+                texturePropertiesBuffer.Add(a);
             }
             return texturePropertiesBuffer;
         }
@@ -688,7 +714,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 vk.DestroyDescriptorSetLayout(device, layout, null);
             }
-            vk.DestroyDescriptorPool(device, descriptorPool, null);
+           // vk.DestroyDescriptorPool(device, descriptorPool, null);
             foreach (var fb in FrameBufferList)
             {
                 vk.DestroyFramebuffer(device, fb, null);
