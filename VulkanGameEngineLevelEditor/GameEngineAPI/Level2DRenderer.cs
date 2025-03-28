@@ -35,9 +35,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         // Pipeline-related fields
         private VkDescriptorPool descriptorPool;
         private ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>();
-        public ListPtr<DescriptorSet> descriptorSetList = new ListPtr<DescriptorSet>();
+        public ListPtr<VkDescriptorSet> descriptorSetList = new ListPtr<VkDescriptorSet>();
         public Pipeline pipeline;
-        public PipelineLayout pipelineLayout;
+        public VkPipelineLayout pipelineLayout;
         private PipelineCache pipelineCache;
 
         public Level2DRenderer(string json, ivec2 renderPassResolution)
@@ -228,103 +228,95 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, model, &includes);
 
             // Descriptor Set Layout
-            DescriptorSetLayoutBinding[] bindings = new[]
+            ListPtr<VkDescriptorSetLayoutBinding> bindings = new ListPtr<VkDescriptorSetLayoutBinding>
                  {
-                new DescriptorSetLayoutBinding
+                new VkDescriptorSetLayoutBinding
                 {
-                    Binding = 0,
-                    DescriptorType = DescriptorType.StorageBuffer, // Instance data
-                    DescriptorCount = 1,
-                    StageFlags = ShaderStageFlags.VertexBit
+                    binding = 0,
+                    descriptorType = (VkDescriptorType)DescriptorType.StorageBuffer, // Instance data
+                    descriptorCount = 1,
+                    stageFlags = (VkShaderStageFlagBits)ShaderStageFlags.VertexBit
                 },
-                new DescriptorSetLayoutBinding
+                new VkDescriptorSetLayoutBinding
                 {
-                    Binding = 1,
-                    DescriptorType = DescriptorType.CombinedImageSampler,
-                    DescriptorCount = 1,
-                    StageFlags = ShaderStageFlags.FragmentBit
+                    binding = 1,
+                    descriptorType = (VkDescriptorType)DescriptorType.CombinedImageSampler,
+                    descriptorCount = 1,
+                    stageFlags = (VkShaderStageFlagBits)ShaderStageFlags.FragmentBit
                 }
             };
-            GCHandle bindingsHandle = GCHandle.Alloc(bindings, GCHandleType.Pinned);
             VkDescriptorSetLayoutCreateInfo layoutInfo = new VkDescriptorSetLayoutCreateInfo
             {
                 sType = (VkStructureType)StructureType.DescriptorSetLayoutCreateInfo,
-                bindingCount = (uint)bindings.Length,
-                pBindings = (VkDescriptorSetLayoutBinding*)bindingsHandle.AddrOfPinnedObject()
+                bindingCount = bindings.UCount,
+                pBindings = bindings.Ptr
             };
             VkFunc.vkCreateDescriptorSetLayout(VulkanRenderer.device, &layoutInfo, null, out VkDescriptorSetLayout layout);
             descriptorSetLayoutList.Add(layout);
-            bindingsHandle.Free();
+
 
             // Allocate Descriptor Sets
-            GCHandle layoutsHandle = GCHandle.Alloc(descriptorSetLayoutList.ToArray(), GCHandleType.Pinned);
-            DescriptorSetAllocateInfo allocInfo = new DescriptorSetAllocateInfo
+            VkDescriptorSetAllocateInfo allocInfo = new VkDescriptorSetAllocateInfo
             {
-                SType = StructureType.DescriptorSetAllocateInfo,
-                DescriptorPool = new DescriptorPool((ulong?)descriptorPool),
-                DescriptorSetCount = 1,
-                PSetLayouts = (DescriptorSetLayout*)layoutsHandle.AddrOfPinnedObject()
+                sType = (VkStructureType)StructureType.DescriptorSetAllocateInfo,
+                descriptorPool = descriptorPool,
+                descriptorSetCount = descriptorSetLayoutList.UCount,
+                pSetLayouts = descriptorSetLayoutList.Ptr
             };
-            vk.AllocateDescriptorSets(device, allocInfo, out DescriptorSet set);
+            VkFunc.vkAllocateDescriptorSets(VulkanRenderer.device, &allocInfo, out VkDescriptorSet set);
             descriptorSetList.Add(set);
-            layoutsHandle.Free();
 
             // Update Descriptor Sets
-            var instanceBufferInfo = new DescriptorBufferInfo
+            var instanceBufferInfo = new VkDescriptorBufferInfo
             {
-                Buffer = new Silk.NET.Vulkan.Buffer((ulong?)SpriteLayerList[0].SpriteBuffer.Buffer), // Assumes VulkanBuffer<T> uses Silk.NET Buffer
-                Offset = 0,
-                Range = (ulong)(sizeof(SpriteInstanceStruct) * SpriteLayerList[0].SpriteInstanceList.Count)
+                buffer = SpriteLayerList[0].SpriteBuffer.Buffer, // Assumes VulkanBuffer<T> uses Silk.NET Buffer
+                offset = 0,
+                range = (ulong)(sizeof(SpriteInstanceStruct) * SpriteLayerList[0].SpriteInstanceList.Count)
             };
+
             var textureInfos = GetTexturePropertiesBuffer(TextureList);
-            WriteDescriptorSet[] writes = new[]
+            ListPtr<VkWriteDescriptorSet> writes = new ListPtr<VkWriteDescriptorSet>()
             {
-                new WriteDescriptorSet
+                new VkWriteDescriptorSet
                 {
-                    SType = StructureType.WriteDescriptorSet,
-                    DstSet = descriptorSetList[0],
-                    DstBinding = 0,
-                    DescriptorCount = 1,
-                    DescriptorType = DescriptorType.StorageBuffer,
-                    PBufferInfo = &instanceBufferInfo
+                    sType = (VkStructureType)StructureType.WriteDescriptorSet,
+                    dstSet = descriptorSetList[0],
+                    dstBinding = 0,
+                    descriptorCount = 1,
+                    descriptorType = (VkDescriptorType)DescriptorType.StorageBuffer,
+                    pBufferInfo = &instanceBufferInfo
                 },
-                new WriteDescriptorSet
+                new VkWriteDescriptorSet
                 {
-                    SType = StructureType.WriteDescriptorSet,
-                    DstSet = descriptorSetList[0],
-                    DstBinding = 1,
-                    DescriptorCount = 1,
-                    DescriptorType = DescriptorType.CombinedImageSampler,
-                    PImageInfo = textureInfos.Ptr
+                    sType = (VkStructureType)StructureType.WriteDescriptorSet,
+                    dstSet = descriptorSetList[0],
+                    dstBinding = 1,
+                    descriptorCount = 1,
+                    descriptorType = (VkDescriptorType)DescriptorType.CombinedImageSampler,
+                    pImageInfo = textureInfos.Ptr
                 }
             };
-            GCHandle writesHandle = GCHandle.Alloc(writes, GCHandleType.Pinned);
-            vk.UpdateDescriptorSets(device, (uint)writes.Length, (WriteDescriptorSet*)writesHandle.AddrOfPinnedObject(), 0, null);
-            writesHandle.Free();
+            VkFunc.vkUpdateDescriptorSets(VulkanRenderer.device, writes.UCount, writes.Ptr, 0, null);
+
 
             // Pipeline Layout with Push Constants
-            PushConstantRange pushConstant = new PushConstantRange
+            VkPushConstantRange pushConstant = new VkPushConstantRange
             {
-                StageFlags = ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit,
-                Offset = 0,
-                Size = (uint)sizeof(SceneDataBuffer)
+                stageFlags = (VkShaderStageFlagBits)(ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit),
+                offset = 0,
+                size = (uint)sizeof(SceneDataBuffer)
             };
 
-            var silkDescriptorSetLayoutList = new ListPtr<DescriptorSetLayout>();
-            foreach(var descriptorSetLayout in descriptorSetLayoutList)
+            VkPipelineLayoutCreateInfo pipelineLayoutInfo = new VkPipelineLayoutCreateInfo
             {
-                silkDescriptorSetLayoutList.Add(new DescriptorSetLayout((ulong?)descriptorSetLayout));
-            }
-
-            PipelineLayoutCreateInfo pipelineLayoutInfo = new PipelineLayoutCreateInfo
-            {
-                SType = StructureType.PipelineLayoutCreateInfo,
-                SetLayoutCount = silkDescriptorSetLayoutList.UCount,
-                PSetLayouts = silkDescriptorSetLayoutList.Ptr,
-                PushConstantRangeCount = 1,
-                PPushConstantRanges = &pushConstant
+                sType = (VkStructureType)StructureType.PipelineLayoutCreateInfo,
+                setLayoutCount = descriptorSetLayoutList.UCount,
+                pSetLayouts = descriptorSetLayoutList.Ptr,
+                pushConstantRangeCount = 1,
+                pPushConstantRanges = &pushConstant
             };
-            vk.CreatePipelineLayout(device, pipelineLayoutInfo, null, out pipelineLayout);
+            VkFunc.vkCreatePipelineLayout(VulkanRenderer.device, &pipelineLayoutInfo, null, out VkPipelineLayout pipelineLayout2);
+            pipelineLayout = pipelineLayout2;
 
             // Graphics Pipeline with Vertex Input
             ShaderModule vertShader = CreateShaderModule("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DVert.spv");
@@ -432,7 +424,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 PMultisampleState = &multisampling,
                 PDepthStencilState = null,
                 PColorBlendState = &colorBlending,
-                Layout = pipelineLayout,
+                Layout = new PipelineLayout((ulong?)pipelineLayout),
                 RenderPass = renderPass,
                 Subpass = 0
             };
@@ -474,7 +466,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             WriteDescriptorSet write = new WriteDescriptorSet
             {
                 SType = StructureType.WriteDescriptorSet,
-                DstSet = descriptorSetList[0],
+                DstSet = new DescriptorSet((ulong?)descriptorSetList[0]),
                 DstBinding = 0,
                 DescriptorCount = 1,
                 DescriptorType = DescriptorType.StorageBuffer,
@@ -574,19 +566,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return meshPropertiesBuffer;
         }
 
-        private ListPtr<DescriptorImageInfo> GetTexturePropertiesBuffer(List<Texture> textureList)
+        private ListPtr<VkDescriptorImageInfo> GetTexturePropertiesBuffer(List<Texture> textureList)
         {
-            ListPtr<DescriptorImageInfo> texturePropertiesBuffer = new ListPtr<DescriptorImageInfo>();
+            ListPtr<VkDescriptorImageInfo> texturePropertiesBuffer = new ListPtr<VkDescriptorImageInfo>();
             foreach (var texture in textureList)
             {
-                var sdf = texture.GetTexturePropertiesBuffer();
-                var a = new DescriptorImageInfo
-                {
-                    Sampler = new Sampler((ulong)texture.Sampler),
-                    ImageView = new ImageView((ulong)texture.View),
-                    ImageLayout = Silk.NET.Vulkan.ImageLayout.ShaderReadOnlyOptimal
-                };
-                texturePropertiesBuffer.Add(a);
+                texturePropertiesBuffer.Add(texture.GetTexturePropertiesBuffer());
             }
             return texturePropertiesBuffer;
         }
@@ -650,13 +635,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 Flags = CommandBufferUsageFlags.SimultaneousUseBit
             };
 
+          var descriptorSet =  new DescriptorSet((ulong?)descriptorSetList[0]);
             vk.ResetCommandBuffer(commandBuffer, 0);
             vk.BeginCommandBuffer(commandBuffer, commandInfo);
             vk.CmdBeginRenderPass(commandBuffer, renderPassInfo, SubpassContents.Inline);
             vk.CmdSetViewport(commandBuffer, 0, 1, viewport);
             vk.CmdSetScissor(commandBuffer, 0, 1, scissor);
             vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, pipeline);
-            vk.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, pipelineLayout, 0, 1, descriptorSetList.Ptr, 0, null);
+            vk.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, new PipelineLayout((ulong?)pipelineLayout), 0, 1, ref descriptorSet, 0, null);
 
             foreach (var spriteLayer in SpriteLayerList)
             {
@@ -670,7 +656,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 fixed (Silk.NET.Vulkan.Buffer* vertexBuffersPtr = vertexBuffers)
                 fixed (ulong* offsetsPtr = offsets)
                 {
-                    vk.CmdPushConstants(commandBuffer, pipelineLayout, ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
+                    vk.CmdPushConstants(commandBuffer, new PipelineLayout((ulong?)pipelineLayout), ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
                     vk.CmdBindVertexBuffers(commandBuffer, 0, 2, vertexBuffersPtr, offsetsPtr);
                     vk.CmdBindIndexBuffer(commandBuffer, new Silk.NET.Vulkan.Buffer((ulong)spriteLayer.SpriteLayerMesh.MeshIndexBuffer.Buffer), 0, IndexType.Uint32);
                     vk.CmdDrawIndexed(commandBuffer, spriteLayer.SpriteIndexList.UCount(), spriteLayer.SpriteInstanceList.UCount(), 0, 0, 0);
@@ -716,7 +702,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public void Destroy()
         {
             vk.DestroyPipeline(device, pipeline, null);
-            vk.DestroyPipelineLayout(device, pipelineLayout, null);
+            vk.DestroyPipelineLayout(device, new PipelineLayout((ulong?)pipelineLayout), null);
             foreach (var layout in descriptorSetLayoutList)
             {
                // vk.DestroyDescriptorSetLayout(device, layout, null);
