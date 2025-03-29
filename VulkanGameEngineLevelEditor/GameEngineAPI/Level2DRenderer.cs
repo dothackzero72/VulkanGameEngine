@@ -183,7 +183,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void StartLevelRenderer()
         {
-            string jsonContent = File.ReadAllText(ConstConfig.DefaulFrameBufferPipeline);
+            string jsonContent = File.ReadAllText(ConstConfig.Default2DPipeline);
             RenderPipelineDLL model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
 
             TextureList.Add(new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp", VkFormat.VK_FORMAT_R8G8B8A8_SRGB, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
@@ -241,48 +241,51 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 materialPropertiesCount = materialProperties.UCount
             };
 
-           // descriptorSetLayoutList.Add(new nint());
+            descriptorSetList = new ListPtr<nint>(1);
+            descriptorSetLayoutList = new ListPtr<nint>(1);
             descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, model, &includes);
-           // GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes, descriptorSetLayoutList.Ptr, model.LayoutBindingListCount);
+            GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes, descriptorSetLayoutList.Ptr, model.LayoutBindingListCount);
+            GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, descriptorSetLayoutList.UCount);
+            // GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes, descriptorSetLayoutList.Ptr, model.LayoutBindingListCount);
 
             // Descriptor Set Layout
-            ListPtr<VkDescriptorSetLayoutBinding> bindings = new ListPtr<VkDescriptorSetLayoutBinding>
-                 {
-                new VkDescriptorSetLayoutBinding
-                {
-                    binding = 0,
-                    descriptorType = (VkDescriptorType)DescriptorType.StorageBuffer, // Instance data
-                    descriptorCount = 1,
-                    stageFlags = (VkShaderStageFlagBits)ShaderStageFlags.VertexBit
-                },
-                new VkDescriptorSetLayoutBinding
-                {
-                    binding = 1,
-                    descriptorType = (VkDescriptorType)DescriptorType.CombinedImageSampler,
-                    descriptorCount = 1,
-                    stageFlags = (VkShaderStageFlagBits)ShaderStageFlags.FragmentBit
-                },
-                new VkDescriptorSetLayoutBinding
-                {
-                    binding = 2,
-                    descriptorType = (VkDescriptorType)DescriptorType.StorageBuffer, // Instance data
-                    descriptorCount = 1,
-                    stageFlags = (VkShaderStageFlagBits)ShaderStageFlags.VertexBit | (VkShaderStageFlagBits)ShaderStageFlags.FragmentBit
-                },
-            };
-            VkDescriptorSetLayoutCreateInfo layoutInfo = new VkDescriptorSetLayoutCreateInfo
-            {
-                sType = (VkStructureType)StructureType.DescriptorSetLayoutCreateInfo,
-                bindingCount = bindings.UCount,
-                pBindings = bindings.Ptr
-            };
-            VkFunc.vkCreateDescriptorSetLayout(VulkanRenderer.device, &layoutInfo, null, out VkDescriptorSetLayout layout);
-            descriptorSetLayoutList.Add(layout);
+            //ListPtr<VkDescriptorSetLayoutBinding> bindings = new ListPtr<VkDescriptorSetLayoutBinding>
+            //     {
+            //    new VkDescriptorSetLayoutBinding
+            //    {
+            //        binding = 0,
+            //        descriptorType = (VkDescriptorType)DescriptorType.StorageBuffer, // Instance data
+            //        descriptorCount = 1,
+            //        stageFlags = (VkShaderStageFlagBits)ShaderStageFlags.VertexBit
+            //    },
+            //    new VkDescriptorSetLayoutBinding
+            //    {
+            //        binding = 1,
+            //        descriptorType = (VkDescriptorType)DescriptorType.CombinedImageSampler,
+            //        descriptorCount = 1,
+            //        stageFlags = (VkShaderStageFlagBits)ShaderStageFlags.FragmentBit
+            //    },
+            //    new VkDescriptorSetLayoutBinding
+            //    {
+            //        binding = 2,
+            //        descriptorType = (VkDescriptorType)DescriptorType.StorageBuffer, // Instance data
+            //        descriptorCount = 1,
+            //        stageFlags = (VkShaderStageFlagBits)ShaderStageFlags.VertexBit | (VkShaderStageFlagBits)ShaderStageFlags.FragmentBit
+            //    },
+            //};
+            //VkDescriptorSetLayoutCreateInfo layoutInfo = new VkDescriptorSetLayoutCreateInfo
+            //{
+            //    sType = (VkStructureType)StructureType.DescriptorSetLayoutCreateInfo,
+            //    bindingCount = bindings.UCount,
+            //    pBindings = bindings.Ptr
+            //};
+            //VkFunc.vkCreateDescriptorSetLayout(VulkanRenderer.device, &layoutInfo, null, out VkDescriptorSetLayout layout);
+            //descriptorSetLayoutList.Add(layout);
 
 
             // Allocate Descriptor Sets
-            descriptorSetList.Add(new nint());
-            GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, model.LayoutBindingListCount);
+            //descriptorSetList.Add(new nint());
+            //GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, model.LayoutBindingListCount);
 
             // Update Descriptor Sets
             var instanceBufferInfo = new VkDescriptorBufferInfo
