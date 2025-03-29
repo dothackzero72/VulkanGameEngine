@@ -888,5 +888,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
        VkQueue queue,
        in VkPresentInfoKHR pPresentInfo);
 
+        internal static void vkCmdBindIndexBuffer(nint commandBuffer, nint buffer, int v, IndexType uint32)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

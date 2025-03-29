@@ -79,6 +79,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     StencilStoreOp = AttachmentStoreOp.DontCare,
                     InitialLayout = ImageLayout.Undefined,
                     FinalLayout = ImageLayout.PresentSrcKhr
+                },
+               new AttachmentDescription
+                {
+                    Format = Format.D32Sfloat,
+                    Samples = SampleCountFlags.Count1Bit,
+                    LoadOp = AttachmentLoadOp.Clear,
+                    StoreOp = AttachmentStoreOp.DontCare,
+                    StencilLoadOp = AttachmentLoadOp.DontCare,
+                    StencilStoreOp = AttachmentStoreOp.DontCare,
+                    InitialLayout = ImageLayout.Undefined,
+                    FinalLayout = ImageLayout.DepthStencilAttachmentOptimal
                 }
             };
 
@@ -88,6 +99,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     Attachment = 0,
                     Layout = ImageLayout.ColorAttachmentOptimal
+                },
+                new AttachmentReference
+                {
+                    Attachment = 1,
+                    Layout = ImageLayout.DepthAttachmentOptimal
                 }
             };
 
@@ -225,7 +241,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 materialPropertiesCount = materialProperties.UCount
             };
 
+           // descriptorSetLayoutList.Add(new nint());
             descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, model, &includes);
+           // GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes, descriptorSetLayoutList.Ptr, model.LayoutBindingListCount);
 
             // Descriptor Set Layout
             ListPtr<VkDescriptorSetLayoutBinding> bindings = new ListPtr<VkDescriptorSetLayoutBinding>
@@ -581,78 +599,76 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return materialPropertiesBuffer;
         }
 
-        public CommandBuffer Draw(List<GameObject> meshList, SceneDataBuffer sceneDataBuffer)
+        public VkCommandBuffer Draw(List<GameObject> meshList, SceneDataBuffer sceneDataBuffer)
         {
-            var commandIndex = VulkanRenderer.CommandIndex % VulkanRenderer.SwapChain.ImageCount;
-            var imageIndex = VulkanRenderer.ImageIndex % VulkanRenderer.SwapChain.ImageCount;
-            var commandBuffer = commandBufferList[(int)commandIndex];
+            var commandIndex = VulkanRenderer.CommandIndex;
+            var imageIndex = VulkanRenderer.ImageIndex;
+            var commandBuffer = commandBufferList[(int)commandIndex].Handle;
 
-            ClearValue[] clearValues = new[] { new ClearValue { Color = new ClearColorValue(0, 0, 0, 1) } };
-            GCHandle clearValuesHandle = GCHandle.Alloc(clearValues, GCHandleType.Pinned);
-            RenderPassBeginInfo renderPassInfo = new RenderPassBeginInfo
+            using ListPtr<VkClearValue> clearValues = new ListPtr<VkClearValue>();
+            clearValues.Add(new VkClearValue { Color = new VkClearColorValue(0, 0, 0, 1) });
+            clearValues.Add(new VkClearValue { DepthStencil = new VkClearDepthStencilValue(0.0f, 1.0f) });
+
+            VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
-                SType = StructureType.RenderPassBeginInfo,
-                RenderPass = renderPass,
-                Framebuffer = FrameBufferList[(int)imageIndex],
-                ClearValueCount = (uint)clearValues.Length,
-                PClearValues = (ClearValue*)clearValuesHandle.AddrOfPinnedObject(),
-                RenderArea = new Rect2D(new Offset2D(0, 0), new Extent2D((uint)RenderPassResolution.x, (uint)RenderPassResolution.y))
+                sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+                renderPass = (nint)renderPass.Handle,
+                framebuffer = (nint)FrameBufferList[(int)imageIndex].Handle,
+                clearValueCount = clearValues.UCount,
+                pClearValues = clearValues.Ptr,
+                renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution)
             };
 
-            Viewport viewport = new Viewport
+            var viewport = new VkViewport
             {
-                X = 0.0f,
-                Y = 0.0f,
-                Width = (float)RenderPassResolution.x,
-                Height = (float)RenderPassResolution.y,
-                MinDepth = 0.0f,
-                MaxDepth = 1.0f
+                x = 0.0f,
+                y = 0.0f,
+                width = VulkanRenderer.SwapChain.SwapChainResolution.width,
+                height = VulkanRenderer.SwapChain.SwapChainResolution.height,
+                minDepth = 0.0f,
+                maxDepth = 1.0f
             };
 
-            Rect2D scissor = new Rect2D
+            var scissor = new VkRect2D
             {
-                Offset = new Offset2D(0, 0),
-                Extent = new Extent2D((uint)RenderPassResolution.x, (uint)RenderPassResolution.y)
+                offset = new VkOffset2D(0, 0),
+                extent = VulkanRenderer.SwapChain.SwapChainResolution,
             };
 
-            CommandBufferBeginInfo commandInfo = new CommandBufferBeginInfo
+            VkCommandBufferBeginInfo commandInfo = new VkCommandBufferBeginInfo
             {
-                SType = StructureType.CommandBufferBeginInfo,
-                Flags = CommandBufferUsageFlags.SimultaneousUseBit
+                sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+                flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
             };
 
-          var descriptorSet =  new DescriptorSet((ulong?)descriptorSetList[0]);
-            vk.ResetCommandBuffer(commandBuffer, 0);
-            vk.BeginCommandBuffer(commandBuffer, commandInfo);
-            vk.CmdBeginRenderPass(commandBuffer, renderPassInfo, SubpassContents.Inline);
-            vk.CmdSetViewport(commandBuffer, 0, 1, viewport);
-            vk.CmdSetScissor(commandBuffer, 0, 1, scissor);
-            vk.CmdBindPipeline(commandBuffer, PipelineBindPoint.Graphics, pipeline);
-            vk.CmdBindDescriptorSets(commandBuffer, PipelineBindPoint.Graphics, new PipelineLayout((ulong?)pipelineLayout), 0, 1, ref descriptorSet, 0, null);
-
-            foreach (var spriteLayer in SpriteLayerList)
+            VkFunc.vkResetCommandBuffer(commandBuffer, 0); // Add this
+            VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
+            VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
+            VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+            VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+            foreach (var obj in SpriteLayerList)
             {
-                // Assuming MeshVertexBuffer.Buffer and SpriteBuffer.Buffer are nint, cast to ulong for Silk.NET Buffer
-                Silk.NET.Vulkan.Buffer[] vertexBuffers = new[]
-                {
-            new Silk.NET.Vulkan.Buffer((ulong)spriteLayer.SpriteLayerMesh.MeshVertexBuffer.Buffer), // Cast nint to ulong
-            new Silk.NET.Vulkan.Buffer((ulong)spriteLayer.SpriteBuffer.Buffer)                     // Cast nint to ulong
-        };
-                ulong[] offsets = new ulong[] { 0, 0 };
-                fixed (Silk.NET.Vulkan.Buffer* vertexBuffersPtr = vertexBuffers)
-                fixed (ulong* offsetsPtr = offsets)
-                {
-                    vk.CmdPushConstants(commandBuffer, new PipelineLayout((ulong?)pipelineLayout), ShaderStageFlags.VertexBit | ShaderStageFlags.FragmentBit, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
-                    vk.CmdBindVertexBuffers(commandBuffer, 0, 2, vertexBuffersPtr, offsetsPtr);
-                    vk.CmdBindIndexBuffer(commandBuffer, new Silk.NET.Vulkan.Buffer((ulong)spriteLayer.SpriteLayerMesh.MeshIndexBuffer.Buffer), 0, IndexType.Uint32);
-                    vk.CmdDrawIndexed(commandBuffer, spriteLayer.SpriteIndexList.UCount(), spriteLayer.SpriteInstanceList.UCount(), 0, 0, 0);
-                }
+                GCHandle vertexHandle = GCHandle.Alloc(obj.SpriteLayerMesh.MeshVertexBuffer.Buffer, GCHandleType.Pinned);
+                GCHandle indexHandle = GCHandle.Alloc(obj.SpriteLayerMesh.MeshIndexBuffer.Buffer, GCHandleType.Pinned);
+                GCHandle instanceHandle = GCHandle.Alloc(obj.SpriteBuffer.Buffer, GCHandleType.Pinned);
+                
+                ulong offsets = 0;
+                VkDescriptorSet descriptorSet = descriptorSetList[0];
+                VkFunc.vkCmdPushConstants(commandBuffer, pipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
+                VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, (nint)pipeline.Handle);
+                VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, null);
+                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, (nint*)vertexHandle.AddrOfPinnedObject(), &offsets);
+                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 1, 1, (nint*)instanceHandle.AddrOfPinnedObject(), &offsets);
+                VkFunc.vkCmdBindIndexBuffer(commandBuffer, *(nint*)indexHandle.AddrOfPinnedObject(), 0, VkIndexType.VK_INDEX_TYPE_UINT32);
+                VkFunc.vkCmdDrawIndexed(commandBuffer, obj.SpriteIndexList.UCount(), obj.SpriteInstanceList.UCount(), 0, 0, 0);
+
+                vertexHandle.Free();
+                indexHandle.Free();
+                instanceHandle.Free();
             }
+            VkFunc.vkCmdEndRenderPass(commandBuffer);
+            VkFunc.vkEndCommandBuffer(commandBuffer);
 
-            vk.CmdEndRenderPass(commandBuffer);
-            vk.EndCommandBuffer(commandBuffer);
-
-            clearValuesHandle.Free();
             return commandBuffer;
         }
 
