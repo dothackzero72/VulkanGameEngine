@@ -42,7 +42,8 @@ namespace VulkanGameEngineLevelEditor.Models
                 pSampleMask = pSampleMask,
                 alphaToCoverageEnable = alphaToCoverageEnable,
                 alphaToOneEnable = alphaToOneEnable,
-                flags = flags
+                flags = flags,
+                pNext = pNext
             };
         }
 

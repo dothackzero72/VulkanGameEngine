@@ -18,14 +18,14 @@ void __stdcall DLL_RenderPass_BuildFrameBuffer(
 	uint32_t renderedTextureCount,
 	ivec2 renderPassResolution)
 {
-	RenderPassBuildInfoModel model = renderPassBuildInfo.Convert();
-	Vector<VkImageView> renderedColorTextureViews(renderedColorTextureList, renderedColorTextureList + renderedTextureCount);
-	Vector<VkImageView> swapChainImageViews(swapChainImageViewList, swapChainImageViewList + swapChainImageCount); 
-	SharedPtr<VkImageView> depthTexturePtr(depthTextureView);
+	//RenderPassBuildInfoModel model = renderPassBuildInfo.Convert();
+	//Vector<VkImageView> renderedColorTextureViews(renderedColorTextureList, renderedColorTextureList + renderedTextureCount);
+	//Vector<VkImageView> swapChainImageViews(swapChainImageViewList, swapChainImageViewList + swapChainImageCount); 
+	//SharedPtr<VkImageView> depthTexturePtr(depthTextureView);
 
-	Vector<VkFramebuffer> frameBufferList2(frameBufferCount, VK_NULL_HANDLE);
-	RenderPass_BuildFrameBuffer(device, renderPass, model, frameBufferList2, renderedColorTextureViews, depthTexturePtr, swapChainImageViews, renderPassResolution);
-	std::memcpy(frameBufferList, frameBufferList2.data(), frameBufferCount * sizeof(VkFramebuffer));
+	//Vector<VkFramebuffer> frameBufferList2(frameBufferCount, VK_NULL_HANDLE);
+	//RenderPass_BuildFrameBuffer(device, renderPass, model, frameBufferList2, renderedColorTextureViews, depthTexturePtr, swapChainImageViews, renderPassResolution);
+	//std::memcpy(frameBufferList, frameBufferList2.data(), frameBufferCount * sizeof(VkFramebuffer));
 }
 
 VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipelineDLL renderPipelineModel, GPUIncludesDLL includePtr)

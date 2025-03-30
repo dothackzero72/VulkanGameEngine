@@ -22,7 +22,7 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public enum DescriptorBindingPropertiesEnum
+    public enum DescriptorBindingPropertiesEnum : UInt32
     {
         kMeshPropertiesDescriptor,
         kTextureDescriptor,
@@ -85,9 +85,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             string jsonContent = File.ReadAllText(jsonPipelineFilePath);
             RenderPipelineDLL model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
 
-            descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(model.LayoutBindingListCount);
-            descriptorSetList = new ListPtr<VkDescriptorSet>(model.LayoutBindingListCount);
-
             var meshProperties = GetMeshPropertiesBuffer<T>(gpuImport.MeshList);
             var textureProperties = GetTexturePropertiesBuffer(gpuImport.TextureList);
             var materialProperties = GetMaterialPropertiesBuffer(gpuImport.MaterialList);
@@ -111,10 +108,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 materialPropertiesCount = materialProperties.UCount
             };
 
-            descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(_device, model, &includes);
-            GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(_device, model, includes, descriptorSetLayoutList.Ptr, model.LayoutBindingListCount);
-            GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(_device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, model.LayoutBindingListCount);
-            GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(_device, descriptorSetList.Ptr, model, includes, model.LayoutBindingListCount);
+            descriptorSetList = new ListPtr<nint>(1);
+            descriptorSetLayoutList = new ListPtr<nint>(1);
+            descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, model, &includes);
+            GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes, descriptorSetLayoutList.Ptr, model.LayoutBindingListCount);
+            GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, descriptorSetLayoutList.UCount);
+            GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(_device, descriptorSetList.Ptr, model, includes, descriptorSetLayoutList.UCount);
             GameEngineImport.DLL_Pipeline_CreatePipelineLayout(_device, descriptorSetLayoutList.Ptr, ConstBufferSize, out VkPipelineLayout pipelineLayoutPtr, model.LayoutBindingListCount);
             GameEngineImport.DLL_Pipeline_CreatePipeline(_device, renderPass, pipelineLayoutPtr, pipelineCache, model, vertexBindings.Ptr, vertexAttributes.Ptr, out VkPipeline pipelinePtr, vertexBindings.UCount, vertexAttributes.UCount);
             pipelineLayout = pipelineLayoutPtr;

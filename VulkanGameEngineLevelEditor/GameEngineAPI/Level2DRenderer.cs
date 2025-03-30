@@ -53,28 +53,18 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     depth = 1
                 };
             }
-            FrameBufferList = new ListPtr<nint>(3);
-            var depthView = depthTexture.View;
 
+            RenderedColorTextureList.Add(new RenderedTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, model.RenderedTextureInfoModelList[0].ImageCreateInfo.Convert(), model.RenderedTextureInfoModelList[0].SamplerCreateInfo.Convert()));
+            depthTexture = new DepthTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_DEPTH_BIT, model.RenderedTextureInfoModelList[1].ImageCreateInfo.Convert(), model.RenderedTextureInfoModelList[1].SamplerCreateInfo.Convert());
+
+
+            //FrameBufferList = new ListPtr<nint>(3);
+            //var depthView = depthTexture.View;
+
+            CreateHardcodedRenderPass();
+            CreateHardcodedFramebuffers();
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
-            renderPass = CreateRenderPass(model);
 
-            VkImageView[] renderedImageViewsArray = RenderedColorTextureList.Select(x => x.View).ToArray();
-            GCHandle renderedImageViewsHandle = GCHandle.Alloc(renderedImageViewsArray, GCHandleType.Pinned);
-
-            VkFramebuffer[] frameBufferArray = new VkFramebuffer[VulkanRenderer.SwapChain.ImageCount];
-            GCHandle frameBufferHandle = GCHandle.Alloc(frameBufferArray, GCHandleType.Pinned);
-
-            VkImageView[] swapChainImageViewsArray = VulkanRenderer.SwapChain.imageViews.ToArray();
-            GCHandle swapChainImageViewsHandle = GCHandle.Alloc(swapChainImageViewsArray, GCHandleType.Pinned);
-
-            GameEngineImport.DLL_RenderPass_BuildFrameBuffer( VulkanRenderer.device, renderPass, modelDLL, (nint*)frameBufferHandle.AddrOfPinnedObject(), (nint*)renderedImageViewsHandle.AddrOfPinnedObject(), &depthView, VulkanRenderer.SwapChain.imageViews.Ptr, FrameBufferList.UCount, VulkanRenderer.SwapChain.imageViews.UCount, RenderedColorTextureList.UCount(), RenderPassResolution);
-            for (int i = 0; i < VulkanRenderer.SwapChain.ImageCount; i++)
-            {
-                FrameBufferList[i] = frameBufferArray[i];
-            }
-
-            //CreateFramebuffer();
         }
 
         public void StartLeveleRenderer()
@@ -113,6 +103,108 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             jsonPipelineList[0] = new JsonPipeline<Vertex2D>("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\Default2DPipeline.json", renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, gpuImport);
             SpriteLayerList[0].SpriteRenderPipeline = jsonPipelineList[0];
+        }
+
+        private void CreateHardcodedRenderPass()
+        {
+            VkAttachmentDescription colorAttachment = new VkAttachmentDescription
+            {
+                format = VkFormat.VK_FORMAT_R8G8B8A8_UNORM,
+                samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
+                loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
+                storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_STORE,
+                stencilLoadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                stencilStoreOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
+                finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+            };
+
+            VkAttachmentDescription depthAttachment = new VkAttachmentDescription
+            {
+                format = VkFormat.VK_FORMAT_D32_SFLOAT,
+                samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
+                loadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_CLEAR,
+                storeOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                stencilLoadOp = VkAttachmentLoadOp.VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                stencilStoreOp = VkAttachmentStoreOp.VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                initialLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
+                finalLayout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+            };
+
+            VkAttachmentReference colorAttachmentRef = new VkAttachmentReference
+            {
+                attachment = 0,
+                layout = VkImageLayout.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+            };
+
+            VkAttachmentReference depthAttachmentRef = new VkAttachmentReference
+            {
+                attachment = 1,
+                layout = VkImageLayout.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+            };
+
+            VkSubpassDescription subpass = new VkSubpassDescription
+            {
+                pipelineBindPoint = VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS,
+                colorAttachmentCount = 1,
+                pColorAttachments = &colorAttachmentRef,
+                pDepthStencilAttachment = &depthAttachmentRef
+            };
+
+            VkSubpassDependency dependency = new VkSubpassDependency
+            {
+                srcSubpass = VulkanConst.VK_SUBPASS_EXTERNAL,
+                dstSubpass = 0,
+                srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                srcAccessMask = 0,
+                dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+            };
+
+            VkAttachmentDescription[] attachments = new[] { colorAttachment, depthAttachment };
+            GCHandle attachmentsHandle = GCHandle.Alloc(attachments, GCHandleType.Pinned);
+            VkRenderPassCreateInfo renderPassInfo = new VkRenderPassCreateInfo
+            {
+                sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+                attachmentCount = 2,
+                pAttachments = (VkAttachmentDescription*)attachmentsHandle.AddrOfPinnedObject(),
+                subpassCount = 1,
+                pSubpasses = &subpass,
+                dependencyCount = 1,
+                pDependencies = &dependency
+            };
+
+            VkFunc.vkCreateRenderPass(VulkanRenderer.device, &renderPassInfo, null, out VkRenderPass renderPass2);
+            renderPass = renderPass2;
+            attachmentsHandle.Free();
+        }
+
+        private void CreateHardcodedFramebuffers()
+        {
+            for (int i = 0; i < VulkanRenderer.SwapChain.ImageCount; i++) // 3 images
+            {
+                nint[] attachments = new nint[]
+                {
+                    RenderedColorTextureList[0].View,
+                    depthTexture.View
+                };
+
+                GCHandle attachmentsHandle = GCHandle.Alloc(attachments, GCHandleType.Pinned);
+                VkFramebufferCreateInfo fbInfo = new VkFramebufferCreateInfo
+                {
+                    sType = VkStructureType.VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                    renderPass = renderPass,
+                    attachmentCount = 2,
+                    pAttachments = (nint*)attachmentsHandle.AddrOfPinnedObject(),
+                    width = (uint)RenderPassResolution.x,
+                    height = (uint)RenderPassResolution.y,
+                    layers = 1
+                };
+
+                VkFunc.vkCreateFramebuffer(VulkanRenderer.device, &fbInfo, null, out VkFramebuffer fb);
+                FrameBufferList.Add(fb);
+                attachmentsHandle.Free();
+            }
         }
 
         public virtual void Input(float deltaTime)

@@ -30,7 +30,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     {
         Vk vk = Vk.GetApi();
         public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
-        public DepthTexture depthTexture { get; private set; } = new DepthTexture();
+        public DepthTexture depthTexture { get; set; } = new DepthTexture();
         public ivec2 RenderPassResolution { get; set; }
         public VkRenderPass renderPass { get; protected set; }
         public ListPtr<VkCommandBuffer> commandBufferList { get; protected set; } = new ListPtr<VkCommandBuffer>();

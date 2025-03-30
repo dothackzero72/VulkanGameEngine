@@ -430,6 +430,13 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkFramebuffer* pFramebuffer);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern VkResult vkCreateFramebuffer(
+    VkDevice device,
+    VkFramebufferCreateInfo* pCreateInfo,
+    VkAllocationCallbacks* pAllocator,
+    out VkFramebuffer pFramebuffer);
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyFramebuffer(
             VkDevice device,
             VkFramebuffer framebuffer,
@@ -441,6 +448,13 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkRenderPassCreateInfo* pCreateInfo,
             VkAllocationCallbacks* pAllocator,
             VkRenderPass* pRenderPass);
+
+        [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern VkResult vkCreateRenderPass(
+        VkDevice device,
+        VkRenderPassCreateInfo* pCreateInfo,
+        VkAllocationCallbacks* pAllocator,
+        out VkRenderPass pRenderPass);
 
         [DllImport("vulkan-1.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void vkDestroyRenderPass(

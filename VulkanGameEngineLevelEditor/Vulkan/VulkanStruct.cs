@@ -43,7 +43,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkDependencyFlagBits dependencyFlags;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkPipelineDepthStencilStateCreateInfo
     {
         public VkStructureType sType;
@@ -60,7 +60,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public float maxDepthBounds;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkPipelineColorBlendStateCreateInfo
     {
         public struct Blender
@@ -104,10 +104,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkImageLayout finalLayout;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkPipelineMultisampleStateCreateInfo
     {
         public VkStructureType sType;
+        public void* pNext;
         public VkCullModeFlagBits flags;
         public VkSampleCountFlagBits rasterizationSamples;
         public VkBool32 sampleShadingEnable;
@@ -164,7 +165,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct VkRect2D
     {
         public VkOffset2D offset;
@@ -177,7 +178,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkDescriptorSetLayoutBinding
     {
         public uint binding;
@@ -187,7 +188,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
          public VkSampler* pImmutableSamplers;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkPipelineRasterizationStateCreateInfo
     {
         public VkStructureType sType;
@@ -205,7 +206,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public float lineWidth;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct VkPipelineColorBlendAttachmentState
     {
         public bool blendEnable;
@@ -218,7 +219,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkColorComponentFlagBits colorWriteMask;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkPipelineInputAssemblyStateCreateInfo
     {
         public VkStructureType sType;
@@ -698,7 +699,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkDescriptorPoolSize* pPoolSizes;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkPipelineViewportStateCreateInfo
     {
         public VkStructureType sType;
