@@ -59,7 +59,7 @@ namespace VulkanGameEngineLevelEditor.Components
 
         }
 
-        public virtual void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, VkDescriptorSet descriptorSetList, SceneDataBuffer sceneProperties)
+        public virtual void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, ListPtr<VkDescriptorSet> descriptorSetList, SceneDataBuffer sceneProperties)
         {
 
         }

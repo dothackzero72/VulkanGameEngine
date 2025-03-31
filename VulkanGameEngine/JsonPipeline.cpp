@@ -26,8 +26,8 @@ JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport g
     Vector<VkVertexInputAttributeDescription> vertexAttributesList = vertexAttributes;
 
     DescriptorPool = Pipeline_CreateDescriptorPool(cRenderer.Device, model, include);
-    DescriptorSetLayoutList = Pipeline_CreateDescriptorSetLayout(cRenderer.Device, model, include);
-    DescriptorSetList = Pipeline_AllocateDescriptorSets(cRenderer.Device, DescriptorPool, DescriptorSetLayoutList);
+    DescriptorSetLayoutList = Pipeline_CreateDescriptorSetLayout(cRenderer.Device, model, include, 1);
+    DescriptorSetList = Pipeline_AllocateDescriptorSets(cRenderer.Device, DescriptorPool, DescriptorSetLayoutList, 1);
     Pipeline_UpdateDescriptorSets(cRenderer.Device, DescriptorSetList, model, include);
     PipelineLayout = Pipeline_CreatePipelineLayout(cRenderer.Device, DescriptorSetLayoutList, constBufferSize);
     Pipeline = Pipeline_CreatePipeline(cRenderer.Device, renderPass, PipelineLayout, PipelineCache, model, vertexBindingList, vertexAttributesList);
@@ -43,7 +43,10 @@ void JsonPipeline::Destroy()
     renderer.DestroyPipelineLayout(PipelineLayout);
     renderer.DestroyPipelineCache(PipelineCache);
     renderer.DestroyDescriptorPool(DescriptorPool);
-    renderer.DestroyDescriptorSetLayout(DescriptorSetLayoutList);
+    for (auto& descriptorSet : DescriptorSetLayoutList)
+    {
+        renderer.DestroyDescriptorSetLayout(descriptorSet);
+    }
 }
 
 const Vector<VkDescriptorImageInfo> JsonPipeline::GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>>& textureList)

@@ -35,32 +35,42 @@ VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipeli
 	return Pipeline_CreateDescriptorPool(device, model, includes);
 }
 
-VkDescriptorSetLayout DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr)
-{
-	RenderPipelineModel model = renderPipelineDLL.Convert();
-	GPUIncludes includes = includePtr.Convert();
-	VkDescriptorSetLayout descriptorSetLayout = Pipeline_CreateDescriptorSetLayout(device, model, includes);
-	
-	return descriptorSetLayout;
-}
-
-VkDescriptorSet DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout)
-{
-	VkDescriptorSet descriptorSet = Pipeline_AllocateDescriptorSets(device, descriptorPool, descriptorSetLayout);
-	return descriptorSet;
-}
-
-void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet descriptorSet, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr)
+VkDescriptorSetLayout* DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, uint32 descriptorSetLayoutCount)
 {
 	RenderPipelineModel model = renderPipelineDLL.Convert();
 	GPUIncludes includes = includePtr.Convert();
 
-	Pipeline_UpdateDescriptorSets( device, descriptorSet, model, includes);
+
+	Vector<VkDescriptorSetLayout> descriptorSetLayoutList = Pipeline_CreateDescriptorSetLayout(device, model, includes, descriptorSetLayoutCount);
+
+	VkDescriptorSetLayout* descriptorSetLayoutPtr = new VkDescriptorSetLayout[descriptorSetLayoutCount];
+	std::memcpy(descriptorSetLayoutPtr, descriptorSetLayoutList.data(), descriptorSetLayoutList.size() * sizeof(VkDescriptorSetLayout));
+	return descriptorSetLayoutPtr;
 }
 
-VkPipelineLayout DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout, uint constBufferSize)
+VkDescriptorSet* DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout* descriptorSetLayouts, uint32 descriptorSetLayoutCount, uint32 descriptorSetCount)
 {
-	return Pipeline_CreatePipelineLayout( device, descriptorSetLayout, constBufferSize);
+	Vector<VkDescriptorSetLayout> descriptorSetLayoutList = Vector<VkDescriptorSetLayout>(descriptorSetLayouts, descriptorSetLayouts + descriptorSetLayoutCount);
+	Vector<VkDescriptorSet> descriptorSetList = Pipeline_AllocateDescriptorSets(device, descriptorPool, descriptorSetLayoutList, descriptorSetCount);
+
+	VkDescriptorSet* descriptorSetPtr = new VkDescriptorSet[descriptorSetCount];
+	std::memcpy(descriptorSetPtr, descriptorSetList.data(), descriptorSetList.size() * sizeof(VkDescriptorSetLayout));
+	return descriptorSetPtr;
+}
+
+void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, VkDescriptorSet* descriptorSetList, uint32 descriptorSetCount)
+{
+	RenderPipelineModel model = renderPipelineDLL.Convert();
+	GPUIncludes includes = includePtr.Convert();
+
+	Vector<VkDescriptorSet> descriptorSetLayoutList = Vector<VkDescriptorSet>(descriptorSetList, descriptorSetList + descriptorSetCount);
+	Pipeline_UpdateDescriptorSets( device, descriptorSetLayoutList, model, includes);
+}
+
+VkPipelineLayout DLL_Pipeline_CreatePipelineLayout(VkDevice device, uint constBufferSize, VkDescriptorSetLayout* descriptorSetLayout, uint32 descriptorSetLayoutCount)
+{
+	Vector<VkDescriptorSetLayout> descriptorSetLayoutList = Vector<VkDescriptorSetLayout>(descriptorSetLayout, descriptorSetLayout + descriptorSetLayoutCount);
+	return Pipeline_CreatePipelineLayout( device, descriptorSetLayoutList, constBufferSize);
 }
 
 VkPipeline DLL_Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineDLL& modelDLL, VkVertexInputBindingDescription* vertexBindingList, VkVertexInputAttributeDescription* vertexAttributeList, uint vertexBindingCount, uint vertexAttributeCount)
@@ -70,3 +80,48 @@ VkPipeline DLL_Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass,
 	Vector<VkVertexInputAttributeDescription> vertexAttributes(vertexAttributeList, vertexAttributeList + vertexAttributeCount);
 	return Pipeline_CreatePipeline( device, renderpass, pipelineLayout, pipelineCache, model, vertexBindings, vertexAttributes);
 }
+
+//void DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, VkDescriptorSetLayout* descriptorSetLayoutPtr, uint descriptorSetLayoutCount)
+//{
+//	RenderPipelineModel model = renderPipelineDLL.Convert();
+//	GPUIncludes includes = includePtr.Convert();
+//
+//	Vector<VkDescriptorSetLayout> descriptorSetLayouts(descriptorSetLayoutCount);
+//	Pipeline_CreateDescriptorSetLayout(device, model, includes, descriptorSetLayouts);
+//	std::memcpy(descriptorSetLayoutPtr, descriptorSetLayouts.data(), descriptorSetLayoutCount * sizeof(VkDescriptorSetLayout));
+//}
+//
+//void DLL_Pipeline_AllocateDescriptorSets(
+//	VkDevice device,
+//	VkDescriptorPool descriptorPool,
+//	VkDescriptorSetLayout* descriptorSetLayoutList,
+//	VkDescriptorSet* descriptorSetListPtr,
+//	uint descriptorSetLayoutCount)
+//{
+//	Vector<VkDescriptorSetLayout> descriptorLayoutSets(descriptorSetLayoutList, descriptorSetLayoutList + descriptorSetLayoutCount);
+//	Vector<VkDescriptorSet> descriptorSets = Pipeline_AllocateDescriptorSets(device, descriptorPool, descriptorLayoutSets);
+//	std::memcpy(descriptorSetListPtr, descriptorSets.data(), descriptorSetLayoutCount * sizeof(VkDescriptorSet));
+//}
+//
+//void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet* descriptorSetList, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, uint descriptorSetListCount)
+//{
+//	RenderPipelineModel model = renderPipelineDLL.Convert();
+//	GPUIncludes includes = includePtr.Convert();
+//
+//	Vector<VkDescriptorSet> descriptorLayoutSets(descriptorSetList, descriptorSetList + descriptorSetListCount);
+//	Pipeline_UpdateDescriptorSets(device, descriptorLayoutSets, model, includes);
+//}
+//
+//void DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout& pipelineLayout, uint descriptorSetLayoutCount)
+//{
+//	Vector<VkDescriptorSetLayout> descriptorLayoutSets(descriptorSetLayoutList, descriptorSetLayoutList + descriptorSetLayoutCount);
+//	Pipeline_CreatePipelineLayout(device, descriptorLayoutSets, constBufferSize, pipelineLayout);
+//}
+//
+//void DLL_Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineDLL& modelDLL, VkVertexInputBindingDescription* vertexBindingList, VkVertexInputAttributeDescription* vertexAttributeList, VkPipeline& pipeline, uint vertexBindingCount, uint vertexAttributeCount)
+//{
+//	RenderPipelineModel model = modelDLL.Convert();
+//	Vector<VkVertexInputBindingDescription> vertexBindings(vertexBindingList, vertexBindingList + vertexBindingCount);
+//	Vector<VkVertexInputAttributeDescription> vertexAttributes(vertexAttributeList, vertexAttributeList + vertexAttributeCount);
+//	Pipeline_CreatePipeline(device, renderpass, pipelineLayout, pipelineCache, model, vertexBindings, vertexAttributes, pipeline);
+//}

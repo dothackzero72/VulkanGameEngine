@@ -62,7 +62,7 @@ void GameObjectComponent::Update(VkCommandBuffer& commandBuffer, const float& de
     //CSobject->InvokeMethod("BufferUpdate", commandBuffer, deltaTime);
 }
 
-void GameObjectComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet)
+void GameObjectComponent::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, Vector<VkDescriptorSet>& descriptorSetList)
 {
 
 }

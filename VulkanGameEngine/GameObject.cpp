@@ -91,11 +91,11 @@ void GameObject::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 	}
 }
 
-void GameObject::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet)
+void GameObject::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, Vector<VkDescriptorSet>& descriptorSetList)
 {
 	for (SharedPtr<GameObjectComponent> component : GameObjectComponentList)
 	{
-		component->Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSet);
+		component->Draw(commandBuffer, pipeline, shaderPipelineLayout, descriptorSetList);
 	}
 }
 

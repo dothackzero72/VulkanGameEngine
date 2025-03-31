@@ -40,7 +40,7 @@ public:
 
     virtual void Input(const float& deltaTime);
     virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
-    virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet);
+    virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, Vector<VkDescriptorSet>& descriptorSetList);
     virtual void Destroy();
     void AddComponent(SharedPtr<GameObjectComponent> newComponent);
     void RemoveComponent(size_t index);
