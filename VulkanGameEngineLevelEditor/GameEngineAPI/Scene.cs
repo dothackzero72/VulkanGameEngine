@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using GlmSharp;
+﻿using GlmSharp;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
     public unsafe class Scene
     {
-        private readonly IMapper _mapper;
+        Vk vk = Vk.GetApi();
         SceneDataBuffer sceneProperties;
         OrthographicCamera2D orthographicCamera;
 
@@ -26,12 +25,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         Level2DRenderer level2DRenderer { get; set; }
         FrameBufferRenderPass frameBufferRenderPass { get; set; } = new FrameBufferRenderPass();
         public ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>();
-
-        public Scene(IMapper mapper)
-        {
-            _mapper = mapper;
-        }
-
         public void StartUp()
         {
             var res = new vec2((float)VulkanRenderer.SwapChain.SwapChainResolution.width, (float)VulkanRenderer.SwapChain.SwapChainResolution.height);
@@ -56,12 +49,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             // MemoryManager.ViewMemoryMap();
             // renderPass3D.CreateJsonRenderPass(ConstConfig.Default2DRenderPass, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
-            level2DRenderer = new Level2DRenderer("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json", new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height), VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT);
-            level2DRenderer.StartLeveleRenderer();
+            level2DRenderer = new Level2DRenderer("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json", new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
 
             GPUImport<NullVertex> imports = new GPUImport<NullVertex>()
             {
-                TextureList = new List<Texture>() { level2DRenderer.RenderedColorTextureList[0] },
+                TextureList = new List<Texture>() { level2DRenderer.texture },
                 MaterialList = new List<Material>(),
                 MeshList = new List<Mesh<NullVertex>>()
             };
@@ -103,7 +95,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             commandBufferList.Add(level2DRenderer.Draw(GameObjectList, sceneProperties));
             commandBufferList.Add(frameBufferRenderPass.Draw());
             //GameEngineImport.DLL_Renderer_EndFrame(VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.AcquireImageSemaphores.Ptr, VulkanRenderer.PresentImageSemaphores.Ptr, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.graphicsQueue, VulkanRenderer.presentQueue, commandIndex, imageIndex, commandBufferList.Ptr, commandBufferList.UCount, &rebuildRendererFlag);
-           VulkanRenderer.EndFrame(commandBufferList);
+            VulkanRenderer.EndFrame(commandBufferList);
             commandBufferList.Clear();
         }
 
@@ -113,4 +105,3 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         }
     }
 }
-
