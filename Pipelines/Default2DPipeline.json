@@ -3,6 +3,8 @@
   "FragmentShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DFrag.spv",
   "ViewportList": [],
   "ScissorList": [],
+  "DescriptorSetCount": 1,
+  "DescriptorSetLayoutCount": 1,
   "PipelineColorBlendAttachmentStateList": [
     {
       "blendEnable": true,

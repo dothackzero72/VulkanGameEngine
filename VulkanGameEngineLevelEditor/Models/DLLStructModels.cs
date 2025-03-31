@@ -227,6 +227,8 @@ namespace VulkanGameEngineLevelEditor.Models
         public IntPtr VertexShader;
         public IntPtr FragmentShader;
 
+        public uint DescriptorSetCount;
+        public uint DescriptorSetLayoutCount;
         public uint ViewportListCount;
         public uint ScissorListCount;
         public uint PipelineColorBlendAttachmentStateListCount;

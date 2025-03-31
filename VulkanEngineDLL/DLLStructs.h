@@ -447,6 +447,8 @@ struct RenderPipelineDLL
     const char* VertexShader;
     const char* FragmentShader;
 
+    uint DescriptorSetCount;
+    uint DescriptorSetLayoutCount;
     uint ViewportListCount;
     uint ScissorListCount;
     uint PipelineColorBlendAttachmentStateListCount;
@@ -470,6 +472,8 @@ struct RenderPipelineDLL
         model._name = Name;
         model.VertexShaderPath = VertexShader;
         model.FragmentShaderPath = FragmentShader;
+        model.DescriptorSetCount = DescriptorSetCount;
+        model.DescriptorSetLayoutCount = DescriptorSetLayoutCount;
         model.PipelineColorBlendStateCreateInfoModel = PipelineColorBlendStateCreateInfo;
         model.PipelineRasterizationStateCreateInfo = PipelineRasterizationStateCreateInfo;
         model.PipelineMultisampleStateCreateInfo = PipelineMultisampleStateCreateInfo;

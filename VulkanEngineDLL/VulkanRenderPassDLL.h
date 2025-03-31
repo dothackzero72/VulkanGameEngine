@@ -23,18 +23,11 @@ extern "C"
 		uint32_t renderedTextureCount,
 		ivec2 renderPassResolution);
 
-	DLL_EXPORT VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipelineDLL renderPipelineModel, GPUIncludesDLL includePtr);
-	DLL_EXPORT VkDescriptorSetLayout* DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, uint32 descriptorSetLayoutCount);
-	DLL_EXPORT VkDescriptorSet* DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout* descriptorSetLayouts, uint32 descriptorSetLayoutCount, uint32 descriptorSetCount);
-	DLL_EXPORT void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, VkDescriptorSet* descriptorSetList, uint32 descriptorSetCount);
-	DLL_EXPORT VkPipelineLayout DLL_Pipeline_CreatePipelineLayout(VkDevice device, uint constBufferSize, VkDescriptorSetLayout* descriptorSetLayout, uint32 descriptorSetLayoutCount);
-	DLL_EXPORT VkPipeline DLL_Pipeline_CreatePipeline(VkDevice device,
-		VkRenderPass renderpass,
-		VkPipelineLayout pipelineLayout,
-		VkPipelineCache pipelineCache,
-		RenderPipelineDLL& modelDLL,
-		VkVertexInputBindingDescription* vertexBindingList,
-		VkVertexInputAttributeDescription* vertexAttributeList,
-		uint vertexBindingCount,
-		uint vertexAttributeCount);
+	DLL_EXPORT VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipelineDLL& renderPipelineModel, GPUIncludesDLL& includePtr);
+	DLL_EXPORT VkDescriptorSetLayout* DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL& renderPipelineDLL, GPUIncludesDLL& includePtr);
+	DLL_EXPORT VkDescriptorSet* DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, RenderPipelineDLL& renderPipelineDLL, VkDescriptorSetLayout* descriptorSetLayouts);
+	DLL_EXPORT void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, RenderPipelineDLL& renderPipelineDLL, GPUIncludesDLL& includePtr, VkDescriptorSet* descriptorSetList);
+	DLL_EXPORT VkPipelineLayout DLL_Pipeline_CreatePipelineLayout(VkDevice device, RenderPipelineDLL& renderPipelineDLL, uint constBufferSize, VkDescriptorSetLayout* descriptorSetLayout);
+	DLL_EXPORT VkPipeline DLL_Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineDLL& modelDLL, VkVertexInputBindingDescription* vertexBindingList, VkVertexInputAttributeDescription* vertexAttributeList, uint vertexBindingCount, uint vertexAttributeCount);
 }
+

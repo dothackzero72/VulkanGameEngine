@@ -109,10 +109,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             };
 
             descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, model, &includes);
-            descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes, 1), 1);
-            descriptorSetList = new ListPtr<VkDescriptorSet>(GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetLayoutList.UCount, 1), 1);
-            GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(_device, model, includes, descriptorSetList.Ptr, descriptorSetList.UCount);
-            pipelineLayout = GameEngineImport.DLL_Pipeline_CreatePipelineLayout(_device, ConstBufferSize, descriptorSetLayoutList.Ptr, descriptorSetLayoutList.UCount);
+            descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes), model.DescriptorSetLayoutCount);
+            descriptorSetList = new ListPtr<VkDescriptorSet>(GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, model, descriptorSetLayoutList.Ptr), model.DescriptorSetCount);
+            GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(_device, model, includes, descriptorSetList.Ptr);
+            pipelineLayout = GameEngineImport.DLL_Pipeline_CreatePipelineLayout(_device, model, ConstBufferSize, descriptorSetLayoutList.Ptr);
             pipeline = GameEngineImport.DLL_Pipeline_CreatePipeline(_device, renderPass, pipelineLayout, pipelineCache, model, vertexBindings.Ptr, vertexAttributes.Ptr, vertexBindings.UCount, vertexAttributes.UCount);
         }
 

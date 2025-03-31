@@ -135,7 +135,8 @@ struct RenderPipelineModel : RenderPassEditorBaseModel
     String FragmentShaderPath;
     Vector<VkViewport> ViewportList;
     Vector<VkRect2D> ScissorList;
-
+    uint DescriptorSetCount;
+    uint DescriptorSetLayoutCount;
     VkPipelineColorBlendStateCreateInfo PipelineColorBlendStateCreateInfoModel;
     VkPipelineRasterizationStateCreateInfo PipelineRasterizationStateCreateInfo;
     VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo;
@@ -156,6 +157,8 @@ struct RenderPipelineModel : RenderPassEditorBaseModel
         model._name = json["_name"];
         model.VertexShaderPath = json["VertexShader"];
         model.FragmentShaderPath = json["FragmentShader"];
+        model.DescriptorSetCount = json["DescriptorSetCount"];
+        model.DescriptorSetLayoutCount = json["DescriptorSetLayoutCount"];
         model.PipelineRasterizationStateCreateInfo = Json::LoadPipelineRasterizationStateCreateInfo(json["PipelineRasterizationStateCreateInfo"]);
         model.PipelineMultisampleStateCreateInfo = Json::LoadPipelineMultisampleStateCreateInfo(json["PipelineMultisampleStateCreateInfo"]);
         model.PipelineDepthStencilStateCreateInfo = Json::LoadPipelineDepthStencilStateCreateInfo(json["PipelineDepthStencilStateCreateInfo"]);

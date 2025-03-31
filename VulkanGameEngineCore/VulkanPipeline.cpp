@@ -82,7 +82,7 @@ VkDescriptorPool Pipeline_CreateDescriptorPool(VkDevice device, const RenderPipe
     return descriptorPool;
 }
 
-Vector<VkDescriptorSetLayout> Pipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes, uint descriptorSetLayoutCount)
+Vector<VkDescriptorSetLayout> Pipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes)
 {
     Vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindingList = Vector<VkDescriptorSetLayoutBinding>();
     for (auto binding : model.PipelineDescriptorModelsList)
@@ -177,7 +177,7 @@ Vector<VkDescriptorSetLayout> Pipeline_CreateDescriptorSetLayout(VkDevice device
         .pBindings = descriptorSetLayoutBindingList.data()
     };
 
-    Vector<VkDescriptorSetLayout> descriptorSetLayoutList = Vector<VkDescriptorSetLayout>(descriptorSetLayoutCount);
+    Vector<VkDescriptorSetLayout> descriptorSetLayoutList = Vector<VkDescriptorSetLayout>(model.DescriptorSetLayoutCount);
     for (auto& descriptorSetLayout : descriptorSetLayoutList)
     {
         VULKAN_RESULT(vkCreateDescriptorSetLayout(device, &descriptorSetLayoutCreateInfo, nullptr, &descriptorSetLayout));
@@ -186,7 +186,7 @@ Vector<VkDescriptorSetLayout> Pipeline_CreateDescriptorSetLayout(VkDevice device
     return descriptorSetLayoutList;
 }
 
-Vector<VkDescriptorSet> Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, Vector<VkDescriptorSetLayout> descriptorSetLayoutList, uint descriptorSetCount)
+Vector<VkDescriptorSet> Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, const RenderPipelineModel& model, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList)
 {
     VkDescriptorSetAllocateInfo allocInfo = {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
@@ -196,7 +196,7 @@ Vector<VkDescriptorSet> Pipeline_AllocateDescriptorSets(VkDevice device, VkDescr
         .pSetLayouts = descriptorSetLayoutList.data()
     };
 
-    Vector<VkDescriptorSet> descriptorSetList = Vector<VkDescriptorSet>(descriptorSetCount);
+    Vector<VkDescriptorSet> descriptorSetList = Vector<VkDescriptorSet>(model.DescriptorSetCount);
     for (auto& descriptorSet : descriptorSetList)
     {
         VULKAN_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet));
@@ -204,7 +204,7 @@ Vector<VkDescriptorSet> Pipeline_AllocateDescriptorSets(VkDevice device, VkDescr
     return descriptorSetList;
 }
 
-void Pipeline_UpdateDescriptorSets(VkDevice device, Vector<VkDescriptorSet> descriptorSetList, const RenderPipelineModel& model, const GPUIncludes& includes)
+void Pipeline_UpdateDescriptorSets(VkDevice device, const Vector<VkDescriptorSet>& descriptorSetList, const RenderPipelineModel& model, const GPUIncludes& includes)
 {
     for (auto& descriptorSet : descriptorSetList)
     {
@@ -327,7 +327,7 @@ void Pipeline_UpdateDescriptorSets(VkDevice device, Vector<VkDescriptorSet> desc
     }
 }
 
-VkPipelineLayout Pipeline_CreatePipelineLayout(VkDevice device, Vector<VkDescriptorSetLayout>& descriptorSetLayoutList, uint constBufferSize)
+VkPipelineLayout Pipeline_CreatePipelineLayout(VkDevice device, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList, uint constBufferSize)
 {
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     Vector<VkPushConstantRange> pushConstantRangeList = Vector<VkPushConstantRange>();
@@ -355,7 +355,7 @@ VkPipelineLayout Pipeline_CreatePipelineLayout(VkDevice device, Vector<VkDescrip
     return pipelineLayout;
 }
 
-VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineModel& model, Vector<VkVertexInputBindingDescription>& vertexBindingList, Vector<VkVertexInputAttributeDescription>& vertexAttributeList)
+VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, const RenderPipelineModel& model, const Vector<VkVertexInputBindingDescription>& vertexBindingList, const Vector<VkVertexInputAttributeDescription>& vertexAttributeList)
 {
     VkPipeline pipeline = VK_NULL_HANDLE;
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo
@@ -373,15 +373,14 @@ VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkP
     Vector<VkRect2D> scissorList = model.ScissorList;
     VkPipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo
     {
-                .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-                .pNext = nullptr,
-                .flags = 0,
-                .viewportCount = static_cast<uint32>(viewPortList.size() + 1),
-                .pViewports = viewPortList.data(),
-                .scissorCount = static_cast<uint32>(scissorList.size() + 1),
-                .pScissors = scissorList.data()
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        .viewportCount = static_cast<uint32>(viewPortList.size() + 1),
+        .pViewports = viewPortList.data(),
+        .scissorCount = static_cast<uint32>(scissorList.size() + 1),
+        .pScissors = scissorList.data()
     };
-
 
     VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfoModel = model.PipelineColorBlendStateCreateInfoModel;
     pipelineColorBlendStateCreateInfoModel.attachmentCount = model.PipelineColorBlendAttachmentStateList.size();
