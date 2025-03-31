@@ -24,18 +24,17 @@ extern "C"
 		ivec2 renderPassResolution);
 
 	DLL_EXPORT VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipelineDLL renderPipelineModel, GPUIncludesDLL includePtr);
-	DLL_EXPORT void DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, VkDescriptorSetLayout* descriptorSetLayoutPtr, uint descriptorSetLayoutCount);
-	DLL_EXPORT void DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout* descriptorSetLayoutList, VkDescriptorSet* descriptorSetListPtr, uint descriptorSetLayoutCount);
-	DLL_EXPORT void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet* descriptorSetList, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, uint descriptorSetCount);
-	DLL_EXPORT void DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout& pipelineLayout, uint descriptorSetLayoutCount);
-	DLL_EXPORT void DLL_Pipeline_CreatePipeline(VkDevice device,
+	DLL_EXPORT VkDescriptorSetLayout DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr);
+	DLL_EXPORT VkDescriptorSet DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout);
+	DLL_EXPORT void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet descriptorSet, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr);
+	DLL_EXPORT VkPipelineLayout DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout, uint constBufferSize);
+	DLL_EXPORT VkPipeline DLL_Pipeline_CreatePipeline(VkDevice device,
 		VkRenderPass renderpass,
 		VkPipelineLayout pipelineLayout,
 		VkPipelineCache pipelineCache,
 		RenderPipelineDLL& modelDLL,
 		VkVertexInputBindingDescription* vertexBindingList,
 		VkVertexInputAttributeDescription* vertexAttributeList,
-		VkPipeline& pipeline,
 		uint vertexBindingCount,
 		uint vertexAttributeCount);
 }

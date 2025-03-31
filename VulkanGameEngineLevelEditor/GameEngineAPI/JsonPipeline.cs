@@ -67,8 +67,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         Vk vk = Vk.GetApi();
         VkDevice _device { get; set; }
         public VkDescriptorPool descriptorPool { get; protected set; }
-        public ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList { get; protected set; } = new ListPtr<VkDescriptorSetLayout>();
-        public ListPtr<VkDescriptorSet> descriptorSetList { get; protected set; } = new ListPtr<VkDescriptorSetLayout>();
+        public VkDescriptorSetLayout descriptorSetLayout { get; protected set; }
+        public VkDescriptorSet descriptorSet { get; protected set; }
         public VkPipeline pipeline { get; protected set; }
         public VkPipelineLayout pipelineLayout { get; protected set; }
         public VkPipelineCache pipelineCache { get; protected set; }
@@ -108,16 +108,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 materialPropertiesCount = materialProperties.UCount
             };
 
-            descriptorSetList = new ListPtr<nint>(1);
-            descriptorSetLayoutList = new ListPtr<nint>(1);
             descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, model, &includes);
-            GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes, descriptorSetLayoutList.Ptr, model.LayoutBindingListCount);
-            GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, descriptorSetLayoutList.UCount);
-            GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(_device, descriptorSetList.Ptr, model, includes, descriptorSetLayoutList.UCount);
-            GameEngineImport.DLL_Pipeline_CreatePipelineLayout(_device, descriptorSetLayoutList.Ptr, ConstBufferSize, out VkPipelineLayout pipelineLayoutPtr, model.LayoutBindingListCount);
-            GameEngineImport.DLL_Pipeline_CreatePipeline(_device, renderPass, pipelineLayoutPtr, pipelineCache, model, vertexBindings.Ptr, vertexAttributes.Ptr, out VkPipeline pipelinePtr, vertexBindings.UCount, vertexAttributes.UCount);
-            pipelineLayout = pipelineLayoutPtr;
-            pipeline = pipelinePtr;
+             descriptorSetLayout = GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes);
+             descriptorSet = GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayout);
+            GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(_device, descriptorSet, model, includes);
+            pipelineLayout = GameEngineImport.DLL_Pipeline_CreatePipelineLayout(_device, descriptorSetLayout, ConstBufferSize);
+            pipeline = GameEngineImport.DLL_Pipeline_CreatePipeline(_device, renderPass, pipelineLayout, pipelineCache, model, vertexBindings.Ptr, vertexAttributes.Ptr, vertexBindings.UCount, vertexAttributes.UCount);
         }
 
         public VkCommandBuffer Draw(VkCommandBuffer[] commandBufferList, VkRenderPass renderPass, VkFramebuffer[] frameBufferList, ivec2 renderPassResolution, List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
@@ -179,7 +175,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
 
-            var descSet = descriptorSetList;
+            var descSet = descriptorSet;
             var commandInfo = new VkCommandBufferBeginInfo
             {
                 flags = 0

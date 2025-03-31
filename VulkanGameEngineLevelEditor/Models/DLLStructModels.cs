@@ -243,33 +243,6 @@ namespace VulkanGameEngineLevelEditor.Models
         public VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo;
         public VkPipelineDepthStencilStateCreateInfo PipelineDepthStencilStateCreateInfo;
         public VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo;
-
-        public RenderPipelineDLL()
-        {
-            int totalSize = Marshal.SizeOf(typeof(RenderPipelineDLL));
-            Console.WriteLine($"Size of RenderPipelineDLL: {totalSize} bytes");
-
-            // Offsets of each field
-            Console.WriteLine($"Offset of Name: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "Name")}");
-            Console.WriteLine($"Offset of VertexShader: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "VertexShader")}");
-            Console.WriteLine($"Offset of FragmentShader: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "FragmentShader")}");
-            Console.WriteLine($"Offset of ViewportListCount: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "ViewportListCount")}");
-            Console.WriteLine($"Offset of ScissorListCount: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "ScissorListCount")}");
-            Console.WriteLine($"Offset of PipelineColorBlendAttachmentStateListCount: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "PipelineColorBlendAttachmentStateListCount")}");
-            Console.WriteLine($"Offset of LayoutBindingListCount: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "LayoutBindingListCount")}");
-            Console.WriteLine($"Offset of PipelineDescriptorListCount: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "PipelineDescriptorListCount")}");
-            Console.WriteLine($"Offset of ViewportList: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "ViewportList")}");
-            Console.WriteLine($"Offset of ScissorList: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "ScissorList")}");
-            Console.WriteLine($"Offset of LayoutBindingList: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "LayoutBindingList")}");
-            Console.WriteLine($"Offset of PipelineDescriptorList: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "PipelineDescriptorList")}");
-            Console.WriteLine($"Offset of PipelineColorBlendAttachmentStateList: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "PipelineColorBlendAttachmentStateList")}");
-            Console.WriteLine($"Offset of PipelineColorBlendStateCreateInfo: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "PipelineColorBlendStateCreateInfo")}");
-            Console.WriteLine($"Offset of PipelineRasterizationStateCreateInfo: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "PipelineRasterizationStateCreateInfo")}");
-            Console.WriteLine($"Offset of PipelineMultisampleStateCreateInfo: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "PipelineMultisampleStateCreateInfo")}");
-            Console.WriteLine($"Offset of PipelineDepthStencilStateCreateInfo: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "PipelineDepthStencilStateCreateInfo")}");
-            Console.WriteLine($"Offset of PipelineInputAssemblyStateCreateInfo: {Marshal.OffsetOf(typeof(RenderPipelineDLL), "PipelineInputAssemblyStateCreateInfo")}");
-            var a = 34;
-        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]

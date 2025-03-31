@@ -20,7 +20,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 {
     public unsafe class VulkanBuffer<T> where T : unmanaged
     {
-        protected Vk vk = Vk.GetApi();
         protected VkDevice _device { get; set; } = VulkanRenderer.device;
         protected VkPhysicalDevice _physicalDevice { get; set; } = VulkanRenderer.physicalDevice;
         protected VkCommandPool _commandPool { get; set; } = VulkanRenderer.commandPool;

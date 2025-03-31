@@ -35,47 +35,38 @@ VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipeli
 	return Pipeline_CreateDescriptorPool(device, model, includes);
 }
 
-void DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, VkDescriptorSetLayout* descriptorSetLayoutPtr, uint descriptorSetLayoutCount)
+VkDescriptorSetLayout DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr)
+{
+	RenderPipelineModel model = renderPipelineDLL.Convert();
+	GPUIncludes includes = includePtr.Convert();
+	VkDescriptorSetLayout descriptorSetLayout = Pipeline_CreateDescriptorSetLayout(device, model, includes);
+	
+	return descriptorSetLayout;
+}
+
+VkDescriptorSet DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout)
+{
+	VkDescriptorSet descriptorSet = Pipeline_AllocateDescriptorSets(device, descriptorPool, descriptorSetLayout);
+	return descriptorSet;
+}
+
+void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet descriptorSet, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr)
 {
 	RenderPipelineModel model = renderPipelineDLL.Convert();
 	GPUIncludes includes = includePtr.Convert();
 
-	Vector<VkDescriptorSetLayout> descriptorSetLayouts(descriptorSetLayoutCount);
-	Pipeline_CreateDescriptorSetLayout(device, model, includes, descriptorSetLayouts);
-	std::memcpy(descriptorSetLayoutPtr, descriptorSetLayouts.data(), descriptorSetLayoutCount * sizeof(VkDescriptorSetLayout));
+	Pipeline_UpdateDescriptorSets( device, descriptorSet, model, includes);
 }
 
-void DLL_Pipeline_AllocateDescriptorSets(
-	VkDevice device,
-	VkDescriptorPool descriptorPool,
-	VkDescriptorSetLayout* descriptorSetLayoutList,
-	VkDescriptorSet* descriptorSetListPtr,
-	uint descriptorSetLayoutCount)
+VkPipelineLayout DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout, uint constBufferSize)
 {
-	Vector<VkDescriptorSetLayout> descriptorLayoutSets(descriptorSetLayoutList, descriptorSetLayoutList + descriptorSetLayoutCount);
-	Vector<VkDescriptorSet> descriptorSets = Pipeline_AllocateDescriptorSets(device, descriptorPool, descriptorLayoutSets);
-	std::memcpy(descriptorSetListPtr, descriptorSets.data(), descriptorSetLayoutCount * sizeof(VkDescriptorSet));
+	return Pipeline_CreatePipelineLayout( device, descriptorSetLayout, constBufferSize);
 }
 
-void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet* descriptorSetList, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, uint descriptorSetListCount)
-{
-	RenderPipelineModel model = renderPipelineDLL.Convert();
-	GPUIncludes includes = includePtr.Convert();
-
-	Vector<VkDescriptorSet> descriptorLayoutSets(descriptorSetList, descriptorSetList + descriptorSetListCount);
-	Pipeline_UpdateDescriptorSets( device, descriptorLayoutSets, model, includes);
-}
-
-void DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout& pipelineLayout, uint descriptorSetLayoutCount)
-{
-	Vector<VkDescriptorSetLayout> descriptorLayoutSets(descriptorSetLayoutList, descriptorSetLayoutList + descriptorSetLayoutCount);
-	Pipeline_CreatePipelineLayout( device, descriptorLayoutSets, constBufferSize, pipelineLayout);
-}
-
-void DLL_Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineDLL& modelDLL, VkVertexInputBindingDescription* vertexBindingList, VkVertexInputAttributeDescription* vertexAttributeList, VkPipeline& pipeline, uint vertexBindingCount, uint vertexAttributeCount)
+VkPipeline DLL_Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineDLL& modelDLL, VkVertexInputBindingDescription* vertexBindingList, VkVertexInputAttributeDescription* vertexAttributeList, uint vertexBindingCount, uint vertexAttributeCount)
 {
 	RenderPipelineModel model = modelDLL.Convert();
 	Vector<VkVertexInputBindingDescription> vertexBindings(vertexBindingList, vertexBindingList + vertexBindingCount);
 	Vector<VkVertexInputAttributeDescription> vertexAttributes(vertexAttributeList, vertexAttributeList + vertexAttributeCount);
-	Pipeline_CreatePipeline( device, renderpass, pipelineLayout, pipelineCache, model, vertexBindings, vertexAttributes, pipeline);
+	return Pipeline_CreatePipeline( device, renderpass, pipelineLayout, pipelineCache, model, vertexBindings, vertexAttributes);
 }

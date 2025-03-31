@@ -131,8 +131,8 @@ protected:
 public:
     String Name;
     VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
-    Vector<VkDescriptorSetLayout> DescriptorSetLayoutList;
-    Vector<VkDescriptorSet> DescriptorSetList;
+    VkDescriptorSetLayout DescriptorSetLayoutList = VK_NULL_HANDLE;
+    VkDescriptorSet DescriptorSetList = VK_NULL_HANDLE;
     VkPipeline Pipeline = VK_NULL_HANDLE;
     VkPipelineLayout PipelineLayout = VK_NULL_HANDLE;
     VkPipelineCache PipelineCache = VK_NULL_HANDLE;

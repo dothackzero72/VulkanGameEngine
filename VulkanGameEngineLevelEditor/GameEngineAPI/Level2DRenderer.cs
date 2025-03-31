@@ -18,28 +18,15 @@ using System.Numerics;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public unsafe class Level2DRenderer
+    public unsafe class Level2DRenderer : JsonRenderPass<Vertex2D>
     {
         private Vk vk = Vk.GetApi();
         private VkDevice device => VulkanRenderer.device;
-        private VkRenderPass renderPass;
-        private ListPtr<VkFramebuffer> FrameBufferList;
-        private ListPtr<VkCommandBuffer> commandBufferList; // Updated to Silk.NET type
         public List<SpriteBatchLayer> SpriteLayerList { get; private set; } = new List<SpriteBatchLayer>();
         public List<GameObject> GameObjectList { get; private set; } = new List<GameObject>();
         public List<Texture> TextureList { get; private set; } = new List<Texture>();
         public List<Material> MaterialList { get; private set; } = new List<Material>();
         public RenderedTexture texture { get; private set; }
-        public DepthTexture depthTexture { get; private set; }
-        private ivec2 RenderPassResolution;
-
-        // Pipeline-related fields
-        private VkDescriptorPool descriptorPool;
-        private ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>();
-        public ListPtr<VkDescriptorSet> descriptorSetList = new ListPtr<VkDescriptorSet>();
-        public VkPipeline pipeline;
-        public VkPipelineLayout pipelineLayout;
-        private PipelineCache pipelineCache;
 
         public Level2DRenderer(string json, ivec2 renderPassResolution)
         {
@@ -73,7 +60,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 new VkAttachmentDescription
                 {
                     format = (VkFormat)Format.R8G8B8A8Unorm,
-                    samples = (VkSampleCountFlagBits)SampleCountFlags.Count1Bit,
+                    samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
                     loadOp = (VkAttachmentLoadOp)AttachmentLoadOp.Clear,
                     storeOp = (VkAttachmentStoreOp)AttachmentStoreOp.Store,
                     stencilLoadOp = (VkAttachmentLoadOp)AttachmentLoadOp.DontCare,
@@ -84,7 +71,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                new VkAttachmentDescription
                 {
                     format = (VkFormat)Format.D32Sfloat,
-                    samples = (VkSampleCountFlagBits)SampleCountFlags.Count1Bit,
+                    samples = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT,
                     loadOp = (VkAttachmentLoadOp)AttachmentLoadOp.Clear,
                     storeOp = (VkAttachmentStoreOp)AttachmentStoreOp.DontCare,
                     stencilLoadOp = (VkAttachmentLoadOp)AttachmentLoadOp.DontCare,
@@ -153,11 +140,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     pDependencies = dependencies
                 };
 
-                VkResult result = VkFunc.vkCreateRenderPass(device, &renderPassInfo, null, out renderPass);
+                VkResult result = VkFunc.vkCreateRenderPass(device, &renderPassInfo, null, out VkRenderPass renderPass2);
                 if (result != VkResult.VK_SUCCESS)
                 {
                     throw new Exception($"vkCreateRenderPass failed: {result}");
                 }
+
+                renderPass = renderPass2;
             }
         }
 
@@ -199,8 +188,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             AddGameObject("Obj2", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 20.0f));
             AddGameObject("Obj3", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 80.0f));
 
-            SpriteLayerList.Add(new SpriteBatchLayer(GameObjectList));
             CreateHardcodedPipeline(model);
+            SpriteLayerList.Add(new SpriteBatchLayer(GameObjectList, jsonPipelineList[0]));
         }
 
         private void CreateHardcodedPipeline(RenderPipelineDLL model)
@@ -255,16 +244,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 vertexAttribute.Add(instanceVar);
             }
 
-            descriptorSetList = new ListPtr<nint>(1);
-            descriptorSetLayoutList = new ListPtr<nint>(1);
-            descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, model, &includes);
-            GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes, descriptorSetLayoutList.Ptr, model.LayoutBindingListCount);
-            GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, descriptorSetLayoutList.Ptr, descriptorSetList.Ptr, descriptorSetLayoutList.UCount);
-            GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(VulkanRenderer.device, descriptorSetList.Ptr, model, includes, descriptorSetLayoutList.UCount);
-            GameEngineImport.DLL_Pipeline_CreatePipelineLayout(VulkanRenderer.device, descriptorSetLayoutList.Ptr, (uint)sizeof(SceneDataBuffer), out VkPipelineLayout pipelineLayoutPtr, model.LayoutBindingListCount);
-            GameEngineImport.DLL_Pipeline_CreatePipeline(VulkanRenderer.device, renderPass, pipelineLayoutPtr, new nint(), model, vertexBinding.Ptr, vertexAttribute.Ptr, out VkPipeline pipelinePtr, vertexBinding.UCount, vertexAttribute.UCount);
-            pipelineLayout = pipelineLayoutPtr;
-            pipeline = pipelinePtr;
+            GPUImport<Vertex2D> gpuImport = new GPUImport<Vertex2D>
+            {
+                MeshList = new List<Mesh<Vertex2D>>(GetMeshFromGameObjects()),
+                TextureList = new List<Texture>(TextureList),
+                MaterialList = new List<Material>(MaterialList)
+            };
+
+            jsonPipelineList.Add(new JsonPipeline<Vertex2D>("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\Default2DPipeline.json", renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, gpuImport));
         }
 
         public void Update(float deltaTime)
@@ -443,23 +430,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
             foreach (var obj in SpriteLayerList)
             {
-                GCHandle vertexHandle = GCHandle.Alloc(obj.SpriteLayerMesh.MeshVertexBuffer.Buffer, GCHandleType.Pinned);
-                GCHandle indexHandle = GCHandle.Alloc(obj.SpriteLayerMesh.MeshIndexBuffer.Buffer, GCHandleType.Pinned);
-                GCHandle instanceHandle = GCHandle.Alloc(obj.SpriteBuffer.Buffer, GCHandleType.Pinned);
-
-                ulong offsets = 0;
-                VkDescriptorSet descriptorSet = descriptorSetList[0];
-                VkFunc.vkCmdPushConstants(commandBuffer, pipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
-                VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, (nint)pipeline);
-                VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, null);
-                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, (nint*)vertexHandle.AddrOfPinnedObject(), &offsets);
-                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 1, 1, (nint*)instanceHandle.AddrOfPinnedObject(), &offsets);
-                VkFunc.vkCmdBindIndexBuffer(commandBuffer, *(nint*)indexHandle.AddrOfPinnedObject(), 0, VkIndexType.VK_INDEX_TYPE_UINT32);
-                VkFunc.vkCmdDrawIndexed(commandBuffer, obj.SpriteIndexList.UCount(), obj.SpriteInstanceList.UCount(), 0, 0, 0);
-
-                vertexHandle.Free();
-                indexHandle.Free();
-                instanceHandle.Free();
+                obj.Draw(commandBuffer, sceneDataBuffer);
             }
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);
@@ -513,8 +484,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             FrameBufferList.Dispose();
             commandBufferList.Dispose();
-            descriptorSetLayoutList.Dispose();
-            descriptorSetList.Dispose();
+            //descriptorSetLayoutList.Dispose();
+          //  descriptorSetList.Dispose();
         }
     }
 }

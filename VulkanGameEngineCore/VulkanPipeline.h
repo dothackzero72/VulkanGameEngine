@@ -17,15 +17,8 @@ struct GPUIncludes
 };
 
 VkDescriptorPool Pipeline_CreateDescriptorPool(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes);
-void Pipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes, Vector<VkDescriptorSetLayout>& descriptorSetLayoutList);
-Vector<VkDescriptorSet> Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList);
-void Pipeline_UpdateDescriptorSets(VkDevice device, const Vector<VkDescriptorSet>& descriptorSetList, const RenderPipelineModel& model, const GPUIncludes& includes);
-void Pipeline_CreatePipelineLayout(VkDevice device, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout& pipelineLayout);
-void Pipeline_CreatePipeline(VkDevice device,
-	VkRenderPass renderpass,
-	VkPipelineLayout pipelineLayout,
-	VkPipelineCache pipelineCache,
-	RenderPipelineModel& model,
-	Vector<VkVertexInputBindingDescription>& vertexBindingList,
-	Vector<VkVertexInputAttributeDescription>& vertexAttributeList,
-	VkPipeline& pipeline);
+VkDescriptorSetLayout Pipeline_CreateDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes);
+VkDescriptorSet Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout& descriptorSetLayoutList);
+void Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet& descriptorSet, const RenderPipelineModel& model, const GPUIncludes& includes);
+VkPipelineLayout Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout& descriptorSetLayout, uint constBufferSize);
+VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineModel& model, Vector<VkVertexInputBindingDescription>& vertexBindingList, Vector<VkVertexInputAttributeDescription>& vertexAttributeList);

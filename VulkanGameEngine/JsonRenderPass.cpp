@@ -141,7 +141,7 @@ VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, Sce
     vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
     for (auto mesh : meshList)
     {
-        mesh->Draw(CommandBuffer, JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0]);
+        mesh->Draw(CommandBuffer, JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList);
     }
     vkCmdEndRenderPass(CommandBuffer);
     vkEndCommandBuffer(CommandBuffer);

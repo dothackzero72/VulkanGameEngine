@@ -394,7 +394,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipeline.pipeline);
                 foreach (var obj in gameObjectList)
                 {
-                    obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, jsonPipeline.descriptorSetList, sceneDataBuffer);
+                    obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, jsonPipeline.descriptorSet, sceneDataBuffer);
                 }
                 VkFunc.vkCmdEndRenderPass(commandBuffer);
                 VkFunc.vkEndCommandBuffer(commandBuffer);
