@@ -141,24 +141,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                                                                                                                                                                          bool useMipMap);
         //RenderPass
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_RenderPass_BuildRenderPass(VkDevice device, VkRenderPass* renderPass, RenderPassBuildInfoDLL* renderPassBuildInfo, RenderedTexture* renderedColorTextureList, DepthTexture depthTexture);
+        public static extern VkRenderPass DLL_RenderPass_BuildRenderPass(VkDevice device, RenderPassBuildInfoDLL renderPassBuildInfo);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern void DLL_RenderPass_BuildFrameBuffer(
-     VkDevice device,
-     VkRenderPass renderPass,
-     RenderPassBuildInfoDLL renderPassBuildInfo,
-     VkFramebuffer* frameBufferList,
-     VkImageView* renderedColorTextureList,
-     VkImageView* depthTextureView,
-     VkImageView* swapChainImageViewList,
-     uint frameBufferCount,
-     uint swapChainCount,
-     uint renderedTextureCount,
-     ivec2 renderPassResolution);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoDLL renderPassBuildInfo, VkFramebuffer* frameBufferList, Texture* renderedColorTextureList, DepthTexture* depthTexture, VkImageView* swapChainImageViewList, uint frameBufferCount, uint renderedTextureCount, ivec2 renderPassResolution);
-
+        public static extern VkFramebuffer* DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoDLL renderPassBuildInfo, VkImageView* renderedColorTextureList, VkImageView* depthTextureView, VkImageView* swapChainImageViewList, uint swapChainCount, uint renderedTextureCount, ivec2 renderPassResolution);
+        
         //Pipeline
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
         public static extern unsafe VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipelineDLL renderPipelineModel, GPUIncludes* includes);

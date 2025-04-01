@@ -31,6 +31,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public Level2DRenderer(string json, ivec2 renderPassResolution)
         {
             RenderPassBuildInfoModel model = new RenderPassBuildInfoModel(json);
+            RenderPassBuildInfoDLL modelDLL = new RenderPassBuildInfoModel(json).ToDLL();
             foreach (var item in model.RenderedTextureInfoModelList)
             {
                 item.ImageCreateInfo.extent = new VkExtent3DModel
@@ -41,15 +42,28 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 };
             }
 
-            texture = new RenderedTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, model.RenderedTextureInfoModelList[0].ImageCreateInfo.Convert(), model.RenderedTextureInfoModelList[0].SamplerCreateInfo.Convert());
-            depthTexture = new DepthTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_DEPTH_BIT, model.RenderedTextureInfoModelList[1].ImageCreateInfo.Convert(), model.RenderedTextureInfoModelList[1].SamplerCreateInfo.Convert());
-
             RenderPassResolution = renderPassResolution;
-            FrameBufferList = new ListPtr<VkFramebuffer>();
-            commandBufferList = new ListPtr<VkCommandBuffer>();
-            VulkanRenderer.CreateCommandBuffers(commandBufferList); // Assumes updated for Silk.NET
-            CreateHardcodedRenderPass();
-            CreateHardcodedFramebuffers();
+            foreach (RenderedTextureInfoModel renderedTextureInfoModel in model.RenderedTextureInfoModelList)
+            {
+                switch (renderedTextureInfoModel.TextureType)
+                {
+                    case RenderedTextureType.ColorRenderedTexture: RenderedColorTextureList.Add(new RenderedTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert())); break;
+                    case RenderedTextureType.InputAttachmentTexture: RenderedColorTextureList.Add(new RenderedTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert())); break;
+                    case RenderedTextureType.ResolveAttachmentTexture: RenderedColorTextureList.Add(new RenderedTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert())); break;
+                    case RenderedTextureType.DepthRenderedTexture: depthTexture = new DepthTexture(VkImageAspectFlagBits.VK_IMAGE_ASPECT_DEPTH_BIT, renderedTextureInfoModel.ImageCreateInfo.Convert(), renderedTextureInfoModel.SamplerCreateInfo.Convert()); break;
+                    default:
+                        {
+                            throw new Exception("Case doesn't exist: RenderedTextureType");
+                        }
+                };
+            }
+
+            ListPtr<VkImageView> imageViews = new ListPtr<VkImageView>(RenderedColorTextureList.Select(x => x.View).ToList());
+            VkImageView depthView = depthTexture.View;
+
+            VulkanRenderer.CreateCommandBuffers(commandBufferList);
+            renderPass = GameEngineImport.DLL_RenderPass_BuildRenderPass(VulkanRenderer.device, modelDLL);
+            FrameBufferList = new ListPtr<VkFramebuffer>(GameEngineImport.DLL_RenderPass_BuildFrameBuffer(device, renderPass, modelDLL, imageViews.Ptr, &depthView, VulkanRenderer.SwapChain.imageViews.Ptr, VulkanRenderer.SwapChain.imageViews.UCount, imageViews.UCount, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height)), VulkanRenderer.SwapChain.imageViews.UCount);
             StartLevelRenderer();
         }
 

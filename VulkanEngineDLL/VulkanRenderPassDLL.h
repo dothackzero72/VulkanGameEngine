@@ -9,20 +9,8 @@
 
 extern "C"
 {
-	DLL_EXPORT void DLL_RenderPass_BuildRenderPass(VkDevice device, VkRenderPass& renderPass, RenderPassBuildInfoModel renderPassBuildInfo, Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList, SharedPtr<DepthTexture>& depthTexture);
-	DLL_EXPORT void __stdcall DLL_RenderPass_BuildFrameBuffer(
-		VkDevice device,
-		VkRenderPass renderPass,
-		RenderPassBuildInfoDLL renderPassBuildInfo,
-		VkFramebuffer* frameBufferList, // Output parameter
-		VkImageView* renderedColorTextureList,
-		VkImageView* depthTextureView,
-		VkImageView* swapChainImageViewList,
-		uint32_t frameBufferCount,
-		uint32_t swapChainImageCount,
-		uint32_t renderedTextureCount,
-		ivec2 renderPassResolution);
-
+	DLL_EXPORT VkRenderPass DLL_RenderPass_BuildRenderPass(VkDevice device, RenderPassBuildInfoDLL& renderPassBuildInfo);
+	DLL_EXPORT VkFramebuffer* DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoDLL renderPassBuildInfo, VkImageView* renderedColorTextureList, VkImageView* depthTextureView, VkImageView* swapChainImageViewList, uint32_t swapChainImageCount, uint32_t renderedTextureCount, ivec2 renderPassResolution);
 	DLL_EXPORT VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipelineDLL& renderPipelineModel, GPUIncludesDLL& includePtr);
 	DLL_EXPORT VkDescriptorSetLayout* DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL& renderPipelineDLL, GPUIncludesDLL& includePtr);
 	DLL_EXPORT VkDescriptorSet* DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, RenderPipelineDLL& renderPipelineDLL, VkDescriptorSetLayout* descriptorSetLayouts);
