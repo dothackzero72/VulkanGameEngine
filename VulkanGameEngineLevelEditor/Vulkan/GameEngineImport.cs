@@ -141,49 +141,36 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                                                                                                                                                                          bool useMipMap);
         //RenderPass
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_RenderPass_BuildRenderPass(VkDevice device, VkRenderPass* renderPass, RenderPassBuildInfoDLL* renderPassBuildInfo, RenderedTexture* renderedColorTextureList, DepthTexture depthTexture);
+        public static extern VkRenderPass DLL_RenderPass_BuildRenderPass(VkDevice device, RenderPassBuildInfoDLL renderPassBuildInfo);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern void DLL_RenderPass_BuildFrameBuffer(
-     VkDevice device,
-     VkRenderPass renderPass,
-     RenderPassBuildInfoDLL renderPassBuildInfo,
-     VkFramebuffer* frameBufferList,
-     VkImageView* renderedColorTextureList,
-     VkImageView* depthTextureView,
-     VkImageView* swapChainImageViewList,
-     uint frameBufferCount,
-     uint swapChainCount,
-     uint renderedTextureCount,
-     ivec2 renderPassResolution);
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoDLL renderPassBuildInfo, VkFramebuffer* frameBufferList, Texture* renderedColorTextureList, DepthTexture* depthTexture, VkImageView* swapChainImageViewList, uint frameBufferCount, uint renderedTextureCount, ivec2 renderPassResolution);
-
+        public static extern VkFramebuffer* DLL_RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, RenderPassBuildInfoDLL renderPassBuildInfo, VkImageView* renderedColorTextureList, VkImageView* depthTextureView, VkImageView* swapChainImageViewList, uint swapChainCount, uint renderedTextureCount, ivec2 renderPassResolution);
+        
         //Pipeline
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
         public static extern unsafe VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipelineDLL renderPipelineModel, GPUIncludes* includes);
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
+        public static extern VkDescriptorSetLayout* DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludes includePtr);
        
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL model, GPUIncludes includes, VkDescriptorSetLayout* descriptorSetLayoutPtr, uint descriptorSetCount);
-       
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout* descriptorSetLayoutList, VkDescriptorSet* descriptorSetListPtr, uint outCount);
+        public static extern VkDescriptorSet* DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, RenderPipelineDLL renderPipelineDLL, VkDescriptorSetLayout* descriptorSetLayouts);
 	   
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet* descriptorSetList, RenderPipelineDLL model, GPUIncludes includes, uint descriptorSetListCount);
-    	
+        public static extern void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludes includePtr, VkDescriptorSet* descriptorSetList);
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern VkPipelineLayout DLL_Pipeline_CreatePipelineLayout(VkDevice device, RenderPipelineDLL renderPipelineDLL, uint constBufferSize, VkDescriptorSetLayout* descriptorSetLayout);
+
+
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayoutList, uint constBufferSize, out VkPipelineLayout pipelineLayout, uint descriptorSetLayoutListCount);
-    	
-        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
-        public static extern void DLL_Pipeline_CreatePipeline(VkDevice device,
+        public static extern VkPipeline DLL_Pipeline_CreatePipeline(VkDevice device,
                                                                                                                                   VkRenderPass renderpass,
                                                                                                                                   VkPipelineLayout pipelineLayout,
                                                                                                                                   VkPipelineCache pipelineCache,
                                                                                                                                   RenderPipelineDLL model,
                                                                                                                                   VkVertexInputBindingDescription* vertexBindingList,
                                                                                                                                   VkVertexInputAttributeDescription* vertexAttributeList,
-                                                                                                                                  out VkPipeline pipeline,
         uint vertexBindingCount,
         uint vertexAttributeCount);
 

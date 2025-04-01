@@ -184,6 +184,7 @@ struct VkStencilOpStateDLL
 
 struct VkPipelineDepthStencilStateCreateInfoDLL
 {
+    const char* Name;
     VkStructureType sType;
     VkBool32 depthTestEnable;
     VkBool32 depthWriteEnable;
@@ -439,12 +440,15 @@ struct VkAttachmentDescriptionDLL : RenderPassEditorBaseDLL
 //    RenderedTextureType _textureType;
 //};
 
+#pragma pack(push, 8)
 struct RenderPipelineDLL
 {
     const char* Name;
     const char* VertexShader;
     const char* FragmentShader;
 
+    uint DescriptorSetCount;
+    uint DescriptorSetLayoutCount;
     uint ViewportListCount;
     uint ScissorListCount;
     uint PipelineColorBlendAttachmentStateListCount;
@@ -453,14 +457,14 @@ struct RenderPipelineDLL
 
     VkViewport* ViewportList;
     VkRect2D* ScissorList;
-    VkDescriptorSetLayoutBindingDLL* LayoutBindingList;
+    VkDescriptorSetLayoutBinding* LayoutBindingList;
     PipelineDescriptorModel* PipelineDescriptorList;
-    VkPipelineColorBlendAttachmentStateDLL* PipelineColorBlendAttachmentStateList;
-    VkPipelineColorBlendStateCreateInfoDLL PipelineColorBlendStateCreateInfo;
-    VkPipelineRasterizationStateCreateInfoDLL PipelineRasterizationStateCreateInfo;
-    VkPipelineMultisampleStateCreateInfoDLL PipelineMultisampleStateCreateInfo;
-    VkPipelineDepthStencilStateCreateInfoDLL PipelineDepthStencilStateCreateInfo;
-    VkPipelineInputAssemblyStateCreateInfoDLL PipelineInputAssemblyStateCreateInfo;
+    VkPipelineColorBlendAttachmentState* PipelineColorBlendAttachmentStateList;
+    VkPipelineColorBlendStateCreateInfo PipelineColorBlendStateCreateInfo;
+    VkPipelineRasterizationStateCreateInfo PipelineRasterizationStateCreateInfo;
+    VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo;
+    VkPipelineDepthStencilStateCreateInfo PipelineDepthStencilStateCreateInfo;
+    VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo;
 
     RenderPipelineModel Convert()
     {
@@ -468,11 +472,13 @@ struct RenderPipelineDLL
         model._name = Name;
         model.VertexShaderPath = VertexShader;
         model.FragmentShaderPath = FragmentShader;
-        model.PipelineColorBlendStateCreateInfoModel = PipelineColorBlendStateCreateInfo.Convert();
-        model.PipelineRasterizationStateCreateInfo = PipelineRasterizationStateCreateInfo.Convert();
-        model.PipelineMultisampleStateCreateInfo = PipelineMultisampleStateCreateInfo.Convert();
-        model.PipelineDepthStencilStateCreateInfo = PipelineDepthStencilStateCreateInfo.Convert();
-        model.PipelineInputAssemblyStateCreateInfo = PipelineInputAssemblyStateCreateInfo.Convert();
+        model.DescriptorSetCount = DescriptorSetCount;
+        model.DescriptorSetLayoutCount = DescriptorSetLayoutCount;
+        model.PipelineColorBlendStateCreateInfoModel = PipelineColorBlendStateCreateInfo;
+        model.PipelineRasterizationStateCreateInfo = PipelineRasterizationStateCreateInfo;
+        model.PipelineMultisampleStateCreateInfo = PipelineMultisampleStateCreateInfo;
+        model.PipelineDepthStencilStateCreateInfo = PipelineDepthStencilStateCreateInfo;
+        model.PipelineInputAssemblyStateCreateInfo = PipelineInputAssemblyStateCreateInfo;
 
         for (uint x = 0; x < ViewportListCount; x++)
         {
@@ -484,7 +490,7 @@ struct RenderPipelineDLL
         }
         for (uint x = 0; x < LayoutBindingListCount; x++)
         {
-            model.LayoutBindingList.emplace_back(LayoutBindingList[x].Convert());
+            model.LayoutBindingList.emplace_back(LayoutBindingList[x]);
         }
         for (uint x = 0; x < PipelineDescriptorListCount; x++)
         {
@@ -492,12 +498,13 @@ struct RenderPipelineDLL
         }
         for (uint x = 0; x < PipelineColorBlendAttachmentStateListCount; x++)
         {
-            model.PipelineColorBlendAttachmentStateList.emplace_back(PipelineColorBlendAttachmentStateList[x].Convert());
+            model.PipelineColorBlendAttachmentStateList.emplace_back(PipelineColorBlendAttachmentStateList[x]);
         }
      
         return model;
     }
 };
+#pragma pack(pop)
 
 //struct VkExtent3DDLL : RenderPassEditorBaseDLL
 //{
@@ -521,9 +528,8 @@ struct RenderPipelineDLL
 //    VkImageLayout _finalLayout;
 //};
 
-struct RenderedTextureInfoDLL
+struct RenderedTextureInfoDLL : RenderPassEditorBaseDLL
 {
-    //const char name;
     //const char* renderedTextureInfoName;
     VkImageCreateInfo imageCreateInfo;
     VkSamplerCreateInfo samplerCreateInfo;

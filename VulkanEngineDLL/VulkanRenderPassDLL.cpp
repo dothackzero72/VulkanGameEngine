@@ -1,81 +1,106 @@
 #include "VulkanRenderPassDLL.h"
 
-void DLL_RenderPass_BuildRenderPass(VkDevice device, VkRenderPass& renderPass, RenderPassBuildInfoModel renderPassBuildInfo, Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList, SharedPtr<DepthTexture>& depthTexture)
+VkRenderPass DLL_RenderPass_BuildRenderPass(VkDevice device, RenderPassBuildInfoDLL& renderPassBuildInfo)
 {
-	RenderPass_BuildRenderPass( device, renderPass, renderPassBuildInfo, renderedColorTextureList, depthTexture);
+	RenderPassBuildInfoModel model = renderPassBuildInfo.Convert();
+	return RenderPass_BuildRenderPass(device, model);
 }
 
-void __stdcall DLL_RenderPass_BuildFrameBuffer(
+VkFramebuffer* DLL_RenderPass_BuildFrameBuffer(
 	VkDevice device,
 	VkRenderPass renderPass,
 	RenderPassBuildInfoDLL renderPassBuildInfo,
-	VkFramebuffer* frameBufferList,
 	VkImageView* renderedColorTextureList,
 	VkImageView* depthTextureView,
 	VkImageView* swapChainImageViewList,
-	uint32_t frameBufferCount,
 	uint32_t swapChainImageCount,
 	uint32_t renderedTextureCount,
 	ivec2 renderPassResolution)
 {
+	if (!device || 
+		!renderPass || 
+		!renderedColorTextureList || 
+		!depthTextureView || 
+		!swapChainImageViewList || 
+		swapChainImageCount == 0 || 
+		renderedTextureCount == 0)
+	{
+		fprintf(stderr, "Error: Invalid parameters in DLL_RenderPass_BuildFrameBuffer.\n");
+		return nullptr;
+	}
+
 	RenderPassBuildInfoModel model = renderPassBuildInfo.Convert();
 	Vector<VkImageView> renderedColorTextureViews(renderedColorTextureList, renderedColorTextureList + renderedTextureCount);
-	Vector<VkImageView> swapChainImageViews(swapChainImageViewList, swapChainImageViewList + swapChainImageCount); 
-	SharedPtr<VkImageView> depthTexturePtr(depthTextureView);
+	Vector<VkImageView> swapChainImageViews(swapChainImageViewList, swapChainImageViewList + swapChainImageCount);
 
-	Vector<VkFramebuffer> frameBufferList2(frameBufferCount, VK_NULL_HANDLE);
-	RenderPass_BuildFrameBuffer(device, renderPass, model, frameBufferList2, renderedColorTextureViews, depthTexturePtr, swapChainImageViews, renderPassResolution);
-	std::memcpy(frameBufferList, frameBufferList2.data(), frameBufferCount * sizeof(VkFramebuffer));
+	Vector<VkFramebuffer> frameBufferList = RenderPass_BuildFrameBuffer(device, renderPass, model, renderedColorTextureViews, depthTextureView, swapChainImageViews, renderPassResolution);
+	if (frameBufferList.size() != swapChainImageCount)
+	{
+		fprintf(stderr, "Error: Framebuffer count mismatch: expected %u, got %zu.\n", swapChainImageCount, frameBufferList.size());
+		return nullptr;
+	}
+
+	VkFramebuffer* frameBufferPtr = new VkFramebuffer[swapChainImageCount];
+	if (!frameBufferPtr)
+	{
+		fprintf(stderr, "Error: Failed to allocate memory for framebuffers.\n");
+		return nullptr;
+	}
+
+	std::memcpy(frameBufferPtr, frameBufferList.data(), swapChainImageCount * sizeof(VkFramebuffer));
+	return frameBufferPtr;
 }
 
-VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipelineDLL renderPipelineModel, GPUIncludesDLL includePtr)
+VkDescriptorPool DLL_Pipeline_CreateDescriptorPool(VkDevice device, RenderPipelineDLL& renderPipelineModel, GPUIncludesDLL& includePtr)
 {
 	RenderPipelineModel model = renderPipelineModel.Convert();
 	GPUIncludes includes = includePtr.Convert();
 	return Pipeline_CreateDescriptorPool(device, model, includes);
 }
 
-void DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, VkDescriptorSetLayout* descriptorSetLayoutPtr, uint descriptorSetLayoutCount)
+VkDescriptorSetLayout* DLL_Pipeline_CreateDescriptorSetLayout(VkDevice device, RenderPipelineDLL& renderPipelineDLL, GPUIncludesDLL& includePtr)
 {
 	RenderPipelineModel model = renderPipelineDLL.Convert();
 	GPUIncludes includes = includePtr.Convert();
 
-	Vector<VkDescriptorSetLayout> descriptorSetLayouts(descriptorSetLayoutCount);
-	Pipeline_CreateDescriptorSetLayout(device, model, includes, descriptorSetLayouts);
-	std::memcpy(descriptorSetLayoutPtr, descriptorSetLayouts.data(), descriptorSetLayoutCount * sizeof(VkDescriptorSetLayout));
+	Vector<VkDescriptorSetLayout> descriptorSetLayoutList = Pipeline_CreateDescriptorSetLayout(device, model, includes);
+
+	VkDescriptorSetLayout* descriptorSetLayoutPtr = new VkDescriptorSetLayout[model.DescriptorSetCount];
+	std::memcpy(descriptorSetLayoutPtr, descriptorSetLayoutList.data(), descriptorSetLayoutList.size() * sizeof(VkDescriptorSetLayout));
+	return descriptorSetLayoutPtr;
 }
 
-void DLL_Pipeline_AllocateDescriptorSets(
-	VkDevice device,
-	VkDescriptorPool descriptorPool,
-	VkDescriptorSetLayout* descriptorSetLayoutList,
-	VkDescriptorSet* descriptorSetListPtr,
-	uint descriptorSetLayoutCount)
+VkDescriptorSet* DLL_Pipeline_AllocateDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, RenderPipelineDLL& renderPipelineDLL, VkDescriptorSetLayout* descriptorSetLayouts)
 {
-	Vector<VkDescriptorSetLayout> descriptorLayoutSets(descriptorSetLayoutList, descriptorSetLayoutList + descriptorSetLayoutCount);
-	Vector<VkDescriptorSet> descriptorSets = Pipeline_AllocateDescriptorSets(device, descriptorPool, descriptorLayoutSets);
-	std::memcpy(descriptorSetListPtr, descriptorSets.data(), descriptorSetLayoutCount * sizeof(VkDescriptorSet));
+	RenderPipelineModel model = renderPipelineDLL.Convert();
+	Vector<VkDescriptorSetLayout> descriptorSetLayoutList = Vector<VkDescriptorSetLayout>(descriptorSetLayouts, descriptorSetLayouts + model.DescriptorSetLayoutCount);
+	Vector<VkDescriptorSet> descriptorSetList = Pipeline_AllocateDescriptorSets(device, descriptorPool, model, descriptorSetLayoutList);
+
+	VkDescriptorSet* descriptorSetPtr = new VkDescriptorSet[model.DescriptorSetCount];
+	std::memcpy(descriptorSetPtr, descriptorSetList.data(), descriptorSetList.size() * sizeof(VkDescriptorSetLayout));
+	return descriptorSetPtr;
 }
 
-void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, VkDescriptorSet* descriptorSetList, RenderPipelineDLL renderPipelineDLL, GPUIncludesDLL includePtr, uint descriptorSetListCount)
+void DLL_Pipeline_UpdateDescriptorSets(VkDevice device, RenderPipelineDLL& renderPipelineDLL, GPUIncludesDLL& includePtr, VkDescriptorSet* descriptorSetList)
 {
 	RenderPipelineModel model = renderPipelineDLL.Convert();
 	GPUIncludes includes = includePtr.Convert();
 
-	Vector<VkDescriptorSet> descriptorLayoutSets(descriptorSetList, descriptorSetList + descriptorSetListCount);
-	Pipeline_UpdateDescriptorSets( device, descriptorLayoutSets, model, includes);
+	Vector<VkDescriptorSet> descriptorSetLayoutList = Vector<VkDescriptorSet>(descriptorSetList, descriptorSetList + model.DescriptorSetCount);
+	Pipeline_UpdateDescriptorSets( device, descriptorSetLayoutList, model, includes);
 }
 
-void DLL_Pipeline_CreatePipelineLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayoutList, uint constBufferSize, VkPipelineLayout& pipelineLayout, uint descriptorSetLayoutCount)
+VkPipelineLayout DLL_Pipeline_CreatePipelineLayout(VkDevice device, RenderPipelineDLL& renderPipelineDLL, uint constBufferSize, VkDescriptorSetLayout* descriptorSetLayout)
 {
-	Vector<VkDescriptorSetLayout> descriptorLayoutSets(descriptorSetLayoutList, descriptorSetLayoutList + descriptorSetLayoutCount);
-	Pipeline_CreatePipelineLayout( device, descriptorLayoutSets, constBufferSize, pipelineLayout);
+	RenderPipelineModel model = renderPipelineDLL.Convert();
+	Vector<VkDescriptorSetLayout> descriptorSetLayoutList = Vector<VkDescriptorSetLayout>(descriptorSetLayout, descriptorSetLayout + model.DescriptorSetLayoutCount);
+	return Pipeline_CreatePipelineLayout( device, descriptorSetLayoutList, constBufferSize);
 }
 
-void DLL_Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineDLL& modelDLL, VkVertexInputBindingDescription* vertexBindingList, VkVertexInputAttributeDescription* vertexAttributeList, VkPipeline& pipeline, uint vertexBindingCount, uint vertexAttributeCount)
+VkPipeline DLL_Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineDLL& modelDLL, VkVertexInputBindingDescription* vertexBindingList, VkVertexInputAttributeDescription* vertexAttributeList, uint vertexBindingCount, uint vertexAttributeCount)
 {
 	RenderPipelineModel model = modelDLL.Convert();
 	Vector<VkVertexInputBindingDescription> vertexBindings(vertexBindingList, vertexBindingList + vertexBindingCount);
 	Vector<VkVertexInputAttributeDescription> vertexAttributes(vertexAttributeList, vertexAttributeList + vertexAttributeCount);
-	Pipeline_CreatePipeline( device, renderpass, pipelineLayout, pipelineCache, model, vertexBindings, vertexAttributes, pipeline);
+	return Pipeline_CreatePipeline( device, renderpass, pipelineLayout, pipelineCache, model, vertexBindings, vertexAttributes);
 }

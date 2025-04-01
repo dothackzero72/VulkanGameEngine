@@ -220,13 +220,15 @@ namespace VulkanGameEngineLevelEditor.Models
         VkSampler Sampler;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct RenderPipelineDLL
     {
         public IntPtr Name;
         public IntPtr VertexShader;
         public IntPtr FragmentShader;
 
+        public uint DescriptorSetCount;
+        public uint DescriptorSetLayoutCount;
         public uint ViewportListCount;
         public uint ScissorListCount;
         public uint PipelineColorBlendAttachmentStateListCount;
@@ -238,11 +240,11 @@ namespace VulkanGameEngineLevelEditor.Models
         public VkDescriptorSetLayoutBinding* LayoutBindingList;
         public PipelineDescriptorModel* PipelineDescriptorList;
         public VkPipelineColorBlendAttachmentState* PipelineColorBlendAttachmentStateList;
-        public VkPipelineColorBlendStateCreateInfoDLL PipelineColorBlendStateCreateInfo;
-        public VkPipelineRasterizationStateCreateInfoDLL PipelineRasterizationStateCreateInfo;
-        public VkPipelineMultisampleStateCreateInfoDLL PipelineMultisampleStateCreateInfo;
-        public VkPipelineDepthStencilStateCreateInfoDLL PipelineDepthStencilStateCreateInfo;
-        public VkPipelineInputAssemblyStateCreateInfoDLL PipelineInputAssemblyStateCreateInfo;
+        public VkPipelineColorBlendStateCreateInfo PipelineColorBlendStateCreateInfo;
+        public VkPipelineRasterizationStateCreateInfo PipelineRasterizationStateCreateInfo;
+        public VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo;
+        public VkPipelineDepthStencilStateCreateInfo PipelineDepthStencilStateCreateInfo;
+        public VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]

@@ -60,7 +60,7 @@ namespace VulkanGameEngineLevelEditor.Components
             GameObjectTransform = mat4.Translate(new vec3(GameObjectPosition, 0.0f));
         }
 
-        public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, ListPtr<VkDescriptorSet> descriptorSetList, SceneDataBuffer sceneProperties)
+        public override void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, ListPtr<VkDescriptorSet> descriptorSet, SceneDataBuffer sceneProperties)
         {
 
         }

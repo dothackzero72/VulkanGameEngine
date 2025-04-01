@@ -58,9 +58,24 @@ void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& render
 
 void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
-    VkRenderPass& renderPass = RenderPass;
-    Vector<SharedPtr<RenderedTexture>>& renderedColorTextureList = RenderedColorTextureList;
-    RenderPass_BuildRenderPass(cRenderer.Device, renderPass, renderPassBuildInfo, renderedColorTextureList, depthTexture);
+    for (auto& texture : renderPassBuildInfo.RenderedTextureInfoModelList)
+    {
+        VkImageCreateInfo imageCreateInfo = texture.ImageCreateInfo;
+        VkSamplerCreateInfo samplerCreateInfo = texture.SamplerCreateInfo;
+        switch (texture.TextureType)
+        {
+            case ColorRenderedTexture: RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo))); break;
+            case InputAttachmentTexture: RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo))); break;
+            case ResolveAttachmentTexture: RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo))); break;
+            case DepthRenderedTexture: depthTexture = std::make_shared<DepthTexture>(DepthTexture(imageCreateInfo, samplerCreateInfo)); break;
+            default:
+            {
+                throw std::runtime_error("Case doesn't exist: RenderedTextureType");
+            }
+        };
+    }
+
+    RenderPass = RenderPass_BuildRenderPass(cRenderer.Device, renderPassBuildInfo);
 }
 
 void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
@@ -78,8 +93,7 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
     }
 
     VkRenderPass& renderPass = RenderPass;
-    Vector<VkFramebuffer>& frameBufferList = FrameBufferList;
-    RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, frameBufferList, imageViewList, depthTextureView, cRenderer.SwapChain.SwapChainImageViews, RenderPassResolution);
+    FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, imageViewList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, RenderPassResolution);
 }
 
 VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
@@ -141,7 +155,7 @@ VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, Sce
     vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
     for (auto mesh : meshList)
     {
-        mesh->Draw(CommandBuffer, JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList[0]);
+        mesh->Draw(CommandBuffer, JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList);
     }
     vkCmdEndRenderPass(CommandBuffer);
     vkEndCommandBuffer(CommandBuffer);

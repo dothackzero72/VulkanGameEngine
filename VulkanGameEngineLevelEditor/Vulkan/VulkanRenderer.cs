@@ -99,6 +99,24 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
         }
 
+        public static void CreateCommandBuffers(ListPtr<CommandBuffer> commandBufferList)
+        {
+            for (int x = 0; x < SwapChain.imageViews.Count; x++)
+            {
+                CommandBufferAllocateInfo commandBufferAllocateInfo = new CommandBufferAllocateInfo()
+                {
+                    SType = (StructureType)VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+                    CommandPool = new CommandPool((ulong?)commandPool),
+                    Level = (CommandBufferLevel)VkCommandBufferLevel.VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+                    CommandBufferCount = 1
+                };
+
+                CommandBuffer commandBuffer = new CommandBuffer();
+                vk.AllocateCommandBuffers(new Device(device), &commandBufferAllocateInfo, &commandBuffer);
+                commandBufferList.Add(commandBuffer);
+            }
+        }
+
         public static VkResult StartFrame()
         {
             CommandIndex = (CommandIndex + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -198,6 +216,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static VkShaderModule CreateShaderModule(byte[] code)
         {
+            VkShaderModule shaderModule = new VkShaderModule();
             fixed (byte* codePtr = code)
             {
                 var createInfo = new VkShaderModuleCreateInfo
@@ -207,14 +226,13 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     pCode = (uint*)codePtr
                 };
 
-                VkResult result = VkFunc.vkCreateShaderModule(device, ref createInfo, IntPtr.Zero, out nint shaderModule);
+                VkResult result = VkFunc.vkCreateShaderModule(device, &createInfo, null, &shaderModule);
                 if (result != VkResult.VK_SUCCESS)
                 {
                     Console.WriteLine($"Failed to create shader module: {result}");
                 }
-                return shaderModule;
             }
-            
+            return shaderModule;
         }
 
         public static uint GetMemoryType(uint typeFilter, VkMemoryPropertyFlagBits properties)

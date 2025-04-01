@@ -87,7 +87,7 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
     vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);
     vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
     vkCmdBindPipeline(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0]->Pipeline);
-    vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0]->PipelineLayout, 0, 1, &JsonPipelineList[0]->DescriptorSetList[0], 0, nullptr);
+    vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0]->PipelineLayout, 0, JsonPipelineList[0]->DescriptorSetList.size(), JsonPipelineList[0]->DescriptorSetList.data(), 0, nullptr);
     vkCmdDraw(CommandBuffer, 6, 1, 0, 0);
     vkCmdEndRenderPass(CommandBuffer);
     vkEndCommandBuffer(CommandBuffer);

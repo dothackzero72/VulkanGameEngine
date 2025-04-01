@@ -14,7 +14,7 @@ public:
 
 	virtual void Input(const float& deltaTime) override;
 	virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime) override;
-	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, VkDescriptorSet& descriptorSet) override;
+	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& pipelineLayout, Vector<VkDescriptorSet>& descriptorSetList) override;
 	virtual void Destroy() override;
 	virtual SharedPtr<GameObjectComponent> Clone() const override;
 	virtual size_t GetMemorySize() const override;

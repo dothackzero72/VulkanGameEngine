@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using System.Runtime.InteropServices;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.Models;
@@ -21,7 +23,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         VkRenderPass renderPass;
         List<JsonPipeline<NullVertex>> jsonPipelines = new List<JsonPipeline<NullVertex>>();
         ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>();
-        ListPtr<VkFramebuffer> frameBufferList;
+        ListPtr<VkFramebuffer> frameBufferList = new ListPtr<VkFramebuffer>();
 
         public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
         public DepthTexture depthTexture { get; private set; } = new DepthTexture();
@@ -41,7 +43,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ListPtr<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
 
             renderPass = CreateRenderPass();
-            frameBufferList = CreateFramebuffer();
+           CreateHardcodedFramebuffers();
             //GameEngineImport.DLL_RenderPass_BuildFrameBuffer(VulkanRenderer.device, renderPass, model, frameBufferList.Ptr, textureList.Ptr, depthTextureList.Ptr, VulkanRenderer.SwapChain.imageViews.Ptr, frameBufferList.UCount, textureList.UCount, RenderPassResolution);
             jsonPipelines.Add(new JsonPipeline<NullVertex>(ConstConfig.DefaulFrameBufferPipeline, renderPass, 0, vertexBinding, vertexAttribute, renderGraphics));
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
@@ -134,29 +136,31 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return renderPass;
         }
 
-        public new ListPtr<VkFramebuffer> CreateFramebuffer()
+        private void CreateHardcodedFramebuffers()
         {
-            ListPtr<VkFramebuffer> frameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
-            for (int x = 0; x < (int)VulkanRenderer.SwapChain.ImageCount; x++)
+            for (int i = 0; i < VulkanRenderer.SwapChain.ImageCount; i++) // 3 images
             {
-                var attachment = VulkanRenderer.SwapChain.imageViews[x];
-                VkFramebufferCreateInfo framebufferInfo = new VkFramebufferCreateInfo()
+                nint[] attachments = new nint[]
+                {
+                      VulkanRenderer.SwapChain.imageViews[i]
+                };
+
+                GCHandle attachmentsHandle = GCHandle.Alloc(attachments, GCHandleType.Pinned);
+                VkFramebufferCreateInfo fbInfo = new VkFramebufferCreateInfo
                 {
                     sType = VkStructureType.VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
                     renderPass = renderPass,
                     attachmentCount = 1,
-                    pAttachments = &attachment,
-                    width = VulkanRenderer.SwapChain.SwapChainResolution.width,
-                    height = VulkanRenderer.SwapChain.SwapChainResolution.height,
+                    pAttachments = (nint*)attachmentsHandle.AddrOfPinnedObject(),
+                    width = (uint)RenderPassResolution.x,
+                    height = (uint)RenderPassResolution.y,
                     layers = 1
                 };
 
-                var frameBuffer = frameBufferList[x];
-                VkFunc.vkCreateFramebuffer(VulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
-                frameBufferList[x] = frameBuffer;
+                VkFunc.vkCreateFramebuffer(VulkanRenderer.device, &fbInfo, null, out VkFramebuffer fb);
+                frameBufferList.Add(fb);
+                attachmentsHandle.Free();
             }
-
-            return frameBufferList;
         }
 
         public unsafe VkCommandBuffer Draw()
@@ -203,12 +207,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
             };
 
+
             VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
             VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
             VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
             VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelines.First().pipeline);
-            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelines.First().pipelineLayout, 0, 1, jsonPipelines.First().descriptorSetList.Ptr, 0, null);
+            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelines.First().pipelineLayout, 0, jsonPipelines[0].descriptorSetList.UCount, jsonPipelines[0].descriptorSetList.Ptr, 0, null);
             VkFunc.vkCmdDraw(commandBuffer, 6, 1, 0, 0);
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);

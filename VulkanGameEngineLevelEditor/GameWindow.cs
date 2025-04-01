@@ -98,7 +98,7 @@ namespace VulkanGameEngineLevelEditor
                 VulkanRenderer.CreateVulkanRenderer(this.pictureBox1.Handle, VulkanSwapChainResolution);
             }));
 
-            scene = new Scene(_mapper);
+            scene = new Scene();
             scene.StartUp();
             while (running)
             {

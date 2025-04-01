@@ -15,6 +15,8 @@ namespace VulkanGameEngineLevelEditor.Models
     {
         public String VertexShader { get; set; }
         public String FragmentShader { get; set; }
+        public uint DescriptorSetCount { get; set; }
+        public uint DescriptorSetLayoutCount { get; set; }
         public List<VkViewport> ViewportList { get; set; } = new List<VkViewport>();
         public List<VkRect2D> ScissorList { get; set; } = new List<VkRect2D>();
         public List<VkPipelineColorBlendAttachmentState> PipelineColorBlendAttachmentStateList { get; set; } = new List<VkPipelineColorBlendAttachmentState>();
@@ -54,12 +56,14 @@ namespace VulkanGameEngineLevelEditor.Models
                     FragmentShader = (IntPtr)fragmentShaderPtr,
                     ViewportList = viewportPtr,
                     ScissorList = scissorPtr,
+                    DescriptorSetCount = DescriptorSetCount,
+                    DescriptorSetLayoutCount = DescriptorSetLayoutCount,
                     PipelineColorBlendAttachmentStateList = blendAttachmentPtr,
-                    PipelineColorBlendStateCreateInfo = PipelineColorBlendStateCreateInfoModel.ConvertDLL(),
-                    PipelineRasterizationStateCreateInfo = PipelineRasterizationStateCreateInfo.ConvertDLL(),
-                    PipelineMultisampleStateCreateInfo = PipelineMultisampleStateCreateInfo.ConvertDLL(),
-                    PipelineDepthStencilStateCreateInfo = PipelineDepthStencilStateCreateInfo.ConvertDLL(),
-                    PipelineInputAssemblyStateCreateInfo = PipelineInputAssemblyStateCreateInfo.ConvertDLL(),
+                    PipelineColorBlendStateCreateInfo = PipelineColorBlendStateCreateInfoModel.Convert(),
+                    PipelineRasterizationStateCreateInfo = PipelineRasterizationStateCreateInfo.Convert(),
+                    PipelineMultisampleStateCreateInfo = PipelineMultisampleStateCreateInfo.Convert(),
+                    PipelineDepthStencilStateCreateInfo = PipelineDepthStencilStateCreateInfo.Convert(),
+                    PipelineInputAssemblyStateCreateInfo = PipelineInputAssemblyStateCreateInfo.Convert(),
                     LayoutBindingList = layoutBindingPtr,
                     PipelineDescriptorList = descriptorPtr,
                     ViewportListCount = (uint)ViewportList.Count,
