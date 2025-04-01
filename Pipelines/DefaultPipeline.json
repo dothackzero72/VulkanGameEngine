@@ -3,6 +3,8 @@
   "FragmentShader": "fragshader.spv",
   "ViewportList": [],
   "ScissorList": [],
+  "DescriptorSetCount": 1,
+  "DescriptorSetLayoutCount": 1,
   "PipelineColorBlendAttachmentStateList": [
     {
       "blendEnable": true,

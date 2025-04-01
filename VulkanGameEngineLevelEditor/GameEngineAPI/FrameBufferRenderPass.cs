@@ -39,12 +39,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             SampleCount = SampleCountFlags.Count1Bit;
 
             RenderPassBuildInfoModel model = new RenderPassBuildInfoModel(jsonFile);
+            RenderPassBuildInfoDLL modelDLL = new RenderPassBuildInfoModel(jsonFile).ToDLL();
             ListPtr<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
             ListPtr<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
 
             renderPass = CreateRenderPass();
            CreateHardcodedFramebuffers();
-            //GameEngineImport.DLL_RenderPass_BuildFrameBuffer(VulkanRenderer.device, renderPass, model, frameBufferList.Ptr, textureList.Ptr, depthTextureList.Ptr, VulkanRenderer.SwapChain.imageViews.Ptr, frameBufferList.UCount, textureList.UCount, RenderPassResolution);
+          //   frameBufferList = new ListPtr<VkFramebuffer>(GameEngineImport.DLL_RenderPass_BuildFrameBuffer(VulkanRenderer.device, renderPass, modelDLL, null, null, VulkanRenderer.SwapChain.imageViews.Ptr, VulkanRenderer.SwapChain.imageViews.UCount, 0, RenderPassResolution), VulkanRenderer.SwapChain.imageViews.UCount);
             jsonPipelines.Add(new JsonPipeline<NullVertex>(ConstConfig.DefaulFrameBufferPipeline, renderPass, 0, vertexBinding, vertexAttribute, renderGraphics));
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
         }
@@ -105,8 +106,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     srcSubpass = uint.MaxValue,
                     dstSubpass = 0,
-                    srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                    dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
+                    srcStageMask = VkPipelineStageFlagBits.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                    dstStageMask = VkPipelineStageFlagBits.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
                     srcAccessMask = 0,
                     dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
                 }
@@ -220,31 +221,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             return commandBuffer;
 
-        }
-
-        private void SaveRenderPass()
-        {
-            RenderPassBuildInfoModel modelInfo = new RenderPassBuildInfoModel()
-            {
-                //SubpassDependencyList = new List<VkSubpassDependencyModel>()
-                //{
-                //      new VkSubpassDependencyModel
-                //    {
-                //        srcSubpass = uint.MaxValue,
-                //        dstSubpass = 0,
-                //        srcStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                //        dstStageMask = VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT,
-                //        srcAccessMask = 0,
-                //        dstAccessMask = VkAccessFlagBits.VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                //    },
-                //},
-                _name = "Default2DRenderPass"
-            };
-
-            string jsonString = JsonConvert.SerializeObject(modelInfo, Formatting.Indented);
-
-            string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\FrameBufferRenderPass.json";
-            File.WriteAllText(finalfilePath, jsonString);
         }
     }
 }

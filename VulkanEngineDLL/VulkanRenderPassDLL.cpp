@@ -17,18 +17,6 @@ VkFramebuffer* DLL_RenderPass_BuildFrameBuffer(
 	uint32_t renderedTextureCount,
 	ivec2 renderPassResolution)
 {
-	if (!device || 
-		!renderPass || 
-		!renderedColorTextureList || 
-		!depthTextureView || 
-		!swapChainImageViewList || 
-		swapChainImageCount == 0 || 
-		renderedTextureCount == 0)
-	{
-		fprintf(stderr, "Error: Invalid parameters in DLL_RenderPass_BuildFrameBuffer.\n");
-		return nullptr;
-	}
-
 	RenderPassBuildInfoModel model = renderPassBuildInfo.Convert();
 	Vector<VkImageView> renderedColorTextureViews(renderedColorTextureList, renderedColorTextureList + renderedTextureCount);
 	Vector<VkImageView> swapChainImageViews(swapChainImageViewList, swapChainImageViewList + swapChainImageCount);

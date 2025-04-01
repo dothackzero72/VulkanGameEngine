@@ -53,7 +53,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             GPUImport<NullVertex> imports = new GPUImport<NullVertex>()
             {
-                TextureList = new List<Texture>() { level2DRenderer.texture },
+                TextureList = new List<Texture>() { level2DRenderer.RenderedColorTextureList[0] },
                 MaterialList = new List<Material>(),
                 MeshList = new List<Mesh<NullVertex>>()
             };

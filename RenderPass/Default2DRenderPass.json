@@ -1,7 +1,8 @@
 {
   "RenderedTextureInfoModelList": [
     {
-      "RenderedTextureInfoName": "ColorRenderTexture",
+      "IsRenderedToSwapchain": true,
+      "RenderedTextureInfoName": "texture",
       "ImageCreateInfo": {
         "imageType": 1,
         "format": 37,
@@ -12,7 +13,7 @@
         "usage": 23,
         "sharingMode": 0,
         "initialLayout": 0,
-        "_name": "DefaultColorTextureCreateInfo"
+        "_name": ""
       },
       "SamplerCreateInfo": {
         "magFilter": 0,
@@ -28,9 +29,9 @@
         "compareOp": 7,
         "minLod": 0.0,
         "maxLod": 1.0,
-        "borderColor": 2,
+        "borderColor": 3,
         "unnormalizedCoordinates": false,
-        "_name": "DefaultColorSampleCreateInfo"
+        "_name": ""
       },
       "AttachmentDescription": {
         "flags": 0,
@@ -41,15 +42,15 @@
         "stencilLoadOp": 2,
         "stencilStoreOp": 1,
         "initialLayout": 0,
-        "finalLayout": 1000001002,
-        "_name": "DefaultColorAttachment"
+        "finalLayout": 5,
+        "_name": ""
       },
       "TextureType": 0,
-      "_name": null
+      "_name": ""
     },
     {
       "IsRenderedToSwapchain": false,
-      "RenderedTextureInfoName": "texture",
+      "RenderedTextureInfoName": "DepthRenderedTexture",
       "ImageCreateInfo": {
         "imageType": 1,
         "format": 126,
@@ -60,7 +61,7 @@
         "usage": 39,
         "sharingMode": 0,
         "initialLayout": 0,
-        "_name": ""
+        "_name": "DefaultDepthTextureCreateInfo"
       },
       "SamplerCreateInfo": {
         "magFilter": 0,
@@ -78,7 +79,7 @@
         "maxLod": 1.0,
         "borderColor": 2,
         "unnormalizedCoordinates": false,
-        "_name": ""
+        "_name": "DefaultDepthSampleCreateInfo"
       },
       "AttachmentDescription": {
         "flags": 0,
@@ -87,13 +88,13 @@
         "loadOp": 1,
         "storeOp": 1,
         "stencilLoadOp": 2,
-        "stencilStoreOp": 1,
+        "stencilStoreOp": 0,
         "initialLayout": 0,
         "finalLayout": 3,
-        "_name": ""
+        "_name": "DefaultDepthAttachment"
       },
       "TextureType": 1,
-      "_name": ""
+      "_name": null
     }
   ],
   "RenderPipelineList": [],

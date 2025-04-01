@@ -528,7 +528,7 @@ struct RenderPipelineDLL
 //    VkImageLayout _finalLayout;
 //};
 
-struct RenderedTextureInfoDLL : RenderPassEditorBaseDLL
+struct RenderedTextureInfoDLL
 {
     //const char* renderedTextureInfoName;
     VkImageCreateInfo imageCreateInfo;
@@ -543,6 +543,7 @@ struct RenderedTextureInfoDLL : RenderPassEditorBaseDLL
        // model.RenderedTextureInfoName = renderedTextureInfoName;
         model.ImageCreateInfo = imageCreateInfo;
         model.SamplerCreateInfo = samplerCreateInfo;
+        model.AttachmentDescription = attachmentDescription;
         model.TextureType = textureType;
         return model;
     }

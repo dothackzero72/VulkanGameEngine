@@ -62,8 +62,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkImageView depthView = depthTexture.View;
 
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
-            // renderPass = GameEngineImport.DLL_RenderPass_BuildRenderPass(VulkanRenderer.device, modelDLL);
-            CreateHardcodedRenderPass();
+            renderPass = GameEngineImport.DLL_RenderPass_BuildRenderPass(VulkanRenderer.device, modelDLL);
+            //CreateHardcodedRenderPass();
             FrameBufferList = new ListPtr<VkFramebuffer>(GameEngineImport.DLL_RenderPass_BuildFrameBuffer(device, renderPass, modelDLL, imageViews.Ptr, &depthView, VulkanRenderer.SwapChain.imageViews.Ptr, VulkanRenderer.SwapChain.imageViews.UCount, imageViews.UCount, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height)), VulkanRenderer.SwapChain.imageViews.UCount);
             StartLevelRenderer();
         }
@@ -399,18 +399,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public VkCommandBuffer Draw(List<GameObject> meshList, SceneDataBuffer sceneDataBuffer)
         {
             var commandIndex = VulkanRenderer.CommandIndex;
-            var imageIndex = VulkanRenderer.ImageIndex;
             var commandBuffer = commandBufferList[(int)commandIndex];
 
             using ListPtr<VkClearValue> clearValues = new ListPtr<VkClearValue>();
-            clearValues.Add(new VkClearValue { Color = new VkClearColorValue(0, 0, 0, 1) });
-            clearValues.Add(new VkClearValue { DepthStencil = new VkClearDepthStencilValue(0.0f, 1.0f) });
+            clearValues.Add(new VkClearValue { Color = new VkClearColorValue(0, 0, 0, 1) });  // Color texture
+            clearValues.Add(new VkClearValue { DepthStencil = new VkClearDepthStencilValue(1.0f, 0) });  // Depth texture
 
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                 renderPass = renderPass,
-                framebuffer = FrameBufferList[(int)imageIndex],
+                framebuffer = FrameBufferList[0],
                 clearValueCount = clearValues.UCount,
                 pClearValues = clearValues.Ptr,
                 renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution)
@@ -438,7 +437,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
             };
 
-            VkFunc.vkResetCommandBuffer(commandBuffer, 0); // Add this
+            VkFunc.vkResetCommandBuffer(commandBuffer, 0);
             VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
             VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
@@ -484,7 +483,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void Destroy()
         {
-           // vk.DestroyPipeline(device, pipeline, null);
+            // vk.DestroyPipeline(device, pipeline, null);
             //vk.DestroyPipelineLayout(device, new PipelineLayout((ulong?)pipelineLayout), null);
             //foreach (var layout in descriptorSetLayoutList)
             //{
@@ -500,7 +499,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             FrameBufferList.Dispose();
             commandBufferList.Dispose();
             //descriptorSetLayoutList.Dispose();
-          //  descriptorSetList.Dispose();
+            //  descriptorSetList.Dispose();
         }
     }
 }

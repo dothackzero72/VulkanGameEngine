@@ -116,7 +116,8 @@ Vector<VkFramebuffer> RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass 
                 TextureAttachmentList.emplace_back(imageViewList[y]);
             }
         }
-        if (depthImageView != nullptr)
+        if (depthImageView != nullptr &&
+            *depthImageView != VK_NULL_HANDLE)
         {
             TextureAttachmentList.emplace_back(*depthImageView);
         }

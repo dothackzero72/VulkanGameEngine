@@ -151,7 +151,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             VkPipelineStageFlagBits[] waitStages = new VkPipelineStageFlagBits[]
             {
-                VkPipelineStageFlagBits.COLOR_ATTACHMENT_OUTPUT_BIT
+                VkPipelineStageFlagBits.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
             };
 
             fixed (VkPipelineStageFlagBits* pWaitStages = waitStages)
