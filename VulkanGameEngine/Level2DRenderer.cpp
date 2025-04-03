@@ -66,7 +66,7 @@ void Level2DRenderer::StartLevelRenderer()
     }
 
 
-    JsonPipelineList[0] = std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer)));
+    JsonPipelineList[0] = std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
     SpriteLayerList[0]->SpriteRenderPipeline = JsonPipelineList[0];
 }
 
@@ -153,26 +153,6 @@ VkCommandBuffer Level2DRenderer::Draw(Vector<SharedPtr<GameObject>> meshList, Sc
         .pClearValues = clearValues.data()
     };
 
-    VkViewport viewport = VkViewport
-    {
-        .x = 0.0f,
-        .y = 0.0f,
-        .width = static_cast<float>(RenderPassResolution.x),
-        .height = static_cast<float>(RenderPassResolution.y),
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f
-    };
-
-    VkRect2D scissor = VkRect2D
-    {
-        .offset = VkOffset2D(0, 0),
-        .extent = VkExtent2D
-        {
-          .width = static_cast<uint32>(RenderPassResolution.x),
-          .height = static_cast<uint32>(RenderPassResolution.y)
-        }
-    };
-
     VkCommandBufferBeginInfo CommandBufferBeginInfo
     {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -182,8 +162,6 @@ VkCommandBuffer Level2DRenderer::Draw(Vector<SharedPtr<GameObject>> meshList, Sc
     VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);
-    vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
     for (auto spriteLayer : SpriteLayerList)
     {
         spriteLayer->Draw(CommandBuffer, sceneDataBuffer);

@@ -504,13 +504,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     {
         public float depth;
         public uint stencil;
-        private float v1;
-        private float v2;
 
-        public VkClearDepthStencilValue(float v1, float v2) : this()
+        public VkClearDepthStencilValue(float depth, uint stencil) : this()
         {
-            this.v1 = v1;
-            this.v2 = v2;
+            this.depth = depth;
+            this.stencil = stencil;
         }
     }
 

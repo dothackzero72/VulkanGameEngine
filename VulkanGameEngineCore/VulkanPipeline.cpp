@@ -355,7 +355,7 @@ VkPipelineLayout Pipeline_CreatePipelineLayout(VkDevice device, const Vector<VkD
     return pipelineLayout;
 }
 
-VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, const RenderPipelineModel& model, const Vector<VkVertexInputBindingDescription>& vertexBindingList, const Vector<VkVertexInputAttributeDescription>& vertexAttributeList)
+VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, const RenderPipelineModel& model, const Vector<VkVertexInputBindingDescription>& vertexBindingList, const Vector<VkVertexInputAttributeDescription>& vertexAttributeList, ivec2& extent)
 {
     VkPipeline pipeline = VK_NULL_HANDLE;
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo
@@ -369,27 +369,62 @@ VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkP
         .pVertexAttributeDescriptions = vertexAttributeList.data()
     };
 
-    Vector<VkViewport> viewPortList = model.ViewportList;
-    Vector<VkRect2D> scissorList = model.ScissorList;
+    VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfoModel = model.PipelineColorBlendStateCreateInfoModel;
+    pipelineColorBlendStateCreateInfoModel.attachmentCount = model.PipelineColorBlendAttachmentStateList.size();
+    pipelineColorBlendStateCreateInfoModel.pAttachments = model.PipelineColorBlendAttachmentStateList.data();
+
+    Vector<VkViewport> viewPortList;
+    Vector<VkRect2D> scissorList;
+    Vector<VkDynamicState> dynamicStateList;
+    if (model.ViewportList.empty())
+    {
+        dynamicStateList = Vector<VkDynamicState>
+        {
+            VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT,
+            VkDynamicState::VK_DYNAMIC_STATE_SCISSOR
+        };
+    }
+    else
+    {
+        for (auto& viewPort : model.ViewportList)
+        {
+            viewPortList.emplace_back(VkViewport
+                                     {
+                                        .x = viewPort.x,
+                                        .y = viewPort.y,
+                                        .width = static_cast<float>(extent.x),
+                                        .height = static_cast<float>(extent.y),
+                                        .minDepth = viewPort.minDepth,
+                                        .maxDepth = viewPort.maxDepth
+                                     });
+        }
+        for (auto& viewPort : model.ViewportList)
+        {
+            scissorList.emplace_back(VkRect2D
+                                    {
+                                        .offset = VkOffset2D
+                                        {
+                                            .x = 0,
+                                            .y = 0
+                                        },
+                                        .extent = VkExtent2D
+                                        {
+                                          .width = static_cast<uint32>(extent.x),
+                                          .height = static_cast<uint32>(extent.y)
+                                        }
+                                    });
+        }
+    }
+
     VkPipelineViewportStateCreateInfo pipelineViewportStateCreateInfo = VkPipelineViewportStateCreateInfo
     {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
         .pNext = nullptr,
         .flags = 0,
-        .viewportCount = static_cast<uint32>(viewPortList.size() + 1),
+        .viewportCount = static_cast<uint32>(viewPortList.size() + (model.ViewportList.empty() ? 1 : 0)),
         .pViewports = viewPortList.data(),
-        .scissorCount = static_cast<uint32>(scissorList.size() + 1),
+        .scissorCount = static_cast<uint32>(scissorList.size() + (model.ScissorList.empty() ? 1 : 0)),
         .pScissors = scissorList.data()
-    };
-
-    VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfoModel = model.PipelineColorBlendStateCreateInfoModel;
-    pipelineColorBlendStateCreateInfoModel.attachmentCount = model.PipelineColorBlendAttachmentStateList.size();
-    pipelineColorBlendStateCreateInfoModel.pAttachments = model.PipelineColorBlendAttachmentStateList.data();
-
-    Vector<VkDynamicState> dynamicStateList = Vector<VkDynamicState>
-    {
-        VkDynamicState::VK_DYNAMIC_STATE_VIEWPORT,
-        VkDynamicState::VK_DYNAMIC_STATE_SCISSOR
     };
 
     VkPipelineDynamicStateCreateInfo pipelineDynamicStateCreateInfo = VkPipelineDynamicStateCreateInfo

@@ -187,7 +187,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             ListPtr<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
             ListPtr<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
-            jsonPipeline = new JsonPipeline<Vertex3D>(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, new GPUImport<Vertex3D>());
+            jsonPipeline = new JsonPipeline<Vertex3D>(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, new GPUImport<Vertex3D>(), RenderPassResolution);
             //LoadDescriptorSets(model);
             //CreateGraphicsPipeline();
 
@@ -360,7 +360,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 },
                 new VkClearValue
                 { 
-                    DepthStencil = new VkClearDepthStencilValue(0.0f, 1.0f) 
+                    DepthStencil = new VkClearDepthStencilValue(1.0f, 0) 
                 }
             };
 

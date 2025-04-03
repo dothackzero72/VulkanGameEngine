@@ -64,8 +64,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
     public unsafe class JsonPipeline<T>
     {
-        Vk vk = Vk.GetApi();
-        VkDevice _device { get; set; }
+        VkDevice _device { get; set; } = VulkanRenderer.device;
         public VkDescriptorPool descriptorPool { get; protected set; }
         public ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList { get; protected set; } = new ListPtr<VkDescriptorSetLayout>();
         public ListPtr<VkDescriptorSet> descriptorSetList { get; protected set; } = new ListPtr<VkDescriptorSet>();
@@ -78,10 +77,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public JsonPipeline(String jsonPipelineFilePath, VkRenderPass renderPass, uint ConstBufferSize, ListPtr<VkVertexInputBindingDescription> vertexBindings, ListPtr<VkVertexInputAttributeDescription> vertexAttributes, GPUImport<T> gpuImport)
+        public JsonPipeline(String jsonPipelineFilePath, VkRenderPass renderPass, uint ConstBufferSize, ListPtr<VkVertexInputBindingDescription> vertexBindings, ListPtr<VkVertexInputAttributeDescription> vertexAttributes, GPUImport<T> gpuImport, ivec2 renderPassResolution)
         {
-            _device = VulkanRenderer.device;
-
             string jsonContent = File.ReadAllText(jsonPipelineFilePath);
             RenderPipelineDLL model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
 
@@ -113,7 +110,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             descriptorSetList = new ListPtr<VkDescriptorSet>(GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, model, descriptorSetLayoutList.Ptr), model.DescriptorSetCount);
             GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(_device, model, includes, descriptorSetList.Ptr);
             pipelineLayout = GameEngineImport.DLL_Pipeline_CreatePipelineLayout(_device, model, ConstBufferSize, descriptorSetLayoutList.Ptr);
-            pipeline = GameEngineImport.DLL_Pipeline_CreatePipeline(_device, renderPass, pipelineLayout, pipelineCache, model, vertexBindings.Ptr, vertexAttributes.Ptr, vertexBindings.UCount, vertexAttributes.UCount);
+            pipeline = GameEngineImport.DLL_Pipeline_CreatePipeline(_device, renderPass, pipelineLayout, pipelineCache, model, vertexBindings.Ptr, vertexAttributes.Ptr, vertexBindings.UCount, vertexAttributes.UCount, renderPassResolution);
         }
 
         public VkCommandBuffer Draw(VkCommandBuffer[] commandBufferList, VkRenderPass renderPass, VkFramebuffer[] frameBufferList, ivec2 renderPassResolution, List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
@@ -155,26 +152,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 };
             }
 
-            var viewport = new VkViewport
-            {
-                x = 0.0f,
-                y = 0.0f,
-                width = (uint)renderPassResolution.x,
-                height = (uint)renderPassResolution.y,
-                minDepth = 0.0f,
-                maxDepth = 1.0f
-            };
-
-            var scissor = new VkRect2D
-            {
-                offset = new VkOffset2D(0, 0),
-                extent = new VkExtent2D()
-                {
-                    width = (uint)renderPassResolution.x,
-                    height = (uint)renderPassResolution.y
-                }
-            };
-
             var commandInfo = new VkCommandBufferBeginInfo
             {
                 flags = 0
@@ -182,8 +159,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
-            VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-            VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
             VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
             foreach (var obj in gameObjectList)
             {

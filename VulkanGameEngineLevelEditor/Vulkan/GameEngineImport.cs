@@ -172,7 +172,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                                                                                                                                   VkVertexInputBindingDescription* vertexBindingList,
                                                                                                                                   VkVertexInputAttributeDescription* vertexAttributeList,
         uint vertexBindingCount,
-        uint vertexAttributeCount);
+        uint vertexAttributeCount,
+        ivec2 renderPassResolution);
 
         //Buffer
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]

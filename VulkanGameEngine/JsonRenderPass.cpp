@@ -52,7 +52,7 @@ void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& render
     {
         Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
         Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
-        JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline(renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer))));
+        JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline(renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution)));
     }
 }
 
@@ -122,26 +122,6 @@ VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, Sce
         .pClearValues = clearValues.data()
     };
 
-    VkViewport viewport = VkViewport
-    {
-        .x = 0.0f,
-        .y = 0.0f,
-        .width = static_cast<float>(RenderPassResolution.x),
-        .height = static_cast<float>(RenderPassResolution.y),
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f
-    };
-
-    VkRect2D scissor = VkRect2D
-    {
-        .offset = VkOffset2D(0, 0),
-        .extent = VkExtent2D
-        {
-          .width = static_cast<uint32>(RenderPassResolution.x),
-          .height = static_cast<uint32>(RenderPassResolution.y)
-        }
-    };
-
     VkCommandBufferBeginInfo CommandBufferBeginInfo
     {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -151,8 +131,6 @@ VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, Sce
     VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);
-    vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
     for (auto mesh : meshList)
     {
         mesh->Draw(CommandBuffer, JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList);

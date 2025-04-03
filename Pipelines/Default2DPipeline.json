@@ -1,8 +1,28 @@
 {
   "VertexShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DVert.spv",
   "FragmentShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\Shader2DFrag.spv",
-  "ViewportList": [],
-  "ScissorList": [],
+  "ViewportList": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "minDepth": 0.0,
+      "maxDepth": 1
+    }
+  ],
+  "ScissorList": [
+    {
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "extent": {
+        "width": 0,
+        "height": 0
+      }
+    }
+  ],
   "DescriptorSetCount": 1,
   "DescriptorSetLayoutCount": 1,
   "PipelineColorBlendAttachmentStateList": [
@@ -57,7 +77,7 @@
     "sType": 25,
     "depthTestEnable": true,
     "depthWriteEnable": true,
-    "depthCompareOp": 2,
+    "depthCompareOp": 1,
     "depthBoundsTestEnable": false,
     "stencilTestEnable": false,
     "front": null,

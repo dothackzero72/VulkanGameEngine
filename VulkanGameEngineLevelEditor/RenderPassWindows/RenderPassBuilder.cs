@@ -142,7 +142,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private void BuildButton_Click(object sender, EventArgs e)
         {
             buildRenderPass = new JsonRenderPass<Vertex2D>();
-            buildRenderPass.CreateRenderPass(RenderPassModels);
+           // buildRenderPass.CreateRenderPass();
         }
 
         private void OnClose(object sender, FormClosingEventArgs e)

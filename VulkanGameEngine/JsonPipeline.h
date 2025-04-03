@@ -25,9 +25,6 @@ class JsonPipeline
 private:
     SharedPtr<JsonRenderPass> ParentRenderPass;
 
-    void LoadDescriptorSets(RenderPipelineModel& model, GPUImport& gpuImport);
-    void LoadPipeline(VkDevice device, RenderPipelineModel& model, VkRenderPass renderPass, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint ConstBufferSize);
-
 protected:
 
     template<class T>
@@ -138,7 +135,7 @@ public:
     VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 
     JsonPipeline();
-    JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize);
+    JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize, ivec2& renderPassResolution);
     ~JsonPipeline();
 
     void Destroy();

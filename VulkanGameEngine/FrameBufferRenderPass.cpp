@@ -23,7 +23,7 @@ FrameBufferRenderPass::FrameBufferRenderPass(const String& jsonPath, SharedPtr<T
     GPUImport import = GPUImport{ .TextureList = Vector<SharedPtr<Texture>> { inputTexture } };
     Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
     Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
-    JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/FrameBufferPipeline.json", RenderPass, import, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer))));
+    JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/FrameBufferPipeline.json", RenderPass, import, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), renderPassResolution)));
 }
 
 FrameBufferRenderPass::~FrameBufferRenderPass()
@@ -55,26 +55,6 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
         .pClearValues = clearValues.data()
     };
 
-    VkViewport viewport = VkViewport
-    {
-        .x = 0.0f,
-        .y = 0.0f,
-        .width = static_cast<float>(RenderPassResolution.x),
-        .height = static_cast<float>(RenderPassResolution.y),
-        .minDepth = 0.0f,
-        .maxDepth = 1.0f
-    };
-
-    VkRect2D scissor = VkRect2D
-    {
-        .offset = VkOffset2D(0, 0),
-        .extent = VkExtent2D
-        {
-          .width = static_cast<uint32>(RenderPassResolution.x),
-          .height = static_cast<uint32>(RenderPassResolution.y)
-        }
-    };
-
     VkCommandBufferBeginInfo CommandBufferBeginInfo
     {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -84,8 +64,6 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
     VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdSetViewport(CommandBuffer, 0, 1, &viewport);
-    vkCmdSetScissor(CommandBuffer, 0, 1, &scissor);
     vkCmdBindPipeline(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0]->Pipeline);
     vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0]->PipelineLayout, 0, JsonPipelineList[0]->DescriptorSetList.size(), JsonPipelineList[0]->DescriptorSetList.data(), 0, nullptr);
     vkCmdDraw(CommandBuffer, 6, 1, 0, 0);
