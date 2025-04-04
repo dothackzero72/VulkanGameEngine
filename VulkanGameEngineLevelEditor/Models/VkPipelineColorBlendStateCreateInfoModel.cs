@@ -54,24 +54,6 @@ namespace VulkanGameEngineLevelEditor.Models
             blendConstants[3] = 0.0f;
         }
 
-        public VkPipelineColorBlendStateCreateInfoDLL ConvertDLL()
-        {
-            VkPipelineColorBlendStateCreateInfoDLL dll = new VkPipelineColorBlendStateCreateInfoDLL
-            {
-                sType = sType,
-                pNext = pNext,
-                flags = flags,
-                logicOpEnable = logicOpEnable,
-                logicOp = logicOp,
-                attachmentCount = (uint)attachmentCount // Ensure this exists
-            };
-            fixed (float* blendPtr = blendConstants)
-            {
-                for (int i = 0; i < 4; i++) blendPtr[i] = blendConstants[i];
-            }
-            return dll;
-        }
-
         public VkPipelineColorBlendStateCreateInfo Convert()
         {
             return new VkPipelineColorBlendStateCreateInfo

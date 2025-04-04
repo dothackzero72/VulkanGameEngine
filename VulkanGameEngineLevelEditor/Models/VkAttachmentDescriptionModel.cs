@@ -184,43 +184,6 @@ namespace VulkanGameEngineLevelEditor.Models
             };
         }
 
-        public VkAttachmentDescription* ConvertPtr()
-        {
-            VkAttachmentDescription* attachmentDescription = (VkAttachmentDescription*)Marshal.AllocHGlobal(sizeof(VkAttachmentDescription));
-            attachmentDescription->flags = flags;
-            attachmentDescription->format = format;
-            attachmentDescription->samples = samples;
-            attachmentDescription->loadOp = loadOp;
-            attachmentDescription->storeOp = storeOp;
-            attachmentDescription->stencilLoadOp = stencilLoadOp;
-            attachmentDescription->stencilStoreOp = stencilStoreOp;
-            attachmentDescription->initialLayout = initialLayout;
-            attachmentDescription->finalLayout = finalLayout;
-            return attachmentDescription;
-        }
-
-        public VkAttachmentDescriptionDLL ToDLL()
-        {
-            fixed (byte* namePtr = System.Text.Encoding.UTF8.GetBytes(_name + "\0"))
-            {
-                return new VkAttachmentDescriptionDLL
-                {
-                    Name = (IntPtr)namePtr,
-                    _finalLayout = _finalLayout,
-                    _flags = _flags,
-                    _format = _format,
-                    _samples = _samples,
-                    _loadOp = _loadOp,
-                    _storeOp = _storeOp,
-                    _stencilLoadOp = _stencilLoadOp,
-                    _stencilStoreOp = _stencilStoreOp,
-                    _initialLayout = _initialLayout,
-                    _pNext = _pNext,
-                    _structureType = _structureType,
-                };
-            }
-        }
-
         public void LoadJsonComponent(string jsonPath)
         {
             var obj = base.LoadJsonComponent<VkAttachmentDescriptionModel>(jsonPath);

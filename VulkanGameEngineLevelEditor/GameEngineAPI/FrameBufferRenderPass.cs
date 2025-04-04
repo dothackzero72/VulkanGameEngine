@@ -43,22 +43,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 new VkClearValue(new VkClearColorValue(1, 1, 0, 1))
             };
 
-            VkViewport viewport = new VkViewport
-            {
-                x = 0.0f,
-                y = 0.0f,
-                width = VulkanRenderer.SwapChain.SwapChainResolution.width,
-                height = VulkanRenderer.SwapChain.SwapChainResolution.height,
-                minDepth = 0.0f,
-                maxDepth = 1.0f
-            };
-
-            VkRect2D scissor = new VkRect2D
-            {
-                offset = new VkOffset2D { x = 0, y = 0 },
-                extent = VulkanRenderer.SwapChain.SwapChainResolution
-            };
-
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
@@ -76,11 +60,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
             };
 
-
             VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
-            VkFunc.vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-            VkFunc.vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
             VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelineList.First().pipeline);
             VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelineList.First().pipelineLayout, 0, jsonPipelineList[0].descriptorSetList.UCount, jsonPipelineList[0].descriptorSetList.Ptr, 0, null);
             VkFunc.vkCmdDraw(commandBuffer, 6, 1, 0, 0);

@@ -11,7 +11,6 @@ using Silk.NET.Core.Native;
 using Silk.NET.Maths;
 using Silk.NET.SDL;
 using Silk.NET.Vulkan;
-using SixLabors.ImageSharp.Memory;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Vulkan;
 using static VulkanGameEngineLevelEditor.GameEngineAPI.GameEngineDLL;
@@ -20,10 +19,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 {
     public unsafe class VulkanBuffer<T> where T : unmanaged
     {
-        protected VkDevice _device { get; set; } = VulkanRenderer.device;
-        protected VkPhysicalDevice _physicalDevice { get; set; } = VulkanRenderer.physicalDevice;
-        protected VkCommandPool _commandPool { get; set; } = VulkanRenderer.commandPool;
-        protected VkQueue _graphicsQueue { get; set; } = VulkanRenderer.graphicsQueue;
+        protected VkDevice _device => VulkanRenderer.device;
+        protected VkPhysicalDevice _physicalDevice => VulkanRenderer.physicalDevice;
+        protected VkCommandPool _commandPool => VulkanRenderer.commandPool;
+        protected VkQueue _graphicsQueue => VulkanRenderer.graphicsQueue;
+
         public VkBuffer StagingBuffer;
         public VkDeviceMemory StagingBufferMemory;
         public VkDeviceMemory BufferMemory;

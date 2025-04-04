@@ -31,22 +31,6 @@ namespace VulkanGameEngineLevelEditor.Models
         { 
         }
 
-        public VkPipelineMultisampleStateCreateInfoDLL ConvertDLL()
-        {
-            return new VkPipelineMultisampleStateCreateInfoDLL()
-            {
-                sType = sType,
-                rasterizationSamples = rasterizationSamples,
-                sampleShadingEnable = sampleShadingEnable,
-                minSampleShading = minSampleShading,
-                pSampleMask = pSampleMask,
-                alphaToCoverageEnable = alphaToCoverageEnable,
-                alphaToOneEnable = alphaToOneEnable,
-                flags = flags,
-                pNext = pNext
-            };
-        }
-
         public VkPipelineMultisampleStateCreateInfo Convert()
         {
             return new VkPipelineMultisampleStateCreateInfo()

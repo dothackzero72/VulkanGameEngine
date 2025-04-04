@@ -51,50 +51,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     break;
             }
             return Vk.False;
-            //Thread currentThread = Thread.CurrentThread;
-            //string currentThreadInfo = $"Thread ID: {currentThread.ManagedThreadId}, Name: {currentThread.Name}";
-
-            //string message = GetMessageFromPointer(callbackData->PMessage);
-            //  string formattedMessage = $"Vulkan Message [Severity: {severity}, Type: {messageType}] [Thread: {currentThreadInfo}]: {message}";
-
-            //foreach (var messager in GlobalMessenger.messenger)
-            //{
-            //    if (messager.richTextBox != null &&
-            //        messager != null &&
-            //        messager.IsActive)
-
-            //    {
-            //        if (messager.ThreadId == currentThread.ManagedThreadId)
-            //        {
-            //            if (messager.richTextBox.InvokeRequired)
-            //            {
-            //                messager.richTextBox.Invoke(new Action(() => messager.LogMessage(formattedMessage, severity)));
-            //            }
-            //        }
-            //    }
-            //}
-
-
-            // Console.WriteLine(currentThreadInfo);
-            //switch (severity)
-            //{
-            //    case DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt:
-            //        Console.WriteLine($"VERBOSE: {callbackData->PMessage}");
-            //        break;
-            //    case DebugUtilsMessageSeverityFlagsEXT.InfoBitExt:
-            //        Console.WriteLine($"INFO: {callbackData->PMessage}");
-            //        break;
-            //    case DebugUtilsMessageSeverityFlagsEXT.WarningBitExt:
-            //        Console.WriteLine($"WARNING: {callbackData->PMessage}");
-            //        break;
-            //    case DebugUtilsMessageSeverityFlagsEXT.ErrorBitExt:
-            //        Console.WriteLine($"ERROR: {callbackData->PMessage}");
-            //        break;
-            //    default:
-            //        Console.WriteLine($"UNKNOWN SEVERITY: {callbackData->PMessage}");
-            //        break;
-            //}
-            //return Vk.False;
         }
     }
 }

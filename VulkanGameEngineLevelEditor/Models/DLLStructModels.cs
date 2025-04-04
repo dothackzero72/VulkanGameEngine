@@ -26,24 +26,6 @@ namespace VulkanGameEngineLevelEditor.Models
         public uint materialPropertiesCount;
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct VkPipelineRasterizationStateCreateInfoDLL
-    {
-        public VkStructureType sType;
-        public VkBool32 depthClampEnable;
-        public VkBool32 rasterizerDiscardEnable;
-        public VkPolygonMode polygonMode;
-        public VkCullModeFlagBits cullMode;
-        public VkFrontFace frontFace;
-        public VkBool32 depthBiasEnable;
-        public float depthBiasConstantFactor;
-        public float depthBiasClamp;
-        public float depthBiasSlopeFactor;
-        public float lineWidth;
-        public uint flags;
-        public IntPtr pNext;
-    }
-
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VkPipelineColorBlendStateCreateInfoDLL
     {
@@ -55,102 +37,6 @@ namespace VulkanGameEngineLevelEditor.Models
         public uint attachmentCount { get; set; }
         public VkPipelineColorBlendAttachmentState* pAttachments { get; set; }
         public fixed float blendConstants[4];
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct VkPipelineMultisampleStateCreateInfoDLL
-    {
-        public VkStructureType sType { get; set; }
-        public VkSampleCountFlagBits rasterizationSamples { get; set; }
-        public VkBool32 sampleShadingEnable { get; set; }
-        public float minSampleShading { get; set; }
-        public uint* pSampleMask { get; set; }
-        public VkBool32 alphaToCoverageEnable { get; set; }
-        public VkBool32 alphaToOneEnable { get; set; }
-        public uint flags { get; set; }
-        public void* pNext { get; set; }
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct VkPipelineInputAssemblyStateCreateInfoDLL
-    {
-        public VkStructureType sType { get; set; }
-        public VkPrimitiveTopology topology { get; set; }
-        public VkBool32 primitiveRestartEnable { get; set; }
-        public uint flags { get; set; }
-        public void* pNext { get; set; }
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public unsafe struct VkStencilOpStateDLL
-    {
-        public VkStencilOp failOp { get; set; }
-        public VkStencilOp passOp { get; set; }
-        public VkStencilOp depthFailOp { get; set; }
-        public VkCompareOp compareOp { get; set; }
-        public uint compareMask { get; set; }
-        public uint writeMask { get; set; }
-        public uint reference { get; set; }
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct VkExtent3DDLL
-    {
-        public IntPtr Name;
-        public uint _width { get; set; }
-        public uint _height { get; set; }
-        public uint _depth { get; set; }
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct VkAttachmentDescriptionDLL
-    {
-        public IntPtr Name;
-        public VkStructureType _structureType;
-        public VkAttachmentDescriptionFlagBits _flags;
-        public void* _pNext;
-        public VkFormat _format;
-        public VkSampleCountFlagBits _samples;
-        public VkAttachmentLoadOp _loadOp;
-        public VkAttachmentStoreOp _storeOp;
-        public VkAttachmentLoadOp _stencilLoadOp;
-        public VkAttachmentStoreOp _stencilStoreOp;
-        public VkImageLayout _initialLayout;
-        public VkImageLayout _finalLayout;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct VkImageCreateInfoDLL
-    {
-        public IntPtr Name;
-        public VkStructureType _sType;
-        public VkImageCreateFlagBits _flags;
-        public void* _pNext;
-        public VkImageType _imageType;
-        public VkFormat _format;
-        public VkExtent3DDLL _extent;
-        public uint _mipLevels;
-        public uint _arrayLayers;
-        public VkSampleCountFlagBits _samples;
-        public VkImageTiling _tiling;
-        public VkImageUsageFlagBits _usage;
-        public VkSharingMode _sharingMode;
-        public uint _queueFamilyIndexCount;
-        public unsafe uint* _pQueueFamilyIndices;
-        public VkImageLayout _initialLayout;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct VkSubpassDependencyDLL
-    {
-        public IntPtr Name;
-        public uint _srcSubpass;
-        public uint _dstSubpass;
-        public VkPipelineStageFlagBits _srcStageMask;
-        public VkPipelineStageFlagBits _dstStageMask;
-        public VkAccessFlagBits _srcAccessMask;
-        public VkAccessFlagBits _dstAccessMask;
-        public VkDependencyFlagBits _dependencyFlags;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
@@ -190,34 +76,6 @@ namespace VulkanGameEngineLevelEditor.Models
         public VkSamplerCreateInfo _samplerCreateInfo;
         public VkAttachmentDescription _attachmentDescription;
         public RenderedTextureType _textureType;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct VkPipelineDepthStencilStateCreateInfoDLL
-    {
-        public IntPtr Name;
-        public VkStructureType sType { get; set; }
-        public VkBool32 depthTestEnable { get; set; }
-        public VkBool32 depthWriteEnable { get; set; }
-        public VkCompareOp depthCompareOp { get; set; }
-        public VkBool32 depthBoundsTestEnable { get; set; }
-        public VkBool32 stencilTestEnable { get; set; }
-        public VkStencilOpStateDLL front { get; set; }
-        public VkStencilOpStateDLL back { get; set; }
-        public float minDepthBounds { get; set; }
-        public float maxDepthBounds { get; set; }
-        public uint flags { get; set; }
-        public void* pNext { get; set; }
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public struct TextureMemoryDLL
-    {
-        VkDescriptorSet ImGuiDescriptorSet;
-        VkImage Image;
-        VkDeviceMemory Memory;
-        VkImageView View;
-        VkSampler Sampler;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]

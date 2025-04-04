@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineGameObjectScripts.Input;
@@ -11,6 +12,7 @@ namespace VulkanGameEngineLevelEditor.Components
 {
     public unsafe class SpriteComponent : GameObjectComponent
     {
+        [JsonIgnore]
         public Sprite SpriteObj { get; protected set; }
         public SpriteComponent()
         {

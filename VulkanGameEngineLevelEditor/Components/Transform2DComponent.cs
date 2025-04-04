@@ -9,11 +9,13 @@ using VulkanGameEngineGameObjectScripts.Import;
 using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using System.Text.Json.Serialization;
 
 namespace VulkanGameEngineLevelEditor.Components
 {
     public unsafe class Transform2DComponent : GameObjectComponent
     {
+        [JsonIgnore]
         public mat4 GameObjectTransform;
         public vec2 GameObjectPosition;
         public vec2 GameObjectRotation;

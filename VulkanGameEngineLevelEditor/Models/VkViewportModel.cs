@@ -29,19 +29,6 @@ namespace VulkanGameEngineLevelEditor.Models
             maxDepth = other.MaxDepth;
         }
 
-        public Viewport Convert()
-        {
-            return new Viewport
-            {
-                X = x,
-                Y = y,
-                Width = width,
-                Height = height,
-                MinDepth = minDepth,
-                MaxDepth = maxDepth
-            };
-        }
-
         public void Dispose()
         {
         }

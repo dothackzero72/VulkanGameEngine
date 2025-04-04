@@ -25,18 +25,6 @@ namespace VulkanGameEngineLevelEditor.Models
         { 
         }
 
-        public VkPipelineInputAssemblyStateCreateInfoDLL ConvertDLL()
-        {
-            return new VkPipelineInputAssemblyStateCreateInfoDLL
-            {
-                sType = sType,
-                topology = topology,
-                primitiveRestartEnable = primitiveRestartEnable,
-                flags = 0,
-                pNext = null
-            };
-        }
-
         public VkPipelineInputAssemblyStateCreateInfo Convert()
         {
             return new VkPipelineInputAssemblyStateCreateInfo
@@ -47,17 +35,6 @@ namespace VulkanGameEngineLevelEditor.Models
                 flags = 0,
                 pNext = null
             };
-        }
-
-        public VkPipelineInputAssemblyStateCreateInfo* ConvertPtr()
-        {
-            VkPipelineInputAssemblyStateCreateInfo* ptr = (VkPipelineInputAssemblyStateCreateInfo*)Marshal.AllocHGlobal(sizeof(VkPipelineInputAssemblyStateCreateInfo));
-            ptr->sType = sType;
-            ptr->topology = topology;
-            ptr->primitiveRestartEnable = primitiveRestartEnable;
-            ptr->flags = 0;
-            ptr->pNext = null;
-            return ptr;
         }
     }
 }

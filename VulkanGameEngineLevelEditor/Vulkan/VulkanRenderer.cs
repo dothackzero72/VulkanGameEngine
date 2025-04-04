@@ -26,7 +26,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
     public unsafe static class VulkanRenderer
     {
-        public static Vk vk = Vk.GetApi();
         public const int MAX_FRAMES_IN_FLIGHT = 3;
         public static IntPtr windowPtr { get; set; }
         public static VkInstance instance { get; private set; }
@@ -47,7 +46,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static UInt32 CommandIndex { get; private set; } = new UInt32();
         public static bool RebuildRendererFlag { get; private set; }
 
-        public static void CreateVulkanRenderer(IntPtr window, Extent2D swapChainResolution)
+        public static void CreateVulkanRenderer(IntPtr window)
         {
             windowPtr = window;
             instance = GameEngineImport.DLL_Renderer_CreateVulkanInstance();
@@ -95,24 +94,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
                 VkCommandBuffer commandBuffer = new VkCommandBuffer();
                 VkFunc.vkAllocateCommandBuffers(device, in commandBufferAllocateInfo, out commandBuffer);
-                commandBufferList.Add(commandBuffer);
-            }
-        }
-
-        public static void CreateCommandBuffers(ListPtr<CommandBuffer> commandBufferList)
-        {
-            for (int x = 0; x < SwapChain.imageViews.Count; x++)
-            {
-                CommandBufferAllocateInfo commandBufferAllocateInfo = new CommandBufferAllocateInfo()
-                {
-                    SType = (StructureType)VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-                    CommandPool = new CommandPool((ulong?)commandPool),
-                    Level = (CommandBufferLevel)VkCommandBufferLevel.VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-                    CommandBufferCount = 1
-                };
-
-                CommandBuffer commandBuffer = new CommandBuffer();
-                vk.AllocateCommandBuffers(new Device(device), &commandBufferAllocateInfo, &commandBuffer);
                 commandBufferList.Add(commandBuffer);
             }
         }
@@ -196,45 +177,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
         }
 
-        public static VkPipelineShaderStageCreateInfo CreateShader(string path, VkShaderStageFlagBits shaderStage)
-        {
-            byte[] shaderBytes = File.ReadAllBytes(path);
-            VkShaderModule shaderModule = CreateShaderModule(shaderBytes);
-            IntPtr pName = Marshal.StringToHGlobalAnsi("main");
-            VkPipelineShaderStageCreateInfo shaderStageInfo = new VkPipelineShaderStageCreateInfo()
-            {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-                stage = shaderStage,
-                module = shaderModule,
-                pName = (char*)pName,
-                pNext = null,
-                flags = 0
-            };
-
-            return shaderStageInfo;
-        }
-
-        public static VkShaderModule CreateShaderModule(byte[] code)
-        {
-            VkShaderModule shaderModule = new VkShaderModule();
-            fixed (byte* codePtr = code)
-            {
-                var createInfo = new VkShaderModuleCreateInfo
-                {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-                    codeSize = code.Length,
-                    pCode = (uint*)codePtr
-                };
-
-                VkResult result = VkFunc.vkCreateShaderModule(device, &createInfo, null, &shaderModule);
-                if (result != VkResult.VK_SUCCESS)
-                {
-                    Console.WriteLine($"Failed to create shader module: {result}");
-                }
-            }
-            return shaderModule;
-        }
-
         public static uint GetMemoryType(uint typeFilter, VkMemoryPropertyFlagBits properties)
         {
             return GameEngineImport.DLL_Tools_GetMemoryType(VulkanRenderer.physicalDevice, typeFilter, properties);
@@ -260,6 +202,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static void CreateCommandPool()
         {
+
             VkCommandPool commandpool = new VkCommandPool();
             VkCommandPoolCreateInfo CommandPoolCreateInfo = new VkCommandPoolCreateInfo()
             {

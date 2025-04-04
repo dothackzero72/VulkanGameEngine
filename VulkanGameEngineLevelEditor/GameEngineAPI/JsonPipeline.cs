@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Silk.NET.SDL;
 using Silk.NET.Vulkan;
-using SixLabors.ImageSharp.Memory;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -260,7 +259,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             return meshPropertiesBuffer;
         }
-
 
         public static ListPtr<VkDescriptorImageInfo> GetTexturePropertiesBuffer(List<Texture> textureList)
         {

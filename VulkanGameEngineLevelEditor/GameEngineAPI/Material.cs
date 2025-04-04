@@ -1,6 +1,5 @@
 ﻿using GlmSharp;
 using Silk.NET.Vulkan;
-using SixLabors.ImageSharp.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;

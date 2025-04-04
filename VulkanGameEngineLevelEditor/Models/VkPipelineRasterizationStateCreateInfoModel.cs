@@ -52,43 +52,5 @@ namespace VulkanGameEngineLevelEditor.Models
                 pNext = null,
             };
         }
-
-        public VkPipelineRasterizationStateCreateInfoDLL ConvertDLL()
-        {
-            return new VkPipelineRasterizationStateCreateInfoDLL()
-            {
-                sType = sType,
-                depthClampEnable = (uint)depthClampEnable,
-                rasterizerDiscardEnable = depthClampEnable,
-                polygonMode = polygonMode,
-                cullMode = cullMode,
-                frontFace = frontFace,
-                depthBiasEnable = depthBiasEnable,
-                depthBiasConstantFactor = depthBiasConstantFactor,
-                depthBiasClamp = depthBiasClamp,
-                depthBiasSlopeFactor = depthBiasSlopeFactor,
-                lineWidth = lineWidth,
-                flags = 0
-            };
-        }
-
-        public VkPipelineRasterizationStateCreateInfo* ConvertPtr()
-        {
-            VkPipelineRasterizationStateCreateInfo* ptr = (VkPipelineRasterizationStateCreateInfo*)Marshal.AllocHGlobal(sizeof(VkPipelineRasterizationStateCreateInfo));
-            ptr->sType = sType;
-            ptr->depthClampEnable = depthClampEnable;
-            ptr->rasterizerDiscardEnable = depthClampEnable;
-            ptr->polygonMode = polygonMode;
-            ptr->cullMode = cullMode;
-            ptr->frontFace = frontFace;
-            ptr->depthBiasEnable = depthBiasEnable;
-            ptr->depthBiasConstantFactor = depthBiasConstantFactor;
-            ptr->depthBiasClamp = depthBiasClamp;
-            ptr->depthBiasSlopeFactor = depthBiasSlopeFactor;
-            ptr->lineWidth = lineWidth;
-            ptr->flags = 0;
-            ptr->pNext = null;
-            return ptr;
-        }
     }
 }

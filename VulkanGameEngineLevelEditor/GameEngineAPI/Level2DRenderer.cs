@@ -20,7 +20,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class Level2DRenderer : JsonRenderPass<Vertex2D>
     {
-        private VkDevice device => VulkanRenderer.device;
         public List<SpriteBatchLayer> SpriteLayerList { get; private set; } = new List<SpriteBatchLayer>();
         public List<GameObject> GameObjectList { get; private set; } = new List<GameObject>();
         public List<Texture> TextureList { get; private set; } = new List<Texture>();
@@ -58,12 +57,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ivec2 size = new ivec2(32);
             SpriteSheet spriteSheet = new SpriteSheet(MaterialList[0], size, 0);
 
-            AddGameObject("Obj1", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(960.0f, 540.0f));
-            AddGameObject("Obj2", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 20.0f));
-            AddGameObject("Obj3", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 80.0f));
-
+            AddGameObject("Obj1", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent }, spriteSheet, new vec2(960.0f, 540.0f));
+            AddGameObject("Obj2", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent }, spriteSheet, new vec2(300.0f, 20.0f));
+            AddGameObject("Obj3", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent}, spriteSheet, new vec2(300.0f, 80.0f));
+            string jsonString = JsonConvert.SerializeObject(GameObjectList, Formatting.Indented);
             CreatePipeline(model);
             SpriteLayerList.Add(new SpriteBatchLayer(GameObjectList, jsonPipelineList[0]));
+
         }
 
         private void CreatePipeline(RenderPipelineDLL model)
@@ -127,7 +127,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GameObjectList.RemoveAll(x => !x.GameObjectAlive);
         }
 
-        public VkCommandBuffer Draw(List<GameObject> meshList, SceneDataBuffer sceneDataBuffer)
+        public override VkCommandBuffer Draw(List<GameObject> meshList, SceneDataBuffer sceneDataBuffer)
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var commandBuffer = commandBufferList[(int)commandIndex];
@@ -192,6 +192,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 meshList.Add(spriteLayer.SpriteLayerMesh);
             }
             return meshList;
+        }
+
+        public void SaveLevel()
+        {
+          
         }
 
         public void Destroy()

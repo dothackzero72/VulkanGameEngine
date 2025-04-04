@@ -9,14 +9,17 @@ using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineGameObjectScripts.Interface;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using System.Text.Json.Serialization;
 
 namespace VulkanGameEngineLevelEditor.Components
 {
     public unsafe class GameObjectComponent
     {
+        [JsonIgnore]
         public GameObject CPPgameObjectPtr;
+        [JsonIgnore]
         public GameObjectComponent CPPcomponentPtr;
-
+        [JsonIgnore]
         public GameObject ParentGameObject;
         public ComponentTypeEnum ComponentType { get; set; }
         public string Name { get; set; }

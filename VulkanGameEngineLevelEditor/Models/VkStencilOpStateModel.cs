@@ -21,20 +21,6 @@ namespace VulkanGameEngineLevelEditor.Models
         public uint reference { get; set; } = 0;
         public VkStencilOpStateModel() { }
 
-        public VkStencilOpStateDLL ConvertDLL()
-        {
-            return new VkStencilOpStateDLL
-            {
-                compareMask = compareMask,
-                compareOp = compareOp,
-                reference = reference,
-                failOp = failOp,
-                passOp = passOp,
-                depthFailOp = depthFailOp,
-                writeMask = writeMask
-            };
-        }
-
         public VkStencilOpState Convert()
         {
             return new VkStencilOpState

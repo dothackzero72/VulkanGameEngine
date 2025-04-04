@@ -36,6 +36,7 @@
             panel1 = new System.Windows.Forms.Panel();
             propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             treeView1 = new System.Windows.Forms.TreeView();
+            SaveLevel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             toolStrip1.SuspendLayout();
             panel1.SuspendLayout();
@@ -107,11 +108,22 @@
             treeView1.Size = new System.Drawing.Size(280, 1338);
             treeView1.TabIndex = 7;
             // 
+            // SaveLevel
+            // 
+            SaveLevel.Location = new System.Drawing.Point(306, 1317);
+            SaveLevel.Name = "SaveLevel";
+            SaveLevel.Size = new System.Drawing.Size(112, 34);
+            SaveLevel.TabIndex = 3;
+            SaveLevel.Text = "button1";
+            SaveLevel.UseVisualStyleBackColor = true;
+            SaveLevel.Click += SaveLevel_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(3109, 1896);
+            Controls.Add(SaveLevel);
             Controls.Add(propertyGrid1);
             Controls.Add(treeView1);
             Controls.Add(panel1);
@@ -136,6 +148,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.Button SaveLevel;
     }
 }
 

@@ -29,12 +29,10 @@ namespace VulkanGameEngineLevelEditor
     public unsafe partial class Form1 : Form
     {
 
-        private Vk vk = Vk.GetApi();
-        private static Scene scene;
+        private static Scene scene = new Scene();
         private volatile bool running;
         private volatile bool levelEditorRunning;
 
-        private Extent2D VulkanSwapChainResolution { get; set; }
         private Thread renderThread { get; set; }
         public RenderPassBuildInfoModel renderPass { get; private set; } = new RenderPassBuildInfoModel();
         public MessengerModel RenderPassMessager { get; set; }
@@ -49,7 +47,6 @@ namespace VulkanGameEngineLevelEditor
 
             this.Load += Form1_Load;
 
-            VulkanSwapChainResolution = new Extent2D() { Width = 1280, Height = 720 };
             Thread.CurrentThread.Name = "LevelEditor";
         }
 
@@ -82,10 +79,9 @@ namespace VulkanGameEngineLevelEditor
 
             this.Invoke(new Action(() =>
             {
-                VulkanRenderer.CreateVulkanRenderer(this.pictureBox1.Handle, VulkanSwapChainResolution);
+                VulkanRenderer.CreateVulkanRenderer(pictureBox1.Handle);
             }));
 
-           // scene = new Scene(_);
             scene.StartUp();
             while (running)
             {
@@ -113,6 +109,11 @@ namespace VulkanGameEngineLevelEditor
         }
 
         private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SaveLevel_Click(object sender, EventArgs e)
         {
 
         }

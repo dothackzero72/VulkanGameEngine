@@ -30,27 +30,6 @@ namespace VulkanGameEngineLevelEditor.Models
         public void* pNext { get; set; } = null;
         public VkPipelineDepthStencilStateCreateInfoModel() { }
 
-        public VkPipelineDepthStencilStateCreateInfoDLL ConvertDLL()
-        {
-                     front = new VkStencilOpStateModel();
-        back = new VkStencilOpStateModel();
-            return new VkPipelineDepthStencilStateCreateInfoDLL
-            {
-                sType = sType,
-                depthTestEnable = depthTestEnable,
-                depthWriteEnable = depthWriteEnable,
-                depthCompareOp = depthCompareOp,
-                depthBoundsTestEnable = depthBoundsTestEnable,
-                stencilTestEnable = stencilTestEnable,
-                minDepthBounds = minDepthBounds,
-                maxDepthBounds = maxDepthBounds,
-                front = front.ConvertDLL(),
-                back = back.ConvertDLL(),
-                flags = 0,
-                pNext = null
-            };
-        }
-
         public VkPipelineDepthStencilStateCreateInfo Convert()
         {
                    front = new VkStencilOpStateModel();
@@ -72,29 +51,5 @@ namespace VulkanGameEngineLevelEditor.Models
             };
         }
 
-        public VkPipelineDepthStencilStateCreateInfo* ConvertPtr()
-        {
-            VkPipelineDepthStencilStateCreateInfo* ptr = (VkPipelineDepthStencilStateCreateInfo*)Marshal.AllocHGlobal(sizeof(VkPipelineDepthStencilStateCreateInfo));
-            ptr->sType = sType;
-            ptr->depthTestEnable = depthTestEnable;
-            ptr->depthWriteEnable = depthWriteEnable;
-            ptr->depthCompareOp = depthCompareOp;
-            ptr->depthBoundsTestEnable = depthBoundsTestEnable;
-            ptr->stencilTestEnable = stencilTestEnable;
-            ptr->minDepthBounds = minDepthBounds;
-            ptr->maxDepthBounds = maxDepthBounds;
-            ptr->front = new VkStencilOpState();
-            ptr->back = new VkStencilOpState();
-            ptr->flags = 0;
-            ptr->pNext = null;
-
-            if (stencilTestEnable == Vk.True)
-            {
-                ptr->front = front.Convert();
-                ptr->back = back.Convert();
-            }
-
-            return ptr;
-        }
     }
 }

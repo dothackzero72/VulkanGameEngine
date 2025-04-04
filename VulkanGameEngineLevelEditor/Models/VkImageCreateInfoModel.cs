@@ -304,32 +304,6 @@ namespace VulkanGameEngineLevelEditor.Models
             };
         }
 
-        public VkImageCreateInfoDLL ToDLL()
-        {
-            fixed (byte* namePtr = System.Text.Encoding.UTF8.GetBytes(_name + "\0"))
-            {
-                return new VkImageCreateInfoDLL
-                {
-                    Name = (IntPtr)namePtr,
-                    _arrayLayers = _arrayLayers,
-                    _format = _format,
-                    _extent = _extent.ToDLL(),
-                    _mipLevels = _mipLevels,
-                    _flags = _flags,
-                    _imageType = _imageType,
-                    _initialLayout = _initialLayout,
-                    _pNext = _pNext,
-                    _pQueueFamilyIndices = _pQueueFamilyIndices,
-                    _queueFamilyIndexCount = _queueFamilyIndexCount,
-                    _samples = _samples,
-                    _tiling = _tiling,
-                    _sharingMode = _sharingMode,
-                    _sType = _sType,
-                    _usage = _usage
-                };
-            }
-        }
-
         public void LoadJsonComponent(string jsonPath)
         {
             var obj = base.LoadJsonComponent<VkImageCreateInfoModel>(jsonPath);
