@@ -54,9 +54,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             }
         }
 
-        public void Update()
+        public void Update(float deltaTime)
         {
-            var deltaTime = 0;
             VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
             foreach (var gameObject in GameObjectList)
             {
@@ -75,10 +74,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             bool rebuildRendererFlag = VulkanRenderer.RebuildRendererFlag;
 
             VulkanRenderer.StartFrame();
-            //GameEngineImport.DLL_Renderer_StartFrame(VulkanRenderer.device, VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.AcquireImageSemaphores.Ptr, &imageIndex, &commandIndex, &rebuildRendererFlag);
+//            GameEngineImport.DLL_Renderer_StartFrame(VulkanRenderer.device, VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.AcquireImageSemaphores.Ptr, &imageIndex, &commandIndex, &rebuildRendererFlag);
             commandBufferList.Add(level2DRenderer.Draw(GameObjectList, sceneProperties));
             commandBufferList.Add(frameBufferRenderPass.Draw());
-           // GameEngineImport.DLL_Renderer_EndFrame(VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.AcquireImageSemaphores.Ptr, VulkanRenderer.PresentImageSemaphores.Ptr, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.graphicsQueue, VulkanRenderer.presentQueue, commandIndex, imageIndex, commandBufferList.Ptr, commandBufferList.UCount, &rebuildRendererFlag);
+  //          GameEngineImport.DLL_Renderer_EndFrame(VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.AcquireImageSemaphores.Ptr, VulkanRenderer.PresentImageSemaphores.Ptr, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.graphicsQueue, VulkanRenderer.presentQueue, commandIndex, imageIndex, commandBufferList.Ptr, commandBufferList.UCount, &rebuildRendererFlag);
             VulkanRenderer.EndFrame(commandBufferList);
             commandBufferList.Clear();
         }

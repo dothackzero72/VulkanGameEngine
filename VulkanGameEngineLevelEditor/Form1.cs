@@ -8,6 +8,7 @@ using StbImageWriteSharp;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -32,7 +33,7 @@ namespace VulkanGameEngineLevelEditor
         private static Scene scene = new Scene();
         private volatile bool running;
         private volatile bool levelEditorRunning;
-
+        private Stopwatch stopwatch = new Stopwatch();
         private Thread renderThread { get; set; }
         public RenderPassBuildInfoModel renderPass { get; private set; } = new RenderPassBuildInfoModel();
         public MessengerModel RenderPassMessager { get; set; }
@@ -82,10 +83,13 @@ namespace VulkanGameEngineLevelEditor
                 VulkanRenderer.CreateVulkanRenderer(pictureBox1.Handle);
             }));
 
+            stopwatch.Start();
             scene.StartUp();
             while (running)
             {
-                scene.Update();
+                float deltaTime = (float)stopwatch.Elapsed.TotalSeconds;
+                stopwatch.Restart();
+                scene.Update(deltaTime);
                 scene.DrawFrame();
             }
         }

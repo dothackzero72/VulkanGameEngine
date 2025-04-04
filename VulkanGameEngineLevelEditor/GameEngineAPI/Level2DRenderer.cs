@@ -57,10 +57,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ivec2 size = new ivec2(32);
             SpriteSheet spriteSheet = new SpriteSheet(MaterialList[0], size, 0);
 
-            AddGameObject("Obj1", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent }, spriteSheet, new vec2(960.0f, 540.0f));
-            AddGameObject("Obj2", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent }, spriteSheet, new vec2(300.0f, 20.0f));
-            AddGameObject("Obj3", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent}, spriteSheet, new vec2(300.0f, 80.0f));
-            string jsonString = JsonConvert.SerializeObject(GameObjectList, Formatting.Indented);
+            AddGameObject("Obj1", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(960.0f, 540.0f));
+            AddGameObject("Obj2", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 20.0f));
+            AddGameObject("Obj3", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 80.0f));
+
             CreatePipeline(model);
             SpriteLayerList.Add(new SpriteBatchLayer(GameObjectList, jsonPipelineList[0]));
 

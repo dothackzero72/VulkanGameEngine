@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -29,7 +30,7 @@ namespace VulkanGameEngineLevelEditor
         private static Scene scene;
         private volatile bool running;
         private volatile bool levelEditorRunning;
-
+        private Stopwatch stopwatch = new Stopwatch();
         private Extent2D VulkanSwapChainResolution { get; set; }
         private Thread renderThread { get; set; }
         public MessengerModel RenderPassMessager { get; set; }
@@ -96,11 +97,12 @@ namespace VulkanGameEngineLevelEditor
             }));
 
             scene = new Scene();
+            stopwatch.Start();
             scene.StartUp();
             while (running)
             {
-                scene.Update();
-               // scene.KeyUpdate();
+                float deltaTime = (float)stopwatch.Elapsed.TotalSeconds;
+                stopwatch.Restart();
                 scene.DrawFrame();
             }
 
