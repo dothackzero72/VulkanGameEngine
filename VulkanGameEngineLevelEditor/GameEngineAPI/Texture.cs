@@ -6,31 +6,48 @@ using Silk.NET.SDL;
 using Silk.NET.Vulkan;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class Texture
     {
-        public static readonly IntPtr VK_NULL_HANDLE = IntPtr.Zero;
-
+        [JsonIgnore]
         static private uint NextTextureId;
+        [JsonIgnore]
         public uint TextureId { get; private set; } = 0;
+        [JsonIgnore]
         public uint TextureBufferIndex { get; private set; } = 0;
+        [JsonIgnore]
         public string Name { get; private set; } = "Texture";
+        [JsonIgnore]
         public int Width { get; protected set; } = 1;
+        [JsonIgnore]
         public int Height { get; protected set; } = 1;
+        [JsonIgnore]
         public int Depth { get; protected set; } = 1;
+        [JsonIgnore]
         public ColorComponents ColorChannels { get; protected set; } = ColorComponents.RedGreenBlueAlpha;
         public uint MipMapLevels { get; protected set; } = 1;
+        [JsonIgnore]
         public TextureUsageEnum TextureUsage { get; protected set; } = TextureUsageEnum.kUse_Undefined;
+        [JsonIgnore]
         public TextureTypeEnum TextureType { get; protected set; } = TextureTypeEnum.kType_UndefinedTexture;
+        [JsonIgnore]
         public VkFormat TextureByteFormat { get; protected set; } = VkFormat.VK_FORMAT_UNDEFINED;
+        [JsonIgnore]
         public VkImageLayout TextureImageLayout { get; protected set; } = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED;
+        [JsonIgnore]
         public VkSampleCountFlagBits SampleCount { get; protected set; } = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT;
-        public VkImage Image { get; protected set; } = VK_NULL_HANDLE;
-        public VkDeviceMemory Memory { get; protected set; } = VK_NULL_HANDLE;
-        public VkImageView View { get; protected set; } = VK_NULL_HANDLE;
-        public VkSampler Sampler { get; protected set; } = VK_NULL_HANDLE;
+        [JsonIgnore]
+        public VkImage Image { get; protected set; } = VulkanConst.VK_NULL_HANDLE;
+        [JsonIgnore]
+        public VkDeviceMemory Memory { get; protected set; } = VulkanConst.VK_NULL_HANDLE;
+        [JsonIgnore]
+        public VkImageView View { get; protected set; } = VulkanConst.VK_NULL_HANDLE;
+        [JsonIgnore]
+        public VkSampler Sampler { get; protected set; } = VulkanConst.VK_NULL_HANDLE;
+        public string TexturePath { get; private set; } = string.Empty;
 
         public Texture()
         {
@@ -57,7 +74,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public Texture(string filePath, VkFormat textureByteFormat, VkImageAspectFlagBits imageType, TextureTypeEnum textureType, bool useMipMaps)
         {
-
+            TexturePath = filePath;
             TextureType = textureType;
             TextureByteFormat = textureByteFormat;
 

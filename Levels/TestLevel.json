@@ -1,0 +1,443 @@
+[
+  {
+    "Name": "Obj1",
+    "GameObjectComponentList": [
+      {
+        "GameObjectPosition": [
+          960.0,
+          540.0
+        ],
+        "GameObjectRotation": [
+          0.0,
+          0.0
+        ],
+        "GameObjectScale": [
+          1.0,
+          1.0
+        ],
+        "Name": "Obj1",
+        "ComponentType": 2
+      },
+      {
+        "SpriteObj": {
+          "SpriteSize": [
+            160.0,
+            160.0
+          ],
+          "SpriteColor": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "SpritePosition": [
+            0.0,
+            0.0
+          ],
+          "SpriteRotation": [
+            0.0,
+            0.0
+          ],
+          "SpriteScale": [
+            1.0,
+            1.0
+          ],
+          "SpriteLayer": 0,
+          "SpriteMaterial": {
+            "Name": "Material1",
+            "AlbedoMap": {
+              "MipMapLevels": 1,
+              "TexturePath": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp"
+            },
+            "MetallicRoughnessMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "MetallicMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "RoughnessMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "AmbientOcclusionMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "NormalMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "DepthMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "AlphaMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "EmissionMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "HeightMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "EmissionMapPath": null,
+            "HeightMapPath": null,
+            "Albedo": [
+              0.0,
+              0.35,
+              0.45
+            ],
+            "Metallic": 0.0,
+            "Roughness": 0.0,
+            "AmbientOcclusion": 1.0,
+            "Emission": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Alpha": 1.0
+          },
+          "AnimationList": [
+            {
+              "AnimationName": "Standing",
+              "FrameHoldTime": 0.2,
+              "FrameList": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  1,
+                  0
+                ]
+              ]
+            },
+            {
+              "AnimationName": "Walking",
+              "FrameHoldTime": 0.5,
+              "FrameList": [
+                [
+                  3,
+                  0
+                ],
+                [
+                  4,
+                  0
+                ],
+                [
+                  5,
+                  0
+                ],
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          ]
+        },
+        "Name": "GameObjectComponent",
+        "ComponentType": 4
+      }
+    ]
+  },
+  {
+    "Name": "Obj2",
+    "GameObjectComponentList": [
+      {
+        "GameObjectPosition": [
+          300.0,
+          20.0
+        ],
+        "GameObjectRotation": [
+          0.0,
+          0.0
+        ],
+        "GameObjectScale": [
+          1.0,
+          1.0
+        ],
+        "Name": "Obj2",
+        "ComponentType": 2
+      },
+      {
+        "SpriteObj": {
+          "SpriteSize": [
+            160.0,
+            160.0
+          ],
+          "SpriteColor": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "SpritePosition": [
+            0.0,
+            0.0
+          ],
+          "SpriteRotation": [
+            0.0,
+            0.0
+          ],
+          "SpriteScale": [
+            1.0,
+            1.0
+          ],
+          "SpriteLayer": 0,
+          "SpriteMaterial": {
+            "Name": "Material1",
+            "AlbedoMap": {
+              "MipMapLevels": 1,
+              "TexturePath": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp"
+            },
+            "MetallicRoughnessMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "MetallicMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "RoughnessMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "AmbientOcclusionMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "NormalMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "DepthMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "AlphaMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "EmissionMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "HeightMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "EmissionMapPath": null,
+            "HeightMapPath": null,
+            "Albedo": [
+              0.0,
+              0.35,
+              0.45
+            ],
+            "Metallic": 0.0,
+            "Roughness": 0.0,
+            "AmbientOcclusion": 1.0,
+            "Emission": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Alpha": 1.0
+          },
+          "AnimationList": [
+            {
+              "AnimationName": "Standing",
+              "FrameHoldTime": 0.2,
+              "FrameList": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  1,
+                  0
+                ]
+              ]
+            },
+            {
+              "AnimationName": "Walking",
+              "FrameHoldTime": 0.5,
+              "FrameList": [
+                [
+                  3,
+                  0
+                ],
+                [
+                  4,
+                  0
+                ],
+                [
+                  5,
+                  0
+                ],
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          ]
+        },
+        "Name": "GameObjectComponent",
+        "ComponentType": 4
+      }
+    ]
+  },
+  {
+    "Name": "Obj3",
+    "GameObjectComponentList": [
+      {
+        "GameObjectPosition": [
+          300.0,
+          80.0
+        ],
+        "GameObjectRotation": [
+          0.0,
+          0.0
+        ],
+        "GameObjectScale": [
+          1.0,
+          1.0
+        ],
+        "Name": "Obj3",
+        "ComponentType": 2
+      },
+      {
+        "SpriteObj": {
+          "SpriteSize": [
+            160.0,
+            160.0
+          ],
+          "SpriteColor": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "SpritePosition": [
+            0.0,
+            0.0
+          ],
+          "SpriteRotation": [
+            0.0,
+            0.0
+          ],
+          "SpriteScale": [
+            1.0,
+            1.0
+          ],
+          "SpriteLayer": 0,
+          "SpriteMaterial": {
+            "Name": "Material1",
+            "AlbedoMap": {
+              "MipMapLevels": 1,
+              "TexturePath": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp"
+            },
+            "MetallicRoughnessMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "MetallicMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "RoughnessMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "AmbientOcclusionMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "NormalMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "DepthMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "AlphaMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "EmissionMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "HeightMap": {
+              "MipMapLevels": 1,
+              "TexturePath": ""
+            },
+            "EmissionMapPath": null,
+            "HeightMapPath": null,
+            "Albedo": [
+              0.0,
+              0.35,
+              0.45
+            ],
+            "Metallic": 0.0,
+            "Roughness": 0.0,
+            "AmbientOcclusion": 1.0,
+            "Emission": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Alpha": 1.0
+          },
+          "AnimationList": [
+            {
+              "AnimationName": "Standing",
+              "FrameHoldTime": 0.2,
+              "FrameList": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  1,
+                  0
+                ]
+              ]
+            },
+            {
+              "AnimationName": "Walking",
+              "FrameHoldTime": 0.5,
+              "FrameList": [
+                [
+                  3,
+                  0
+                ],
+                [
+                  4,
+                  0
+                ],
+                [
+                  5,
+                  0
+                ],
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          ]
+        },
+        "Name": "GameObjectComponent",
+        "ComponentType": 4
+      }
+    ]
+  }
+]

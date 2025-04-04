@@ -10,6 +10,7 @@ using VulkanGameEngineGameObjectScripts.Interface;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using GlmSharp;
+using Newtonsoft.Json;
 
 namespace VulkanGameEngineLevelEditor.Components
 {
@@ -82,19 +83,19 @@ namespace VulkanGameEngineLevelEditor.Components
             {
                 if ((KeyBoardKeys)key == KeyBoardKeys.W)
                 {
-                    transform.GameObjectPosition.y += 0.01f;
+                  //  transform.GameObjectPosition.y += 0.01f;
                 }
                 if ((KeyBoardKeys)key == KeyBoardKeys.A)
                 {
-                    transform.GameObjectPosition.x -= 0.01f;
+                  //  transform.GameObjectPosition.x -= 0.01f;
                 }
                 if ((KeyBoardKeys)key == KeyBoardKeys.S)
                 {
-                    transform.GameObjectPosition.y -= 0.01f;
+                  //  transform.GameObjectPosition.y -= 0.01f;
                 }
                 if ((KeyBoardKeys)key == KeyBoardKeys.D)
                 {
-                    transform.GameObjectPosition.x += 0.01f;
+                  //  transform.GameObjectPosition.x += 0.01f;
                 }
             }
             else

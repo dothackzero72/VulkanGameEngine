@@ -7,18 +7,23 @@ using System.Threading.Tasks;
 using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.Components;
+using Newtonsoft.Json;
+using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class GameObject
     {
+        [JsonIgnore]
         public static uint NextGameObjectId { get; private set; } = 0;
+        [JsonIgnore]
         public uint GameObjectId { get; private set; } = 0;
+        [JsonIgnore]
         public size_t ObjectComponentMemorySize { get; private set; } = 0;
-
+        [JsonIgnore]
+        public bool GameObjectAlive { get; private set; } = true;
         public string Name { get; protected set; }
         public List<GameObjectComponent> GameObjectComponentList { get; protected set; } = new List<GameObjectComponent>();
-        public bool GameObjectAlive { get; private set; } = true;
 
         public GameObject()
         {
@@ -40,6 +45,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             GameObjectId = ++NextGameObjectId;
             Name = name;
+        }
+
+        public GameObject(GameObjectModel model)
+        {
+            GameObjectId = ++NextGameObjectId;
+
+            Name = model.Name;
+         //   GameObjectComponentList = model.GameObjectComponentList;
         }
 
         static public List<GameObjectComponent> GetComponentFromGameObjects(List<GameObject> gameObjectList, ComponentTypeEnum componentType)

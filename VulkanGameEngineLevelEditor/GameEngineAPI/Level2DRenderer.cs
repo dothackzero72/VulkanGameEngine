@@ -50,9 +50,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             string jsonContent = File.ReadAllText(ConstConfig.Default2DPipeline);
             RenderPipelineDLL model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
 
+            //string jsonContent2 = File.ReadAllText("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Levels\\TestLevel.json");
+            //GameObjectModel model2 = JsonConvert.DeserializeObject<GameObjectModel>(jsonContent);
+
             TextureList.Add(new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp", VkFormat.VK_FORMAT_R8G8B8A8_SRGB, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
             MaterialList.Add(new Material("Material1"));
-            MaterialList.Last().SetAlbedoMap(TextureList[0]);
+            MaterialList.Last().SetAlbedoMap("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp");
 
             ivec2 size = new ivec2(32);
             SpriteSheet spriteSheet = new SpriteSheet(MaterialList[0], size, 0);
@@ -60,6 +63,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             AddGameObject("Obj1", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(960.0f, 540.0f));
             AddGameObject("Obj2", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 20.0f));
             AddGameObject("Obj3", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 80.0f));
+
+            string finalfilePath = @"C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Levels\\TestLevel.json";
+            string jsonString = JsonConvert.SerializeObject(GameObjectList, Formatting.Indented);
+            File.WriteAllText(finalfilePath, jsonString);
 
             CreatePipeline(model);
             SpriteLayerList.Add(new SpriteBatchLayer(GameObjectList, jsonPipelineList[0]));

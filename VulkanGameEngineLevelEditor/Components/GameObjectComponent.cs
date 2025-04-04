@@ -9,20 +9,22 @@ using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineGameObjectScripts.Interface;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Components
 {
     public unsafe class GameObjectComponent
     {
         [JsonIgnore]
-        public GameObject CPPgameObjectPtr;
+        public GameObject CPPgameObjectPtr { get; set; }
         [JsonIgnore]
-        public GameObjectComponent CPPcomponentPtr;
+        public GameObjectComponent CPPcomponentPtr { get; set; }
         [JsonIgnore]
-        public GameObject ParentGameObject;
-        public ComponentTypeEnum ComponentType { get; set; }
+        public GameObject ParentGameObject { get; set; }
+
         public string Name { get; set; }
+        public ComponentTypeEnum ComponentType { get; set; }
 
         public GameObjectComponent()
         {
@@ -51,6 +53,13 @@ namespace VulkanGameEngineLevelEditor.Components
 
             Name = name;
             ComponentType = componentType;
+        }
+
+        public GameObjectComponent(GameObject parentGameObject, GameObjectComponentModel model)
+        {
+            ParentGameObject = parentGameObject;
+            Name = model.Name;
+            ComponentType = model.ComponentType;
         }
 
         public virtual void Input(KeyBoardKeys key, float deltaTime)

@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,35 +7,53 @@ using System.Security.Cryptography.Xml;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineGameObjectScripts.Import;
 using VulkanGameEngineLevelEditor.Components;
+using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public class Sprite
     {
-        public uint CurrentAnimationID = 0;
+        [JsonIgnore]
+        public GameObject ParentGameObject { get; set; }
 
-        public vec2 SpriteSize = new vec2(50.0f);
-        public vec4 SpriteColor = new vec4(0.0f, 0.0f, 0.0f, 1.0f);
-        public vec2 SpritePosition = new vec2(0.0f);
-        public uint SpriteLayer = 0;
-        public vec2 SpriteRotation = new vec2(0.0f);
-        public vec2 SpriteScale = new vec2(1.0f);
+        [JsonIgnore]
+        public Transform2DComponent Transform2D { get; set; }
 
-        public GameObject ParentGameObject;
-        public Transform2DComponent Transform2D;
+        [JsonIgnore]
+        public uint CurrentAnimationID { get; set; } = 0;
 
-        public SpriteSheet Spritesheet;
-        public Material SpriteMaterial;
+        [JsonIgnore]
+        public uint CurrentFrame { get; set; } = 0;
+
+        [JsonIgnore]
+        public bool SpriteAlive { get; set; } = true;
+
+        [JsonIgnore]
+        public Animation2D CurrentSpriteAnimation { get; set; }
+
+        [JsonIgnore]
+        public SpriteSheet Spritesheet { get; set; }
+
+        [JsonIgnore]
         public SpriteInstanceStruct SpriteInstance;
-        public Animation2D CurrentSpriteAnimation;
 
-        public List<Animation2D> AnimationList = new List<Animation2D>();
-        public uint CurrentFrame = 0;
-
-        public bool SpriteAlive = true;
+        public vec2 SpriteSize { get; set; } = new vec2(50.0f);
+        public vec4 SpriteColor { get; set; } = new vec4(0.0f, 0.0f, 0.0f, 1.0f);
+        public vec2 SpritePosition { get; set; } = new vec2(0.0f);
+        public vec2 SpriteRotation { get; set; } = new vec2(0.0f);
+        public vec2 SpriteScale { get; set; } = new vec2(1.0f);
+        public uint SpriteLayer { get; set; } = 0;
+        public Material SpriteMaterial { get; set; }
+        public List<Animation2D> AnimationList { get; set; } = new List<Animation2D>();
 
         Sprite()
         {
+
+        }
+
+        public Sprite(GameObject parentGameObject, SpriteModel model)
+        {
+            this.ParentGameObject = parentGameObject;
 
         }
 

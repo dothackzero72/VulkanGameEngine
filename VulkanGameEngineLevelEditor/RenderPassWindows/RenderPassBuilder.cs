@@ -197,11 +197,11 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private void SaveTemplete_Click(object sender, EventArgs e)
         {
             RenderPassEditorBaseModel obj = (RenderPassEditorBaseModel)propertyGrid1.SelectedObject;
-           
-                string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\DefaultRenderPass.json";
-                string jsonString = JsonConvert.SerializeObject(RenderPassModels, Formatting.Indented);
-                File.WriteAllText(finalfilePath, jsonString);
-           
+
+            string finalfilePath = @"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\DefaultRenderPass.json";
+            string jsonString = JsonConvert.SerializeObject(RenderPassModels, Formatting.Indented);
+            File.WriteAllText(finalfilePath, jsonString);
+
         }
 
         private void SaveComponents_Click(object sender, EventArgs e)

@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Newtonsoft.Json;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
@@ -38,21 +39,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
     public unsafe class Material
     {
+        [JsonIgnore]
         private static uint NextMaterialId = 0;
+        [JsonIgnore]
         public uint MaterialID { get; private set; } = 0;
+        [JsonIgnore]
         public uint MaterialBufferIndex { get; private set; } = 0;
-        String Name { get; set; }
-        
+        [JsonIgnore]
         public VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer { get; private set; }
+        [JsonIgnore]
         public MaterialProperitiesBuffer MaterialInfo { get; set; } = new MaterialProperitiesBuffer();
-
-        public vec3 Albedo { get; set; } = new vec3(0.0f, 0.35f, 0.45f);
-        public float Metallic { get; set; } = 0.0f;
-        public float Roughness { get; set; } = 0.0f;
-        public float AmbientOcclusion { get; set; } = 1.0f; 
-        public vec3 Emission { get; set; } = new vec3(0.0f);
-        public float Alpha { get; set; } = 1.0f;
-
+        public string Name { get; set; } = string.Empty;
         public Texture AlbedoMap { get; set; } = new Texture();
         public Texture MetallicRoughnessMap { get; set; } = new Texture();
         public Texture MetallicMap { get; set; } = new Texture();
@@ -63,6 +60,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public Texture AlphaMap { get; set; } = new Texture();
         public Texture EmissionMap { get; set; } = new Texture();
         public Texture HeightMap { get; set; } = new Texture();
+        public string EmissionMapPath { get; private set; }
+        public string HeightMapPath { get; private set; }
+        public vec3 Albedo { get; set; } = new vec3(0.0f, 0.35f, 0.45f);
+        public float Metallic { get; set; } = 0.0f;
+        public float Roughness { get; set; } = 0.0f;
+        public float AmbientOcclusion { get; set; } = 1.0f;
+        public vec3 Emission { get; set; } = new vec3(0.0f);
+        public float Alpha { get; set; } = 1.0f;
 
         public Material()
         {
@@ -209,9 +214,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
-        public void SetAlbedoMap(Texture texture)
+        public void SetAlbedoMap(string texturePath)
         {
-            AlbedoMap = texture;
+            AlbedoMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_SRGB, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false);
 
             var updatedInfo = MaterialInfo;
             updatedInfo.AlbedoMap = AlbedoMap.TextureBufferIndex;
@@ -222,9 +227,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
-        public void SetMetallicRoughnessMap(Texture texture)
+        public void SetMetallicRoughnessMap(string texturePath)
         {
-            MetallicRoughnessMap = texture;
+            MetallicRoughnessMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_MetallicTextureMap, false);
 
             var updatedInfo = MaterialInfo;
             updatedInfo.MetallicRoughnessMap = MetallicRoughnessMap.TextureBufferIndex;
@@ -235,9 +240,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
-        public void SetMetallicMap(Texture texture)
+        public void SetMetallicMap(string texturePath)
         {
-            MetallicMap = texture;
+            MetallicMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_MetallicTextureMap, false);
 
             var updatedInfo = MaterialInfo;
             updatedInfo.MetallicMap = MetallicMap.TextureBufferIndex;
@@ -248,9 +253,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
-        public void SetRoughnessMap(Texture texture)
+        public void SetRoughnessMap(string texturePath)
         {
-            RoughnessMap = texture;
+            RoughnessMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_MetallicTextureMap, false);
 
             var updatedInfo = MaterialInfo;
             updatedInfo.RoughnessMap = RoughnessMap.TextureBufferIndex;
@@ -261,9 +266,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
-        public void SetAmbientOcclusionMap(Texture texture)
+        public void SetAmbientOcclusionMap(string texturePath)
         {
-            AmbientOcclusionMap = texture;
+            AmbientOcclusionMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_AmbientOcclusionTextureMap, false);
 
             var updatedInfo = MaterialInfo;
             updatedInfo.AmbientOcclusionMap = AmbientOcclusionMap.TextureBufferIndex;
@@ -274,9 +279,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
-        public void SetNormalMap(Texture texture)
+        public void SetNormalMap(string texturePath)
         {
-            NormalMap = texture;
+            NormalMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_NormalTextureMap, false);
 
             var updatedInfo = MaterialInfo;
             updatedInfo.NormalMap = NormalMap.TextureBufferIndex;
@@ -287,9 +292,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
-        public void SetDepthMap(Texture texture)
+        public void SetDepthMap(string texturePath)
         {
-            DepthMap = texture;
+            DepthMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DepthTextureMap, false);
 
             var updatedInfo = MaterialInfo;
             updatedInfo.DepthMap = DepthMap.TextureBufferIndex;
@@ -300,9 +305,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
-        public void SetAlphaMap(Texture texture)
+        public void SetAlphaMap(string texturePath)
         {
-            AlphaMap = texture;
+            AlphaMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_AlphaTextureMap, false);
 
             var updatedInfo = MaterialInfo;
             updatedInfo.AlphaMap = AlphaMap.TextureBufferIndex;
@@ -313,9 +318,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
-        public void SetEmissionMap(Texture texture)
+        public void SetEmissionMap(string texturePath)
         {
-            EmissionMap = texture;
+            EmissionMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_EmissionTextureMap, false);
 
             var updatedInfo = MaterialInfo;
             updatedInfo.EmissionMap = EmissionMap.TextureBufferIndex;
@@ -326,9 +331,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MaterialBuffer.UpdateBufferMemory(ptr, (ulong)sizeof(MaterialProperitiesBuffer));
         }
 
-        public void SetHeightMap(Texture texture)
+        public void SetHeightMap(string texturePath)
         {
-            HeightMap = texture;
+            HeightMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_HeightMap, false);
 
             var updatedInfo = MaterialInfo;
             updatedInfo.HeightMap = HeightMap.TextureBufferIndex;

@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public class Animation2D
     {
+        public string AnimationName { get; set; }
+        [JsonIgnore]
         public uint CurrentFrame { get; set; }
+        [JsonIgnore]
         public vec2 CurrentFrameUV { get; set; }
+        [JsonIgnore]
         public float CurrentFrameTime { get; set; }
         public float FrameHoldTime { get; set; }
         public List<ivec2> FrameList { get; set; }
-        public string AnimationName { get; set; }
 
         public Animation2D()
         {

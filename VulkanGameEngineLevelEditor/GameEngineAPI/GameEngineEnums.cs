@@ -51,6 +51,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         kType_CubeMapDepthTexture,
         kType_EnvironmentTexture,
         kType_RenderedCubeMap,
-        kType_BakedTexture
+        kType_BakedTexture,
+        kType_HeightMap
     };
 }

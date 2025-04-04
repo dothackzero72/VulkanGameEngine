@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using VulkanGameEngineGameObjectScripts;
+﻿using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using Newtonsoft.Json;
 
 namespace VulkanGameEngineLevelEditor.Components
 {
     public unsafe class SpriteComponent : GameObjectComponent
     {
-        [JsonIgnore]
         public Sprite SpriteObj { get; protected set; }
         public SpriteComponent()
         {

@@ -9,17 +9,17 @@ using VulkanGameEngineGameObjectScripts.Import;
 using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace VulkanGameEngineLevelEditor.Components
 {
     public unsafe class Transform2DComponent : GameObjectComponent
     {
         [JsonIgnore]
-        public mat4 GameObjectTransform;
-        public vec2 GameObjectPosition;
-        public vec2 GameObjectRotation;
-        public vec2 GameObjectScale;
+        public mat4 GameObjectTransform { get; private set; }
+        public vec2 GameObjectPosition { get; set; }
+        public vec2 GameObjectRotation { get; set; }
+        public vec2 GameObjectScale { get; set; }
 
         public Transform2DComponent() : base()
         {
@@ -77,36 +77,5 @@ namespace VulkanGameEngineLevelEditor.Components
             return (int)sizeof(Transform2DComponent);
         }
 
-        public vec2* GetPositionPtr()
-        {
-            fixed (vec2* positionPointer = &GameObjectPosition)
-            {
-                return positionPointer;
-            }
-        }
-
-        public vec2* GetRotationPtr()
-        {
-            fixed (vec2* rotationPointer = &GameObjectRotation)
-            {
-                return rotationPointer;
-            }
-        }
-
-        public vec2* GetScalePtr()
-        {
-            fixed (vec2* scalePointer = &GameObjectScale)
-            {
-                return scalePointer;
-            }
-        }
-
-        public mat4* GetTransformMatrixPtr()
-        {
-            fixed (mat4* transformPointer = &GameObjectTransform)
-            {
-                return transformPointer;
-            }
-        }
     }
 }
