@@ -9,8 +9,8 @@ namespace VulkanGameEngineLevelEditor.Models
 {
     public class GameObjectComponentModel
     {
-        public string Name { get; private set; }
-        public ComponentTypeEnum ComponentType { get; private set; }
+        public string Name { get; set; }
+        public ComponentTypeEnum ComponentType { get; set; }
 
         public GameObjectComponentModel() 
             { }

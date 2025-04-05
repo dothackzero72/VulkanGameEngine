@@ -24,15 +24,15 @@ namespace VulkanGameEngineLevelEditor.Components
             ComponentType = ComponentTypeEnum.kInputComponent;
         }
 
-        public InputComponent(uint gameObjectId) : base(gameObjectId, ComponentTypeEnum.kInputComponent)
+        public InputComponent(GameObject parentGameObject) : base(parentGameObject, ComponentTypeEnum.kInputComponent)
         {
             Name = "InputComponent";
-            transform = ParentGameObject.GameObjectComponentList.Where(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent).First() as Transform2DComponent;
+            transform = ParentGameObject.GameObjectComponentList.Where(x => x.ComponentType == ComponentTypeEnum.kTransform2DComponent).First() as Transform2DComponent;
         }
 
-        public InputComponent(uint gameObjectId, string name) : base(gameObjectId, name, ComponentTypeEnum.kInputComponent)
+        public InputComponent(GameObject parentGameObject, string name) : base(parentGameObject, name, ComponentTypeEnum.kInputComponent)
         {
-            transform = ParentGameObject.GameObjectComponentList.Where(x => x.ComponentType == ComponentTypeEnum.kGameObjectTransform2DComponent).First() as Transform2DComponent;
+            transform = ParentGameObject.GameObjectComponentList.Where(x => x.ComponentType == ComponentTypeEnum.kTransform2DComponent).First() as Transform2DComponent;
         }
 
         public override void Destroy()

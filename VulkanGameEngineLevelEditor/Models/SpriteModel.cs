@@ -17,6 +17,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public vec2 SpriteScale { get; set; } = new vec2(1.0f);
         public uint SpriteLayer { get; set; } = 0;
         public MaterialModel SpriteMaterial { get; set; }
+        public SpriteSheet Spritesheet { get; set; }
         public List<Animation2DModel> AnimationList { get; set; } = new List<Animation2DModel>();
     }
 }

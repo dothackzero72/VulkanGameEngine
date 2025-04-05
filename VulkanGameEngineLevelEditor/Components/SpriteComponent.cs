@@ -2,6 +2,7 @@
 using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using Newtonsoft.Json;
+using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Components
 {
@@ -13,9 +14,17 @@ namespace VulkanGameEngineLevelEditor.Components
 
         }
 
-        public SpriteComponent(GameObject gameObjectId, string name, SpriteSheet spriteSheet) : base(gameObjectId.GameObjectId, ComponentTypeEnum.kSpriteComponent)
+        public SpriteComponent(GameObject parentGameObject, GameObjectComponentModel model) : base(parentGameObject, ComponentTypeEnum.kSpriteComponent)
         {
-            SpriteObj = new Sprite(gameObjectId, spriteSheet);
+            var spriteModel = model as SpriteComponentModel;
+
+            ParentGameObject = parentGameObject;
+            SpriteObj = new Sprite(parentGameObject, spriteModel.SpriteObj);
+        }
+
+        public SpriteComponent(GameObject parentGameObject, string name, SpriteSheet spriteSheet) : base(parentGameObject, name, ComponentTypeEnum.kSpriteComponent)
+        {
+            SpriteObj = new Sprite(parentGameObject, spriteSheet);
         }
 
         public override void Input(KeyBoardKeys key, float deltaTime)

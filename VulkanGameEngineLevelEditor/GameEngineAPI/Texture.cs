@@ -47,7 +47,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public VkImageView View { get; protected set; } = VulkanConst.VK_NULL_HANDLE;
         [JsonIgnore]
         public VkSampler Sampler { get; protected set; } = VulkanConst.VK_NULL_HANDLE;
-        public string TexturePath { get; private set; } = string.Empty;
+        public string TexturePath { get; private set; }
 
         public Texture()
         {

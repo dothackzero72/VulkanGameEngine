@@ -25,8 +25,8 @@ namespace VulkanGameEngineLevelEditor
                 var componentType = obj["ComponentType"]?.Value<int>() ?? 0;
                 GameObjectComponentModel component = componentType switch
                 {
-                    2 => new Transform2DComponentModel(),
-                    4 => new SpriteComponentModel(),
+                    (int)ComponentTypeEnum.kTransform2DComponent => new Transform2DComponentModel(),
+                    (int)ComponentTypeEnum.kSpriteComponent => new SpriteComponentModel(),
                     _ => throw new JsonSerializationException($"Unknown ComponentType: {componentType}")
                 };
                 serializer.Populate(obj.CreateReader(), component);

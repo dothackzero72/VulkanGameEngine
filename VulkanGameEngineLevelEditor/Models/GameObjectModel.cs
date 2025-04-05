@@ -10,9 +10,10 @@ namespace VulkanGameEngineLevelEditor.Models
 {
     public class GameObjectModel
     {
-        public string Name { get; private set; } = string.Empty;
+        public string Name { get; set; }
         [JsonConverter(typeof(GameObjectComponentConverter))]
-        public List<GameObjectComponentModel> GameObjectComponentList { get; private set; } = new List<GameObjectComponentModel>();
-        public GameObjectModel() { }
+        public List<GameObjectComponentModel> GameObjectComponentList { get; set; }
+        GameObjectModel() { }
+
     }
 }

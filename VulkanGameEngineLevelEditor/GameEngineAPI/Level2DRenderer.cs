@@ -50,23 +50,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             string jsonContent = File.ReadAllText(ConstConfig.Default2DPipeline);
             RenderPipelineDLL model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
 
-            //string jsonContent2 = File.ReadAllText("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Levels\\TestLevel.json");
-            //GameObjectModel model2 = JsonConvert.DeserializeObject<GameObjectModel>(jsonContent);
-
-            TextureList.Add(new Texture("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp", VkFormat.VK_FORMAT_R8G8B8A8_SRGB, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false));
-            MaterialList.Add(new Material("Material1"));
-            MaterialList.Last().SetAlbedoMap("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp");
-
-            ivec2 size = new ivec2(32);
-            SpriteSheet spriteSheet = new SpriteSheet(MaterialList[0], size, 0);
-
-            AddGameObject("Obj1", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(960.0f, 540.0f));
-            AddGameObject("Obj2", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 20.0f));
-            AddGameObject("Obj3", new List<ComponentTypeEnum> { ComponentTypeEnum.kTransform2DComponent, ComponentTypeEnum.kSpriteComponent }, spriteSheet, new vec2(300.0f, 80.0f));
-
-            string finalfilePath = @"C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Levels\\TestLevel.json";
-            string jsonString = JsonConvert.SerializeObject(GameObjectList, Formatting.Indented);
-            File.WriteAllText(finalfilePath, jsonString);
+            LoadGameObjects();
 
             CreatePipeline(model);
             SpriteLayerList.Add(new SpriteBatchLayer(GameObjectList, jsonPipelineList[0]));
@@ -172,6 +156,17 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return commandBuffer;
         }
 
+        private void LoadGameObjects()
+        {
+            string jsonContent = File.ReadAllText("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Levels\\TestLevel.json");
+            List<GameObjectModel> model = JsonConvert.DeserializeObject<List<GameObjectModel>>(jsonContent);
+
+            foreach (GameObjectModel obj in model)
+            {
+                GameObjectList.Add(new GameObject(obj));
+            }
+        }
+
         private void AddGameObject(string name, List<ComponentTypeEnum> gameObjectComponentTypeList, SpriteSheet spriteSheet, vec2 objectPosition)
         {
             GameObjectList.Add(new GameObject(name, new List<ComponentTypeEnum>
@@ -185,7 +180,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 switch (component)
                 {
-                    case ComponentTypeEnum.kTransform2DComponent: gameObject.AddComponent(new Transform2DComponent(gameObject.GameObjectId, objectPosition, name)); break;
+                    case ComponentTypeEnum.kTransform2DComponent: gameObject.AddComponent(new Transform2DComponent(gameObject, objectPosition, name)); break;
                     case ComponentTypeEnum.kSpriteComponent: gameObject.AddComponent(new SpriteComponent(gameObject, name, spriteSheet)); break;
                 }
             }

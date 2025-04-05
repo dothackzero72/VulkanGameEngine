@@ -9,6 +9,8 @@ using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.Components;
 using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.Models;
+using System.Xml.Linq;
+using VulkanGameEngineGameObjectScripts.Interface;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -52,7 +54,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GameObjectId = ++NextGameObjectId;
 
             Name = model.Name;
-         //   GameObjectComponentList = model.GameObjectComponentList;
+            foreach (GameObjectComponentModel component in model.GameObjectComponentList)
+            {
+                switch (component.ComponentType)
+                {
+                    case ComponentTypeEnum.kTransform2DComponent: AddComponent(new Transform2DComponent(this, component)); break;
+                    case ComponentTypeEnum.kSpriteComponent: AddComponent(new SpriteComponent(this, component)); break;
+                }
+            }
         }
 
         static public List<GameObjectComponent> GetComponentFromGameObjects(List<GameObject> gameObjectList, ComponentTypeEnum componentType)

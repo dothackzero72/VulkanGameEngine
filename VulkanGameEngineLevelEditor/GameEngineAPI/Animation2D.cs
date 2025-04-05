@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -24,6 +25,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public Animation2D()
         {
 
+        }
+
+        public Animation2D(Animation2DModel model)
+        {
+            AnimationName = model.AnimationName;
+            FrameList = model.FrameList;
+            FrameHoldTime = model.FrameHoldTime;
+            CurrentFrameUV = new vec2(0.0f);
+            CurrentFrameTime = 0.0f;
+            CurrentFrame = 0;
         }
 
         public Animation2D(string animationName, List<ivec2> frameList, float frameHoldTime)

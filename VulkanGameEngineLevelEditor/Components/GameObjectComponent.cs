@@ -11,15 +11,12 @@ using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.Models;
+using System.Reflection;
 
 namespace VulkanGameEngineLevelEditor.Components
 {
     public unsafe class GameObjectComponent
     {
-        [JsonIgnore]
-        public GameObject CPPgameObjectPtr { get; set; }
-        [JsonIgnore]
-        public GameObjectComponent CPPcomponentPtr { get; set; }
         [JsonIgnore]
         public GameObject ParentGameObject { get; set; }
 
@@ -31,26 +28,16 @@ namespace VulkanGameEngineLevelEditor.Components
 
         }
 
-        public GameObjectComponent(uint gameObjectId, ComponentTypeEnum componentType)
+        public GameObjectComponent(GameObject parentGameObject, ComponentTypeEnum componentType)
         {
-            //CPPcomponentPtr = cppComponentPtr;
-            //CPPgameObjectPtr = cppGameObjectPtr;
-
-            //GCHandle handle = GCHandle.FromIntPtr(csParentGameObject);
-            //ParentGameObject = (GameObject)handle.Target;
-
+            ParentGameObject = parentGameObject;
             Name = "GameObjectComponent";
             ComponentType = componentType;
         }
 
-        public GameObjectComponent(uint gameObjectId,  string name, ComponentTypeEnum componentType)
+        public GameObjectComponent(GameObject parentGameObject, string name, ComponentTypeEnum componentType)
         {
-            //CPPcomponentPtr = cppComponentPtr;
-            //CPPgameObjectPtr = cppGameObjectPtr;
-
-        //GCHandle handle = GCHandle.FromIntPtr(csParentGameObject);
-        //ParentGameObject = (GameObject)handle.Target;
-
+            ParentGameObject = parentGameObject;
             Name = name;
             ComponentType = componentType;
         }

@@ -32,9 +32,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public Animation2D CurrentSpriteAnimation { get; set; }
 
         [JsonIgnore]
-        public SpriteSheet Spritesheet { get; set; }
-
-        [JsonIgnore]
         public SpriteInstanceStruct SpriteInstance;
 
         public vec2 SpriteSize { get; set; } = new vec2(50.0f);
@@ -44,6 +41,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public vec2 SpriteScale { get; set; } = new vec2(1.0f);
         public uint SpriteLayer { get; set; } = 0;
         public Material SpriteMaterial { get; set; }
+        public SpriteSheet Spritesheet { get; set; }
         public List<Animation2D> AnimationList { get; set; } = new List<Animation2D>();
 
         Sprite()
@@ -53,14 +51,30 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public Sprite(GameObject parentGameObject, SpriteModel model)
         {
-            this.ParentGameObject = parentGameObject;
+            ParentGameObject = parentGameObject;
+            Transform2D = (Transform2DComponent)ParentGameObject.GetComponentByComponentType(ComponentTypeEnum.kTransform2DComponent);
 
+            Spritesheet = model.Spritesheet;
+            SpriteSize = model.SpriteSize;
+            SpriteColor = model.SpriteColor;
+            SpritePosition = model.SpritePosition;
+            SpriteRotation = model.SpriteRotation;
+            SpriteScale = model.SpriteScale;
+            SpriteLayer = model.SpriteLayer;
+            SpriteMaterial = new Material(model.SpriteMaterial);
+
+            AnimationList = new List<Animation2D>();
+            foreach (var animation in model.AnimationList)
+            {
+                AnimationList.Add(new Animation2D(animation));
+            }
+            CurrentSpriteAnimation = AnimationList.Last();
         }
 
         public Sprite(GameObject parentObject, SpriteSheet spriteSheet)
         {
             ParentGameObject = parentObject;
-            Transform2D = (Transform2DComponent)ParentGameObject.GetComponentByComponentType(ComponentTypeEnum.kGameObjectTransform2DComponent);
+            Transform2D = (Transform2DComponent)ParentGameObject.GetComponentByComponentType(ComponentTypeEnum.kTransform2DComponent);
 
             Spritesheet = spriteSheet;
             SpriteLayer = spriteSheet.SpriteLayer;

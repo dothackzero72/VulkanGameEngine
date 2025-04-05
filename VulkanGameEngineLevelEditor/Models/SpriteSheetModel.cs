@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public class Animation2DModel
+    public class SpriteSheetModel
     {
-        public string AnimationName { get; set; }
-        public float FrameHoldTime { get; set; }
-        public List<ivec2> FrameList { get; set; }
+        public ivec2 SpritePixelSize { get; set; }
+        public vec2 SpriteScale { get; set; }
     }
 }

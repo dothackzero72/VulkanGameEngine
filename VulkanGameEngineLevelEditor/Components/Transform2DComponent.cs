@@ -10,6 +10,7 @@ using VulkanGameEngineGameObjectScripts.Input;
 using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using Newtonsoft.Json;
+using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Components
 {
@@ -31,7 +32,21 @@ namespace VulkanGameEngineLevelEditor.Components
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(uint gameObjectId, vec2 position) : base(gameObjectId, ComponentTypeEnum.kGameObjectTransform2DComponent)
+        public Transform2DComponent(GameObject parentGameObject, GameObjectComponentModel model) : base(parentGameObject, ComponentTypeEnum.kTransform2DComponent)
+        {
+            var transform = model as Transform2DComponentModel;
+
+            ParentGameObject = parentGameObject;
+            
+            Name = model.Name;
+            GameObjectTransform = mat4.Identity;
+            GameObjectPosition = transform.GameObjectPosition;
+            GameObjectRotation = transform.GameObjectRotation;
+            GameObjectScale = transform.GameObjectScale;
+            ComponentType = transform.ComponentType;
+        }
+
+        public Transform2DComponent(GameObject parentGameObject, vec2 position) : base(parentGameObject, ComponentTypeEnum.kTransform2DComponent)
         {
             Name = "GameObjectTransform2DComponent";
 
@@ -41,7 +56,7 @@ namespace VulkanGameEngineLevelEditor.Components
             GameObjectScale = new vec2(1.0f, 1.0f);
         }
 
-        public Transform2DComponent(uint gameObjectId, vec2 position, string name) : base(gameObjectId, name, ComponentTypeEnum.kGameObjectTransform2DComponent)
+        public Transform2DComponent(GameObject parentGameObject, vec2 position, string name) : base(parentGameObject, name, ComponentTypeEnum.kTransform2DComponent)
         {
             GameObjectTransform = mat4.Identity;
             GameObjectPosition = position;

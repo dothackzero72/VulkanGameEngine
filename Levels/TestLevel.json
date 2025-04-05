@@ -45,46 +45,14 @@
           "SpriteLayer": 0,
           "SpriteMaterial": {
             "Name": "Material1",
-            "AlbedoMap": {
-              "MipMapLevels": 1,
-              "TexturePath": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp"
-            },
-            "MetallicRoughnessMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "MetallicMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "RoughnessMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "AmbientOcclusionMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "NormalMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "DepthMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "AlphaMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "EmissionMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "HeightMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
+            "AlbedoMapPath": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp",
+            "MetallicRoughnessMapPath": null,
+            "MetallicMapPath": null,
+            "RoughnessMapPath": null,
+            "AmbientOcclusionMapPath": null,
+            "NormalMapPath": null,
+            "DepthMapPath": null,
+            "AlphaMapPath": null,
             "EmissionMapPath": null,
             "HeightMapPath": null,
             "Albedo": [
@@ -101,6 +69,16 @@
               0.0
             ],
             "Alpha": 1.0
+          },
+          "Spritesheet": {
+            "SpritePixelSize": [
+              32,
+              32
+            ],
+            "SpriteScale": [
+              5.0,
+              5.0
+            ]
           },
           "AnimationList": [
             {
@@ -141,7 +119,7 @@
             }
           ]
         },
-        "Name": "GameObjectComponent",
+        "Name": "Obj1",
         "ComponentType": 4
       }
     ]
@@ -192,46 +170,14 @@
           "SpriteLayer": 0,
           "SpriteMaterial": {
             "Name": "Material1",
-            "AlbedoMap": {
-              "MipMapLevels": 1,
-              "TexturePath": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp"
-            },
-            "MetallicRoughnessMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "MetallicMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "RoughnessMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "AmbientOcclusionMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "NormalMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "DepthMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "AlphaMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "EmissionMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "HeightMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
+            "AlbedoMapPath": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp",
+            "MetallicRoughnessMapPath": null,
+            "MetallicMapPath": null,
+            "RoughnessMapPath": null,
+            "AmbientOcclusionMapPath": null,
+            "NormalMapPath": null,
+            "DepthMapPath": null,
+            "AlphaMapPath": null,
             "EmissionMapPath": null,
             "HeightMapPath": null,
             "Albedo": [
@@ -248,6 +194,16 @@
               0.0
             ],
             "Alpha": 1.0
+          },
+          "Spritesheet": {
+            "SpritePixelSize": [
+              32,
+              32
+            ],
+            "SpriteScale": [
+              5.0,
+              5.0
+            ]
           },
           "AnimationList": [
             {
@@ -288,7 +244,7 @@
             }
           ]
         },
-        "Name": "GameObjectComponent",
+        "Name": "Obj2",
         "ComponentType": 4
       }
     ]
@@ -339,46 +295,14 @@
           "SpriteLayer": 0,
           "SpriteMaterial": {
             "Name": "Material1",
-            "AlbedoMap": {
-              "MipMapLevels": 1,
-              "TexturePath": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp"
-            },
-            "MetallicRoughnessMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "MetallicMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "RoughnessMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "AmbientOcclusionMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "NormalMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "DepthMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "AlphaMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "EmissionMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
-            "HeightMap": {
-              "MipMapLevels": 1,
-              "TexturePath": ""
-            },
+            "AlbedoMapPath": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\MegaMan_diffuse.bmp",
+            "MetallicRoughnessMapPath": null,
+            "MetallicMapPath": null,
+            "RoughnessMapPath": null,
+            "AmbientOcclusionMapPath": null,
+            "NormalMapPath": null,
+            "DepthMapPath": null,
+            "AlphaMapPath": null,
             "EmissionMapPath": null,
             "HeightMapPath": null,
             "Albedo": [
@@ -395,6 +319,16 @@
               0.0
             ],
             "Alpha": 1.0
+          },
+          "Spritesheet": {
+            "SpritePixelSize": [
+              32,
+              32
+            ],
+            "SpriteScale": [
+              5.0,
+              5.0
+            ]
           },
           "AnimationList": [
             {
@@ -435,7 +369,7 @@
             }
           ]
         },
-        "Name": "GameObjectComponent",
+        "Name": "Obj3",
         "ComponentType": 4
       }
     ]

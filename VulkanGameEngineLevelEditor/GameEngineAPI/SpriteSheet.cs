@@ -10,12 +10,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public class SpriteSheet
     {
-        public Material SpriteMaterial;
-        public ivec2 SpritePixelSize;
-        public ivec2 SpriteCells;
-        public vec2 SpriteUVSize;
-        public uint SpriteLayer;
-        public vec2 SpriteScale;
+        [JsonIgnore]
+        public Material SpriteMaterial { get; set; }
+        [JsonIgnore]
+        public ivec2 SpriteCells { get; set; }
+        [JsonIgnore]
+        public vec2 SpriteUVSize { get; set; }
+        [JsonIgnore]
+        public uint SpriteLayer { get; set; }
+        public ivec2 SpritePixelSize { get; set; }
+        public vec2 SpriteScale { get; set; }
 
         public SpriteSheet()
         {

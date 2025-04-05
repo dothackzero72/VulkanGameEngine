@@ -9,22 +9,22 @@ namespace VulkanGameEngineLevelEditor.Models
 {
     public class MaterialModel
     {
-        public string Name { get; private set; }
-        public string AlbedoMapPath { get; private set; }
-        public string MetallicRoughnessMapPath { get; private set; }
-        public string MetallicMapPath { get; private set; }
-        public string RoughnessMapPath { get; private set; }
-        public string AmbientOcclusionMapPath { get; private set; }
-        public string NormalMapPath { get; private set; }
-        public string DepthMapPath { get; private set; }
-        public string AlphaMapPath { get; private set; }
-        public string EmissionMapPath { get; private set; }
-        public string HeightMapPath { get; private set; }
-        public vec3 Albedo { get; private set; }
-        public float Metallic { get; private set; }
-        public float Roughness { get; private set; }
-        public float AmbientOcclusion { get; private set; }
-        public vec3 Emission { get; private set; }
-        public float Alpha { get; private set; }
+        public string Name { get; set; }
+        public string AlbedoMapPath { get; set; }
+        public string MetallicRoughnessMapPath { get; set; }
+        public string MetallicMapPath { get; set; }
+        public string RoughnessMapPath { get; set; }
+        public string AmbientOcclusionMapPath { get; set; }
+        public string NormalMapPath { get; set; }
+        public string DepthMapPath { get; set; }
+        public string AlphaMapPath { get; set; }
+        public string EmissionMapPath { get; set; }
+        public string HeightMapPath { get; set; }
+        public vec3 Albedo { get; set; }
+        public float Metallic { get; set; }
+        public float Roughness { get; set; }
+        public float AmbientOcclusion { get; set; }
+        public vec3 Emission { get; set; }
+        public float Alpha { get; set; }
     }
 }
