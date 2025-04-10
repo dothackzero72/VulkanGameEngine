@@ -28,8 +28,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ListPtr<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
             ListPtr<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
 
-            CreateJsonRenderPass(jsonFile, RenderPassResolution);
-            jsonPipelineList.Add(new JsonPipeline<NullVertex>(ConstConfig.DefaulFrameBufferPipeline, renderPass, 0, vertexBinding, vertexAttribute, renderGraphics, RenderPassResolution));
+            CreateJsonRenderPass($@"{ConstConfig.RenderPassBasePath}//{ConstConfig.FrameBufferRenderPass}", RenderPassResolution);
+            jsonPipelineList.Add(new JsonPipeline<NullVertex>($@"{ConstConfig.PipelineBasePath}//{ConstConfig.FrameBufferPipeline}", renderPass, 0, vertexBinding, vertexAttribute, renderGraphics, RenderPassResolution));
         }
 
         public unsafe VkCommandBuffer Draw()

@@ -9,6 +9,7 @@ namespace VulkanGameEngineLevelEditor.Models
 {
     public class MaterialModel
     {
+        public string MaterialID { get; set; }
         public string Name { get; set; }
         public string AlbedoMapPath { get; set; }
         public string MetallicRoughnessMapPath { get; set; }

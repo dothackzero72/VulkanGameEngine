@@ -42,10 +42,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class Material
     {
         [JsonIgnore]
-        private static uint NextMaterialId = 0;
-        [JsonIgnore]
-        public uint MaterialID { get; private set; } = 0;
-        [JsonIgnore]
         public uint MaterialBufferIndex { get; private set; } = 0;
         [JsonIgnore]
         public VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer { get; private set; }
@@ -71,6 +67,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public Texture EmissionMap { get; set; }
         [JsonIgnore]
         public Texture HeightMap { get; set; }
+
+
+        public Guid MaterialID { get; private set; }
         public string Name { get; set; } = string.Empty;
         public string AlbedoMapPath { get; set; }
         public string MetallicRoughnessMapPath { get; set; }
@@ -97,7 +96,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public Material(MaterialModel model)
         {
             Name = model.Name;
-            MaterialID = ++NextMaterialId;
+            MaterialID = new Guid(model.MaterialID);
             MaterialBufferIndex = 0;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
@@ -160,7 +159,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public Material(string materialName)
         {
             Name = materialName;
-            MaterialID = ++NextMaterialId;
+            MaterialID = Guid.NewGuid();
             MaterialBufferIndex = 0;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);

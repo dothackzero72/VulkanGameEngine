@@ -52,6 +52,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Levels", "Levels", "{23E8B8
 		Levels\TestLevel.json = Levels\TestLevel.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Materials", "Materials", "{4CCF9A80-6215-4938-8BF7-38F42B25CDFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +133,7 @@ Global
 		{0EDEA954-1D78-4E87-B6E9-6AD004194688} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
 		{6553F8D0-FC4F-4C55-A633-B3F3CBE2CD48} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
 		{23E8B804-7274-445A-AF83-A71B1E9AAFC5} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
+		{4CCF9A80-6215-4938-8BF7-38F42B25CDFB} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F492211-3E89-431E-83CC-E65D5E8EBE55}
