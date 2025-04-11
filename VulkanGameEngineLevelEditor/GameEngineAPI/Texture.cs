@@ -1,12 +1,7 @@
-﻿using System;
-using StbImageSharp;
+﻿using StbImageSharp;
 using VulkanGameEngineLevelEditor.Vulkan;
-using VulkanGameEngineGameObjectScripts;
-using Silk.NET.SDL;
-using Silk.NET.Vulkan;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using Newtonsoft.Json;
+using System;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {

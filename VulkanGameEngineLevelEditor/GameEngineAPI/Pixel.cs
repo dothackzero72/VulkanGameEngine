@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VulkanGameEngineGameObjectScripts
+namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public struct Pixel3
     {

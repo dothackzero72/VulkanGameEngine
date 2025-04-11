@@ -2,15 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using VulkanGameEngineGameObjectScripts.Input;
-using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.Components;
 using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.Models;
-using System.Xml.Linq;
-using VulkanGameEngineGameObjectScripts.Interface;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -40,7 +35,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             GameObjectId = ++NextGameObjectId;
             Name = name;
-        //    GameObjectComponentList = gameObjectComponentList;
         }
 
         public GameObject(string name, List<ComponentTypeEnum> gameObjectComponentList, SpriteSheet spriteSheet)
@@ -79,14 +73,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             GameObjectComponentList.Add(newComponent);
         }
 
-        public void AddComponent(GameObjectComponent* gameObjectComponentPtr, IntPtr componentPtr)
-        {
-            //GameObjectComponent gameObjectComponent = *gameObjectComponentPtr;
-            //gameObjectComponent.CPPcomponentPtr = componentPtr;
-
-            GameObjectComponentList.Add(*gameObjectComponentPtr);
-        }
-
         public virtual void Input(KeyBoardKeys key, float deltaTime)
         {
         }
@@ -96,14 +82,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             foreach (GameObjectComponent component in GameObjectComponentList)
             {
                 component.Update(commandBuffer, deltaTime);
-            }
-        }
-
-        public virtual void Draw(VkCommandBuffer commandBuffer, VkPipeline pipeline, VkPipelineLayout pipelineLayout, ListPtr<VkDescriptorSet> descriptorSetList, SceneDataBuffer sceneProperties)
-        {
-            foreach (GameObjectComponent component in GameObjectComponentList)
-            {
-                component.Draw(commandBuffer, pipeline, pipelineLayout, descriptorSetList, sceneProperties);
             }
         }
 
@@ -120,25 +98,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return sizeof(GameObject);
         }
 
-        public unsafe IntPtr GetGameObjectPtr()
-        {
-            return Marshal.UnsafeAddrOfPinnedArrayElement(GameObjectComponentList.ToArray(), 0);
-        }
-
         public IntPtr GetGameObjectComponent(int index)
         {
             GameObjectComponent component = GameObjectComponentList[index];
             GCHandle handle = GCHandle.Alloc(component);
             return (IntPtr)handle;
-        }
-
-        public void ReleaseComponentHandle(IntPtr handle)
-        {
-            GCHandle gCHandle = (GCHandle)handle;
-            if (gCHandle.IsAllocated)
-            {
-                gCHandle.Free();
-            }
         }
 
         public void RemoveComponent(GameObjectComponent component)

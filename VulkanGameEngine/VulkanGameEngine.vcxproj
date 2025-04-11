@@ -249,11 +249,6 @@
     <ClInclude Include="Transform3DComponent.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\VulkanGameEngineGameObjectScripts\VulkanGameEngineGameObjectScripts.csproj">
-      <Project>{1614928c-774c-4dd2-97c1-cad5484b41e3}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

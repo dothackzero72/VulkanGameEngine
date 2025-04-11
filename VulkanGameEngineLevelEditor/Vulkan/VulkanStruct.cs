@@ -1,14 +1,6 @@
-﻿using Silk.NET.Core.Attributes;
-using Silk.NET.Vulkan;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using VulkanGameEngineGameObjectScripts.Vulkan;
-using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
@@ -336,7 +328,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public void* pNext;
         public VkRenderPass renderPass;
         public uint subpass;
-        public Framebuffer framebuffer;
+        public VkFramebuffer framebuffer;
         public VkBool32 occlusionQueryEnable;
         public VkQueryControlFlagBits queryFlags;
         public VkQueryPipelineStatisticFlagBits pipelineStatistics;
@@ -691,7 +683,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     {
         public VkStructureType sType;
         public void* pNext;
-        public DescriptorPoolCreateFlags flags;
+        public VkDescriptorPoolCreateFlagBits flags;
         public uint maxSets;
         public uint poolSizeCount;
         public VkDescriptorPoolSize* pPoolSizes;
@@ -708,6 +700,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public uint scissorCount;
         public VkRect2D* pScissors;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkVertexInputBindingDescription
+    {
+        public uint binding;
+        public uint stride;
+        public VkVertexInputRate inputRate;
+    };
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkVertexInputAttributeDescription

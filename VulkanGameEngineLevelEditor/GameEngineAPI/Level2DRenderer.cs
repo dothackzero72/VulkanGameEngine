@@ -1,39 +1,50 @@
 ﻿using GlmSharp;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using VulkanGameEngineGameObjectScripts.Vulkan;
-using VulkanGameEngineLevelEditor.Components;
 using VulkanGameEngineLevelEditor.Models;
-using Silk.NET.Vulkan;
-using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.Vulkan;
-using static VulkanGameEngineLevelEditor.GameEngineAPI.SpriteInstanceVertex2D;
 using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using System.IO;
-using System.Numerics;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class Level2DRenderer : JsonRenderPass<Vertex2D>
     {
+        public List<SpriteBatchLayer> SpriteLayerList { get; private set; } = new List<SpriteBatchLayer>();
+        public Level2DRenderer(List<GameObject> gameObjectList, GPUImport<Vertex2D> gpuImport, string json, ivec2 renderPassResolution)
+        {
+            RenderPassBuildInfoModel model = new RenderPassBuildInfoModel(json);
+            foreach (var item in model.RenderedTextureInfoModelList)
+            {
+                item.ImageCreateInfo.extent = new VkExtent3DModel
+                {
+                    width = (uint)renderPassResolution.x,
+                    height = (uint)renderPassResolution.y,
+                    depth = 1
+                };
+            }
+
+            RenderPassResolution = renderPassResolution;
+
+            VulkanRenderer.CreateCommandBuffers(commandBufferList);
+            base.CreateJsonRenderPass(json, renderPassResolution);
+            StartLevelRenderer(gameObjectList, gpuImport);
+        }
+
         public Level2DRenderer()
         {
         }
 
-        public Level2DRenderer(GPUImport<Vertex2D> gpuImport, ivec2 renderPassResolution)
+        public void StartLevelRenderer(List<GameObject> gameObjectList, GPUImport<Vertex2D> gpuImport)
         {
-            RenderPassResolution = renderPassResolution;
+            string jsonContent = File.ReadAllText(ConstConfig.Default2DPipeline);
+            RenderPipelineDLL model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
 
-            VulkanRenderer.CreateCommandBuffers(commandBufferList);
-            base.CreateJsonRenderPass(@$"{ConstConfig.RenderPassBasePath}\\{ConstConfig.Default2DRenderPass}", renderPassResolution);
-            CreatePipeline(gpuImport);
+            CreatePipeline(model, gpuImport);
+            SpriteLayerList.Add(new SpriteBatchLayer(gameObjectList, jsonPipelineList[0]));
         }
 
-        private void CreatePipeline(GPUImport<Vertex2D> gpuImport)
+        private void CreatePipeline(RenderPipelineDLL model, GPUImport<Vertex2D> gpuImport)
         {
             var vertexBinding = NullVertex.GetBindingDescriptions();
             foreach (var instanceVar in SpriteInstanceVertex2D.GetBindingDescriptions())
@@ -47,26 +58,24 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 vertexAttribute.Add(instanceVar);
             }
 
-            jsonPipelineList.Add(new JsonPipeline<Vertex2D>(@$"{ConstConfig.PipelineBasePath}\\{ConstConfig.Default2DPipeline}", renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, gpuImport, RenderPassResolution));
+            jsonPipelineList.Add(new JsonPipeline<Vertex2D>("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\Default2DPipeline.json", renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, gpuImport, RenderPassResolution));
         }
 
-        public override void Update(float deltaTime)
+        public void Update(VkCommandBuffer commandBuffer, float deltaTime)
         {
-
+            foreach (var spriteLayer in SpriteLayerList)
+            {
+                spriteLayer.Update(commandBuffer, deltaTime);
+            }
         }
 
-        public virtual VkCommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
-        {
-            throw new Exception("Can't call this version of draw.");
-        }
-
-        public VkCommandBuffer Draw(List<SpriteBatchLayer> spriteLayerList, SceneDataBuffer sceneDataBuffer)
+        public override VkCommandBuffer Draw(List<GameObject> meshList, SceneDataBuffer sceneDataBuffer)
         {
             var commandIndex = VulkanRenderer.CommandIndex;
             var commandBuffer = commandBufferList[(int)commandIndex];
 
             using ListPtr<VkClearValue> clearValues = new ListPtr<VkClearValue>();
-            clearValues.Add(new VkClearValue { Color = new VkClearColorValue(0, 0, 0, 1) }); 
+            clearValues.Add(new VkClearValue { Color = new VkClearColorValue(0, 0, 0, 1) });
             clearValues.Add(new VkClearValue { DepthStencil = new VkClearDepthStencilValue(1.0f, 0) });
 
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
@@ -88,7 +97,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkFunc.vkResetCommandBuffer(commandBuffer, 0);
             VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
-            foreach (var obj in spriteLayerList)
+            foreach (var obj in SpriteLayerList)
             {
                 obj.Draw(commandBuffer, sceneDataBuffer);
             }
@@ -98,7 +107,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             return commandBuffer;
         }
 
-            public void Destroy()
+        public void Destroy()
         {
             // vk.DestroyPipeline(device, pipeline, null);
             //vk.DestroyPipelineLayout(device, new PipelineLayout((ulong?)pipelineLayout), null);
@@ -117,11 +126,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             commandBufferList.Dispose();
             //descriptorSetLayoutList.Dispose();
             //  descriptorSetList.Dispose();
-        }
-
-        public SpriteBatchLayer AddSpriteLayer(List<GameObject> gameObjectList)
-        {
-            return new SpriteBatchLayer(gameObjectList, jsonPipelineList[0]);
         }
     }
 }

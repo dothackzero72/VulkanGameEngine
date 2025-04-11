@@ -1,17 +1,6 @@
 ﻿using GlmSharp;
-using Silk.NET.Vulkan;
 using StbImageSharp;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using VulkanGameEngineGameObjectScripts;
-using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 

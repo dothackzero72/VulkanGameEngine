@@ -48,29 +48,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Import\CLIMath.cs" />
-    <Compile Include="Import\ivec2.cs" />
-    <Compile Include="Import\ivec3.cs" />
-    <Compile Include="Import\ivec4.cs" />
-    <Compile Include="Import\mat2.cs" />
-    <Compile Include="Import\mat3.cs" />
-    <Compile Include="Import\mat4.cs" />
-    <Compile Include="Import\vec2.cs" />
-    <Compile Include="Import\vec3.cs" />
-    <Compile Include="Import\vec4.cs" />
-    <Compile Include="Input\input.cs" />
-    <Compile Include="Input\Keyboard.cs" />
-    <Compile Include="Interface\IGameObject.cs" />
-    <Compile Include="Interface\IGameObjectComponent.cs" />
-    <Compile Include="Pixel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SceneData.cs" />
-    <Compile Include="Vulkan\Enum.cs" />
-    <Compile Include="Vulkan\Struct.cs" />
-    <Compile Include="Vulkan\TypeDef.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Component\" />
+    <Folder Include="Interface\" />
+    <Folder Include="Vulkan\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

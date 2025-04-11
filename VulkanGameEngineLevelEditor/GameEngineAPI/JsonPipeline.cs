@@ -1,21 +1,9 @@
 ﻿using GlmSharp;
 using Newtonsoft.Json;
-using Silk.NET.SDL;
-using Silk.NET.Vulkan;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mail;
-using System.Numerics;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using VulkanGameEngineGameObjectScripts;
-using VulkanGameEngineGameObjectScripts.Vulkan;
-using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -63,7 +51,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
     public unsafe class JsonPipeline<T>
     {
-        VkDevice _device { get; set; } = VulkanRenderer.device;
+        private VkDevice _device { get; set; } = VulkanRenderer.device;
+        public GPUImport<T> _GPUImport { get; protected set; } 
         public VkDescriptorPool descriptorPool { get; protected set; }
         public ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList { get; protected set; } = new ListPtr<VkDescriptorSetLayout>();
         public ListPtr<VkDescriptorSet> descriptorSetList { get; protected set; } = new ListPtr<VkDescriptorSet>();
@@ -78,6 +67,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public JsonPipeline(String jsonPipelineFilePath, VkRenderPass renderPass, uint ConstBufferSize, ListPtr<VkVertexInputBindingDescription> vertexBindings, ListPtr<VkVertexInputAttributeDescription> vertexAttributes, GPUImport<T> gpuImport, ivec2 renderPassResolution)
         {
+            _GPUImport = gpuImport;
+
             string jsonContent = File.ReadAllText(jsonPipelineFilePath);
             RenderPipelineDLL model = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
 
@@ -161,7 +152,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
             foreach (var obj in gameObjectList)
             {
-                obj.Draw(commandBuffer, pipeline, pipelineLayout, descriptorSetList, sceneDataBuffer);
+          //      obj.Draw(commandBuffer, pipeline, pipelineLayout, descriptorSetList, sceneDataBuffer);
             }
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);

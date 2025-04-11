@@ -1,21 +1,13 @@
-﻿using Coral.Managed.Interop;
-using GlmSharp;
+﻿using GlmSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Xml.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-
-namespace VulkanGameEngineGameObjectScripts
+namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public sealed class CustomAttribute : Attribute
-    {
-        public float Value;
-    }
-
     public enum ComponentTypeEnum
     {
         kUndefined,

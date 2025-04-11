@@ -20,6 +20,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public uint SpriteLayer { get; set; }
         public ivec2 SpritePixelSize { get; set; }
         public vec2 SpriteScale { get; set; }
+        public Guid SpriteMaterialID
+        {
+            get
+            {
+                return SpriteMaterial.MaterialID;
+            }
+        }
 
         public SpriteSheet()
         {

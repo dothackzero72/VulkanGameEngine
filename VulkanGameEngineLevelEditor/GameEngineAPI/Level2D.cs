@@ -4,12 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using VulkanGameEngineGameObjectScripts;
 using VulkanGameEngineLevelEditor.Components;
-using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -22,7 +17,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         [JsonIgnore]
         public List<SpriteBatchLayer> SpriteLayerList { get; private set; } = new List<SpriteBatchLayer>();
-        
+
         [JsonIgnore]
         public List<Texture> TextureList { get; private set; } = new List<Texture>();
 
@@ -33,6 +28,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public string LevelName { get; private set; } = string.Empty;
         public List<GameObject> GameObjectList { get; private set; } = new List<GameObject>();
         public List<Material> MaterialList { get; private set; } = new List<Material>();
+
+        public class SaveLevelModel
+        {
+            public Guid LevelID { get; set; }
+            public string LevelName { get; set; }
+            public List<GameObject> GameObjectList { get; set; }
+            public List<Guid> MaterialList { get; set; }
+        };
 
         public Level2D()
         {
@@ -60,9 +63,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 MaterialList = new List<Material>(MaterialList)
             };
 
-            LevelRenderer = new Level2DRenderer(gpuImport, renderPassResolution);
+            LevelRenderer = new Level2DRenderer(GameObjectList, gpuImport, levelJsonPath, renderPassResolution);
+            LevelRenderer.StartLevelRenderer(GameObjectList, gpuImport);
             RenderedLevelTexture = LevelRenderer.RenderedColorTextureList.First();
-            SpriteLayerList.Add(LevelRenderer.AddSpriteLayer(GameObjectList));
+
+            // SaveLevel();
         }
 
         public void Update(float deltaTime)
@@ -73,90 +78,78 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 obj.Update(commandBuffer, deltaTime);
             }
-            foreach (var spriteLayer in SpriteLayerList)
-            {
-                spriteLayer.Update(commandBuffer, deltaTime);
-            }
+            LevelRenderer.Update(commandBuffer, deltaTime);
             VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
-            LevelRenderer.Update(deltaTime);
         }
 
         public VkCommandBuffer Draw(SceneDataBuffer sceneDataBuffer)
         {
-           return  LevelRenderer.Draw(SpriteLayerList, sceneDataBuffer);
+            return LevelRenderer.Draw(GameObjectList, sceneDataBuffer);
         }
 
         public void LoadLevel()
         {
             string jsonContent = File.ReadAllText(@$"{ConstConfig.LevelBasePath}\\TestLevel.json");
-            List<GameObjectModel> model = JsonConvert.DeserializeObject<List<GameObjectModel>>(jsonContent);
+            List<SaveLevelModel> model = JsonConvert.DeserializeObject<List<SaveLevelModel>>(jsonContent);
 
-            foreach (GameObjectModel obj in model)
+            foreach (var material in MaterialList)
             {
-                GameObjectList.Add(new GameObject(obj));
+                MaterialList.Add(material);
             }
+
+            //foreach (SaveLevelModel obj in model)
+            //{
+            //    obj.GameObjectList
+            //    GameObjectList.Add(new GameObject(obj));
+            //}
         }
 
         public void SaveLevel()
         {
-            foreach (var material in MaterialList)
-            {
-                var materialFilePath = @$"{ConstConfig.MaterialBasePath}\\{material.Name}.json";
-                if (File.Exists(materialFilePath))
-                {
-                    string materialJsonContent = File.ReadAllText(materialFilePath);
-                    Material model = JsonConvert.DeserializeObject<Material>(materialJsonContent);
+            SaveMaterials();
 
-                    if (model.MaterialID == material.MaterialID)
+            SaveLevelModel levelObject = new SaveLevelModel
+            {
+                LevelID = this.LevelID,
+                LevelName = this.LevelName,
+                GameObjectList = this.GameObjectList,
+                MaterialList = MaterialList.Select(x => x.MaterialID).ToList(),
+            };
+
+            var levelFilePath = @$"{ConstConfig.LevelBasePath}\\{LevelName}.json";
+            string levelJsonString = JsonConvert.SerializeObject(levelObject, Formatting.Indented);
+            File.WriteAllText(levelFilePath, levelJsonString);
+
+            if (File.Exists(levelFilePath))
+            {
+                string levelJsonContent = File.ReadAllText(levelFilePath);
+                SaveLevelModel model = JsonConvert.DeserializeObject<SaveLevelModel>(levelJsonContent);
+
+                if (model.LevelID == LevelID)
+                {
+                    string materialJsonString = JsonConvert.SerializeObject(LevelName, Formatting.Indented);
+                    File.WriteAllText(levelFilePath, materialJsonString);
+                }
+                else if (File.Exists(@$"{ConstConfig.LevelBasePath}\\{LevelName}(0).json"))
+                {
+                    var x = 0;
+                    while (File.Exists(@$"{ConstConfig.LevelBasePath}\\{LevelName}({x}).json"))
                     {
-                        string materialJsonString = JsonConvert.SerializeObject(material, Formatting.Indented);
-                        File.WriteAllText(materialFilePath, materialJsonString);
+                        x++;
                     }
-                    else
-                    {
-                        var x = 0;
-                        while (File.Exists(@$"{ConstConfig.MaterialBasePath}\\{material.Name}{x}.json"))
-                        {
-                            string materialJsonString = JsonConvert.SerializeObject(material, Formatting.Indented);
-                            File.WriteAllText(@$"{ConstConfig.MaterialBasePath}\\{material.Name}{x}.json", materialJsonString);
-                            x++;
-                        }
-                    }
+                    string materialJsonString = JsonConvert.SerializeObject(levelObject, Formatting.Indented);
+                    File.WriteAllText(@$"{ConstConfig.LevelBasePath}\\{LevelName}({x}).json", materialJsonString);
                 }
                 else
                 {
-                    string jsonString2 = JsonConvert.SerializeObject(material, Formatting.Indented);
-                    File.WriteAllText(@$"{ConstConfig.MaterialBasePath}\\{material.Name}.json", jsonString2);
+                    string materialJsonString = JsonConvert.SerializeObject(levelObject, Formatting.Indented);
+                    File.WriteAllText(@$"{ConstConfig.LevelBasePath}\\{LevelName}(0).json", materialJsonString);
                 }
             }
+            else
             {
-                var levelFilePath = @$"{ConstConfig.LevelBasePath}\\{LevelName}.json";
-                if (File.Exists(levelFilePath))
-                {
-                    string levelJsonContent = File.ReadAllText(levelFilePath);
-                    Level2D model = JsonConvert.DeserializeObject<Level2D>(levelJsonContent);
-
-                    if (model.LevelID == LevelID)
-                    {
-                        string materialJsonString = JsonConvert.SerializeObject(LevelName, Formatting.Indented);
-                        File.WriteAllText(levelFilePath, materialJsonString);
-                    }
-                    else
-                    {
-                        var x = 0;
-                        while (File.Exists(@$"{ConstConfig.LevelBasePath}\\{LevelName}{x}.json"))
-                        {
-                            string materialJsonString = JsonConvert.SerializeObject(this, Formatting.Indented);
-                            File.WriteAllText(@$"{ConstConfig.LevelBasePath}\\{LevelName}{x}.json", materialJsonString);
-                            x++;
-                        }
-                    }
-                }
-                else
-                {
-                    string jsonString2 = JsonConvert.SerializeObject(this, Formatting.Indented);
-                    File.WriteAllText(@$"{ConstConfig.LevelBasePath}\\{LevelName}.json", jsonString2);
-                }
+                string jsonString2 = JsonConvert.SerializeObject(levelObject, Formatting.Indented);
+                File.WriteAllText(@$"{ConstConfig.LevelBasePath}\\{LevelName}.json", jsonString2);
             }
         }
 
@@ -175,8 +168,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             //}
             //vk.DestroyRenderPass(device, new RenderPass((ulong?)renderPass), null);
 
-           // frameBufferList.Dispose();
-           // commandBufferList.Dispose();
+            // frameBufferList.Dispose();
+            // commandBufferList.Dispose();
             //descriptorSetLayoutList.Dispose();
             //  descriptorSetList.Dispose();
         }
@@ -229,6 +222,45 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             }
             GameObjectList.RemoveAll(x => !x.GameObjectAlive);
+        }
+
+        private void SaveMaterials()
+        {
+            foreach (var material in MaterialList)
+            {
+                var materialFilePath = @$"{ConstConfig.MaterialBasePath}\\{material.Name}.json";
+                if (File.Exists(materialFilePath))
+                {
+                    string materialJsonContent = File.ReadAllText(materialFilePath);
+                    Material model = JsonConvert.DeserializeObject<Material>(materialJsonContent);
+
+                    if (model.MaterialID == material.MaterialID)
+                    {
+                        string materialJsonString = JsonConvert.SerializeObject(material, Formatting.Indented);
+                        File.WriteAllText(materialFilePath, materialJsonString);
+                    }
+                    else if (File.Exists(@$"{ConstConfig.MaterialBasePath}\\{material.Name}(0).json"))
+                    {
+                        var x = 0;
+                        while (File.Exists(@$"{ConstConfig.MaterialBasePath}\\{material.Name}({x}).json"))
+                        {
+                            x++;
+                        }
+                        string materialJsonString = JsonConvert.SerializeObject(material, Formatting.Indented);
+                        File.WriteAllText(@$"{ConstConfig.MaterialBasePath}\\{material.Name}({x}).json", materialJsonString);
+                    }
+                    else
+                    {
+                        string materialJsonString = JsonConvert.SerializeObject(material, Formatting.Indented);
+                        File.WriteAllText(@$"{ConstConfig.MaterialBasePath}\\{material.Name}(0).json", materialJsonString);
+                    }
+                }
+                else
+                {
+                    string jsonString2 = JsonConvert.SerializeObject(material, Formatting.Indented);
+                    File.WriteAllText(@$"{ConstConfig.MaterialBasePath}\\{material.Name}.json", jsonString2);
+                }
+            }
         }
     }
 }

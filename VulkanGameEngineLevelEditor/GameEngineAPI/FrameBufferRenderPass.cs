@@ -1,15 +1,6 @@
 ﻿using GlmSharp;
-using Newtonsoft.Json;
-using Silk.NET.Vulkan;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Mail;
-using System.Runtime.InteropServices;
-using VulkanGameEngineGameObjectScripts;
-using VulkanGameEngineGameObjectScripts.Vulkan;
-using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -28,8 +19,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ListPtr<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
             ListPtr<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
 
-            CreateJsonRenderPass($@"{ConstConfig.RenderPassBasePath}//{ConstConfig.FrameBufferRenderPass}", RenderPassResolution);
-            jsonPipelineList.Add(new JsonPipeline<NullVertex>($@"{ConstConfig.PipelineBasePath}//{ConstConfig.FrameBufferPipeline}", renderPass, 0, vertexBinding, vertexAttribute, renderGraphics, RenderPassResolution));
+            CreateJsonRenderPass(jsonFile, RenderPassResolution);
+            jsonPipelineList.Add(new JsonPipeline<NullVertex>(ConstConfig.DefaulFrameBufferPipeline, renderPass, 0, vertexBinding, vertexAttribute, renderGraphics, RenderPassResolution));
         }
 
         public unsafe VkCommandBuffer Draw()

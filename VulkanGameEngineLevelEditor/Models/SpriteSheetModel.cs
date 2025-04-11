@@ -11,5 +11,6 @@ namespace VulkanGameEngineLevelEditor.Models
     {
         public ivec2 SpritePixelSize { get; set; }
         public vec2 SpriteScale { get; set; }
+        public Guid MaterialID { get; set; }
     }
 }

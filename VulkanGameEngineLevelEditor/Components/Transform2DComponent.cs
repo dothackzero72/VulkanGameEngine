@@ -1,16 +1,8 @@
-﻿using Coral.Managed.Interop;
-using GlmSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VulkanGameEngineGameObjectScripts.Import;
-using VulkanGameEngineGameObjectScripts.Input;
-using VulkanGameEngineGameObjectScripts;
+﻿using GlmSharp;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Components
 {
@@ -72,8 +64,8 @@ namespace VulkanGameEngineLevelEditor.Components
         {
             GameObjectTransform = mat4.Identity;
             GameObjectTransform = mat4.Scale(new vec3(GameObjectScale, 0.0f));
-            GameObjectTransform = mat4.Rotate(CLIMath.DegreesToRadians(GameObjectRotation.x), new vec3(1.0f, 0.0f, 0.0f));
-            GameObjectTransform = mat4.Rotate(CLIMath.DegreesToRadians(GameObjectRotation.y), new vec3(0.0f, 1.0f, 0.0f));
+            GameObjectTransform = mat4.Rotate(VMath.DegreesToRadians(GameObjectRotation.x), new vec3(1.0f, 0.0f, 0.0f));
+            GameObjectTransform = mat4.Rotate(VMath.DegreesToRadians(GameObjectRotation.y), new vec3(0.0f, 1.0f, 0.0f));
             GameObjectTransform = mat4.Translate(new vec3(GameObjectPosition, 0.0f));
         }
 

@@ -1,28 +1,11 @@
-﻿using AutoMapper;
-using GlmSharp;
+﻿using GlmSharp;
 using Newtonsoft.Json;
-using Silk.NET.Core.Native;
-using Silk.NET.Maths;
-using Silk.NET.SDL;
-using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using VulkanGameEngineGameObjectScripts;
-using VulkanGameEngineGameObjectScripts.Vulkan;
 using VulkanGameEngineLevelEditor.Models;
-using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
-using ImageLayout = Silk.NET.Vulkan.ImageLayout;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -135,7 +118,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelineList[0].pipeline);
             foreach (var obj in gameObjectList)
             {
-                obj.Draw(commandBuffer, jsonPipelineList[0].pipeline, jsonPipelineList[0].pipelineLayout, jsonPipelineList[0].descriptorSetList, sceneDataBuffer);
+              //  obj.Draw(commandBuffer, jsonPipelineList[0].pipeline, jsonPipelineList[0].pipelineLayout, jsonPipelineList[0].descriptorSetList, sceneDataBuffer);
             }
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);

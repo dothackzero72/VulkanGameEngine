@@ -1,13 +1,6 @@
 ﻿using GlmSharp;
-using Microsoft.CodeAnalysis;
-using Silk.NET.Vulkan;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using VulkanGameEngineGameObjectScripts.Vulkan;
-using VulkanGameEngineLevelEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
-using static System.Windows.Forms.DataFormats;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {

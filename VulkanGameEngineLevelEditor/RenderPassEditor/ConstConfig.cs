@@ -19,52 +19,49 @@ namespace VulkanGameEngineLevelEditor.RenderPassEditor
         public static string GameObjectComponentDLLPath => ConfigurationManager.AppSettings["GameObjectComponentDLLPath"];
 
         public static string DefaultColorAttachmentDescriptionModel =>
-            $"AttachmentDescription\\DefaultColorAttachment.json";
+            $"{RenderPassBasePath}AttachmentDescription\\DefaultColorAttachment.json";
 
         public static string DefaultDepthAttachmentDescriptionModel =>
-            $"AttachmentDescription\\DefaultDepthAttachment.json";
+            $"{RenderPassBasePath}AttachmentDescription\\DefaultDepthAttachment.json";
 
         public static string DefaultCreateColorImageInfo =>
-            $"CreateImageInfo\\DefaultColorTextureCreateInfo.json";
+            $"{RenderPassBasePath}CreateImageInfo\\DefaultColorTextureCreateInfo.json";
 
         public static string DefaultCreateDepthImageInfo =>
-            $"CreateImageInfo\\DefaultDepthTextureCreateInfo.json";
+            $"{RenderPassBasePath}CreateImageInfo\\DefaultDepthTextureCreateInfo.json";
 
         public static string DefaultColorSamplerCreateInfo =>
-            $"CreateSamplerInfo\\DefaultColorSampleCreateInfo.json";
+            $"{RenderPassBasePath}CreateSamplerInfo\\DefaultColorSampleCreateInfo.json";
 
         public static string DefaultDepthSamplerCreateInfo =>
-            $"CreateSamplerInfo\\DefaultDepthSampleCreateInfo.json";
+            $"{RenderPassBasePath}CreateSamplerInfo\\DefaultDepthSampleCreateInfo.json";
 
         public static string DefaultSubpassDependencyModel =>
-            $"SubPassDependencies\\DefaultSubpassDependency.json";
+            $"{RenderPassBasePath}SubPassDependencies\\DefaultSubpassDependency.json";
 
         public static string AttachmentDescriptionModelPath =>
-            $"AttachmentDescription\\";
+            $"{RenderPassBasePath}AttachmentDescription\\";
 
         public static string CreateImageInfoPath =>
-            $"CreateImageInfo\\";
+            $"{RenderPassBasePath}CreateImageInfo\\";
 
         public static string SamplerCreateInfoPath =>
-            $"SamplerCreateInfo\\";
+            $"{RenderPassBasePath}SamplerCreateInfo\\";
 
         public static string SubpassDependencyModelPath =>
-            $"SamplerCreateInfo\\";
+            $"{RenderPassBasePath}SamplerCreateInfo\\";
 
         public static string Default2DRenderPass =>
-            $"Default2DRenderPass.json";
-
-        public static string FrameBufferRenderPass =>
-    $"Default2DRenderPass.json";
+            $"{RenderPassBasePath}Default2DRenderPass.json";
 
         public static string Default3DRenderPass =>
-            $"Default3DRenderPass.json";
+            $"{RenderPassBasePath}Default3DRenderPass.json";
 
         public static string Default2DPipeline =>
-            $"Default2DPipeline.json";
-        public static string FrameBufferPipeline =>
-    $"FrameBufferPipeline.json";
+            $"{PipelineBasePath}Default2DPipeline.json";
+        public static string DefaulFrameBufferPipeline =>
+    $"{PipelineBasePath}FrameBufferPipeline.json";
         public static string Default3DPipeline =>
-            $"Default3DPipeline.json";
+            $"{PipelineBasePath}Default3DPipeline.json";
     }
 }
