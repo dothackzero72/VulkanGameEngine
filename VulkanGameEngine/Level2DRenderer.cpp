@@ -34,11 +34,11 @@ void Level2DRenderer::StartLevelRenderer()
     }
 
     TextureList.emplace_back(std::make_shared<Texture>(Texture("../Textures/MegaMan_diffuse.bmp", VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum::kType_DiffuseTextureMap, false)));
-    MaterialList.emplace_back(std::make_shared<Material>(Material("Material1")));
-    MaterialList.back()->SetAlbedoMap(TextureList[0]);
+    assetManager.MaterialList[0] = Material("Material1");
+    assetManager.MaterialList[0].SetAlbedoMap(TextureList[0]);
 
     ivec2 size = ivec2(32);
-    SpriteSheet spriteSheet = SpriteSheet(MaterialList[0], size, 0);
+    SpriteSheet spriteSheet = SpriteSheet(0, size, 0);
 
     AddGameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 40.0f));
     AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 20.0f));
@@ -50,7 +50,6 @@ void Level2DRenderer::StartLevelRenderer()
     {
      .MeshList = Vector<SharedPtr<Mesh<Vertex2D>>>(GetMeshFromGameObjects()),
         .TextureList = Vector<SharedPtr<Texture>>(TextureList),
-        .MaterialList = Vector<SharedPtr<Material>>(MaterialList)
     };
 
     Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
@@ -64,7 +63,6 @@ void Level2DRenderer::StartLevelRenderer()
     {
         vertexAttribute.emplace_back(instanceVar);
     }
-
 
     JsonPipelineList[0] = std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
     SpriteLayerList[0]->SpriteRenderPipeline = JsonPipelineList[0];
@@ -121,9 +119,10 @@ void Level2DRenderer::UpdateBufferIndex()
     {
         TextureList[x]->UpdateTextureBufferIndex(x);
     }
-    for (int x = 0; x < MaterialList.size(); x++)
-    {
-        MaterialList[x]->UpdateMaterialBufferIndex(x);
+    int xz = 0;
+    for (auto& [id, material] : assetManager.MaterialList) {
+        material.UpdateMaterialBufferIndex(xz);
+        ++xz;
     }
 }
 
@@ -185,10 +184,10 @@ void Level2DRenderer::Destroy()
     {
         texture->Destroy();
     }
-    for (auto& material : MaterialList)
+  /*  for (auto& material : MaterialList)
     {
         material->Destroy();
-    }
+    }*/
     JsonRenderPass::Destroy();
 }
 

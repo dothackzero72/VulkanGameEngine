@@ -6,7 +6,9 @@
 #include "Vertex.h"
 #include "GameObject.h"
 #include "Transform2DComponent.h"
+#include "AssetManager.h"
 
+class AssetManager;
 class Sprite
 {
 	friend class SpriteSheet;
@@ -20,7 +22,7 @@ private:
 	WeakPtr<Transform2DComponent> Transform2D;
 
 	SpriteSheet Spritesheet;
-	SharedPtr<Material> SpriteMaterial;
+	uint SpriteMaterialID;
 	SharedPtr<SpriteInstanceStruct> SpriteInstance;
 	Animation2D CurrentSpriteAnimation;
 

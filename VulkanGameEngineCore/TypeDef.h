@@ -26,6 +26,7 @@ typedef std::string String;
 
 typedef uint8_t MemoryAddress;
 
+template <typename T, typename P> using UnorderedMap = std::unordered_map<T, P>;
 template <typename T> using Vector = std::vector<T>;
 template <typename T> using SharedPtr = std::shared_ptr<T>;
 template <typename T> using UniquePtr = std::unique_ptr<T>;

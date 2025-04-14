@@ -169,6 +169,7 @@
     <ClCompile Include="..\External\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
     <ClCompile Include="Animation2D.cpp" />
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GameObjectComponent.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="..\External\ImPlot\implot.h" />
     <ClInclude Include="..\External\ImPlot\implot_internal.h" />
     <ClInclude Include="Animation2D.h" />
+    <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GameObjectComponent.h" />
     <ClInclude Include="FPSGraph.h" />

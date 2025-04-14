@@ -2,10 +2,11 @@
 #include "Typedef.h"
 #include "Material.h"
 
+
 class SpriteSheet
 {
 public:
-	SharedPtr<Material> SpriteMaterial;
+	uint32				SpriteMaterialID;
 	ivec2				SpritePixelSize;
 	ivec2				SpriteCells;
 	vec2				SpriteUVSize;
@@ -13,7 +14,7 @@ public:
 	vec2				SpriteScale;
 
 	SpriteSheet();
-	SpriteSheet(SharedPtr<Material> spriteMaterial, ivec2& spritePixelSize, uint spriteLayer);
-	SpriteSheet(SharedPtr<Material> spriteMaterial, ivec2& spritePixelSize, uint spriteLayer, vec2 spriteScale);
+	SpriteSheet(uint32 SpriteMaterialID, ivec2& spritePixelSize, uint spriteLayer);
+	SpriteSheet(uint32 SpriteMaterialID, ivec2& spritePixelSize, uint spriteLayer, vec2 spriteScale);
 };
 

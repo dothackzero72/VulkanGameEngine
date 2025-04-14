@@ -19,7 +19,7 @@ JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport g
         //        .transformProperties = GetTransformPropertiesBuffer(gpuImport.MeshList),
         .meshProperties = GetMeshPropertiesBuffer(gpuImport.MeshList),
         .texturePropertiesList = GetTexturePropertiesBuffer(gpuImport.TextureList),
-        .materialProperties = GetMaterialPropertiesBuffer(gpuImport.MaterialList)
+        .materialProperties = GetMaterialPropertiesBuffer()
     };
 
     Vector<VkVertexInputBindingDescription> vertexBindingList = vertexBindings;
@@ -99,8 +99,14 @@ const Vector<VkDescriptorImageInfo> JsonPipeline::GetTexturePropertiesBuffer(Vec
     return texturePropertiesBuffer;
 }
 
-const Vector<VkDescriptorBufferInfo> JsonPipeline::GetMaterialPropertiesBuffer(Vector<SharedPtr<Material>>& materialList)
+const Vector<VkDescriptorBufferInfo> JsonPipeline::GetMaterialPropertiesBuffer()
 {
+    Vector<Material> materialList;
+    materialList.reserve(assetManager.MaterialList.size());
+    std::transform(assetManager.MaterialList.begin(), assetManager.MaterialList.end(),
+        std::back_inserter(materialList),
+        [](const auto& pair) { return pair.second; });
+
     std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
     if (materialList.size() == 0)
     {
@@ -115,7 +121,7 @@ const Vector<VkDescriptorBufferInfo> JsonPipeline::GetMaterialPropertiesBuffer(V
     {
         for (auto& material : materialList)
         {
-            material->GetMaterialPropertiesBuffer(materialPropertiesBuffer);
+            material.GetMaterialPropertiesBuffer(materialPropertiesBuffer);
         }
     }
     return materialPropertiesBuffer;

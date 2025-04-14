@@ -9,7 +9,6 @@ private:
 	Vector<SharedPtr<SpriteBatchLayer>> SpriteLayerList;
 	Vector<SharedPtr<GameObject>>		GameObjectList;
 	Vector<SharedPtr<Texture>>		    TextureList;
-	Vector<SharedPtr<Material>>		    MaterialList;
 
 	void AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, SpriteSheet& spriteSheet, vec2 objectPosition);
 	void AddTexture();

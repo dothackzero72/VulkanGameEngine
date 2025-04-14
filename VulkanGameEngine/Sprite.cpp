@@ -17,7 +17,7 @@ Sprite::Sprite(uint32 gameObjectId, SpriteSheet& spriteSheet)
 	SpriteLayer = spriteSheet.SpriteLayer;
 	SpriteSize = vec2(spriteSheet.SpritePixelSize.x * spriteSheet.SpriteScale.x, spriteSheet.SpritePixelSize.y * spriteSheet.SpriteScale.y);
 	SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	SpriteMaterial = spriteSheet.SpriteMaterial;
+	SpriteMaterialID = spriteSheet.SpriteMaterialID;
 	SpriteInstance = std::make_shared<SpriteInstanceStruct>(SpriteInstanceStruct());
 
 	Vector<ivec2> frameList =
@@ -49,6 +49,8 @@ void Sprite::Input(const float& deltaTime)
 
 void Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
+	 Material material = assetManager.MaterialList[SpriteMaterialID];
+
 	if (SharedPtr transform2D = Transform2D.lock())
 	{
 		mat4 spriteMatrix = mat4(1.0f);
@@ -62,7 +64,7 @@ void Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 		SpriteInstance->SpriteSize = SpriteSize;
 		SpriteInstance->UVOffset = vec4(Spritesheet.SpriteUVSize.x * CurrentSpriteAnimation.FrameList[CurrentFrame].x, Spritesheet.SpriteUVSize.y * CurrentSpriteAnimation.FrameList[CurrentFrame].y, Spritesheet.SpriteUVSize.x, Spritesheet.SpriteUVSize.y);
 		SpriteInstance->Color = SpriteColor;
-		SpriteInstance->MaterialID = (SpriteMaterial) ? SpriteMaterial->GetMaterialBufferIndex() : 0;
+		SpriteInstance->MaterialID = material.GetMaterialBufferIndex();
 		SpriteInstance->InstanceTransform = spriteMatrix;
 	}
 

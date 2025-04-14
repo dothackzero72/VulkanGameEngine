@@ -20,14 +20,13 @@ class GameObject
 private:
     const String NameSpace = "VulkanGameEngineGameObjectScripts.GameObject";
     static uint32 NextGameObjectId;
-    uint32 GameObjectId = 0;
     size_t ObjectComponentMemorySize = 0;
 
     SharedPtr<Coral::Type> CSclass;
     SharedPtr<Coral::ManagedObject> CSobject;
 
 public:
-
+    uint32 GameObjectId = 0;
     String Name;
     Vector<SharedPtr<GameObjectComponent>> GameObjectComponentList;
     bool GameObjectAlive = true;

@@ -15,7 +15,6 @@ struct GPUImport
 {
     Vector<SharedPtr<Mesh<Vertex2D>>> MeshList;
     Vector<SharedPtr<Texture>> TextureList;
-    Vector<SharedPtr<Material>> MaterialList;
 };
 
 class JsonPipeline
@@ -123,7 +122,7 @@ protected:
     }
 
     const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>>& textureList);
-    const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer(Vector<SharedPtr<Material>>& materialList);
+    const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer();
 
 public:
     String Name;

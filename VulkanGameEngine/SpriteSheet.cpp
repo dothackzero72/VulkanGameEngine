@@ -1,24 +1,29 @@
 #include "SpriteSheet.h"
+#include "AssetManager.h"
 
 SpriteSheet::SpriteSheet()
 {
 }
 
-SpriteSheet::SpriteSheet(SharedPtr<Material> spriteMaterial, ivec2& spritePixelSize, uint spriteLayer)
+SpriteSheet::SpriteSheet(uint32 spriteMaterialID, ivec2& spritePixelSize, uint spriteLayer)
 {
-	SpriteMaterial = spriteMaterial;
+	Material material = assetManager.MaterialList[spriteMaterialID];
+
+	SpriteMaterialID = spriteMaterialID;
 	SpritePixelSize = spritePixelSize;
-	SpriteCells = ivec2(spriteMaterial->GetAlbedoMap()->Width / spritePixelSize.x, spriteMaterial->GetAlbedoMap()->Height / spritePixelSize.y);
+	SpriteCells = ivec2(material.GetAlbedoMap()->Width / spritePixelSize.x, material.GetAlbedoMap()->Height / spritePixelSize.y);
 	SpriteUVSize = vec2(1.0f / (float)SpriteCells.x, 1.0f / (float)SpriteCells.y);
 	SpriteLayer = spriteLayer;
 	SpriteScale = vec2(5.0f);
 }
 
-SpriteSheet::SpriteSheet(SharedPtr<Material> spriteMaterial, ivec2& spritePixelSize, uint spriteLayer, vec2 spriteScale)
+SpriteSheet::SpriteSheet(uint32 spriteMaterialID, ivec2& spritePixelSize, uint spriteLayer, vec2 spriteScale)
 {
-	SpriteMaterial = spriteMaterial;
+	Material material = assetManager.MaterialList[spriteMaterialID];
+
+	SpriteMaterialID = spriteMaterialID;
 	SpritePixelSize = spritePixelSize;
-	SpriteCells = ivec2(spriteMaterial->GetAlbedoMap()->Width / spritePixelSize.x, spriteMaterial->GetAlbedoMap()->Height / spritePixelSize.y);
+	SpriteCells = ivec2(material.GetAlbedoMap()->Width / spritePixelSize.x, material.GetAlbedoMap()->Height / spritePixelSize.y);
 	SpriteUVSize = vec2(1.0f / (float)SpriteCells.x, 1.0f / (float)SpriteCells.y);
 	SpriteLayer = spriteLayer;
 	SpriteScale = spriteScale;
