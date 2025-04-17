@@ -127,19 +127,6 @@
   ],
   "VertexInputBindingDescriptionList": [],
   "VertexInputAttributeDescriptionList": [],
-  "RenderArea": {
-    "RenderArea": {
-      "offset": {
-        "x": 0,
-        "y": 0
-      },
-      "extent": {
-        "width": 0,
-        "height": 0
-      }
-    },
-    "UseDefaultRenderArea": true
-  },
   "IsRenderedToSwapchain": true,
   "_name": "DefaultPipeline"
 }

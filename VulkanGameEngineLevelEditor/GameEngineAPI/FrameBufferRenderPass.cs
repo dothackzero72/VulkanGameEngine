@@ -30,16 +30,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var imageIndex = VulkanRenderer.ImageIndex;
             var commandBuffer = commandBufferList[(int)commandIndex];
 
-            VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
-            {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-                renderPass = renderPass,
-                renderArea = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution),
-                clearValueCount = clearColorValueList.UCount,
-                pClearValues = clearColorValueList.Ptr,
-                framebuffer = frameBufferList[(int)imageIndex],
-                pNext = IntPtr.Zero
-            };
+            var renderPassInfo = RenderPassInfo;
+            renderPassInfo.framebuffer = frameBufferList[(int)imageIndex];
 
             VkCommandBufferBeginInfo commandInfo = new VkCommandBufferBeginInfo
             {

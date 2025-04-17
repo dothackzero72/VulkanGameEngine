@@ -19,7 +19,7 @@ namespace VulkanGameEngineLevelEditor.Models
     [Serializable]
     public unsafe class VkSamplerCreateInfoModel : RenderPassEditorBaseModel
     {
-        IMapper _mapper;
+      //  IMapper _mapper;
         private VkStructureType _sType = VkStructureType.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
         private VkSamplerCreateFlagBits _flags = 0;
         private void* _pNext = null;
@@ -39,7 +39,7 @@ namespace VulkanGameEngineLevelEditor.Models
         private VkBorderColor _borderColor;
         private bool _unnormalizedCoordinates;
 
-        public VkSamplerCreateInfoDLL DLL => _mapper.Map<VkSamplerCreateInfoDLL>(this);
+    //    public VkSamplerCreateInfoDLL DLL => _mapper.Map<VkSamplerCreateInfoDLL>(this);
 
         [Browsable(false)]
         [Newtonsoft.Json.JsonIgnore]

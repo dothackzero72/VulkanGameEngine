@@ -21,8 +21,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         protected List<JsonPipeline<T>> jsonPipelineList { get; set; } = new List<JsonPipeline<T>>();
         public VkSampleCountFlagBits SampleCountFlags { get; protected set; }
         public ListPtr<VkClearValue> clearColorValueList { get; protected set; } = new ListPtr<VkClearValue>();
-
- 
+        public VkRenderPassBeginInfo RenderPassInfo { get; protected set; }
         public JsonRenderPass() : base()
         {
         }
@@ -35,7 +34,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             string jsonContent = File.ReadAllText(jsonPath);
             RenderPassBuildInfoModel model = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
             clearColorValueList = new ListPtr<VkClearValue>(model.ClearValueList);
-
 
             RenderPassBuildInfoDLL modelDLL = model.ToDLL();
             foreach (var item in model.RenderedTextureInfoModelList)
@@ -51,6 +49,33 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             renderPass = GameEngineImport.DLL_RenderPass_BuildRenderPass(VulkanRenderer.device, model.ToDLL());
             frameBufferList = CreateRenderPassImages(model);
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
+
+            VkExtent2D extent = new VkExtent2D
+            {
+                width = model.RenderArea.RenderArea.extent.width,
+                height = model.RenderArea.RenderArea.extent.height,
+            };
+            if (model.RenderArea.UseDefaultRenderArea)
+            {
+                extent.width = (uint)RenderPassResolution.x;
+                extent.height = (uint)RenderPassResolution.y;
+            }
+            RenderPassInfo = new VkRenderPassBeginInfo
+            {
+                renderPass = renderPass,
+                framebuffer = frameBufferList[0],
+                clearValueCount = clearColorValueList.UCount,
+                pClearValues = clearColorValueList.Ptr,
+                renderArea = new VkRect2D
+                {
+                    offset = new VkOffset2D
+                    {
+                        x = model.RenderArea.RenderArea.offset.x,
+                        y = model.RenderArea.RenderArea.offset.y
+                    },
+                    extent = extent
+                }
+            };
         }
 
         private ListPtr<VkFramebuffer> CreateRenderPassImages(RenderPassBuildInfoModel model)

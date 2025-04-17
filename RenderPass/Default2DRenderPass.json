@@ -1,7 +1,6 @@
 {
   "RenderedTextureInfoModelList": [
     {
-      "IsRenderedToSwapchain": true,
       "RenderedTextureInfoName": "texture",
       "ImageCreateInfo": {
         "imageType": 1,
@@ -49,7 +48,6 @@
       "_name": ""
     },
     {
-      "IsRenderedToSwapchain": false,
       "RenderedTextureInfoName": "DepthRenderedTexture",
       "ImageCreateInfo": {
         "imageType": 1,
@@ -152,6 +150,19 @@
       }
     }
   ],
-  "_name": "Default2DRenderPass",
-  "IsRenderedToSwapchain": false
+  "RenderArea": {
+    "RenderArea": {
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "extent": {
+        "width": 0,
+        "height": 0
+      }
+    },
+    "UseDefaultRenderArea": true
+  },
+  "IsRenderedToSwapchain": false,
+  "_name": "Default2DRenderPass"
 }

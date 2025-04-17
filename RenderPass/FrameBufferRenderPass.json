@@ -82,6 +82,19 @@
       }
     }
   ],
+  "RenderArea": {
+    "RenderArea": {
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "extent": {
+        "width": 0,
+        "height": 0
+      }
+    },
+    "UseDefaultRenderArea": true
+  },
   "_name": "BasicRenderPass",
   "IsRenderedToSwapchain": true
 }

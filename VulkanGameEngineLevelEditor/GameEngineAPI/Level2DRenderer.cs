@@ -59,18 +59,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public override VkCommandBuffer Draw(List<GameObject> meshList, SceneDataBuffer sceneDataBuffer)
         {
+            var imageIndex = VulkanRenderer.ImageIndex;
             var commandIndex = VulkanRenderer.CommandIndex;
             var commandBuffer = commandBufferList[(int)commandIndex];
 
-            VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
-            {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-                renderPass = renderPass,
-                framebuffer = frameBufferList[0],
-                clearValueCount = clearColorValueList.UCount,
-                pClearValues = clearColorValueList.Ptr,
-                renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution)
-            };
+            var renderPassInfo = RenderPassInfo;
+            renderPassInfo.framebuffer = frameBufferList[(int)imageIndex];
 
             VkCommandBufferBeginInfo commandInfo = new VkCommandBufferBeginInfo
             {
