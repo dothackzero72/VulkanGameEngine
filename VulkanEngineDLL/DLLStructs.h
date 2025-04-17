@@ -457,7 +457,6 @@ struct RenderPipelineDLL
     uint PipelineDescriptorListCount;
     uint VertexInputBindingDescriptionCount;
     uint VertexInputAttributeDescriptionCount;
-    uint ClearValueCount;
 
     VkViewport* ViewportList;
     VkRect2D* ScissorList;
@@ -471,7 +470,6 @@ struct RenderPipelineDLL
     VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo;
     VkVertexInputBindingDescription* VertexInputBindingDescription;
     VkVertexInputAttributeDescription* VertexInputAttributeDescription;
-    VkClearValue* ClearValueList;
 
     RenderPipelineModel Convert()
     {
@@ -518,10 +516,6 @@ struct RenderPipelineDLL
         for (uint x = 0; x < VertexInputAttributeDescriptionCount; x++)
         {
             model.VertexInputAttributeDescriptionList.emplace_back(VertexInputAttributeDescription[x]);
-        }
-        for (uint x = 0; x < ClearValueCount; x++)
-        {
-            model.ClearValueList.emplace_back(ClearValueList[x]);
         }
         return model;
     }
@@ -592,6 +586,11 @@ struct TextureMemoryDLL
     VkSampler Sampler;
 };
 
+struct RenderAreaModelDLL
+{
+    VkRect2D RenderArea;
+    bool UseDefaultRenderArea;
+};
 
 struct RenderPassBuildInfoDLL
 {
@@ -599,17 +598,26 @@ struct RenderPassBuildInfoDLL
 //const char** RenderPipelineList;
     RenderedTextureInfoDLL* RenderedTextureInfoModelList;
     VkSubpassDependency* SubpassDependencyList;
+    VkClearValue* ClearValueList;
+    RenderAreaModelDLL RenderArea;
+
     bool IsRenderedToSwapchain;
 
     uint RenderPipelineCount;
     uint RenderedTextureInfoModeCount;
     uint SubpassDependencyCount;
+    uint ClearValueCount;
 
     RenderPassBuildInfoModel Convert()
     {
         RenderPassBuildInfoModel model;
        // model._name = String(name);
         model.IsRenderedToSwapchain = IsRenderedToSwapchain;
+        model.RenderArea = RenderAreaModel
+        {
+            .RenderArea = RenderArea.RenderArea,
+            .UseDefaultRenderArea = RenderArea.UseDefaultRenderArea
+        };
 
         for (uint32_t x = 0; x < RenderedTextureInfoModeCount; x++)
         {
@@ -625,7 +633,10 @@ struct RenderPassBuildInfoDLL
         {
             model.RenderPipelineList.emplace_back(String(RenderPipelineList[x]));
         }*/
-
+        for (uint x = 0; x < ClearValueCount; x++)
+        {
+            model.ClearValueList.emplace_back(ClearValueList[x]);
+        }
         return model;
     }
 };

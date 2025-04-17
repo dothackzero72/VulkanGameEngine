@@ -21,7 +21,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ListPtr<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
 
             CreateJsonRenderPass(jsonFile, RenderPassResolution);
-            jsonPipelineList.Add(new JsonPipeline<NullVertex>(ConstConfig.DefaulFrameBufferPipeline, renderPass, 0, vertexBinding, vertexAttribute, renderGraphics, RenderPassResolution));
+            jsonPipelineList.Add(new JsonPipeline<NullVertex>(ConstConfig.DefaulFrameBufferPipeline, renderPass, 0, renderGraphics, RenderPassResolution));
         }
 
         public unsafe VkCommandBuffer Draw()
@@ -30,20 +30,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var imageIndex = VulkanRenderer.ImageIndex;
             var commandBuffer = commandBufferList[(int)commandIndex];
 
-            VkClearValue* clearValues = stackalloc[]
-            {
-                new VkClearValue(new VkClearColorValue(1, 1, 0, 1))
-            };
-
-          
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                 renderPass = renderPass,
                 renderArea = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution),
-                clearValueCount = 1,
+                clearValueCount = clearColorValueList.UCount,
+                pClearValues = clearColorValueList.Ptr,
                 framebuffer = frameBufferList[(int)imageIndex],
-                pClearValues = clearValues,
                 pNext = IntPtr.Zero
             };
 

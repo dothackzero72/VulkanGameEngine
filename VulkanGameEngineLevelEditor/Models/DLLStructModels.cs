@@ -95,7 +95,6 @@ namespace VulkanGameEngineLevelEditor.Models
         public uint PipelineDescriptorListCount;
         public uint VertexInputBindingDescriptionCount;
         public uint VertexInputAttributeDescriptionCount;
-        public uint ClearValueCount;
 
         public VkViewport* ViewportList;
         public VkRect2D* ScissorList;
@@ -109,7 +108,6 @@ namespace VulkanGameEngineLevelEditor.Models
         public VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo;
         public VkVertexInputBindingDescription* VertexInputBindingDescription;
         public VkVertexInputAttributeDescription* VertexInputAttributeDescription;
-        public VkClearValue* ClearValueList;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
@@ -119,10 +117,13 @@ namespace VulkanGameEngineLevelEditor.Models
        // public IntPtr* RenderPipelineList;
         public RenderedTextureInfoDLL* RenderedTextureInfoModelList;
         public VkSubpassDependency* SubpassDependencyList;
+        public VkClearValue* ClearValueList;
+        public RenderAreaModel RenderArea;
         public bool IsRenderedToSwapchain;
 
         public uint RenderPipelineCount;
         public uint RenderedTextureInfoModeCount;
         public uint SubpassDependencyCount;
+        public uint ClearValueCount;
     }
 }

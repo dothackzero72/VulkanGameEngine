@@ -26,10 +26,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             RenderPassResolution = renderPassResolution;
 
-            using ListPtr<VkClearValue> clearValues = new ListPtr<VkClearValue>();
-            clearValues.Add(new VkClearValue { Color = new VkClearColorValue(0, 0, 0, 1) });
-            clearValues.Add(new VkClearValue { DepthStencil = new VkClearDepthStencilValue(1.0f, 0) });
-
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
             base.CreateJsonRenderPass(json, renderPassResolution);
             StartLevelRenderer(gameObjectList, gpuImport);
@@ -50,19 +46,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         private void CreatePipeline(RenderPipelineDLL model, GPUImport<Vertex2D> gpuImport)
         {
-            var vertexBinding = NullVertex.GetBindingDescriptions();
-            foreach (var instanceVar in SpriteInstanceVertex2D.GetBindingDescriptions())
-            {
-                vertexBinding.Add(instanceVar);
-            }
-
-            var vertexAttribute = NullVertex.GetAttributeDescriptions();
-            foreach (var instanceVar in SpriteInstanceVertex2D.GetAttributeDescriptions())
-            {
-                vertexAttribute.Add(instanceVar);
-            }
-
-            jsonPipelineList.Add(new JsonPipeline<Vertex2D>("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\Default2DPipeline.json", renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, gpuImport, RenderPassResolution));
+            jsonPipelineList.Add(new JsonPipeline<Vertex2D>("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Pipelines\\Default2DPipeline.json", renderPass, (uint)sizeof(SceneDataBuffer), gpuImport, RenderPassResolution));
         }
 
         public void Update(VkCommandBuffer commandBuffer, float deltaTime)
@@ -78,17 +62,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var commandIndex = VulkanRenderer.CommandIndex;
             var commandBuffer = commandBufferList[(int)commandIndex];
 
-            using ListPtr<VkClearValue> clearValues = new ListPtr<VkClearValue>();
-            clearValues.Add(new VkClearValue { Color = new VkClearColorValue(0, 0, 0, 1) });
-            clearValues.Add(new VkClearValue { DepthStencil = new VkClearDepthStencilValue(1.0f, 0) });
-
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                 renderPass = renderPass,
                 framebuffer = frameBufferList[0],
-                clearValueCount = clearValues.UCount,
-                pClearValues = clearValues.Ptr,
+                clearValueCount = clearColorValueList.UCount,
+                pClearValues = clearColorValueList.Ptr,
                 renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution)
             };
 

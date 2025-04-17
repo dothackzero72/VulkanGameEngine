@@ -85,10 +85,8 @@ VkPipelineLayout DLL_Pipeline_CreatePipelineLayout(VkDevice device, RenderPipeli
 	return Pipeline_CreatePipelineLayout( device, descriptorSetLayoutList, constBufferSize);
 }
 
-VkPipeline DLL_Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineDLL& modelDLL, VkVertexInputBindingDescription* vertexBindingList, VkVertexInputAttributeDescription* vertexAttributeList, uint vertexBindingCount, uint vertexAttributeCount, ivec2 renderPassResolution)
+VkPipeline DLL_Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, RenderPipelineDLL& modelDLL, ivec2 renderPassResolution)
 {
 	RenderPipelineModel model = modelDLL.Convert();
-	Vector<VkVertexInputBindingDescription> vertexBindings(vertexBindingList, vertexBindingList + vertexBindingCount);
-	Vector<VkVertexInputAttributeDescription> vertexAttributes(vertexAttributeList, vertexAttributeList + vertexAttributeCount);
-	return Pipeline_CreatePipeline( device, renderpass, pipelineLayout, pipelineCache, model, vertexBindings, vertexAttributes, renderPassResolution);
+	return Pipeline_CreatePipeline( device, renderpass, pipelineLayout, pipelineCache, model, renderPassResolution);
 }

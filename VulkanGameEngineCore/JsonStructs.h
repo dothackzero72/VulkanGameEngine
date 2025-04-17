@@ -80,6 +80,12 @@ public:
     }
 };
 
+struct RenderAreaModel
+{
+    VkRect2D RenderArea;
+    bool UseDefaultRenderArea;
+};
+
 struct PipelineDescriptorModel
 {
     uint BindingNumber;
@@ -105,9 +111,11 @@ struct RenderPassBuildInfoModel : public RenderPassEditorBaseModel
 {
 public:
     bool IsRenderedToSwapchain;
-    std::vector<std::string> RenderPipelineList;
-    std::vector<RenderedTextureInfoModel> RenderedTextureInfoModelList;
+    Vector<String> RenderPipelineList;
+    Vector<RenderedTextureInfoModel> RenderedTextureInfoModelList;
     Vector<VkSubpassDependency> SubpassDependencyModelList;
+    Vector<VkClearValue> ClearValueList;
+    RenderAreaModel RenderArea;
 
     RenderPassBuildInfoModel()
     {

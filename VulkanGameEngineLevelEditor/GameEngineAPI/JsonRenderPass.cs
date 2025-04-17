@@ -20,6 +20,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public ListPtr<VkFramebuffer> frameBufferList { get; protected set; } = new ListPtr<VkFramebuffer>();
         protected List<JsonPipeline<T>> jsonPipelineList { get; set; } = new List<JsonPipeline<T>>();
         public VkSampleCountFlagBits SampleCountFlags { get; protected set; }
+        public ListPtr<VkClearValue> clearColorValueList { get; protected set; } = new ListPtr<VkClearValue>();
+
+ 
         public JsonRenderPass() : base()
         {
         }
@@ -31,6 +34,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             string jsonContent = File.ReadAllText(jsonPath);
             RenderPassBuildInfoModel model = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
+            clearColorValueList = new ListPtr<VkClearValue>(model.ClearValueList);
+
+
             RenderPassBuildInfoDLL modelDLL = model.ToDLL();
             foreach (var item in model.RenderedTextureInfoModelList)
             {
@@ -79,18 +85,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             var imageIndex = VulkanRenderer.ImageIndex;
             var commandBuffer = commandBufferList[(int)VulkanRenderer.CommandIndex];
 
-            using ListPtr<VkClearValue> clearValues = new ListPtr<VkClearValue>
-            {
-                new VkClearValue { Color = new VkClearColorValue(1, 0, 0, 1) },
-                new VkClearValue { DepthStencil = new VkClearDepthStencilValue(1.0f, 0) }
-            };
-
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
                 renderPass = renderPass,
                 framebuffer = frameBufferList[(int)imageIndex],
-                clearValueCount = clearValues.UCount,
-                pClearValues = clearValues.Ptr,
+                clearValueCount = clearColorValueList.UCount,
+                pClearValues = clearColorValueList.Ptr,
                 renderArea = new VkRect2D
                 {
                     offset = new VkOffset2D

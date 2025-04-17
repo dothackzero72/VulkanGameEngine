@@ -158,10 +158,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                                                                                                                                   VkPipelineLayout pipelineLayout,
                                                                                                                                   VkPipelineCache pipelineCache,
                                                                                                                                   RenderPipelineDLL model,
-                                                                                                                                  VkVertexInputBindingDescription* vertexBindingList,
-                                                                                                                                  VkVertexInputAttributeDescription* vertexAttributeList,
-        uint vertexBindingCount,
-        uint vertexAttributeCount,
         ivec2 renderPassResolution);
 
         //Buffer

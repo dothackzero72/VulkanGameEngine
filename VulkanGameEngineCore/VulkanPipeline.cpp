@@ -355,7 +355,7 @@ VkPipelineLayout Pipeline_CreatePipelineLayout(VkDevice device, const Vector<VkD
     return pipelineLayout;
 }
 
-VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, const RenderPipelineModel& model, const Vector<VkVertexInputBindingDescription>& vertexBindingList, const Vector<VkVertexInputAttributeDescription>& vertexAttributeList, ivec2& extent)
+VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, const RenderPipelineModel& model, ivec2& extent)
 {
     VkPipeline pipeline = VK_NULL_HANDLE;
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = VkPipelineVertexInputStateCreateInfo
@@ -363,10 +363,10 @@ VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkP
         .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
         .pNext = nullptr,
         .flags = 0,
-        .vertexBindingDescriptionCount = static_cast<uint>(vertexBindingList.size()),
-        .pVertexBindingDescriptions = vertexBindingList.data(),
-        .vertexAttributeDescriptionCount = static_cast<uint>(vertexAttributeList.size()),
-        .pVertexAttributeDescriptions = vertexAttributeList.data()
+        .vertexBindingDescriptionCount = static_cast<uint>(model.VertexInputBindingDescriptionList.size()),
+        .pVertexBindingDescriptions = model.VertexInputBindingDescriptionList.data(),
+        .vertexAttributeDescriptionCount = static_cast<uint>(model.VertexInputAttributeDescriptionList.size()),
+        .pVertexAttributeDescriptions = model.VertexInputAttributeDescriptionList.data()
     };
 
     VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfoModel = model.PipelineColorBlendStateCreateInfoModel;

@@ -337,13 +337,13 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct VkRenderPassBeginInfo
     {
-        public VkStructureType sType;
-        public IntPtr pNext; 
-        public VkRenderPass renderPass;
-        public VkFramebuffer framebuffer;
-        public VkRect2D renderArea;
-        public uint clearValueCount;
-        public VkClearValue* pClearValues;
+        public VkStructureType sType { get; set; }
+        public IntPtr pNext { get; set; }
+        public VkRenderPass renderPass { get; set; }
+        public VkFramebuffer framebuffer { get; set; }
+        public VkRect2D renderArea { get; set; }
+        public uint clearValueCount { get; set; }
+        public VkClearValue* pClearValues { get; set; }
     }
 
     [StructLayout(LayoutKind.Explicit)]

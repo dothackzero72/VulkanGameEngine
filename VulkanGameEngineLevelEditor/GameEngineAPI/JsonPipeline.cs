@@ -65,7 +65,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         }
 
-        public JsonPipeline(String jsonPipelineFilePath, VkRenderPass renderPass, uint ConstBufferSize, ListPtr<VkVertexInputBindingDescription> vertexBindings, ListPtr<VkVertexInputAttributeDescription> vertexAttributes, GPUImport<T> gpuImport, ivec2 renderPassResolution)
+        public JsonPipeline(String jsonPipelineFilePath, VkRenderPass renderPass, uint ConstBufferSize, GPUImport<T> gpuImport, ivec2 renderPassResolution)
         {
             _GPUImport = gpuImport;
 
@@ -100,7 +100,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             descriptorSetList = new ListPtr<VkDescriptorSet>(GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, model, descriptorSetLayoutList.Ptr), model.DescriptorSetCount);
             GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(_device, model, includes, descriptorSetList.Ptr);
             pipelineLayout = GameEngineImport.DLL_Pipeline_CreatePipelineLayout(_device, model, ConstBufferSize, descriptorSetLayoutList.Ptr);
-            pipeline = GameEngineImport.DLL_Pipeline_CreatePipeline(_device, renderPass, pipelineLayout, pipelineCache, model, vertexBindings.Ptr, vertexAttributes.Ptr, vertexBindings.UCount, vertexAttributes.UCount, renderPassResolution);
+            pipeline = GameEngineImport.DLL_Pipeline_CreatePipeline(_device, renderPass, pipelineLayout, pipelineCache, model, renderPassResolution);
         }
 
         public VkCommandBuffer Draw(VkCommandBuffer[] commandBufferList, VkRenderPass renderPass, VkFramebuffer[] frameBufferList, ivec2 renderPassResolution, List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)

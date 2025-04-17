@@ -74,7 +74,6 @@ namespace VulkanGameEngineLevelEditor.Models
                     PipelineInputAssemblyStateCreateInfo = PipelineInputAssemblyStateCreateInfo.Convert(),
                     VertexInputAttributeDescription = vertexInputAttributeDescriptionPtr,
                     VertexInputBindingDescription = vertexInputBindingDescriptionPtr,
-                    ClearValueList = clearColorPtr,
                     LayoutBindingList = layoutBindingPtr,
                     PipelineDescriptorList = descriptorPtr,
                     ViewportListCount = (uint)ViewportList.Count,
@@ -84,7 +83,6 @@ namespace VulkanGameEngineLevelEditor.Models
                     PipelineDescriptorListCount = (uint)PipelineDescriptorModelsList.Count,
                     VertexInputAttributeDescriptionCount = VertexInputAttributeDescriptionList.UCount(),
                     VertexInputBindingDescriptionCount = VertexInputBindingDescriptionList.UCount(),
-                    ClearValueCount = (uint)ClearValueList.Count,
                 };
             }
         }

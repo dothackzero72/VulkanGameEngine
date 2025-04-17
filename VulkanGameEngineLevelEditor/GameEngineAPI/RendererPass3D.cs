@@ -172,7 +172,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             ListPtr<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
             ListPtr<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
-            jsonPipeline = new JsonPipeline<Vertex3D>(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer), vertexBinding, vertexAttribute, new GPUImport<Vertex3D>(), RenderPassResolution);
+            jsonPipeline = new JsonPipeline<Vertex3D>(ConstConfig.Default2DPipeline, renderPass, (uint)sizeof(SceneDataBuffer), new GPUImport<Vertex3D>(), RenderPassResolution);
             //LoadDescriptorSets(model);
             //CreateGraphicsPipeline();
 
