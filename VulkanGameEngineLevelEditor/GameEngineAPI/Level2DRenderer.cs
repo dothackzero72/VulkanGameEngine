@@ -26,6 +26,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             RenderPassResolution = renderPassResolution;
 
+            using ListPtr<VkClearValue> clearValues = new ListPtr<VkClearValue>();
+            clearValues.Add(new VkClearValue { Color = new VkClearColorValue(0, 0, 0, 1) });
+            clearValues.Add(new VkClearValue { DepthStencil = new VkClearDepthStencilValue(1.0f, 0) });
+
             VulkanRenderer.CreateCommandBuffers(commandBufferList);
             base.CreateJsonRenderPass(json, renderPassResolution);
             StartLevelRenderer(gameObjectList, gpuImport);

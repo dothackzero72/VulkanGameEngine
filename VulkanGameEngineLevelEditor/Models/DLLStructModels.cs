@@ -84,6 +84,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public IntPtr Name;
         public IntPtr VertexShader;
         public IntPtr FragmentShader;
+        public VertexTypeEnum VertexType;
 
         public uint DescriptorSetCount;
         public uint DescriptorSetLayoutCount;
@@ -92,6 +93,9 @@ namespace VulkanGameEngineLevelEditor.Models
         public uint PipelineColorBlendAttachmentStateListCount;
         public uint LayoutBindingListCount;
         public uint PipelineDescriptorListCount;
+        public uint VertexInputBindingDescriptionCount;
+        public uint VertexInputAttributeDescriptionCount;
+        public uint ClearValueCount;
 
         public VkViewport* ViewportList;
         public VkRect2D* ScissorList;
@@ -103,6 +107,9 @@ namespace VulkanGameEngineLevelEditor.Models
         public VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo;
         public VkPipelineDepthStencilStateCreateInfo PipelineDepthStencilStateCreateInfo;
         public VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo;
+        public VkVertexInputBindingDescription* VertexInputBindingDescription;
+        public VkVertexInputAttributeDescription* VertexInputAttributeDescription;
+        public VkClearValue* ClearValueList;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]

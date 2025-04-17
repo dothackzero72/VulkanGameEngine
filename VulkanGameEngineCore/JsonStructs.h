@@ -41,6 +41,12 @@ enum DescriptorBindingPropertiesEnum
     kTransformDescriptor
 };
 
+enum VertexTypeEnum
+{
+    NullVertex = 0,
+    SpriteInstanceVertex = 1,
+};
+
 struct RenderPassEditorBaseModel
 {
     String _name;
@@ -145,6 +151,9 @@ struct RenderPipelineModel : RenderPassEditorBaseModel
     Vector<VkDescriptorSetLayoutBinding> LayoutBindingList;
     Vector<PipelineDescriptorModel> PipelineDescriptorModelsList;
     Vector<VkPipelineColorBlendAttachmentState> PipelineColorBlendAttachmentStateList;
+    Vector<VkVertexInputBindingDescription> VertexInputBindingDescriptionList;
+    Vector<VkVertexInputAttributeDescription> VertexInputAttributeDescriptionList;
+    Vector<VkClearValue> ClearValueList;
 
     RenderPipelineModel()
     {

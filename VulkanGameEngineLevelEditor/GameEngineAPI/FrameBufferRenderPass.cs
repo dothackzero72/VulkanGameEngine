@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
@@ -34,6 +35,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 new VkClearValue(new VkClearColorValue(1, 1, 0, 1))
             };
 
+          
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,

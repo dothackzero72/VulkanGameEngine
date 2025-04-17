@@ -23,6 +23,7 @@
       }
     }
   ],
+  "VertexType": 0,
   "DescriptorSetCount": 1,
   "DescriptorSetLayoutCount": 1,
   "PipelineColorBlendAttachmentStateList": [
@@ -122,6 +123,30 @@
       "BindingNumber": 0,
       "BindingPropertiesList": 1,
       "DescriptorType": 1
+    }
+  ],
+  "VertexInputBindingDescriptionList": [],
+  "VertexInputAttributeDescriptionList": [],
+  "ClearValueList": [
+    {
+      "Color": {
+        "Float32_0": 0.0,
+        "Float32_1": 0.0,
+        "Float32_2": 0.0,
+        "Float32_3": 1.0,
+        "Int32_0": 0,
+        "Int32_1": 0,
+        "Int32_2": 0,
+        "Int32_3": 1065353216,
+        "Uint32_0": 0,
+        "Uint32_1": 0,
+        "Uint32_2": 0,
+        "Uint32_3": 1065353216
+      },
+      "DepthStencil": {
+        "depth": 0.0,
+        "stencil": 0
+      }
     }
   ],
   "IsRenderedToSwapchain": true,

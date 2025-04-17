@@ -32,8 +32,8 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public VkPipelineDepthStencilStateCreateInfo Convert()
         {
-                   front = new VkStencilOpStateModel();
-        back = new VkStencilOpStateModel();
+            front = new VkStencilOpStateModel();
+            back = new VkStencilOpStateModel();
             return new VkPipelineDepthStencilStateCreateInfo
             {
                 sType = sType,

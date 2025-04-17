@@ -446,6 +446,7 @@ struct RenderPipelineDLL
     const char* Name;
     const char* VertexShader;
     const char* FragmentShader;
+    VertexTypeEnum VertexType;
 
     uint DescriptorSetCount;
     uint DescriptorSetLayoutCount;
@@ -454,6 +455,9 @@ struct RenderPipelineDLL
     uint PipelineColorBlendAttachmentStateListCount;
     uint LayoutBindingListCount;
     uint PipelineDescriptorListCount;
+    uint VertexInputBindingDescriptionCount;
+    uint VertexInputAttributeDescriptionCount;
+    uint ClearValueCount;
 
     VkViewport* ViewportList;
     VkRect2D* ScissorList;
@@ -465,6 +469,9 @@ struct RenderPipelineDLL
     VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo;
     VkPipelineDepthStencilStateCreateInfo PipelineDepthStencilStateCreateInfo;
     VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo;
+    VkVertexInputBindingDescription* VertexInputBindingDescription;
+    VkVertexInputAttributeDescription* VertexInputAttributeDescription;
+    VkClearValue* ClearValueList;
 
     RenderPipelineModel Convert()
     {
@@ -500,7 +507,22 @@ struct RenderPipelineDLL
         {
             model.PipelineColorBlendAttachmentStateList.emplace_back(PipelineColorBlendAttachmentStateList[x]);
         }
-     
+        for (uint x = 0; x < PipelineColorBlendAttachmentStateListCount; x++)
+        {
+            model.PipelineColorBlendAttachmentStateList.emplace_back(PipelineColorBlendAttachmentStateList[x]);
+        }
+        for (uint x = 0; x < VertexInputBindingDescriptionCount; x++)
+        {
+            model.VertexInputBindingDescriptionList.emplace_back(VertexInputBindingDescription[x]);
+        }
+        for (uint x = 0; x < VertexInputAttributeDescriptionCount; x++)
+        {
+            model.VertexInputAttributeDescriptionList.emplace_back(VertexInputAttributeDescription[x]);
+        }
+        for (uint x = 0; x < ClearValueCount; x++)
+        {
+            model.ClearValueList.emplace_back(ClearValueList[x]);
+        }
         return model;
     }
 };
