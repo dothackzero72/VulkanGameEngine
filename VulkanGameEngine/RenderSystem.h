@@ -21,43 +21,6 @@ private:
     VkRenderPassBeginInfo renderPassInfo;
     VkCommandBufferBeginInfo CommandBufferBeginInfo;
 
-
-    void LoadRenderPass(SharedPtr<JsonRenderPass> renderPass, SharedPtr<JsonPipeline> renderPipeline)
-    {
-        JsonRenderPassPtr = renderPass;
-        JsonPipelinePtr = renderPipeline;
-
-        clearValues =
-        {
-            VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
-            VkClearValue{.depthStencil = { 1.0f, 0 } }
-        };
-
-        renderPassInfo =
-        {
-            .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-            .renderPass = JsonRenderPassPtr->RenderPass,
-            .framebuffer = JsonRenderPassPtr->FrameBufferList[cRenderer.ImageIndex],
-            .renderArea
-            {
-                .offset = {0, 0},
-                .extent =
-                {
-                    .width = static_cast<uint32>(JsonRenderPassPtr->RenderPassResolution.x),
-                    .height = static_cast<uint32>(JsonRenderPassPtr->RenderPassResolution.y)
-                }
-            },
-            .clearValueCount = static_cast<uint32>(clearValues.size()),
-            .pClearValues = clearValues.data()
-        };
-
-        VkCommandBufferBeginInfo CommandBufferBeginInfo
-        {
-            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-            .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
-        };
-    }
-
    /* void SortSpritesByLayer(Vector<SpriteBatchLayerECS>& sprites)
     {
         std::sort(sprites.begin(), sprites.end(), [](const SpriteBatchLayerECS& spriteA, const SpriteBatchLayerECS& spriteB)
@@ -112,19 +75,26 @@ public:
     {
     }
 
-    RenderSystem(Vector<String>& renderPassJsonList)
+    RenderSystem(Vector<String>& renderPassJsonList, SharedPtr<Texture>& texture, SceneDataBuffer sceneDataBuffer)
     {
+        GPUImport gpuImport;
+        gpuImport.TextureList.emplace_back(texture);
 
-       // auto asdf = JsonRenderPass("../RenderPass/FrameBufferRenderPass.json", levelRenderer->RenderedColorTextureList[0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height);
         for (int x = 0; x < renderPassJsonList.size(); x++)
         {
-            //RenderPassList[0] = JsonRenderPass("../RenderPass/FrameBufferRenderPass.json", levelRenderer->RenderedColorTextureList[0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height);
+            RenderPassList[x] = JsonRenderPass(renderPassJsonList[x], gpuImport, ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height), sceneDataBuffer);
+            GraphicsPipelineList[x] = RenderPassList[x].JsonPipelineList[0];
         }
-       // LoadRenderPass(renderPass, renderPipeline);
-       // SpriteLayerList.emplace_back(SpriteBatchLayerECS());
+        // LoadRenderPass(renderPass, renderPipeline);
+        // SpriteLayerList.emplace_back(SpriteBatchLayerECS());
     }
 
     ~RenderSystem()
+    {
+
+    }
+
+    void Update(const float& deltaTime)
     {
 
     }
@@ -134,6 +104,11 @@ public:
         const JsonPipeline pipeline = GraphicsPipelineList[CurrentGraphicsPipelineID];
         const JsonRenderPass renderPass = RenderPassList[CurrentRenderPassID];
         const VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
+        VkRenderPassBeginInfo renderPassInfo = renderPass.RenderPassInfo;
+
+        renderPassInfo.clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size());
+        renderPassInfo.pClearValues = renderPass.ClearValueList.data();
+        renderPassInfo.framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex];
 
         VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
         VULKAN_RESULT(vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo));
@@ -146,15 +121,20 @@ public:
         return commandBuffer;
     }
 
-    VkCommandBuffer Render2D(const float deltaTime, SceneDataBuffer& sceneDataBuffer, uint32 gameObjectID)
+    VkCommandBuffer RenderSprites(const float deltaTime, SceneDataBuffer& sceneDataBuffer, uint32 gameObjectID)
     {
         const JsonPipeline pipeline = GraphicsPipelineList[CurrentGraphicsPipelineID];
         const JsonRenderPass renderPass = RenderPassList[CurrentRenderPassID];
         const VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
         const Vector<SpriteInstanceStruct> batchLayerList = BatchLayerList[gameObjectID];
+        VkRenderPassBeginInfo renderPassInfo = renderPass.RenderPassInfo;
 
         //SortSpritesByLayer(SpriteLayerList);
       //  InstanceUpdate(commandBuffer, deltaTime);
+
+        renderPassInfo.clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size());
+        renderPassInfo.pClearValues = renderPass.ClearValueList.data();
+        renderPassInfo.framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex];
 
         VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
         VULKAN_RESULT(vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo));
@@ -173,5 +153,10 @@ public:
         vkCmdEndRenderPass(commandBuffer);
         VULKAN_RESULT(vkEndCommandBuffer(commandBuffer));
         return commandBuffer;
+    }
+
+    void Destroy()
+    {
+
     }
 };

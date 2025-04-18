@@ -7,9 +7,11 @@
 #include "SpriteComponent.h"
 #include "JsonPipeline.h"
 
-typedef uint32 GameObjectID;
-typedef uint32 TextureID;
-typedef uint32 MaterialID;
+typedef uint32 UM_GameObjectID;
+typedef uint32 UM_TextureID;
+typedef uint32 UM_MaterialID;
+typedef uint32 UM_RenderPassID;
+typedef uint32 UM_PipelineID;
 
 class Sprite;
 class AssetManager
@@ -19,15 +21,15 @@ private:
 	uint32 NextId = 0;
 
 public:
-	Vector<GameObjectID> GameObjectList;
-	UnorderedMap<GameObjectID, Transform2DComponent> TransformComponentList;
-	//UnorderedMap<GameObjectID, SpriteComponent> SpriteComponentList;
-	UnorderedMap<GameObjectID, Sprite> SpriteList;
-	UnorderedMap<TextureID, Texture> TextureList;
-	UnorderedMap<MaterialID, Material> MaterialList;
-	//UnorderedMap<GameObjectID, Mesh2D> MeshList;
-	UnorderedMap<GameObjectID, Animation2D> Animation2DList;
-	UnorderedMap<GameObjectID, SpriteSheet> SpriteSheetList;
+	Vector<UM_GameObjectID> GameObjectList;
+	UnorderedMap<UM_GameObjectID, Transform2DComponent> TransformComponentList;
+	//UnorderedMap<UM_GameObjectID, SpriteComponent> SpriteComponentList;
+	UnorderedMap<UM_GameObjectID, Sprite> SpriteList;
+	UnorderedMap<UM_TextureID, Texture> TextureList;
+	UnorderedMap<UM_MaterialID, Material> MaterialList;
+	//UnorderedMap<UM_GameObjectID, Mesh2D> MeshList;
+	UnorderedMap<UM_GameObjectID, Animation2D> Animation2DList;
+	UnorderedMap<UM_GameObjectID, SpriteSheet> SpriteSheetList;
 
 	AssetManager();
 	~AssetManager();
