@@ -9,8 +9,6 @@ private:
 
 
 	void AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, SpriteSheet& spriteSheet, vec2 objectPosition);
-	void AddTexture();
-	void AddMaterial();
 	void RemoveGameObject(SharedPtr<GameObject> gameObject);
 	void DestroyDeadGameObjects();
 

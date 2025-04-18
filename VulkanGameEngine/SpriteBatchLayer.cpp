@@ -6,7 +6,7 @@ SpriteBatchLayer::SpriteBatchLayer()
 
 }
 
-SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, SharedPtr<JsonPipeline> spriteRenderPipeline)
+SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, JsonPipeline spriteRenderPipeline)
 {
 	SpriteRenderPipeline = spriteRenderPipeline;
 	SpriteLayerMesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList, nullptr));
@@ -70,9 +70,9 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 void SpriteBatchLayer::Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneDataBuffer)
 {
 	VkDeviceSize offsets[] = { 0 };
-	vkCmdPushConstants(commandBuffer, SpriteRenderPipeline->PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline->Pipeline);
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline->PipelineLayout, 0, SpriteRenderPipeline->DescriptorSetList.size(), SpriteRenderPipeline->DescriptorSetList.data(), 0, nullptr);
+	vkCmdPushConstants(commandBuffer, SpriteRenderPipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.Pipeline);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.PipelineLayout, 0, SpriteRenderPipeline.DescriptorSetList.size(), SpriteRenderPipeline.DescriptorSetList.data(), 0, nullptr);
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, SpriteLayerMesh->GetVertexBuffer().get(), offsets);
 	vkCmdBindVertexBuffers(commandBuffer, 1, 1, &SpriteBuffer.Buffer, offsets);
 	vkCmdBindIndexBuffer(commandBuffer, *SpriteLayerMesh->GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
@@ -81,7 +81,6 @@ void SpriteBatchLayer::Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sce
 
 void SpriteBatchLayer::Destroy()
 {
-	SpriteRenderPipeline.reset();
 	SpriteLayerMesh->Destroy();
 }
 

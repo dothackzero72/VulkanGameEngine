@@ -74,7 +74,7 @@ void Level2DRenderer::StartLevelRenderer()
         vertexAttribute.emplace_back(instanceVar);
     }
 
-    JsonPipelineList[0] = std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
+    JsonPipelineList[0] = JsonPipeline("../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution);
     SpriteLayerList[0]->SpriteRenderPipeline = JsonPipelineList[0];
 }
 

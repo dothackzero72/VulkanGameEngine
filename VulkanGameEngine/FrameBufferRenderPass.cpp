@@ -23,7 +23,7 @@ FrameBufferRenderPass::FrameBufferRenderPass(const String& jsonPath, SharedPtr<T
     GPUImport import = GPUImport{ .TextureList = Vector<SharedPtr<Texture>> { inputTexture } };
     Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
     Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
-    JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/FrameBufferPipeline.json", RenderPass, import, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), renderPassResolution)));
+    JsonPipelineList.emplace_back(JsonPipeline("../Pipelines/FrameBufferPipeline.json", RenderPass, import, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), renderPassResolution));
     ClearValueList = renderPassBuildInfo.ClearValueList;
     RenderPassInfo = VkRenderPassBeginInfo
     {

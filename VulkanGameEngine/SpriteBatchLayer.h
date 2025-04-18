@@ -33,10 +33,10 @@ public:
 	Vector<SpriteInstanceStruct>    SpriteInstanceList;
 	SpriteInstanceBuffer			SpriteBuffer;
 	SharedPtr<Mesh2D>		        SpriteLayerMesh;
-	SharedPtr<JsonPipeline>			SpriteRenderPipeline;
+	JsonPipeline 					SpriteRenderPipeline;
 
 	SpriteBatchLayer();
-	SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, SharedPtr<JsonPipeline> spriteRenderPipeline);
+	SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, JsonPipeline spriteRenderPipeline);
 	virtual ~SpriteBatchLayer();
 
 	void LoadSprites();

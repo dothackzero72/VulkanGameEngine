@@ -29,7 +29,7 @@ public:
 	Vector<VkClearValue> ClearValueList;
 	VkRenderPassBeginInfo RenderPassInfo;
 
-	Vector<SharedPtr<JsonPipeline>> JsonPipelineList;
+	Vector<JsonPipeline> JsonPipelineList;
 	Vector<SharedPtr<Texture>> InputTextureList;
 
 	Vector<SharedPtr<RenderedTexture>> RenderedColorTextureList = Vector<SharedPtr<RenderedTexture>>();

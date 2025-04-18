@@ -62,7 +62,7 @@ void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& render
     {
         Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
         Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
-        JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline(renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution)));
+        JsonPipelineList.emplace_back(JsonPipeline(renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
     }
 }
 
@@ -121,8 +121,8 @@ VkCommandBuffer JsonRenderPass::DrawFrameBuffer()
     VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdBindPipeline(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0]->Pipeline);
-    vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0]->PipelineLayout, 0, JsonPipelineList[0]->DescriptorSetList.size(), JsonPipelineList[0]->DescriptorSetList.data(), 0, nullptr);
+    vkCmdBindPipeline(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0].Pipeline);
+    vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0].PipelineLayout, 0, JsonPipelineList[0].DescriptorSetList.size(), JsonPipelineList[0].DescriptorSetList.data(), 0, nullptr);
     vkCmdDraw(CommandBuffer, 6, 1, 0, 0);
     vkCmdEndRenderPass(CommandBuffer);
     vkEndCommandBuffer(CommandBuffer);
@@ -146,7 +146,7 @@ VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, Sce
     vkCmdBeginRenderPass(CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     for (auto mesh : meshList)
     {
-        mesh->Draw(CommandBuffer, JsonPipelineList[0]->Pipeline, JsonPipelineList[0]->PipelineLayout, JsonPipelineList[0]->DescriptorSetList);
+        mesh->Draw(CommandBuffer, JsonPipelineList[0].Pipeline, JsonPipelineList[0].PipelineLayout, JsonPipelineList[0].DescriptorSetList);
     }
     vkCmdEndRenderPass(CommandBuffer);
     vkEndCommandBuffer(CommandBuffer);
@@ -161,7 +161,7 @@ void JsonRenderPass::Destroy()
     }
     for (auto pipeline : JsonPipelineList)
     {
-        pipeline->Destroy();
+        pipeline.Destroy();
     }
     depthTexture->Destroy();
     renderer.DestroyRenderPass(RenderPass);

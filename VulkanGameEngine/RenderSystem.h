@@ -21,54 +21,6 @@ private:
     VkRenderPassBeginInfo renderPassInfo;
     VkCommandBufferBeginInfo CommandBufferBeginInfo;
 
-   /* void SortSpritesByLayer(Vector<SpriteBatchLayerECS>& sprites)
-    {
-        std::sort(sprites.begin(), sprites.end(), [](const SpriteBatchLayerECS& spriteA, const SpriteBatchLayerECS& spriteB)
-            {
-                return spriteA.SpriteLayerIndex > spriteB.SpriteLayerIndex;
-            });
-    }
-
-    void InstanceUpdate(VkCommandBuffer& commandBuffer, const float& deltaTime)
-    {
-        for (auto& gameObj : assetManager.GameObjectList)
-        {
-            const Transform2DComponent transformComponent = assetManager.TransformComponentList[gameObj];
-            const SpriteSheetECS spriteSheet = assetManager.SpriteSheetList[gameObj];
-            SpriteECS spriteObj = assetManager.SpriteList[gameObj];
-            Animation2D animation = spriteObj.AnimationList[spriteObj.CurrentAnimationID];
-            Vector<SpriteInstanceStructECS> spriteInstanceList = BatchLayerList[gameObj];
-
-            for (auto& sprite : spriteInstanceList)
-            {
-                mat4 spriteMatrix = mat4(1.0f);
-                spriteMatrix = glm::translate(spriteMatrix, vec3(transformComponent.GameObjectPosition.x, transformComponent.GameObjectPosition.y, 0.0f));
-                spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transformComponent.GameObjectRotation.x), vec3(1.0f, 0.0f, 0.0f));
-                spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transformComponent.GameObjectRotation.y), vec3(0.0f, 1.0f, 0.0f));
-                spriteMatrix = glm::rotate(spriteMatrix, glm::radians(0.0f), vec3(0.0f, 0.0f, 1.0f));
-                spriteMatrix = glm::scale(spriteMatrix, vec3(transformComponent.GameObjectScale.x, transformComponent.GameObjectScale.y, 0.0f));
-
-                sprite.SpritePosition = transformComponent.GameObjectPosition;
-                sprite.SpriteSize = sprite.SpriteSize;
-                sprite.UVOffset = vec4(spriteSheet.SpriteUVSize.x * animation.FrameList[spriteObj.CurrentFrame].x, spriteSheet.SpriteUVSize.y * animation.FrameList[spriteObj.CurrentFrame].y, spriteSheet.SpriteUVSize.x, spriteSheet.SpriteUVSize.y);
-                sprite.Color = sprite.Color;
-                sprite.MaterialID = sprite.MaterialID;
-                sprite.InstanceTransform = spriteMatrix;
-
-                animation.CurrentFrameTime += deltaTime;
-                if (animation.CurrentFrameTime >= animation.FrameHoldTime)
-                {
-                    spriteObj.CurrentFrame += 1;
-                    animation.CurrentFrameTime = 0.0f;
-                    if (spriteObj.CurrentFrame > animation.FrameList.size() - 1)
-                    {
-                        spriteObj.CurrentFrame = 0;
-                    }
-                }
-            }
-        }
-    }*/
-
 public:
 
     RenderSystem()
@@ -83,10 +35,8 @@ public:
         for (int x = 0; x < renderPassJsonList.size(); x++)
         {
             RenderPassList[x] = JsonRenderPass(renderPassJsonList[x], gpuImport, ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height), sceneDataBuffer);
-            GraphicsPipelineList[x] = RenderPassList[x].JsonPipelineList[0];
+          //  GraphicsPipelineList[x] = RenderPassList[x].JsonPipelineList[0];
         }
-        // LoadRenderPass(renderPass, renderPipeline);
-        // SpriteLayerList.emplace_back(SpriteBatchLayerECS());
     }
 
     ~RenderSystem()
@@ -128,9 +78,6 @@ public:
         const VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
         const Vector<SpriteInstanceStruct> batchLayerList = BatchLayerList[gameObjectID];
         VkRenderPassBeginInfo renderPassInfo = renderPass.RenderPassInfo;
-
-        //SortSpritesByLayer(SpriteLayerList);
-      //  InstanceUpdate(commandBuffer, deltaTime);
 
         renderPassInfo.clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size());
         renderPassInfo.pClearValues = renderPass.ClearValueList.data();
