@@ -12,6 +12,4 @@ public:
 	FrameBufferRenderPass();
 	FrameBufferRenderPass(const String& jsonPath, SharedPtr<Texture> inputTexture, ivec2 renderPassResolution);
 	virtual ~FrameBufferRenderPass();
-
-	VkCommandBuffer Draw();
 };

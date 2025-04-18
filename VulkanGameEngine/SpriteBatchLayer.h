@@ -4,9 +4,7 @@
 #include "Mesh.h"
 #include "Mesh2D.h"
 #include "JsonPipeline.h"
-#include "Level2DRenderer.h"
 
-class Level2DRenderer;
 class SpriteBatchLayer
 {
 private:

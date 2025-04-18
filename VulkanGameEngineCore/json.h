@@ -475,6 +475,31 @@ public:
 		};
 	}
 
+	static VkClearValue LoadClearValue(nlohmann::json json)
+	{
+		VkClearValue clearValue = VkClearValue();
+
+		clearValue.color.float32[0] = json["Color"]["Float32_0"];
+		clearValue.color.float32[1] = json["Color"]["Float32_1"];
+		clearValue.color.float32[2] = json["Color"]["Float32_2"];
+		clearValue.color.float32[3] = json["Color"]["Float32_3"];
+
+		clearValue.color.int32[0] = json["Color"]["Int32_0"];
+		clearValue.color.int32[1] = json["Color"]["Int32_1"];
+		clearValue.color.int32[2] = json["Color"]["Int32_2"];
+		clearValue.color.int32[3] = json["Color"]["Int32_3"];
+
+		clearValue.color.uint32[0] = json["Color"]["Uint32_0"];
+		clearValue.color.uint32[1] = json["Color"]["Uint32_1"];
+		clearValue.color.uint32[2] = json["Color"]["Uint32_2"];
+		clearValue.color.uint32[3] = json["Color"]["Uint32_3"];
+
+		clearValue.depthStencil.depth = json["DepthStencil"]["depth"];
+		clearValue.depthStencil.stencil = json["DepthStencil"]["stencil"];
+
+		return clearValue;
+	}
+
 	static VkSubpassDependency LoadSubpassDependency(nlohmann::json json)
 	{
 		return VkSubpassDependency
@@ -526,6 +551,27 @@ public:
 		{
 			.offset = Json::LoadOffset2D(json["offset"]),
 			.extent = Json::LoadExtent2D(json["extent"])
+		};
+	}
+
+	static VkVertexInputBindingDescription LoadVertexInputBindingDescription(nlohmann::json json)
+	{
+		return VkVertexInputBindingDescription
+		{
+			.binding = json["binding"],
+			.stride = json["stride"],
+			.inputRate = json["inputRate"]
+		};
+	}
+
+	static VkVertexInputAttributeDescription LoadVertexInputAttributeDescription(nlohmann::json json)
+	{
+		return VkVertexInputAttributeDescription
+		{
+			.location = json["location"],
+			.binding = json["binding"],
+			.format = json["format"],
+			.offset = json["offset"]
 		};
 	}
 

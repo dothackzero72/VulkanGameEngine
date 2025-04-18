@@ -20,6 +20,8 @@ protected:
 	VkRenderPass RenderPass = VK_NULL_HANDLE;
 	VkCommandBuffer CommandBuffer;
 	std::vector<VkFramebuffer> FrameBufferList;
+	Vector<VkClearValue> ClearValueList;
+	VkRenderPassBeginInfo RenderPassInfo;
 
 	Vector<SharedPtr<JsonPipeline>> JsonPipelineList;
 	Vector<SharedPtr<Texture>> InputTextureList;
@@ -39,6 +41,7 @@ public:
 	virtual ~JsonRenderPass();
 
 	virtual void Update(const float& deltaTime);
+	VkCommandBuffer DrawFrameBuffer();
 	virtual VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer);
 	virtual void Destroy();
 };

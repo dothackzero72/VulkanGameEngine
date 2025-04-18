@@ -64,8 +64,8 @@ void Scene::UpdateRenderPasses()
 void Scene::Draw()
 {
 	VULKAN_RESULT(renderer.StartFrame());
-	CommandBufferSubmitList.emplace_back(levelRenderer->Draw(GameObjectList, sceneProperties));
-	CommandBufferSubmitList.emplace_back(frameRenderPass->Draw());
+	CommandBufferSubmitList.emplace_back(levelRenderer->DrawSprites(levelRenderer->SpriteLayerList, sceneProperties));
+	CommandBufferSubmitList.emplace_back(frameRenderPass->DrawFrameBuffer());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
 	VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
 	CommandBufferSubmitList.clear();

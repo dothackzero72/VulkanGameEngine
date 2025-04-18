@@ -17,6 +17,7 @@ struct GPUImport
     Vector<SharedPtr<Texture>> TextureList;
 };
 
+class SpriteBatchLayer;
 class JsonPipeline
 {
     friend class JsonRenderPass;

@@ -126,31 +126,9 @@ void Level2DRenderer::UpdateBufferIndex()
     }
 }
 
-VkCommandBuffer Level2DRenderer::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
+VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SharedPtr<SpriteBatchLayer>> spriteLayerList, SceneDataBuffer& sceneDataBuffer)
 {
-    std::vector<VkClearValue> clearValues
-    {
-        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
-        VkClearValue{.depthStencil = { 1.0f, 0 } }
-    };
-
-    VkRenderPassBeginInfo renderPassInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .renderPass = RenderPass,
-        .framebuffer = FrameBufferList[cRenderer.ImageIndex],
-        .renderArea
-        {
-            .offset = {0, 0},
-            .extent =
-            {
-                .width = static_cast<uint32>(RenderPassResolution.x),
-                .height = static_cast<uint32>(RenderPassResolution.y)
-            }
-        },
-        .clearValueCount = static_cast<uint32>(clearValues.size()),
-        .pClearValues = clearValues.data()
-    };
+    RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo
     {
@@ -160,8 +138,8 @@ VkCommandBuffer Level2DRenderer::Draw(Vector<SharedPtr<GameObject>> meshList, Sc
 
     VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
-    vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    for (auto spriteLayer : SpriteLayerList)
+    vkCmdBeginRenderPass(CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    for (auto spriteLayer : spriteLayerList)
     {
         spriteLayer->Draw(CommandBuffer, sceneDataBuffer);
     }
