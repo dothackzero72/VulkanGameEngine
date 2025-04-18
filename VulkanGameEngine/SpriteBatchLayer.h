@@ -8,6 +8,9 @@
 class SpriteBatchLayer
 {
 private:
+	void SortSpritesByLayer(std::vector<WeakPtr<Sprite>>& sprites);
+
+public:
 	Vector<Vertex2D> SpriteVertexList =
 	{
 		Vertex2D(vec2(0.0f, 1.0f), vec2(0.0f, 0.0f)),
@@ -16,12 +19,13 @@ private:
 		Vertex2D(vec2(0.0f, 0.0f), vec2(0.0f, 1.0f)),
 	};
 
-	 Vector<uint32> SpriteIndexList =
+	Vector<uint32> SpriteIndexList =
 	{
 	  0, 3, 1,
 	  1, 3, 2
 	};
 
+	String					        Name;
 	uint32                          MaxSpritesPerSheet;
 	uint32                          SpriteLayerIndex;
 
@@ -29,12 +33,8 @@ private:
 	Vector<SpriteInstanceStruct>    SpriteInstanceList;
 	SpriteInstanceBuffer			SpriteBuffer;
 	SharedPtr<Mesh2D>		        SpriteLayerMesh;
-
-	void SortSpritesByLayer(std::vector<WeakPtr<Sprite>>& sprites);
-
-public:
-	String					        Name;
 	SharedPtr<JsonPipeline>			SpriteRenderPipeline;
+
 	SpriteBatchLayer();
 	SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, SharedPtr<JsonPipeline> spriteRenderPipeline);
 	virtual ~SpriteBatchLayer();

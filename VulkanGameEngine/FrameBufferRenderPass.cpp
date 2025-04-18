@@ -24,6 +24,16 @@ FrameBufferRenderPass::FrameBufferRenderPass(const String& jsonPath, SharedPtr<T
     Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
     Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
     JsonPipelineList.emplace_back(std::make_shared<JsonPipeline>(JsonPipeline("../Pipelines/FrameBufferPipeline.json", RenderPass, import, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), renderPassResolution)));
+    ClearValueList = renderPassBuildInfo.ClearValueList;
+    RenderPassInfo = VkRenderPassBeginInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = RenderPass,
+        .framebuffer = FrameBufferList[cRenderer.ImageIndex],
+        .renderArea = renderPassBuildInfo.RenderArea.RenderArea,
+        .clearValueCount = static_cast<uint32>(ClearValueList.size()),
+        .pClearValues = ClearValueList.data()
+    };
 }
 
 FrameBufferRenderPass::~FrameBufferRenderPass()

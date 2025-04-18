@@ -92,13 +92,13 @@ struct RenderAreaModel
         model.RenderArea.offset.y = json["RenderArea"]["offset"]["y"];
         if (json["UseDefaultRenderArea"])
         {
-            model.RenderArea.extent.width = json["RenderArea"]["extent"]["width"];
-            model.RenderArea.extent.height = json["RenderArea"]["extent"]["height"];
+            model.RenderArea.extent.width = renderPassResolution.x;
+            model.RenderArea.extent.height = renderPassResolution.y;
         }
         else
         {
-            model.RenderArea.extent.width = renderPassResolution.x;
-            model.RenderArea.extent.height = renderPassResolution.y;
+            model.RenderArea.extent.width = json["RenderArea"]["extent"]["width"];
+            model.RenderArea.extent.height = json["RenderArea"]["extent"]["height"];
         }
         return model;
     }

@@ -20,6 +20,16 @@ Level2DRenderer::Level2DRenderer(const String& jsonPath, ivec2 renderPassResolut
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
+    ClearValueList = renderPassBuildInfo.ClearValueList;
+    RenderPassInfo = VkRenderPassBeginInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = RenderPass,
+        .framebuffer = FrameBufferList[cRenderer.ImageIndex],
+        .renderArea = renderPassBuildInfo.RenderArea.RenderArea,
+        .clearValueCount = static_cast<uint32>(ClearValueList.size()),
+        .pClearValues = ClearValueList.data()
+    };
 }
 
 Level2DRenderer::~Level2DRenderer()
@@ -128,6 +138,8 @@ void Level2DRenderer::UpdateBufferIndex()
 
 VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SharedPtr<SpriteBatchLayer>> spriteLayerList, SceneDataBuffer& sceneDataBuffer)
 {
+    RenderPassInfo.clearValueCount = static_cast<uint32>(ClearValueList.size());
+    RenderPassInfo.pClearValues = ClearValueList.data();
     RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo

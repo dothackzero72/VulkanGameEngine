@@ -14,6 +14,12 @@ class JsonRenderPass
 	friend class JsonPipeline;
 
 protected:
+	virtual void BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, GPUImport& renderGraphics, SceneDataBuffer& sceneDataBuffer);
+	virtual void BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo);
+	virtual void BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
+
+public:
+	String Name;
 	ivec2 RenderPassResolution;
 	VkSampleCountFlagBits SampleCount;
 
@@ -26,12 +32,6 @@ protected:
 	Vector<SharedPtr<JsonPipeline>> JsonPipelineList;
 	Vector<SharedPtr<Texture>> InputTextureList;
 
-	virtual void BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, GPUImport& renderGraphics, SceneDataBuffer& sceneDataBuffer);
-	virtual void BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo);
-	virtual void BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
-
-public:
-	String Name;
 	Vector<SharedPtr<RenderedTexture>> RenderedColorTextureList = Vector<SharedPtr<RenderedTexture>>();
 	SharedPtr<DepthTexture> depthTexture;
 

@@ -108,6 +108,8 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
 
 VkCommandBuffer JsonRenderPass::DrawFrameBuffer()
 {
+    RenderPassInfo.clearValueCount = static_cast<uint32>(ClearValueList.size());
+    RenderPassInfo.pClearValues = ClearValueList.data();
     RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo
@@ -129,6 +131,8 @@ VkCommandBuffer JsonRenderPass::DrawFrameBuffer()
 
 VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
 {
+    RenderPassInfo.clearValueCount = static_cast<uint32>(ClearValueList.size());
+    RenderPassInfo.pClearValues = ClearValueList.data();
     RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo
