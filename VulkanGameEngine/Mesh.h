@@ -37,8 +37,7 @@ private:
 	const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-	SharedPtr<GameObject> ParentGameObject;
-	SharedPtr<GameObjectComponent> ParentGameObjectComponent;
+	uint32 ParentGameObjectID;
 	SharedPtr<Transform2DComponent> GameObjectTransform;
 	
 protected:
@@ -64,12 +63,6 @@ public:
 
 	Mesh()
 	{
-	}
-
-	Mesh(SharedPtr<GameObjectComponent> parentGameObjectComponent)
-	{
-		ParentGameObject = parentGameObjectComponent->GetParentGameObject();
-		ParentGameObjectComponent = parentGameObjectComponent;
 	}
 
 	virtual ~Mesh()

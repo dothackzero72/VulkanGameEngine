@@ -1,16 +1,4 @@
 #include "GameObjectComponent.h"
-#include "MemoryManager.h"
-
-std::string GameObjectComponent::GetCSNameSpacePath(ComponentTypeEnum componentType)
-{
-    switch (componentType) 
-    {
-        case kRenderMesh2DComponent: return CSNameSpace + "RenderMesh2DComponent";
-        case kTransform2DComponent:  return CSNameSpace + "Transform2DComponent";
-        case kInputComponent:        return CSNameSpace + "InputComponent";
-        default:                     return "Undefined";
-    }
-}
 
 GameObjectComponent::GameObjectComponent()
 {
@@ -19,33 +7,17 @@ GameObjectComponent::GameObjectComponent()
 
 GameObjectComponent::GameObjectComponent(uint32 gameObjectId, ComponentTypeEnum componentType)
 {
-   // ParentGameObject = Level2DRenderer::LevelRenderer->SearchGameObjectsById(gameObjectId);
-    //void* reqw = this;
-    //Name = std::make_shared<Coral::String>(Coral::String().New("component"));
+    Name = "default";
+    ParentGameObjectID = gameObjectId;
     ComponentType = componentType;
-    //ParentGameObjectPtr = parentGameObjectPtr;
-
-    //CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(GetCSNameSpacePath(componentType)));
-    //SharedPtr<GameObject> parentPtr = ParentGameObjectPtr.lock();
-    //if (parentPtr)
-    //{
-    //    CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ptr, parentGameObjectPtr.get(), parentPtr->GetCSObjectHandle()));
-    //}
 }
 
 GameObjectComponent::GameObjectComponent(uint32 gameObjectId, const String& name, ComponentTypeEnum componentType)
 {
- //   ParentGameObject = Level2DRenderer::LevelRenderer->SearchGameObjectsById(gameObjectId);
-    //Name = std::make_shared<Coral::String>(Coral::String().New(name));
+    Name = name;
+    ParentGameObjectID = gameObjectId;
     ComponentType = componentType;
-    //ParentGameObjectPtr = parentGameObjectPtr;
 
-    //CSclass = std::make_shared<Coral::Type>(MemoryManager::GetECSassemblyModule()->GetType(GetCSNameSpacePath(componentType)));
-    //SharedPtr<GameObject> parentPtr = ParentGameObjectPtr.lock();
-    //if (parentPtr)
-    //{
-    //    CSobject = std::make_shared<Coral::ManagedObject>(CSclass->CreateInstance(ptr, parentGameObjectPtr.get(), parentPtr->GetCSObjectHandle()));
-    //}
 }
 
 GameObjectComponent::~GameObjectComponent()

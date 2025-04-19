@@ -5,10 +5,6 @@ extern "C"
 }
 #include <memory>
 #include "GameObjectComponent.h"
-#include <Coral/HostInstance.hpp>
-#include <Coral/GC.hpp>
-#include <Coral/Array.hpp>
-#include <Coral/Attribute.hpp>
 #include "Material.h"
 #include "SpriteSheet.h"
 
@@ -18,12 +14,8 @@ class GameObjectComponent;
 class GameObject 
 {
 private:
-    const String NameSpace = "VulkanGameEngineGameObjectScripts.GameObject";
     static uint32 NextGameObjectId;
     size_t ObjectComponentMemorySize = 0;
-
-    SharedPtr<Coral::Type> CSclass;
-    SharedPtr<Coral::ManagedObject> CSobject;
 
 public:
     uint32 GameObjectId = 0;
@@ -46,7 +38,6 @@ public:
 
     Vector<SharedPtr<GameObjectComponent>> GetGameObjectComponentList();
     SharedPtr<GameObjectComponent> GetComponentByName(const std::string& name);
-    void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
 
     std::shared_ptr<GameObjectComponent> GetComponentByComponentType(ComponentTypeEnum type);
     const uint32 GetId() { return GameObjectId; }

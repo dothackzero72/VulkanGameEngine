@@ -20,18 +20,11 @@ class GameObject;
 class GameObjectComponent
 {
 private:
-    const String CSNameSpace = "VulkanGameEngineGameObjectScripts.Component.";
-
 protected:
-    SharedPtr<Coral::Type> CSclass = nullptr;
-    SharedPtr<Coral::ManagedObject> CSobject = nullptr;
-
-    std::string GetCSNameSpacePath(ComponentTypeEnum componentType);
-
 public:
-    SharedPtr<GameObject> ParentGameObject;
+    uint32 ParentGameObjectID;
     ComponentTypeEnum ComponentType;
-    SharedPtr<Coral::String> Name = nullptr;
+    String Name;
     size_t MemorySize = 0;
 
     GameObjectComponent();
@@ -45,8 +38,4 @@ public:
     virtual void Destroy();
     virtual SharedPtr<GameObjectComponent> Clone() const;
     virtual size_t GetMemorySize() const;
-
-    SharedPtr<GameObject> GetParentGameObject() { return ParentGameObject; }
-    void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
-    const GameObjectComponent* GetCPPObjectHandle() { return this; }
 };
