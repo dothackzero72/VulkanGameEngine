@@ -18,8 +18,8 @@ private:
 	vec2 SpriteSize = vec2(50.0f);
 	vec4 SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	WeakPtr<GameObject> ParentGameObject;
-	WeakPtr<Transform2DComponent> Transform2D;
+	SharedPtr<GameObject> ParentGameObject;
+	SharedPtr<Transform2DComponent> Transform2D;
 
 	SpriteSheet Spritesheet;
 	uint SpriteMaterialID;

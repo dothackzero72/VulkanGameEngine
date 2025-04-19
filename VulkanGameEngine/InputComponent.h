@@ -21,7 +21,7 @@ struct CSTransform2DComponent : public CSGameObjectComponent
 class InputComponent : public GameObjectComponent
 {
 private:
-    WeakPtr<Transform2DComponent> transform2DComponentRef;
+    SharedPtr<Transform2DComponent> transform2DComponentRef;
 
 public:
 

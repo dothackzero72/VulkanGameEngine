@@ -12,7 +12,7 @@ LevelMap::~LevelMap()
 
 }
 
-void LevelMap::LoadLevelMap(Vector<WeakPtr<Tile>>& tileList, WeakPtr<Material> levelMaterial)
+void LevelMap::LoadLevelMap(Vector<SharedPtr<Tile>>& tileList, SharedPtr<Material> levelMaterial)
 {
 	TileList = tileList;
 	LevelMaterial = levelMaterial;

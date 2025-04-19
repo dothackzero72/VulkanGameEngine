@@ -16,8 +16,8 @@ struct Tile
 class LevelMap
 {
 private:
-	WeakPtr<Material>			  LevelMaterial;
-	Vector<WeakPtr<Tile>>         TileList;
+	SharedPtr<Material>			  LevelMaterial;
+	Vector<SharedPtr<Tile>>         TileList;
 
 	void LoadTiles();
 
@@ -25,5 +25,5 @@ public:
 	LevelMap();
 	virtual ~LevelMap();
 
-	void LoadLevelMap(Vector<WeakPtr<Tile>>& tileList, WeakPtr<Material> levelMaterial);
+	void LoadLevelMap(Vector<SharedPtr<Tile>>& tileList, SharedPtr<Material> levelMaterial);
 };

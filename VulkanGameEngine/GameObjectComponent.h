@@ -29,7 +29,7 @@ protected:
     std::string GetCSNameSpacePath(ComponentTypeEnum componentType);
 
 public:
-    WeakPtr<GameObject> ParentGameObject;
+    SharedPtr<GameObject> ParentGameObject;
     ComponentTypeEnum ComponentType;
     SharedPtr<Coral::String> Name = nullptr;
     size_t MemorySize = 0;
@@ -46,7 +46,7 @@ public:
     virtual SharedPtr<GameObjectComponent> Clone() const;
     virtual size_t GetMemorySize() const;
 
-    WeakPtr<GameObject> GetParentGameObject() { return ParentGameObject; }
+    SharedPtr<GameObject> GetParentGameObject() { return ParentGameObject; }
     void* GetCSObjectHandle() const { return CSobject->GetHandle(); }
     const GameObjectComponent* GetCPPObjectHandle() { return this; }
 };

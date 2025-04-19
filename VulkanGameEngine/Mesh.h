@@ -37,9 +37,9 @@ private:
 	const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-	WeakPtr<GameObject> ParentGameObject;
-	WeakPtr<GameObjectComponent> ParentGameObjectComponent;
-	WeakPtr<Transform2DComponent> GameObjectTransform;
+	SharedPtr<GameObject> ParentGameObject;
+	SharedPtr<GameObjectComponent> ParentGameObjectComponent;
+	SharedPtr<Transform2DComponent> GameObjectTransform;
 	
 protected:
 	SharedPtr<Material>		  MeshMaterial;
@@ -90,15 +90,15 @@ public:
 		MeshTransformBuffer = TransformBuffer(static_cast<void*>(&MeshTransform), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
-		SharedPtr parentGameObject = ParentGameObject.lock();
-		if (parentGameObject)
-		{
-			SharedPtr<GameObjectComponent> component = parentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent);
-			if (component)
-			{
-				GameObjectTransform = std::dynamic_pointer_cast<Transform2DComponent>(component);
-			}
-		}
+		//SharedPtr parentGameObject = ParentGameObject.lock();
+		//if (parentGameObject)
+		//{
+		//	SharedPtr<GameObjectComponent> component = parentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent);
+		//	if (component)
+		//	{
+		//		GameObjectTransform = std::dynamic_pointer_cast<Transform2DComponent>(component);
+		//	}
+		//}
 	}
 
 	void MeshStartUp(Vector<T>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material)
@@ -114,15 +114,13 @@ public:
 		MeshTransformBuffer = TransformBuffer(static_cast<void*>(&MeshTransform), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
-		SharedPtr parentGameObject = ParentGameObject.lock();
-		if (parentGameObject)
-		{
-			SharedPtr<GameObjectComponent> component = parentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent);
+
+		/*	SharedPtr<GameObjectComponent> component = ParentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent);
 			if (component)
 			{
 				GameObjectTransform = std::dynamic_pointer_cast<Transform2DComponent>(component);
-			}
-		}
+			}*/
+		
 	}
 
 	virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime)

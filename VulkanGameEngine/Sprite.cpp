@@ -8,10 +8,7 @@ Sprite::Sprite()
 Sprite::Sprite(uint32 gameObjectId, SpriteSheet& spriteSheet)
 {
 	ParentGameObject = Level2DRenderer::LevelRenderer->SearchGameObjectsById(gameObjectId);
-	if (SharedPtr parentGameObject = ParentGameObject.lock())
-	{
-		Transform2D = std::dynamic_pointer_cast<Transform2DComponent>(parentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent));
-	}
+	Transform2D = std::dynamic_pointer_cast<Transform2DComponent>(ParentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent));
 
 	Spritesheet = spriteSheet;
 	SpriteLayer = spriteSheet.SpriteLayer;
@@ -51,22 +48,20 @@ void Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
 	 Material material = assetManager.MaterialList[SpriteMaterialID];
 
-	if (SharedPtr transform2D = Transform2D.lock())
-	{
 		mat4 spriteMatrix = mat4(1.0f);
-		spriteMatrix = glm::translate(spriteMatrix, vec3(transform2D->GameObjectPosition.x, transform2D->GameObjectPosition.y, 0.0f));
-		spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transform2D->GameObjectRotation.x), vec3(1.0f, 0.0f, 0.0f));
-		spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transform2D->GameObjectRotation.y), vec3(0.0f, 1.0f, 0.0f));
+		spriteMatrix = glm::translate(spriteMatrix, vec3(Transform2D->GameObjectPosition.x, Transform2D->GameObjectPosition.y, 0.0f));
+		spriteMatrix = glm::rotate(spriteMatrix, glm::radians(Transform2D->GameObjectRotation.x), vec3(1.0f, 0.0f, 0.0f));
+		spriteMatrix = glm::rotate(spriteMatrix, glm::radians(Transform2D->GameObjectRotation.y), vec3(0.0f, 1.0f, 0.0f));
 		spriteMatrix = glm::rotate(spriteMatrix, glm::radians(0.0f), vec3(0.0f, 0.0f, 1.0f));
-		spriteMatrix = glm::scale(spriteMatrix, vec3(transform2D->GameObjectScale.x, transform2D->GameObjectScale.y, 0.0f));
+		spriteMatrix = glm::scale(spriteMatrix, vec3(Transform2D->GameObjectScale.x, Transform2D->GameObjectScale.y, 0.0f));
 
-		SpriteInstance->SpritePosition = transform2D->GameObjectPosition;
+		SpriteInstance->SpritePosition = Transform2D->GameObjectPosition;
 		SpriteInstance->SpriteSize = SpriteSize;
 		SpriteInstance->UVOffset = vec4(Spritesheet.SpriteUVSize.x * CurrentSpriteAnimation.FrameList[CurrentFrame].x, Spritesheet.SpriteUVSize.y * CurrentSpriteAnimation.FrameList[CurrentFrame].y, Spritesheet.SpriteUVSize.x, Spritesheet.SpriteUVSize.y);
 		SpriteInstance->Color = SpriteColor;
 		SpriteInstance->MaterialID = material.GetMaterialBufferIndex();
 		SpriteInstance->InstanceTransform = spriteMatrix;
-	}
+	
 
 	CurrentSpriteAnimation.CurrentFrameTime += deltaTime;
 	if (CurrentSpriteAnimation.CurrentFrameTime >= CurrentSpriteAnimation.FrameHoldTime)

@@ -40,8 +40,7 @@ void SpriteBatchLayer::RemoveSprite(SharedPtr<Sprite> sprite)
 {
 	sprite->Destroy();
 	SpriteList.erase(std::remove_if(SpriteList.begin(), SpriteList.end(),
-		[&sprite](const WeakPtr<Sprite>& spriteWeakPtr) {
-			const SharedPtr spritePtr = spriteWeakPtr.lock();
+		[&sprite](const SharedPtr<Sprite>& spritePtr) {
 			return spritePtr.get() == sprite.get();
 		}),
 		SpriteList.end());
@@ -54,11 +53,10 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 
 	for (auto& spritePtr : SpriteList)
 	{
-		const SharedPtr sprite = spritePtr.lock();
-		{
-			sprite->Update(commandBuffer, deltaTime);
-			SpriteInstanceList.emplace_back(*sprite->GetSpriteInstance().get());
-		}
+	
+			spritePtr->Update(commandBuffer, deltaTime);
+			SpriteInstanceList.emplace_back(*spritePtr->GetSpriteInstance().get());
+		
 	}
 
 	if (SpriteList.size())
@@ -84,11 +82,9 @@ void SpriteBatchLayer::Destroy()
 	SpriteLayerMesh->Destroy();
 }
 
-void SpriteBatchLayer::SortSpritesByLayer(std::vector<WeakPtr<Sprite>>& sprites)
+void SpriteBatchLayer::SortSpritesByLayer(std::vector<SharedPtr<Sprite>>& sprites)
 {
-	std::sort(sprites.begin(), sprites.end(), [](const WeakPtr<Sprite>& a, const WeakPtr<Sprite>& b) {
-			const SharedPtr spriteA = a.lock();
-			const SharedPtr spriteB = b.lock();
+	std::sort(sprites.begin(), sprites.end(), [](const SharedPtr<Sprite>& spriteA, const SharedPtr<Sprite>& spriteB) {
 			if (spriteA &&
 				spriteB)
 			{

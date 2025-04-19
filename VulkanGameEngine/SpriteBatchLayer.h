@@ -8,7 +8,7 @@
 class SpriteBatchLayer
 {
 private:
-	void SortSpritesByLayer(std::vector<WeakPtr<Sprite>>& sprites);
+	void SortSpritesByLayer(std::vector<SharedPtr<Sprite>>& sprites);
 
 public:
 	Vector<Vertex2D> SpriteVertexList =
@@ -29,7 +29,7 @@ public:
 	uint32                          MaxSpritesPerSheet;
 	uint32                          SpriteLayerIndex;
 
-	Vector<WeakPtr<Sprite>>         SpriteList;
+	Vector<SharedPtr<Sprite>>         SpriteList;
 	Vector<SpriteInstanceStruct>    SpriteInstanceList;
 	SpriteInstanceBuffer			SpriteBuffer;
 	SharedPtr<Mesh2D>		        SpriteLayerMesh;
