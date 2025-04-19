@@ -193,7 +193,6 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteBatchLayer.cpp" />
-    <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="SpriteSheet.cpp" />
     <ClCompile Include="SystemClock.cpp" />
     <ClCompile Include="Tile.cpp" />
@@ -242,7 +241,6 @@
     <ClInclude Include="SceneDataBuffer.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteBatchLayer.h" />
-    <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="SpriteSheet.h" />
     <ClInclude Include="SystemClock.h" />
     <ClInclude Include="Tile.h" />

@@ -54,5 +54,28 @@ public:
 	virtual void Destroy();
 
 	SharedPtr<SpriteInstanceStruct> GetSpriteInstance() { return SpriteInstance; }
+
+	Sprite& operator=(const Sprite& other)
+	{
+		if (this != &other)
+		{
+			CurrentAnimationID = other.CurrentAnimationID;
+			ParentGameObjectID = other.ParentGameObjectID;
+			SpritesheetID = other.SpritesheetID;
+			SpriteMaterialID = other.SpriteMaterialID;
+			CurrentFrame = other.CurrentFrame;
+			SpriteAlive = other.SpriteAlive;
+			SpritePosition = other.SpritePosition;
+			SpriteLayer = other.SpriteLayer;
+			SpriteRotation = other.SpriteRotation;
+			SpriteScale = other.SpriteScale;
+			SpriteSize = other.SpriteSize;
+			SpriteColor = other.SpriteColor;
+			SpriteInstance = other.SpriteInstance;
+			AnimationList = other.AnimationList;
+			CurrentSpriteAnimation = other.CurrentSpriteAnimation;
+		}
+		return *this; 
+	}
 };
 

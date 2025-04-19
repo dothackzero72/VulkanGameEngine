@@ -90,23 +90,10 @@ void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTy
         {
             case kTransform2DComponent: assetManager.TransformComponentList[gameObject->GameObjectId] = Transform2DComponent(gameObject->GetId(), objectPosition, name); break;
             case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject->GetId(), name))); break;
-            case kSpriteComponent: gameObject->AddComponent(std::make_shared<SpriteComponent>(SpriteComponent(gameObject->GetId(), name, spriteSheet))); break;
+            case kSpriteComponent: assetManager.SpriteList[gameObject->GameObjectId] = std::make_shared<Sprite>(Sprite(gameObject->GetId(), spriteSheet)); break;
         }
     }
 
-    //auto count = assetManager.GameObjectList.size() + 1;
-//assetManager.GameObjectList[count] = GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet);
-
-//Vector<GameObjectComponent> gameObjectComponentList;
-//for (auto component : gameObjectComponentTypeList)
-//{
-//    switch (component)
-//    {
-//        case kTransform2DComponent: assetManager.GameObjectList[count].AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(assetManager.GameObjectList[count].GetId(), objectPosition, name))); break;
-//        case kInputComponent: assetManager.GameObjectList[count].AddComponent(std::make_shared<InputComponent>(InputComponent(assetManager.GameObjectList[count].GetId(), name))); break;
-//        case kSpriteComponent: assetManager.GameObjectList[count].AddComponent(std::make_shared<SpriteComponent>(SpriteComponent(assetManager.GameObjectList[count].GetId(), name, spriteSheet))); break;
-//    }
-//}
 }
 
 void Level2DRenderer::RemoveGameObject(SharedPtr<GameObject> gameObject)
@@ -209,25 +196,25 @@ void Level2DRenderer::DestroyDeadGameObjects()
         }
     }
 
-    if (!deadGameObjectList.empty())
-    {
-        for (auto& gameObject : deadGameObjectList) {
-            if (SharedPtr spriteComponent = gameObject->GetComponentByComponentType(kSpriteComponent)) {
-                SharedPtr sprite = std::dynamic_pointer_cast<SpriteComponent>(spriteComponent);
-                if (sprite) {
-                    SharedPtr spriteObject = sprite->GetSprite();
-                    SpriteLayerList[0]->RemoveSprite(spriteObject);
-                }
-            }
-            gameObject->Destroy();
-        }
+    //if (!deadGameObjectList.empty())
+    //{
+    //    for (auto& gameObject : deadGameObjectList) {
+    //        if (SharedPtr spriteComponent = gameObject->GetComponentByComponentType(kSpriteComponent)) {
+    //            SharedPtr sprite = std::dynamic_pointer_cast<SpriteComponent>(spriteComponent);
+    //            if (sprite) {
+    //                SharedPtr spriteObject = sprite->GetSprite();
+    //                SpriteLayerList[0]->RemoveSprite(spriteObject);
+    //            }
+    //        }
+    //        gameObject->Destroy();
+    //    }
 
-        GameObjectList.erase(std::remove_if(GameObjectList.begin(), GameObjectList.end(),
-            [&](const SharedPtr<GameObject>& gameObject) {
-                return !gameObject->GameObjectAlive;
-            }),
-            GameObjectList.end());
-    }
+    //    GameObjectList.erase(std::remove_if(GameObjectList.begin(), GameObjectList.end(),
+    //        [&](const SharedPtr<GameObject>& gameObject) {
+    //            return !gameObject->GameObjectAlive;
+    //        }),
+    //        GameObjectList.end());
+    //}
 }
 
 Vector<SharedPtr<Mesh<Vertex2D>>> Level2DRenderer::GetMeshFromGameObjects()

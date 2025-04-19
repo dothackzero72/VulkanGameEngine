@@ -8,7 +8,6 @@
 #include "Material.h"
 #include "Mesh2D.h"
 #include "SpriteBatchLayer.h"
-#include "SpriteComponent.h"
 
 void ExceptionCallback(std::string_view InMessage);
 class MemoryManager 

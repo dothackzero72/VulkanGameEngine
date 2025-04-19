@@ -11,15 +11,11 @@ SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList
 	SpriteRenderPipeline = spriteRenderPipeline;
 	SpriteLayerMesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList, nullptr));
 
-	for (auto& gameObject : gameObjectList) 
+	for (auto& gameObject : gameObjectList)
 	{
-		if (SharedPtr spriteComponent = gameObject->GetComponentByComponentType(kSpriteComponent)) {
-			SharedPtr sprite = std::dynamic_pointer_cast<SpriteComponent>(spriteComponent);
-			if (sprite->GetSprite()) {
-				SpriteList.emplace_back(sprite->GetSprite());
-				SpriteInstanceList.emplace_back(*sprite->GetSprite()->GetSpriteInstance().get());
-			}
-		}
+		SharedPtr<Sprite> sprite = assetManager.SpriteList[gameObject->GameObjectId];
+		SpriteList.emplace_back(sprite);
+		SpriteInstanceList.emplace_back(*sprite->SpriteInstance.get());
 	}
 
 	SpriteBuffer = SpriteInstanceBuffer(SpriteInstanceList, SpriteLayerMesh->GetMeshBufferUsageSettings(), SpriteLayerMesh->GetMeshBufferPropertySettings(), false);

@@ -4,7 +4,7 @@
 #include <TypeDef.h>
 #include "VulkanRenderer.h"
 #include "Mesh2D.h"
-#include "SpriteComponent.h"
+#include "Animation2D.h"
 #include "JsonPipeline.h"
 
 typedef uint32 UM_GameObjectID;
@@ -25,7 +25,7 @@ public:
 	Vector<UM_GameObjectID> GameObjectList;
 	UnorderedMap<UM_GameObjectID, Transform2DComponent> TransformComponentList;
 	//UnorderedMap<UM_GameObjectID, SpriteComponent> SpriteComponentList;
-	UnorderedMap<UM_GameObjectID, Sprite> SpriteList;
+	UnorderedMap<UM_GameObjectID, SharedPtr<Sprite>> SpriteList;
 	UnorderedMap<UM_TextureID, Texture> TextureList;
 	UnorderedMap<UM_MaterialID, Material> MaterialList;
 	//UnorderedMap<UM_GameObjectID, Mesh2D> MeshList;
