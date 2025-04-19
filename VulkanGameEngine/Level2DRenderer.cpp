@@ -48,11 +48,11 @@ void Level2DRenderer::StartLevelRenderer()
     assetManager.MaterialList[0].SetAlbedoMap(TextureList[0]);
 
     ivec2 size = ivec2(32);
-    SpriteSheet spriteSheet = SpriteSheet(0, size, 0);
+    assetManager.SpriteSheetList[0] = SpriteSheet(0, size, 0);
 
-    AddGameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 40.0f));
-    AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 20.0f));
-    AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet, vec2(300.0f, 80.0f));
+    AddGameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 40.0f));
+    AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 20.0f));
+    AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 80.0f));
 
     JsonPipelineList.resize(1);
     SpriteLayerList.emplace_back(std::make_shared<SpriteBatchLayer>(SpriteBatchLayer(GameObjectList, JsonPipelineList[0])));
@@ -78,7 +78,7 @@ void Level2DRenderer::StartLevelRenderer()
     SpriteLayerList[0]->SpriteRenderPipeline = JsonPipelineList[0];
 }
 
-void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, SpriteSheet& spriteSheet, vec2 objectPosition)
+void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, uint32 spriteSheet, vec2 objectPosition)
 {
     SharedPtr<GameObject> gameObject = std::make_shared<GameObject>(GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet));
     GameObjectList.emplace_back(gameObject);
@@ -88,11 +88,25 @@ void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTy
     {
         switch (component)
         {
-            case kTransform2DComponent: gameObject->AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(gameObject->GetId(), objectPosition, name))); break;
+            case kTransform2DComponent: assetManager.TransformComponentList[gameObject->GameObjectId] = Transform2DComponent(gameObject->GetId(), objectPosition, name); break;
             case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject->GetId(), name))); break;
             case kSpriteComponent: gameObject->AddComponent(std::make_shared<SpriteComponent>(SpriteComponent(gameObject->GetId(), name, spriteSheet))); break;
         }
     }
+
+    //auto count = assetManager.GameObjectList.size() + 1;
+//assetManager.GameObjectList[count] = GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteSheet);
+
+//Vector<GameObjectComponent> gameObjectComponentList;
+//for (auto component : gameObjectComponentTypeList)
+//{
+//    switch (component)
+//    {
+//        case kTransform2DComponent: assetManager.GameObjectList[count].AddComponent(std::make_shared<Transform2DComponent>(Transform2DComponent(assetManager.GameObjectList[count].GetId(), objectPosition, name))); break;
+//        case kInputComponent: assetManager.GameObjectList[count].AddComponent(std::make_shared<InputComponent>(InputComponent(assetManager.GameObjectList[count].GetId(), name))); break;
+//        case kSpriteComponent: assetManager.GameObjectList[count].AddComponent(std::make_shared<SpriteComponent>(SpriteComponent(assetManager.GameObjectList[count].GetId(), name, spriteSheet))); break;
+//    }
+//}
 }
 
 void Level2DRenderer::RemoveGameObject(SharedPtr<GameObject> gameObject)

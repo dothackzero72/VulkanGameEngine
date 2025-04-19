@@ -29,7 +29,7 @@ public:
 	uint32                          MaxSpritesPerSheet;
 	uint32                          SpriteLayerIndex;
 
-	Vector<SharedPtr<Sprite>>         SpriteList;
+	Vector<SharedPtr<Sprite>>       SpriteList;
 	Vector<SpriteInstanceStruct>    SpriteInstanceList;
 	SpriteInstanceBuffer			SpriteBuffer;
 	SharedPtr<Mesh2D>		        SpriteLayerMesh;

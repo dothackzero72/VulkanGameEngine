@@ -5,9 +5,9 @@ SpriteComponent::SpriteComponent()
 {
 }
 
-SpriteComponent::SpriteComponent(uint32 gameObjectId, const String& name, SpriteSheet& spriteSheet) : GameObjectComponent(gameObjectId, kSpriteComponent)
+SpriteComponent::SpriteComponent(uint32 gameObjectId, const String& name, uint32 spriteSheetID) : GameObjectComponent(gameObjectId, kSpriteComponent)
 {
-	SpriteObj = std::make_shared<Sprite>(Sprite(gameObjectId, spriteSheet));
+	SpriteObj = std::make_shared<Sprite>(Sprite(gameObjectId, spriteSheetID));
 }
 
 SpriteComponent::~SpriteComponent()

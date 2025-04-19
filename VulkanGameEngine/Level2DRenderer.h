@@ -8,7 +8,7 @@ class Level2DRenderer : public JsonRenderPass
 private:
 
 
-	void AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, SpriteSheet& spriteSheet, vec2 objectPosition);
+	void AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, uint32 spriteSheet, vec2 objectPosition);
 	void RemoveGameObject(SharedPtr<GameObject> gameObject);
 	void DestroyDeadGameObjects();
 

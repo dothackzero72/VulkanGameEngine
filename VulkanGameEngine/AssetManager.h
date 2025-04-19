@@ -12,6 +12,7 @@ typedef uint32 UM_TextureID;
 typedef uint32 UM_MaterialID;
 typedef uint32 UM_RenderPassID;
 typedef uint32 UM_PipelineID;
+typedef uint32 UM_SpriteSheetID;
 
 class Sprite;
 class AssetManager
@@ -29,7 +30,7 @@ public:
 	UnorderedMap<UM_MaterialID, Material> MaterialList;
 	//UnorderedMap<UM_GameObjectID, Mesh2D> MeshList;
 	UnorderedMap<UM_GameObjectID, Animation2D> Animation2DList;
-	UnorderedMap<UM_GameObjectID, SpriteSheet> SpriteSheetList;
+	UnorderedMap<UM_SpriteSheetID, SpriteSheet> SpriteSheetList;
 
 	AssetManager();
 	~AssetManager();

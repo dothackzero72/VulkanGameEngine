@@ -25,13 +25,13 @@ GameObject::GameObject(const String& name, const Vector<ComponentTypeEnum>& game
 	Name = name;
 }
 
-GameObject::GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList, SpriteSheet& spriteSheet)
+GameObject::GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList, uint32 spriteSheetId)
 {
 	GameObjectId = ++NextGameObjectId;
 	Name = name;
 }
 
-GameObject::GameObject(const String& name, const Vector<GameObjectComponent>& gameObjectComponentList, SpriteSheet& spriteSheet)
+GameObject::GameObject(const String& name, const Vector<GameObjectComponent>& gameObjectComponentList, uint32 spriteSheetId)
 {
 	GameObjectId = ++NextGameObjectId;
 	Name = name;

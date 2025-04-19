@@ -26,8 +26,8 @@ public:
     GameObject();
     GameObject(const String& name);
     GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList);
-    GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList, SpriteSheet& spriteSheet);
-    GameObject(const String& name, const Vector<GameObjectComponent>& gameObjectComponentList, SpriteSheet& spriteSheet);
+    GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList, uint32 spriteSheetId);
+    GameObject(const String& name, const Vector<GameObjectComponent>& gameObjectComponentList, uint32 spriteSheetId);
 
     virtual void Input(const float& deltaTime);
     virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);

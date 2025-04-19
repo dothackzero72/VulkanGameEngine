@@ -50,13 +50,10 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 {
 	SpriteInstanceList.clear();
 	SpriteInstanceList.reserve(SpriteList.size());
-
 	for (auto& spritePtr : SpriteList)
 	{
-	
-			spritePtr->Update(commandBuffer, deltaTime);
-			SpriteInstanceList.emplace_back(*spritePtr->GetSpriteInstance().get());
-		
+		spritePtr->Update(commandBuffer, deltaTime);
+		SpriteInstanceList.emplace_back(*spritePtr->GetSpriteInstance().get());
 	}
 
 	if (SpriteList.size())
