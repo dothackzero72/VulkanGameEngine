@@ -50,6 +50,36 @@ void Level2DRenderer::StartLevelRenderer()
     ivec2 size = ivec2(32);
     assetManager.SpriteSheetList[0] = SpriteSheet(0, size, 0);
 
+    Vector<ivec2> frameList =
+    {
+        ivec2(0, 0),
+        ivec2(1, 0)
+    };
+
+    Vector<ivec2> frameList2 =
+    {
+        ivec2(3, 0),
+        ivec2(4, 0),
+        ivec2(5, 0),
+        ivec2(4, 0)
+    };
+
+
+    assetManager.VRAMSpriteList[0] = SpriteVRAM
+    {
+        .VRAMSpriteID = 0,
+        .SpritesheetID = assetManager.SpriteSheetList[0].SpriteMaterialID,
+        .SpriteMaterialID = assetManager.MaterialList[0].MaterialID,
+        .SpriteLayer = assetManager.SpriteSheetList[0].SpriteLayer,
+        .SpriteSize = vec2(assetManager.SpriteSheetList[0].SpritePixelSize.x * assetManager.SpriteSheetList[0].SpriteScale.x,   assetManager.SpriteSheetList[0].SpritePixelSize.y * assetManager.SpriteSheetList[0].SpriteScale.y),
+        .SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f),
+        .AnimationList = Vector<Animation2D>
+            {
+                Animation2D("Standing", frameList, 0.2f),
+                Animation2D("Walking", frameList2, 0.2f)
+            },
+    };
+
     AddGameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 40.0f));
     AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 20.0f));
     AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 80.0f));

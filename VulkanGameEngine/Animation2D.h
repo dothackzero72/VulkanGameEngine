@@ -9,7 +9,6 @@ struct Animation2D
 	float CurrentFrameTime;
 	float FrameHoldTime;
 	Vector<ivec2> FrameList;
-	String AnimationName;
 
 	Animation2D();
 	Animation2D(const String& animationName, Vector<ivec2>& frameList, float frameHoldTime);

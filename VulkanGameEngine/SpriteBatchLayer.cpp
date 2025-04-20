@@ -15,7 +15,7 @@ SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList
 	{
 		SharedPtr<Sprite> sprite = assetManager.SpriteList[gameObject->GameObjectId];
 		SpriteList.emplace_back(sprite);
-		SpriteInstanceList.emplace_back(*sprite->SpriteInstance.get());
+		SpriteInstanceList.emplace_back(sprite->SpriteInstance);
 	}
 
 	SpriteBuffer = SpriteInstanceBuffer(SpriteInstanceList, SpriteLayerMesh->GetMeshBufferUsageSettings(), SpriteLayerMesh->GetMeshBufferPropertySettings(), false);
@@ -49,7 +49,7 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 	for (auto& spritePtr : SpriteList)
 	{
 		spritePtr->Update(commandBuffer, deltaTime);
-		SpriteInstanceList.emplace_back(*spritePtr->GetSpriteInstance().get());
+		SpriteInstanceList.emplace_back(spritePtr->SpriteInstance);
 	}
 
 	if (SpriteList.size())
@@ -77,12 +77,12 @@ void SpriteBatchLayer::Destroy()
 
 void SpriteBatchLayer::SortSpritesByLayer(std::vector<SharedPtr<Sprite>>& sprites)
 {
-	std::sort(sprites.begin(), sprites.end(), [](const SharedPtr<Sprite>& spriteA, const SharedPtr<Sprite>& spriteB) {
-			if (spriteA &&
-				spriteB)
-			{
-				return spriteA->SpriteLayer > spriteB->SpriteLayer;
-			}
-			return true;
-		});
+	//std::sort(sprites.begin(), sprites.end(), [](const SharedPtr<Sprite>& spriteA, const SharedPtr<Sprite>& spriteB) {
+	//		if (spriteA &&
+	//			spriteB)
+	//		{
+	//			return spriteA->SpriteLayer > spriteB->SpriteLayer;
+	//		}
+	//		return true;
+	//	});
 }

@@ -242,6 +242,7 @@
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteBatchLayer.h" />
     <ClInclude Include="SpriteSheet.h" />
+    <ClInclude Include="SpriteVRAM.h" />
     <ClInclude Include="SystemClock.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TileMap.h" />

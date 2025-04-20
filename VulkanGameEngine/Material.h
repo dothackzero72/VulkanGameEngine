@@ -26,6 +26,9 @@ struct MaterialProperitiesBuffer
 class Material
 {
 private:
+	void UpdateBuffer();
+
+public:
 	static uint32 NextMaterialId;
 	uint32 MaterialID = 0;
 	uint MaterialBufferIndex = 0;
@@ -50,9 +53,6 @@ private:
 	SharedPtr<Texture> EmissionMap = nullptr;
 	SharedPtr<Texture> HeightMap = nullptr;
 
-	void UpdateBuffer();
-
-public:
 	Material();
 	Material(const String& materialName);
 	virtual ~Material();
