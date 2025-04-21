@@ -29,13 +29,13 @@ void AssetManager::Destroy()
 
 void AssetManager::CreateEntity()
 {
-	if (!FreeIds.empty())
-	{
-		GameObjectList.emplace_back(FreeIds.front());
-		FreeIds.pop();
-		return;
-	}
-	GameObjectList.emplace_back(++NextId);
+	//if (!FreeIds.empty())
+	//{
+	//	GameObjectList.emplace_back(FreeIds.front());
+	//	FreeIds.pop();
+	//	return;
+	//}
+	//GameObjectList.emplace_back(++NextId);
 }
 
 void AssetManager::DestroyEntity(uint32_t id)

@@ -8,7 +8,8 @@
 class SpriteBatchLayer
 {
 private:
-	void SortSpritesByLayer(std::vector<SharedPtr<Sprite>>& sprites);
+	static uint32 NextSpriteBatchLayerID;
+	void SortSpritesByLayer();
 
 public:
 	Vector<Vertex2D> SpriteVertexList =
@@ -26,12 +27,11 @@ public:
 	};
 
 	String					        Name;
+	uint32							SpriteBatchLayerID = 0;
 	uint32                          MaxSpritesPerSheet;
 	uint32                          SpriteLayerIndex;
 
-	Vector<SharedPtr<Sprite>>       SpriteList;
-	Vector<SpriteInstanceStruct>    SpriteInstanceList;
-	SpriteInstanceBuffer			SpriteBuffer;
+	Vector<UM_GameObjectID>         GameObjectIDList;
 	SharedPtr<Mesh2D>		        SpriteLayerMesh;
 	JsonPipeline 					SpriteRenderPipeline;
 
@@ -44,8 +44,8 @@ public:
 	void Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneDataBuffer);
 	void Destroy();
 
-	void AddSprite(SharedPtr<Sprite> sprite);
-	void RemoveSprite(SharedPtr<Sprite> sprite);
+	void AddSprite(uint gameObjectID);
+	void RemoveSprite(uint gameObjectID);
 
 	SharedPtr<Mesh2D> GetSpriteLayerMesh() { return SpriteLayerMesh; }
 };

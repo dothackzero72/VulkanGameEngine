@@ -13,6 +13,7 @@ class Sprite
 {
 	friend class SpriteSheet;
 private:
+	static uint NextSpriteID;
 	enum SpriteAnimationEnum
 	{
 		kStanding,
@@ -22,7 +23,7 @@ private:
 public:
 	uint ParentGameObjectID = 0;
 	uint SpriteID = 0;
-	SpriteInstanceStruct SpriteInstance;
+	uint SpriteInstance = 0;
 	uint SpriteVRAMID = 0;
 	uint CurrentAnimationID = 0;
 	uint CurrentFrame = 0;
@@ -39,7 +40,7 @@ public:
 	~Sprite();
 
 	void Input(const float& deltaTime);
-	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
+	SpriteInstanceStruct Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
 	void Destroy();
 
 	Sprite& operator=(const Sprite& other)

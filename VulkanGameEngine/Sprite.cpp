@@ -1,6 +1,8 @@
 #include "Sprite.h"
 #include "Level2DRenderer.h"
 
+uint32 Sprite::NextSpriteID = 0;
+
 Sprite::Sprite()
 {
 }
@@ -8,7 +10,9 @@ Sprite::Sprite()
 Sprite::Sprite(uint32 gameObjectId, uint32 spriteSheetID)
 {
 	const SpriteSheet spriteSheet = assetManager.SpriteSheetList[spriteSheetID];
+
 	ParentGameObjectID = gameObjectId;
+	SpriteID = ++NextSpriteID;
 	CurrentSpriteAnimation = assetManager.VRAMSpriteList[0].AnimationList[kWalking];
 }
 
@@ -21,10 +25,11 @@ void Sprite::Input(const float& deltaTime)
 
 }
 
-void Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
+SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
 	const Transform2DComponent transform2D = assetManager.TransformComponentList[ParentGameObjectID];
 	const SpriteSheet spriteSheet = assetManager.SpriteSheetList[assetManager.VRAMSpriteList[0].SpritesheetID];
+	SpriteInstanceStruct spriteInstance;
 	Material material = assetManager.MaterialList[assetManager.VRAMSpriteList[0].SpriteMaterialID];
 
 	mat4 spriteMatrix = mat4(1.0f);
@@ -34,12 +39,12 @@ void Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(0.0f), vec3(0.0f, 0.0f, 1.0f));
 	spriteMatrix = glm::scale(spriteMatrix, vec3(transform2D.GameObjectScale.x, transform2D.GameObjectScale.y, 0.0f));
 
-	SpriteInstance.SpritePosition = transform2D.GameObjectPosition;
-	SpriteInstance.SpriteSize = assetManager.VRAMSpriteList[0].SpriteSize;
-	SpriteInstance.UVOffset = vec4(spriteSheet.SpriteUVSize.x * CurrentSpriteAnimation.FrameList[CurrentFrame].x, spriteSheet.SpriteUVSize.y * CurrentSpriteAnimation.FrameList[CurrentFrame].y, spriteSheet.SpriteUVSize.x, spriteSheet.SpriteUVSize.y);
-	SpriteInstance.Color = assetManager.VRAMSpriteList[0].SpriteColor;
-	SpriteInstance.MaterialID = material.GetMaterialBufferIndex();
-	SpriteInstance.InstanceTransform = spriteMatrix;
+	spriteInstance.SpritePosition = transform2D.GameObjectPosition;
+	spriteInstance.SpriteSize = assetManager.VRAMSpriteList[0].SpriteSize;
+	spriteInstance.UVOffset = vec4(spriteSheet.SpriteUVSize.x * CurrentSpriteAnimation.FrameList[CurrentFrame].x, spriteSheet.SpriteUVSize.y * CurrentSpriteAnimation.FrameList[CurrentFrame].y, spriteSheet.SpriteUVSize.x, spriteSheet.SpriteUVSize.y);
+	spriteInstance.Color = assetManager.VRAMSpriteList[0].SpriteColor;
+	spriteInstance.MaterialID = material.GetMaterialBufferIndex();
+	spriteInstance.InstanceTransform = spriteMatrix;
 
 	CurrentSpriteAnimation.CurrentFrameTime += deltaTime;
 	if (CurrentSpriteAnimation.CurrentFrameTime >= CurrentSpriteAnimation.FrameHoldTime)
@@ -51,6 +56,7 @@ void Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 			CurrentFrame = 0;
 		}
 	}
+	return spriteInstance;
 }
 
 void Sprite::Destroy()

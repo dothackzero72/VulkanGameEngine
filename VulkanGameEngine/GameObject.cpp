@@ -25,16 +25,18 @@ GameObject::GameObject(const String& name, const Vector<ComponentTypeEnum>& game
 	Name = name;
 }
 
-GameObject::GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList, uint32 spriteSheetId)
+GameObject::GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList, uint32 spriteID)
 {
 	GameObjectId = ++NextGameObjectId;
 	Name = name;
+	SpriteID = spriteID;
 }
 
-GameObject::GameObject(const String& name, const Vector<GameObjectComponent>& gameObjectComponentList, uint32 spriteSheetId)
+GameObject::GameObject(const String& name, const Vector<GameObjectComponent>& gameObjectComponentList, uint32 spriteID)
 {
 	GameObjectId = ++NextGameObjectId;
 	Name = name;
+	SpriteID = spriteID;
 }
 
 void GameObject::Input(const float& deltaTime)

@@ -3,6 +3,10 @@
 #include "JsonRenderPass.h"
 #include "AssetManager.h"
 
+typedef uint UM_SpriteID;
+typedef uint UM_SpriteBatchID;
+
+class Sprite;
 class RenderSystem
 {
 private:
@@ -13,7 +17,6 @@ private:
     UnorderedMap<UM_PipelineID, JsonPipeline> GraphicsPipelineList;
     UnorderedMap<UM_RenderPassID, JsonRenderPass> RenderPassList;
     UnorderedMap<uint32, RenderedTexture> RenderedTextureList;
-    UnorderedMap<uint32, Vector<SpriteInstanceStruct>> BatchLayerList;
     UnorderedMap<uint32, Vector<VkVertexInputBindingDescription>> VertexInputBindingList;
     UnorderedMap<uint32, Vector<VkVertexInputAttributeDescription>> VertexInputAttributeDescription;
 
@@ -22,6 +25,8 @@ private:
     VkCommandBufferBeginInfo CommandBufferBeginInfo;
 
 public:
+    UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>> SpriteInstanceList;
+    UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer> SpriteInstanceBufferList;
 
     RenderSystem()
     {
@@ -76,7 +81,6 @@ public:
         const JsonPipeline pipeline = GraphicsPipelineList[CurrentGraphicsPipelineID];
         const JsonRenderPass renderPass = RenderPassList[CurrentRenderPassID];
         const VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
-        const Vector<SpriteInstanceStruct> batchLayerList = BatchLayerList[gameObjectID];
         VkRenderPassBeginInfo renderPassInfo = renderPass.RenderPassInfo;
 
         renderPassInfo.clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size());
@@ -88,14 +92,17 @@ public:
         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         for (auto batchLayer : SpriteLayerList)
         {
+            const Vector<SpriteInstanceStruct> spriteInstanceList = SpriteInstanceList[batchLayer.SpriteBatchLayerID];
+            const SpriteInstanceBuffer spriteInstanceBuffer = SpriteInstanceBufferList[batchLayer.SpriteBatchLayerID];
+
             VkDeviceSize offsets[] = { 0 };
             vkCmdPushConstants(commandBuffer, pipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(sceneDataBuffer), &sceneDataBuffer);
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
             vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
             vkCmdBindVertexBuffers(commandBuffer, 0, 1, batchLayer.SpriteLayerMesh->GetVertexBuffer().get(), offsets);
-            vkCmdBindVertexBuffers(commandBuffer, 1, 1, &batchLayer.SpriteBuffer.Buffer, offsets);
+            vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
             vkCmdBindIndexBuffer(commandBuffer, *batchLayer.SpriteLayerMesh->GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
-            vkCmdDrawIndexed(commandBuffer, batchLayer.SpriteIndexList.size(), batchLayer.SpriteInstanceList.size(), 0, 0, 0);
+            vkCmdDrawIndexed(commandBuffer, batchLayer.SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
         }
         vkCmdEndRenderPass(commandBuffer);
         VULKAN_RESULT(vkEndCommandBuffer(commandBuffer));
@@ -107,3 +114,5 @@ public:
 
     }
 };
+extern RenderSystem renderSystem;
+RenderSystem renderSystem = RenderSystem();

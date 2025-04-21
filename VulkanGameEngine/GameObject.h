@@ -11,7 +11,7 @@ extern "C"
 class Sprite;
 class SpriteSheet;
 class GameObjectComponent;
-class GameObject 
+class GameObject
 {
 private:
     static uint32 NextGameObjectId;
@@ -19,6 +19,7 @@ private:
 
 public:
     uint32 GameObjectId = 0;
+    uint32 SpriteID = 0;
     String Name;
     Vector<SharedPtr<GameObjectComponent>> GameObjectComponentList;
     bool GameObjectAlive = true;
@@ -26,13 +27,13 @@ public:
     GameObject();
     GameObject(const String& name);
     GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList);
-    GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList, uint32 spriteSheetId);
-    GameObject(const String& name, const Vector<GameObjectComponent>& gameObjectComponentList, uint32 spriteSheetId);
+    GameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentList, uint32 spriteID);
+    GameObject(const String& name, const Vector<GameObjectComponent>& gameObjectComponentList, uint32 spriteID);
 
-    virtual void Input(const float& deltaTime);
-    virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
-    virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, Vector<VkDescriptorSet>& descriptorSetList);
-    virtual void Destroy();
+    void Input(const float& deltaTime);
+    void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
+    void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, Vector<VkDescriptorSet>& descriptorSetList);
+    void Destroy();
     void AddComponent(SharedPtr<GameObjectComponent> newComponent);
     void RemoveComponent(size_t index);
 

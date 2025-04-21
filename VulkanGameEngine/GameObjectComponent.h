@@ -22,7 +22,7 @@ class GameObjectComponent
 private:
 protected:
 public:
-    uint32 ParentGameObjectID;
+    uint32 ParentGameObjectID = 0;
     ComponentTypeEnum ComponentType;
     String Name;
     size_t MemorySize = 0;

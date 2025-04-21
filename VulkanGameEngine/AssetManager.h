@@ -25,7 +25,7 @@ private:
 	uint32 NextId = 0;
 
 public:
-	Vector<UM_GameObjectID> GameObjectList;
+	UnorderedMap<UM_GameObjectID, GameObject> GameObjectList;
 	UnorderedMap<UM_GameObjectID, Transform2DComponent> TransformComponentList;
 	//UnorderedMap<UM_GameObjectID, SpriteComponent> SpriteComponentList;
 	UnorderedMap<UM_GameObjectID, SharedPtr<Sprite>> SpriteList;

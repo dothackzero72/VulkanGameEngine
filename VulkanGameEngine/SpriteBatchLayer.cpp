@@ -1,5 +1,8 @@
 #include "SpriteBatchLayer.h"
 #include "MemoryManager.h"
+#include "RenderSystem.h"
+
+uint32 SpriteBatchLayer::NextSpriteBatchLayerID = 0;
 
 SpriteBatchLayer::SpriteBatchLayer()
 {
@@ -8,66 +11,73 @@ SpriteBatchLayer::SpriteBatchLayer()
 
 SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, JsonPipeline spriteRenderPipeline)
 {
+	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 	SpriteRenderPipeline = spriteRenderPipeline;
 	SpriteLayerMesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList, nullptr));
 
 	for (auto& gameObject : gameObjectList)
 	{
 		SharedPtr<Sprite> sprite = assetManager.SpriteList[gameObject->GameObjectId];
-		SpriteList.emplace_back(sprite);
-		SpriteInstanceList.emplace_back(sprite->SpriteInstance);
+		GameObjectIDList.emplace_back(gameObject->GameObjectId);
 	}
 
-	SpriteBuffer = SpriteInstanceBuffer(SpriteInstanceList, SpriteLayerMesh->GetMeshBufferUsageSettings(), SpriteLayerMesh->GetMeshBufferPropertySettings(), false);
-	SortSpritesByLayer(SpriteList);
+	renderSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(gameObjectList.size());
+	renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = SpriteInstanceBuffer(renderSystem.SpriteInstanceList[SpriteBatchLayerID], SpriteLayerMesh->GetMeshBufferUsageSettings(), SpriteLayerMesh->GetMeshBufferPropertySettings(), false);
+	SortSpritesByLayer();
 }
 
 SpriteBatchLayer::~SpriteBatchLayer()
 {
 }
 
-void SpriteBatchLayer::AddSprite(SharedPtr<Sprite> sprite)
+void SpriteBatchLayer::AddSprite(uint gameObjectID)
 {
-	SpriteList.emplace_back(sprite);
-	SortSpritesByLayer(SpriteList);
+	//GameObjectIDList.emplace_back(gameObjectID);
+	//SortSpritesByLayer(GameObjectIDList);
 }
 
-void SpriteBatchLayer::RemoveSprite(SharedPtr<Sprite> sprite)
+void SpriteBatchLayer::RemoveSprite(uint gameObjectID)
 {
-	sprite->Destroy();
-	SpriteList.erase(std::remove_if(SpriteList.begin(), SpriteList.end(),
-		[&sprite](const SharedPtr<Sprite>& spritePtr) {
-			return spritePtr.get() == sprite.get();
-		}),
-		SpriteList.end());
+	//sprite->Destroy();
+	//GameObjectIDList.erase(std::remove_if(GameObjectIDList.begin(), GameObjectIDList.end(),
+	//	[&sprite](const uint32& compairGameObjectID = gameObjectID) {
+	//		return compairGameObjectID == gameObjectID;
+	//	}),
+	//	GameObjectIDList.end());
 }
 
 void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
-	SpriteInstanceList.clear();
-	SpriteInstanceList.reserve(SpriteList.size());
-	for (auto& spritePtr : SpriteList)
+	Vector<SpriteInstanceStruct> spriteInstanceList = renderSystem.SpriteInstanceList[SpriteBatchLayerID];
+	SpriteInstanceBuffer spriteInstanceBuffer = renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID];
+
+	spriteInstanceList.clear();
+	spriteInstanceList.reserve(GameObjectIDList.size());
+	for (auto& gameObjectID : GameObjectIDList)
 	{
-		spritePtr->Update(commandBuffer, deltaTime);
-		SpriteInstanceList.emplace_back(spritePtr->SpriteInstance);
+		SharedPtr<Sprite> sprite = assetManager.SpriteList[gameObjectID];
+		spriteInstanceList.emplace_back(sprite->Update(commandBuffer, deltaTime));
 	}
 
-	if (SpriteList.size())
+	if (GameObjectIDList.size())
 	{
-		SpriteBuffer.UpdateBufferMemory(SpriteInstanceList);
+		spriteInstanceBuffer.UpdateBufferMemory(spriteInstanceList);
 	}
 }
 
 void SpriteBatchLayer::Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneDataBuffer)
 {
+	const Vector<SpriteInstanceStruct> spriteInstanceList = renderSystem.SpriteInstanceList[SpriteBatchLayerID];
+	const SpriteInstanceBuffer spriteInstanceBuffer = renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID];
+
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdPushConstants(commandBuffer, SpriteRenderPipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.Pipeline);
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.PipelineLayout, 0, SpriteRenderPipeline.DescriptorSetList.size(), SpriteRenderPipeline.DescriptorSetList.data(), 0, nullptr);
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, SpriteLayerMesh->GetVertexBuffer().get(), offsets);
-	vkCmdBindVertexBuffers(commandBuffer, 1, 1, &SpriteBuffer.Buffer, offsets);
+	vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
 	vkCmdBindIndexBuffer(commandBuffer, *SpriteLayerMesh->GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
-	vkCmdDrawIndexed(commandBuffer, SpriteIndexList.size(), SpriteInstanceList.size(), 0, 0, 0);
+	vkCmdDrawIndexed(commandBuffer, SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
 }
 
 void SpriteBatchLayer::Destroy()
@@ -75,7 +85,7 @@ void SpriteBatchLayer::Destroy()
 	SpriteLayerMesh->Destroy();
 }
 
-void SpriteBatchLayer::SortSpritesByLayer(std::vector<SharedPtr<Sprite>>& sprites)
+void SpriteBatchLayer::SortSpritesByLayer()
 {
 	//std::sort(sprites.begin(), sprites.end(), [](const SharedPtr<Sprite>& spriteA, const SharedPtr<Sprite>& spriteB) {
 	//		if (spriteA &&
