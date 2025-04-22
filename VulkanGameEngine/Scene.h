@@ -24,8 +24,6 @@ private:
 	Vector<SharedPtr<Sprite>>		  SpriteList;
 	Vector<SharedPtr<Texture>>      TextureList;
 
-	SharedPtr<Material>		        material;
-	SharedPtr<Material>		        Material2;
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 public:
 	void StartUp();

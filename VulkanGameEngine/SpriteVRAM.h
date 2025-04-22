@@ -4,6 +4,7 @@
 struct SpriteVRAM
 {
 	uint VRAMSpriteID = 0;
+	String VRAMSpriteName;
 	uint SpritesheetID = 0;
 	uint SpriteMaterialID = 0;
 	uint SpriteLayer = 0;

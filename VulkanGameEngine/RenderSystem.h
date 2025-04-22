@@ -80,7 +80,7 @@ public:
     {
         const JsonPipeline pipeline = GraphicsPipelineList[CurrentGraphicsPipelineID];
         const JsonRenderPass renderPass = RenderPassList[CurrentRenderPassID];
-        const VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
+        VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
         VkRenderPassBeginInfo renderPassInfo = renderPass.RenderPassInfo;
 
         renderPassInfo.clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size());
@@ -89,6 +89,12 @@ public:
 
         VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
         VULKAN_RESULT(vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo));
+
+        for (auto& spriteLayer : SpriteLayerList)
+        {
+            spriteLayer.Update(commandBuffer, deltaTime);
+        }
+
         vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         for (auto batchLayer : SpriteLayerList)
         {

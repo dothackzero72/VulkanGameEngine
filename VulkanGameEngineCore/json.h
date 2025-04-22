@@ -5,6 +5,7 @@
 #include "Typedef.h"
 #include <iostream>
 #include "File.h"
+#include <objbase.h>
 
 class Json : public nlohmann::json
 {

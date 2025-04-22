@@ -17,15 +17,18 @@
 #undef max
 #endif
 
-uint32 Texture::NextTextureId = 0;
+uint32 Texture::NextTextureId = 1;
 
 Texture::Texture()
 {
 
 }
 
-Texture::Texture(Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
+Texture::Texture(uint textureID, GUID assetId, Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
 {
+	NextTextureId++;
+	TextureId = textureID;
+	AssetId = assetId;
 	Width = width;
 	Height = height;
 	TextureType = textureType;
@@ -43,8 +46,11 @@ Texture::Texture(Pixel clearColor, int width, int height, VkFormat textureByteFo
 	//ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-Texture::Texture(const String& filePath, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
+Texture::Texture(uint textureID, GUID assetId, const String& filePath, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
 {
+	NextTextureId++;
+	TextureId = textureID;
+	AssetId = assetId;
 	TextureType = textureType;
 	TextureByteFormat = textureByteFormat;
 
@@ -361,7 +367,7 @@ void Texture_CreateImageTexture(VkDevice device,
 	VkDeviceSize bufferSize = (*width) * (*height) * (*colorChannelUsed);
 	VkBufferUsageFlags bufferUsage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	VkMemoryPropertyFlags bufferProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-	
+
 	Buffer_CreateStagingBuffer(device, physicalDevice, commandPool, graphicsQueue, &stagingBuffer, &buffer, &stagingBufferMemory, &bufferMemory, data, bufferSize, bufferUsage, bufferProperties);
 
 	VkImageCreateInfo imageCreateInfo =
@@ -406,7 +412,7 @@ void Texture_CreateImageTexture(VkDevice device,
 
 void Texture_SaveTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, const char* filename, SharedPtr<Texture> texture, ExportTextureFormat textureFormat, uint32 channels)
 {
-	Texture exportTexture = Texture(Pixel(0x00, 0x00, 0x00, 0xFF), texture->Width, texture->Height, VkFormat::VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, kType_AlbedoTextureMap, false);
+	/*Texture exportTexture = Texture(0, Pixel(0x00, 0x00, 0x00, 0xFF), texture->Width, texture->Height, VkFormat::VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, kType_AlbedoTextureMap, false);
 
 	VkCommandBufferAllocateInfo allocInfo
 	{
@@ -507,5 +513,5 @@ void Texture_SaveTexture(VkDevice device, VkCommandPool commandPool, VkQueue gra
 		}
 	}
 
-	exportTexture.Destroy();
+	exportTexture.Destroy();*/
 }

@@ -215,6 +215,7 @@
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TypeDef.h" />
+    <ClInclude Include="uint128_t.h" />
     <ClInclude Include="VulkanBuffer.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="CVulkanRenderer.h" />

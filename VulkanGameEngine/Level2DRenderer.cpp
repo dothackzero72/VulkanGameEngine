@@ -43,9 +43,12 @@ void Level2DRenderer::StartLevelRenderer()
         LevelRenderer = SharedPtr<Level2DRenderer>(this);
     }
 
-    TextureList.emplace_back(std::make_shared<Texture>(Texture("../Textures/MegaMan_diffuse.bmp", VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum::kType_DiffuseTextureMap, false)));
+    auto textureId = assetManager.LoadTexture("../Textures/TestTexture.json");
+    assetManager.AddSpriteVRAM("../Sprites/TestSprite.json");
+
+    TextureList.emplace_back(std::make_shared<Texture>(assetManager.TextureList[textureId]));
     assetManager.MaterialList[0] = Material("Material1");
-    assetManager.MaterialList[0].SetAlbedoMap(TextureList[0]);
+    assetManager.MaterialList[0].SetAlbedoMap(std::make_shared<Texture>(assetManager.TextureList[textureId]));
 
     ivec2 size = ivec2(32);
     assetManager.SpriteSheetList[0] = SpriteSheet(0, size, 0);

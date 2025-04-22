@@ -1,0 +1,54 @@
+{
+  "VRAMSpriteID": 1,
+  "VRAMSpriteName": "TestSprite",
+  "SpriteLayer": 0,
+  "MaterialFile": "../Textures/MegaMan_diffuse.bmp",
+  "SpriteSize": [
+    32,
+    32
+  ],
+  "SpriteColor": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "AnimationList": [
+    {
+      "AnimationName": "Standing",
+      "FrameHoldTime": 0.2,
+      "FrameList": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "AnimationName": "Walking",
+      "FrameHoldTime": 0.2,
+      "FrameList": [
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          4,
+          0
+        ]
+      ]
+    }
+  ]
+}

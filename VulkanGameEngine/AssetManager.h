@@ -24,6 +24,8 @@ private:
 	std::queue<uint32> FreeIds;
 	uint32 NextId = 0;
 
+	GUID GetGUID(nlohmann::json& json);
+
 public:
 	UnorderedMap<UM_GameObjectID, GameObject> GameObjectList;
 	UnorderedMap<UM_GameObjectID, Transform2DComponent> TransformComponentList;
@@ -45,5 +47,9 @@ public:
 
 	void CreateEntity();
 	void DestroyEntity(uint32_t id);
+
+	UM_SpriteVRAMID AddSpriteVRAM(const String& spritePath);
+	UM_TextureID LoadTexture(const String& texturePath);
+	UM_MaterialID LoadMaterial(const String& materialPath);
 };
 extern AssetManager assetManager;

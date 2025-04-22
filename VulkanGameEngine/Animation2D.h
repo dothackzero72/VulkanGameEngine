@@ -4,6 +4,7 @@
 
 struct Animation2D
 {
+	String AnimationName;
 	uint32 CurrentFrame;
 	vec2 CurrentFrameUV;
 	float CurrentFrameTime;

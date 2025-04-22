@@ -6,6 +6,7 @@ Animation2D::Animation2D()
 
 Animation2D::Animation2D(const String& animationName, Vector<ivec2>& frameList, float frameHoldTime)
 {
+	AnimationName = animationName;
 	FrameList = frameList;
 	FrameHoldTime = frameHoldTime;
 	CurrentFrameUV = vec2(0.0f);
