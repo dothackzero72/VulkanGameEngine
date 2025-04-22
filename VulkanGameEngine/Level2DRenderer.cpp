@@ -48,7 +48,7 @@ void Level2DRenderer::StartLevelRenderer()
 
     TextureList.emplace_back(std::make_shared<Texture>(assetManager.TextureList[textureId]));
     assetManager.MaterialList[0] = Material("Material1");
-    assetManager.MaterialList[0].SetAlbedoMap(std::make_shared<Texture>(assetManager.TextureList[textureId]));
+    assetManager.MaterialList[0].AlbedoMap = textureId;
 
     ivec2 size = ivec2(32);
     assetManager.SpriteSheetList[0] = SpriteSheet(0, size, 0);
@@ -72,7 +72,7 @@ void Level2DRenderer::StartLevelRenderer()
     {
         .VRAMSpriteID = 0,
         .SpritesheetID = assetManager.SpriteSheetList[0].SpriteMaterialID,
-        .SpriteMaterialID = assetManager.MaterialList[0].MaterialID,
+        .SpriteMaterialID = assetManager.MaterialList[0].GetMaterialId(),
         .SpriteLayer = assetManager.SpriteSheetList[0].SpriteLayer,
         .SpriteSize = vec2(assetManager.SpriteSheetList[0].SpritePixelSize.x * assetManager.SpriteSheetList[0].SpriteScale.x,   assetManager.SpriteSheetList[0].SpritePixelSize.y * assetManager.SpriteSheetList[0].SpriteScale.y),
         .SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f),
