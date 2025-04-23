@@ -1,4 +1,5 @@
 #include "AssetManager.h"
+#include "Material.h"
 
 AssetManager assetManager = AssetManager();
 
@@ -61,22 +62,50 @@ UM_SpriteVRAMID AssetManager::AddSpriteVRAM(const String& spritePath)
 
 UM_TextureID AssetManager::LoadTexture(const String& texturePath)
 {
+	if (texturePath.empty())
+	{
+		return 0;
+	}
+
 	nlohmann::json json = Json::ReadJson(texturePath);
 	UM_TextureID textureId = Texture::GetNextTextureID();
-	GUID assetID = GetGUID(json["AssetID"]);
 	String textureFilePath = json["TextureFilePath"];
 	VkFormat textureByteFormat = json["TextureByteFormat"];
 	VkImageAspectFlags imageType = json["ImageType"];
 	TextureTypeEnum textureType = json["TextureType"];
 	bool useMipMaps = json["UseMipMaps"];
 
-	TextureList[textureId] = Texture(textureId, assetID, textureFilePath, textureByteFormat, imageType, textureType, useMipMaps);
+	TextureList[textureId] = Texture(textureId, textureFilePath, textureByteFormat, imageType, textureType, useMipMaps);
 	return textureId;
 }
 
 UM_MaterialID AssetManager::LoadMaterial(const String& materialPath)
 {
-	return 0;
+	nlohmann::json json = Json::ReadJson(materialPath);
+
+	UM_MaterialID materialId = Material::GetNextMaterialId();
+	String name = json["Name"];
+	MaterialList[materialId] = Material(name, materialId);
+
+	MaterialList[materialId].Albedo = vec3(json["Albedo"][0], json["Albedo"][1], json["Albedo"][2]);
+	MaterialList[materialId].Metallic = json["Metallic"];
+	MaterialList[materialId].Roughness = json["Roughness"];
+	MaterialList[materialId].AmbientOcclusion = json["AmbientOcclusion"];
+	MaterialList[materialId].Emission = vec3(json["Emission"][0], json["Emission"][1], json["Emission"][2]);
+	MaterialList[materialId].Alpha = json["Alpha"];
+
+	MaterialList[materialId].AlbedoMapId = LoadTexture(json["AlbedoMapPath"]);
+	MaterialList[materialId].MetallicRoughnessMapId = LoadTexture(json["MetallicRoughnessMapPath"]);
+	MaterialList[materialId].MetallicMapId = LoadTexture(json["MetallicMapPath"]);
+	MaterialList[materialId].RoughnessMapId = LoadTexture(json["RoughnessMapPath"]);
+	MaterialList[materialId].AmbientOcclusionMapId = LoadTexture(json["AmbientOcclusionMapPath"]);
+	MaterialList[materialId].NormalMapId = LoadTexture(json["NormalMapPath"]);
+	MaterialList[materialId].DepthMapId = LoadTexture(json["DepthMapPath"]);
+	MaterialList[materialId].AlphaMapId = LoadTexture(json["AlphaMapPath"]);
+	MaterialList[materialId].EmissionMapId = LoadTexture(json["EmissionMapPath"]);
+	MaterialList[materialId].HeightMapId = LoadTexture(json["HeightMapPath"]);
+
+	return materialId;
 }
 
 GUID AssetManager::GetGUID(nlohmann::json& json)

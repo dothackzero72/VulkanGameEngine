@@ -7,7 +7,7 @@ Material::Material()
 {
 }
 
-Material::Material(const String& materialName)
+Material::Material(const String& materialName, uint32 materialId)
 {
 	Name = materialName;
 	MaterialID = ++NextMaterialId;
@@ -22,13 +22,14 @@ Material::~Material()
 {
 }
 
-void Material::UpdateMaterialBufferIndex(uint64 bufferIndex)
+void Material::UpdateMaterialBufferIndex(uint32 bufferIndex)
 {
 	MaterialBufferIndex = bufferIndex;
 }
 
 void Material::UpdateBuffer()
 {
+
 	MaterialBuffer.UpdateBufferMemory(MaterialInfo);
 }
 

@@ -51,6 +51,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Levels", "Levels", "{23E8B8
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Materials", "Materials", "{4CCF9A80-6215-4938-8BF7-38F42B25CDFB}"
+	ProjectSection(SolutionItems) = preProject
+		Materials\Material1.json = Materials\Material1.json
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sprites", "Sprites", "{93D4EF0C-42F1-4FB6-8F6C-60CBB26A242A}"
 	ProjectSection(SolutionItems) = preProject

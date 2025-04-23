@@ -44,11 +44,11 @@ void Level2DRenderer::StartLevelRenderer()
     }
 
     auto textureId = assetManager.LoadTexture("../Textures/TestTexture.json");
+    auto materialId = assetManager.LoadMaterial("../Materials/Material1.json");
     assetManager.AddSpriteVRAM("../Sprites/TestSprite.json");
 
-    TextureList.emplace_back(std::make_shared<Texture>(assetManager.TextureList[textureId]));
-    assetManager.MaterialList[0] = Material("Material1");
-    assetManager.MaterialList[0].AlbedoMap = textureId;
+    const Material material = assetManager.MaterialList[materialId];
+    TextureList.emplace_back(std::make_shared<Texture>(assetManager.TextureList[material.AlbedoMapId]));
 
     ivec2 size = ivec2(32);
     assetManager.SpriteSheetList[0] = SpriteSheet(0, size, 0);
@@ -91,7 +91,7 @@ void Level2DRenderer::StartLevelRenderer()
     SpriteLayerList.emplace_back(std::make_shared<SpriteBatchLayer>(SpriteBatchLayer(GameObjectList, JsonPipelineList[0])));
     GPUImport gpuImport =
     {
-     .MeshList = Vector<SharedPtr<Mesh<Vertex2D>>>(GetMeshFromGameObjects()),
+        .MeshList = Vector<SharedPtr<Mesh<Vertex2D>>>(GetMeshFromGameObjects()),
         .TextureList = Vector<SharedPtr<Texture>>(TextureList),
     };
 

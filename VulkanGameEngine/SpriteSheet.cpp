@@ -8,7 +8,7 @@ SpriteSheet::SpriteSheet()
 SpriteSheet::SpriteSheet(uint32 spriteMaterialID, ivec2& spritePixelSize, uint spriteLayer)
 {
 	const Material material = assetManager.MaterialList[spriteMaterialID];
-	const Texture texture = assetManager.TextureList[material.AlbedoMap];
+	const Texture texture = assetManager.TextureList[material.AlbedoMapId];
 
 	SpriteMaterialID = spriteMaterialID;
 	SpritePixelSize = spritePixelSize;
@@ -21,7 +21,7 @@ SpriteSheet::SpriteSheet(uint32 spriteMaterialID, ivec2& spritePixelSize, uint s
 SpriteSheet::SpriteSheet(uint32 spriteMaterialID, ivec2& spritePixelSize, uint spriteLayer, vec2 spriteScale)
 {
 	Material material = assetManager.MaterialList[spriteMaterialID];
-	const Texture texture = assetManager.TextureList[material.AlbedoMap];
+	const Texture texture = assetManager.TextureList[material.AlbedoMapId];
 
 	SpriteMaterialID = spriteMaterialID;
 	SpritePixelSize = spritePixelSize;
