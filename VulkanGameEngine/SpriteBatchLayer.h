@@ -2,7 +2,6 @@
 #include "TypeDef.h"
 #include "Sprite.h"
 #include "Mesh.h"
-#include "Mesh2D.h"
 #include "JsonPipeline.h"
 
 class SpriteBatchLayer
@@ -32,7 +31,7 @@ public:
 	uint32                          SpriteLayerIndex;
 
 	Vector<UM_GameObjectID>         GameObjectIDList;
-	SharedPtr<Mesh2D>		        SpriteLayerMesh;
+	SharedPtr<SpriteMesh>		    SpriteLayerMesh;
 	JsonPipeline 					SpriteRenderPipeline;
 
 	SpriteBatchLayer();
@@ -47,6 +46,6 @@ public:
 	void AddSprite(uint gameObjectID);
 	void RemoveSprite(uint gameObjectID);
 
-	SharedPtr<Mesh2D> GetSpriteLayerMesh() { return SpriteLayerMesh; }
+	SharedPtr<SpriteMesh> GetSpriteLayerMesh() { return SpriteLayerMesh; }
 };
 

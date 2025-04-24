@@ -1,8 +1,8 @@
 #pragma once
 extern "C"
 {
-	#include <CTexture.h>
-	#include <CBuffer.h>
+#include <CTexture.h>
+#include <CBuffer.h>
 }
 #include "GameObject.h"
 #include <VulkanBuffer.h>
@@ -29,17 +29,17 @@ class Mesh
 private:
 
 	const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
-													   VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
-													   VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
-													   VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
-													   VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+		VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
+		VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+		VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+		VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
 	const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 	uint32 ParentGameObjectID;
 	SharedPtr<Transform2DComponent> GameObjectTransform;
-	
+
 protected:
 	SharedPtr<Material>		  MeshMaterial;
 	Vector<T>				  MeshVertexList;
@@ -51,7 +51,7 @@ public:
 	uint32 IndexCount = 0;
 
 	MeshProperitiesStruct MeshProperties;
-	mat4 MeshTransform =  mat4(0.0f);
+	mat4 MeshTransform = mat4(0.0f);
 	vec3 MeshPosition = vec3(0.0f);
 	vec3 MeshRotation = vec3(0.0f);
 	vec3 MeshScale = vec3(1.0f);
@@ -65,12 +65,7 @@ public:
 	{
 	}
 
-	virtual ~Mesh()
-	{
-
-	}
-
-	void MeshStartUp(Vector<T>& vertexList, Vector<uint32>& indexList, uint32 meshBufferIndex)
+	Mesh(Vector<T>& vertexList, Vector<uint32>& indexList, uint32 meshBufferIndex)
 	{
 		MeshBufferIndex = meshBufferIndex;
 		MeshVertexList = vertexList;
@@ -94,7 +89,7 @@ public:
 		//}
 	}
 
-	void MeshStartUp(Vector<T>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material)
+	Mesh(Vector<T>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material)
 	{
 		MeshMaterial = material;
 		MeshVertexList = vertexList;
@@ -113,10 +108,15 @@ public:
 			{
 				GameObjectTransform = std::dynamic_pointer_cast<Transform2DComponent>(component);
 			}*/
-		
+
 	}
 
-	virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
+	~Mesh()
+	{
+
+	}
+
+	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 	{
 		mat4 GameObjectMatrix = mat4(1.0);
 		//SharedPtr<Transform2DComponent> transform = GameObjectTransform.lock();
@@ -138,12 +138,12 @@ public:
 		PropertiesBuffer.UpdateBufferMemory(MeshProperties);
 	}
 
-	virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneDataBuffer)
+	void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneDataBuffer)
 	{
 
 	}
 
-	virtual void Destroy()
+	void Destroy()
 	{
 		MeshMaterial.reset();
 		MeshVertexBuffer.DestroyBuffer();
@@ -154,41 +154,41 @@ public:
 	VkDescriptorBufferInfo GetVertexPropertiesBuffer()
 	{
 		return VkDescriptorBufferInfo
-			{
-				.buffer = MeshVertexBuffer.Buffer,
-				.offset = 0,
-				.range = VK_WHOLE_SIZE
-			};
+		{
+			.buffer = MeshVertexBuffer.Buffer,
+			.offset = 0,
+			.range = VK_WHOLE_SIZE
+		};
 	}
 
 	VkDescriptorBufferInfo GetIndexPropertiesBuffer()
 	{
 		return VkDescriptorBufferInfo
-			{
-				.buffer = MeshIndexBuffer.Buffer,
-				.offset = 0,
-				.range = VK_WHOLE_SIZE
-			};
+		{
+			.buffer = MeshIndexBuffer.Buffer,
+			.offset = 0,
+			.range = VK_WHOLE_SIZE
+		};
 	}
 
 	VkDescriptorBufferInfo GetTransformBuffer()
 	{
 		return VkDescriptorBufferInfo
-			{
-				.buffer = MeshTransformBuffer.Buffer,
-				.offset = 0,
-				.range = VK_WHOLE_SIZE
-			};
+		{
+			.buffer = MeshTransformBuffer.Buffer,
+			.offset = 0,
+			.range = VK_WHOLE_SIZE
+		};
 	}
 
 	VkDescriptorBufferInfo GetMeshPropertiesBuffer()
 	{
 		return VkDescriptorBufferInfo
-			{
-				.buffer = PropertiesBuffer.Buffer,
-				.offset = 0,
-				.range = VK_WHOLE_SIZE
-			};
+		{
+			.buffer = PropertiesBuffer.Buffer,
+			.offset = 0,
+			.range = VK_WHOLE_SIZE
+		};
 	}
 
 	const VkBufferUsageFlags GetMeshBufferUsageSettings() { return MeshBufferUsageSettings; }
@@ -197,3 +197,4 @@ public:
 	SharedPtr<VkBuffer> GetIndexBuffer() { return std::make_shared<VkBuffer>(MeshIndexBuffer.Buffer); }
 };
 
+typedef Mesh<Vertex2D> SpriteMesh;

@@ -7,7 +7,6 @@
 #include "FrameTimer.h"
 #include "JsonRenderPass.h"
 #include "GameObject.h"
-#include "RenderMesh2DComponent.h"
 #include "Level2DRenderer.h"
 
 class Scene

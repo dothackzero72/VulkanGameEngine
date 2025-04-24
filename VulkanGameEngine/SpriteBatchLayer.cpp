@@ -13,7 +13,7 @@ SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList
 {
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 	SpriteRenderPipeline = spriteRenderPipeline;
-	SpriteLayerMesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList, nullptr));
+	SpriteLayerMesh = std::make_shared<SpriteMesh>(SpriteMesh(SpriteVertexList, SpriteIndexList, nullptr));
 
 	for (auto& gameObject : gameObjectList)
 	{

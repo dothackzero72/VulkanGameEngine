@@ -2,7 +2,6 @@
 #include <Macro.h>
 #include <iostream>
 #include "MemoryManager.h"
-#include "RenderMesh2DComponent.h"
 #include "Transform2DComponent.h"
 #include "InputComponent.h"
 #include "Sprite.h"

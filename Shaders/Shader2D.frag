@@ -54,27 +54,5 @@ layout(binding = 2) buffer MaterialProperities { MaterialProperitiesBuffer mater
 
 void main() 
 {
-	MaterialProperitiesBuffer material = materialBuffer[PS_MaterialID].materialProperties;
-
-	vec2 UV = PS_UV;
-	if(PS_FlipSprite.x == 1)
-	{
-		UV.x = 1.0f - PS_FlipSprite.x; 
-	}
-	if(PS_FlipSprite.y == 1)
-	{
-		UV.y= 1.0f - PS_FlipSprite.y; 
-	}
-
-	vec4 albedoColor = texture(TextureMap[0], UV);
-	material.Albedo = albedoColor.rgb;
-	material.Alpha = albedoColor.a;
-	
-	if(material.Alpha == 0.0f)
-	{
-		discard;
-	}
-  
-    float gamma = 2.2;
-    OutputColor = vec4(pow(material.Albedo.rgb, vec3(1.0/gamma)), material.Alpha);
+  OutputColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }

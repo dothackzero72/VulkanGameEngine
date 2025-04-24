@@ -1,12 +1,10 @@
 #pragma once
 #include "MemoryPool.h"
 #include "GameObject.h"
-#include "RenderMesh2DComponent.h"
 #include <Texture.h>
 #include "JsonRenderPass.h"
 #include "JsonPipeline.h"
 #include "Material.h"
-#include "Mesh2D.h"
 #include "SpriteBatchLayer.h"
 
 void ExceptionCallback(std::string_view InMessage);

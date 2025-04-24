@@ -3,7 +3,6 @@
 #include <queue>
 #include <TypeDef.h>
 #include "VulkanRenderer.h"
-#include "Mesh2D.h"
 #include "Animation2D.h"
 #include "JsonPipeline.h"
 #include "SpriteVRAM.h"
