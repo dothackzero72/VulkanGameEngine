@@ -54,7 +54,7 @@ layout(binding = 2) buffer MaterialProperities { MaterialProperitiesBuffer mater
 
 void main() 
 {
-	MaterialProperitiesBuffer material = materialBuffer[PS_MaterialID].materialProperties;
+	MaterialProperitiesBuffer material = materialBuffer[0].materialProperties;
 
 	vec2 UV = PS_UV;
 	if(PS_FlipSprite.x == 1)
