@@ -200,5 +200,8 @@
     <ClInclude Include="uint128_t.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VkGuid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
