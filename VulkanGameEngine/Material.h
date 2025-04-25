@@ -83,7 +83,6 @@ public:
 class Material
 {
 private:
-	uint32 MaterialID = 0;
 	uint MaterialBufferIndex = 0;
 
 	void UpdateBuffer();
@@ -92,6 +91,7 @@ public:
 	static uint32 NextMaterialId;
 
 	String Name;
+	uint32 MaterialID = 0;
 
 	vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
 	float Metallic = 0.0f;

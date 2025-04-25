@@ -40,7 +40,6 @@ public:
 
 	void Input(const float& deltaTime);
 	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
-	void Destroy();
 
 	void CreateEntity();
 	void DestroyEntity(uint32_t id);
@@ -48,5 +47,12 @@ public:
 	UM_SpriteVRAMID AddSpriteVRAM(const String& spritePath);
 	UM_TextureID LoadTexture(const String& texturePath);
 	UM_MaterialID LoadMaterial(const String& materialPath);
+
+	void DestroyGameObject(UM_GameObjectID id);
+	void DestroyGameObjects();
+	void DestoryTextures();
+	void DestoryMaterials();
+	void DestoryVRAMSprites();
+	void Destroy();
 };
 extern AssetManager assetManager;

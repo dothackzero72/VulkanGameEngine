@@ -23,11 +23,6 @@ void AssetManager::Update(VkCommandBuffer& commandBuffer, const float& deltaTime
 
 }
 
-void AssetManager::Destroy()
-{
-
-}
-
 void AssetManager::CreateEntity()
 {
 	//if (!FreeIds.empty())
@@ -112,7 +107,7 @@ GUID AssetManager::GetGUID(nlohmann::json& json)
 	GUID guid = {};
 	std::string guidStr = json.get<String>();
 
-	if (guidStr.front() != '{') 
+	if (guidStr.front() != '{')
 	{
 		guidStr = "{" + guidStr + "}";
 	}
@@ -120,7 +115,7 @@ GUID AssetManager::GetGUID(nlohmann::json& json)
 	std::wstring wGuidStr(guidStr.begin(), guidStr.end());
 	HRESULT result = CLSIDFromString(wGuidStr.c_str(), &guid);
 
-	if (FAILED(result)) 
+	if (FAILED(result))
 	{
 		std::cerr << "Failed to convert string to GUID. HRESULT: " << std::hex << result << std::endl;
 		throw std::runtime_error("Invalid GUID format.");
@@ -128,3 +123,65 @@ GUID AssetManager::GetGUID(nlohmann::json& json)
 
 	return guid;
 }
+
+void AssetManager::DestroyGameObject(UM_GameObjectID id)
+{
+	MeshList[id].Destroy();
+
+	MeshList.erase(id);
+	SpriteList.erase(id);
+	TransformComponentList.erase(id);
+	GameObjectList.erase(id);
+}
+
+void AssetManager::DestroyGameObjects()
+{
+	for (auto& gameObject : GameObjectList)
+	{
+		const UM_GameObjectID id = gameObject.second.GameObjectId;
+		MeshList[id].Destroy();
+	}
+	MeshList.clear();
+	SpriteList.clear();
+	TransformComponentList.clear();
+	GameObjectList.clear();
+}
+
+void AssetManager::DestoryTextures()
+{
+	for (auto& texture : TextureList)
+	{
+		const uint id = texture.second.TextureId;
+		TextureList[id].Destroy();
+	}
+	TextureList.clear();
+}
+
+void AssetManager::DestoryMaterials()
+{
+	for (auto& material : MaterialList)
+	{
+		const uint id = material.second.MaterialID;
+		MaterialList[id].Destroy();
+	}
+	MaterialList.clear();
+}
+
+void AssetManager::DestoryVRAMSprites()
+{
+	for (auto& spriteVRAM : VRAMSpriteList)
+	{
+		const uint id = spriteVRAM.second.VRAMSpriteID;
+		VRAMSpriteList.erase(id);
+	}
+	VRAMSpriteList.clear();
+}
+
+void AssetManager::Destroy()
+{
+	DestroyGameObjects();
+	DestoryTextures();
+	DestoryMaterials();
+	DestoryVRAMSprites();
+}
+

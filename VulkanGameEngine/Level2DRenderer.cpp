@@ -260,16 +260,3 @@ Vector<SpriteMesh> Level2DRenderer::GetMeshFromGameObjects()
 
     return meshList;
 }
-
-SharedPtr<GameObject> Level2DRenderer::SearchGameObjectsById(uint32 id)
-{
-    if (GameObjectList.empty()) {
-        return nullptr;
-    }
-    auto it = std::find_if(GameObjectList.begin(), GameObjectList.end(),
-        [id](const std::shared_ptr<GameObject>& obj)
-        {
-            return obj && obj->GetId() == id;
-        });
-    return (it != GameObjectList.end()) ? *it : nullptr;
-}

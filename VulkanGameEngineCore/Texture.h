@@ -23,7 +23,6 @@ class Texture
 {
 private:
 	static uint32 NextTextureId;
-	uint32 TextureId = 0;
 	uint32 TextureBufferIndex = 0;
 
 protected:
@@ -36,6 +35,7 @@ protected:
 
 public:
 	String Name = "Texture";
+	uint32 TextureId = 0;
 	int Width = 1;
 	int Height = 1;
 	int Depth = 1;

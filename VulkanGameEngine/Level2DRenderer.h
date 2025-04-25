@@ -30,6 +30,4 @@ public:
 	VkCommandBuffer DrawSprites(Vector<SharedPtr<SpriteBatchLayer>> meshList, SceneDataBuffer& sceneDataBuffer);
 	void UpdateBufferIndex();
 	virtual void Destroy() override;
-
-	SharedPtr<GameObject> SearchGameObjectsById(uint32 id);
 };
