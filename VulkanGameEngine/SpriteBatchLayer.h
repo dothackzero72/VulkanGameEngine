@@ -45,7 +45,5 @@ public:
 
 	void AddSprite(uint gameObjectID);
 	void RemoveSprite(uint gameObjectID);
-
-	SharedPtr<SpriteMesh> GetSpriteLayerMesh() { return SpriteLayerMesh; }
 };
 

@@ -250,12 +250,12 @@ void Level2DRenderer::DestroyDeadGameObjects()
     //}
 }
 
-Vector<SharedPtr<Mesh<Vertex2D>>> Level2DRenderer::GetMeshFromGameObjects()
+Vector<SharedPtr<SpriteMesh>> Level2DRenderer::GetMeshFromGameObjects()
 {
-    Vector<SharedPtr<Mesh<Vertex2D>>> meshList;
+    Vector<SharedPtr<SpriteMesh>> meshList;
     for (auto& spriteLayer : SpriteLayerList) 
     {
-        meshList.emplace_back(spriteLayer->GetSpriteLayerMesh());
+        meshList.emplace_back(spriteLayer->SpriteLayerMesh);
     }
 
     return meshList;
