@@ -13,7 +13,6 @@ private:
     UM_PipelineID CurrentGraphicsPipelineID = 0;
     UM_RenderPassID CurrentRenderPassID = 0;
 
-    Vector<SpriteBatchLayer> SpriteLayerList;
     UnorderedMap<UM_PipelineID, JsonPipeline> GraphicsPipelineList;
     UnorderedMap<UM_RenderPassID, JsonRenderPass> RenderPassList;
     UnorderedMap<uint32, RenderedTexture> RenderedTextureList;

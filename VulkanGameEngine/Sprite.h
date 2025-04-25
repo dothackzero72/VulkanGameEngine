@@ -10,7 +10,6 @@
 class AssetManager;
 class Sprite
 {
-	friend class SpriteSheet;
 private:
 	static uint NextSpriteID;
 	enum SpriteAnimationEnum

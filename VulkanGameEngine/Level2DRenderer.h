@@ -2,7 +2,6 @@
 #include "JsonRenderPass.h"
 #include "SpriteBatchLayer.h"
 
-class SpriteBatchLayer;
 class Level2DRenderer : public JsonRenderPass
 {
 private:

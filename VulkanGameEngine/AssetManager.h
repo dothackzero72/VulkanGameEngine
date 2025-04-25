@@ -16,8 +16,6 @@ typedef uint32 UM_PipelineID;
 typedef uint32 UM_SpriteSheetID;
 typedef uint32 UM_SpriteVRAMID;
 
-struct SpriteVRAM;
-class Sprite;
 class AssetManager
 {
 private:
