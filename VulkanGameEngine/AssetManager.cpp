@@ -47,7 +47,7 @@ void AssetManager::DestroyEntity(uint32_t id)
 UM_SpriteVRAMID AssetManager::AddSpriteVRAM(const String& spritePath)
 {
 	nlohmann::json json = Json::ReadJson(spritePath);
-	UM_SpriteVRAMID vramId = json["VRAMSpriteID"];
+	UM_SpriteVRAMID vramId = 0;
 
 	SpriteVRAM sprite;
 	sprite.VRAMSpriteID = vramId;

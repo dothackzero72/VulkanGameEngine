@@ -27,6 +27,7 @@ template<class T>
 class Mesh
 {
 private:
+	static uint32 NextMeshId;
 
 	const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
 		VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
@@ -46,7 +47,8 @@ protected:
 	Vector<uint32>			  MeshIndexList;
 
 public:
-	uint64 MeshBufferIndex = 0;
+	uint32 MeshId = 0;
+	uint32 MeshBufferIndex = 0;
 	uint32 VertexCount = 0;
 	uint32 IndexCount = 0;
 
@@ -67,6 +69,7 @@ public:
 
 	Mesh(Vector<T>& vertexList, Vector<uint32>& indexList, uint32 meshBufferIndex)
 	{
+		MeshId = ++NextMeshId;
 		MeshBufferIndex = meshBufferIndex;
 		MeshVertexList = vertexList;
 		MeshIndexList = indexList;
@@ -91,6 +94,7 @@ public:
 
 	Mesh(Vector<T>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material)
 	{
+		MeshId = ++NextMeshId;
 		MeshMaterial = material;
 		MeshVertexList = vertexList;
 		MeshIndexList = indexList;
@@ -191,10 +195,44 @@ public:
 		};
 	}
 
+	Mesh& operator=(const Mesh& other)
+	{
+		if (this != &other)
+		{
+			MeshId = other.MeshId;
+			MeshBufferIndex = other.MeshBufferIndex;
+			VertexCount = other.VertexCount;
+			IndexCount = other.IndexCount;
+			MeshProperties = other.MeshProperties;
+			MeshTransform = other.MeshTransform;
+			MeshPosition = other.MeshPosition;
+			MeshRotation = other.MeshRotation;
+			MeshScale = other.MeshScale;
+
+			MeshMaterial = other.MeshMaterial;
+			GameObjectTransform = other.GameObjectTransform;
+
+			MeshVertexList = other.MeshVertexList;
+			MeshIndexList = other.MeshIndexList;
+
+			/*		MeshVertexBuffer = VulkanBuffer<T>(MeshVertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+					MeshIndexBuffer = IndexBuffer(other.MeshIndexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+					MeshTransformBuffer = TransformBuffer(static_cast<void*>(&MeshTransform), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+					PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);*/
+		}
+		return *this;
+	}
+
 	const VkBufferUsageFlags GetMeshBufferUsageSettings() { return MeshBufferUsageSettings; }
 	const VkMemoryPropertyFlags GetMeshBufferPropertySettings() { return MeshBufferPropertySettings; }
 	SharedPtr<VkBuffer> GetVertexBuffer() { return std::make_shared<VkBuffer>(MeshVertexBuffer.Buffer); }
 	SharedPtr<VkBuffer> GetIndexBuffer() { return std::make_shared<VkBuffer>(MeshIndexBuffer.Buffer); }
+	static const uint32 GetNextIdNumber()
+	{
+		uint32 nextId = NextMeshId;
+		return ++nextId;
+	}
 };
 
 typedef Mesh<Vertex2D> SpriteMesh;
+uint32 SpriteMesh::NextMeshId = 0;
