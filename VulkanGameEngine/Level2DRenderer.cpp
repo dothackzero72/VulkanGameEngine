@@ -45,13 +45,10 @@ void Level2DRenderer::StartLevelRenderer()
 
     auto textureId = assetManager.LoadTexture("../Textures/TestTexture.json");
     auto materialId = assetManager.LoadMaterial("../Materials/Material1.json");
-    assetManager.AddSpriteVRAM("../Sprites/TestSprite.json");
+    auto vRAMID = assetManager.AddSpriteVRAM("../Sprites/TestSprite.json");
 
     const Material material = assetManager.MaterialList[materialId];
     TextureList.emplace_back(std::make_shared<Texture>(assetManager.TextureList[material.AlbedoMapId]));
-
-    ivec2 size = ivec2(32);
-    assetManager.SpriteSheetList[0] = SpriteSheet(0, size, 0);
 
     Vector<ivec2> frameList =
     {
@@ -67,21 +64,24 @@ void Level2DRenderer::StartLevelRenderer()
         ivec2(4, 0)
     };
 
-
+    const Texture texture = assetManager.TextureList[material.AlbedoMapId];
     assetManager.VRAMSpriteList[0] = SpriteVRAM
     {
         .VRAMSpriteID = 0,
-        .SpritesheetID = assetManager.SpriteSheetList[0].SpriteMaterialID,
-        .SpriteMaterialID = assetManager.MaterialList[0].GetMaterialId(),
-        .SpriteLayer = assetManager.SpriteSheetList[0].SpriteLayer,
-        .SpriteSize = vec2(assetManager.SpriteSheetList[0].SpritePixelSize.x * assetManager.SpriteSheetList[0].SpriteScale.x,   assetManager.SpriteSheetList[0].SpritePixelSize.y * assetManager.SpriteSheetList[0].SpriteScale.y),
+        .SpriteMaterialID = materialId,
+        .SpriteLayer = 0,
         .SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f),
+        .SpritePixelSize = ivec2(32),
+        .SpriteScale = vec2(5.0f),
         .AnimationList = Vector<Animation2D>
             {
                 Animation2D("Standing", frameList, 0.2f),
                 Animation2D("Walking", frameList2, 0.2f)
             },
     };
+    assetManager.VRAMSpriteList[vRAMID].SpriteSize = vec2(assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.x * assetManager.VRAMSpriteList[vRAMID].SpriteScale.x, assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.y * assetManager.VRAMSpriteList[vRAMID].SpriteScale.y),
+    assetManager.VRAMSpriteList[vRAMID].SpriteCells = ivec2(texture.Width / assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.x, texture.Height / assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.y),
+    assetManager.VRAMSpriteList[vRAMID].SpriteUVSize = vec2(1.0f / (float)assetManager.VRAMSpriteList[vRAMID].SpriteCells.x, 1.0f / (float)assetManager.VRAMSpriteList[vRAMID].SpriteCells.y);
 
     AddGameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 40.0f));
     AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 20.0f));

@@ -1,6 +1,5 @@
 #pragma once
 #include <TypeDef.h>
-#include "SpriteSheet.h"
 
 struct Animation2D
 {

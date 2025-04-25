@@ -51,7 +51,6 @@ UM_SpriteVRAMID AssetManager::AddSpriteVRAM(const String& spritePath)
 
 	SpriteVRAM sprite;
 	sprite.VRAMSpriteID = vramId;
-	sprite.VRAMSpriteName = json["VRAMSpriteName"];
 	sprite.SpriteLayer = json["SpriteLayer"];
 	sprite.SpriteSize = ivec2{ json["SpriteSize"][0], json["SpriteSize"][1] };
 	sprite.SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] };

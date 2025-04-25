@@ -1,6 +1,5 @@
 #pragma once
 #include "TypeDef.h"
-#include "SpriteSheet.h"
 #include "Animation2D.h"
 #include "SceneDataBuffer.h"
 #include "Vertex.h"

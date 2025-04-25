@@ -6,7 +6,6 @@ extern "C"
 #include <memory>
 #include "GameObjectComponent.h"
 #include "Material.h"
-#include "SpriteSheet.h"
 
 class Sprite;
 class SpriteSheet;
