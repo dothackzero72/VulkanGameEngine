@@ -2,11 +2,11 @@
 #include <cstdint>
 #include <queue>
 #include <TypeDef.h>
-#include "VulkanRenderer.h"
-#include "Animation2D.h"
-#include "JsonPipeline.h"
-#include "SpriteVRAM.h"
+#include <VkGuid.h>
+#include "GameObject.h"
+#include "Transform2DComponent.h"
 #include "Mesh.h"
+#include "SpriteVRAM.h"
 
 typedef uint32 UM_GameObjectID;
 typedef uint32 UM_TextureID;

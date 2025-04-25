@@ -1,5 +1,6 @@
 #include "AssetManager.h"
 #include "Material.h"
+#include <json.h>
 
 AssetManager assetManager = AssetManager();
 

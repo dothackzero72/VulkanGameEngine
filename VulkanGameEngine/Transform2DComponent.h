@@ -2,10 +2,9 @@
 #include "GameObjectComponent.h"
 #include "memory"
 
-class Transform2DComponent : public GameObjectComponent
+class Transform2DComponent
 {
 public:
-
     vec2 GameObjectPosition = vec2(0.0f);
     vec2 GameObjectRotation = vec2(0.0f);
     vec2 GameObjectScale = vec2(1.0f);
@@ -14,11 +13,9 @@ public:
     Transform2DComponent();
     Transform2DComponent(uint32 gameObjectId, const vec2& position);
     Transform2DComponent(uint32 gameObjectId, const vec2& position, const String& name);
-    virtual ~Transform2DComponent();
+    ~Transform2DComponent();
 
-    virtual void Input(const float& deltaTime) override;
-    virtual void Update(VkCommandBuffer& commandBuffer, const float& deltaTime) override;
-    virtual void Destroy() override;
-    virtual SharedPtr<GameObjectComponent> Clone() const;
-    virtual size_t GetMemorySize() const override;
+    void Input(const float& deltaTime);
+    void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
+    void Destroy();
 };
