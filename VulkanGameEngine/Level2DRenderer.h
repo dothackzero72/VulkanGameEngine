@@ -12,7 +12,7 @@ private:
 	void RemoveGameObject(SharedPtr<GameObject> gameObject);
 	void DestroyDeadGameObjects();
 
-	Vector<SharedPtr<Mesh<Vertex2D>>> GetMeshFromGameObjects();
+	Vector<SpriteMesh> GetMeshFromGameObjects();
 
 public:
 	static SharedPtr<Level2DRenderer>   LevelRenderer;

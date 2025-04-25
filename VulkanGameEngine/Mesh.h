@@ -215,10 +215,10 @@ public:
 			MeshVertexList = other.MeshVertexList;
 			MeshIndexList = other.MeshIndexList;
 
-			/*		MeshVertexBuffer = VulkanBuffer<T>(MeshVertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-					MeshIndexBuffer = IndexBuffer(other.MeshIndexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-					MeshTransformBuffer = TransformBuffer(static_cast<void*>(&MeshTransform), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-					PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);*/
+			MeshVertexBuffer = other.MeshVertexBuffer;
+			MeshIndexBuffer = other.MeshIndexBuffer;
+			MeshTransformBuffer = other.MeshTransformBuffer;
+			PropertiesBuffer = other.PropertiesBuffer;
 		}
 		return *this;
 	}

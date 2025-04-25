@@ -31,7 +31,7 @@ public:
 	uint32                          SpriteLayerIndex;
 
 	Vector<UM_GameObjectID>         GameObjectIDList;
-	SharedPtr<SpriteMesh>		    SpriteLayerMesh;
+	uint							SpriteLayerMeshId;
 	JsonPipeline 					SpriteRenderPipeline;
 
 	SpriteBatchLayer();

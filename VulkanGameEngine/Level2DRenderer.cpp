@@ -91,7 +91,7 @@ void Level2DRenderer::StartLevelRenderer()
     SpriteLayerList.emplace_back(std::make_shared<SpriteBatchLayer>(SpriteBatchLayer(GameObjectList, JsonPipelineList[0])));
     GPUImport gpuImport =
     {
-        .MeshList = Vector<SharedPtr<Mesh<Vertex2D>>>(GetMeshFromGameObjects()),
+        .MeshList = Vector<SpriteMesh>(GetMeshFromGameObjects()),
         .TextureList = Vector<SharedPtr<Texture>>(TextureList),
     };
 
@@ -250,12 +250,12 @@ void Level2DRenderer::DestroyDeadGameObjects()
     //}
 }
 
-Vector<SharedPtr<SpriteMesh>> Level2DRenderer::GetMeshFromGameObjects()
+Vector<SpriteMesh> Level2DRenderer::GetMeshFromGameObjects()
 {
-    Vector<SharedPtr<SpriteMesh>> meshList;
+    Vector<SpriteMesh> meshList;
     for (auto& spriteLayer : SpriteLayerList) 
     {
-        meshList.emplace_back(spriteLayer->SpriteLayerMesh);
+        meshList.emplace_back(assetManager.MeshList[spriteLayer->SpriteLayerMeshId]);
     }
 
     return meshList;

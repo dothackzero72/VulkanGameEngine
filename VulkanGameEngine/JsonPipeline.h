@@ -13,7 +13,7 @@ class Texture;
 
 struct GPUImport
 {
-    Vector<SharedPtr<Mesh<Vertex2D>>> MeshList;
+    Vector<SpriteMesh> MeshList;
     Vector<SharedPtr<Texture>> TextureList;
 };
 
@@ -27,8 +27,7 @@ private:
 
 protected:
 
-    template<class T>
-    const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
+    const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer(Vector<SpriteMesh>& meshList)
     {
         Vector<VkDescriptorBufferInfo> vertexPropertiesBuffer;
         if (meshList.size() == 0)
@@ -51,8 +50,7 @@ protected:
         return vertexPropertiesBuffer;
     }
 
-    template<class T>
-    const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
+    const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer(Vector<SpriteMesh>& meshList)
     {
         std::vector<VkDescriptorBufferInfo>	indexPropertiesBuffer;
         if (meshList.size() == 0)
@@ -74,8 +72,7 @@ protected:
         return indexPropertiesBuffer;
     }
 
-    template<class T>
-    const Vector<VkDescriptorBufferInfo> GetGameObjectTransformBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
+    const Vector<VkDescriptorBufferInfo> GetGameObjectTransformBuffer(Vector<SpriteMesh>& meshList)
     {
         std::vector<VkDescriptorBufferInfo>	transformPropertiesBuffer;
         if (meshList.size() == 0)
@@ -91,15 +88,14 @@ protected:
         {
             for (auto& mesh : meshList)
             {
-                mesh->GetTransformBuffer(transformPropertiesBuffer);
+                mesh.GetTransformBuffer();
             }
         }
 
         return transformPropertiesBuffer;
     }
 
-    template<class T>
-    const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer(Vector<SharedPtr<Mesh<T>>>& meshList)
+    const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer(Vector<SpriteMesh>& meshList)
     {
         Vector<VkDescriptorBufferInfo> meshPropertiesBuffer;
         if (meshList.size() == 0)
@@ -115,7 +111,7 @@ protected:
         {
             for (auto& mesh : meshList)
             {
-                meshPropertiesBuffer.emplace_back(mesh->GetMeshPropertiesBuffer());
+                meshPropertiesBuffer.emplace_back(mesh.GetMeshPropertiesBuffer());
             }
         }
 
