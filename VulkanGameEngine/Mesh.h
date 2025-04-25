@@ -4,13 +4,8 @@ extern "C"
 #include <CTexture.h>
 #include <CBuffer.h>
 }
-#include "GameObject.h"
-#include <VulkanBuffer.h>
-#include "SceneDataBuffer.h"
-#include "FrameTimer.h"
-#include "Transform2DComponent.h"
-#include "Material.h"
 #include "Vertex.h"
+#include "Transform2DComponent.h"
 
 struct MeshProperitiesStruct
 {
@@ -39,7 +34,7 @@ private:
 		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 	uint32 ParentGameObjectID;
-	SharedPtr<Transform2DComponent> GameObjectTransform;
+	uint32 GameObjectTransform;
 
 protected:
 	SharedPtr<Material>		  MeshMaterial;
@@ -90,29 +85,6 @@ public:
 		//		GameObjectTransform = std::dynamic_pointer_cast<Transform2DComponent>(component);
 		//	}
 		//}
-	}
-
-	Mesh(Vector<T>& vertexList, Vector<uint32>& indexList, SharedPtr<Material> material)
-	{
-		MeshId = ++NextMeshId;
-		MeshMaterial = material;
-		MeshVertexList = vertexList;
-		MeshIndexList = indexList;
-		VertexCount = vertexList.size();
-		IndexCount = indexList.size();
-
-		MeshVertexBuffer = VulkanBuffer<T>(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		MeshTransformBuffer = TransformBuffer(static_cast<void*>(&MeshTransform), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
-
-
-		/*	SharedPtr<GameObjectComponent> component = ParentGameObject->GetComponentByComponentType(ComponentTypeEnum::kTransform2DComponent);
-			if (component)
-			{
-				GameObjectTransform = std::dynamic_pointer_cast<Transform2DComponent>(component);
-			}*/
-
 	}
 
 	~Mesh()
@@ -235,4 +207,5 @@ public:
 };
 
 typedef Mesh<Vertex2D> SpriteMesh;
+typedef VulkanBuffer<SpriteMesh>			SpriteMeshBuffer;
 uint32 SpriteMesh::NextMeshId = 0;

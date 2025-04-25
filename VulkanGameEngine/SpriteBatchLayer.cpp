@@ -15,7 +15,7 @@ SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList
 	SpriteRenderPipeline = spriteRenderPipeline;
 
 	SpriteLayerMeshId = SpriteMesh::GetNextIdNumber();
-	assetManager.MeshList[SpriteLayerMeshId] = SpriteMesh(SpriteVertexList, SpriteIndexList, nullptr);
+	assetManager.MeshList[SpriteLayerMeshId] = SpriteMesh(SpriteVertexList, SpriteIndexList, 0);
 
 	for (auto& gameObject : gameObjectList)
 	{

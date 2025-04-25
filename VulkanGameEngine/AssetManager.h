@@ -6,6 +6,7 @@
 #include "Animation2D.h"
 #include "JsonPipeline.h"
 #include "SpriteVRAM.h"
+#include "Mesh.h"
 
 typedef uint32 UM_GameObjectID;
 typedef uint32 UM_TextureID;
