@@ -18,7 +18,7 @@ public:
 	static SharedPtr<Level2DRenderer>   LevelRenderer;
 	Vector<SharedPtr<SpriteBatchLayer>> SpriteLayerList;
 	Vector<SharedPtr<GameObject>>		GameObjectList;
-	Vector<SharedPtr<Texture>>		    TextureList;
+	Vector<Texture>						TextureList;
 
 	Level2DRenderer();
 	Level2DRenderer(const String& JsonPath, ivec2 RenderPassResolution);

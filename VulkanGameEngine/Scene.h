@@ -21,7 +21,7 @@ private:
 	SharedPtr<Level2DRenderer>    levelRenderer;
 	Vector<SharedPtr<GameObject>>   GameObjectList;
 	Vector<SharedPtr<Sprite>>		  SpriteList;
-	Vector<SharedPtr<Texture>>      TextureList;
+	Vector<Texture>      TextureList;
 
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 public:

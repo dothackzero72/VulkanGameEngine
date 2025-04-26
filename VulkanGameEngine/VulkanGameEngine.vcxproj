@@ -188,6 +188,7 @@
     <ClCompile Include="OrthographicCamera3D.cpp" />
     <ClCompile Include="OrthographicCamera2D.cpp" />
     <ClCompile Include="ProgramStats.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteBatchLayer.cpp" />

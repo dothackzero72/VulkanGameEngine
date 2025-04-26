@@ -49,7 +49,7 @@ void Level2DRenderer::StartLevelRenderer()
     auto vRAMID = assetManager.AddSpriteVRAM("../Sprites/TestSprite.json");
 
     const Material material = assetManager.MaterialList[materialId];
-    TextureList.emplace_back(std::make_shared<Texture>(assetManager.TextureList[material.AlbedoMapId]));
+    TextureList.emplace_back(assetManager.TextureList[material.AlbedoMapId]);
 
     Vector<ivec2> frameList =
     {
@@ -93,7 +93,6 @@ void Level2DRenderer::StartLevelRenderer()
     GPUImport gpuImport =
     {
         .MeshList = Vector<SpriteMesh>(GetMeshFromGameObjects()),
-        .TextureList = Vector<SharedPtr<Texture>>(TextureList),
     };
 
     Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
@@ -162,7 +161,7 @@ void Level2DRenderer::UpdateBufferIndex()
 {
     for (int x = 0; x < TextureList.size(); x++)
     {
-        TextureList[x]->UpdateTextureBufferIndex(x);
+        TextureList[x].UpdateTextureBufferIndex(x);
     }
     int xz = 0;
     for (auto& [id, material] : assetManager.MaterialList) {
@@ -207,7 +206,7 @@ void Level2DRenderer::Destroy()
     }
     for (auto& texture : TextureList)
     {
-        texture->Destroy();
+        texture.Destroy();
     }
   /*  for (auto& material : MaterialList)
     {

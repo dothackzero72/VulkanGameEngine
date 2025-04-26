@@ -7,7 +7,7 @@ FrameBufferRenderPass::FrameBufferRenderPass()
 {
 }
 
-FrameBufferRenderPass::FrameBufferRenderPass(const String& jsonPath, SharedPtr<Texture> inputTexture, ivec2 renderPassResolution)
+FrameBufferRenderPass::FrameBufferRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
 {
     RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -20,7 +20,7 @@ FrameBufferRenderPass::FrameBufferRenderPass(const String& jsonPath, SharedPtr<T
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
 
-    GPUImport import = GPUImport{ .TextureList = Vector<SharedPtr<Texture>> { inputTexture } };
+    GPUImport import = GPUImport{ .TextureList = Vector<Texture> { inputTexture } };
     Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
     Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
     JsonPipelineList.emplace_back(JsonPipeline("../Pipelines/FrameBufferPipeline.json", RenderPass, import, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), renderPassResolution));

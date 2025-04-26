@@ -74,9 +74,9 @@ void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassB
         VkSamplerCreateInfo samplerCreateInfo = texture.SamplerCreateInfo;
         switch (texture.TextureType)
         {
-            case ColorRenderedTexture: RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo))); break;
-            case InputAttachmentTexture: RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo))); break;
-            case ResolveAttachmentTexture: RenderedColorTextureList.emplace_back(std::make_shared<RenderedTexture>(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo))); break;
+            case ColorRenderedTexture: RenderedColorTextureList.emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
+            case InputAttachmentTexture: RenderedColorTextureList.emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
+            case ResolveAttachmentTexture: RenderedColorTextureList.emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
             case DepthRenderedTexture: depthTexture = std::make_shared<DepthTexture>(DepthTexture(imageCreateInfo, samplerCreateInfo)); break;
             default:
             {
@@ -93,7 +93,7 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
     Vector<VkImageView> imageViewList;
     for (int x = 0; x < RenderedColorTextureList.size(); x++)
     {
-        imageViewList.emplace_back(RenderedColorTextureList[x]->View);
+        imageViewList.emplace_back(RenderedColorTextureList[x].View);
     }
 
     SharedPtr<VkImageView> depthTextureView = nullptr;
@@ -157,7 +157,7 @@ void JsonRenderPass::Destroy()
 {
     for (auto renderedTexture : RenderedColorTextureList)
     {
-        renderedTexture->Destroy();
+        renderedTexture.Destroy();
     }
     for (auto pipeline : JsonPipelineList)
     {

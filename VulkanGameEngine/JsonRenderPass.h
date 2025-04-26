@@ -30,9 +30,9 @@ public:
 	VkRenderPassBeginInfo RenderPassInfo;
 
 	Vector<JsonPipeline> JsonPipelineList;
-	Vector<SharedPtr<Texture>> InputTextureList;
+	Vector<Texture> InputTextureList;
 
-	Vector<SharedPtr<RenderedTexture>> RenderedColorTextureList = Vector<SharedPtr<RenderedTexture>>();
+	Vector<RenderedTexture> RenderedColorTextureList = Vector<RenderedTexture>();
 	SharedPtr<DepthTexture> depthTexture;
 
 	JsonRenderPass();

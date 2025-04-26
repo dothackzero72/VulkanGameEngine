@@ -10,6 +10,6 @@ private:
 
 public:
 	FrameBufferRenderPass();
-	FrameBufferRenderPass(const String& jsonPath, SharedPtr<Texture> inputTexture, ivec2 renderPassResolution);
+	FrameBufferRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution);
 	virtual ~FrameBufferRenderPass();
 };

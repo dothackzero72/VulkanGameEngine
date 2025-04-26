@@ -3,12 +3,15 @@
 #include "JsonRenderPass.h"
 #include "AssetManager.h"
 
+
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;
 
 class Sprite;
+class JsonPipeline;
 class RenderSystem
 {
+    friend class JsonPipeline;
 private:
     UM_PipelineID CurrentGraphicsPipelineID = 0;
     UM_RenderPassID CurrentRenderPassID = 0;
@@ -23,6 +26,13 @@ private:
     VkRenderPassBeginInfo renderPassInfo;
     VkCommandBufferBeginInfo CommandBufferBeginInfo;
 
+    const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer();
+    const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer();
+    const Vector<VkDescriptorBufferInfo> GetGameObjectTransformBuffer();
+    const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer();
+    const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(Vector<Texture>& renderedTextureList);
+    const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer();
+
 public:
     UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>> SpriteInstanceList;
     UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer> SpriteInstanceBufferList;
@@ -31,7 +41,7 @@ public:
     {
     }
 
-    RenderSystem(Vector<String>& renderPassJsonList, SharedPtr<Texture>& texture, SceneDataBuffer sceneDataBuffer)
+    RenderSystem(Vector<String>& renderPassJsonList, Texture& texture, SceneDataBuffer sceneDataBuffer)
     {
         GPUImport gpuImport;
         gpuImport.TextureList.emplace_back(texture);
@@ -120,4 +130,3 @@ public:
     }
 };
 extern RenderSystem renderSystem;
-RenderSystem renderSystem = RenderSystem();
