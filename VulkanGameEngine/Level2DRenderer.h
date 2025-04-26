@@ -1,6 +1,7 @@
 #pragma once
 #include "JsonRenderPass.h"
 #include "SpriteBatchLayer.h"
+#include "Level2DRenderer.h"
 
 class Level2DRenderer : public JsonRenderPass
 {

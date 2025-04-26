@@ -19,7 +19,7 @@ SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList
 
 	for (auto& gameObject : gameObjectList)
 	{
-		SharedPtr<Sprite> sprite = assetManager.SpriteList[gameObject->GameObjectId];
+		Sprite sprite = assetManager.SpriteList[gameObject->GameObjectId];
 		GameObjectIDList.emplace_back(gameObject->GameObjectId);
 	}
 
@@ -57,8 +57,7 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 	spriteInstanceList.reserve(GameObjectIDList.size());
 	for (auto& gameObjectID : GameObjectIDList)
 	{
-		SharedPtr<Sprite> sprite = assetManager.SpriteList[gameObjectID];
-		spriteInstanceList.emplace_back(sprite->Update(commandBuffer, deltaTime));
+		spriteInstanceList.emplace_back(assetManager.SpriteList[gameObjectID].Update(commandBuffer, deltaTime));
 	}
 
 	if (GameObjectIDList.size())

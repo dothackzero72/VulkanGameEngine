@@ -1,5 +1,6 @@
 #include "JsonPipeline.h"
 #include "MemoryManager.h"
+#include "AssetManager.h"
 
 JsonPipeline::JsonPipeline()
 {

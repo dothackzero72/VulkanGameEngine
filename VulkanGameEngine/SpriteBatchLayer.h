@@ -30,7 +30,7 @@ public:
 	uint32                          MaxSpritesPerSheet;
 	uint32                          SpriteLayerIndex;
 
-	Vector<UM_GameObjectID>         GameObjectIDList;
+	Vector<uint>					GameObjectIDList;
 	uint							SpriteLayerMeshId;
 	JsonPipeline 					SpriteRenderPipeline;
 

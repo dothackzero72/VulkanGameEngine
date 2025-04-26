@@ -7,6 +7,7 @@
 #include "Transform2DComponent.h"
 #include "Mesh.h"
 #include "SpriteVRAM.h"
+#include "Sprite.h"
 
 typedef uint32 UM_GameObjectID;
 typedef uint32 UM_TextureID;
@@ -27,7 +28,7 @@ private:
 public:
 	UnorderedMap<UM_GameObjectID, GameObject> GameObjectList;
 	UnorderedMap<UM_GameObjectID, Transform2DComponent> TransformComponentList;
-	UnorderedMap<UM_GameObjectID, SharedPtr<Sprite>> SpriteList;
+	UnorderedMap<UM_GameObjectID, Sprite> SpriteList;
 	UnorderedMap<UM_GameObjectID, SpriteMesh> MeshList;
 
 	UnorderedMap<UM_TextureID, Texture> TextureList;

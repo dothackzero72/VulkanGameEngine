@@ -1,5 +1,6 @@
 #include "Sprite.h"
 #include "Level2DRenderer.h"
+#include "AssetManager.h"
 
 uint32 Sprite::NextSpriteID = 0;
 

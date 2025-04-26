@@ -5,7 +5,6 @@
 #include "Vertex.h"
 #include "GameObject.h"
 #include "Transform2DComponent.h"
-#include "AssetManager.h"
 
 class AssetManager;
 class Sprite

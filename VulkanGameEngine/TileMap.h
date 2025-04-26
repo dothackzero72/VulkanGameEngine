@@ -5,6 +5,7 @@
 #include "Vertex.h"
 #include "GameObject.h"
 #include "Transform2DComponent.h"
+#include "Material.h"
 
 struct Tile
 {

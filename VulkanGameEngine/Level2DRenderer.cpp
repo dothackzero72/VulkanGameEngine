@@ -1,6 +1,7 @@
 #include "Level2DRenderer.h"
 #include "MemoryManager.h"
 #include "InputComponent.h"
+#include "AssetManager.h"
 
 SharedPtr<Level2DRenderer> Level2DRenderer::LevelRenderer = nullptr;
 
@@ -122,8 +123,8 @@ void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTy
         switch (component)
         {
             case kTransform2DComponent: assetManager.TransformComponentList[gameObject->GameObjectId] = Transform2DComponent(gameObject->GetId(), objectPosition, name); break;
-            case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject->GetId(), name))); break;
-            case kSpriteComponent: assetManager.SpriteList[gameObject->GameObjectId] = std::make_shared<Sprite>(Sprite(gameObject->GetId(), spriteID)); break;
+           // case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject->GetId(), name))); break;
+            case kSpriteComponent: assetManager.SpriteList[gameObject->GameObjectId] = Sprite(gameObject->GetId(), spriteID); break;
         }
     }
 
@@ -138,7 +139,7 @@ void Level2DRenderer::Input(const float& deltaTime)
 {
     for (auto gameObject : GameObjectList)
     {
-        gameObject->Input(deltaTime);
+       // gameObject->Input(deltaTime);
     }
 }
 
@@ -148,7 +149,7 @@ void Level2DRenderer::Update(const float& deltaTime)
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
     for (auto gameObj : GameObjectList)
     {
-        gameObj->Update(commandBuffer, deltaTime);
+        //gameObj->Update(commandBuffer, deltaTime);
     }
     for (auto& spriteLayer : SpriteLayerList)
     {

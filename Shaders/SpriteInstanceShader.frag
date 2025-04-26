@@ -57,14 +57,14 @@ void main()
 	MaterialProperitiesBuffer material = materialBuffer[PS_MaterialID].materialProperties;
 
 	vec2 UV = PS_UV;
-	if(PS_FlipSprite.x <= 1)
-	{
-		UV.x = 1.0f - PS_FlipSprite.x; 
-	}
-	if(PS_FlipSprite.y <= 1)
-	{
-		UV.y= 1.0f - PS_FlipSprite.y; 
-	}
+//	if(PS_FlipSprite.x <= 1)
+//	{
+//		UV.x = 1.0f - PS_FlipSprite.x; 
+//	}
+//	if(PS_FlipSprite.y <= 1)
+//	{
+//		UV.y= 1.0f - PS_FlipSprite.y; 
+//	}
 
 	vec4 albedoColor = texture(TextureMap[material.AlbedoMap], UV);
 	material.Albedo = albedoColor.rgb;
