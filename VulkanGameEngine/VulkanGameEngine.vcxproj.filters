@@ -13,10 +13,279 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{56c1ba21-cc4b-4dd6-bb27-a395ceab39be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\External">
+      <UniqueIdentifier>{29d6add3-18b0-49ad-95b7-14f3704fbc97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\External">
+      <UniqueIdentifier>{0e3d1b98-ee20-4d8d-b612-25128bc2fef7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Animation2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="File.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBufferRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HLSLShaderCompiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InterfaceRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Level2DRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OrthographicCamera2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OrthographicCamera3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgramStats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteBatchLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemClock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform2DComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform3DComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\ImPlot\implot_items.cpp">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\imgui\imgui.cpp">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\imgui\imgui_demo.cpp">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\imgui\imgui_draw.cpp">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\imgui\backends\imgui_impl_glfw.cpp">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\imgui\backends\imgui_impl_vulkan.cpp">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\imgui\imgui_tables.cpp">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\ImPlot\implot.cpp">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\ImPlot\implot_demo.cpp">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Animation2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicVulkanBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBufferRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLShaderCompiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InterfaceRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Level2DRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OrthographicCamera2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OrthographicCamera3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgramStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneDataBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteBatchLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteVRAM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemClock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform2DComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform3DComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\imgui\imconfig.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\imgui\imgui.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\imgui\backends\imgui_impl_glfw.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\imgui\backends\imgui_impl_vulkan.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\imgui\imgui_internal.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\ImPlot\implot.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\ImPlot\implot_internal.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\imgui\imstb_rectpack.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\imgui\imstb_textedit.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\imgui\imstb_truetype.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
