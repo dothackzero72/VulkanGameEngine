@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,14 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{44de42e7-0d69-4422-b5b2-0823d4983781}</ProjectGuid>
+    <ProjectGuid>{59f6607d-4eff-4042-8d44-7dff6d1968ca}</ProjectGuid>
     <RootNamespace>VulkanGameEngine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformMinVersion>7.0</WindowsTargetPlatformMinVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <CLRSupport>true</CLRSupport>
-    <TargetFramework>8.0-Windows</TargetFramework>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -49,7 +44,6 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <CLRSupport>false</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -75,35 +69,17 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\DHZ\Documents\Visual Studio 2022\nlohmann;$(SolutionDir)External\sdl\include;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngineCore;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)x64\Debug;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;C:\Users\dotha\source\repos\WindowTest\External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Users\DHZ\Documents\Visual Studio 2022\nlohmann;$(SolutionDir)External\sdl\include;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngineCore;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)x64\Debug;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;C:\Users\dotha\source\repos\WindowTest\External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\dotha\Documents\GitHub\VulkanGameEngine\Project1;C:\Users\dotha\Documents\GitHub\VulkanGameEngine\External\nlohmann\include;$(SolutionDir)External\ImPlot;$(SolutionDir)External\Coral\Include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\glfw\include\GLFW;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngineCore;C:\VulkanSDK\1.4.304.0\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)External\Coral;$(SolutionDir)x64\Debug;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\VulkanSDK\1.4.304.0\Lib;$(SolutionDir)External\sdl\lib;C:\Users\dotha\source\repos\WindowTest\External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
-    <ManagedAssembly>false</ManagedAssembly>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\DHZ\Documents\Visual Studio 2022\nlohmann;$(SolutionDir)External\sdl\include;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngineCore;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)x64\Release;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;C:\Users\dotha\source\repos\WindowTest\External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
+  <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -114,29 +90,24 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;VulkanGameEngineCore.lib;Coral.Native.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,106 +116,18 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\External\imgui\backends\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\External\imgui\backends\imgui_impl_vulkan.cpp" />
-    <ClCompile Include="..\External\imgui\imgui.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_draw.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_tables.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="..\External\ImPlot\implot.cpp" />
-    <ClCompile Include="..\External\ImPlot\implot_demo.cpp" />
-    <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
-    <ClCompile Include="Animation2D.cpp" />
-    <ClCompile Include="AssetManager.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="GameObjectComponent.cpp" />
-    <ClCompile Include="FPSGraph.cpp" />
-    <ClCompile Include="FrameBufferRenderPass.cpp" />
-    <ClCompile Include="FrameTimer.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="HLSLShaderCompiler.cpp" />
-    <ClCompile Include="InputComponent.cpp" />
-    <ClCompile Include="InterfaceRenderPass.cpp" />
-    <ClCompile Include="JsonPipeline.cpp" />
-    <ClCompile Include="JsonRenderPass.cpp" />
-    <ClCompile Include="Level2DRenderer.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Material.cpp" />
-    <ClCompile Include="MemoryManager.cpp" />
-    <ClCompile Include="OrthographicCamera3D.cpp" />
-    <ClCompile Include="OrthographicCamera2D.cpp" />
-    <ClCompile Include="ProgramStats.cpp" />
-    <ClCompile Include="RenderSystem.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="SpriteBatchLayer.cpp" />
-    <ClCompile Include="SystemClock.cpp" />
-    <ClCompile Include="Tile.cpp" />
-    <ClCompile Include="TileMap.cpp" />
-    <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="Transform2DComponent.cpp" />
-    <ClCompile Include="Transform3DComponent.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\External\imgui\backends\imgui_impl_glfw.h" />
-    <ClInclude Include="..\External\imgui\backends\imgui_impl_vulkan.h" />
-    <ClInclude Include="..\External\imgui\imconfig.h" />
-    <ClInclude Include="..\External\imgui\imgui.h" />
-    <ClInclude Include="..\External\imgui\imgui_internal.h" />
-    <ClInclude Include="..\External\imgui\imstb_rectpack.h" />
-    <ClInclude Include="..\External\imgui\imstb_textedit.h" />
-    <ClInclude Include="..\External\imgui\imstb_truetype.h" />
-    <ClInclude Include="..\External\ImPlot\implot.h" />
-    <ClInclude Include="..\External\ImPlot\implot_internal.h" />
-    <ClInclude Include="Animation2D.h" />
-    <ClInclude Include="AssetManager.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="GameObjectComponent.h" />
-    <ClInclude Include="FPSGraph.h" />
-    <ClInclude Include="FrameBufferRenderPass.h" />
-    <ClInclude Include="FrameTimer.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="HLSLShaderCompiler.h" />
-    <ClInclude Include="InputComponent.h" />
-    <ClInclude Include="InterfaceRenderPass.h" />
-    <ClInclude Include="JsonPipeline.h" />
-    <ClInclude Include="JsonRenderPass.h" />
-    <ClInclude Include="Level2DRenderer.h" />
-    <ClInclude Include="Material.h" />
-    <ClInclude Include="MemoryPool.h" />
-    <ClInclude Include="MemoryManager.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="OrthographicCamera3D.h" />
-    <ClInclude Include="OrthographicCamera2D.h" />
-    <ClInclude Include="ProgramStats.h" />
-    <ClInclude Include="RenderSystem.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneDataBuffer.h" />
-    <ClInclude Include="Sprite.h" />
-    <ClInclude Include="SpriteBatchLayer.h" />
-    <ClInclude Include="SpriteVRAM.h" />
-    <ClInclude Include="SystemClock.h" />
-    <ClInclude Include="Tile.h" />
-    <ClInclude Include="TileMap.h" />
-    <ClInclude Include="Timer.h" />
-    <ClInclude Include="Transform2DComponent.h" />
-    <ClInclude Include="Transform3DComponent.h" />
-    <ClInclude Include="Vertex.h" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
