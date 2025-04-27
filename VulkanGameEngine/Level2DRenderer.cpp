@@ -92,7 +92,7 @@ void Level2DRenderer::StartLevelRenderer()
 
     AddGameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 40.0f));
     AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 20.0f));
-    for (int x = 0; x < 7500; x++)
+    for (int x = 0; x < 20000; x++)
     {
         AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 80.0f));
     }

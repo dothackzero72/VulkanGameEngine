@@ -25,6 +25,10 @@ public:
 	uint CurrentAnimationID = 0;
 	uint CurrentFrame = 0;
 	float CurrentFrameTime = 0.0f;
+
+	vec2 LastSpritePosition = vec2(0.0f);
+	vec2 LastSpriteRotation = vec2(0.0f);
+	vec2 LastSpriteScale = vec2(1.0f);
 	vec2 SpritePosition = vec2(0.0f);
 	vec2 SpriteRotation = vec2(0.0f);
 	vec2 SpriteScale = vec2(1.0f);
