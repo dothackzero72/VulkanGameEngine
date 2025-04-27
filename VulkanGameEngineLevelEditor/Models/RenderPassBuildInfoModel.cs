@@ -1,13 +1,6 @@
-﻿using AutoMapper;
-using GlmSharp;
-using Silk.NET.Vulkan;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -24,7 +17,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public RenderAreaModel RenderArea { get; set; }
         public bool IsRenderedToSwapchain { get; set; }
 
-        public RenderPassBuildInfoModel() 
+        public RenderPassBuildInfoModel()
         {
         }
 
@@ -35,7 +28,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public RenderPassBuildInfoModel(string name, string jsonFilePath) : base(name)
         {
-           // LoadJsonComponent(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderPass\DefaultSubpassDependency.json");
+            // LoadJsonComponent(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderPass\DefaultSubpassDependency.json");
         }
 
         public RenderPassBuildInfoDLL ToDLL()
@@ -68,12 +61,12 @@ namespace VulkanGameEngineLevelEditor.Models
             {
                 return new RenderPassBuildInfoDLL
                 {
-                   // Name = (IntPtr)namePtr,
+                    // Name = (IntPtr)namePtr,
                     IsRenderedToSwapchain = IsRenderedToSwapchain,
                     RenderedTextureInfoModelList = (RenderedTextureInfoDLL*)textureInfoHandle.AddrOfPinnedObject(),
                     RenderedTextureInfoModeCount = RenderedTextureInfoModelList.UCount(),
                     ClearValueCount = ClearValueList.UCount(),
-                   // RenderPipelineList = (IntPtr*)renderPipelineHandle.AddrOfPinnedObject(),
+                    // RenderPipelineList = (IntPtr*)renderPipelineHandle.AddrOfPinnedObject(),
                     SubpassDependencyCount = SubpassDependencyList.UCount(),
                     SubpassDependencyList = (VkSubpassDependency*)subpassHandle.AddrOfPinnedObject(),
                     ClearValueList = clearColorPtr,

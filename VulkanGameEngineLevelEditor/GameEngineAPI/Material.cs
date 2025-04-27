@@ -1,14 +1,8 @@
 ﻿using CSScripting;
 using GlmSharp;
 using Newtonsoft.Json;
-using Silk.NET.Vulkan;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -223,8 +217,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             Albedo = color;
 
             var updatedInfo = MaterialInfo;
-            updatedInfo.Albedo = color; 
-            MaterialInfo = updatedInfo; 
+            updatedInfo.Albedo = color;
+            MaterialInfo = updatedInfo;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
             void* ptr = handle.AddrOfPinnedObject().ToPointer();

@@ -1,13 +1,6 @@
-﻿using AutoMapper;
-using Silk.NET.Vulkan;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -71,7 +64,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         [Category("Attachment")]
         public VkAttachmentDescriptionModel AttachmentDescription
-        { 
+        {
             get => _attachmentDescription;
             set
             {
@@ -121,7 +114,7 @@ namespace VulkanGameEngineLevelEditor.Models
             {
                 return new RenderedTextureInfoDLL
                 {
-                  //  Name = (IntPtr)namePtr,
+                    //  Name = (IntPtr)namePtr,
                     _attachmentDescription = _attachmentDescription.Convert(),
                     _textureType = _textureType,
                     _imageCreateInfo = _imageCreateInfo.Convert(),

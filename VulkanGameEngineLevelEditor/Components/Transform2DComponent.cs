@@ -1,6 +1,6 @@
 ﻿using GlmSharp;
-using VulkanGameEngineLevelEditor.GameEngineAPI;
 using Newtonsoft.Json;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.Vulkan;
 
@@ -29,7 +29,7 @@ namespace VulkanGameEngineLevelEditor.Components
             var transform = model as Transform2DComponentModel;
 
             ParentGameObject = parentGameObject;
-            
+
             Name = model.Name;
             GameObjectTransform = mat4.Identity;
             GameObjectPosition = transform.GameObjectPosition;

@@ -1,11 +1,7 @@
-﻿using Microsoft.VisualBasic.Devices;
-using Silk.NET.Vulkan;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -40,7 +36,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 return null;
             }
 
-            int elementSize = sizeof(T); 
+            int elementSize = sizeof(T);
             int totalSize = elementSize * list.Count;
             IntPtr ptr = Marshal.AllocHGlobal(totalSize);
 

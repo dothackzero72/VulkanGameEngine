@@ -1,12 +1,5 @@
-﻿using Silk.NET.Core.Native;
-using Silk.NET.Vulkan;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -23,12 +16,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public static extern VkResult DLL_Buffer_CreateStagingBuffer(VkDevice device,
                                                                     VkPhysicalDevice physicalDevice,
                                                                     VkCommandPool commandPool,
-                                                                    VkQueue graphicsQueue, 
-                                                                    ref VkBuffer stagingBuffer, 
-                                                                    ref VkBuffer buffer, 
-                                                                    ref VkDeviceMemory stagingBufferMemory, 
-                                                                    ref VkDeviceMemory bufferMemory, 
-                                                                    void* bufferData, 
+                                                                    VkQueue graphicsQueue,
+                                                                    ref VkBuffer stagingBuffer,
+                                                                    ref VkBuffer buffer,
+                                                                    ref VkDeviceMemory stagingBufferMemory,
+                                                                    ref VkDeviceMemory bufferMemory,
+                                                                    void* bufferData,
                                                                     ulong bufferSize,
                                                                     VkBufferUsageFlagBits bufferUsage,
                                                                     VkMemoryPropertyFlagBits properties);

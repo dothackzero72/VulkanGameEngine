@@ -1,25 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Silk.NET.Core.Attributes;
-using Silk.NET.Core;
-using Silk.NET.Vulkan;
 using System.ComponentModel;
 using System.Reflection;
-using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.EditorEnhancements;
+using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
-using VulkanGameEngineLevelEditor;
-using AutoMapper;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
     public unsafe class VkSamplerCreateInfoModel : RenderPassEditorBaseModel
     {
-      //  IMapper _mapper;
+        //  IMapper _mapper;
         private VkStructureType _sType = VkStructureType.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
         private VkSamplerCreateFlagBits _flags = 0;
         private void* _pNext = null;
@@ -39,7 +30,7 @@ namespace VulkanGameEngineLevelEditor.Models
         private VkBorderColor _borderColor;
         private bool _unnormalizedCoordinates;
 
-    //    public VkSamplerCreateInfoDLL DLL => _mapper.Map<VkSamplerCreateInfoDLL>(this);
+        //    public VkSamplerCreateInfoDLL DLL => _mapper.Map<VkSamplerCreateInfoDLL>(this);
 
         [Browsable(false)]
         [Newtonsoft.Json.JsonIgnore]
@@ -309,7 +300,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public VkSamplerCreateInfoModel(string name, string jsonFilePath) : base(name)
         {
-           // LoadJsonComponent(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\  \DefaultSubpassDependency.json");
+            // LoadJsonComponent(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\  \DefaultSubpassDependency.json");
         }
 
         public VkSamplerCreateInfo Convert()

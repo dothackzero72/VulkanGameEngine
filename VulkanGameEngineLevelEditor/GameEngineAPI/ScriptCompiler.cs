@@ -1,17 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using VulkanGameEngineLevelEditor.Models;
-using VulkanGameEngineLevelEditor.RenderPassEditor;
-using RGiesecke.DllExport;
-using System.Runtime.InteropServices;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {

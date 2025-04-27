@@ -16,9 +16,9 @@ private:
 
 public:
 	static SharedPtr<Level2DRenderer>   LevelRenderer;
-	Vector<SharedPtr<SpriteBatchLayer>> SpriteLayerList;
-	Vector<SharedPtr<GameObject>>		GameObjectList;
+	Vector<SpriteBatchLayer> SpriteLayerList;
 	Vector<Texture>						TextureList;
+	Vector<GameObject>					GameObjectList;
 
 	Level2DRenderer();
 	Level2DRenderer(const String& JsonPath, ivec2 RenderPassResolution);
@@ -27,7 +27,7 @@ public:
 	void StartLevelRenderer();
 	virtual void Input(const float& deltaTime);
 	virtual void Update(const float& deltaTime) override;
-	VkCommandBuffer DrawSprites(Vector<SharedPtr<SpriteBatchLayer>> meshList, SceneDataBuffer& sceneDataBuffer);
+	VkCommandBuffer DrawSprites(Vector<SpriteBatchLayer> meshList, SceneDataBuffer& sceneDataBuffer);
 	void UpdateBufferIndex();
 	virtual void Destroy() override;
 };

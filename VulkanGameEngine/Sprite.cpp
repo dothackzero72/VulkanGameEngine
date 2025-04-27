@@ -14,7 +14,7 @@ Sprite::Sprite(uint32 gameObjectId, uint32 SpriteVRAMID)
 
 	ParentGameObjectID = gameObjectId;
 	SpriteID = ++NextSpriteID;
-	CurrentSpriteAnimation = spriteVRAM.AnimationList[kWalking];
+	CurrentAnimationID = kWalking;
 }
 
 Sprite::~Sprite()
@@ -29,30 +29,32 @@ void Sprite::Input(const float& deltaTime)
 SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
 	const Transform2DComponent transform2D = assetManager.TransformComponentList[ParentGameObjectID];
-	const SpriteVRAM vRAM = assetManager.VRAMSpriteList[SpriteVRAMID];
+	const SpriteVRAM vram = assetManager.VRAMSpriteList[SpriteVRAMID];
+	const Animation2D animation = assetManager.AnimationList[vram.AnimationListID];
+	const Vector<ivec2> frameList = assetManager.AnimationFrameList[animation.AnimationFrameId];
+	const Material material = assetManager.MaterialList[assetManager.VRAMSpriteList[SpriteVRAMID].SpriteMaterialID];
 	SpriteInstanceStruct spriteInstance;
-	Material material = assetManager.MaterialList[assetManager.VRAMSpriteList[SpriteVRAMID].SpriteMaterialID];
 
 	mat4 spriteMatrix = mat4(1.0f);
 	spriteMatrix = glm::translate(spriteMatrix, vec3(transform2D.GameObjectPosition.x, transform2D.GameObjectPosition.y, 0.0f));
-	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transform2D.GameObjectRotation.x), vec3(1.0f, 0.0f, 0.0f));
-	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transform2D.GameObjectRotation.y), vec3(0.0f, 1.0f, 0.0f));
-	spriteMatrix = glm::rotate(spriteMatrix, glm::radians(0.0f), vec3(0.0f, 0.0f, 1.0f));
+	//spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transform2D.GameObjectRotation.x), vec3(1.0f, 0.0f, 0.0f));
+	//spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transform2D.GameObjectRotation.y), vec3(0.0f, 1.0f, 0.0f));
+	//spriteMatrix = glm::rotate(spriteMatrix, glm::radians(0.0f), vec3(0.0f, 0.0f, 1.0f));
 	spriteMatrix = glm::scale(spriteMatrix, vec3(transform2D.GameObjectScale.x, transform2D.GameObjectScale.y, 0.0f));
 
 	spriteInstance.SpritePosition = transform2D.GameObjectPosition;
 	spriteInstance.SpriteSize = assetManager.VRAMSpriteList[SpriteVRAMID].SpriteSize;
-	spriteInstance.UVOffset = vec4(vRAM.SpriteUVSize.x * CurrentSpriteAnimation.FrameList[CurrentFrame].x, vRAM.SpriteUVSize.y * CurrentSpriteAnimation.FrameList[CurrentFrame].y, vRAM.SpriteUVSize.x, vRAM.SpriteUVSize.y);
+	spriteInstance.UVOffset = vec4(vram.SpriteUVSize.x * frameList[CurrentFrame].x, vram.SpriteUVSize.y * frameList[CurrentFrame].y, vram.SpriteUVSize.x, vram.SpriteUVSize.y);
 	spriteInstance.Color = assetManager.VRAMSpriteList[SpriteVRAMID].SpriteColor;
-	spriteInstance.MaterialID = material.GetMaterialBufferIndex();
+	spriteInstance.MaterialID = material.MaterialBufferIndex;
 	spriteInstance.InstanceTransform = spriteMatrix;
 
-	CurrentSpriteAnimation.CurrentFrameTime += deltaTime;
-	if (CurrentSpriteAnimation.CurrentFrameTime >= CurrentSpriteAnimation.FrameHoldTime)
+	CurrentFrameTime += deltaTime;
+	if (CurrentFrameTime >= animation.FrameHoldTime)
 	{
 		CurrentFrame += 1;
-		CurrentSpriteAnimation.CurrentFrameTime = 0.0f;
-		if (CurrentFrame > CurrentSpriteAnimation.FrameList.size() - 1)
+		CurrentFrameTime = 0.0f;
+		if (CurrentFrame > frameList.size() - 1)
 		{
 			CurrentFrame = 0;
 		}

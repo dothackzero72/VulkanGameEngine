@@ -12,5 +12,5 @@ struct SpriteVRAM
 	ivec2				SpriteCells;
 	vec2				SpriteUVSize;
 	vec2				SpriteScale;
-	Vector<Animation2D> AnimationList;
+	uint				AnimationListID;
 };

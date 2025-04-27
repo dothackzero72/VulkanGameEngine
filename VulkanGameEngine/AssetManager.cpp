@@ -51,7 +51,7 @@ UM_SpriteVRAMID AssetManager::AddSpriteVRAM(const String& spritePath)
 	sprite.SpriteSize = ivec2{ json["SpriteSize"][0], json["SpriteSize"][1] };
 	sprite.SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] };
 
-	VRAMSpriteList[vramId] = sprite;
+	VRAMSpriteList.emplace_back(sprite);
 	return vramId;
 }
 
@@ -172,8 +172,8 @@ void AssetManager::DestoryVRAMSprites()
 {
 	for (auto& spriteVRAM : VRAMSpriteList)
 	{
-		const uint id = spriteVRAM.second.VRAMSpriteID;
-		VRAMSpriteList.erase(id);
+		/*const uint id = spriteVRAM.second.VRAMSpriteID;
+		VRAMSpriteList.erase(id);*/
 	}
 	VRAMSpriteList.clear();
 }

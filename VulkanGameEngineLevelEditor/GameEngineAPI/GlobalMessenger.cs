@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
@@ -32,7 +29,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 if (messenger.Count > 0)
                 {
                     var messengerModel = messenger.First();
-                    messenger.Remove(messengerModel); 
+                    messenger.Remove(messengerModel);
 
                     if (messenger.Count == 0)
                     {

@@ -52,7 +52,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     public unsafe class JsonPipeline<T>
     {
         private VkDevice _device { get; set; } = VulkanRenderer.device;
-        public GPUImport<T> _GPUImport { get; protected set; } 
+        public GPUImport<T> _GPUImport { get; protected set; }
         public VkDescriptorPool descriptorPool { get; protected set; }
         public ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList { get; protected set; } = new ListPtr<VkDescriptorSetLayout>();
         public ListPtr<VkDescriptorSet> descriptorSetList { get; protected set; } = new ListPtr<VkDescriptorSet>();
@@ -152,7 +152,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
             foreach (var obj in gameObjectList)
             {
-          //      obj.Draw(commandBuffer, pipeline, pipelineLayout, descriptorSetList, sceneDataBuffer);
+                //      obj.Draw(commandBuffer, pipeline, pipelineLayout, descriptorSetList, sceneDataBuffer);
             }
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);

@@ -33,7 +33,10 @@ public:
 
 	UnorderedMap<UM_TextureID, Texture> TextureList;
 	UnorderedMap<UM_MaterialID, Material> MaterialList;
-	UnorderedMap<UM_SpriteVRAMID, SpriteVRAM> VRAMSpriteList;
+	Vector<SpriteVRAM> VRAMSpriteList;
+
+	UnorderedMap<uint, Animation2D> AnimationList;
+	UnorderedMap<uint, Vector<ivec2>> AnimationFrameList;
 
 	AssetManager();
 	~AssetManager();

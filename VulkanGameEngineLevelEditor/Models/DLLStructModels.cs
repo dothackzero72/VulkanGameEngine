@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
@@ -113,8 +108,8 @@ namespace VulkanGameEngineLevelEditor.Models
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct RenderPassBuildInfoDLL
     {
-       // public IntPtr Name;
-       // public IntPtr* RenderPipelineList;
+        // public IntPtr Name;
+        // public IntPtr* RenderPipelineList;
         public RenderedTextureInfoDLL* RenderedTextureInfoModelList;
         public VkSubpassDependency* SubpassDependencyList;
         public VkClearValue* ClearValueList;

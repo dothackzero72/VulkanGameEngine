@@ -1,27 +1,19 @@
-﻿using Silk.NET.Vulkan;
-using Silk.NET.Vulkan.Extensions.EXT;
-using Silk.NET.Vulkan.Extensions.KHR;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection.Metadata;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using VulkanGameEngineLevelEditor.GameEngineAPI;
-using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
     public class SwapChainState
     {
-        public uint ImageCount { get;  set; }
-        public VkFormat Format { get;  set; }
-        public VkColorSpaceKHR ColorSpace { get;  set; }
-        public VkPresentModeKHR PresentMode { get;  set; }
-        public ListPtr<VkImage> Images { get;  set; }
-        public ListPtr<VkImageView> imageViews { get;  set; }
-        public VkExtent2D SwapChainResolution { get;  set; }
-        public VkSwapchainKHR Swapchain { get;  set; }
+        public uint ImageCount { get; set; }
+        public VkFormat Format { get; set; }
+        public VkColorSpaceKHR ColorSpace { get; set; }
+        public VkPresentModeKHR PresentMode { get; set; }
+        public ListPtr<VkImage> Images { get; set; }
+        public ListPtr<VkImageView> imageViews { get; set; }
+        public VkExtent2D SwapChainResolution { get; set; }
+        public VkSwapchainKHR Swapchain { get; set; }
     }
 
     public unsafe static class VulkanRenderer
@@ -40,7 +32,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static VkCommandPool commandPool { get; private set; }
         public static ListPtr<VkFence> InFlightFences { get; private set; }
         public static ListPtr<VkSemaphore> AcquireImageSemaphores { get; private set; }
-        public static ListPtr<VkSemaphore> PresentImageSemaphores { get; private set; } 
+        public static ListPtr<VkSemaphore> PresentImageSemaphores { get; private set; }
         public static SwapChainState SwapChain { get; set; } = new SwapChainState();
         public static UInt32 ImageIndex { get; private set; } = new UInt32();
         public static UInt32 CommandIndex { get; private set; } = new UInt32();
@@ -315,7 +307,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static ListPtr<VkPresentModeKHR> Renderer_GetSurfacePresentModes()
         {
-            VkPresentModeKHR* presentModeListPtr =  GameEngineImport.DLL_Renderer_GetSurfacePresentModes(physicalDevice, surface, out uint count);
+            VkPresentModeKHR* presentModeListPtr = GameEngineImport.DLL_Renderer_GetSurfacePresentModes(physicalDevice, surface, out uint count);
             return new ListPtr<VkPresentModeKHR>(presentModeListPtr, count);
         }
 

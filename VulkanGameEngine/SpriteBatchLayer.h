@@ -35,7 +35,7 @@ public:
 	JsonPipeline 					SpriteRenderPipeline;
 
 	SpriteBatchLayer();
-	SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, JsonPipeline spriteRenderPipeline);
+	SpriteBatchLayer(Vector<GameObject>& gameObjectList, JsonPipeline spriteRenderPipeline);
 	virtual ~SpriteBatchLayer();
 
 	void LoadSprites();

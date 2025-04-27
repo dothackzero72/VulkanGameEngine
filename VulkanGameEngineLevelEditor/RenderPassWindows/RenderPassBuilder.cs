@@ -1,25 +1,10 @@
 ﻿using GlmSharp;
 using Newtonsoft.Json;
-using Silk.NET.Core;
-using Silk.NET.SDL;
-using Silk.NET.Vulkan;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Security.Principal;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Serialization;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
-using VulkanGameEngineLevelEditor.RenderPassEditor;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.RenderPassWindows
@@ -45,7 +30,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
                 TextBoxName = RenderPassBuilderDebug.Name,
                 ThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId,
             };
-           // GlobalMessenger.AddMessenger(RenderPassMessager);
+            // GlobalMessenger.AddMessenger(RenderPassMessager);
 
             RenderPassModels = new RenderPassBuildInfoModel
             {
@@ -88,7 +73,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
             using (RenderPassBuilder popup = new RenderPassBuilder())
             {
                 DialogResult result = popup.ShowDialog();
-               
+
                 if (result == DialogResult.OK)
                 {
                     MessageBox.Show("Popup closed.");
@@ -97,8 +82,8 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         }
         private void ImageTypeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-          //  var asdf = (ImageType)Enum.Parse(typeof(ImageType), ImageTypeBox.SelectedItem.ToString());
-         //   var asd = ImageTypeBox.SelectedItem.ToString();
+            //  var asdf = (ImageType)Enum.Parse(typeof(ImageType), ImageTypeBox.SelectedItem.ToString());
+            //   var asd = ImageTypeBox.SelectedItem.ToString();
         }
 
         private void propertyGrid1_Click(object sender, EventArgs e)
@@ -142,7 +127,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private void BuildButton_Click(object sender, EventArgs e)
         {
             buildRenderPass = new JsonRenderPass<Vertex2D>();
-           // buildRenderPass.CreateRenderPass();
+            // buildRenderPass.CreateRenderPass();
         }
 
         private void OnClose(object sender, FormClosingEventArgs e)
@@ -190,7 +175,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-           
+
 
         }
 

@@ -24,12 +24,11 @@ public:
 	uint SpriteVRAMID = 0;
 	uint CurrentAnimationID = 0;
 	uint CurrentFrame = 0;
-
+	float CurrentFrameTime = 0.0f;
 	vec2 SpritePosition = vec2(0.0f);
 	vec2 SpriteRotation = vec2(0.0f);
 	vec2 SpriteScale = vec2(1.0f);
 
-	Animation2D CurrentSpriteAnimation;
 	bool SpriteAlive = true;
 
 	Sprite();
@@ -51,7 +50,6 @@ public:
 			SpritePosition = other.SpritePosition;
 			SpriteRotation = other.SpriteRotation;
 			SpriteScale = other.SpriteScale;
-			CurrentSpriteAnimation = other.CurrentSpriteAnimation;
 		}
 		return *this; 
 	}

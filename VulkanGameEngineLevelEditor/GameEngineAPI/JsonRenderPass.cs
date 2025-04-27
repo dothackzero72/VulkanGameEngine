@@ -131,8 +131,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 }
             };
 
-            var commandInfo = new VkCommandBufferBeginInfo 
-            { 
+            var commandInfo = new VkCommandBufferBeginInfo
+            {
                 sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
                 flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
             };
@@ -143,7 +143,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipelineList[0].pipeline);
             foreach (var obj in gameObjectList)
             {
-              //  obj.Draw(commandBuffer, jsonPipelineList[0].pipeline, jsonPipelineList[0].pipelineLayout, jsonPipelineList[0].descriptorSetList, sceneDataBuffer);
+                //  obj.Draw(commandBuffer, jsonPipelineList[0].pipeline, jsonPipelineList[0].pipelineLayout, jsonPipelineList[0].descriptorSetList, sceneDataBuffer);
             }
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);

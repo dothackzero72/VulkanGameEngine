@@ -177,7 +177,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkDescriptorType descriptorType;
         public uint descriptorCount;
         public VkShaderStageFlagBits stageFlags;
-         public VkSampler* pImmutableSamplers;
+        public VkSampler* pImmutableSamplers;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]

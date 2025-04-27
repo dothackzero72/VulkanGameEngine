@@ -1,11 +1,5 @@
 ﻿using Silk.NET.Vulkan;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VulkanGameEngineLevelEditor.GameEngineAPI;
-using VulkanGameEngineLevelEditor.Vulkan;
 using DescriptorBindingPropertiesEnum = VulkanGameEngineLevelEditor.GameEngineAPI.DescriptorBindingPropertiesEnum;
 
 namespace VulkanGameEngineLevelEditor.Models

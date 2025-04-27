@@ -55,9 +55,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public vec3 MeshRotation { get; protected set; }
         public vec3 MeshScale { get; protected set; }
 
-        public VulkanBuffer<Vertex2D> MeshVertexBuffer { get;  set; }
-        public VulkanBuffer<UInt32> MeshIndexBuffer { get;  set; }
-        public VulkanBuffer<mat4> MeshTransformBuffer { get;  set; }
+        public VulkanBuffer<Vertex2D> MeshVertexBuffer { get; set; }
+        public VulkanBuffer<UInt32> MeshIndexBuffer { get; set; }
+        public VulkanBuffer<mat4> MeshTransformBuffer { get; set; }
         public VulkanBuffer<MeshProperitiesStruct> PropertiesBuffer { get; set; }
 
         public Mesh()
@@ -122,7 +122,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                                                                                                                      VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
                                                                                                                      VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                                                                                                                      VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
-            
+
             vertexListHandle.Free();
             indexListHandle.Free();
             transformHandle.Free();

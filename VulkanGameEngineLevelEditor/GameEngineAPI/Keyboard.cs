@@ -3,7 +3,7 @@
     public static class Keyboard
     {
         private static KeyboardState keyboardState;
-        
+
         public static void KeyboardKeyPressed(InputKey key, KeyState keyState)
         {
             switch (keyState)

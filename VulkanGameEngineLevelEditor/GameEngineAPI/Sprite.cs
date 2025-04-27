@@ -12,7 +12,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
     {
         [JsonIgnore]
         public GameObject ParentGameObject { get; set; }
-        
+
         [JsonIgnore]
         public JsonPipeline<Vertex2D> renderPipeline { get; set; }
 
@@ -119,7 +119,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public void Update(VkCommandBuffer commandBuffer, float deltaTime)
         {
             if (Transform2D != null)
-	{
+            {
                 mat4 spriteMatrix = mat4.Identity;
                 spriteMatrix = mat4.Translate(new vec3(Transform2D.GameObjectPosition.x, Transform2D.GameObjectPosition.y, 0.0f));
                 spriteMatrix = mat4.Rotate(VMath.DegreesToRadians(Transform2D.GameObjectRotation.x), new vec3(1.0f, 0.0f, 0.0f));

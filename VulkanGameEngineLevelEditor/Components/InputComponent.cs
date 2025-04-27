@@ -73,24 +73,24 @@ namespace VulkanGameEngineLevelEditor.Components
             {
                 if ((KeyBoardKeys)key == KeyBoardKeys.W)
                 {
-                  //  transform.GameObjectPosition.y += 0.01f;
+                    //  transform.GameObjectPosition.y += 0.01f;
                 }
                 if ((KeyBoardKeys)key == KeyBoardKeys.A)
                 {
-                  //  transform.GameObjectPosition.x -= 0.01f;
+                    //  transform.GameObjectPosition.x -= 0.01f;
                 }
                 if ((KeyBoardKeys)key == KeyBoardKeys.S)
                 {
-                  //  transform.GameObjectPosition.y -= 0.01f;
+                    //  transform.GameObjectPosition.y -= 0.01f;
                 }
                 if ((KeyBoardKeys)key == KeyBoardKeys.D)
                 {
-                  //  transform.GameObjectPosition.x += 0.01f;
+                    //  transform.GameObjectPosition.x += 0.01f;
                 }
             }
             else
             {
-              //  Console.WriteLine($"Transform not found: GameObjectId: 0x{CPPcomponentPtr.ToString("x")} TransformID: 0x{CPPcomponentPtr.ToString("x")}");
+                //  Console.WriteLine($"Transform not found: GameObjectId: 0x{CPPcomponentPtr.ToString("x")} TransformID: 0x{CPPcomponentPtr.ToString("x")}");
             }
         }
 

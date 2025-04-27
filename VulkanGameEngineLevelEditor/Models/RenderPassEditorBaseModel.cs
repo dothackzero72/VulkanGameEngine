@@ -1,14 +1,7 @@
-﻿using AutoMapper;
-using Newtonsoft.Json;
-using Silk.NET.SDL;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -18,7 +11,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public string _name { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public RenderPassEditorBaseModel() 
+        public RenderPassEditorBaseModel()
         {
 
         }

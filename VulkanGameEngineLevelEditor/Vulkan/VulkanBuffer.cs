@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using Silk.NET.Core.Native;
-using Silk.NET.Maths;
-using Silk.NET.SDL;
-using Silk.NET.Vulkan;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
-using VulkanGameEngineLevelEditor.Vulkan;
-using static VulkanGameEngineLevelEditor.GameEngineAPI.GameEngineDLL;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
@@ -103,7 +92,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 CreateBuffer(bufferDataPtr);
             }
         }
-                                    
+
         public VulkanBuffer(List<T> bufferDataList, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer)
         {
             var arrayList = bufferDataList.ToArray();
@@ -202,7 +191,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public void UpdateBufferMemory(T bufferData)
         {
-         
+
             GCHandle bufferDataHandle = GCHandle.Alloc(bufferData, GCHandleType.Pinned);
             if (UsingStagingBuffer)
             {

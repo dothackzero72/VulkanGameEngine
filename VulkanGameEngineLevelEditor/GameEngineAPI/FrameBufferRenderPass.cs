@@ -1,5 +1,4 @@
 ﻿using GlmSharp;
-using Newtonsoft.Json;
 using System;
 using System.Linq;
 using VulkanGameEngineLevelEditor.RenderPassEditor;

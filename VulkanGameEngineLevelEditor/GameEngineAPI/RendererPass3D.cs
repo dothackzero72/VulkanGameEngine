@@ -16,8 +16,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
         public DepthTexture depthTexture { get; private set; }
         //public Texture texture { get; set; }
-      //  public Texture renderedTexture { get; set; }
-       // JsonRenderPass jsonRenderer { get; set; }
+        //  public Texture renderedTexture { get; set; }
+        // JsonRenderPass jsonRenderer { get; set; }
         JsonPipeline<Vertex3D> jsonPipeline { get; set; }
         public RendererPass3D() : base()
         {
@@ -300,9 +300,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 List<VkImageView> TextureAttachmentList = new List<VkImageView>();
                 foreach (var texture in RenderedColorTextureList)
                 {
-                  
-                        TextureAttachmentList.Add(VulkanRenderer.SwapChain.imageViews[x]);
-               
+
+                    TextureAttachmentList.Add(VulkanRenderer.SwapChain.imageViews[x]);
+
                 }
                 if (depthTexture != null)
                 {
@@ -340,12 +340,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             List<VkClearValue> clearValues = new List<VkClearValue>
 {
                 new VkClearValue
-                { 
-                    Color = new VkClearColorValue(1, 0, 0, 1) 
+                {
+                    Color = new VkClearColorValue(1, 0, 0, 1)
                 },
                 new VkClearValue
-                { 
-                    DepthStencil = new VkClearDepthStencilValue(1.0f, 0) 
+                {
+                    DepthStencil = new VkClearDepthStencilValue(1.0f, 0)
                 }
             };
 
@@ -379,7 +379,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, jsonPipeline.pipeline);
                 foreach (var obj in gameObjectList)
                 {
-                //    obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, jsonPipeline.descriptorSetList, sceneDataBuffer);
+                    //    obj.Draw(commandBuffer, jsonPipeline.pipeline, jsonPipeline.pipelineLayout, jsonPipeline.descriptorSetList, sceneDataBuffer);
                 }
                 VkFunc.vkCmdEndRenderPass(commandBuffer);
                 VkFunc.vkEndCommandBuffer(commandBuffer);

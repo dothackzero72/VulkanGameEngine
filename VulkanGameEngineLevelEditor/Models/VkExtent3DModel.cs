@@ -1,13 +1,9 @@
 ﻿using Silk.NET.Vulkan;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models

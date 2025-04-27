@@ -1,13 +1,5 @@
-﻿using Silk.NET.Core.Attributes;
-using Silk.NET.Core;
-using Silk.NET.Vulkan;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 using System.Runtime.InteropServices;
-using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models

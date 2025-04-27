@@ -1,16 +1,8 @@
-﻿using Silk.NET.Core.Attributes;
-using Silk.NET.Core;
+﻿using Newtonsoft.Json;
 using Silk.NET.Vulkan;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using Silk.NET.Core.Native;
-using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.Vulkan;
-using System.Reflection;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -62,7 +54,7 @@ namespace VulkanGameEngineLevelEditor.Models
                 pNext = null,
                 attachmentCount = attachmentCount,
                 pAttachments = pAttachments,
-               // blendConstants = blendConstants,
+                // blendConstants = blendConstants,
                 flags = flags,
                 logicOpEnable = logicOpEnable,
                 logicOp = logicOp

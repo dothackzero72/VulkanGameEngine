@@ -1,22 +1,10 @@
 ﻿using GlmSharp;
-using Silk.NET.Core.Attributes;
-using Silk.NET.Vulkan;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing.Design;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.EditorEnhancements;
-using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
-using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.Vulkan;
-using System.Runtime.InteropServices;
-using AutoMapper;
 
 namespace VulkanGameEngineLevelEditor.Models
 {

@@ -51,18 +51,29 @@ void Level2DRenderer::StartLevelRenderer()
     const Material material = assetManager.MaterialList[materialId];
     TextureList.emplace_back(assetManager.TextureList[material.AlbedoMapId]);
 
-    Vector<ivec2> frameList =
+    assetManager.AnimationFrameList[0] = Vector<ivec2>
     {
         ivec2(0, 0),
         ivec2(1, 0)
     };
 
-    Vector<ivec2> frameList2 =
+    assetManager.AnimationFrameList[1] = Vector<ivec2>
     {
         ivec2(3, 0),
         ivec2(4, 0),
         ivec2(5, 0),
         ivec2(4, 0)
+    };
+
+    assetManager.AnimationList[0] = Animation2D
+    {
+        .FrameHoldTime = 0.2f,
+        .AnimationFrameId = 0
+    };
+    assetManager.AnimationList[1] = Animation2D
+    {
+        .FrameHoldTime = 0.2f,
+        .AnimationFrameId = 1
     };
 
     const Texture texture = assetManager.TextureList[material.AlbedoMapId];
@@ -73,12 +84,7 @@ void Level2DRenderer::StartLevelRenderer()
         .SpriteLayer = 0,
         .SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f),
         .SpritePixelSize = ivec2(32),
-        .SpriteScale = vec2(5.0f),
-        .AnimationList = Vector<Animation2D>
-            {
-                Animation2D("Standing", frameList, 0.2f),
-                Animation2D("Walking", frameList2, 0.2f)
-            },
+        .SpriteScale = vec2(5.0f)
     };
     assetManager.VRAMSpriteList[vRAMID].SpriteSize = vec2(assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.x * assetManager.VRAMSpriteList[vRAMID].SpriteScale.x, assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.y * assetManager.VRAMSpriteList[vRAMID].SpriteScale.y),
     assetManager.VRAMSpriteList[vRAMID].SpriteCells = ivec2(texture.Width / assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.x, texture.Height / assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.y),
@@ -86,10 +92,12 @@ void Level2DRenderer::StartLevelRenderer()
 
     AddGameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 40.0f));
     AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 20.0f));
-    AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 80.0f));
-
+    for (int x = 0; x < 7500; x++)
+    {
+        AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 80.0f));
+    }
     JsonPipelineList.resize(1);
-    SpriteLayerList.emplace_back(std::make_shared<SpriteBatchLayer>(SpriteBatchLayer(GameObjectList, JsonPipelineList[0])));
+    SpriteLayerList.emplace_back(SpriteBatchLayer(GameObjectList, JsonPipelineList[0]));
     GPUImport gpuImport =
     {
         .MeshList = Vector<SpriteMesh>(GetMeshFromGameObjects()),
@@ -108,12 +116,12 @@ void Level2DRenderer::StartLevelRenderer()
     }
 
     JsonPipelineList[0] = JsonPipeline("../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution);
-    SpriteLayerList[0]->SpriteRenderPipeline = JsonPipelineList[0];
+    SpriteLayerList[0].SpriteRenderPipeline = JsonPipelineList[0];
 }
 
 void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, uint32 spriteID, vec2 objectPosition)
 {
-    SharedPtr<GameObject> gameObject = std::make_shared<GameObject>(GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteID));
+    GameObject gameObject = GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteID);
     GameObjectList.emplace_back(gameObject);
 
     Vector<GameObjectComponent> gameObjectComponentList;
@@ -121,9 +129,9 @@ void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTy
     {
         switch (component)
         {
-            case kTransform2DComponent: assetManager.TransformComponentList[gameObject->GameObjectId] = Transform2DComponent(gameObject->GetId(), objectPosition, name); break;
+            case kTransform2DComponent: assetManager.TransformComponentList[gameObject.GameObjectId] = Transform2DComponent(gameObject.GetId(), objectPosition, name); break;
            // case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject->GetId(), name))); break;
-            case kSpriteComponent: assetManager.SpriteList[gameObject->GameObjectId] = Sprite(gameObject->GetId(), spriteID); break;
+            case kSpriteComponent: assetManager.SpriteList[gameObject.GameObjectId] = Sprite(gameObject.GetId(), spriteID); break;
         }
     }
 
@@ -136,23 +144,16 @@ void Level2DRenderer::RemoveGameObject(SharedPtr<GameObject> gameObject)
 
 void Level2DRenderer::Input(const float& deltaTime)
 {
-    for (auto gameObject : GameObjectList)
-    {
-       // gameObject->Input(deltaTime);
-    }
+
 }
 
 void Level2DRenderer::Update(const float& deltaTime)
 {
     DestroyDeadGameObjects();
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-    for (auto gameObj : GameObjectList)
-    {
-        //gameObj->Update(commandBuffer, deltaTime);
-    }
     for (auto& spriteLayer : SpriteLayerList)
     {
-        spriteLayer->Update(commandBuffer, deltaTime);
+        spriteLayer.Update(commandBuffer, deltaTime);
     }
     renderer.EndSingleTimeCommands(commandBuffer);
 }
@@ -170,7 +171,7 @@ void Level2DRenderer::UpdateBufferIndex()
     }
 }
 
-VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SharedPtr<SpriteBatchLayer>> spriteLayerList, SceneDataBuffer& sceneDataBuffer)
+VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SpriteBatchLayer> spriteLayerList, SceneDataBuffer& sceneDataBuffer)
 {
     RenderPassInfo.clearValueCount = static_cast<uint32>(ClearValueList.size());
     RenderPassInfo.pClearValues = ClearValueList.data();
@@ -187,7 +188,7 @@ VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SharedPtr<SpriteBatchLayer>>
     vkCmdBeginRenderPass(CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     for (auto spriteLayer : spriteLayerList)
     {
-        spriteLayer->Draw(CommandBuffer, sceneDataBuffer);
+        spriteLayer.Draw(CommandBuffer, sceneDataBuffer);
     }
     vkCmdEndRenderPass(CommandBuffer);
     vkEndCommandBuffer(CommandBuffer);
@@ -196,13 +197,10 @@ VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SharedPtr<SpriteBatchLayer>>
 
 void Level2DRenderer::Destroy()
 {
-    for (auto& gameObject : GameObjectList)
-    {
-        gameObject->Destroy();
-    }
+
     for (auto& spriteLayer : SpriteLayerList)
     {
-        spriteLayer->Destroy();
+        spriteLayer.Destroy();
     }
     for (auto& texture : TextureList)
     {
@@ -222,12 +220,12 @@ void Level2DRenderer::DestroyDeadGameObjects()
         return;
     }
 
-    Vector<SharedPtr<GameObject>> deadGameObjectList;
-    for (auto it = GameObjectList.begin(); it != GameObjectList.end(); ++it) {
-        if (!(*it)->GameObjectAlive) {
-            deadGameObjectList.push_back(*it);
-        }
-    }
+    //Vector<SharedPtr<GameObject>> deadGameObjectList;
+    //for (auto it = GameObjectList.begin(); it != GameObjectList.end(); ++it) {
+    //    if (!(*it)->GameObjectAlive) {
+    //        deadGameObjectList.push_back(*it);
+    //    }
+    //}
 
     //if (!deadGameObjectList.empty())
     //{
@@ -255,7 +253,7 @@ Vector<SpriteMesh> Level2DRenderer::GetMeshFromGameObjects()
     Vector<SpriteMesh> meshList;
     for (auto& spriteLayer : SpriteLayerList) 
     {
-        meshList.emplace_back(assetManager.MeshList[spriteLayer->SpriteLayerMeshId]);
+        meshList.emplace_back(assetManager.MeshList[spriteLayer.SpriteLayerMeshId]);
     }
 
     return meshList;

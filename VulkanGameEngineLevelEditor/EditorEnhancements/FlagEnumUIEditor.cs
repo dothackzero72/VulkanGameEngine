@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms.Design;
 using System.Windows.Forms;
-using VulkanGameEngineLevelEditor.Models;
+using System.Windows.Forms.Design;
 
 namespace VulkanGameEngineLevelEditor.EditorEnhancements
 {
@@ -23,8 +18,8 @@ namespace VulkanGameEngineLevelEditor.EditorEnhancements
 
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
         {
-            if (context != null && 
-                context.Instance != null && 
+            if (context != null &&
+                context.Instance != null &&
                 provider != null)
             {
 
@@ -216,7 +211,7 @@ namespace VulkanGameEngineLevelEditor.EditorEnhancements
 
                 Items.Clear();
                 enumValue = value;
-                enumType = value.GetType(); 
+                enumType = value.GetType();
                 FillEnumMembers();
                 ApplyEnumValue();
 

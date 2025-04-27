@@ -1,14 +1,5 @@
-﻿using Silk.NET.Core.Attributes;
-using Silk.NET.Core;
-using Silk.NET.Vulkan;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Mail;
+﻿using Newtonsoft.Json;
 using System.Runtime.InteropServices;
-using Newtonsoft.Json;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
@@ -31,7 +22,7 @@ namespace VulkanGameEngineLevelEditor.Models
         [JsonIgnore]
         public void* pNext { get; set; } = null;
 
-       public VkPipelineRasterizationStateCreateInfoModel() { }
+        public VkPipelineRasterizationStateCreateInfoModel() { }
 
         public VkPipelineRasterizationStateCreateInfo Convert()
         {

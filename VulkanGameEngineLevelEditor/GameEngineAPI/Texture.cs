@@ -1,7 +1,7 @@
-﻿using StbImageSharp;
-using VulkanGameEngineLevelEditor.Vulkan;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using StbImageSharp;
 using System;
+using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
@@ -213,7 +213,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         protected VkResult CreateImage(VkImageCreateInfo imageCreateInfo)
         {
-            var result =  GameEngineImport.DLL_Texture_CreateImage(VulkanRenderer.device, VulkanRenderer.physicalDevice, out VkImage image, out VkDeviceMemory memory, imageCreateInfo);
+            var result = GameEngineImport.DLL_Texture_CreateImage(VulkanRenderer.device, VulkanRenderer.physicalDevice, out VkImage image, out VkDeviceMemory memory, imageCreateInfo);
             Image = image;
             Memory = memory;
 

@@ -9,7 +9,7 @@ SpriteBatchLayer::SpriteBatchLayer()
 
 }
 
-SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList, JsonPipeline spriteRenderPipeline)
+SpriteBatchLayer::SpriteBatchLayer(Vector<GameObject>& gameObjectList, JsonPipeline spriteRenderPipeline)
 {
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 	SpriteRenderPipeline = spriteRenderPipeline;
@@ -19,8 +19,8 @@ SpriteBatchLayer::SpriteBatchLayer(Vector<SharedPtr<GameObject>>& gameObjectList
 
 	for (auto& gameObject : gameObjectList)
 	{
-		Sprite sprite = assetManager.SpriteList[gameObject->GameObjectId];
-		GameObjectIDList.emplace_back(gameObject->GameObjectId);
+		Sprite sprite = assetManager.SpriteList[gameObject.GameObjectId];
+		GameObjectIDList.emplace_back(gameObject.GameObjectId);
 	}
 
 	renderSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(gameObjectList.size());

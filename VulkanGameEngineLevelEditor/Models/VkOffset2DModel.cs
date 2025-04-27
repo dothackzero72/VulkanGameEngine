@@ -1,10 +1,5 @@
 ﻿using Silk.NET.Vulkan;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
@@ -15,7 +10,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public int y { get; set; }
 
         public VkOffset2DModel() { }
-        public VkOffset2DModel(int x, int y) 
+        public VkOffset2DModel(int x, int y)
         {
             this.x = x;
             this.y = y;
