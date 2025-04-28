@@ -98,16 +98,16 @@ public:
 	vec3 Emission = vec3(0.0f);
 	float Alpha = 1.0f;
 
-	uint32 AlbedoMapId = 0;
-	uint32 MetallicRoughnessMapId = 0;
-	uint32 MetallicMapId = 0;
-	uint32 RoughnessMapId = 0;
-	uint32 AmbientOcclusionMapId = 0;
-	uint32 NormalMapId = 0;
-	uint32 DepthMapId = 0;
-	uint32 AlphaMapId = 0;
-	uint32 EmissionMapId = 0;
-	uint32 HeightMapId = 0;
+	VkGuid AlbedoMapId;
+	VkGuid MetallicRoughnessMapId;
+	VkGuid MetallicMapId;
+	VkGuid RoughnessMapId;
+	VkGuid AmbientOcclusionMapId;
+	VkGuid NormalMapId;
+	VkGuid DepthMapId;
+	VkGuid AlphaMapId;
+	VkGuid EmissionMapId;
+	VkGuid HeightMapId;
 
 	MaterialProperitiesBuffer MaterialInfo;
 	VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;

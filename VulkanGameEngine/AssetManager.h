@@ -23,15 +23,13 @@ private:
 	std::queue<uint32> FreeIds;
 	uint32 NextId = 0;
 
-	GUID GetGUID(nlohmann::json& json);
-
 public:
 	UnorderedMap<UM_GameObjectID, GameObject> GameObjectList;
 	UnorderedMap<UM_GameObjectID, Transform2DComponent> TransformComponentList;
 	UnorderedMap<UM_GameObjectID, Sprite> SpriteList;
 	UnorderedMap<UM_GameObjectID, SpriteMesh> MeshList;
 
-	UnorderedMap<UM_TextureID, Texture> TextureList;
+	UnorderedMap<VkGuid, Texture> TextureList;
 	UnorderedMap<VkGuid, Material> MaterialList;
 	UnorderedMap<VkGuid, SpriteVram> VramSpriteList;
 
@@ -48,7 +46,7 @@ public:
 	void DestroyEntity(uint32_t id);
 
 	VkGuid AddSpriteVRAM(const String& spritePath);
-	UM_TextureID LoadTexture(const String& texturePath);
+	VkGuid LoadTexture(const String& texturePath);
 	VkGuid LoadMaterial(const String& materialPath);
 
 	void DestroyGameObject(UM_GameObjectID id);

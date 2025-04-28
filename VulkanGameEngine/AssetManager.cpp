@@ -65,15 +65,16 @@ VkGuid AssetManager::AddSpriteVRAM(const String& spritePath)
 	return vramId;
 }
 
-UM_TextureID AssetManager::LoadTexture(const String& texturePath)
+VkGuid AssetManager::LoadTexture(const String& texturePath)
 {
-	if (texturePath.empty())
+	if (texturePath.empty() ||
+		texturePath == "")
 	{
-		return 0;
+		return VkGuid();
 	}
 
 	nlohmann::json json = Json::ReadJson(texturePath);
-	UM_TextureID textureId = Texture::GetNextTextureID();
+	VkGuid textureId = VkGuid(json["TextureId"].get<String>().c_str());
 	String textureFilePath = json["TextureFilePath"];
 	VkFormat textureByteFormat = json["TextureByteFormat"];
 	VkImageAspectFlags imageType = json["ImageType"];
@@ -114,28 +115,6 @@ VkGuid AssetManager::LoadMaterial(const String& materialPath)
 	return materialId;
 }
 
-GUID AssetManager::GetGUID(nlohmann::json& json)
-{
-	GUID guid = {};
-	std::string guidStr = json.get<String>();
-
-	if (guidStr.front() != '{')
-	{
-		guidStr = "{" + guidStr + "}";
-	}
-
-	std::wstring wGuidStr(guidStr.begin(), guidStr.end());
-	HRESULT result = CLSIDFromString(wGuidStr.c_str(), &guid);
-
-	if (FAILED(result))
-	{
-		std::cerr << "Failed to convert string to GUID. HRESULT: " << std::hex << result << std::endl;
-		throw std::runtime_error("Invalid GUID format.");
-	}
-
-	return guid;
-}
-
 void AssetManager::DestroyGameObject(UM_GameObjectID id)
 {
 	MeshList[id].Destroy();
@@ -163,7 +142,7 @@ void AssetManager::DestoryTextures()
 {
 	for (auto& texture : TextureList)
 	{
-		const uint id = texture.second.TextureId;
+		const VkGuid id = texture.second.TextureId;
 		TextureList[id].Destroy();
 	}
 	TextureList.clear();

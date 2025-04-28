@@ -17,16 +17,13 @@
 #undef max
 #endif
 
-uint32 Texture::NextTextureId = 1;
-
 Texture::Texture()
 {
 
 }
 
-Texture::Texture(uint textureID, Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
+Texture::Texture(VkGuid textureID, Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
 {
-	NextTextureId++;
 	TextureId = textureID;
 	Width = width;
 	Height = height;
@@ -45,9 +42,8 @@ Texture::Texture(uint textureID, Pixel clearColor, int width, int height, VkForm
 	//ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-Texture::Texture(uint textureID, const String& filePath, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
+Texture::Texture(VkGuid textureID, const String& filePath, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
 {
-	NextTextureId++;
 	TextureId = textureID;
 	TextureType = textureType;
 	TextureByteFormat = textureByteFormat;

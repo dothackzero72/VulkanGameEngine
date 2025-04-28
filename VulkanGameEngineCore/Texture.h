@@ -10,6 +10,7 @@ extern "C"
 #include "typedef.h"
 #include "VulkanBuffer.h"
 #include <objbase.h>
+#include "VkGuid.h"
 
 enum ExportTextureFormat
 {
@@ -22,7 +23,6 @@ enum ExportTextureFormat
 class Texture
 {
 private:
-	static uint32 NextTextureId;
 	uint32 TextureBufferIndex = 0;
 
 protected:
@@ -35,7 +35,7 @@ protected:
 
 public:
 	String Name = "Texture";
-	uint32 TextureId = 0;
+	VkGuid TextureId;
 	int Width = 1;
 	int Height = 1;
 	int Depth = 1;
@@ -55,8 +55,8 @@ public:
 	VkSampler Sampler = VK_NULL_HANDLE;
 
 	Texture();
-	Texture(uint textureID, Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps);
-	Texture(uint textureID, const String& filePath, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum TextureType, bool useMipMaps);
+	Texture(VkGuid textureID, Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps);
+	Texture(VkGuid textureID, const String& filePath, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum TextureType, bool useMipMaps);
 	virtual ~Texture();
 
 	void UpdateTextureBufferIndex(uint64_t bufferIndex);
@@ -78,7 +78,6 @@ public:
 	const VkFormat GetTextureByteFormat() { return TextureByteFormat; }
 	const VkSampleCountFlagBits GetSampleCount() { return SampleCount; }
 	const uint32 GetTextureBufferIndex() { return TextureBufferIndex; }
-	const static uint32 GetNextTextureID() { return NextTextureId; }
 };
 
 void Texture_CreateImageTexture(VkDevice device,
