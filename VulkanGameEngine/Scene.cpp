@@ -5,6 +5,7 @@
 #include "implot.h"
 #include <stb/stb_image_write.h>
 #include <stb/stb_image.h>
+#include "RenderSystem.h"
 
 void Scene::StartUp()
 {
@@ -15,10 +16,10 @@ void Scene::StartUp()
 
 void Scene::Input(float deltaTime)
 {
-	for (auto gameObject : GameObjectList)
-	{
-		gameObject->Input(deltaTime);
-	}
+	//for (auto gameObject : GameObjectList)
+	//{
+	//	gameObject->Input(deltaTime);
+	//}
 }
 
 void Scene::Update(const float& deltaTime)
@@ -46,10 +47,11 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 
 void Scene::BuildRenderPasses()
 {
+	renderSystem.RenderSystemStartUp();
 	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
 	levelRenderer->StartLevelRenderer();
 
-	frameRenderPass = std::make_shared<FrameBufferRenderPass>(FrameBufferRenderPass("../RenderPass/FrameBufferRenderPass.json", levelRenderer->RenderedColorTextureList[0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
+	frameRenderPass = std::make_shared<FrameBufferRenderPass>(FrameBufferRenderPass(1, "../RenderPass/FrameBufferRenderPass.json", levelRenderer->RenderedColorTextureList[0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
 }
 
 void Scene::UpdateRenderPasses()

@@ -6,7 +6,7 @@ JsonPipeline::JsonPipeline()
 {
 }
 
-JsonPipeline::JsonPipeline(String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize, ivec2& renderPassResolution)
+JsonPipeline::JsonPipeline(uint RenderPipelineId, String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize, ivec2& renderPassResolution)
 {
     //  ParentRenderPass = parentRenderPass;
 

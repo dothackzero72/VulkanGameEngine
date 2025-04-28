@@ -1,6 +1,11 @@
 #include "renderSystem.h"
 RenderSystem renderSystem = RenderSystem();
 
+VkResult RenderSystem::CreateCommandBuffer()
+{
+    return Renderer_CreateCommandBuffers(cRenderer.Device, cRenderer.CommandPool, &CommandBuffer, 1);
+}
+
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetVertexPropertiesBuffer()
 {
     Vector<SpriteMesh> meshList;

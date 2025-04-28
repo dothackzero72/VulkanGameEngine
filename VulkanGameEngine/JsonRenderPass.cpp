@@ -62,7 +62,7 @@ void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& render
     {
         Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
         Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
-        JsonPipelineList.emplace_back(JsonPipeline(renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
+        JsonPipelineList.emplace_back(JsonPipeline(1, renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
     }
 }
 
