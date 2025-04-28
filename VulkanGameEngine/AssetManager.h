@@ -33,7 +33,7 @@ public:
 
 	UnorderedMap<UM_TextureID, Texture> TextureList;
 	UnorderedMap<UM_MaterialID, Material> MaterialList;
-	Vector<SpriteVRAM> VRAMSpriteList;
+	UnorderedMap<VkGuid, SpriteVram> VramSpriteList;
 
 	UnorderedMap<uint, Animation2D> AnimationList;
 	UnorderedMap<uint, Vector<ivec2>> AnimationFrameList;
@@ -47,7 +47,7 @@ public:
 	void CreateEntity();
 	void DestroyEntity(uint32_t id);
 
-	UM_SpriteVRAMID AddSpriteVRAM(const String& spritePath);
+	VkGuid AddSpriteVRAM(const String& spritePath);
 	UM_TextureID LoadTexture(const String& texturePath);
 	UM_MaterialID LoadMaterial(const String& materialPath);
 

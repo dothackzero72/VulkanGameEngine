@@ -8,12 +8,11 @@ Sprite::Sprite()
 {
 }
 
-Sprite::Sprite(uint32 gameObjectId, uint32 SpriteVRAMID)
+Sprite::Sprite(uint32 gameObjectId, VkGuid& spriteVramId)
 {
-	const SpriteVRAM spriteVRAM = assetManager.VRAMSpriteList[SpriteVRAMID];
-
-	ParentGameObjectID = gameObjectId;
 	SpriteID = ++NextSpriteID;
+    GameObjectID = gameObjectId;
+    SpriteVramId = spriteVramId;
 	CurrentAnimationID = kWalking;
 }
 
@@ -28,8 +27,8 @@ void Sprite::Input(const float& deltaTime)
 
 SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
-    const Transform2DComponent& transform2D = assetManager.TransformComponentList.at(ParentGameObjectID);
-    const SpriteVRAM& vram = assetManager.VRAMSpriteList.at(SpriteVRAMID);
+    const Transform2DComponent& transform2D = assetManager.TransformComponentList.at(GameObjectID);
+    const SpriteVram& vram = assetManager.VramSpriteList.at(SpriteVramId);
     const Animation2D& animation = assetManager.AnimationList.at(vram.AnimationListID);
     const Vector<ivec2>& frameList = assetManager.AnimationFrameList.at(animation.AnimationFrameId);
     const Material& material = assetManager.MaterialList.at(vram.SpriteMaterialID);

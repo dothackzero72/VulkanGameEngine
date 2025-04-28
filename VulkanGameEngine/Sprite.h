@@ -5,6 +5,7 @@
 #include "Vertex.h"
 #include "GameObject.h"
 #include "Transform2DComponent.h"
+#include "VkGuid.h"
 
 class AssetManager;
 class Sprite
@@ -18,10 +19,10 @@ private:
 	};
 
 public:
-	uint ParentGameObjectID = 0;
+	uint GameObjectID = 0;
 	uint SpriteID = 0;
 	uint SpriteInstance = 0;
-	uint SpriteVRAMID = 0;
+	VkGuid SpriteVramId;
 	uint CurrentAnimationID = 0;
 	uint CurrentFrame = 0;
 	float CurrentFrameTime = 0.0f;
@@ -36,7 +37,7 @@ public:
 	bool SpriteAlive = true;
 
 	Sprite();
-	Sprite(uint32 id, uint32 spriteSheetID);
+	Sprite(uint32 id, VkGuid& spriteVramId);
 	~Sprite();
 
 	void Input(const float& deltaTime);
@@ -47,13 +48,20 @@ public:
 	{
 		if (this != &other)
 		{
-			CurrentAnimationID = other.CurrentAnimationID;
-			ParentGameObjectID = other.ParentGameObjectID;
-			CurrentFrame = other.CurrentFrame;
-			SpriteAlive = other.SpriteAlive;
-			SpritePosition = other.SpritePosition;
-			SpriteRotation = other.SpriteRotation;
-			SpriteScale = other.SpriteScale;
+			 GameObjectID = other.GameObjectID;
+			 SpriteID = other.SpriteID;
+			 SpriteInstance = other.SpriteInstance;
+			 SpriteVramId = other.SpriteVramId;
+			 CurrentAnimationID = other.CurrentAnimationID;
+			 CurrentFrame = other.CurrentFrame;
+			 CurrentFrameTime = other.CurrentFrameTime;
+			 LastSpritePosition = other.LastSpritePosition;
+			 LastSpriteRotation = other.LastSpriteRotation;
+			 LastSpriteScale = other.LastSpriteScale;
+			 SpritePosition = other.SpritePosition;
+			 SpriteRotation = other.SpriteRotation;
+			 SpriteScale = other.SpriteScale;
+			 SpriteAlive = other.SpriteAlive;
 		}
 		return *this; 
 	}

@@ -45,7 +45,7 @@ void Level2DRenderer::StartLevelRenderer()
 
     auto textureId = assetManager.LoadTexture("../Textures/TestTexture.json");
     auto materialId = assetManager.LoadMaterial("../Materials/Material1.json");
-    auto vRAMID = assetManager.AddSpriteVRAM("../Sprites/TestSprite.json");
+    auto vramId = assetManager.AddSpriteVRAM("../Sprites/TestSprite.json");
 
     const Material material = assetManager.MaterialList[materialId];
     TextureList.emplace_back(assetManager.TextureList[material.AlbedoMapId]);
@@ -75,25 +75,11 @@ void Level2DRenderer::StartLevelRenderer()
         .AnimationFrameId = 1
     };
 
-    const Texture texture = assetManager.TextureList[material.AlbedoMapId];
-    assetManager.VRAMSpriteList[0] = SpriteVRAM
-    {
-        .VRAMSpriteID = 0,
-        .SpriteMaterialID = materialId,
-        .SpriteLayer = 0,
-        .SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f),
-        .SpritePixelSize = ivec2(32),
-        .SpriteScale = vec2(5.0f)
-    };
-    assetManager.VRAMSpriteList[vRAMID].SpriteSize = vec2(assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.x * assetManager.VRAMSpriteList[vRAMID].SpriteScale.x, assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.y * assetManager.VRAMSpriteList[vRAMID].SpriteScale.y),
-    assetManager.VRAMSpriteList[vRAMID].SpriteCells = ivec2(texture.Width / assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.x, texture.Height / assetManager.VRAMSpriteList[vRAMID].SpritePixelSize.y),
-    assetManager.VRAMSpriteList[vRAMID].SpriteUVSize = vec2(1.0f / (float)assetManager.VRAMSpriteList[vRAMID].SpriteCells.x, 1.0f / (float)assetManager.VRAMSpriteList[vRAMID].SpriteCells.y);
-
-    AddGameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 40.0f));
-    AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 20.0f));
+    AddGameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 40.0f));
+    AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 20.0f));
     for (int x = 0; x < 20000; x++)
     {
-        AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0, vec2(300.0f, 80.0f));
+        AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
     }
     JsonPipelineList.resize(1);
     SpriteLayerList.emplace_back(SpriteBatchLayer(GameObjectList, JsonPipelineList[0]));
@@ -118,9 +104,9 @@ void Level2DRenderer::StartLevelRenderer()
     SpriteLayerList[0].SpriteRenderPipeline = JsonPipelineList[0];
 }
 
-void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, uint32 spriteID, vec2 objectPosition)
+void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
 {
-    GameObject gameObject = GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, spriteID);
+    GameObject gameObject = GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0);
     GameObjectList.emplace_back(gameObject);
 
     Vector<GameObjectComponent> gameObjectComponentList;
@@ -130,7 +116,7 @@ void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTy
         {
             case kTransform2DComponent: assetManager.TransformComponentList[gameObject.GameObjectId] = Transform2DComponent(gameObject.GetId(), objectPosition, name); break;
            // case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject->GetId(), name))); break;
-            case kSpriteComponent: assetManager.SpriteList[gameObject.GameObjectId] = Sprite(gameObject.GetId(), spriteID); break;
+            case kSpriteComponent: assetManager.SpriteList[gameObject.GameObjectId] = Sprite(gameObject.GetId(), vramId); break;
         }
     }
 

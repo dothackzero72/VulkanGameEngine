@@ -40,18 +40,39 @@ void AssetManager::DestroyEntity(uint32_t id)
 	FreeIds.push(id);
 }
 
-UM_SpriteVRAMID AssetManager::AddSpriteVRAM(const String& spritePath)
+VkGuid AssetManager::AddSpriteVRAM(const String& spritePath)
 {
+	const Material& material = MaterialList.at(0);
+	const Texture& texture = TextureList.at(material.AlbedoMapId);
+
 	nlohmann::json json = Json::ReadJson(spritePath);
-	UM_SpriteVRAMID vramId = 0;
+	VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
 
-	SpriteVRAM sprite;
-	sprite.VRAMSpriteID = vramId;
-	sprite.SpriteLayer = json["SpriteLayer"];
-	sprite.SpriteSize = ivec2{ json["SpriteSize"][0], json["SpriteSize"][1] };
-	sprite.SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] };
+	//VkGuid				VramSpriteID;
+	//uint				SpriteMaterialID = 0;
+	//uint				SpriteLayer = 0;
+	//vec2				SpriteSize = vec2(50.0f);
+	//vec4				SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	//ivec2				SpritePixelSize;
+	//ivec2				SpriteCells;
+	//vec2				SpriteUVSize;
+	//vec2				SpriteScale;
+	//uint				AnimationListID;
 
-	VRAMSpriteList.emplace_back(sprite);
+	SpriteVram sprite = SpriteVram
+	{
+		.VramSpriteID = vramId,
+		.SpriteMaterialID = 0,
+		.SpriteLayer = json["SpriteLayer"],
+		.SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] },
+		.SpritePixelSize = ivec2{ json["SpritePixelSize"][0], json["SpritePixelSize"][1] },
+		.SpriteScale = vec2(5.0f),
+		.SpriteCells = ivec2(texture.Width / sprite.SpritePixelSize.x, texture.Height / sprite.SpritePixelSize.y),
+		.SpriteUVSize = vec2(1.0f / (float)sprite.SpriteCells.x, 1.0f / (float)sprite.SpriteCells.y),
+		.SpriteSize = vec2(sprite.SpritePixelSize.x * sprite.SpriteScale.x, sprite.SpritePixelSize.y * sprite.SpriteScale.y),
+	};
+
+	VramSpriteList[vramId] = sprite;
 	return vramId;
 }
 
@@ -170,12 +191,12 @@ void AssetManager::DestoryMaterials()
 
 void AssetManager::DestoryVRAMSprites()
 {
-	for (auto& spriteVRAM : VRAMSpriteList)
+	for (auto& spriteVram : VramSpriteList)
 	{
 		/*const uint id = spriteVRAM.second.VRAMSpriteID;
 		VRAMSpriteList.erase(id);*/
 	}
-	VRAMSpriteList.clear();
+	VramSpriteList.clear();
 }
 
 void AssetManager::Destroy()

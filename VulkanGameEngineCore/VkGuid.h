@@ -6,6 +6,7 @@
 #include <objbase.h>
 #include <stdexcept>
 #include <array>
+#include <iostream>
 
 class VkGuid
 {
@@ -18,6 +19,30 @@ private:
 public:
     VkGuid() : Data1(0), Data2(0), Data3(0), Data4{ 0 } {}
 
+    VkGuid(const char* guidchar)
+    {
+        GUID guid = {};
+        String guidString = String(guidchar);
+        if (guidString.front() != '{')
+        {
+            guidString = "{" + guidString + "}";
+        }
+
+        std::wstring wGuidStr(guidString.begin(), guidString.end());
+        HRESULT result = CLSIDFromString(wGuidStr.c_str(), &guid);
+
+        if (FAILED(result))
+        {
+            std::cerr << "Failed to convert string to GUID. HRESULT: " << std::hex << result << std::endl;
+            throw std::runtime_error("Invalid GUID format.");
+        }
+
+        Data1 = guid.Data1;
+        Data2 = guid.Data2;
+        Data3 = guid.Data3;
+        std::copy(std::begin(guid.Data4), std::end(guid.Data4), Data4.begin());
+    }
+
     VkGuid(const GUID& guid) {
         Data1 = guid.Data1;
         Data2 = guid.Data2;
@@ -25,7 +50,6 @@ public:
         std::copy(std::begin(guid.Data4), std::end(guid.Data4), Data4.begin());
     }
 
-    // Method to generate GUID
     static VkGuid GenerateGUID()
     {
         GUID guid;
