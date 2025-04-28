@@ -1,15 +1,13 @@
 #include "Material.h"
 
-uint32 Material::NextMaterialId = 0;
-
 Material::Material()
 {
 }
 
-Material::Material(const String& materialName, uint32 materialId)
+Material::Material(const String& materialName, VkGuid& materialId)
 {
 	Name = materialName;
-	MaterialID = ++NextMaterialId;
+	MaterialId = materialId;
 	MaterialBufferIndex = 0;
 	MaterialBuffer = VulkanBuffer<MaterialProperitiesBuffer>(MaterialInfo,  VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
 																			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 

@@ -1,6 +1,7 @@
 #pragma once
 #include <Texture.h>
 #include "VulkanBuffer.h"
+#include "VkGuid.h"
 
 struct Material2DProperitiesBuffer
 {
@@ -37,15 +38,14 @@ struct MaterialProperitiesBuffer
 class Material2D
 {
 private:
-	uint32 MaterialID = 0;
 	uint MaterialBufferIndex = 0;
 
 	void UpdateBuffer();
 
 public:
-	static uint32 NextMaterialId;
 
 	String Name;
+	VkGuid MaterialId;
 
 	vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
 	float Metallic = 0.0f;
@@ -76,7 +76,6 @@ public:
 	void UpdateMaterialBufferIndex(uint32 bufferIndex);
 	void Destroy();
 
-	const uint32 GetMaterialId() { return MaterialID; }
 	const uint32 GetMaterialBufferIndex() { return MaterialBufferIndex; }
 };
 
@@ -89,7 +88,7 @@ public:
 	static uint32 NextMaterialId;
 
 	String Name;
-	uint32 MaterialID = 0;
+	VkGuid MaterialId;
 	uint MaterialBufferIndex = 0;
 
 	vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
@@ -114,14 +113,13 @@ public:
 	VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;
 
 	Material();
-	Material(const String& materialName, uint32 materialId);
+	Material(const String& materialName, VkGuid& materialId);
 	virtual ~Material();
 
 	void GetMaterialPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& materialBufferList);
 	void UpdateMaterialBufferIndex(uint32 bufferIndex);
 	void Destroy();
 
-	const uint32 GetMaterialId() { return MaterialID; }
 	const uint32 GetMaterialBufferIndex() { return MaterialBufferIndex; }
 	static const uint32 GetNextMaterialId() { return NextMaterialId; }
 };

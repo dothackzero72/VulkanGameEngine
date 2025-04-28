@@ -4,7 +4,7 @@
 struct SpriteVram
 {
 	VkGuid				VramSpriteID;
-	uint				SpriteMaterialID = 0;
+	VkGuid				SpriteMaterialID;
 	uint				SpriteLayer = 0;
 	vec4				SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	ivec2				SpritePixelSize;

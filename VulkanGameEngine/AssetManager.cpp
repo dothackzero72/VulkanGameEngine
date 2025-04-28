@@ -42,27 +42,16 @@ void AssetManager::DestroyEntity(uint32_t id)
 
 VkGuid AssetManager::AddSpriteVRAM(const String& spritePath)
 {
-	const Material& material = MaterialList.at(0);
-	const Texture& texture = TextureList.at(material.AlbedoMapId);
-
 	nlohmann::json json = Json::ReadJson(spritePath);
 	VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
+	VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
 
-	//VkGuid				VramSpriteID;
-	//uint				SpriteMaterialID = 0;
-	//uint				SpriteLayer = 0;
-	//vec2				SpriteSize = vec2(50.0f);
-	//vec4				SpriteColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	//ivec2				SpritePixelSize;
-	//ivec2				SpriteCells;
-	//vec2				SpriteUVSize;
-	//vec2				SpriteScale;
-	//uint				AnimationListID;
-
+	const Material& material = MaterialList.at(materialId);
+	const Texture& texture = TextureList.at(material.AlbedoMapId);
 	SpriteVram sprite = SpriteVram
 	{
 		.VramSpriteID = vramId,
-		.SpriteMaterialID = 0,
+		.SpriteMaterialID = materialId,
 		.SpriteLayer = json["SpriteLayer"],
 		.SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] },
 		.SpritePixelSize = ivec2{ json["SpritePixelSize"][0], json["SpritePixelSize"][1] },
@@ -95,14 +84,15 @@ UM_TextureID AssetManager::LoadTexture(const String& texturePath)
 	return textureId;
 }
 
-UM_MaterialID AssetManager::LoadMaterial(const String& materialPath)
+VkGuid AssetManager::LoadMaterial(const String& materialPath)
 {
 	nlohmann::json json = Json::ReadJson(materialPath);
 
-	UM_MaterialID materialId = Material::GetNextMaterialId();
-	String name = json["Name"];
-	MaterialList[materialId] = Material(name, materialId);
 
+	String name = json["Name"];
+	VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
+
+	MaterialList[materialId] = Material(name, materialId);
 	MaterialList[materialId].Albedo = vec3(json["Albedo"][0], json["Albedo"][1], json["Albedo"][2]);
 	MaterialList[materialId].Metallic = json["Metallic"];
 	MaterialList[materialId].Roughness = json["Roughness"];
@@ -183,7 +173,7 @@ void AssetManager::DestoryMaterials()
 {
 	for (auto& material : MaterialList)
 	{
-		const uint id = material.second.MaterialID;
+		const VkGuid id = material.second.MaterialId;
 		MaterialList[id].Destroy();
 	}
 	MaterialList.clear();

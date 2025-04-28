@@ -32,7 +32,7 @@ public:
 	UnorderedMap<UM_GameObjectID, SpriteMesh> MeshList;
 
 	UnorderedMap<UM_TextureID, Texture> TextureList;
-	UnorderedMap<UM_MaterialID, Material> MaterialList;
+	UnorderedMap<VkGuid, Material> MaterialList;
 	UnorderedMap<VkGuid, SpriteVram> VramSpriteList;
 
 	UnorderedMap<uint, Animation2D> AnimationList;
@@ -49,7 +49,7 @@ public:
 
 	VkGuid AddSpriteVRAM(const String& spritePath);
 	UM_TextureID LoadTexture(const String& texturePath);
-	UM_MaterialID LoadMaterial(const String& materialPath);
+	VkGuid LoadMaterial(const String& materialPath);
 
 	void DestroyGameObject(UM_GameObjectID id);
 	void DestroyGameObjects();
