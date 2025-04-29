@@ -85,7 +85,7 @@ void Level2DRenderer::StartLevelRenderer()
         AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
     }
     JsonPipelineList.resize(1);
-    renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId, GameObjectList, JsonPipelineList[0]));
+    renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId, JsonPipelineList[0]));
     GPUImport gpuImport =
     {
         .MeshList = Vector<SpriteMesh>(GetMeshFromGameObjects()),
@@ -110,6 +110,7 @@ void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTy
 {
     GameObject gameObject = GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0);
     GameObjectList.emplace_back(gameObject);
+    renderSystem.SpriteBatchLayerObjectList[RenderPassId].emplace_back(gameObject.GameObjectId);
 
     Vector<GameObjectComponent> gameObjectComponentList;
     for (auto component : gameObjectComponentTypeList)
@@ -175,8 +176,8 @@ VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SpriteBatchLayer> spriteLaye
     vkCmdBeginRenderPass(CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     for (auto spriteLayer : spriteLayerList)
     {
-        const Vector<SpriteInstanceStruct> spriteInstanceList = renderSystem.SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
-        const SpriteInstanceBuffer spriteInstanceBuffer = renderSystem.SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID];
+        const Vector<SpriteInstanceStruct>& spriteInstanceList = renderSystem.SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
+        const SpriteInstanceBuffer& spriteInstanceBuffer = renderSystem.SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID];
 
         VkDeviceSize offsets[] = { 0 };
         vkCmdPushConstants(CommandBuffer, JsonPipelineList[0].PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
@@ -185,7 +186,7 @@ VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SpriteBatchLayer> spriteLaye
         vkCmdBindVertexBuffers(CommandBuffer, 0, 1, assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetVertexBuffer().get(), offsets);
         vkCmdBindVertexBuffers(CommandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
         vkCmdBindIndexBuffer(CommandBuffer, *assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
-        vkCmdDrawIndexed(CommandBuffer, assetManager.SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
+        vkCmdDrawIndexed(CommandBuffer, renderSystem.SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
     }
     vkCmdEndRenderPass(CommandBuffer);
     vkEndCommandBuffer(CommandBuffer);

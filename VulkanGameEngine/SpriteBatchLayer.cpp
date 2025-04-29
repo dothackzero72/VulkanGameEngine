@@ -8,22 +8,14 @@ SpriteBatchLayer::SpriteBatchLayer()
 
 }
 
-SpriteBatchLayer::SpriteBatchLayer(uint32 renderPassId, Vector<GameObject>& gameObjectList, JsonPipeline spriteRenderPipeline)
+SpriteBatchLayer::SpriteBatchLayer(uint32 renderPassId, JsonPipeline spriteRenderPipeline)
 {
 	RenderPassId = renderPassId;
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
-	SpriteRenderPipeline = spriteRenderPipeline;
 
 	SpriteLayerMeshId = SpriteMesh::GetNextIdNumber();
-	assetManager.MeshList[SpriteLayerMeshId] = SpriteMesh(SpriteVertexList, SpriteIndexList, 0);
-
-	for (auto& gameObject : gameObjectList)
-	{
-		Sprite sprite = assetManager.SpriteList[gameObject.GameObjectId];
-		renderSystem.SpriteBatchLayerObjectList[renderPassId].emplace_back(gameObject.GameObjectId);
-	}
-
-	renderSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(gameObjectList.size());
+	assetManager.MeshList[SpriteLayerMeshId] = SpriteMesh(renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, 0);
+	renderSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(renderSystem.SpriteBatchLayerObjectList[RenderPassId].size());
 	renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = SpriteInstanceBuffer(renderSystem.SpriteInstanceList[SpriteBatchLayerID], assetManager.MeshList[SpriteLayerMeshId].GetMeshBufferUsageSettings(), assetManager.MeshList[SpriteLayerMeshId].GetMeshBufferPropertySettings(), false);
 	SortSpritesByLayer();
 }
