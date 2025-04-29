@@ -24,7 +24,7 @@ class JsonPipeline
 private:
 
 public:
-    uint RenderPipelineId;
+    uint RenderPipelineId = 0;
 
     VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
     Vector<VkDescriptorSetLayout> DescriptorSetLayoutList;
@@ -34,7 +34,7 @@ public:
     VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 
     JsonPipeline();
-    JsonPipeline(uint RenderPipelineId, String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize, ivec2& renderPassResolution);
+    JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize, ivec2& renderPassResolution);
     ~JsonPipeline();
 
     void Destroy();

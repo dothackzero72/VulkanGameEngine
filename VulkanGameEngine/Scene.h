@@ -21,7 +21,8 @@ private:
 	Vector<SharedPtr<GameObject>>   GameObjectList;
 	Vector<SharedPtr<Sprite>>		  SpriteList;
 	Vector<Texture>      TextureList;
-
+	uint renderPass2DId;
+	uint frameBufferId;
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 public:
 	void StartUp();
@@ -30,6 +31,6 @@ public:
 	void ImGuiUpdate(const float& deltaTime);
 	void BuildRenderPasses();
 	void UpdateRenderPasses();
-	void Draw();
+	void Draw(const float& deltaTime);
 	void Destroy();
 };

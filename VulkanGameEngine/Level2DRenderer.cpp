@@ -2,6 +2,7 @@
 #include "InputComponent.h"
 #include "AssetManager.h"
 #include "RenderSystem.h"
+#include <VulkanRenderPass.h>
 
 Level2DRenderer::Level2DRenderer() : JsonRenderPass2()
 {
@@ -21,15 +22,15 @@ Level2DRenderer::Level2DRenderer(const String& jsonPath, ivec2 renderPassResolut
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
-    ClearValueList = renderPassBuildInfo.ClearValueList;
-    RenderPassInfo = VkRenderPassBeginInfo
+    renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
+    renderSystem.RenderPassInfoList[RenderPassId] = VkRenderPassBeginInfo
     {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = RenderPass,
         .framebuffer = FrameBufferList[cRenderer.ImageIndex],
         .renderArea = renderPassBuildInfo.RenderArea.RenderArea,
-        .clearValueCount = static_cast<uint32>(ClearValueList.size()),
-        .pClearValues = ClearValueList.data()
+        .clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size()),
+        .pClearValues = renderSystem.ClearValueList[RenderPassId].data()
     };
 }
 
@@ -75,7 +76,7 @@ void Level2DRenderer::StartLevelRenderer()
         assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
     }
     JsonPipelineList.resize(1);
-    renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId, JsonPipelineList[0]));
+   // renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId, JsonPipelineList[0]));
     GPUImport gpuImport =
     {
         .MeshList = Vector<SpriteMesh>(GetMeshFromGameObjects()),
@@ -93,7 +94,7 @@ void Level2DRenderer::StartLevelRenderer()
         vertexAttribute.emplace_back(instanceVar);
     }
 
-    JsonPipelineList[0] = JsonPipeline(1, "../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution);
+    renderSystem.RenderPipelineList[2].emplace_back(JsonPipeline(2, "../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
 }
 
 void Level2DRenderer::Update(const float& deltaTime)

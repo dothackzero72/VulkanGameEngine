@@ -29,7 +29,7 @@ void Scene::Update(const float& deltaTime)
 		UpdateRenderPasses();
 	}
 	orthographicCamera->Update(sceneProperties);
-	levelRenderer->Update(deltaTime);
+	renderSystem.Update(deltaTime);
 }
 
 void Scene::ImGuiUpdate(const float& deltaTime)
@@ -48,10 +48,8 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 void Scene::BuildRenderPasses()
 {
 	renderSystem.RenderSystemStartUp();
-	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
-	levelRenderer->StartLevelRenderer();
-
-	renderSystem.AddRenderPass("../RenderPass/FrameBufferRenderPass.json", levelRenderer->RenderedColorTextureList[0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
+	 renderPass2DId = renderSystem.AddRenderPass("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
+	 frameBufferId = renderSystem.AddRenderPass("../RenderPass/FrameBufferRenderPass.json", renderSystem.RenderedTextureList[renderPass2DId][0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
 }
 
 void Scene::UpdateRenderPasses()
@@ -62,11 +60,11 @@ void Scene::UpdateRenderPasses()
 	cRenderer.RebuildRendererFlag = false;
 }
 
-void Scene::Draw()
+void Scene::Draw(const float& deltaTime)
 {
 	VULKAN_RESULT(renderer.StartFrame());
-	CommandBufferSubmitList.emplace_back(levelRenderer->DrawSprites(renderSystem.SpriteBatchLayerList[2], sceneProperties));
-	CommandBufferSubmitList.emplace_back(renderSystem.RenderFrameBuffer());
+	CommandBufferSubmitList.emplace_back(renderSystem.RenderSprites(renderPass2DId, deltaTime, sceneProperties));
+	CommandBufferSubmitList.emplace_back(renderSystem.RenderFrameBuffer(frameBufferId));
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
 	VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
 	CommandBufferSubmitList.clear();

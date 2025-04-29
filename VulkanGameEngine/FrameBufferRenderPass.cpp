@@ -9,7 +9,96 @@ JsonRenderPass::JsonRenderPass()
 {
 }
 
-JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
+JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, ivec2& renderPassResolution)
+{
+    RenderPassId = renderPassIndex;
+    RenderPassResolution = renderPassResolution;
+    SampleCount = VK_SAMPLE_COUNT_1_BIT;
+    FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
+
+    nlohmann::json json = Json::ReadJson(jsonPath);
+    RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
+    BuildRenderPass(renderPassBuildInfo);
+    BuildFrameBuffer(renderPassBuildInfo);
+
+    auto textureId = renderSystem.LoadTexture("../Textures/TestTexture.json");
+    auto materialId = renderSystem.LoadMaterial("../Materials/Material1.json");
+    auto vramId = renderSystem.AddSpriteVRAM("../Sprites/TestSprite.json");
+
+    assetManager.AnimationFrameList[0] = Vector<ivec2>
+    {
+        ivec2(0, 0),
+        ivec2(1, 0)
+    };
+
+    assetManager.AnimationFrameList[1] = Vector<ivec2>
+    {
+        ivec2(3, 0),
+        ivec2(4, 0),
+        ivec2(5, 0),
+        ivec2(4, 0)
+    };
+
+    assetManager.AnimationList[0] = Animation2D
+    {
+        .FrameHoldTime = 0.2f,
+        .AnimationFrameId = 0
+    };
+    assetManager.AnimationList[1] = Animation2D
+    {
+        .FrameHoldTime = 0.2f,
+        .AnimationFrameId = 1
+    };
+
+    assetManager.CreateGameObject(RenderPassId, "Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 40.0f));
+    assetManager.CreateGameObject(RenderPassId, "Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 20.0f));
+    for (int x = 0; x < 20000; x++)
+    {
+        assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
+    }
+
+    renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
+
+    Vector<SpriteMesh> meshList;
+    for (auto& spriteLayer : renderSystem.SpriteBatchLayerList[RenderPassId])
+    {
+        meshList.emplace_back(assetManager.MeshList[spriteLayer.SpriteLayerMeshId]);
+    }
+
+    GPUImport gpuImport =
+    {
+        .MeshList = meshList,
+    };
+
+    Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
+    for (auto& instanceVar : SpriteInstanceVertex2D::GetBindingDescriptions())
+    {
+        vertexBinding.emplace_back(instanceVar);
+    }
+
+    Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
+    for (auto& instanceVar : SpriteInstanceVertex2D::GetAttributeDescriptions())
+    {
+        vertexAttribute.emplace_back(instanceVar);
+    }
+
+    uint id = renderSystem.RenderPipelineList.size();
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
+
+    renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
+    renderArea = renderPassBuildInfo.RenderArea.RenderArea;
+    renderSystem.RenderPassInfoList[RenderPassId] = VkRenderPassBeginInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = RenderPass,
+        .framebuffer = FrameBufferList[cRenderer.ImageIndex],
+        .renderArea = renderPassBuildInfo.RenderArea.RenderArea,
+        .clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size()),
+        .pClearValues = renderSystem.ClearValueList[RenderPassId].data()
+    };
+}
+
+JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution)
 {
     RenderPassId = renderPassIndex;
     RenderPassResolution = renderPassResolution;
@@ -25,17 +114,18 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, Tex
     Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
     Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
 
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(0, "../Pipelines/FrameBufferPipeline.json", RenderPass, import, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), renderPassResolution));
-
-    ClearValueList = renderPassBuildInfo.ClearValueList;
-    RenderPassInfo = VkRenderPassBeginInfo
+    uint id = renderSystem.RenderPipelineList.size();
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/FrameBufferPipeline.json", RenderPass, import, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), renderPassResolution));
+    renderArea = renderPassBuildInfo.RenderArea.RenderArea;
+    renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
+    renderSystem.RenderPassInfoList[RenderPassId] = VkRenderPassBeginInfo
     {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = RenderPass,
         .framebuffer = FrameBufferList[cRenderer.ImageIndex],
         .renderArea = renderPassBuildInfo.RenderArea.RenderArea,
-        .clearValueCount = static_cast<uint32>(ClearValueList.size()),
-        .pClearValues = ClearValueList.data()
+        .clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size()),
+        .pClearValues = renderSystem.ClearValueList[RenderPassId].data()
     };
 }
 
@@ -83,7 +173,7 @@ void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassB
 void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
     Vector<VkImageView> imageViewList;
-    for (int x = 0; x < renderSystem.RenderedTextureList.size(); x++)
+    for (int x = 0; x < renderSystem.RenderedTextureList[RenderPassId].size(); x++)
     {
         imageViewList.emplace_back(renderSystem.RenderedTextureList[RenderPassId][x].View);
     }
@@ -100,8 +190,8 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
 
 VkCommandBuffer JsonRenderPass::DrawFrameBuffer()
 {
-    RenderPassInfo.clearValueCount = static_cast<uint32>(ClearValueList.size());
-    RenderPassInfo.pClearValues = ClearValueList.data();
+    RenderPassInfo.clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size());
+    RenderPassInfo.pClearValues = renderSystem.ClearValueList[RenderPassId].data();
     RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo
@@ -123,8 +213,8 @@ VkCommandBuffer JsonRenderPass::DrawFrameBuffer()
 
 VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
 {
-    RenderPassInfo.clearValueCount = static_cast<uint32>(ClearValueList.size());
-    RenderPassInfo.pClearValues = ClearValueList.data();
+    RenderPassInfo.clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size());
+    RenderPassInfo.pClearValues = renderSystem.ClearValueList[RenderPassId].data();
     RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo

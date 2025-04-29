@@ -16,14 +16,14 @@ public:
 
 	ivec2 RenderPassResolution;
 	VkSampleCountFlagBits SampleCount;
-
+	VkRect2D renderArea;
 	VkRenderPass RenderPass = VK_NULL_HANDLE;
 	std::vector<VkFramebuffer> FrameBufferList;
-	Vector<VkClearValue> ClearValueList;
 	VkRenderPassBeginInfo RenderPassInfo;
 
 	JsonRenderPass();
-	JsonRenderPass(uint renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution);
+	JsonRenderPass(uint renderPassIndex, const String& jsonPath, ivec2& renderPassResolution);
+	JsonRenderPass(uint renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution);
 	 ~JsonRenderPass();
 
 	 void Update(const float& deltaTime);

@@ -213,11 +213,6 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer()
     return materialPropertiesBuffer;
 }
 
-void RenderSystem::Update(const float& deltaTime)
-{
-
-}
-
 void RenderSystem::UpdateBufferIndex()
 {
     int xy = 0;

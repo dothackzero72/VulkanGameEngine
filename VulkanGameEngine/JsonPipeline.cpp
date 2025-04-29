@@ -6,10 +6,10 @@ JsonPipeline::JsonPipeline()
 {
 }
 
-JsonPipeline::JsonPipeline(uint RenderPipelineId, String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize, ivec2& renderPassResolution)
+JsonPipeline::JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize, ivec2& renderPassResolution)
 {
     //  ParentRenderPass = parentRenderPass;
-
+    RenderPipelineId = renderPipelineId;
     nlohmann::json json = Json::ReadJson(jsonPath);
     RenderPipelineModel model = RenderPipelineModel::from_json(json);
 

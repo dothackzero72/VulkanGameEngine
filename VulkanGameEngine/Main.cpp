@@ -33,7 +33,7 @@ int main(int argc, char** argv)
         scene.Input(frameTime);
         scene.Update(frameTime);
         scene.ImGuiUpdate(frameTime);
-        scene.Draw();
+        scene.Draw(frameTime);
         deltaTime.EndFrameTime();
     }
 

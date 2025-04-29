@@ -18,7 +18,7 @@ public:
 	uint SpriteLayerMeshId;
 
 	SpriteBatchLayer();
-	SpriteBatchLayer(uint32 renderPassId, JsonPipeline spriteRenderPipeline);
+	SpriteBatchLayer(uint32 renderPassId);
 	~SpriteBatchLayer();
 
 	void LoadSprites();
