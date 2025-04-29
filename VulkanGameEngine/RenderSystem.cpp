@@ -213,6 +213,25 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer()
     return materialPropertiesBuffer;
 }
 
+void RenderSystem::Update(const float& deltaTime)
+{
+
+}
+
+void RenderSystem::UpdateBufferIndex()
+{
+    int xy = 0;
+    for (auto& [id, texture] : renderSystem.TextureList) {
+        texture.UpdateTextureBufferIndex(xy);
+        ++xy;
+    }
+    int xz = 0;
+    for (auto& [id, material] : renderSystem.MaterialList) {
+        material.UpdateMaterialBufferIndex(xz);
+        ++xz;
+    }
+}
+
 VkGuid RenderSystem::AddSpriteVRAM(const String& spritePath)
 {
     nlohmann::json json = Json::ReadJson(spritePath);

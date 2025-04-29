@@ -109,16 +109,7 @@ void Level2DRenderer::Update(const float& deltaTime)
 
 void Level2DRenderer::UpdateBufferIndex()
 {
-    int xy = 0;
-    for (auto& [id, texture] : renderSystem.TextureList) {
-        texture.UpdateTextureBufferIndex(xy);
-        ++xy;
-    }
-    int xz = 0;
-    for (auto& [id, material] : renderSystem.MaterialList) {
-        material.UpdateMaterialBufferIndex(xz);
-        ++xz;
-    }
+    renderSystem.UpdateBufferIndex();
 }
 
 VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SpriteBatchLayer> spriteLayerList, SceneDataBuffer& sceneDataBuffer)

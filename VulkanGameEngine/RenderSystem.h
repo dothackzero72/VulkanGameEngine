@@ -93,15 +93,13 @@ public:
         CreateCommandBuffer();
     }
 
-    void Update(const float& deltaTime)
-    {
-
-    }
+    void Update(const float& deltaTime);
+    void UpdateBufferIndex();
 
     VkCommandBuffer RenderFrameBuffer()
     {
-        const JsonRenderPass renderPass = RenderPassList[CurrentRenderPassID];
-        const JsonPipeline pipeline = RenderPipelineList[CurrentRenderPassID][0];
+        const JsonRenderPass& renderPass = RenderPassList[CurrentRenderPassID];
+        const JsonPipeline& pipeline = RenderPipelineList[CurrentRenderPassID][0];
         const VkCommandBuffer commandBuffer = CommandBuffer;
         VkRenderPassBeginInfo renderPassInfo = renderPass.RenderPassInfo;
 
@@ -122,40 +120,41 @@ public:
 
     VkCommandBuffer RenderSprites(const float deltaTime, SceneDataBuffer& sceneDataBuffer, uint32 gameObjectID)
     {
-        //const JsonPipeline pipeline = GraphicsPipelineList[CurrentGraphicsPipelineID];
-        //const JsonRenderPass renderPass = RenderPassList[CurrentRenderPassID];
-        //VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
-        //VkRenderPassBeginInfo renderPassInfo = renderPass.RenderPassInfo;
+        const JsonRenderPass& renderPass = RenderPassList[CurrentRenderPassID];
+        const JsonPipeline& pipeline = RenderPipelineList[CurrentRenderPassID][0];
+        const Vector<SpriteBatchLayer>& spriteLayerList = SpriteBatchLayerList[CurrentRenderPassID];
+        const VkCommandBuffer commandBuffer = CommandBuffer;
 
+        //VkRenderPassBeginInfo renderPassInfo = renderPass.RenderPassInfo;
         //renderPassInfo.clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size());
         //renderPassInfo.pClearValues = renderPass.ClearValueList.data();
         //renderPassInfo.framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex];
 
-        //VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
-        //VULKAN_RESULT(vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo));
-
-        //for (auto& spriteLayer : SpriteLayerList)
+        //VkCommandBufferBeginInfo CommandBufferBeginInfo
         //{
-        //    spriteLayer.Update(commandBuffer, deltaTime);
-        //}
+        //    .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+        //    .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
+        //};
 
-        //vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-        //for (auto batchLayer : SpriteLayerList)
+        //VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
+        //VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
+        //vkCmdBeginRenderPass(CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        //for (auto spriteLayer : spriteLayerList)
         //{
-        //    const Vector<SpriteInstanceStruct> spriteInstanceList = SpriteInstanceList[batchLayer.SpriteBatchLayerID];
-        //    const SpriteInstanceBuffer spriteInstanceBuffer = SpriteInstanceBufferList[batchLayer.SpriteBatchLayerID];
+        //    const Vector<SpriteInstanceStruct>& spriteInstanceList = renderSystem.SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
+        //    const SpriteInstanceBuffer& spriteInstanceBuffer = renderSystem.SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID];
 
         //    VkDeviceSize offsets[] = { 0 };
-        //    vkCmdPushConstants(commandBuffer, pipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(sceneDataBuffer), &sceneDataBuffer);
-        //    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
-        //    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
-        //    vkCmdBindVertexBuffers(commandBuffer, 0, 1, batchLayer.SpriteLayerMesh.GetVertexBuffer().get(), offsets);
-        //    vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
-        //    vkCmdBindIndexBuffer(commandBuffer, *batchLayer.SpriteLayerMesh.GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
-        //    vkCmdDrawIndexed(commandBuffer, batchLayer.SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
+        //    vkCmdPushConstants(CommandBuffer, pipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
+        //    vkCmdBindPipeline(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
+        //    vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
+        //    vkCmdBindVertexBuffers(CommandBuffer, 0, 1, assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetVertexBuffer().get(), offsets);
+        //    vkCmdBindVertexBuffers(CommandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
+        //    vkCmdBindIndexBuffer(CommandBuffer, *assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
+        //    vkCmdDrawIndexed(CommandBuffer, renderSystem.SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
         //}
-        //vkCmdEndRenderPass(commandBuffer);
-        //VULKAN_RESULT(vkEndCommandBuffer(commandBuffer));
+        //vkCmdEndRenderPass(CommandBuffer);
+        //vkEndCommandBuffer(CommandBuffer);
         return CommandBuffer;
     }
 
