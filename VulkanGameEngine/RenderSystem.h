@@ -45,6 +45,10 @@ public:
     UM_PipelineID CurrentGraphicsPipelineID = 0;
     UM_RenderPassID CurrentRenderPassID = 0;
 
+    UnorderedMap<VkGuid, Texture> TextureList;
+    UnorderedMap<VkGuid, Material> MaterialList;
+    UnorderedMap<VkGuid, SpriteVram> VramSpriteList;
+
     UnorderedMap<UM_RenderPassID, JsonRenderPass> RenderPassList;
     UnorderedMap<UM_RenderPassID, Vector<JsonPipeline>> RenderPipelineList;
     UnorderedMap<UM_RenderPassID, Vector<Texture>> InputTextureList;
@@ -162,9 +166,10 @@ public:
         RenderPassList[id] = JsonRenderPass(id, jsonPath, inputTexture, renderPassResolution);
     }
 
-    void Destroy()
-    {
+    VkGuid AddSpriteVRAM(const String& spritePath);
+    VkGuid LoadTexture(const String& texturePath);
+    VkGuid LoadMaterial(const String& materialPath);
 
-    }
+    void Destroy();
 };
 extern RenderSystem renderSystem;

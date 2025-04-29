@@ -1,6 +1,7 @@
 #include "AssetManager.h"
 #include "Material.h"
 #include <json.h>
+#include "RenderSystem.h"
 
 AssetManager assetManager = AssetManager();
 
@@ -24,95 +25,27 @@ void AssetManager::Update(VkCommandBuffer& commandBuffer, const float& deltaTime
 
 }
 
-void AssetManager::CreateEntity()
+void AssetManager::CreateGameObject(uint renderPassId, const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
 {
-	//if (!FreeIds.empty())
-	//{
-	//	GameObjectList.emplace_back(FreeIds.front());
-	//	FreeIds.pop();
-	//	return;
-	//}
-	//GameObjectList.emplace_back(++NextId);
+	GameObject gameObject = GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0);
+	assetManager.GameObjectList[gameObject.GameObjectId] = gameObject;
+	renderSystem.SpriteBatchLayerObjectList[renderPassId].emplace_back(gameObject.GameObjectId);
+
+	Vector<GameObjectComponent> gameObjectComponentList;
+	for (auto component : gameObjectComponentTypeList)
+	{
+		switch (component)
+		{
+		case kTransform2DComponent: assetManager.TransformComponentList[gameObject.GameObjectId] = Transform2DComponent(gameObject.GetId(), objectPosition, name); break;
+			// case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject->GetId(), name))); break;
+		case kSpriteComponent: assetManager.SpriteList[gameObject.GameObjectId] = Sprite(gameObject.GetId(), vramId); break;
+		}
+	}
 }
 
 void AssetManager::DestroyEntity(uint32_t id)
 {
 	FreeIds.push(id);
-}
-
-VkGuid AssetManager::AddSpriteVRAM(const String& spritePath)
-{
-	nlohmann::json json = Json::ReadJson(spritePath);
-	VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
-	VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
-
-	const Material& material = MaterialList.at(materialId);
-	const Texture& texture = TextureList.at(material.AlbedoMapId);
-	SpriteVram sprite = SpriteVram
-	{
-		.VramSpriteID = vramId,
-		.SpriteMaterialID = materialId,
-		.SpriteLayer = json["SpriteLayer"],
-		.SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] },
-		.SpritePixelSize = ivec2{ json["SpritePixelSize"][0], json["SpritePixelSize"][1] },
-		.SpriteScale = vec2(5.0f),
-		.SpriteCells = ivec2(texture.Width / sprite.SpritePixelSize.x, texture.Height / sprite.SpritePixelSize.y),
-		.SpriteUVSize = vec2(1.0f / (float)sprite.SpriteCells.x, 1.0f / (float)sprite.SpriteCells.y),
-		.SpriteSize = vec2(sprite.SpritePixelSize.x * sprite.SpriteScale.x, sprite.SpritePixelSize.y * sprite.SpriteScale.y),
-	};
-
-	VramSpriteList[vramId] = sprite;
-	return vramId;
-}
-
-VkGuid AssetManager::LoadTexture(const String& texturePath)
-{
-	if (texturePath.empty() ||
-		texturePath == "")
-	{
-		return VkGuid();
-	}
-
-	nlohmann::json json = Json::ReadJson(texturePath);
-	VkGuid textureId = VkGuid(json["TextureId"].get<String>().c_str());
-	String textureFilePath = json["TextureFilePath"];
-	VkFormat textureByteFormat = json["TextureByteFormat"];
-	VkImageAspectFlags imageType = json["ImageType"];
-	TextureTypeEnum textureType = json["TextureType"];
-	bool useMipMaps = json["UseMipMaps"];
-
-	TextureList[textureId] = Texture(textureId, textureFilePath, textureByteFormat, imageType, textureType, useMipMaps);
-	return textureId;
-}
-
-VkGuid AssetManager::LoadMaterial(const String& materialPath)
-{
-	nlohmann::json json = Json::ReadJson(materialPath);
-
-
-	String name = json["Name"];
-	VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
-
-	MaterialList[materialId] = Material(name, materialId);
-	MaterialList[materialId].Albedo = vec3(json["Albedo"][0], json["Albedo"][1], json["Albedo"][2]);
-	MaterialList[materialId].Metallic = json["Metallic"];
-	MaterialList[materialId].Roughness = json["Roughness"];
-	MaterialList[materialId].AmbientOcclusion = json["AmbientOcclusion"];
-	MaterialList[materialId].Emission = vec3(json["Emission"][0], json["Emission"][1], json["Emission"][2]);
-	MaterialList[materialId].Alpha = json["Alpha"];
-
-	MaterialList[materialId].AlbedoMapId = LoadTexture(json["AlbedoMapPath"]);
-	MaterialList[materialId].MetallicRoughnessMapId = LoadTexture(json["MetallicRoughnessMapPath"]);
-	MaterialList[materialId].MetallicMapId = LoadTexture(json["MetallicMapPath"]);
-	MaterialList[materialId].RoughnessMapId = LoadTexture(json["RoughnessMapPath"]);
-	MaterialList[materialId].AmbientOcclusionMapId = LoadTexture(json["AmbientOcclusionMapPath"]);
-	MaterialList[materialId].NormalMapId = LoadTexture(json["NormalMapPath"]);
-	MaterialList[materialId].DepthMapId = LoadTexture(json["DepthMapPath"]);
-	MaterialList[materialId].AlphaMapId = LoadTexture(json["AlphaMapPath"]);
-	MaterialList[materialId].EmissionMapId = LoadTexture(json["EmissionMapPath"]);
-	MaterialList[materialId].HeightMapId = LoadTexture(json["HeightMapPath"]);
-
-	return materialId;
 }
 
 void AssetManager::DestroyGameObject(UM_GameObjectID id)
@@ -140,32 +73,32 @@ void AssetManager::DestroyGameObjects()
 
 void AssetManager::DestoryTextures()
 {
-	for (auto& texture : TextureList)
-	{
-		const VkGuid id = texture.second.TextureId;
-		TextureList[id].Destroy();
-	}
-	TextureList.clear();
+	//for (auto& texture : TextureList)
+	//{
+	//	const VkGuid id = texture.second.TextureId;
+	//	TextureList[id].Destroy();
+	//}
+	//TextureList.clear();
 }
 
 void AssetManager::DestoryMaterials()
 {
-	for (auto& material : MaterialList)
-	{
-		const VkGuid id = material.second.MaterialId;
-		MaterialList[id].Destroy();
-	}
-	MaterialList.clear();
+	//for (auto& material : MaterialList)
+	//{
+	//	const VkGuid id = material.second.MaterialId;
+	//	MaterialList[id].Destroy();
+	//}
+	//MaterialList.clear();
 }
 
 void AssetManager::DestoryVRAMSprites()
 {
-	for (auto& spriteVram : VramSpriteList)
-	{
-		/*const uint id = spriteVRAM.second.VRAMSpriteID;
-		VRAMSpriteList.erase(id);*/
-	}
-	VramSpriteList.clear();
+	//for (auto& spriteVram : VramSpriteList)
+	//{
+	//	/*const uint id = spriteVRAM.second.VRAMSpriteID;
+	//	VRAMSpriteList.erase(id);*/
+	//}
+	//VramSpriteList.clear();
 }
 
 void AssetManager::Destroy()

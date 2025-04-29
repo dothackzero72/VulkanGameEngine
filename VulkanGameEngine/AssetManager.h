@@ -16,6 +16,8 @@ typedef uint32 UM_RenderPassID;
 typedef uint32 UM_PipelineID;
 typedef uint32 UM_SpriteSheetID;
 typedef uint32 UM_SpriteVRAMID;
+typedef uint32 UM_AnimationFrameId;
+typedef uint32 UM_AnimationListID;
 
 class AssetManager
 {
@@ -29,12 +31,8 @@ public:
 	UnorderedMap<UM_GameObjectID, Sprite> SpriteList;
 	UnorderedMap<UM_GameObjectID, SpriteMesh> MeshList;
 
-	UnorderedMap<VkGuid, Texture> TextureList;
-	UnorderedMap<VkGuid, Material> MaterialList;
-	UnorderedMap<VkGuid, SpriteVram> VramSpriteList;
-
-	UnorderedMap<uint, Animation2D> AnimationList;
-	UnorderedMap<uint, Vector<ivec2>> AnimationFrameList;
+	UnorderedMap<UM_AnimationListID, Animation2D> AnimationList;
+	UnorderedMap<UM_AnimationFrameId, Vector<ivec2>> AnimationFrameList;
 
 	AssetManager();
 	~AssetManager();
@@ -43,12 +41,8 @@ public:
 	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
 
 	//CreateGameObject();
-	void CreateEntity();
+	void CreateGameObject(uint renderPassId, const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition);
 	void DestroyEntity(uint32_t id);
-
-	VkGuid AddSpriteVRAM(const String& spritePath);
-	VkGuid LoadTexture(const String& texturePath);
-	VkGuid LoadMaterial(const String& materialPath);
 
 	void DestroyGameObject(UM_GameObjectID id);
 	void DestroyGameObjects();

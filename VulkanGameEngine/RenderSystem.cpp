@@ -127,8 +127,8 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(Vec
     Vector<Texture> textureList;
     if (renderedTextureList.empty())
     {
-        textureList.reserve(assetManager.TextureList.size());
-        std::transform(assetManager.TextureList.begin(), assetManager.TextureList.end(),
+        textureList.reserve(TextureList.size());
+        std::transform(TextureList.begin(), TextureList.end(),
             std::back_inserter(textureList),
             [](const auto& pair) { return pair.second; });
     }
@@ -188,8 +188,8 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(Vec
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer()
 {
     Vector<Material> materialList;
-    materialList.reserve(assetManager.MaterialList.size());
-    std::transform(assetManager.MaterialList.begin(), assetManager.MaterialList.end(),
+    materialList.reserve(MaterialList.size());
+    std::transform(MaterialList.begin(), MaterialList.end(),
         std::back_inserter(materialList),
         [](const auto& pair) { return pair.second; });
 
@@ -211,4 +211,83 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer()
         }
     }
     return materialPropertiesBuffer;
+}
+
+VkGuid RenderSystem::AddSpriteVRAM(const String& spritePath)
+{
+    nlohmann::json json = Json::ReadJson(spritePath);
+    VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
+    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
+
+    const Material& material = MaterialList.at(materialId);
+    const Texture& texture = TextureList.at(material.AlbedoMapId);
+    SpriteVram sprite = SpriteVram
+    {
+        .VramSpriteID = vramId,
+        .SpriteMaterialID = materialId,
+        .SpriteLayer = json["SpriteLayer"],
+        .SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] },
+        .SpritePixelSize = ivec2{ json["SpritePixelSize"][0], json["SpritePixelSize"][1] },
+        .SpriteScale = vec2(5.0f),
+        .SpriteCells = ivec2(texture.Width / sprite.SpritePixelSize.x, texture.Height / sprite.SpritePixelSize.y),
+        .SpriteUVSize = vec2(1.0f / (float)sprite.SpriteCells.x, 1.0f / (float)sprite.SpriteCells.y),
+        .SpriteSize = vec2(sprite.SpritePixelSize.x * sprite.SpriteScale.x, sprite.SpritePixelSize.y * sprite.SpriteScale.y),
+    };
+
+    VramSpriteList[vramId] = sprite;
+    return vramId;
+}
+
+VkGuid RenderSystem::LoadTexture(const String& texturePath)
+{
+    if (texturePath.empty() ||
+        texturePath == "")
+    {
+        return VkGuid();
+    }
+
+    nlohmann::json json = Json::ReadJson(texturePath);
+    VkGuid textureId = VkGuid(json["TextureId"].get<String>().c_str());
+    String textureFilePath = json["TextureFilePath"];
+    VkFormat textureByteFormat = json["TextureByteFormat"];
+    VkImageAspectFlags imageType = json["ImageType"];
+    TextureTypeEnum textureType = json["TextureType"];
+    bool useMipMaps = json["UseMipMaps"];
+
+    TextureList[textureId] = Texture(textureId, textureFilePath, textureByteFormat, imageType, textureType, useMipMaps);
+    return textureId;
+}
+
+VkGuid RenderSystem::LoadMaterial(const String& materialPath)
+{
+    nlohmann::json json = Json::ReadJson(materialPath);
+
+
+    String name = json["Name"];
+    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
+
+    MaterialList[materialId] = Material(name, materialId);
+    MaterialList[materialId].Albedo = vec3(json["Albedo"][0], json["Albedo"][1], json["Albedo"][2]);
+    MaterialList[materialId].Metallic = json["Metallic"];
+    MaterialList[materialId].Roughness = json["Roughness"];
+    MaterialList[materialId].AmbientOcclusion = json["AmbientOcclusion"];
+    MaterialList[materialId].Emission = vec3(json["Emission"][0], json["Emission"][1], json["Emission"][2]);
+    MaterialList[materialId].Alpha = json["Alpha"];
+
+    MaterialList[materialId].AlbedoMapId = LoadTexture(json["AlbedoMapPath"]);
+    MaterialList[materialId].MetallicRoughnessMapId = LoadTexture(json["MetallicRoughnessMapPath"]);
+    MaterialList[materialId].MetallicMapId = LoadTexture(json["MetallicMapPath"]);
+    MaterialList[materialId].RoughnessMapId = LoadTexture(json["RoughnessMapPath"]);
+    MaterialList[materialId].AmbientOcclusionMapId = LoadTexture(json["AmbientOcclusionMapPath"]);
+    MaterialList[materialId].NormalMapId = LoadTexture(json["NormalMapPath"]);
+    MaterialList[materialId].DepthMapId = LoadTexture(json["DepthMapPath"]);
+    MaterialList[materialId].AlphaMapId = LoadTexture(json["AlphaMapPath"]);
+    MaterialList[materialId].EmissionMapId = LoadTexture(json["EmissionMapPath"]);
+    MaterialList[materialId].HeightMapId = LoadTexture(json["HeightMapPath"]);
+
+    return materialId;
+}
+
+void RenderSystem::Destroy()
+{
 }

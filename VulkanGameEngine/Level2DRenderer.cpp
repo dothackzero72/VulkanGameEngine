@@ -39,9 +39,9 @@ Level2DRenderer::~Level2DRenderer()
 
 void Level2DRenderer::StartLevelRenderer()
 {
-    auto textureId = assetManager.LoadTexture("../Textures/TestTexture.json");
-    auto materialId = assetManager.LoadMaterial("../Materials/Material1.json");
-    auto vramId = assetManager.AddSpriteVRAM("../Sprites/TestSprite.json");
+    auto textureId = renderSystem.LoadTexture("../Textures/TestTexture.json");
+    auto materialId = renderSystem.LoadMaterial("../Materials/Material1.json");
+    auto vramId = renderSystem.AddSpriteVRAM("../Sprites/TestSprite.json");
 
     assetManager.AnimationFrameList[0] = Vector<ivec2>
     {
@@ -68,11 +68,11 @@ void Level2DRenderer::StartLevelRenderer()
         .AnimationFrameId = 1
     };
 
-    AddGameObject("Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 40.0f));
-    AddGameObject("Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 20.0f));
+    assetManager.CreateGameObject(RenderPassId, "Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 40.0f));
+    assetManager.CreateGameObject(RenderPassId, "Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 20.0f));
     for (int x = 0; x < 20000; x++)
     {
-        AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
+        assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
     }
     JsonPipelineList.resize(1);
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId, JsonPipelineList[0]));
@@ -96,35 +96,6 @@ void Level2DRenderer::StartLevelRenderer()
     JsonPipelineList[0] = JsonPipeline(1, "../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution);
 }
 
-void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
-{
-    GameObject gameObject = GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0);
-    assetManager.GameObjectList[gameObject.GameObjectId] = gameObject;
-    renderSystem.SpriteBatchLayerObjectList[RenderPassId].emplace_back(gameObject.GameObjectId);
-
-    Vector<GameObjectComponent> gameObjectComponentList;
-    for (auto component : gameObjectComponentTypeList)
-    {
-        switch (component)
-        {
-            case kTransform2DComponent: assetManager.TransformComponentList[gameObject.GameObjectId] = Transform2DComponent(gameObject.GetId(), objectPosition, name); break;
-           // case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject->GetId(), name))); break;
-            case kSpriteComponent: assetManager.SpriteList[gameObject.GameObjectId] = Sprite(gameObject.GetId(), vramId); break;
-        }
-    }
-
-}
-
-void Level2DRenderer::RemoveGameObject(SharedPtr<GameObject> gameObject)
-{
-    gameObject->GameObjectAlive = false;
-}
-
-void Level2DRenderer::Input(const float& deltaTime)
-{
-
-}
-
 void Level2DRenderer::Update(const float& deltaTime)
 {
    // DestroyDeadGameObjects();
@@ -139,12 +110,12 @@ void Level2DRenderer::Update(const float& deltaTime)
 void Level2DRenderer::UpdateBufferIndex()
 {
     int xy = 0;
-    for (auto& [id, texture] : assetManager.TextureList) {
+    for (auto& [id, texture] : renderSystem.TextureList) {
         texture.UpdateTextureBufferIndex(xy);
         ++xy;
     }
     int xz = 0;
-    for (auto& [id, material] : assetManager.MaterialList) {
+    for (auto& [id, material] : renderSystem.MaterialList) {
         material.UpdateMaterialBufferIndex(xz);
         ++xz;
     }

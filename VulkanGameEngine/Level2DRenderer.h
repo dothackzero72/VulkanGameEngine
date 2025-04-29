@@ -8,9 +8,6 @@ class Level2DRenderer : public JsonRenderPass2
 private:
 
 
-	void AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition);
-	void RemoveGameObject(SharedPtr<GameObject> gameObject);
-
 	Vector<SpriteMesh> GetMeshFromGameObjects();
 
 public:
@@ -21,7 +18,6 @@ public:
 	virtual ~Level2DRenderer();
 
 	void StartLevelRenderer();
-	virtual void Input(const float& deltaTime);
 	virtual void Update(const float& deltaTime) override;
 	VkCommandBuffer DrawSprites(Vector<SpriteBatchLayer> meshList, SceneDataBuffer& sceneDataBuffer);
 	void UpdateBufferIndex();
