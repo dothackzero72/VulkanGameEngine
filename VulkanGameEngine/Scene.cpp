@@ -51,7 +51,7 @@ void Scene::BuildRenderPasses()
 	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
 	levelRenderer->StartLevelRenderer();
 
-	frameRenderPass = std::make_shared<FrameBufferRenderPass>(FrameBufferRenderPass(1, "../RenderPass/FrameBufferRenderPass.json", levelRenderer->RenderedColorTextureList[0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
+	renderSystem.AddRenderPass("../RenderPass/FrameBufferRenderPass.json", levelRenderer->RenderedColorTextureList[0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
 }
 
 void Scene::UpdateRenderPasses()
@@ -65,8 +65,8 @@ void Scene::UpdateRenderPasses()
 void Scene::Draw()
 {
 	VULKAN_RESULT(renderer.StartFrame());
-	CommandBufferSubmitList.emplace_back(levelRenderer->DrawSprites(levelRenderer->SpriteLayerList, sceneProperties));
-	CommandBufferSubmitList.emplace_back(frameRenderPass->DrawFrameBuffer());
+	CommandBufferSubmitList.emplace_back(levelRenderer->DrawSprites(renderSystem.SpriteBatchLayerList[2], sceneProperties));
+	CommandBufferSubmitList.emplace_back(renderSystem.RenderFrameBuffer());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
 	VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
 	CommandBufferSubmitList.clear();
@@ -75,5 +75,5 @@ void Scene::Draw()
 void Scene::Destroy()
 {
 	levelRenderer->Destroy();
-	frameRenderPass->Destroy();
+	//frameRenderPass->Destroy();
 }

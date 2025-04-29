@@ -1,11 +1,11 @@
 #include "JsonRenderPass.h"
 #include "VulkanRenderPass.h"
 
-JsonRenderPass::JsonRenderPass()
+JsonRenderPass2::JsonRenderPass2()
 {
 }
 
-JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, ivec2 renderPassResolution, SceneDataBuffer& sceneDataBuffer)
+JsonRenderPass2::JsonRenderPass2(const String& jsonPath, GPUImport renderGraphics, ivec2 renderPassResolution, SceneDataBuffer& sceneDataBuffer)
 {
     RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -31,7 +31,7 @@ JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics,
     };
 }
 
-JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, VkExtent2D renderPassResolution, SceneDataBuffer& sceneDataBuffer)
+JsonRenderPass2::JsonRenderPass2(const String& jsonPath, GPUImport renderGraphics, VkExtent2D renderPassResolution, SceneDataBuffer& sceneDataBuffer)
 {
     RenderPassResolution = ivec2(renderPassResolution.width, renderPassResolution.height);
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -48,15 +48,15 @@ JsonRenderPass::JsonRenderPass(const String& jsonPath, GPUImport renderGraphics,
 }
 
 
-JsonRenderPass::~JsonRenderPass()
+JsonRenderPass2::~JsonRenderPass2()
 {
 }
 
-void JsonRenderPass::Update(const float& deltaTime)
+void JsonRenderPass2::Update(const float& deltaTime)
 {
 }
 
-void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, GPUImport& renderGraphics, SceneDataBuffer& sceneDataBuffer)
+void JsonRenderPass2::BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, GPUImport& renderGraphics, SceneDataBuffer& sceneDataBuffer)
 {
     for (int x = 0; x < renderPassBuildInfo.RenderPipelineList.size(); x++)
     {
@@ -66,7 +66,7 @@ void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& render
     }
 }
 
-void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo)
+void JsonRenderPass2::BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
     for (auto& texture : renderPassBuildInfo.RenderedTextureInfoModelList)
     {
@@ -88,7 +88,7 @@ void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassB
     RenderPass = RenderPass_BuildRenderPass(cRenderer.Device, renderPassBuildInfo);
 }
 
-void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
+void JsonRenderPass2::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
     Vector<VkImageView> imageViewList;
     for (int x = 0; x < RenderedColorTextureList.size(); x++)
@@ -106,7 +106,7 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
     FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, imageViewList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, RenderPassResolution);
 }
 
-VkCommandBuffer JsonRenderPass::DrawFrameBuffer()
+VkCommandBuffer JsonRenderPass2::DrawFrameBuffer()
 {
     RenderPassInfo.clearValueCount = static_cast<uint32>(ClearValueList.size());
     RenderPassInfo.pClearValues = ClearValueList.data();
@@ -129,7 +129,7 @@ VkCommandBuffer JsonRenderPass::DrawFrameBuffer()
     return CommandBuffer;
 }
 
-VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
+VkCommandBuffer JsonRenderPass2::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
 {
     RenderPassInfo.clearValueCount = static_cast<uint32>(ClearValueList.size());
     RenderPassInfo.pClearValues = ClearValueList.data();
@@ -153,7 +153,7 @@ VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, Sce
     return CommandBuffer;
 }
 
-void JsonRenderPass::Destroy()
+void JsonRenderPass2::Destroy()
 {
     for (auto renderedTexture : RenderedColorTextureList)
     {

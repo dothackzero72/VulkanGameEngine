@@ -5,13 +5,13 @@
 #include "RenderSystem.h"
 #include "JsonPipeline.h"
 
-FrameBufferRenderPass::FrameBufferRenderPass()
+JsonRenderPass::JsonRenderPass()
 {
 }
 
-FrameBufferRenderPass::FrameBufferRenderPass(uint renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
+JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
 {
-    RenderPassId = RenderPassId;
+    RenderPassId = renderPassIndex;
     RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
     FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
@@ -39,15 +39,15 @@ FrameBufferRenderPass::FrameBufferRenderPass(uint renderPassIndex, const String&
     };
 }
 
-FrameBufferRenderPass::~FrameBufferRenderPass()
+JsonRenderPass::~JsonRenderPass()
 {
 }
 
-void FrameBufferRenderPass::Update(const float& deltaTime)
+void JsonRenderPass::Update(const float& deltaTime)
 {
 }
 
-void FrameBufferRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, GPUImport& renderGraphics, SceneDataBuffer& sceneDataBuffer)
+void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, GPUImport& renderGraphics, SceneDataBuffer& sceneDataBuffer)
 {
     for (int x = 0; x < renderPassBuildInfo.RenderPipelineList.size(); x++)
     {
@@ -57,7 +57,7 @@ void FrameBufferRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel&
     }
 }
 
-void FrameBufferRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo)
+void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
     Vector<RenderedTexture> RenderedColorTextureList;
     for (auto& texture : renderPassBuildInfo.RenderedTextureInfoModelList)
@@ -80,7 +80,7 @@ void FrameBufferRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& rend
     RenderPass = RenderPass_BuildRenderPass(cRenderer.Device, renderPassBuildInfo);
 }
 
-void FrameBufferRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
+void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
     Vector<VkImageView> imageViewList;
     for (int x = 0; x < renderSystem.RenderedTextureList.size(); x++)
@@ -98,7 +98,7 @@ void FrameBufferRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& ren
     FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, imageViewList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, RenderPassResolution);
 }
 
-VkCommandBuffer FrameBufferRenderPass::DrawFrameBuffer()
+VkCommandBuffer JsonRenderPass::DrawFrameBuffer()
 {
     RenderPassInfo.clearValueCount = static_cast<uint32>(ClearValueList.size());
     RenderPassInfo.pClearValues = ClearValueList.data();
@@ -121,7 +121,7 @@ VkCommandBuffer FrameBufferRenderPass::DrawFrameBuffer()
     return renderSystem.CommandBuffer;
 }
 
-VkCommandBuffer FrameBufferRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
+VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
 {
     RenderPassInfo.clearValueCount = static_cast<uint32>(ClearValueList.size());
     RenderPassInfo.pClearValues = ClearValueList.data();
@@ -145,17 +145,13 @@ VkCommandBuffer FrameBufferRenderPass::Draw(Vector<SharedPtr<GameObject>> meshLi
     return renderSystem.CommandBuffer;
 }
 
-void FrameBufferRenderPass::Destroy()
+void JsonRenderPass::Destroy()
 {
     for (auto renderedTexture : renderSystem.RenderedTextureList[RenderPassId])
     {
         renderedTexture.Destroy();
     }
-    for (auto pipeline : JsonPipelineList)
-    {
-        //pipeline.Destroy();
-    }
-    //  depthTexture->Destroy();
+
     renderer.DestroyRenderPass(RenderPass);
     renderer.DestroyCommandBuffers(renderSystem.CommandBuffer);
     renderer.DestroyFrameBuffers(FrameBufferList);

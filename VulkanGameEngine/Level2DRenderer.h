@@ -3,20 +3,19 @@
 #include "SpriteBatchLayer.h"
 #include "Level2DRenderer.h"
 
-class Level2DRenderer : public JsonRenderPass
+class Level2DRenderer : public JsonRenderPass2
 {
 private:
 
 
 	void AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition);
 	void RemoveGameObject(SharedPtr<GameObject> gameObject);
-	void DestroyDeadGameObjects();
 
 	Vector<SpriteMesh> GetMeshFromGameObjects();
 
 public:
+	uint RenderPassId = 0;
 	static SharedPtr<Level2DRenderer>   LevelRenderer;
-	Vector<SpriteBatchLayer> SpriteLayerList;
 	Vector<Texture>						TextureList;
 	Vector<GameObject>					GameObjectList;
 

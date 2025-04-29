@@ -2,7 +2,7 @@
 #include "TypeDef.h"
 #include "JsonRenderPass.h"
 #include "AssetManager.h"
-
+#include "FrameBufferRenderPass.h"
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;
@@ -33,20 +33,19 @@ public:
 
     UnorderedMap<UM_RenderPassID, JsonRenderPass> RenderPassList;
     UnorderedMap<UM_RenderPassID, Vector<JsonPipeline>> RenderPipelineList;
+    UnorderedMap<UM_RenderPassID, Vector<Texture>> InputTextureList;
+    UnorderedMap<UM_RenderPassID, Vector<RenderedTexture>> RenderedTextureList;
+    UnorderedMap<UM_RenderPassID, DepthTexture> DepthTextureList;
+    UnorderedMap<UM_RenderPassID, Vector<SpriteBatchLayer>> SpriteBatchLayerList;
+    UnorderedMap<UM_RenderPassID, Vector<VkVertexInputBindingDescription>> VertexInputBindingList;
+    UnorderedMap<UM_RenderPassID, Vector<VkVertexInputAttributeDescription>> VertexInputAttributeDescription;
 
-    UnorderedMap<uint32, Vector<VkVertexInputBindingDescription>> VertexInputBindingList;
-    UnorderedMap<uint32, Vector<VkVertexInputAttributeDescription>> VertexInputAttributeDescription;
-
+    UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>> SpriteInstanceList;
+    UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer> SpriteInstanceBufferList;
 
     Vector<VkClearValue> clearValues;
     VkRenderPassBeginInfo renderPassInfo;
     VkCommandBufferBeginInfo CommandBufferBeginInfo;
-
-    UnorderedMap<UM_RenderPassID, Vector<Texture>> InputTextureList;
-    UnorderedMap<UM_RenderPassID, Vector<RenderedTexture>> RenderedTextureList;
-    UnorderedMap<UM_RenderPassID, DepthTexture> DepthTextureList;
-    UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>> SpriteInstanceList;
-    UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer> SpriteInstanceBufferList;
 
     RenderSystem()
     {
@@ -55,14 +54,14 @@ public:
 
     RenderSystem(Vector<String>& renderPassJsonList, Texture& texture, SceneDataBuffer sceneDataBuffer)
     {
-        GPUImport gpuImport;
-        gpuImport.TextureList.emplace_back(texture);
+        //GPUImport gpuImport;
+        //gpuImport.TextureList.emplace_back(texture);
 
-        for (int x = 0; x < renderPassJsonList.size(); x++)
-        {
-            RenderPassList[x] = JsonRenderPass(renderPassJsonList[x], gpuImport, ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height), sceneDataBuffer);
-          //  GraphicsPipelineList[x] = RenderPassList[x].JsonPipelineList[0];
-        }
+        //for (int x = 0; x < renderPassJsonList.size(); x++)
+        //{
+        //    RenderPassList[x] = JsonRenderPass(renderPassJsonList[x], gpuImport, ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height), sceneDataBuffer);
+        //  //  GraphicsPipelineList[x] = RenderPassList[x].JsonPipelineList[0];
+        //}
     }
 
     ~RenderSystem()
@@ -80,25 +79,25 @@ public:
 
     }
 
-    VkCommandBuffer RenderFrameBuffer(const float deltaTime, SceneDataBuffer& sceneDataBuffer, uint32 gameObjectID)
+    VkCommandBuffer RenderFrameBuffer()
     {
-        //const JsonPipeline pipeline = GraphicsPipelineList[CurrentGraphicsPipelineID];
-        //const JsonRenderPass renderPass = RenderPassList[CurrentRenderPassID];
-        //const VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
-        //VkRenderPassBeginInfo renderPassInfo = renderPass.RenderPassInfo;
+        const JsonRenderPass renderPass = RenderPassList[CurrentRenderPassID];
+        const JsonPipeline pipeline = RenderPipelineList[CurrentRenderPassID][0];
+        const VkCommandBuffer commandBuffer = CommandBuffer;
+        VkRenderPassBeginInfo renderPassInfo = renderPass.RenderPassInfo;
 
-        //renderPassInfo.clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size());
-        //renderPassInfo.pClearValues = renderPass.ClearValueList.data();
-        //renderPassInfo.framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex];
+        renderPassInfo.clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size());
+        renderPassInfo.pClearValues = renderPass.ClearValueList.data();
+        renderPassInfo.framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex];
 
-        //VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
-        //VULKAN_RESULT(vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo));
-        //vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-        //vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
-        //vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
-        //vkCmdDraw(commandBuffer, 6, 1, 0, 0);
-        //vkCmdEndRenderPass(commandBuffer);
-        //vkEndCommandBuffer(commandBuffer);
+        VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
+        VULKAN_RESULT(vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo));
+        vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
+        vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+        vkCmdEndRenderPass(commandBuffer);
+        vkEndCommandBuffer(commandBuffer);
         return CommandBuffer;
     }
 
@@ -139,6 +138,13 @@ public:
         //vkCmdEndRenderPass(commandBuffer);
         //VULKAN_RESULT(vkEndCommandBuffer(commandBuffer));
         return CommandBuffer;
+    }
+
+    void AddRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
+    {
+        uint id = RenderPassList.size() + 1;
+        CurrentRenderPassID = id;
+        RenderPassList[id] = JsonRenderPass(id, jsonPath, inputTexture, renderPassResolution);
     }
 
     void Destroy()

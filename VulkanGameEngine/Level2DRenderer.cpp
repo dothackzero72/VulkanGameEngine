@@ -1,15 +1,18 @@
 #include "Level2DRenderer.h"
 #include "InputComponent.h"
 #include "AssetManager.h"
+#include "RenderSystem.h"
 
 SharedPtr<Level2DRenderer> Level2DRenderer::LevelRenderer = nullptr;
 
-Level2DRenderer::Level2DRenderer() : JsonRenderPass()
+Level2DRenderer::Level2DRenderer() : JsonRenderPass2()
 {
 }
 
 Level2DRenderer::Level2DRenderer(const String& jsonPath, ivec2 renderPassResolution)
 {
+    RenderPassId = 2;
+
     RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
     FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
@@ -82,7 +85,7 @@ void Level2DRenderer::StartLevelRenderer()
         AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
     }
     JsonPipelineList.resize(1);
-    SpriteLayerList.emplace_back(SpriteBatchLayer(GameObjectList, JsonPipelineList[0]));
+    renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(GameObjectList, JsonPipelineList[0]));
     GPUImport gpuImport =
     {
         .MeshList = Vector<SpriteMesh>(GetMeshFromGameObjects()),
@@ -101,7 +104,7 @@ void Level2DRenderer::StartLevelRenderer()
     }
 
     JsonPipelineList[0] = JsonPipeline(1, "../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution);
-    SpriteLayerList[0].SpriteRenderPipeline = JsonPipelineList[0];
+    renderSystem.SpriteBatchLayerList[RenderPassId][0].SpriteRenderPipeline = JsonPipelineList[0];
 }
 
 void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
@@ -134,9 +137,9 @@ void Level2DRenderer::Input(const float& deltaTime)
 
 void Level2DRenderer::Update(const float& deltaTime)
 {
-    DestroyDeadGameObjects();
+   // DestroyDeadGameObjects();
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-    for (auto& spriteLayer : SpriteLayerList)
+    for (auto& spriteLayer : renderSystem.SpriteBatchLayerList[RenderPassId])
     {
         spriteLayer.Update(commandBuffer, deltaTime);
     }
@@ -183,7 +186,7 @@ VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SpriteBatchLayer> spriteLaye
 void Level2DRenderer::Destroy()
 {
 
-    for (auto& spriteLayer : SpriteLayerList)
+    for (auto& spriteLayer : renderSystem.SpriteBatchLayerList[RenderPassId])
     {
         spriteLayer.Destroy();
     }
@@ -195,48 +198,13 @@ void Level2DRenderer::Destroy()
     {
         material->Destroy();
     }*/
-    JsonRenderPass::Destroy();
-}
-
-void Level2DRenderer::DestroyDeadGameObjects()
-{
-    if (GameObjectList.empty()) 
-    {
-        return;
-    }
-
-    //Vector<SharedPtr<GameObject>> deadGameObjectList;
-    //for (auto it = GameObjectList.begin(); it != GameObjectList.end(); ++it) {
-    //    if (!(*it)->GameObjectAlive) {
-    //        deadGameObjectList.push_back(*it);
-    //    }
-    //}
-
-    //if (!deadGameObjectList.empty())
-    //{
-    //    for (auto& gameObject : deadGameObjectList) {
-    //        if (SharedPtr spriteComponent = gameObject->GetComponentByComponentType(kSpriteComponent)) {
-    //            SharedPtr sprite = std::dynamic_pointer_cast<SpriteComponent>(spriteComponent);
-    //            if (sprite) {
-    //                SharedPtr spriteObject = sprite->GetSprite();
-    //                SpriteLayerList[0]->RemoveSprite(spriteObject);
-    //            }
-    //        }
-    //        gameObject->Destroy();
-    //    }
-
-    //    GameObjectList.erase(std::remove_if(GameObjectList.begin(), GameObjectList.end(),
-    //        [&](const SharedPtr<GameObject>& gameObject) {
-    //            return !gameObject->GameObjectAlive;
-    //        }),
-    //        GameObjectList.end());
-    //}
+  //  JsonRenderPass::Destroy();
 }
 
 Vector<SpriteMesh> Level2DRenderer::GetMeshFromGameObjects()
 {
     Vector<SpriteMesh> meshList;
-    for (auto& spriteLayer : SpriteLayerList) 
+    for (auto& spriteLayer : renderSystem.SpriteBatchLayerList[RenderPassId])
     {
         meshList.emplace_back(assetManager.MeshList[spriteLayer.SpriteLayerMeshId]);
     }

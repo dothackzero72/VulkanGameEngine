@@ -158,6 +158,7 @@
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectComponent.cpp" />
+    <ClCompile Include="GameSystem.cpp" />
     <ClCompile Include="HLSLShaderCompiler.cpp" />
     <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectComponent.h" />
+    <ClInclude Include="GameSystem.h" />
     <ClInclude Include="HLSLShaderCompiler.h" />
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InterfaceRenderPass.h" />

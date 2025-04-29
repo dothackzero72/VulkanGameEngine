@@ -9,7 +9,7 @@
 #include "GameObject.h"
 
 struct GPUImport;
-class JsonRenderPass
+class JsonRenderPass2
 {
 	friend class JsonPipeline;
 
@@ -35,10 +35,10 @@ public:
 	Vector<RenderedTexture> RenderedColorTextureList = Vector<RenderedTexture>();
 	SharedPtr<DepthTexture> depthTexture;
 
-	JsonRenderPass();
-	JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, ivec2 renderPassResolution, SceneDataBuffer& sceneDataBuffer);
-	JsonRenderPass(const String& jsonPath, GPUImport renderGraphics, VkExtent2D renderPassResolution, SceneDataBuffer& sceneDataBuffer);
-	virtual ~JsonRenderPass();
+	JsonRenderPass2();
+	JsonRenderPass2(const String& jsonPath, GPUImport renderGraphics, ivec2 renderPassResolution, SceneDataBuffer& sceneDataBuffer);
+	JsonRenderPass2(const String& jsonPath, GPUImport renderGraphics, VkExtent2D renderPassResolution, SceneDataBuffer& sceneDataBuffer);
+	virtual ~JsonRenderPass2();
 
 	virtual void Update(const float& deltaTime);
 	VkCommandBuffer DrawFrameBuffer();

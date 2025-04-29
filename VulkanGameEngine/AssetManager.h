@@ -42,6 +42,7 @@ public:
 	void Input(const float& deltaTime);
 	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
 
+	//CreateGameObject();
 	void CreateEntity();
 	void DestroyEntity(uint32_t id);
 
