@@ -11,36 +11,18 @@ private:
 	void SortSpritesByLayer();
 
 public:
-	Vector<Vertex2D> SpriteVertexList =
-	{
-		Vertex2D(vec2(0.0f, 1.0f), vec2(0.0f, 0.0f)),
-		Vertex2D(vec2(1.0f, 0.0f), vec2(1.0f, 0.0f)),
-		Vertex2D(vec2(1.0f, 0.0f), vec2(1.0f, 1.0f)),
-		Vertex2D(vec2(0.0f, 0.0f), vec2(0.0f, 1.0f)),
-	};
-
-	Vector<uint32> SpriteIndexList =
-	{
-	  0, 3, 1,
-	  1, 3, 2
-	};
-
-	String					        Name;
-	uint32 RenderPassId = 0;
-	uint32							SpriteBatchLayerID = 0;
-	uint32                          MaxSpritesPerSheet;
-	uint32                          SpriteLayerIndex;
-
-	uint							SpriteLayerMeshId;
-	JsonPipeline 					SpriteRenderPipeline;
+	uint RenderPassId = 0;
+	uint SpriteBatchLayerID = 0;
+	uint MaxSpritesPerSheet;
+	uint SpriteLayerIndex;
+	uint SpriteLayerMeshId;
 
 	SpriteBatchLayer();
 	SpriteBatchLayer(uint32 renderPassId, Vector<GameObject>& gameObjectList, JsonPipeline spriteRenderPipeline);
-	virtual ~SpriteBatchLayer();
+	~SpriteBatchLayer();
 
 	void LoadSprites();
 	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
-	void Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneDataBuffer);
 	void Destroy();
 
 	void AddSprite(uint gameObjectID);

@@ -104,7 +104,6 @@ void Level2DRenderer::StartLevelRenderer()
     }
 
     JsonPipelineList[0] = JsonPipeline(1, "../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution);
-    renderSystem.SpriteBatchLayerList[RenderPassId][0].SpriteRenderPipeline = JsonPipelineList[0];
 }
 
 void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
@@ -176,7 +175,17 @@ VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SpriteBatchLayer> spriteLaye
     vkCmdBeginRenderPass(CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     for (auto spriteLayer : spriteLayerList)
     {
-        spriteLayer.Draw(CommandBuffer, sceneDataBuffer);
+        const Vector<SpriteInstanceStruct> spriteInstanceList = renderSystem.SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
+        const SpriteInstanceBuffer spriteInstanceBuffer = renderSystem.SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID];
+
+        VkDeviceSize offsets[] = { 0 };
+        vkCmdPushConstants(CommandBuffer, JsonPipelineList[0].PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
+        vkCmdBindPipeline(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0].Pipeline);
+        vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0].PipelineLayout, 0, JsonPipelineList[0].DescriptorSetList.size(), JsonPipelineList[0].DescriptorSetList.data(), 0, nullptr);
+        vkCmdBindVertexBuffers(CommandBuffer, 0, 1, assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetVertexBuffer().get(), offsets);
+        vkCmdBindVertexBuffers(CommandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
+        vkCmdBindIndexBuffer(CommandBuffer, *assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(CommandBuffer, assetManager.SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
     }
     vkCmdEndRenderPass(CommandBuffer);
     vkEndCommandBuffer(CommandBuffer);

@@ -66,21 +66,6 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 	}
 }
 
-void SpriteBatchLayer::Draw(VkCommandBuffer& commandBuffer, SceneDataBuffer& sceneDataBuffer)
-{
-	const Vector<SpriteInstanceStruct> spriteInstanceList = renderSystem.SpriteInstanceList[SpriteBatchLayerID];
-	const SpriteInstanceBuffer spriteInstanceBuffer = renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID];
-
-	VkDeviceSize offsets[] = { 0 };
-	vkCmdPushConstants(commandBuffer, SpriteRenderPipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.Pipeline);
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.PipelineLayout, 0, SpriteRenderPipeline.DescriptorSetList.size(), SpriteRenderPipeline.DescriptorSetList.data(), 0, nullptr);
-	vkCmdBindVertexBuffers(commandBuffer, 0, 1, assetManager.MeshList[SpriteLayerMeshId].GetVertexBuffer().get(), offsets);
-	vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
-	vkCmdBindIndexBuffer(commandBuffer, *assetManager.MeshList[SpriteLayerMeshId].GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
-	vkCmdDrawIndexed(commandBuffer, SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
-}
-
 void SpriteBatchLayer::Destroy()
 {
 	assetManager.MeshList[SpriteLayerMeshId].Destroy();
