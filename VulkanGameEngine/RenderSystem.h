@@ -40,6 +40,7 @@ public:
     UnorderedMap<UM_RenderPassID, Vector<VkVertexInputBindingDescription>> VertexInputBindingList;
     UnorderedMap<UM_RenderPassID, Vector<VkVertexInputAttributeDescription>> VertexInputAttributeDescription;
 
+    UnorderedMap<UM_SpriteBatchID, Vector<UM_GameObjectID>> SpriteBatchLayerObjectList;
     UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>> SpriteInstanceList;
     UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer> SpriteInstanceBufferList;
 

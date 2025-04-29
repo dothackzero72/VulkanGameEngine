@@ -85,7 +85,7 @@ void Level2DRenderer::StartLevelRenderer()
         AddGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
     }
     JsonPipelineList.resize(1);
-    renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(GameObjectList, JsonPipelineList[0]));
+    renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId, GameObjectList, JsonPipelineList[0]));
     GPUImport gpuImport =
     {
         .MeshList = Vector<SpriteMesh>(GetMeshFromGameObjects()),

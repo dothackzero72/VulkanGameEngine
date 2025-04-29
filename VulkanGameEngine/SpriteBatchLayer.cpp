@@ -8,8 +8,9 @@ SpriteBatchLayer::SpriteBatchLayer()
 
 }
 
-SpriteBatchLayer::SpriteBatchLayer(Vector<GameObject>& gameObjectList, JsonPipeline spriteRenderPipeline)
+SpriteBatchLayer::SpriteBatchLayer(uint32 renderPassId, Vector<GameObject>& gameObjectList, JsonPipeline spriteRenderPipeline)
 {
+	RenderPassId = renderPassId;
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 	SpriteRenderPipeline = spriteRenderPipeline;
 
@@ -19,7 +20,7 @@ SpriteBatchLayer::SpriteBatchLayer(Vector<GameObject>& gameObjectList, JsonPipel
 	for (auto& gameObject : gameObjectList)
 	{
 		Sprite sprite = assetManager.SpriteList[gameObject.GameObjectId];
-		GameObjectIDList.emplace_back(gameObject.GameObjectId);
+		renderSystem.SpriteBatchLayerObjectList[renderPassId].emplace_back(gameObject.GameObjectId);
 	}
 
 	renderSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(gameObjectList.size());
@@ -53,13 +54,13 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 	SpriteInstanceBuffer spriteInstanceBuffer = renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID];
 
 	spriteInstanceList.clear();
-	spriteInstanceList.reserve(GameObjectIDList.size());
-	for (auto& gameObjectID : GameObjectIDList)
+	spriteInstanceList.reserve(renderSystem.SpriteBatchLayerObjectList[RenderPassId].size());
+	for (auto& gameObjectID : renderSystem.SpriteBatchLayerObjectList[RenderPassId])
 	{
 		spriteInstanceList.emplace_back(assetManager.SpriteList[gameObjectID].Update(commandBuffer, deltaTime));
 	}
 
-	if (GameObjectIDList.size())
+	if (renderSystem.SpriteBatchLayerObjectList[RenderPassId].size())
 	{
 		spriteInstanceBuffer.UpdateBufferMemory(spriteInstanceList);
 	}

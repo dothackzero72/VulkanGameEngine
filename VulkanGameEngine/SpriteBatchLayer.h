@@ -26,16 +26,16 @@ public:
 	};
 
 	String					        Name;
+	uint32 RenderPassId = 0;
 	uint32							SpriteBatchLayerID = 0;
 	uint32                          MaxSpritesPerSheet;
 	uint32                          SpriteLayerIndex;
 
-	Vector<uint>					GameObjectIDList;
 	uint							SpriteLayerMeshId;
 	JsonPipeline 					SpriteRenderPipeline;
 
 	SpriteBatchLayer();
-	SpriteBatchLayer(Vector<GameObject>& gameObjectList, JsonPipeline spriteRenderPipeline);
+	SpriteBatchLayer(uint32 renderPassId, Vector<GameObject>& gameObjectList, JsonPipeline spriteRenderPipeline);
 	virtual ~SpriteBatchLayer();
 
 	void LoadSprites();
