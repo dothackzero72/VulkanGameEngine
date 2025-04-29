@@ -15,9 +15,6 @@ private:
 
 public:
 	uint RenderPassId = 0;
-	static SharedPtr<Level2DRenderer>   LevelRenderer;
-	Vector<Texture>						TextureList;
-	Vector<GameObject>					GameObjectList;
 
 	Level2DRenderer();
 	Level2DRenderer(const String& JsonPath, ivec2 RenderPassResolution);

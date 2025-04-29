@@ -3,8 +3,6 @@
 #include "AssetManager.h"
 #include "RenderSystem.h"
 
-SharedPtr<Level2DRenderer> Level2DRenderer::LevelRenderer = nullptr;
-
 Level2DRenderer::Level2DRenderer() : JsonRenderPass2()
 {
 }
@@ -41,17 +39,9 @@ Level2DRenderer::~Level2DRenderer()
 
 void Level2DRenderer::StartLevelRenderer()
 {
-    if (!LevelRenderer)
-    {
-        LevelRenderer = SharedPtr<Level2DRenderer>(this);
-    }
-
     auto textureId = assetManager.LoadTexture("../Textures/TestTexture.json");
     auto materialId = assetManager.LoadMaterial("../Materials/Material1.json");
     auto vramId = assetManager.AddSpriteVRAM("../Sprites/TestSprite.json");
-
-    const Material material = assetManager.MaterialList[materialId];
-    TextureList.emplace_back(assetManager.TextureList[material.AlbedoMapId]);
 
     assetManager.AnimationFrameList[0] = Vector<ivec2>
     {
@@ -109,7 +99,7 @@ void Level2DRenderer::StartLevelRenderer()
 void Level2DRenderer::AddGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
 {
     GameObject gameObject = GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0);
-    GameObjectList.emplace_back(gameObject);
+    assetManager.GameObjectList[gameObject.GameObjectId] = gameObject;
     renderSystem.SpriteBatchLayerObjectList[RenderPassId].emplace_back(gameObject.GameObjectId);
 
     Vector<GameObjectComponent> gameObjectComponentList;
@@ -148,9 +138,10 @@ void Level2DRenderer::Update(const float& deltaTime)
 
 void Level2DRenderer::UpdateBufferIndex()
 {
-    for (int x = 0; x < TextureList.size(); x++)
-    {
-        TextureList[x].UpdateTextureBufferIndex(x);
+    int xy = 0;
+    for (auto& [id, texture] : assetManager.TextureList) {
+        texture.UpdateTextureBufferIndex(xy);
+        ++xy;
     }
     int xz = 0;
     for (auto& [id, material] : assetManager.MaterialList) {
@@ -200,10 +191,10 @@ void Level2DRenderer::Destroy()
     {
         spriteLayer.Destroy();
     }
-    for (auto& texture : TextureList)
-    {
-        texture.Destroy();
-    }
+    //for (auto& texture : TextureList)
+    //{
+    //    texture.Destroy();
+    //}
   /*  for (auto& material : MaterialList)
     {
         material->Destroy();
