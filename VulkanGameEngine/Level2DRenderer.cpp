@@ -77,10 +77,6 @@ void Level2DRenderer::StartLevelRenderer()
     }
     JsonPipelineList.resize(1);
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
-    GPUImport gpuImport =
-    {
-        .MeshList = Vector<SpriteMesh>(GetMeshFromGameObjects()),
-    };
 
     Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
     for (auto& instanceVar : SpriteInstanceVertex2D::GetBindingDescriptions())
@@ -94,7 +90,7 @@ void Level2DRenderer::StartLevelRenderer()
         vertexAttribute.emplace_back(instanceVar);
     }
 
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(2, "../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(2, "../Pipelines/Default2DPipeline.json", RenderPass, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
 }
 
 void Level2DRenderer::Update(const float& deltaTime)

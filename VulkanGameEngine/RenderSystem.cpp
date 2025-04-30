@@ -122,7 +122,7 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer()
     return meshPropertiesBuffer;
 }
 
-const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(Vector<Texture>& renderedTextureList)
+const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>>& renderedTextureList)
 {
     Vector<Texture> textureList;
     if (renderedTextureList.empty())
@@ -134,7 +134,10 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(Vec
     }
     else
     {
-        textureList = renderedTextureList;
+        for (auto& texture : renderedTextureList)
+        {
+            textureList.emplace_back(*texture.get());
+        }
     }
 
     Vector<VkDescriptorImageInfo>	texturePropertiesBuffer;

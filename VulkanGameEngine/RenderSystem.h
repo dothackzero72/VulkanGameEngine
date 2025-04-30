@@ -23,7 +23,7 @@ private:
     const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer();
     const Vector<VkDescriptorBufferInfo> GetGameObjectTransformBuffer();
     const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer();
-    const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(Vector<Texture>& renderedTextureList);
+    const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>>& renderedTextureList);
     const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer();
 
 public:
@@ -53,7 +53,7 @@ public:
     UnorderedMap<UM_RenderPassID, DepthTexture> DepthTextureList;
     UnorderedMap<UM_RenderPassID, VkRenderPassBeginInfo> RenderPassInfoList;
     UnorderedMap<UM_RenderPassID, Vector<JsonPipeline>> RenderPipelineList;
-    UnorderedMap<UM_RenderPassID, Vector<Texture>> InputTextureList;
+    UnorderedMap<UM_RenderPassID, Vector<SharedPtr<Texture>>> InputTextureList;
     UnorderedMap<UM_RenderPassID, Vector<RenderedTexture>> RenderedTextureList;
     UnorderedMap<UM_RenderPassID, Vector<SpriteBatchLayer>> SpriteBatchLayerList;
     UnorderedMap<UM_RenderPassID, Vector<VkVertexInputBindingDescription>> VertexInputBindingList;

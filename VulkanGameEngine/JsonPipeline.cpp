@@ -6,7 +6,7 @@ JsonPipeline::JsonPipeline()
 {
 }
 
-JsonPipeline::JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass renderPass, GPUImport gpuImport, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize, ivec2& renderPassResolution)
+JsonPipeline::JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass renderPass, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize, ivec2& renderPassResolution)
 {
     //  ParentRenderPass = parentRenderPass;
     RenderPipelineId = renderPipelineId;
@@ -19,7 +19,7 @@ JsonPipeline::JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass 
         .indexProperties = renderSystem.GetIndexPropertiesBuffer(),
         //        .transformProperties = renderSystem.GetTransformPropertiesBuffer(gpuImport.MeshList),
         .meshProperties = renderSystem.GetMeshPropertiesBuffer(),
-        .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(gpuImport.TextureList),
+        .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderSystem.InputTextureList[renderPipelineId]),
         .materialProperties = renderSystem.GetMaterialPropertiesBuffer()
     };
 

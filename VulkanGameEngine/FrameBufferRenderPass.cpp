@@ -65,11 +65,6 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, ive
         meshList.emplace_back(assetManager.MeshList[spriteLayer.SpriteLayerMeshId]);
     }
 
-    GPUImport gpuImport =
-    {
-        .MeshList = meshList,
-    };
-
     Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
     for (auto& instanceVar : SpriteInstanceVertex2D::GetBindingDescriptions())
     {
@@ -83,7 +78,7 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, ive
     }
 
     uint id = renderSystem.RenderPipelineList.size();
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/Default2DPipeline.json", RenderPass, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
 
     renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
     renderArea = renderPassBuildInfo.RenderArea.RenderArea;
@@ -115,7 +110,8 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, Tex
     Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
 
     uint id = renderSystem.RenderPipelineList.size();
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/FrameBufferPipeline.json", RenderPass, import, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), renderPassResolution));
+    renderSystem.InputTextureList[id].emplace_back(std::make_shared<Texture>(inputTexture));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/FrameBufferPipeline.json", RenderPass, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), renderPassResolution));
     renderArea = renderPassBuildInfo.RenderArea.RenderArea;
     renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
     renderSystem.RenderPassInfoList[RenderPassId] = VkRenderPassBeginInfo
@@ -143,7 +139,7 @@ void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& render
     {
         Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
         Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
-        renderSystem.RenderPipelineList[RenderPassId] = Vector<JsonPipeline>{ JsonPipeline(1, renderPassBuildInfo.RenderPipelineList[x], RenderPass, renderGraphics, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution) };
+        renderSystem.RenderPipelineList[RenderPassId] = Vector<JsonPipeline>{ JsonPipeline(1, renderPassBuildInfo.RenderPipelineList[x], RenderPass, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution) };
     }
 }
 
