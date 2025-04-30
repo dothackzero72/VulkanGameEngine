@@ -2,7 +2,8 @@
 #include "TypeDef.h"
 #include "JsonRenderPass.h"
 #include "AssetManager.h"
-#include "FrameBufferRenderPass.h"
+#include "DepthTexture.h"
+#include "RenderedTexture.h"
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;

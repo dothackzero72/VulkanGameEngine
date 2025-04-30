@@ -1,48 +1,36 @@
 #pragma once
 #include <vulkan/vulkan_core.h>
-#include <json.h>
-#include "Typedef.h"
-#include "JsonStructs.h"
-#include <RenderedTexture.h>
-#include <DepthTexture.h>
+#include <Texture.h>
+#include <ShaderCompiler.h>
+#include "vertex.h"
 #include "JsonPipeline.h"
 #include "GameObject.h"
+#include "JsonStructs.h"
 
-struct GPUImport;
-class JsonRenderPass2
+class JsonRenderPass
 {
-	friend class JsonPipeline;
-
-protected:
-	virtual void BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, GPUImport& renderGraphics, SceneDataBuffer& sceneDataBuffer);
-	virtual void BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo);
-	virtual void BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
+private:
+	void BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, SceneDataBuffer& sceneDataBuffer);
+	void BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo);
+	void BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
 
 public:
-	String Name;
+	uint32 RenderPassId = 0;
+
 	ivec2 RenderPassResolution;
 	VkSampleCountFlagBits SampleCount;
-
+	VkRect2D renderArea;
 	VkRenderPass RenderPass = VK_NULL_HANDLE;
-	VkCommandBuffer CommandBuffer;
 	std::vector<VkFramebuffer> FrameBufferList;
-	Vector<VkClearValue> ClearValueList;
 	VkRenderPassBeginInfo RenderPassInfo;
 
-	Vector<JsonPipeline> JsonPipelineList;
-	Vector<Texture> InputTextureList;
+	JsonRenderPass();
+	JsonRenderPass(uint renderPassIndex, const String& jsonPath, ivec2& renderPassResolution);
+	JsonRenderPass(uint renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution);
+	~JsonRenderPass();
 
-	Vector<RenderedTexture> RenderedColorTextureList = Vector<RenderedTexture>();
-	SharedPtr<DepthTexture> depthTexture;
-
-	JsonRenderPass2();
-	JsonRenderPass2(const String& jsonPath, GPUImport renderGraphics, ivec2 renderPassResolution, SceneDataBuffer& sceneDataBuffer);
-	JsonRenderPass2(const String& jsonPath, GPUImport renderGraphics, VkExtent2D renderPassResolution, SceneDataBuffer& sceneDataBuffer);
-	virtual ~JsonRenderPass2();
-
-	virtual void Update(const float& deltaTime);
+	void Update(const float& deltaTime);
 	VkCommandBuffer DrawFrameBuffer();
-	virtual VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer);
-	virtual void Destroy();
+	VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer);
+	void Destroy();
 };
-

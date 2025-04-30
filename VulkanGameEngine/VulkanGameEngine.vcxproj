@@ -154,7 +154,6 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
-    <ClCompile Include="FrameBufferRenderPass.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectComponent.cpp" />
@@ -198,7 +197,6 @@
     <ClInclude Include="DynamicVulkanBuffer.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FPSGraph.h" />
-    <ClInclude Include="FrameBufferRenderPass.h" />
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectComponent.h" />
