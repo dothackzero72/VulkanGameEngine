@@ -4,41 +4,11 @@
 #include "RenderSystem.h"
 #include <VulkanRenderPass.h>
 
-Level2DRenderer::Level2DRenderer()
+Level2DRenderer::Level2DRenderer() : JsonRenderPass()
 {
 }
 
-Level2DRenderer::Level2DRenderer(const String& jsonPath, ivec2 renderPassResolution)
-{
-    RenderPassId = 2;
-
-    RenderPassResolution = renderPassResolution;
-    SampleCount = VK_SAMPLE_COUNT_1_BIT;
-    FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
-
-    nlohmann::json json = Json::ReadJson(jsonPath);
-    RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
-    BuildRenderPass(renderPassBuildInfo);
-    BuildFrameBuffer(renderPassBuildInfo);
-    CreateCommandBuffer();
-
-    renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
-    RenderPassInfo = VkRenderPassBeginInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .renderPass = RenderPass,
-        .framebuffer = FrameBufferList[cRenderer.ImageIndex],
-        .renderArea = renderPassBuildInfo.RenderArea.RenderArea,
-        .clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size()),
-        .pClearValues = renderSystem.ClearValueList[RenderPassId].data()
-    };
-}
-
-Level2DRenderer::~Level2DRenderer()
-{
-}
-
-void Level2DRenderer::StartLevelRenderer()
+Level2DRenderer::Level2DRenderer(const String& jsonPath, ivec2 renderPassResolution) : JsonRenderPass(2, jsonPath, renderPassResolution)
 {
     auto textureId = renderSystem.LoadTexture("../Textures/TestTexture.json");
     auto materialId = renderSystem.LoadMaterial("../Materials/Material1.json");
@@ -76,7 +46,16 @@ void Level2DRenderer::StartLevelRenderer()
         assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
     }
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(2, "../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer), RenderPassResolution));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(RenderPassId, "../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer), RenderPassResolution));
+}
+
+Level2DRenderer::~Level2DRenderer()
+{
+}
+
+void Level2DRenderer::StartLevelRenderer()
+{
+
 }
 
 void Level2DRenderer::Update(const float& deltaTime)
@@ -97,36 +76,7 @@ void Level2DRenderer::UpdateBufferIndex()
 
 VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SpriteBatchLayer> spriteLayerList, SceneDataBuffer& sceneDataBuffer)
 {
-    RenderPassInfo.clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size());
-    RenderPassInfo.pClearValues = renderSystem.ClearValueList[RenderPassId].data();
-    RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
-
-    VkCommandBufferBeginInfo CommandBufferBeginInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-        .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
-    };
-
-    VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
-    VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
-    vkCmdBeginRenderPass(CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    for (auto spriteLayer : spriteLayerList)
-    {
-        const Vector<SpriteInstanceStruct>& spriteInstanceList = renderSystem.SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
-        const SpriteInstanceBuffer& spriteInstanceBuffer = renderSystem.SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID];
-
-        VkDeviceSize offsets[] = { 0 };
-        vkCmdPushConstants(CommandBuffer, renderSystem.RenderPipelineList[RenderPassId][0].PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
-        vkCmdBindPipeline(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderSystem.RenderPipelineList[RenderPassId][0].Pipeline);
-        vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderSystem.RenderPipelineList[RenderPassId][0].PipelineLayout, 0, renderSystem.RenderPipelineList[RenderPassId][0].DescriptorSetList.size(), renderSystem.RenderPipelineList[RenderPassId][0].DescriptorSetList.data(), 0, nullptr);
-        vkCmdBindVertexBuffers(CommandBuffer, 0, 1, assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetVertexBuffer().get(), offsets);
-        vkCmdBindVertexBuffers(CommandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
-        vkCmdBindIndexBuffer(CommandBuffer, *assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
-        vkCmdDrawIndexed(CommandBuffer, renderSystem.SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
-    }
-    vkCmdEndRenderPass(CommandBuffer);
-    vkEndCommandBuffer(CommandBuffer);
-    return CommandBuffer;
+    return renderSystem.RenderSprites(RenderPassId, 0.0f, sceneDataBuffer);
 }
 
 void Level2DRenderer::Destroy()

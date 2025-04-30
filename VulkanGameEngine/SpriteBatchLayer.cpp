@@ -43,13 +43,13 @@ void SpriteBatchLayer::RemoveSprite(uint gameObjectID)
 void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
 	renderSystem.SpriteInstanceList[SpriteBatchLayerID].clear();
-	renderSystem.SpriteInstanceList[SpriteBatchLayerID].reserve(renderSystem.SpriteBatchLayerObjectList[RenderPassId].size());
-	for (auto& gameObjectID : renderSystem.SpriteBatchLayerObjectList[RenderPassId])
+	renderSystem.SpriteInstanceList[SpriteBatchLayerID].reserve(renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
+	for (auto& gameObjectID : renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID])
 	{
 		renderSystem.SpriteInstanceList[SpriteBatchLayerID].emplace_back(assetManager.SpriteList[gameObjectID].Update(commandBuffer, deltaTime));
 	}
 
-	if (renderSystem.SpriteBatchLayerObjectList[RenderPassId].size())
+	if (renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size())
 	{
 		renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID].UpdateBufferMemory(renderSystem.SpriteInstanceList[SpriteBatchLayerID]);
 	}
