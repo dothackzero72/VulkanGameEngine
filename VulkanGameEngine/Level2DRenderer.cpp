@@ -77,20 +77,7 @@ void Level2DRenderer::StartLevelRenderer()
     }
     JsonPipelineList.resize(1);
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
-
-    Vector<VkVertexInputBindingDescription> vertexBinding = NullVertex::GetBindingDescriptions();
-    for (auto& instanceVar : SpriteInstanceVertex2D::GetBindingDescriptions())
-    {
-        vertexBinding.emplace_back(instanceVar);
-    }
-
-    Vector<VkVertexInputAttributeDescription> vertexAttribute = NullVertex::GetAttributeDescriptions();
-    for (auto& instanceVar : SpriteInstanceVertex2D::GetAttributeDescriptions())
-    {
-        vertexAttribute.emplace_back(instanceVar);
-    }
-
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(2, "../Pipelines/Default2DPipeline.json", RenderPass, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(2, "../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer), RenderPassResolution));
 }
 
 void Level2DRenderer::Update(const float& deltaTime)

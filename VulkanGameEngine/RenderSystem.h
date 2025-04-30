@@ -52,6 +52,7 @@ public:
     UnorderedMap<UM_RenderPassID, JsonRenderPass> RenderPassList;
     UnorderedMap<UM_RenderPassID, DepthTexture> DepthTextureList;
     UnorderedMap<UM_RenderPassID, VkRenderPassBeginInfo> RenderPassInfoList;
+    UnorderedMap<UM_RenderPassID, ivec2> RenderPassResolutionList;
     UnorderedMap<UM_RenderPassID, Vector<JsonPipeline>> RenderPipelineList;
     UnorderedMap<UM_RenderPassID, Vector<SharedPtr<Texture>>> InputTextureList;
     UnorderedMap<UM_RenderPassID, Vector<RenderedTexture>> RenderedTextureList;

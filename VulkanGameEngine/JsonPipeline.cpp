@@ -6,7 +6,7 @@ JsonPipeline::JsonPipeline()
 {
 }
 
-JsonPipeline::JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass renderPass, const Vector<VkVertexInputBindingDescription>& vertexBindings, const Vector<VkVertexInputAttributeDescription>& vertexAttributes, uint constBufferSize, ivec2& renderPassResolution)
+JsonPipeline::JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass renderPass, uint constBufferSize, ivec2& renderPassResolution)
 {
     //  ParentRenderPass = parentRenderPass;
     RenderPipelineId = renderPipelineId;
@@ -22,9 +22,6 @@ JsonPipeline::JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass 
         .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderSystem.InputTextureList[renderPipelineId]),
         .materialProperties = renderSystem.GetMaterialPropertiesBuffer()
     };
-
-    Vector<VkVertexInputBindingDescription> vertexBindingList = vertexBindings;
-    Vector<VkVertexInputAttributeDescription> vertexAttributesList = vertexAttributes;
 
     DescriptorPool = Pipeline_CreateDescriptorPool(cRenderer.Device, model, include);
     DescriptorSetLayoutList = Pipeline_CreateDescriptorSetLayout(cRenderer.Device, model, include);
