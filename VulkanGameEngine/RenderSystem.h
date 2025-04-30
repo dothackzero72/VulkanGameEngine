@@ -19,7 +19,6 @@ private:
 
 
     VkResult CreateCommandBuffer();
-    VkCommandBuffer RenderFrameBuffer(uint renderPassId);
 
     const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer();
     const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer();
@@ -74,7 +73,9 @@ public:
     void Update(const float& deltaTime);
     void UpdateBufferIndex();
 
+    VkCommandBuffer RenderFrameBuffer(uint renderPassId);
     VkCommandBuffer RenderSprites(uint renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
+ 
     uint AddRenderPass(const String& jsonPath, ivec2 renderPassResolution);
     uint AddRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution);
     VkGuid AddSpriteVRAM(const String& spritePath);

@@ -51,11 +51,10 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, ive
         .AnimationFrameId = 1
     };
 
-    assetManager.CreateGameObject(RenderPassId, "Obj1", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 40.0f));
-    assetManager.CreateGameObject(RenderPassId, "Obj2", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 20.0f));
     for (int x = 0; x < 20000; x++)
     {
-        assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
+        assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f + x, 80.0f + x));
+        renderSystem.SpriteBatchLayerObjectList[RenderPassId].emplace_back(assetManager.GameObjectList[x + 1].GameObjectId);
     }
 
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));

@@ -29,7 +29,7 @@ void AssetManager::CreateGameObject(uint renderPassId, const String& name, const
 {
 	GameObject gameObject = GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0);
 	assetManager.GameObjectList[gameObject.GameObjectId] = gameObject;
-	renderSystem.SpriteBatchLayerObjectList[renderPassId].emplace_back(gameObject.GameObjectId);
+	//renderSystem.SpriteBatchLayerObjectList[renderPassId].emplace_back(gameObject.GameObjectId);
 
 	Vector<GameObjectComponent> gameObjectComponentList;
 	for (auto component : gameObjectComponentTypeList)
