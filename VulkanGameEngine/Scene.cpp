@@ -47,7 +47,6 @@ void Scene::ImGuiUpdate(const float& deltaTime)
 
 void Scene::BuildRenderPasses()
 {
-	renderSystem.RenderSystemStartUp();
 	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
 	levelRenderer->StartLevelRenderer();
 

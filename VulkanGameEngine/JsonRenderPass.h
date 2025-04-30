@@ -23,14 +23,15 @@ public:
 	VkRenderPass RenderPass = VK_NULL_HANDLE;
 	std::vector<VkFramebuffer> FrameBufferList;
 	VkRenderPassBeginInfo RenderPassInfo;
+	VkCommandBuffer CommandBuffer = VK_NULL_HANDLE;
 
+	void CreateCommandBuffer();
 	JsonRenderPass();
 	JsonRenderPass(uint renderPassIndex, const String& jsonPath, ivec2& renderPassResolution);
 	JsonRenderPass(uint renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution);
 	~JsonRenderPass();
 
 	void Update(const float& deltaTime);
-	VkCommandBuffer DrawFrameBuffer();
 	VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer);
 	void Destroy();
 };

@@ -20,6 +20,7 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, ive
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
+    CreateCommandBuffer();
 
     auto textureId = renderSystem.LoadTexture("../Textures/TestTexture.json");
     auto materialId = renderSystem.LoadMaterial("../Materials/Material1.json");
@@ -92,6 +93,7 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, Tex
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
+    CreateCommandBuffer();
 
     uint id = renderSystem.RenderPipelineList.size();
     renderSystem.InputTextureList[id].emplace_back(std::make_shared<Texture>(inputTexture));
@@ -166,29 +168,6 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
     FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, imageViewList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, RenderPassResolution);
 }
 
-VkCommandBuffer JsonRenderPass::DrawFrameBuffer()
-{
-    RenderPassInfo.clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size());
-    RenderPassInfo.pClearValues = renderSystem.ClearValueList[RenderPassId].data();
-    RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
-
-    VkCommandBufferBeginInfo CommandBufferBeginInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-        .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
-    };
-
-    VULKAN_RESULT(vkResetCommandBuffer(renderSystem.CommandBuffer, 0));
-    VULKAN_RESULT(vkBeginCommandBuffer(renderSystem.CommandBuffer, &CommandBufferBeginInfo));
-    vkCmdBeginRenderPass(renderSystem.CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdBindPipeline(renderSystem.CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderSystem.RenderPipelineList[RenderPassId][0].Pipeline);
-    vkCmdBindDescriptorSets(renderSystem.CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderSystem.RenderPipelineList[RenderPassId][0].PipelineLayout, 0, renderSystem.RenderPipelineList[RenderPassId][0].DescriptorSetList.size(), renderSystem.RenderPipelineList[RenderPassId][0].DescriptorSetList.data(), 0, nullptr);
-    vkCmdDraw(renderSystem.CommandBuffer, 6, 1, 0, 0);
-    vkCmdEndRenderPass(renderSystem.CommandBuffer);
-    vkEndCommandBuffer(renderSystem.CommandBuffer);
-    return renderSystem.CommandBuffer;
-}
-
 VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
 {
     RenderPassInfo.clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size());
@@ -201,16 +180,21 @@ VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, Sce
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
-    VULKAN_RESULT(vkResetCommandBuffer(renderSystem.CommandBuffer, 0));
-    VULKAN_RESULT(vkBeginCommandBuffer(renderSystem.CommandBuffer, &CommandBufferBeginInfo));
-    vkCmdBeginRenderPass(renderSystem.CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
+    VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
+    vkCmdBeginRenderPass(CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     for (auto mesh : meshList)
     {
-        mesh->Draw(renderSystem.CommandBuffer, renderSystem.RenderPipelineList[RenderPassId][0].Pipeline, renderSystem.RenderPipelineList[RenderPassId][0].PipelineLayout, renderSystem.RenderPipelineList[RenderPassId][0].DescriptorSetList);
+        mesh->Draw(CommandBuffer, renderSystem.RenderPipelineList[RenderPassId][0].Pipeline, renderSystem.RenderPipelineList[RenderPassId][0].PipelineLayout, renderSystem.RenderPipelineList[RenderPassId][0].DescriptorSetList);
     }
-    vkCmdEndRenderPass(renderSystem.CommandBuffer);
-    vkEndCommandBuffer(renderSystem.CommandBuffer);
-    return renderSystem.CommandBuffer;
+    vkCmdEndRenderPass(CommandBuffer);
+    vkEndCommandBuffer(CommandBuffer);
+    return CommandBuffer;
+}
+
+void JsonRenderPass::CreateCommandBuffer()
+{
+    Renderer_CreateCommandBuffers(cRenderer.Device, cRenderer.CommandPool, &CommandBuffer, 1);
 }
 
 void JsonRenderPass::Destroy()
@@ -221,7 +205,7 @@ void JsonRenderPass::Destroy()
     }
 
     renderer.DestroyRenderPass(RenderPass);
-    renderer.DestroyCommandBuffers(renderSystem.CommandBuffer);
+    renderer.DestroyCommandBuffers(CommandBuffer);
     renderer.DestroyFrameBuffers(FrameBufferList);
     FrameBufferList.clear();
 }

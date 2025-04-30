@@ -10,8 +10,6 @@ private:
 	Vector<SpriteMesh> GetMeshFromGameObjects();
 
 public:
-	VkCommandBuffer CommandBuffer;
-
 	Level2DRenderer();
 	Level2DRenderer(const String& JsonPath, ivec2 RenderPassResolution);
 	 ~Level2DRenderer();

@@ -16,12 +16,12 @@ Level2DRenderer::Level2DRenderer(const String& jsonPath, ivec2 renderPassResolut
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
     FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
 
-    VULKAN_RESULT(renderer.CreateCommandBuffer(CommandBuffer));
-
     nlohmann::json json = Json::ReadJson(jsonPath);
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
+    CreateCommandBuffer();
+
     renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
     RenderPassInfo = VkRenderPassBeginInfo
     {
