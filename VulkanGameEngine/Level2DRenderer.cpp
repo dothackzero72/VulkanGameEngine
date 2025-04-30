@@ -79,46 +79,6 @@ void Level2DRenderer::StartLevelRenderer()
     renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(2, "../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer), RenderPassResolution));
 }
 
-void Level2DRenderer::BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo)
-{
-    for (auto& texture : renderPassBuildInfo.RenderedTextureInfoModelList)
-    {
-        VkImageCreateInfo imageCreateInfo = texture.ImageCreateInfo;
-        VkSamplerCreateInfo samplerCreateInfo = texture.SamplerCreateInfo;
-        switch (texture.TextureType)
-        {
-            case ColorRenderedTexture: RenderedColorTextureList.emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-            case InputAttachmentTexture: RenderedColorTextureList.emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-            case ResolveAttachmentTexture: RenderedColorTextureList.emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-            case DepthRenderedTexture: depthTexture = std::make_shared<DepthTexture>(DepthTexture(imageCreateInfo, samplerCreateInfo)); break;
-            default:
-            {
-                throw std::runtime_error("Case doesn't exist: RenderedTextureType");
-            }
-        };
-    }
-
-    RenderPass = RenderPass_BuildRenderPass(cRenderer.Device, renderPassBuildInfo);
-}
-
-void Level2DRenderer::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
-{
-    Vector<VkImageView> imageViewList;
-    for (int x = 0; x < RenderedColorTextureList.size(); x++)
-    {
-        imageViewList.emplace_back(RenderedColorTextureList[x].View);
-    }
-
-    SharedPtr<VkImageView> depthTextureView = nullptr;
-    if (depthTexture)
-    {
-        depthTextureView = std::make_shared<VkImageView>(depthTexture->View);
-    }
-
-    VkRenderPass& renderPass = RenderPass;
-    FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, imageViewList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, RenderPassResolution);
-}
-
 void Level2DRenderer::Update(const float& deltaTime)
 {
    // DestroyDeadGameObjects();

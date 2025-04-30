@@ -4,31 +4,13 @@
 #include "DepthTexture.h"
 #include "RenderedTexture.h"
 
-class Level2DRenderer
+class Level2DRenderer : public JsonRenderPass
 {
 private:
-
-		 void BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo);
-	 void BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
 	Vector<SpriteMesh> GetMeshFromGameObjects();
 
 public:
-	uint RenderPassId = 0;
-	String Name;
-	ivec2 RenderPassResolution;
-	VkSampleCountFlagBits SampleCount;
-
-	VkRenderPass RenderPass = VK_NULL_HANDLE;
 	VkCommandBuffer CommandBuffer;
-	std::vector<VkFramebuffer> FrameBufferList;
-	Vector<VkClearValue> ClearValueList;
-	VkRenderPassBeginInfo RenderPassInfo;
-
-	Vector<JsonPipeline> JsonPipelineList;
-	Vector<Texture> InputTextureList;
-
-	Vector<RenderedTexture> RenderedColorTextureList = Vector<RenderedTexture>();
-	SharedPtr<DepthTexture> depthTexture;
 
 	Level2DRenderer();
 	Level2DRenderer(const String& JsonPath, ivec2 RenderPassResolution);

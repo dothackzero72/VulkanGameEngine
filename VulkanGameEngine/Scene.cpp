@@ -51,7 +51,7 @@ void Scene::BuildRenderPasses()
 	levelRenderer = std::make_shared<Level2DRenderer>(Level2DRenderer("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height)));
 	levelRenderer->StartLevelRenderer();
 
-	frameBufferId = renderSystem.AddRenderPass("../RenderPass/FrameBufferRenderPass.json", levelRenderer->RenderedColorTextureList[0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
+	frameBufferId = renderSystem.AddRenderPass("../RenderPass/FrameBufferRenderPass.json", renderSystem.RenderedTextureList[2][0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
 }
 
 void Scene::UpdateRenderPasses()
