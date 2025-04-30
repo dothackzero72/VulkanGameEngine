@@ -287,5 +287,8 @@
     <ClInclude Include="GameSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ECGid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

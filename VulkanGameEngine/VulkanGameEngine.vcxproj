@@ -195,6 +195,7 @@
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DynamicVulkanBuffer.h" />
+    <ClInclude Include="ECGid.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="FrameTimer.h" />
