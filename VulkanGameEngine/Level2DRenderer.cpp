@@ -23,7 +23,7 @@ Level2DRenderer::Level2DRenderer(const String& jsonPath, ivec2 renderPassResolut
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
     renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
-    renderSystem.RenderPassInfoList[RenderPassId] = VkRenderPassBeginInfo
+    RenderPassInfo = VkRenderPassBeginInfo
     {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = RenderPass,
@@ -76,7 +76,7 @@ void Level2DRenderer::StartLevelRenderer()
         assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
     }
     JsonPipelineList.resize(1);
-   // renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId, JsonPipelineList[0]));
+    renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
     GPUImport gpuImport =
     {
         .MeshList = Vector<SpriteMesh>(GetMeshFromGameObjects()),
@@ -94,7 +94,7 @@ void Level2DRenderer::StartLevelRenderer()
         vertexAttribute.emplace_back(instanceVar);
     }
 
-    renderSystem.RenderPipelineList[2].emplace_back(JsonPipeline(2, "../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(2, "../Pipelines/Default2DPipeline.json", RenderPass, gpuImport, vertexBinding, vertexAttribute, sizeof(SceneDataBuffer), RenderPassResolution));
 }
 
 void Level2DRenderer::Update(const float& deltaTime)
@@ -115,8 +115,8 @@ void Level2DRenderer::UpdateBufferIndex()
 
 VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SpriteBatchLayer> spriteLayerList, SceneDataBuffer& sceneDataBuffer)
 {
-    RenderPassInfo.clearValueCount = static_cast<uint32>(ClearValueList.size());
-    RenderPassInfo.pClearValues = ClearValueList.data();
+    RenderPassInfo.clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size());
+    RenderPassInfo.pClearValues = renderSystem.ClearValueList[RenderPassId].data();
     RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo
@@ -134,9 +134,9 @@ VkCommandBuffer Level2DRenderer::DrawSprites(Vector<SpriteBatchLayer> spriteLaye
         const SpriteInstanceBuffer& spriteInstanceBuffer = renderSystem.SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID];
 
         VkDeviceSize offsets[] = { 0 };
-        vkCmdPushConstants(CommandBuffer, JsonPipelineList[0].PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
-        vkCmdBindPipeline(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0].Pipeline);
-        vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, JsonPipelineList[0].PipelineLayout, 0, JsonPipelineList[0].DescriptorSetList.size(), JsonPipelineList[0].DescriptorSetList.data(), 0, nullptr);
+        vkCmdPushConstants(CommandBuffer, renderSystem.RenderPipelineList[RenderPassId][0].PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
+        vkCmdBindPipeline(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderSystem.RenderPipelineList[RenderPassId][0].Pipeline);
+        vkCmdBindDescriptorSets(CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, renderSystem.RenderPipelineList[RenderPassId][0].PipelineLayout, 0, renderSystem.RenderPipelineList[RenderPassId][0].DescriptorSetList.size(), renderSystem.RenderPipelineList[RenderPassId][0].DescriptorSetList.data(), 0, nullptr);
         vkCmdBindVertexBuffers(CommandBuffer, 0, 1, assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetVertexBuffer().get(), offsets);
         vkCmdBindVertexBuffers(CommandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
         vkCmdBindIndexBuffer(CommandBuffer, *assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
