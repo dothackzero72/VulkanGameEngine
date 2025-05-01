@@ -27,18 +27,17 @@ void AssetManager::Update(VkCommandBuffer& commandBuffer, const float& deltaTime
 
 void AssetManager::CreateGameObject(uint renderPassId, const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
 {
-	GameObject gameObject = GameObject(name, Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, 0);
-	assetManager.GameObjectList[gameObject.GameObjectId] = gameObject;
-	//renderSystem.SpriteBatchLayerObjectList[renderPassId].emplace_back(gameObject.GameObjectId);
+	uint id = assetManager.GameObjectList.size() + 1;
+	assetManager.GameObjectList[id] = GameObject(id);
 
 	Vector<GameObjectComponent> gameObjectComponentList;
 	for (auto component : gameObjectComponentTypeList)
 	{
 		switch (component)
 		{
-		case kTransform2DComponent: assetManager.TransformComponentList[gameObject.GameObjectId] = Transform2DComponent(gameObject.GetId(), objectPosition, name); break;
+		case kTransform2DComponent: assetManager.TransformComponentList[id] = Transform2DComponent(id, objectPosition, name); break;
 			// case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject->GetId(), name))); break;
-		case kSpriteComponent: assetManager.SpriteList[gameObject.GameObjectId] = Sprite(gameObject.GetId(), vramId); break;
+		case kSpriteComponent: assetManager.SpriteList[id] = Sprite(id, vramId); break;
 		}
 	}
 }

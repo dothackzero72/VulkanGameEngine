@@ -53,7 +53,7 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, ive
 
     for (int x = 0; x < 20000; x++)
     {
-        assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f + x, 80.0f + x));
+        assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
         renderSystem.SpriteBatchLayerObjectList[RenderPassId].emplace_back(assetManager.GameObjectList[x + 1].GameObjectId);
     }
 
@@ -169,25 +169,25 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
 
 VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
 {
-    RenderPassInfo.clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size());
-    RenderPassInfo.pClearValues = renderSystem.ClearValueList[RenderPassId].data();
-    RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
-
-    VkCommandBufferBeginInfo CommandBufferBeginInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-        .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
-    };
-
-    VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
-    VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
-    vkCmdBeginRenderPass(CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    for (auto mesh : meshList)
-    {
-        mesh->Draw(CommandBuffer, renderSystem.RenderPipelineList[RenderPassId][0].Pipeline, renderSystem.RenderPipelineList[RenderPassId][0].PipelineLayout, renderSystem.RenderPipelineList[RenderPassId][0].DescriptorSetList);
-    }
-    vkCmdEndRenderPass(CommandBuffer);
-    vkEndCommandBuffer(CommandBuffer);
+//    RenderPassInfo.clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size());
+//    RenderPassInfo.pClearValues = renderSystem.ClearValueList[RenderPassId].data();
+//    RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
+//
+//    VkCommandBufferBeginInfo CommandBufferBeginInfo
+//    {
+//        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+//        .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
+//    };
+//
+//    VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
+//    VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
+//    vkCmdBeginRenderPass(CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+//    for (auto mesh : meshList)
+//    {
+//        mesh->Draw(CommandBuffer, renderSystem.RenderPipelineList[RenderPassId][0].Pipeline, renderSystem.RenderPipelineList[RenderPassId][0].PipelineLayout, renderSystem.RenderPipelineList[RenderPassId][0].DescriptorSetList);
+//    }
+//    vkCmdEndRenderPass(CommandBuffer);
+//    vkEndCommandBuffer(CommandBuffer);
     return CommandBuffer;
 }
 
