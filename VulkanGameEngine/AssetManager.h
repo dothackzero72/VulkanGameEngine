@@ -41,8 +41,8 @@ public:
 	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
 
 	//CreateGameObject();
-	void CreateGameObject(uint renderPassId, const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition);
-	void DestroyEntity(uint32_t id);
+	void CreateGameObject(RenderPassID renderPassId, const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition);
+	void DestroyEntity(RenderPassID id);
 
 	void DestroyGameObject(GameObjectID id);
 	void DestroyGameObjects();

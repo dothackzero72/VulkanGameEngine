@@ -6,6 +6,7 @@
 #include "JsonPipeline.h"
 #include "GameObject.h"
 #include "JsonStructs.h"
+#include "ECGid.h"
 
 class JsonRenderPass
 {
@@ -15,7 +16,7 @@ protected:
 	void BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
 
 public:
-	uint32 RenderPassId = 0;
+	RenderPassID RenderPassId;
 
 	ivec2 RenderPassResolution;
 	VkSampleCountFlagBits SampleCount;
@@ -27,8 +28,8 @@ public:
 
 	void CreateCommandBuffer();
 	JsonRenderPass();
-	JsonRenderPass(uint renderPassIndex, const String& jsonPath, ivec2& renderPassResolution);
-	JsonRenderPass(uint renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution);
+	JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, ivec2& renderPassResolution);
+	JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution);
 	~JsonRenderPass();
 
 	void Update(const float& deltaTime);

@@ -14,14 +14,16 @@ void RenderSystem::Update(const float& deltaTime)
 {
     // DestroyDeadGameObjects();
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-    for (auto& spriteLayer : SpriteBatchLayerList[1])
+
+    RenderPassID id = RenderPassID(1);
+    for (auto& spriteLayer : SpriteBatchLayerList[id])
     {
         spriteLayer.Update(commandBuffer, deltaTime);
     }
     renderer.EndSingleTimeCommands(commandBuffer);
 }
 
-VkCommandBuffer RenderSystem::RenderFrameBuffer(uint renderPassId)
+VkCommandBuffer RenderSystem::RenderFrameBuffer(RenderPassID renderPassId)
 {
     JsonRenderPass renderPass = RenderPassList[renderPassId];
     const JsonPipeline& pipeline = RenderPipelineList[renderPassId][0];
@@ -48,7 +50,7 @@ VkCommandBuffer RenderSystem::RenderFrameBuffer(uint renderPassId)
     return commandBuffer;
 }
 
-VkCommandBuffer RenderSystem::RenderSprites(uint renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
+VkCommandBuffer RenderSystem::RenderSprites(RenderPassID renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
 {
     const JsonRenderPass& renderPass = RenderPassList[renderPassId];
     const JsonPipeline& pipeline = RenderPipelineList[renderPassId][0];
@@ -87,18 +89,18 @@ VkCommandBuffer RenderSystem::RenderSprites(uint renderPassId, const float delta
     return commandBuffer;
 }
 
-uint RenderSystem::AddRenderPass(const String& jsonPath, ivec2 renderPassResolution)
+RenderPassID RenderSystem::AddRenderPass(const String& jsonPath, ivec2 renderPassResolution)
 {
-    uint id = RenderPassList.size() + 1;
-    CurrentRenderPassID = id;
+    RenderPassID id;
+    id.id = RenderPassList.size() + 1;
     RenderPassList[id] = JsonRenderPass(id, jsonPath, renderPassResolution);
     return id;
 }
 
-uint RenderSystem::AddRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
+RenderPassID RenderSystem::AddRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
 {
-    uint id = RenderPassList.size() + 1;
-    CurrentRenderPassID = id;
+    RenderPassID id;
+    id.id = RenderPassList.size() + 1;
     RenderPassList[id] = JsonRenderPass(id, jsonPath, inputTexture, renderPassResolution);
     return id;
 }

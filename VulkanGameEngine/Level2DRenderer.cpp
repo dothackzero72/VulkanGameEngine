@@ -8,7 +8,7 @@ Level2DRenderer::Level2DRenderer() : JsonRenderPass()
 {
 }
 
-Level2DRenderer::Level2DRenderer(const String& jsonPath, ivec2 renderPassResolution) : JsonRenderPass(2, jsonPath, renderPassResolution)
+Level2DRenderer::Level2DRenderer(RenderPassID renderPassId, const String& jsonPath, ivec2 renderPassResolution) : JsonRenderPass(renderPassId, jsonPath, renderPassResolution)
 {
     auto textureId = renderSystem.LoadTexture("../Textures/TestTexture.json");
     auto materialId = renderSystem.LoadMaterial("../Materials/Material1.json");
@@ -46,7 +46,7 @@ Level2DRenderer::Level2DRenderer(const String& jsonPath, ivec2 renderPassResolut
         assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2(300.0f, 80.0f));
     }
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(RenderPassId, "../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer), RenderPassResolution));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(renderSystem.RenderPipelineList.size() + 1, "../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer), RenderPassResolution));
 }
 
 Level2DRenderer::~Level2DRenderer()

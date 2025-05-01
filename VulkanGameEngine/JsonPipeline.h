@@ -6,6 +6,7 @@
 #include <VulkanPipeline.h>
 #include <json.h>
 #include "vertex.h"
+#include "ECGid.h"
 
 class Material;
 class Texture;
@@ -24,7 +25,7 @@ class JsonPipeline
 private:
 
 public:
-    //uint RenderPipelineId = 0;
+    uint RenderPipelineId;
     VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
     Vector<VkDescriptorSetLayout> DescriptorSetLayoutList;
     Vector<VkDescriptorSet> DescriptorSetList;

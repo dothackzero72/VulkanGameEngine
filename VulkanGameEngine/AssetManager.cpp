@@ -25,7 +25,7 @@ void AssetManager::Update(VkCommandBuffer& commandBuffer, const float& deltaTime
 
 }
 
-void AssetManager::CreateGameObject(uint renderPassId, const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
+void AssetManager::CreateGameObject(RenderPassID renderPassId, const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
 {
 	GameObjectID id;
 	id.id = assetManager.GameObjectList.size() + 1;
@@ -43,9 +43,9 @@ void AssetManager::CreateGameObject(uint renderPassId, const String& name, const
 	}
 }
 
-void AssetManager::DestroyEntity(uint32_t id)
+void AssetManager::DestroyEntity(RenderPassID id)
 {
-	FreeIds.push(id);
+	//FreeIds.push(id);
 }
 
 void AssetManager::DestroyGameObject(GameObjectID id)

@@ -3,6 +3,7 @@
 #include "Sprite.h"
 #include "Mesh.h"
 #include "JsonPipeline.h"
+#include "ECGid.h"
 
 class SpriteBatchLayer
 {
@@ -11,12 +12,12 @@ private:
 	void SortSpritesByLayer();
 
 public:
-	uint RenderPassId = 0;
+	RenderPassID RenderPassId;
 	uint SpriteBatchLayerID = 0;
 	uint SpriteLayerMeshId = 0;
 
 	SpriteBatchLayer();
-	SpriteBatchLayer(uint32 renderPassId);
+	SpriteBatchLayer(RenderPassID renderPassId);
 	~SpriteBatchLayer();
 
 	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);

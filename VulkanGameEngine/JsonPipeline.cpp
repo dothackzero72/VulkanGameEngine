@@ -8,7 +8,7 @@ JsonPipeline::JsonPipeline()
 
 JsonPipeline::JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass renderPass, uint constBufferSize, ivec2& renderPassResolution)
 {
-    //  ParentRenderPass = parentRenderPass;
+    RenderPipelineId = renderPipelineId;
     nlohmann::json json = Json::ReadJson(jsonPath);
     RenderPipelineModel model = RenderPipelineModel::from_json(json);
 

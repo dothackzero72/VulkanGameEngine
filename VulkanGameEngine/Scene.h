@@ -17,8 +17,8 @@ private:
 	SceneDataBuffer				  sceneProperties;
 	SharedPtr<OrthographicCamera2D> orthographicCamera;
 	SharedPtr<Level2DRenderer>    levelRenderer;
-	uint renderPass2DId;
-	uint frameBufferId;
+	RenderPassID renderPass2DId;
+	RenderPassID frameBufferId;
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 public:
 	void StartUp();

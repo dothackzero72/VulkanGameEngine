@@ -9,7 +9,7 @@ JsonRenderPass::JsonRenderPass()
 {
 }
 
-JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, ivec2& renderPassResolution)
+JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, ivec2& renderPassResolution)
 {
     RenderPassId = renderPassIndex;
     RenderPassResolution = renderPassResolution;
@@ -57,7 +57,7 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, ive
 
         GameObjectID id;
         id.id = x + 1;
-        renderSystem.SpriteBatchLayerObjectList[RenderPassId].emplace_back(id);
+        renderSystem.SpriteBatchLayerObjectList[RenderPassId.id].emplace_back(id);
     }
 
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
@@ -84,7 +84,7 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, ive
     };
 }
 
-JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution)
+JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution)
 {
     RenderPassId = renderPassIndex;
     RenderPassResolution = renderPassResolution;
