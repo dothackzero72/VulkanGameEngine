@@ -162,7 +162,6 @@
     <ClCompile Include="InterfaceRenderPass.cpp" />
     <ClCompile Include="JsonPipeline.cpp" />
     <ClCompile Include="JsonRenderPass.cpp" />
-    <ClCompile Include="Level2DRenderer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="OrthographicCamera2D.cpp" />
@@ -206,7 +205,6 @@
     <ClInclude Include="json.h" />
     <ClInclude Include="JsonPipeline.h" />
     <ClInclude Include="JsonRenderPass.h" />
-    <ClInclude Include="Level2DRenderer.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="Mesh.h" />

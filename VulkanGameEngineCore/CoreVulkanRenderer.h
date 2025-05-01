@@ -24,13 +24,13 @@ static const char* DeviceExtensionList[] =
 
 static const char* ValidationLayers[] = { "VK_LAYER_KHRONOS_validation" };
 
-static VkValidationFeatureEnableEXT enabledList[] = { VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT,
-                                                      VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT };
+static Vector<VkValidationFeatureEnableEXT> enabledList = { VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT,
+															VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT };
 
-static VkValidationFeatureDisableEXT disabledList[] = { VK_VALIDATION_FEATURE_DISABLE_THREAD_SAFETY_EXT,
-                                                        VK_VALIDATION_FEATURE_DISABLE_API_PARAMETERS_EXT,
-                                                        VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT,
-                                                        VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT };
+static Vector<VkValidationFeatureDisableEXT> disabledList = { VK_VALIDATION_FEATURE_DISABLE_THREAD_SAFETY_EXT,
+																VK_VALIDATION_FEATURE_DISABLE_API_PARAMETERS_EXT,
+																VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT,
+																VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT };
 
 
 typedef struct swapChainState

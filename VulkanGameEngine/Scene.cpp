@@ -71,6 +71,4 @@ void Scene::Draw(const float& deltaTime)
 
 void Scene::Destroy()
 {
-	levelRenderer->Destroy();
-	//frameRenderPass->Destroy();
 }

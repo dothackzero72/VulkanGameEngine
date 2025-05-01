@@ -41,26 +41,5 @@ public:
 	~Sprite();
 
 	SpriteInstanceStruct Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
-
-	Sprite& operator=(const Sprite& other)
-	{
-		if (this != &other)
-		{
-			 GameObjectId = other.GameObjectId;
-			 SpriteID = other.SpriteID;
-			 SpriteVramId = other.SpriteVramId;
-			 CurrentAnimationID = other.CurrentAnimationID;
-			 CurrentFrame = other.CurrentFrame;
-			 CurrentFrameTime = other.CurrentFrameTime;
-			 LastSpritePosition = other.LastSpritePosition;
-			 LastSpriteRotation = other.LastSpriteRotation;
-			 LastSpriteScale = other.LastSpriteScale;
-			 SpritePosition = other.SpritePosition;
-			 SpriteRotation = other.SpriteRotation;
-			 SpriteScale = other.SpriteScale;
-			 SpriteAlive = other.SpriteAlive;
-		}
-		return *this; 
-	}
 };
 

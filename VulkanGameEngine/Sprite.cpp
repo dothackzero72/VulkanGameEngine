@@ -1,5 +1,4 @@
 #include "Sprite.h"
-#include "Level2DRenderer.h"
 #include "AssetManager.h"
 #include "RenderSystem.h"
 

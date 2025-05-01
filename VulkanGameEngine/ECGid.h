@@ -13,6 +13,43 @@ typedef uint32 UM_SpriteVRAMID;
 typedef uint32 UM_AnimationFrameId;
 typedef uint32 UM_AnimationListID;
 
+
+struct AnimationFrameID
+{
+    uint id = 0;
+
+    AnimationFrameID() = default;
+    explicit AnimationFrameID(uint32_t id) : id(id) {}
+
+    bool operator==(const AnimationFrameID& other) const
+    {
+        return id == other.id;
+    }
+
+    bool operator!=(const AnimationFrameID& other) const
+    {
+        return !(*this == other);
+    }
+};
+
+struct AnimationListID
+{
+    uint id = 0;
+
+    AnimationListID() = default;
+    explicit AnimationListID(uint32_t id) : id(id) {}
+
+    bool operator==(const AnimationListID& other) const
+    {
+        return id == other.id;
+    }
+
+    bool operator!=(const AnimationListID& other) const
+    {
+        return !(*this == other);
+    }
+};
+
 struct RenderPassID
 {
     uint id = 0;

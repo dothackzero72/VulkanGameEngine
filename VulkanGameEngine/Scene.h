@@ -6,7 +6,6 @@
 #include "FrameTimer.h"
 #include "JsonRenderPass.h"
 #include "GameObject.h"
-#include "Level2DRenderer.h"
 
 class Scene
 {
@@ -16,7 +15,6 @@ private:
 	FrameTimer timer;
 	SceneDataBuffer				  sceneProperties;
 	SharedPtr<OrthographicCamera2D> orthographicCamera;
-	SharedPtr<Level2DRenderer>    levelRenderer;
 	RenderPassID renderPass2DId;
 	RenderPassID frameBufferId;
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;

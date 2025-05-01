@@ -139,6 +139,16 @@ VkInstance Renderer_CreateVulkanInstance()
         .pfnUserCallback = Vulkan_DebugCallBack
     };
 
+    VkValidationFeaturesEXT ValidationFeatures
+    {
+        .sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT,
+        .pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugInfo,
+        .enabledValidationFeatureCount = static_cast<uint32_t>(disabledList.size()),
+        .pEnabledValidationFeatures = enabledList.data(),
+        .disabledValidationFeatureCount = static_cast<uint32_t>(enabledList.size()),
+        .pDisabledValidationFeatures = disabledList.data(),
+    };
+
     int enableValidationLayers = 1;
 #ifdef NDEBUG
     enableValidationLayers = 0;
@@ -169,7 +179,7 @@ VkInstance Renderer_CreateVulkanInstance()
     };
     if (enableValidationLayers)
     {
-        vulkanCreateInfo.pNext = &debugInfo;
+        vulkanCreateInfo.pNext = &ValidationFeatures;
     }
 
     VkResult result = vkCreateInstance(&vulkanCreateInfo, nullptr, &instance);
@@ -374,7 +384,7 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
         .shaderClipDistance = VK_FALSE,
         .shaderCullDistance = VK_FALSE,
         .shaderFloat64 = VK_FALSE,
-        .shaderInt64 = VK_FALSE,
+        .shaderInt64 = VK_TRUE,
         .shaderInt16 = VK_FALSE,
         .shaderResourceResidency = VK_FALSE,
         .shaderResourceMinLod = VK_FALSE,
@@ -439,11 +449,11 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
         .shaderSubgroupExtendedTypes = VK_FALSE,
         .separateDepthStencilLayouts = VK_TRUE,
         .hostQueryReset = VK_FALSE,
-        .timelineSemaphore = VK_FALSE,
-        .bufferDeviceAddress = VK_FALSE,
+        .timelineSemaphore = VK_TRUE,
+        .bufferDeviceAddress = VK_TRUE,
         .bufferDeviceAddressCaptureReplay = VK_FALSE,
         .bufferDeviceAddressMultiDevice = VK_FALSE,
-        .vulkanMemoryModel = VK_FALSE,
+        .vulkanMemoryModel = VK_TRUE,
         .vulkanMemoryModelDeviceScope = VK_FALSE,
         .vulkanMemoryModelAvailabilityVisibilityChains = VK_FALSE,
         .shaderOutputViewportIndex = VK_FALSE,
