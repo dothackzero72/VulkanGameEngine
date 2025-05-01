@@ -1,10 +1,6 @@
 #pragma once
-extern "C"
-{
-#include <CTexture.h>
-#include <CBuffer.h>
-}
 #include "Vertex.h"
+#include "Material.h"
 #include "Transform2DComponent.h"
 
 struct MeshProperitiesStruct
@@ -112,11 +108,6 @@ public:
 		MeshProperties.MaterialIndex = (MeshMaterial) ? MeshMaterial->GetMaterialBufferIndex() : 0;
 		MeshProperties.MeshTransform = MeshTransform;
 		PropertiesBuffer.UpdateBufferMemory(MeshProperties);
-	}
-
-	void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneDataBuffer)
-	{
-
 	}
 
 	void Destroy()

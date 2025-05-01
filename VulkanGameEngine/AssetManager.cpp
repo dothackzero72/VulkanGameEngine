@@ -31,7 +31,6 @@ void AssetManager::CreateGameObject(RenderPassID renderPassId, const String& nam
 	id.id = assetManager.GameObjectList.size() + 1;
 	assetManager.GameObjectList[id] = GameObject(id);
 
-	Vector<GameObjectComponent> gameObjectComponentList;
 	for (auto component : gameObjectComponentTypeList)
 	{
 		switch (component)

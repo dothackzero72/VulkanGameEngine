@@ -3,7 +3,6 @@
 #include "Vertex.h"
 #include "SceneDataBuffer.h"
 #include "OrthographicCamera2D.h"
-#include "FrameTimer.h"
 #include "JsonRenderPass.h"
 #include "GameObject.h"
 
@@ -12,7 +11,6 @@ class Scene
 private:
 	std::vector<Vertex2D> SpriteVertexList;
 
-	FrameTimer timer;
 	SceneDataBuffer				  sceneProperties;
 	SharedPtr<OrthographicCamera2D> orthographicCamera;
 	RenderPassID renderPass2DId;

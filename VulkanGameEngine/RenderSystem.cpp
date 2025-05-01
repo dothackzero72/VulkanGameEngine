@@ -1,4 +1,5 @@
 #include "renderSystem.h"
+
 RenderSystem renderSystem = RenderSystem();
 
 RenderSystem::RenderSystem()

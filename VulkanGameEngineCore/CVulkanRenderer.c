@@ -120,7 +120,6 @@ VkResult Renderer_GetWin32Extensions(uint32_t* extensionCount, char*** enabledEx
         }
         strncpy(extensionNames[x], extensions[x].extensionName, 256);
         extensionNames[x][256 - 1] = '\0';
-        printf("Extension: %s, Spec Version: %d\n", extensionNames[x], extensions[x].specVersion);
     }
 
     free(extensions);

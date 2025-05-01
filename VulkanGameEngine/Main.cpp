@@ -12,6 +12,7 @@ extern "C"
 #include "SystemClock.h"
 #include "FrameTime.h"
 #include <iostream>
+#include "FrameTimer.h"
 
 int main(int argc, char** argv)
 {

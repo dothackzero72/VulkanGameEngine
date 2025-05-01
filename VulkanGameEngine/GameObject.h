@@ -4,7 +4,6 @@ extern "C"
     #include <Keyboard.h>
 }
 #include <memory>
-#include "GameObjectComponent.h"
 #include "Material.h"
 #include "ECGid.h"
 

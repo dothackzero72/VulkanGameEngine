@@ -126,13 +126,11 @@ VkInstance Renderer_CreateVulkanInstance()
 {
     VkInstance instance = VK_NULL_HANDLE;
     VkDebugUtilsMessengerEXT* debugMessenger = VK_NULL_HANDLE;
-    VkDebugUtilsMessengerCreateInfoEXT debugInfo =
+    VkDebugUtilsMessengerCreateInfoEXT debugInfo = 
     {
         .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
-                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+                           VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
         .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
                        VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
                        VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
@@ -199,7 +197,7 @@ VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance)
     VkDebugUtilsMessengerCreateInfoEXT debugInfo =
     {
         .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
         .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
         .pfnUserCallback = Vulkan_DebugCallBack
     };
@@ -415,7 +413,7 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
         .samplerMirrorClampToEdge = VK_FALSE,
         .drawIndirectCount = VK_FALSE,
         .storageBuffer8BitAccess = VK_FALSE,
-        .uniformAndStorageBuffer8BitAccess = VK_FALSE,
+        .uniformAndStorageBuffer8BitAccess = VK_TRUE,
         .storagePushConstant8 = VK_FALSE,
         .shaderBufferInt64Atomics = VK_FALSE,
         .shaderSharedInt64Atomics = VK_FALSE,
@@ -454,7 +452,7 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
         .bufferDeviceAddressCaptureReplay = VK_FALSE,
         .bufferDeviceAddressMultiDevice = VK_FALSE,
         .vulkanMemoryModel = VK_TRUE,
-        .vulkanMemoryModelDeviceScope = VK_FALSE,
+        .vulkanMemoryModelDeviceScope = VK_TRUE,
         .vulkanMemoryModelAvailabilityVisibilityChains = VK_FALSE,
         .shaderOutputViewportIndex = VK_FALSE,
         .shaderOutputLayer = VK_FALSE,

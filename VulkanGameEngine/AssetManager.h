@@ -9,6 +9,7 @@
 #include "SpriteVRAM.h"
 #include "Sprite.h"
 #include "ECGid.h"
+#include "SceneDataBuffer.h"
 
 typedef uint32 UM_TextureID;
 typedef uint32 UM_MaterialID;

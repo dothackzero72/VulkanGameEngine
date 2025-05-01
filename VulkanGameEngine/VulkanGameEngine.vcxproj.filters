@@ -45,13 +45,7 @@
     <ClCompile Include="FrameTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameObjectComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="HLSLShaderCompiler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InputComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InterfaceRenderPass.cpp">
@@ -99,9 +93,6 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Transform3DComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\External\ImPlot\implot_items.cpp">
       <Filter>Source Files\External</Filter>
     </ClCompile>
@@ -146,28 +137,16 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DynamicVulkanBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="File.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FPSGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FrameTimer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameObjectComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HLSLShaderCompiler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InterfaceRenderPass.h">
@@ -233,9 +212,6 @@
     <ClInclude Include="Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Transform3DComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -276,6 +252,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Transform2DComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

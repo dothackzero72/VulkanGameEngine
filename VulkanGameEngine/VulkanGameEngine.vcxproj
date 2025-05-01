@@ -155,10 +155,8 @@
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
-    <ClCompile Include="GameObjectComponent.cpp" />
     <ClCompile Include="GameSystem.cpp" />
     <ClCompile Include="HLSLShaderCompiler.cpp" />
-    <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
     <ClCompile Include="JsonPipeline.cpp" />
     <ClCompile Include="JsonRenderPass.cpp" />
@@ -175,7 +173,6 @@
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="Transform3DComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\External\imgui\backends\imgui_impl_glfw.h" />
@@ -191,16 +188,13 @@
     <ClInclude Include="Animation2D.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="DynamicVulkanBuffer.h" />
     <ClInclude Include="ECGid.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="GameObjectComponent.h" />
     <ClInclude Include="GameSystem.h" />
     <ClInclude Include="HLSLShaderCompiler.h" />
-    <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="JsonPipeline.h" />
@@ -223,7 +217,6 @@
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform2DComponent.h" />
-    <ClInclude Include="Transform3DComponent.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

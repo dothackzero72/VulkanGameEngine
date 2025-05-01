@@ -1,13 +1,9 @@
 #pragma once
 #include "TypeDef.h"
-#include "Animation2D.h"
-#include "SceneDataBuffer.h"
-#include "Vertex.h"
-#include "GameObject.h"
-#include "Transform2DComponent.h"
 #include "VkGuid.h"
+#include "ECGid.h"
+#include "vertex.h"
 
-class AssetManager;
 class Sprite
 {
 private:

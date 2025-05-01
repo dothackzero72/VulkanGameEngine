@@ -1,5 +1,4 @@
 #pragma once
-#include "GameObjectComponent.h"
 #include "memory"
 
 struct Transform2DComponent

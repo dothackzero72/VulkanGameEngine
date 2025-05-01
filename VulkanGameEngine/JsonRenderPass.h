@@ -7,6 +7,7 @@
 #include "GameObject.h"
 #include "JsonStructs.h"
 #include "ECGid.h"
+#include "SceneDataBuffer.h"
 
 class JsonRenderPass
 {
