@@ -17,9 +17,6 @@ private:
 	SceneDataBuffer				  sceneProperties;
 	SharedPtr<OrthographicCamera2D> orthographicCamera;
 	SharedPtr<Level2DRenderer>    levelRenderer;
-	Vector<SharedPtr<GameObject>>   GameObjectList;
-	Vector<SharedPtr<Sprite>>		  SpriteList;
-	Vector<Texture>      TextureList;
 	uint renderPass2DId;
 	uint frameBufferId;
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;

@@ -176,7 +176,6 @@
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="Transform2DComponent.cpp" />
     <ClCompile Include="Transform3DComponent.cpp" />
   </ItemGroup>
   <ItemGroup>

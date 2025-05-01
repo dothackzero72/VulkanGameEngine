@@ -6,17 +6,18 @@ extern "C"
 #include <memory>
 #include "GameObjectComponent.h"
 #include "Material.h"
+#include "ECGid.h"
 
 struct GameObject
 {
-    uint32 GameObjectId = 0;
+    GameObjectID GameObjectId = 0;
 
     GameObject()
     {
 
     }
 
-    GameObject(uint32 gameObjectId)
+    GameObject(GameObjectID gameObjectId)
     {
         GameObjectId = gameObjectId;
     }

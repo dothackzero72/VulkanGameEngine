@@ -9,10 +9,10 @@ Sprite::Sprite()
 {
 }
 
-Sprite::Sprite(uint32 gameObjectId, VkGuid& spriteVramId)
+Sprite::Sprite(GameObjectID gameObjectId, VkGuid& spriteVramId)
 {
 	SpriteID = ++NextSpriteID;
-    GameObjectID = gameObjectId;
+    GameObjectId = gameObjectId;
     SpriteVramId = spriteVramId;
 	CurrentAnimationID = kWalking;
 }
@@ -23,7 +23,7 @@ Sprite::~Sprite()
 
 SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
-    const Transform2DComponent& transform2D = assetManager.TransformComponentList.at(GameObjectID);
+    const Transform2DComponent& transform2D = assetManager.TransformComponentList.at(GameObjectId);
     const SpriteVram& vram = renderSystem.VramSpriteList.at(SpriteVramId);
     const Animation2D& animation = assetManager.AnimationList.at(vram.AnimationListID);
     const Vector<ivec2>& frameList = assetManager.AnimationFrameList.at(animation.AnimationFrameId);

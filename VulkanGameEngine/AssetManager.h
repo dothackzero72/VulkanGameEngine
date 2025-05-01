@@ -8,8 +8,8 @@
 #include "Mesh.h"
 #include "SpriteVRAM.h"
 #include "Sprite.h"
+#include "ECGid.h"
 
-typedef uint32 UM_GameObjectID;
 typedef uint32 UM_TextureID;
 typedef uint32 UM_MaterialID;
 typedef uint32 UM_RenderPassID;
@@ -26,10 +26,10 @@ private:
 	uint32 NextId = 0;
 
 public:
-	UnorderedMap<UM_GameObjectID, GameObject> GameObjectList;
-	UnorderedMap<UM_GameObjectID, Transform2DComponent> TransformComponentList;
-	UnorderedMap<UM_GameObjectID, Sprite> SpriteList;
-	UnorderedMap<UM_GameObjectID, SpriteMesh> MeshList;
+	UnorderedMap<GameObjectID, GameObject> GameObjectList;
+	UnorderedMap<GameObjectID, Transform2DComponent> TransformComponentList;
+	UnorderedMap<GameObjectID, Sprite> SpriteList;
+	UnorderedMap<GameObjectID, SpriteMesh> MeshList;
 
 	UnorderedMap<UM_AnimationListID, Animation2D> AnimationList;
 	UnorderedMap<UM_AnimationFrameId, Vector<ivec2>> AnimationFrameList;
@@ -44,7 +44,7 @@ public:
 	void CreateGameObject(uint renderPassId, const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition);
 	void DestroyEntity(uint32_t id);
 
-	void DestroyGameObject(UM_GameObjectID id);
+	void DestroyGameObject(GameObjectID id);
 	void DestroyGameObjects();
 	void DestoryTextures();
 	void DestoryMaterials();

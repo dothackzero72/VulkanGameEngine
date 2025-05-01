@@ -54,7 +54,10 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, ive
     for (int x = 0; x < 20000; x++)
     {
         assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
-        renderSystem.SpriteBatchLayerObjectList[RenderPassId].emplace_back(assetManager.GameObjectList[x + 1].GameObjectId);
+
+        GameObjectID id;
+        id.id = x + 1;
+        renderSystem.SpriteBatchLayerObjectList[RenderPassId].emplace_back(id);
     }
 
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));

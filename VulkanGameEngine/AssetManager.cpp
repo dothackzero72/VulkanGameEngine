@@ -27,7 +27,8 @@ void AssetManager::Update(VkCommandBuffer& commandBuffer, const float& deltaTime
 
 void AssetManager::CreateGameObject(uint renderPassId, const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
 {
-	uint id = assetManager.GameObjectList.size() + 1;
+	GameObjectID id;
+	id.id = assetManager.GameObjectList.size() + 1;
 	assetManager.GameObjectList[id] = GameObject(id);
 
 	Vector<GameObjectComponent> gameObjectComponentList;
@@ -47,27 +48,27 @@ void AssetManager::DestroyEntity(uint32_t id)
 	FreeIds.push(id);
 }
 
-void AssetManager::DestroyGameObject(UM_GameObjectID id)
+void AssetManager::DestroyGameObject(GameObjectID id)
 {
-	MeshList[id].Destroy();
+	//MeshList[id].Destroy();
 
-	MeshList.erase(id);
-	SpriteList.erase(id);
-	TransformComponentList.erase(id);
-	GameObjectList.erase(id);
+	//MeshList.erase(id);
+	//SpriteList.erase(id);
+	//TransformComponentList.erase(id);
+	//GameObjectList.erase(id);
 }
 
 void AssetManager::DestroyGameObjects()
 {
-	for (auto& gameObject : GameObjectList)
-	{
-		const UM_GameObjectID id = gameObject.second.GameObjectId;
-		MeshList[id].Destroy();
-	}
-	MeshList.clear();
-	SpriteList.clear();
-	TransformComponentList.clear();
-	GameObjectList.clear();
+	//for (auto& gameObject : GameObjectList)
+	//{
+	//	const UM_GameObjectID id = gameObject.second.GameObjectId;
+	//	MeshList[id].Destroy();
+	//}
+	//MeshList.clear();
+	//SpriteList.clear();
+	//TransformComponentList.clear();
+	//GameObjectList.clear();
 }
 
 void AssetManager::DestoryTextures()

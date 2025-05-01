@@ -4,6 +4,7 @@
 #include "AssetManager.h"
 #include "DepthTexture.h"
 #include "RenderedTexture.h"
+#include "ECGid.h"
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;
@@ -60,7 +61,7 @@ public:
     UnorderedMap<UM_RenderPassID, Vector<VkClearValue>> ClearValueList;
 
     UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer> SpriteInstanceBufferList;
-    UnorderedMap<UM_SpriteBatchID, Vector<UM_GameObjectID>> SpriteBatchLayerObjectList;
+    UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>> SpriteBatchLayerObjectList;
     UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>> SpriteInstanceList;
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo;

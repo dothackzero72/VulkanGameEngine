@@ -20,7 +20,7 @@ private:
 
 public:
 
-	uint GameObjectID = 0;
+	GameObjectID GameObjectId = 0;
 	uint SpriteID = 0;
 	VkGuid SpriteVramId;
 	uint CurrentAnimationID = 0;
@@ -37,7 +37,7 @@ public:
 	bool SpriteAlive = true;
 
 	Sprite();
-	Sprite(uint32 id, VkGuid& spriteVramId);
+	Sprite(GameObjectID gameObjectId, VkGuid& spriteVramId);
 	~Sprite();
 
 	SpriteInstanceStruct Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
@@ -46,7 +46,7 @@ public:
 	{
 		if (this != &other)
 		{
-			 GameObjectID = other.GameObjectID;
+			 GameObjectId = other.GameObjectId;
 			 SpriteID = other.SpriteID;
 			 SpriteVramId = other.SpriteVramId;
 			 CurrentAnimationID = other.CurrentAnimationID;
