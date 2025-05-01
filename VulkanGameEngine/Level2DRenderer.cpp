@@ -97,13 +97,13 @@ void Level2DRenderer::Destroy()
   //  JsonRenderPass::Destroy();
 }
 
-Vector<SpriteMesh> Level2DRenderer::GetMeshFromGameObjects()
-{
-    Vector<SpriteMesh> meshList;
-    for (auto& spriteLayer : renderSystem.SpriteBatchLayerList[RenderPassId])
-    {
-        meshList.emplace_back(assetManager.MeshList[spriteLayer.SpriteLayerMeshId]);
-    }
-
-    return meshList;
-}
+//Vector<SpriteMesh> Level2DRenderer::GetMeshFromGameObjects()
+//{
+//    Vector<SpriteMesh> meshList;
+//    for (auto& spriteLayer : renderSystem.SpriteBatchLayerList[RenderPassId])
+//    {
+//        meshList.emplace_back(assetManager.MeshList[spriteLayer.SpriteLayerMeshId]);
+//    }
+//
+//    return meshList;
+//}

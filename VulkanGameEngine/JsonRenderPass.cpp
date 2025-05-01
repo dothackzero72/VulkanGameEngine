@@ -65,7 +65,7 @@ JsonRenderPass::JsonRenderPass(uint renderPassIndex, const String& jsonPath, ive
     Vector<SpriteMesh> meshList;
     for (auto& spriteLayer : renderSystem.SpriteBatchLayerList[RenderPassId])
     {
-        meshList.emplace_back(assetManager.MeshList[spriteLayer.SpriteLayerMeshId]);
+        meshList.emplace_back(renderSystem.SpriteMeshList[spriteLayer.SpriteLayerMeshId]);
     }
 
     uint id = renderSystem.RenderPipelineList.size();

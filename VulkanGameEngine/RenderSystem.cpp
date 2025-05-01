@@ -77,9 +77,9 @@ VkCommandBuffer RenderSystem::RenderSprites(uint renderPassId, const float delta
         vkCmdPushConstants(commandBuffer, pipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetVertexBuffer().get(), offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, renderSystem.SpriteMeshList[spriteLayer.SpriteLayerMeshId].GetVertexBuffer().get(), offsets);
         vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
-        vkCmdBindIndexBuffer(commandBuffer, *assetManager.MeshList[spriteLayer.SpriteLayerMeshId].GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(commandBuffer, *renderSystem.SpriteMeshList[spriteLayer.SpriteLayerMeshId].GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
     }
     vkCmdEndRenderPass(commandBuffer);
@@ -106,8 +106,8 @@ uint RenderSystem::AddRenderPass(const String& jsonPath, Texture& inputTexture, 
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetVertexPropertiesBuffer()
 {
     Vector<SpriteMesh> meshList;
-    meshList.reserve(assetManager.MeshList.size());
-    std::transform(assetManager.MeshList.begin(), assetManager.MeshList.end(),
+    meshList.reserve(renderSystem.SpriteMeshList.size());
+    std::transform(renderSystem.SpriteMeshList.begin(), renderSystem.SpriteMeshList.end(),
         std::back_inserter(meshList),
         [](const auto& pair) { return pair.second; });
 
@@ -136,8 +136,8 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetVertexPropertiesBuffer()
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetIndexPropertiesBuffer()
 {
     Vector<SpriteMesh> meshList;
-    meshList.reserve(assetManager.MeshList.size());
-    std::transform(assetManager.MeshList.begin(), assetManager.MeshList.end(),
+    meshList.reserve(renderSystem.SpriteMeshList.size());
+    std::transform(renderSystem.SpriteMeshList.begin(), renderSystem.SpriteMeshList.end(),
         std::back_inserter(meshList),
         [](const auto& pair) { return pair.second; });
 
@@ -164,8 +164,8 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetIndexPropertiesBuffer()
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetGameObjectTransformBuffer()
 {
     Vector<SpriteMesh> meshList;
-    meshList.reserve(assetManager.MeshList.size());
-    std::transform(assetManager.MeshList.begin(), assetManager.MeshList.end(),
+    meshList.reserve(renderSystem.SpriteMeshList.size());
+    std::transform(renderSystem.SpriteMeshList.begin(), renderSystem.SpriteMeshList.end(),
         std::back_inserter(meshList),
         [](const auto& pair) { return pair.second; });
 
@@ -193,8 +193,8 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetGameObjectTransformBuffer(
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer()
 {
     Vector<SpriteMesh> meshList;
-    meshList.reserve(assetManager.MeshList.size());
-    std::transform(assetManager.MeshList.begin(), assetManager.MeshList.end(),
+    meshList.reserve(renderSystem.SpriteMeshList.size());
+    std::transform(renderSystem.SpriteMeshList.begin(), renderSystem.SpriteMeshList.end(),
         std::back_inserter(meshList),
         [](const auto& pair) { return pair.second; });
 

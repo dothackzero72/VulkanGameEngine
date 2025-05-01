@@ -10,7 +10,7 @@ extern "C"
 
 struct GameObject
 {
-    GameObjectID GameObjectId = 0;
+    GameObjectID GameObjectId;
 
     GameObject()
     {

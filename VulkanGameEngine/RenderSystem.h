@@ -63,6 +63,7 @@ public:
     UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer> SpriteInstanceBufferList;
     UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>> SpriteBatchLayerObjectList;
     UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>> SpriteInstanceList;
+    UnorderedMap<UM_SpriteBatchID, SpriteMesh> SpriteMeshList;
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo;
 

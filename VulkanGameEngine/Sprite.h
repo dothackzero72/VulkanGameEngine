@@ -20,7 +20,7 @@ private:
 
 public:
 
-	GameObjectID GameObjectId = 0;
+	GameObjectID GameObjectId;
 	uint SpriteID = 0;
 	VkGuid SpriteVramId;
 	uint CurrentAnimationID = 0;

@@ -13,28 +13,21 @@ typedef uint32 UM_SpriteVRAMID;
 typedef uint32 UM_AnimationFrameId;
 typedef uint32 UM_AnimationListID;
 
-//struct SpriteID
-//{
-//    uint id = 0;
-//};
-
 struct RenderPassID
 {
     uint id = 0;
 
-    RenderPassID()
-    {
-        id = 0;
-    }
-
-    RenderPassID(uint id)
-    {
-        id = id;
-    }
+    RenderPassID() = default;
+    explicit RenderPassID(uint32_t id) : id(id) {}
 
     bool operator==(const RenderPassID& other) const
     {
         return id == other.id;
+    }
+
+    bool operator!=(const RenderPassID& other) const
+    {
+        return !(*this == other);
     }
 };
 
@@ -42,19 +35,17 @@ struct SpriteBatchID
 {
     uint id = 0;
 
-    SpriteBatchID()
-    {
-        id = 0;
-    }
-
-    SpriteBatchID(uint id)
-    {
-        id = id;
-    }
+    SpriteBatchID() = default;
+    explicit SpriteBatchID(uint32_t id) : id(id) {}
 
     bool operator==(const SpriteBatchID& other) const
     {
         return id == other.id;
+    }
+
+    bool operator!=(const SpriteBatchID& other) const
+    {
+        return !(*this == other);
     }
 };
 
@@ -62,40 +53,35 @@ struct GameObjectID
 {
     uint id = 0;
 
-    GameObjectID()
-    {
-        id = 0;
-    }
-
-    GameObjectID(uint id)
-    {
-        id = id;
-    }
+    GameObjectID() = default;
+    explicit GameObjectID(uint32_t id) : id(id) {}
 
     bool operator==(const GameObjectID& other) const
     {
         return id == other.id;
     }
 
-
+    bool operator!=(const GameObjectID& other) const
+    {
+        return !(*this == other);
+    }
 };
 
-struct SpriteMeshID {
-    int id = 0;
+struct SpriteMeshID 
+{
+    uint id = 0;
 
-    SpriteMeshID()
-    {
-        id = 0;
-    }
-
-    SpriteMeshID(uint id)
-    {
-        id = id;
-    }
+    SpriteMeshID() = default;
+    explicit SpriteMeshID(uint32_t id) : id(id) {}
 
     bool operator==(const SpriteMeshID& other) const
     {
         return id == other.id;
+    }
+
+    bool operator!=(const SpriteMeshID& other) const
+    {
+        return !(*this == other);
     }
 };
 

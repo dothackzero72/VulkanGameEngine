@@ -29,7 +29,7 @@ public:
 	UnorderedMap<GameObjectID, GameObject> GameObjectList;
 	UnorderedMap<GameObjectID, Transform2DComponent> TransformComponentList;
 	UnorderedMap<GameObjectID, Sprite> SpriteList;
-	UnorderedMap<GameObjectID, SpriteMesh> MeshList;
+	//UnorderedMap<GameObjectID, SpriteMesh> MeshList;
 
 	UnorderedMap<UM_AnimationListID, Animation2D> AnimationList;
 	UnorderedMap<UM_AnimationFrameId, Vector<ivec2>> AnimationFrameList;

@@ -14,9 +14,9 @@ SpriteBatchLayer::SpriteBatchLayer(uint32 renderPassId)
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 
 	SpriteLayerMeshId = SpriteMesh::GetNextIdNumber();
-	assetManager.MeshList[SpriteLayerMeshId] = SpriteMesh(renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, 0);
+	renderSystem.SpriteMeshList[SpriteLayerMeshId] = SpriteMesh(renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, 0);
 	renderSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(renderSystem.SpriteBatchLayerObjectList[RenderPassId].size());
-	renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = SpriteInstanceBuffer(renderSystem.SpriteInstanceList[SpriteBatchLayerID], assetManager.MeshList[SpriteLayerMeshId].GetMeshBufferUsageSettings(), assetManager.MeshList[SpriteLayerMeshId].GetMeshBufferPropertySettings(), false);
+	renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = SpriteInstanceBuffer(renderSystem.SpriteInstanceList[SpriteBatchLayerID], renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferUsageSettings(), renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferPropertySettings(), false);
 	SortSpritesByLayer();
 }
 
@@ -57,7 +57,7 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 
 void SpriteBatchLayer::Destroy()
 {
-	assetManager.MeshList[SpriteLayerMeshId].Destroy();
+	renderSystem.SpriteMeshList[SpriteLayerMeshId].Destroy();
 }
 
 void SpriteBatchLayer::SortSpritesByLayer()

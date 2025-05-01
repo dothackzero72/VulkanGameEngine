@@ -7,7 +7,6 @@
 class Level2DRenderer : public JsonRenderPass
 {
 private:
-	Vector<SpriteMesh> GetMeshFromGameObjects();
 
 public:
 	Level2DRenderer();
