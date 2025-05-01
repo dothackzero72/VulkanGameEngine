@@ -14,9 +14,17 @@ SpriteBatchLayer::SpriteBatchLayer(RenderPassID renderPassId)
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 
 	SpriteLayerMeshId = SpriteMesh::GetNextIdNumber();
+
+	for (int x = 0; x < 20000; x++)
+	{
+		renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
+	}
 	renderSystem.SpriteMeshList[SpriteLayerMeshId] = SpriteMesh(renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, 0);
 	renderSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
 	renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = SpriteInstanceBuffer(renderSystem.SpriteInstanceList[SpriteBatchLayerID], renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferUsageSettings(), renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferPropertySettings(), false);
+
+
+
 	SortSpritesByLayer();
 }
 
