@@ -57,8 +57,6 @@ public:
     UnorderedMap<UM_RenderPassID, Vector<SharedPtr<Texture>>> InputTextureList;
     UnorderedMap<UM_RenderPassID, Vector<RenderedTexture>> RenderedTextureList;
     UnorderedMap<UM_RenderPassID, Vector<SpriteBatchLayer>> SpriteBatchLayerList;
-    UnorderedMap<UM_RenderPassID, Vector<VkVertexInputBindingDescription>> VertexInputBindingList;
-    UnorderedMap<UM_RenderPassID, Vector<VkVertexInputAttributeDescription>> VertexInputAttributeDescription;
     UnorderedMap<UM_RenderPassID, Vector<VkClearValue>> ClearValueList;
 
     UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer> SpriteInstanceBufferList;

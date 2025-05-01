@@ -155,7 +155,6 @@
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
-    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectComponent.cpp" />
     <ClCompile Include="GameSystem.cpp" />
     <ClCompile Include="HLSLShaderCompiler.cpp" />

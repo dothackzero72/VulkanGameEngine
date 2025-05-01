@@ -21,11 +21,6 @@ Sprite::~Sprite()
 {
 }
 
-void Sprite::Input(const float& deltaTime)
-{
-
-}
-
 SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
     const Transform2DComponent& transform2D = assetManager.TransformComponentList.at(GameObjectID);
@@ -76,10 +71,4 @@ SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float&
     }
 
     return spriteInstance;
-}
-
-void Sprite::Destroy()
-{
-	SpriteAlive = false;
-	//SpriteInstance.reset();
 }

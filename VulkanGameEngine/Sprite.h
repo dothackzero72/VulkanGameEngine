@@ -19,9 +19,9 @@ private:
 	};
 
 public:
+
 	uint GameObjectID = 0;
 	uint SpriteID = 0;
-	uint SpriteInstance = 0;
 	VkGuid SpriteVramId;
 	uint CurrentAnimationID = 0;
 	uint CurrentFrame = 0;
@@ -40,9 +40,7 @@ public:
 	Sprite(uint32 id, VkGuid& spriteVramId);
 	~Sprite();
 
-	void Input(const float& deltaTime);
 	SpriteInstanceStruct Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
-	void Destroy();
 
 	Sprite& operator=(const Sprite& other)
 	{
@@ -50,7 +48,6 @@ public:
 		{
 			 GameObjectID = other.GameObjectID;
 			 SpriteID = other.SpriteID;
-			 SpriteInstance = other.SpriteInstance;
 			 SpriteVramId = other.SpriteVramId;
 			 CurrentAnimationID = other.CurrentAnimationID;
 			 CurrentFrame = other.CurrentFrame;

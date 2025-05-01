@@ -24,8 +24,7 @@ class JsonPipeline
 private:
 
 public:
-    uint RenderPipelineId = 0;
-
+    //uint RenderPipelineId = 0;
     VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
     Vector<VkDescriptorSetLayout> DescriptorSetLayoutList;
     Vector<VkDescriptorSet> DescriptorSetList;

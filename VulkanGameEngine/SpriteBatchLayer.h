@@ -13,15 +13,12 @@ private:
 public:
 	uint RenderPassId = 0;
 	uint SpriteBatchLayerID = 0;
-	uint MaxSpritesPerSheet;
-	uint SpriteLayerIndex;
-	uint SpriteLayerMeshId;
+	uint SpriteLayerMeshId = 0;
 
 	SpriteBatchLayer();
 	SpriteBatchLayer(uint32 renderPassId);
 	~SpriteBatchLayer();
 
-	void LoadSprites();
 	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
 	void Destroy();
 

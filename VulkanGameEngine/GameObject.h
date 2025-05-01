@@ -10,16 +10,14 @@ extern "C"
 struct GameObject
 {
     uint32 GameObjectId = 0;
-    bool GameObjectAlive = true;
 
     GameObject()
     {
 
     }
 
-    GameObject(uint32 gameObjectId, bool gameObjectAlive = true)
+    GameObject(uint32 gameObjectId)
     {
         GameObjectId = gameObjectId;
-        gameObjectAlive = GameObjectAlive;
     }
 };
