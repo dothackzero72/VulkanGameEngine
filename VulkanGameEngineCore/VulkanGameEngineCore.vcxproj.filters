@@ -36,9 +36,6 @@
     <ClCompile Include="GLFWWindow.c">
       <Filter>Source Files\Window</Filter>
     </ClCompile>
-    <ClCompile Include="CBuffer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CShaderCompiler.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,9 +69,6 @@
     <ClCompile Include="CoreVulkanRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanPipeline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderCompiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -85,9 +79,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VulkanRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VulkanRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RenderedTexture.cpp">
@@ -115,9 +106,6 @@
     </ClInclude>
     <ClInclude Include="SDLWindow.h">
       <Filter>Header Files\Window</Filter>
-    </ClInclude>
-    <ClInclude Include="CBuffer.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CShaderCompiler.h">
       <Filter>Header Files</Filter>
@@ -164,9 +152,6 @@
     <ClInclude Include="TypeDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanPipeline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCompiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -183,9 +168,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RenderedTexture.h">

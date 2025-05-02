@@ -152,6 +152,7 @@
     <ClCompile Include="Animation2D.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CBuffer.c" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
@@ -173,6 +174,8 @@
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="VulkanPipeline.cpp" />
+    <ClCompile Include="VulkanRenderPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\External\imgui\backends\imgui_impl_glfw.h" />
@@ -188,6 +191,7 @@
     <ClInclude Include="Animation2D.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CBuffer.h" />
     <ClInclude Include="ECGid.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FPSGraph.h" />
@@ -218,6 +222,8 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform2DComponent.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VulkanPipeline.h" />
+    <ClInclude Include="VulkanRenderPass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

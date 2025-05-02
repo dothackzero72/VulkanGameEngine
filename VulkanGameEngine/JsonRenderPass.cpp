@@ -1,7 +1,7 @@
 #include "JsonRenderPass.h"
 #include <CVulkanRenderer.h>
 #include <stdexcept>
-#include <VulkanRenderPass.h>
+#include "VulkanRenderPass.h"
 #include "RenderSystem.h"
 #include "JsonPipeline.h"
 #include "GameSystem.h"
@@ -19,7 +19,7 @@ JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonP
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
-    CreateCommandBuffer();
+    BuildCommandBuffer();
 
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
 
@@ -48,7 +48,7 @@ JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonP
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
-    CreateCommandBuffer();
+    BuildCommandBuffer();
 
     uint id = renderSystem.RenderPipelineList.size();
     renderSystem.InputTextureList[id].emplace_back(std::make_shared<Texture>(inputTexture));
@@ -126,31 +126,7 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
     FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, imageViewList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, RenderPassResolution);
 }
 
-VkCommandBuffer JsonRenderPass::Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer)
-{
-//    RenderPassInfo.clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size());
-//    RenderPassInfo.pClearValues = renderSystem.ClearValueList[RenderPassId].data();
-//    RenderPassInfo.framebuffer = FrameBufferList[cRenderer.ImageIndex];
-//
-//    VkCommandBufferBeginInfo CommandBufferBeginInfo
-//    {
-//        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-//        .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
-//    };
-//
-//    VULKAN_RESULT(vkResetCommandBuffer(CommandBuffer, 0));
-//    VULKAN_RESULT(vkBeginCommandBuffer(CommandBuffer, &CommandBufferBeginInfo));
-//    vkCmdBeginRenderPass(CommandBuffer, &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-//    for (auto mesh : meshList)
-//    {
-//        mesh->Draw(CommandBuffer, renderSystem.RenderPipelineList[RenderPassId][0].Pipeline, renderSystem.RenderPipelineList[RenderPassId][0].PipelineLayout, renderSystem.RenderPipelineList[RenderPassId][0].DescriptorSetList);
-//    }
-//    vkCmdEndRenderPass(CommandBuffer);
-//    vkEndCommandBuffer(CommandBuffer);
-    return CommandBuffer;
-}
-
-void JsonRenderPass::CreateCommandBuffer()
+void JsonRenderPass::BuildCommandBuffer()
 {
     Renderer_CreateCommandBuffers(cRenderer.Device, cRenderer.CommandPool, &CommandBuffer, 1);
 }

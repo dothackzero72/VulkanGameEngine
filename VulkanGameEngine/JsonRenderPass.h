@@ -15,6 +15,7 @@ protected:
 	void BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, SceneDataBuffer& sceneDataBuffer);
 	void BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo);
 	void BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
+	void BuildCommandBuffer();
 
 public:
 	RenderPassID RenderPassId;
@@ -28,14 +29,11 @@ public:
 	VkRenderPassBeginInfo RenderPassInfo;
 	VkCommandBuffer CommandBuffer = VK_NULL_HANDLE;
 
-	void CreateCommandBuffer();
 	JsonRenderPass();
 	JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, ivec2& renderPassResolution);
 	JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution);
 	~JsonRenderPass();
 
 	void Update(const float& deltaTime);
-
-	VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer);
 	void Destroy();
 };

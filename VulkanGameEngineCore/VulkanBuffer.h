@@ -1,7 +1,7 @@
 #pragma once
 extern "C"
 {
-	#include <CBuffer.h>
+	#include "CBuffer.h"
 }
 
 #include <iostream>
