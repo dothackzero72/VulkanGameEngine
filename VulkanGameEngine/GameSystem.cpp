@@ -80,7 +80,7 @@ void GameSystem::LoadLevel()
         .AnimationFrameId = 1
     };
 
-    for (int x = 0; x < 20000; x++)
+    for (int x = 0; x < 10000; x++)
     {
         assetManager.CreateGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
     }

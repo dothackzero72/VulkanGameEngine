@@ -23,12 +23,12 @@ JsonPipeline::JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass 
         .materialProperties = renderSystem.GetMaterialPropertiesBuffer()
     };
 
-    DescriptorPool = Pipeline_CreateDescriptorPool(cRenderer.Device, model, include);
-    DescriptorSetLayoutList = Pipeline_CreateDescriptorSetLayout(cRenderer.Device, model, include);
-    DescriptorSetList = Pipeline_AllocateDescriptorSets(cRenderer.Device, DescriptorPool, model, DescriptorSetLayoutList);
-    Pipeline_UpdateDescriptorSets(cRenderer.Device, DescriptorSetList, model, include);
-    PipelineLayout = Pipeline_CreatePipelineLayout(cRenderer.Device, DescriptorSetLayoutList, constBufferSize);
-    Pipeline = Pipeline_CreatePipeline(cRenderer.Device, renderPass, PipelineLayout, PipelineCache, model, renderPassResolution);
+    DescriptorPool = Pipeline_CreateDescriptorPool(*renderSystem.Device.get(), model, include);
+    DescriptorSetLayoutList = Pipeline_CreateDescriptorSetLayout(*renderSystem.Device.get(), model, include);
+    DescriptorSetList = Pipeline_AllocateDescriptorSets(*renderSystem.Device.get(), DescriptorPool, model, DescriptorSetLayoutList);
+    Pipeline_UpdateDescriptorSets(*renderSystem.Device.get(), DescriptorSetList, model, include);
+    PipelineLayout = Pipeline_CreatePipelineLayout(*renderSystem.Device.get(), DescriptorSetLayoutList, constBufferSize);
+    Pipeline = Pipeline_CreatePipeline(*renderSystem.Device.get(), renderPass, PipelineLayout, PipelineCache, model, renderPassResolution);
 }
 
 JsonPipeline::~JsonPipeline()

@@ -22,6 +22,27 @@ class RenderSystem
     friend class JsonPipeline;
 private:
 
+    SharedPtr<uint32>                   ImageIndex;
+    SharedPtr<uint32>                   CommandIndex;
+    SharedPtr<uint32>			        SwapChainImageCount;
+    SharedPtr<uint32>		            GraphicsFamily;
+    SharedPtr<uint32>		            PresentFamily;
+
+    SharedPtr<VkInstance>               Instance;
+    SharedPtr<VkDevice>                 Device;
+    SharedPtr<VkPhysicalDevice>         PhysicalDevice;
+    SharedPtr<VkSurfaceKHR>             Surface;
+    SharedPtr<VkCommandPool>            CommandPool;
+    SharedPtr<VkDebugUtilsMessengerEXT> DebugMessenger;
+    SharedPtr<VkQueue>	                GraphicsQueue;
+    SharedPtr<VkQueue>	                PresentQueue;
+    Vector<SharedPtr<VkFence>>          InFlightFences;
+    Vector<SharedPtr<VkSemaphore>>      AcquireImageSemaphores;
+    Vector<SharedPtr<VkSemaphore>>      PresentImageSemaphores;
+
+    VkFormat                 Format;
+    VkColorSpaceKHR          ColorSpace;
+    VkPresentModeKHR         PresentMode;
 
     VkResult CreateCommandBuffer();
 
@@ -49,6 +70,12 @@ public:
 
     UM_PipelineID CurrentGraphicsPipelineID = 0;
     UM_RenderPassID CurrentRenderPassID = 0;
+
+    Vector<VkImage> SwapChainImages;
+    Vector<VkImageView> SwapChainImageViews;
+    VkExtent2D SwapChainResolution;
+    VkSwapchainKHR Swapchain;
+    VkPhysicalDeviceFeatures PhysicalDeviceFeatures;
 
     UnorderedMap<VkGuid, Texture> TextureList;
     UnorderedMap<VkGuid, Material> MaterialList;

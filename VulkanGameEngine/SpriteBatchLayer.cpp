@@ -15,7 +15,7 @@ SpriteBatchLayer::SpriteBatchLayer(RenderPassID renderPassId)
 
 	SpriteLayerMeshId = SpriteMesh::GetNextIdNumber();
 
-	for (int x = 0; x < 20000; x++)
+	for (int x = 0; x < assetManager.SpriteList.size(); x++)
 	{
 		renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
 	}
