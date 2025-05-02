@@ -22,8 +22,9 @@ public:
 	ivec2 RenderPassResolution;
 	VkSampleCountFlagBits SampleCount;
 	VkRect2D renderArea;
+
 	VkRenderPass RenderPass = VK_NULL_HANDLE;
-	std::vector<VkFramebuffer> FrameBufferList;
+	Vector<VkFramebuffer> FrameBufferList;
 	VkRenderPassBeginInfo RenderPassInfo;
 	VkCommandBuffer CommandBuffer = VK_NULL_HANDLE;
 
@@ -34,6 +35,7 @@ public:
 	~JsonRenderPass();
 
 	void Update(const float& deltaTime);
+
 	VkCommandBuffer Draw(Vector<SharedPtr<GameObject>> meshList, SceneDataBuffer& sceneDataBuffer);
 	void Destroy();
 };

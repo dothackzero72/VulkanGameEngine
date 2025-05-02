@@ -13,9 +13,7 @@ JsonRenderPass::JsonRenderPass()
 JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, ivec2& renderPassResolution)
 {
     RenderPassId = renderPassIndex;
-    RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
-    FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
 
     nlohmann::json json = Json::ReadJson(jsonPath);
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
@@ -26,7 +24,7 @@ JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonP
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
 
     uint id = renderSystem.RenderPipelineList.size();
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer), RenderPassResolution));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
 
     renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
     renderArea = renderPassBuildInfo.RenderArea.RenderArea;
@@ -44,9 +42,7 @@ JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonP
 JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution)
 {
     RenderPassId = renderPassIndex;
-    RenderPassResolution = renderPassResolution;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
-    FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
 
     nlohmann::json json = Json::ReadJson(jsonPath);
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
@@ -76,6 +72,8 @@ JsonRenderPass::~JsonRenderPass()
 
 void JsonRenderPass::Update(const float& deltaTime)
 {
+    Destroy();
+
 }
 
 void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, SceneDataBuffer& sceneDataBuffer)
@@ -124,6 +122,7 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
     }
 
     VkRenderPass& renderPass = RenderPass;
+    FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
     FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, imageViewList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, RenderPassResolution);
 }
 

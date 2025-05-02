@@ -57,7 +57,7 @@ public:
     UnorderedMap<RenderPassID, JsonRenderPass> RenderPassList;
     UnorderedMap<RenderPassID, DepthTexture> DepthTextureList;
     UnorderedMap<RenderPassID, VkRenderPassBeginInfo> RenderPassInfoList;
-    UnorderedMap<RenderPassID, ivec2> RenderPassResolutionList;
+    UnorderedMap<RenderPassID, VkRect2D> RenderPassResolutionList;
     UnorderedMap<RenderPassID, Vector<JsonPipeline>> RenderPipelineList;
     UnorderedMap<RenderPassID, Vector<RenderedTexture>> RenderedTextureList;
     UnorderedMap<RenderPassID, Vector<SpriteBatchLayer>> SpriteBatchLayerList;

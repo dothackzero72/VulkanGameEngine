@@ -12,8 +12,6 @@ RenderSystem::~RenderSystem()
 
 }
 
-
-
 void RenderSystem::StartUp()
 {
     renderer.RendererSetUp();
@@ -22,7 +20,14 @@ void RenderSystem::StartUp()
 
 void RenderSystem::Update(const float& deltaTime)
 {
-    // DestroyDeadGameObjects();
+    if (cRenderer.RebuildRendererFlag)
+    {
+        for (auto& renderPass : RenderPassList)
+        {
+            renderPass.second.Update(deltaTime);
+        }
+    }
+
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
 
     RenderPassID id = RenderPassID(1);
