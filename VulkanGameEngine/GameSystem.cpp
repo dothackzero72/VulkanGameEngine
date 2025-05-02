@@ -1,6 +1,6 @@
 #include "GameSystem.h"
 #include <imgui/backends/imgui_impl_glfw.h>
-#include "Scene.h"
+
 
 GameSystem gameSystem = GameSystem();
 
@@ -85,8 +85,14 @@ void GameSystem::LoadLevel()
         assetManager.CreateGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
     }
 
-    //renderPass2DId = renderSystem.AddRenderPass("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
-    //frameBufferId = renderSystem.AddRenderPass("../RenderPass/FrameBufferRenderPass.json", renderSystem.RenderedTextureList[renderPass2DId][0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
+    renderPass2DId = renderSystem.AddRenderPass("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
+    frameBufferId = renderSystem.AddRenderPass("../RenderPass/FrameBufferRenderPass.json", renderSystem.RenderedTextureList[renderPass2DId][0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
+}
+
+void GameSystem::StartUp()
+{
+    renderSystem.StartUp();
+    LoadLevel();
 }
 
 void GameSystem::Input(const float& deltaTime)
@@ -100,6 +106,7 @@ void GameSystem::Input(const float& deltaTime)
 void GameSystem::Update(const float& deltaTime)
 {
     //DestroyDeadGameObjects();
+    gameSystem.OrthographicCamera->Update(SceneProperties);
     renderSystem.Update(deltaTime);
 }
 
@@ -124,4 +131,10 @@ void GameSystem::Draw(const float& deltaTime)
     CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
     VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
     CommandBufferSubmitList.clear();
+}
+
+void GameSystem::Destroy()
+{
+    assetManager.Destroy();
+    renderSystem.Destroy();
 }

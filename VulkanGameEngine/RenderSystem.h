@@ -7,6 +7,7 @@
 #include "DepthTexture.h"
 #include "RenderedTexture.h"
 #include "ECGid.h"
+#include "InterfaceRenderPass.h"
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;
@@ -74,6 +75,7 @@ public:
     RenderSystem();
     ~RenderSystem();
 
+    void StartUp();
     void Update(const float& deltaTime);
     void UpdateBufferIndex();
 

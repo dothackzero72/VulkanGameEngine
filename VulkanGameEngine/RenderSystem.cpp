@@ -4,11 +4,20 @@ RenderSystem renderSystem = RenderSystem();
 
 RenderSystem::RenderSystem()
 {
+
 }
 
 RenderSystem::~RenderSystem()
 {
 
+}
+
+
+
+void RenderSystem::StartUp()
+{
+    renderer.RendererSetUp();
+    InterfaceRenderPass::StartUp();
 }
 
 void RenderSystem::Update(const float& deltaTime)
@@ -407,4 +416,6 @@ VkGuid RenderSystem::LoadMaterial(const String& materialPath)
 
 void RenderSystem::Destroy()
 {
+    InterfaceRenderPass::Destroy();
+    renderer.DestroyRenderer();
 }
