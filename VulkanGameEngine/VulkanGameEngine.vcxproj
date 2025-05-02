@@ -157,6 +157,7 @@
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="GameSystem.cpp" />
     <ClCompile Include="HLSLShaderCompiler.cpp" />
+    <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
     <ClCompile Include="JsonPipeline.cpp" />
     <ClCompile Include="JsonRenderPass.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSystem.h" />
     <ClInclude Include="HLSLShaderCompiler.h" />
+    <ClInclude Include="InputSystem.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="JsonPipeline.h" />

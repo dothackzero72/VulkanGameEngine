@@ -25,7 +25,7 @@ void AssetManager::Update(VkCommandBuffer& commandBuffer, const float& deltaTime
 
 }
 
-void AssetManager::CreateGameObject(RenderPassID renderPassId, const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
+void AssetManager::CreateGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition)
 {
 	GameObjectID id;
 	id.id = assetManager.GameObjectList.size() + 1;

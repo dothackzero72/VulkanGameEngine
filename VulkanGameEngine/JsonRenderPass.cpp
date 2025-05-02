@@ -4,6 +4,7 @@
 #include <VulkanRenderPass.h>
 #include "RenderSystem.h"
 #include "JsonPipeline.h"
+#include "GameSystem.h"
 
 JsonRenderPass::JsonRenderPass()
 {
@@ -22,47 +23,7 @@ JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonP
     BuildFrameBuffer(renderPassBuildInfo);
     CreateCommandBuffer();
 
-    auto textureId = renderSystem.LoadTexture("../Textures/TestTexture.json");
-    auto materialId = renderSystem.LoadMaterial("../Materials/Material1.json");
-    auto vramId = renderSystem.AddSpriteVRAM("../Sprites/TestSprite.json");
-
-    assetManager.AnimationFrameList[0] = Vector<ivec2>
-    {
-        ivec2(0, 0),
-        ivec2(1, 0)
-    };
-
-    assetManager.AnimationFrameList[1] = Vector<ivec2>
-    {
-        ivec2(3, 0),
-        ivec2(4, 0),
-        ivec2(5, 0),
-        ivec2(4, 0)
-    };
-
-    assetManager.AnimationList[0] = Animation2D
-    {
-        .FrameHoldTime = 0.2f,
-        .AnimationFrameId = 0
-    };
-    assetManager.AnimationList[1] = Animation2D
-    {
-        .FrameHoldTime = 0.2f,
-        .AnimationFrameId = 1
-    };
-
-    for (int x = 0; x < 20000; x++)
-    {
-        assetManager.CreateGameObject(RenderPassId, "Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
-    }
-
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
-
-    Vector<SpriteMesh> meshList;
-    for (auto& spriteLayer : renderSystem.SpriteBatchLayerList[RenderPassId])
-    {
-        meshList.emplace_back(renderSystem.SpriteMeshList[spriteLayer.SpriteLayerMeshId]);
-    }
 
     uint id = renderSystem.RenderPipelineList.size();
     renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer), RenderPassResolution));

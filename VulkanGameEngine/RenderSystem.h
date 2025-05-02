@@ -1,3 +1,5 @@
+#pragma once
+#include "VulkanRenderer.h"
 #include "SpriteBatchLayer.h"
 #include "TypeDef.h"
 #include "JsonRenderPass.h"

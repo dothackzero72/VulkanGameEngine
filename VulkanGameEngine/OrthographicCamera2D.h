@@ -1,3 +1,4 @@
+#pragma once
 #include "Camera.h"
 
 class OrthographicCamera2D : public Camera

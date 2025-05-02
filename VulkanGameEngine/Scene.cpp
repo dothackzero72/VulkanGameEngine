@@ -6,11 +6,12 @@
 #include <stb/stb_image_write.h>
 #include <stb/stb_image.h>
 #include "RenderSystem.h"
+#include "GameSystem.h"
 
 void Scene::StartUp()
 {
 	orthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
-	//MemoryManager::ViewMemoryMap();
+	gameSystem.LoadLevel();
 	BuildRenderPasses();
 }
 

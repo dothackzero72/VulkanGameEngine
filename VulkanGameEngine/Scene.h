@@ -1,10 +1,6 @@
 #pragma once
 #include "InterfaceRenderPass.h"
-#include "Vertex.h"
-#include "SceneDataBuffer.h"
-#include "OrthographicCamera2D.h"
-#include "JsonRenderPass.h"
-#include "GameObject.h"
+#include "GameSystem.h"
 
 class Scene
 {
