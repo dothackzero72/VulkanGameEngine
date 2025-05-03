@@ -3,7 +3,7 @@ extern "C"
 {
 #include <VulkanWindow.h>
 #include <CVulkanRenderer.h>
-#include "CBuffer.h"
+
 }
 #include "Typedef.h"
 #include "CoreVulkanRenderer.h"

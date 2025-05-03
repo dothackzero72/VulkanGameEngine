@@ -111,7 +111,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -153,6 +153,8 @@
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CBuffer.c" />
+    <ClCompile Include="CTexture.c" />
+    <ClCompile Include="DepthTexture.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
@@ -167,10 +169,12 @@
     <ClCompile Include="OrthographicCamera2D.cpp" />
     <ClCompile Include="OrthographicCamera3D.cpp" />
     <ClCompile Include="ProgramStats.cpp" />
+    <ClCompile Include="RenderedTexture.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteBatchLayer.cpp" />
     <ClCompile Include="SystemClock.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -192,6 +196,8 @@
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CBuffer.h" />
+    <ClInclude Include="CTexture.h" />
+    <ClInclude Include="DepthTexture.h" />
     <ClInclude Include="ECGid.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FPSGraph.h" />
@@ -210,6 +216,7 @@
     <ClInclude Include="OrthographicCamera2D.h" />
     <ClInclude Include="OrthographicCamera3D.h" />
     <ClInclude Include="ProgramStats.h" />
+    <ClInclude Include="RenderedTexture.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SceneDataBuffer.h" />
@@ -217,11 +224,13 @@
     <ClInclude Include="SpriteBatchLayer.h" />
     <ClInclude Include="SpriteVRAM.h" />
     <ClInclude Include="SystemClock.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform2DComponent.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VulkanBuffer.h" />
     <ClInclude Include="VulkanPipeline.h" />
     <ClInclude Include="VulkanRenderPass.h" />
   </ItemGroup>

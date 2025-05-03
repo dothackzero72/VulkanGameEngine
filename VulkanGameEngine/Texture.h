@@ -1,7 +1,7 @@
 #pragma once
 extern "C"
 {
-#include <CTexture.h>
+#include "CTexture.h"
 #include <pixel.h>
 }
 #include <cmath>

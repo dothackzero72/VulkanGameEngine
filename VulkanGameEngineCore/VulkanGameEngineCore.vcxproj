@@ -158,11 +158,7 @@
     <ClCompile Include="CShaderCompiler.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
     </ClCompile>
-    <ClCompile Include="CTexture.c">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-    </ClCompile>
     <ClCompile Include="CTimer.c" />
-    <ClCompile Include="DepthTexture.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FrameTime.c" />
     <ClCompile Include="GameController.c" />
@@ -172,10 +168,8 @@
     <ClCompile Include="Keyboard.c" />
     <ClCompile Include="Memory.c" />
     <ClCompile Include="Mouse.c" />
-    <ClCompile Include="RenderedTexture.cpp" />
     <ClCompile Include="SDLWindow.c" />
     <ClCompile Include="ShaderCompiler.cpp" />
-    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VulkanError.c" />
     <ClCompile Include="CVulkanRenderer.c" />
     <ClCompile Include="VulkanRenderer.cpp" />
@@ -184,10 +178,8 @@
   <ItemGroup>
     <ClInclude Include="CoreVulkanRenderer.h" />
     <ClInclude Include="CShaderCompiler.h" />
-    <ClInclude Include="CTexture.h" />
     <ClInclude Include="CTimer.h" />
     <ClInclude Include="CTypedef.h" />
-    <ClInclude Include="DepthTexture.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FrameTime.h" />
     <ClInclude Include="GameController.h" />
@@ -204,14 +196,11 @@
     </ClInclude>
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="pixel.h" />
-    <ClInclude Include="RenderedTexture.h" />
     <ClInclude Include="SDLWindow.h" />
     <ClInclude Include="ShaderCompiler.h" />
-    <ClInclude Include="Texture.h" />
     <ClInclude Include="TypeDef.h" />
     <ClInclude Include="uint128_t.h" />
     <ClInclude Include="VkGuid.h" />
-    <ClInclude Include="VulkanBuffer.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="CVulkanRenderer.h" />
     <ClInclude Include="VulkanRenderer.h" />

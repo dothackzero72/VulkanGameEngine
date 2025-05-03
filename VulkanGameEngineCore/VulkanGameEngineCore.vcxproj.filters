@@ -39,9 +39,6 @@
     <ClCompile Include="CShaderCompiler.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CTexture.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="io.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -75,16 +72,7 @@
     <ClCompile Include="File.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VulkanRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderedTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DepthTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -108,9 +96,6 @@
       <Filter>Header Files\Window</Filter>
     </ClInclude>
     <ClInclude Include="CShaderCompiler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="io.h">
@@ -161,19 +146,7 @@
     <ClInclude Include="File.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="VulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderedTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DepthTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JsonStructs.h">
