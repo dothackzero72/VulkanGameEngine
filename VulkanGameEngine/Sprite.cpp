@@ -13,7 +13,7 @@ Sprite::Sprite(GameObjectID gameObjectId, VkGuid& spriteVramId)
 	SpriteID = ++NextSpriteID;
     GameObjectId = gameObjectId;
     SpriteVramId = spriteVramId;
-	CurrentAnimationID = kWalking;
+	CurrentAnimationID = kStanding;
 }
 
 Sprite::~Sprite()
@@ -24,9 +24,10 @@ SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float&
 {
     const Transform2DComponent& transform2D = assetManager.TransformComponentList.at(GameObjectId);
     const SpriteVram& vram = renderSystem.VramSpriteList.at(SpriteVramId);
-    const Animation2D& animation = assetManager.AnimationList.at(vram.AnimationListID);
+    const Animation2D& animation = assetManager.AnimationList.at(CurrentAnimationID);
     const Vector<ivec2>& frameList = assetManager.AnimationFrameList.at(animation.AnimationFrameId);
     const Material& material = renderSystem.MaterialList.at(vram.SpriteMaterialID);
+    const ivec2& currentFrame = frameList[CurrentFrame];
 
     mat4 spriteMatrix = mat4(1.0f);
     if (LastSpritePosition != SpritePosition)
@@ -46,18 +47,6 @@ SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float&
         spriteMatrix = glm::scale(spriteMatrix, vec3(transform2D.GameObjectScale.x, transform2D.GameObjectScale.y, 1.0f));
         LastSpriteScale == SpriteScale;
     }
-    SpriteInstanceStruct spriteInstance;
-    spriteInstance.SpritePosition = transform2D.GameObjectPosition;
-    spriteInstance.SpriteSize = vram.SpriteSize;
-    spriteInstance.MaterialID = material.MaterialBufferIndex;
-    spriteInstance.InstanceTransform = spriteMatrix;
-
-    if (CurrentFrame < frameList.size()) 
-    {
-        const ivec2& currentFrame = frameList[CurrentFrame];
-        vec2 spriteUVSize = vram.SpriteUVSize;
-        spriteInstance.UVOffset = vec4(spriteUVSize.x * currentFrame.x, spriteUVSize.y * currentFrame.y, spriteUVSize.x, spriteUVSize.y);
-    }
 
     CurrentFrameTime += deltaTime;
     if (CurrentFrameTime >= animation.FrameHoldTime) {
@@ -69,5 +58,24 @@ SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float&
         }
     }
 
+    SpriteInstanceStruct spriteInstance;
+    spriteInstance.SpritePosition = transform2D.GameObjectPosition;
+    spriteInstance.SpriteSize = vram.SpriteSize;
+    spriteInstance.MaterialID = material.MaterialBufferIndex;
+    spriteInstance.InstanceTransform = spriteMatrix;
+    spriteInstance.UVOffset = vec4(vram.SpriteUVSize.x * currentFrame.x, vram.SpriteUVSize.y * currentFrame.y, vram.SpriteUVSize.x, vram.SpriteUVSize.y);
+
     return spriteInstance;
+}
+
+void Sprite::SetSpriteAnimation(SpriteAnimationEnum spriteAnimation)
+{
+    if (CurrentAnimationID == spriteAnimation)
+    {
+        return;
+    }
+
+    CurrentAnimationID = spriteAnimation;
+    CurrentFrame = 0;
+    CurrentFrameTime = 0.0f;
 }

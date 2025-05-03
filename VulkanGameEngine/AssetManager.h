@@ -10,6 +10,7 @@
 #include "Sprite.h"
 #include "ECGid.h"
 #include "SceneDataBuffer.h"
+#include "InputComponent.h"
 
 typedef uint32 UM_TextureID;
 typedef uint32 UM_MaterialID;
@@ -29,6 +30,7 @@ private:
 public:
 	UnorderedMap<GameObjectID, GameObject> GameObjectList;
 	UnorderedMap<GameObjectID, Transform2DComponent> TransformComponentList;
+	UnorderedMap<GameObjectID, InputComponent> InputComponentList;
 	UnorderedMap<GameObjectID, Sprite> SpriteList;
 	//UnorderedMap<GameObjectID, SpriteMesh> MeshList;
 

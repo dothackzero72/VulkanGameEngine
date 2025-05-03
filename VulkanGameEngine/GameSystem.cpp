@@ -82,7 +82,7 @@ void GameSystem::LoadLevel()
 
     for (int x = 0; x < 10000; x++)
     {
-        assetManager.CreateGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
+        assetManager.CreateGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kInputComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
     }
 
     renderPass2DId = renderSystem.AddRenderPass("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
@@ -97,9 +97,26 @@ void GameSystem::StartUp()
 
 void GameSystem::Input(const float& deltaTime)
 {
-    if (vulkanWindow->keyboard.KeyPressed[KEY_G] == KS_PRESSED)
+    for (auto& input : assetManager.InputComponentList)
     {
-        auto sf = 234;
+        Sprite& sprite = assetManager.SpriteList[input.first];
+        Transform2DComponent& transform = assetManager.TransformComponentList[input.first];
+        if (vulkanWindow->keyboard.KeyPressed[KEY_A] == KS_PRESSED ||
+            vulkanWindow->keyboard.KeyPressed[KEY_A] == KS_HELD)
+        {
+            transform.GameObjectPosition.x -= 200.0f * deltaTime;
+            sprite.SetSpriteAnimation(Sprite::SpriteAnimationEnum::kWalking);
+        }
+        else if (vulkanWindow->keyboard.KeyPressed[KEY_D] == KS_PRESSED ||
+            vulkanWindow->keyboard.KeyPressed[KEY_D] == KS_HELD)
+        {
+            transform.GameObjectPosition.x += 200.0f * deltaTime;
+            sprite.SetSpriteAnimation(Sprite::SpriteAnimationEnum::kWalking);
+        }
+        else
+        {
+            sprite.SetSpriteAnimation(Sprite::SpriteAnimationEnum::kStanding);
+        }
     }
 }
 

@@ -36,7 +36,7 @@ void AssetManager::CreateGameObject(const String& name, const Vector<ComponentTy
 		switch (component)
 		{
 		case kTransform2DComponent: assetManager.TransformComponentList[id] = Transform2DComponent(objectPosition); break;
-			// case kInputComponent: gameObject->AddComponent(std::make_shared<InputComponent>(InputComponent(gameObject->GetId(), name))); break;
+	    case kInputComponent: assetManager.InputComponentList[id] = InputComponent(); break;
 		case kSpriteComponent: assetManager.SpriteList[id] = Sprite(id, vramId); break;
 		}
 	}
