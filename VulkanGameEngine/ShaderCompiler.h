@@ -2,9 +2,9 @@
 extern "C"
 {
 	#include "CShaderCompiler.h"
-	#include <io.h>
 }
 #include "TypeDef.h"
+#include "File.h"
 
 class ShaderCompiler
 {

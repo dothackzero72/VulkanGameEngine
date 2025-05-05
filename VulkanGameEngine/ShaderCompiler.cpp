@@ -1,5 +1,4 @@
 #include "ShaderCompiler.h"
-#include "io.c"
 #include <iostream>
 #include <vector>
 

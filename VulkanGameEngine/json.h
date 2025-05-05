@@ -3,14 +3,16 @@
 #include <nlohmann/json.hpp>
 #include <glm/glm.hpp>
 #include "Typedef.h"
-#include "File.h"
 #include <iostream>
+#include "File.h"
+#include <objbase.h>
+
 class Json : public nlohmann::json
 {
 public:
 	static nlohmann::json ReadJson(const String filePath)
 	{
-		return File::ReadJsonFile(filePath);
+		return File::ReadJsonFile2(filePath);
 	}
 
 	static void to_json(nlohmann::json& json, String& string)
@@ -32,16 +34,6 @@ public:
 				json[0].get_to(vec2.x);
 				json[1].get_to(vec2.y);
 			}*/
-	}
-
-	static void to_json(nlohmann::json& json, bool& boolean)
-	{
-		json = boolean;
-	}
-
-	static void from_json(nlohmann::json& json, bool& boolean)
-	{
-		json.get_to(boolean);
 	}
 
 	static void to_json(nlohmann::json& json, int& number)
@@ -388,7 +380,7 @@ public:
 			json = { mat4[0][0], mat4[0][1], mat4[0][2], mat4[0][3],
 					 mat4[1][0], mat4[1][1], mat4[1][2], mat4[1][3],
 					 mat4[2][0], mat4[2][1], mat4[2][2], mat4[2][3],
-					 mat4[3][0], mat4[3][1], mat4[3][2], mat4[3][3] };
+					 mat4[3][0], mat4[3][1],mat4[3][2], mat4[3][3] };
 		}
 	}
 	static void from_json(nlohmann::json& json, std::vector<glm::mat4> mat4List)
@@ -484,6 +476,31 @@ public:
 		};
 	}
 
+	static VkClearValue LoadClearValue(nlohmann::json json)
+	{
+		VkClearValue clearValue = VkClearValue();
+
+		clearValue.color.float32[0] = json["Color"]["Float32_0"];
+		clearValue.color.float32[1] = json["Color"]["Float32_1"];
+		clearValue.color.float32[2] = json["Color"]["Float32_2"];
+		clearValue.color.float32[3] = json["Color"]["Float32_3"];
+
+		clearValue.color.int32[0] = json["Color"]["Int32_0"];
+		clearValue.color.int32[1] = json["Color"]["Int32_1"];
+		clearValue.color.int32[2] = json["Color"]["Int32_2"];
+		clearValue.color.int32[3] = json["Color"]["Int32_3"];
+
+		clearValue.color.uint32[0] = json["Color"]["Uint32_0"];
+		clearValue.color.uint32[1] = json["Color"]["Uint32_1"];
+		clearValue.color.uint32[2] = json["Color"]["Uint32_2"];
+		clearValue.color.uint32[3] = json["Color"]["Uint32_3"];
+
+		clearValue.depthStencil.depth = json["DepthStencil"]["depth"];
+		clearValue.depthStencil.stencil = json["DepthStencil"]["stencil"];
+
+		return clearValue;
+	}
+
 	static VkSubpassDependency LoadSubpassDependency(nlohmann::json json)
 	{
 		return VkSubpassDependency
@@ -538,18 +555,39 @@ public:
 		};
 	}
 
+	static VkVertexInputBindingDescription LoadVertexInputBindingDescription(nlohmann::json json)
+	{
+		return VkVertexInputBindingDescription
+		{
+			.binding = json["binding"],
+			.stride = json["stride"],
+			.inputRate = json["inputRate"]
+		};
+	}
+
+	static VkVertexInputAttributeDescription LoadVertexInputAttributeDescription(nlohmann::json json)
+	{
+		return VkVertexInputAttributeDescription
+		{
+			.location = json["location"],
+			.binding = json["binding"],
+			.format = json["format"],
+			.offset = json["offset"]
+		};
+	}
+
 	static VkPipelineColorBlendAttachmentState LoadPipelineColorBlendAttachmentState(nlohmann::json json)
 	{
 		return VkPipelineColorBlendAttachmentState
 		{
-			.blendEnable = json["blendEnable"]["Value"],
+			.blendEnable = json["blendEnable"],
 			.srcColorBlendFactor = json["srcColorBlendFactor"],
 			.dstColorBlendFactor = json["dstColorBlendFactor"],
-		    .colorBlendOp = json["colorBlendOp"],
-		    .srcAlphaBlendFactor = json["srcAlphaBlendFactor"],
-		    .dstAlphaBlendFactor = json["dstAlphaBlendFactor"],
-		    .alphaBlendOp = json["alphaBlendOp"],
-		    .colorWriteMask = json["colorWriteMask"]
+			.colorBlendOp = json["colorBlendOp"],
+			.srcAlphaBlendFactor = json["srcAlphaBlendFactor"],
+			.dstAlphaBlendFactor = json["dstAlphaBlendFactor"],
+			.alphaBlendOp = json["alphaBlendOp"],
+			.colorWriteMask = json["colorWriteMask"]
 		};
 	}
 
@@ -671,7 +709,7 @@ public:
 			.primitiveRestartEnable = json["primitiveRestartEnable"]
 		};
 	}
-	
+
 	static VkDescriptorSetLayoutBinding LoadLayoutBinding(nlohmann::json json)
 	{
 		return VkDescriptorSetLayoutBinding

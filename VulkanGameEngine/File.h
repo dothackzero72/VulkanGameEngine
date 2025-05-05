@@ -9,13 +9,13 @@ extern "C"
 class File
 {
 public:
-	static char*  ReadFile(const String filePath);
-	static nlohmann::json ReadJsonFile(const String filePath);
-	static bool   WriteFile(void* fileInfo, size_t size, const String filePath);
-	static String GetFileExtention(const String filePath);
-	static String GetFileNameFromPath(const String filePath);
-	static time_t LastModifiedTime(const String filePath);
-	static String RemoveFileExtention(const String filePath);
-	static bool FileExists(const String filePath);
+	static char*  ReadFile2(const String filePath);
+	static nlohmann::json ReadJsonFile2(const String filePath);
+	static bool   WriteFile2(void* fileInfo, size_t size, const String filePath);
+	static String GetFileExtention2(const String filePath);
+	static String GetFileNameFromPath2(const String filePath);
+	static time_t LastModifiedTime2(const String filePath);
+	static String RemoveFileExtention2(const String filePath);
+	static bool FileExists2(const String filePath);
 };
 
