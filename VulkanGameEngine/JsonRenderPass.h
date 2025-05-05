@@ -17,12 +17,13 @@ protected:
 	void BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
 	void BuildCommandBuffer();
 
+	void RebuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
 public:
 	RenderPassID RenderPassId;
 
-	ivec2 RenderPassResolution;
 	VkSampleCountFlagBits SampleCount;
 	VkRect2D renderArea;
+	bool UseFrameBufferResolution = true;
 
 	VkRenderPass RenderPass = VK_NULL_HANDLE;
 	Vector<VkFramebuffer> FrameBufferList;
@@ -34,6 +35,6 @@ public:
 	JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution);
 	~JsonRenderPass();
 
-	void Update(const float& deltaTime);
+	void RecreateSwapchain(int newWidth, int newHeight);
 	void Destroy();
 };

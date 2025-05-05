@@ -21,6 +21,7 @@ layout (location = 2) out vec2  PS_SpriteSize;
 layout (location = 3) out ivec2 PS_FlipSprite;
 layout (location = 4) out vec4  PS_Color;
 layout (location = 5) out uint  PS_MaterialID;
+layout (location = 6) out vec4  PS_UVOffset;
 
 layout(push_constant) uniform SceneDataBuffer
 {
@@ -84,6 +85,7 @@ void main()
 	PS_FlipSprite = VS_FlipSprite;
 	PS_Color = VS_Color;
 	PS_MaterialID = VS_MaterialID;
+	PS_UVOffset = VS_UVOffset;
 
     gl_Position = sceneData.Projection * 
                   sceneData.View *  

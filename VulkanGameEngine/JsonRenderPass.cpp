@@ -16,24 +16,27 @@ JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonP
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
     nlohmann::json json = Json::ReadJson(jsonPath);
-    RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
-    BuildRenderPass(renderPassBuildInfo);
-    BuildFrameBuffer(renderPassBuildInfo);
+    renderSystem.renderPassBuildInfoList[RenderPassId] = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
+    renderSystem.RenderPassResolutionList[RenderPassId] = renderPassResolution;
+    UseFrameBufferResolution = renderSystem.renderPassBuildInfoList[RenderPassId].IsRenderedToSwapchain;
+
+    BuildRenderPass(renderSystem.renderPassBuildInfoList[RenderPassId]);
+    BuildFrameBuffer(renderSystem.renderPassBuildInfoList[RenderPassId]);
     BuildCommandBuffer();
 
-    renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
 
     uint id = renderSystem.RenderPipelineList.size();
     renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
+    renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
 
-    renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
-    renderArea = renderPassBuildInfo.RenderArea.RenderArea;
+    renderSystem.ClearValueList[RenderPassId] = renderSystem.renderPassBuildInfoList[RenderPassId].ClearValueList;
+    renderArea = renderSystem.renderPassBuildInfoList[RenderPassId].RenderArea.RenderArea;
     renderSystem.RenderPassInfoList[RenderPassId] = VkRenderPassBeginInfo
     {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = RenderPass,
         .framebuffer = FrameBufferList[cRenderer.ImageIndex],
-        .renderArea = renderPassBuildInfo.RenderArea.RenderArea,
+        .renderArea = renderSystem.renderPassBuildInfoList[RenderPassId].RenderArea.RenderArea,
         .clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size()),
         .pClearValues = renderSystem.ClearValueList[RenderPassId].data()
     };
@@ -46,6 +49,10 @@ JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonP
 
     nlohmann::json json = Json::ReadJson(jsonPath);
     RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
+    renderSystem.renderPassBuildInfoList[RenderPassId] = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
+    renderSystem.RenderPassResolutionList[RenderPassId] = renderPassResolution;
+    UseFrameBufferResolution = renderSystem.renderPassBuildInfoList[RenderPassId].IsRenderedToSwapchain;
+
     BuildRenderPass(renderPassBuildInfo);
     BuildFrameBuffer(renderPassBuildInfo);
     BuildCommandBuffer();
@@ -70,17 +77,46 @@ JsonRenderPass::~JsonRenderPass()
 {
 }
 
-void JsonRenderPass::Update(const float& deltaTime)
+void JsonRenderPass::RecreateSwapchain(int newWidth, int newHeight)
 {
-    Destroy();
+    renderer.DestroyRenderPass(RenderPass);
+    renderer.DestroyCommandBuffers(CommandBuffer);
+    renderer.DestroyFrameBuffers(FrameBufferList);
+    FrameBufferList.clear();
 
+    Vector<VkImageView> imageViewList;
+    for (auto& renderedTexture : renderSystem.RenderedTextureList[RenderPassId])
+    {
+        imageViewList.emplace_back(renderedTexture.View);
+    }
+    VkImageView depthTexture = renderSystem.DepthTextureList[RenderPassId].View;
+
+    RenderPass = RenderPass_BuildRenderPass(cRenderer.Device, renderSystem.renderPassBuildInfoList[RenderPassId]);
+    FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, RenderPass, renderSystem.renderPassBuildInfoList[RenderPassId], imageViewList, &depthTexture, cRenderer.SwapChain.SwapChainImageViews, renderSystem.RenderPassResolutionList[RenderPassId]);
+    BuildCommandBuffer();
+
+    for (auto& pipeline : renderSystem.RenderPipelineList[RenderPassId])
+    {
+        pipeline.RecreateSwapchain(RenderPass, sizeof(SceneDataBuffer), newWidth, newHeight);
+    }
+
+    renderSystem.ClearValueList[RenderPassId] = renderSystem.renderPassBuildInfoList[RenderPassId].ClearValueList;
+    renderSystem.RenderPassInfoList[RenderPassId] = VkRenderPassBeginInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = RenderPass,
+        .framebuffer = FrameBufferList[cRenderer.ImageIndex],
+        .renderArea = renderSystem.renderPassBuildInfoList[RenderPassId].RenderArea.RenderArea,
+        .clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size()),
+        .pClearValues = renderSystem.ClearValueList[RenderPassId].data()
+    };
 }
 
 void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, SceneDataBuffer& sceneDataBuffer)
 {
     for (int x = 0; x < renderPassBuildInfo.RenderPipelineList.size(); x++)
     {
-        renderSystem.RenderPipelineList[RenderPassId] = Vector<JsonPipeline>{ JsonPipeline(1, renderPassBuildInfo.RenderPipelineList[x], RenderPass, sizeof(SceneDataBuffer), RenderPassResolution) };
+      //  renderSystem.RenderPipelineList[RenderPassId] = Vector<JsonPipeline>{ JsonPipeline(1, renderPassBuildInfo.RenderPipelineList[x], RenderPass, sizeof(SceneDataBuffer), RenderPassResolution) };
     }
 }
 
@@ -93,10 +129,10 @@ void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassB
         VkSamplerCreateInfo samplerCreateInfo = texture.SamplerCreateInfo;
         switch (texture.TextureType)
         {
-        case ColorRenderedTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-        case InputAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-        case ResolveAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-        case DepthRenderedTexture: renderSystem.DepthTextureList[RenderPassId] = DepthTexture(imageCreateInfo, samplerCreateInfo); break;
+            case ColorRenderedTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
+            case InputAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
+            case ResolveAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
+            case DepthRenderedTexture: renderSystem.DepthTextureList[RenderPassId] = DepthTexture(imageCreateInfo, samplerCreateInfo); break;
         default:
         {
             throw std::runtime_error("Case doesn't exist: RenderedTextureType");
@@ -123,7 +159,15 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
 
     VkRenderPass& renderPass = RenderPass;
     FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
-    FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, imageViewList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, RenderPassResolution);
+    FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, imageViewList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, renderSystem.RenderPassResolutionList[RenderPassId]);
+}
+
+void JsonRenderPass::RebuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
+{
+    VkRenderPass& renderPass = RenderPass;
+    Vector<RenderedTexture> renderedTextureList = renderSystem.RenderedTextureList[RenderPassId];
+    FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
+   // FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, renderedTextureList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, renderSystem.RenderPassResolutionList[RenderPassId]);
 }
 
 void JsonRenderPass::BuildCommandBuffer()

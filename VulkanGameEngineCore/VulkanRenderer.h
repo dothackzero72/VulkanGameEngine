@@ -11,10 +11,12 @@ extern "C"
 class VulkanRenderer
 {
 private:
-    VkResult SetUpSwapChain();
+
 
 public:
+
     VkResult RendererSetUp();
+    VkResult SetUpSwapChain();
     VkResult RebuildSwapChain();
 
     VkResult StartFrame();

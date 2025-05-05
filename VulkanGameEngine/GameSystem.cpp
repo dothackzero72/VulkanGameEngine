@@ -80,7 +80,7 @@ void GameSystem::LoadLevel()
         .AnimationFrameId = 1
     };
 
-    for (int x = 0; x < 10000; x++)
+    for (int x = 0; x < 5; x++)
     {
         assetManager.CreateGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kInputComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
     }
@@ -106,12 +106,14 @@ void GameSystem::Input(const float& deltaTime)
         {
             transform.GameObjectPosition.x -= 200.0f * deltaTime;
             sprite.SetSpriteAnimation(Sprite::SpriteAnimationEnum::kWalking);
+            sprite.FlipSprite.x = 0;
         }
         else if (vulkanWindow->keyboard.KeyPressed[KEY_D] == KS_PRESSED ||
-            vulkanWindow->keyboard.KeyPressed[KEY_D] == KS_HELD)
+                 vulkanWindow->keyboard.KeyPressed[KEY_D] == KS_HELD)
         {
             transform.GameObjectPosition.x += 200.0f * deltaTime;
             sprite.SetSpriteAnimation(Sprite::SpriteAnimationEnum::kWalking);
+            sprite.FlipSprite.x = 1;
         }
         else
         {
@@ -145,7 +147,7 @@ void GameSystem::Draw(const float& deltaTime)
     VULKAN_RESULT(renderer.StartFrame());
     CommandBufferSubmitList.emplace_back(renderSystem.RenderSprites(renderPass2DId, deltaTime, SceneProperties));
     CommandBufferSubmitList.emplace_back(renderSystem.RenderFrameBuffer(frameBufferId));
-    CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
+ //   CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
     VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
     CommandBufferSubmitList.clear();
 }

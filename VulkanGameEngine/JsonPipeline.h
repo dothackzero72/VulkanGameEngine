@@ -20,5 +20,6 @@ public:
     JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass renderPass, uint constBufferSize, ivec2& renderPassResolution);
     ~JsonPipeline();
 
+    void RecreateSwapchain(VkRenderPass renderPass, uint constBufferSize, int newWidth, int newHeight);
     void Destroy();
 };

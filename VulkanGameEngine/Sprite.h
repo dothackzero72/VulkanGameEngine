@@ -26,6 +26,7 @@ public:
 	GameObjectID GameObjectId;
 	uint SpriteID = 0;
 
+	ivec2 FlipSprite = vec2(0);
 	vec2 LastSpritePosition = vec2(0.0f);
 	vec2 LastSpriteRotation = vec2(0.0f);
 	vec2 LastSpriteScale = vec2(1.0f);

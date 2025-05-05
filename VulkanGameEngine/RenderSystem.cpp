@@ -17,20 +17,20 @@ void RenderSystem::StartUp()
     renderer.RendererSetUp();
     InterfaceRenderPass::StartUp();
 
-    ImageIndex = std::make_shared<uint>(cRenderer.ImageIndex);
-    CommandIndex = std::make_shared<uint>(cRenderer.CommandIndex);
-    SwapChainImageCount = std::make_shared<uint>(cRenderer.SwapChain.SwapChainImageCount);
-    GraphicsFamily = std::make_shared<uint>(cRenderer.SwapChain.GraphicsFamily);
-    PresentFamily = std::make_shared<uint>(cRenderer.SwapChain.PresentFamily);
+    //ImageIndex = std::make_shared<uint>(cRenderer.ImageIndex);
+    //CommandIndex = std::make_shared<uint>(cRenderer.CommandIndex);
+    //SwapChainImageCount = std::make_shared<uint>(cRenderer.SwapChain.SwapChainImageCount);
+    //GraphicsFamily = std::make_shared<uint>(cRenderer.SwapChain.GraphicsFamily);
+    //PresentFamily = std::make_shared<uint>(cRenderer.SwapChain.PresentFamily);
 
-    Instance = std::make_shared<VkInstance>(cRenderer.Instance);
+    //Instance = std::make_shared<VkInstance>(cRenderer.Instance);
     Device = std::make_shared<VkDevice>(cRenderer.Device);
-    PhysicalDevice = std::make_shared<VkPhysicalDevice>(cRenderer.PhysicalDevice);
-    Surface = std::make_shared<VkSurfaceKHR>(cRenderer.Surface);
-    CommandPool = std::make_shared<VkCommandPool>(cRenderer.CommandPool);
-    DebugMessenger = std::make_shared<VkDebugUtilsMessengerEXT>(cRenderer.DebugMessenger);
-    GraphicsQueue = std::make_shared<VkQueue>(cRenderer.SwapChain.GraphicsQueue);
-    PresentQueue = std::make_shared<VkQueue>(cRenderer.SwapChain.PresentQueue);
+    //PhysicalDevice = std::make_shared<VkPhysicalDevice>(cRenderer.PhysicalDevice);
+    //Surface = std::make_shared<VkSurfaceKHR>(cRenderer.Surface);
+    //CommandPool = std::make_shared<VkCommandPool>(cRenderer.CommandPool);
+    //DebugMessenger = std::make_shared<VkDebugUtilsMessengerEXT>(cRenderer.DebugMessenger);
+    //GraphicsQueue = std::make_shared<VkQueue>(cRenderer.SwapChain.GraphicsQueue);
+    //PresentQueue = std::make_shared<VkQueue>(cRenderer.SwapChain.PresentQueue);
     /*for (int x = 0; x < *SwapChainImageCount.get(); x++)
     {
         InFlightFences.emplace_back(std::make_shared<VkFence>(cRenderer.InFlightFences));
@@ -43,10 +43,10 @@ void RenderSystem::Update(const float& deltaTime)
 {
     if (cRenderer.RebuildRendererFlag)
     {
-        for (auto& renderPass : RenderPassList)
-        {
-            renderPass.second.Update(deltaTime);
-        }
+        int width = cRenderer.SwapChain.SwapChainResolution.width;
+        int height = cRenderer.SwapChain.SwapChainResolution.height;
+        RecreateSwapchain();
+        cRenderer.RebuildRendererFlag = false;
     }
 
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
@@ -57,6 +57,24 @@ void RenderSystem::Update(const float& deltaTime)
         spriteLayer.Update(commandBuffer, deltaTime);
     }
     renderer.EndSingleTimeCommands(commandBuffer);
+}
+
+void RenderSystem::RecreateSwapchain()
+{
+    int width = 0;
+    int height = 0;
+
+    vkDeviceWaitIdle(*Device.get());
+
+    vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
+    renderer.DestroySwapChainImageView();
+    renderer.DestroySwapChain();
+    renderer.SetUpSwapChain();
+
+    RenderPassID id;
+    id.id = 2;
+
+    RenderPassList[id].RecreateSwapchain(width, height);
 }
 
 VkCommandBuffer RenderSystem::RenderFrameBuffer(RenderPassID renderPassId)

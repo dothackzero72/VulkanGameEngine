@@ -10,6 +10,7 @@ layout (location = 2) in vec2  PS_SpriteSize;
 layout (location = 3) in flat ivec2 PS_FlipSprite;
 layout (location = 4) in vec4  PS_Color;
 layout (location = 5) in flat uint  PS_MaterialID;
+layout (location = 6) in flat vec4  PS_UVOffset;
 
 layout(location = 0) out vec4 OutputColor;
 
@@ -57,14 +58,14 @@ void main()
 	MaterialProperitiesBuffer material = materialBuffer[PS_MaterialID].materialProperties;
 
 	vec2 UV = PS_UV;
-//	if(PS_FlipSprite.x <= 1)
-//	{
-//		UV.x = 1.0f - PS_FlipSprite.x; 
-//	}
-//	if(PS_FlipSprite.y <= 1)
-//	{
-//		UV.y= 1.0f - PS_FlipSprite.y; 
-//	}
+    if (PS_FlipSprite.x == 1) 
+	{
+        UV.x = UV.x + (PS_UVOffset.z) - (UV.x - PS_UVOffset.x);
+    }
+    if (PS_FlipSprite.y == 1) 
+	{
+        UV.y = UV.y + (PS_UVOffset.w) - (UV.y - PS_UVOffset.y);
+    }
 
 	vec4 albedoColor = texture(TextureMap[material.AlbedoMap], UV);
 	material.Albedo = albedoColor.rgb;

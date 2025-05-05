@@ -11,7 +11,7 @@ JsonPipeline::JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass 
 {
     RenderPipelineId = renderPipelineId;
     nlohmann::json json = Json::ReadJson(jsonPath);
-    RenderPipelineModel model = RenderPipelineModel::from_json(json);
+    renderSystem.renderPipelineModelList[RenderPipelineId] = RenderPipelineModel::from_json(json);
 
     GPUIncludes include =
     {
@@ -19,20 +19,43 @@ JsonPipeline::JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass 
         .indexProperties = renderSystem.GetIndexPropertiesBuffer(),
         //        .transformProperties = renderSystem.GetTransformPropertiesBuffer(gpuImport.MeshList),
         .meshProperties = renderSystem.GetMeshPropertiesBuffer(),
-        .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderSystem.InputTextureList[renderPipelineId]),
+        .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderSystem.InputTextureList[RenderPipelineId]),
         .materialProperties = renderSystem.GetMaterialPropertiesBuffer()
     };
 
-    DescriptorPool = Pipeline_CreateDescriptorPool(*renderSystem.Device.get(), model, include);
-    DescriptorSetLayoutList = Pipeline_CreateDescriptorSetLayout(*renderSystem.Device.get(), model, include);
-    DescriptorSetList = Pipeline_AllocateDescriptorSets(*renderSystem.Device.get(), DescriptorPool, model, DescriptorSetLayoutList);
-    Pipeline_UpdateDescriptorSets(*renderSystem.Device.get(), DescriptorSetList, model, include);
+    DescriptorPool = Pipeline_CreateDescriptorPool(*renderSystem.Device.get(), renderSystem.renderPipelineModelList[RenderPipelineId], include);
+    DescriptorSetLayoutList = Pipeline_CreateDescriptorSetLayout(*renderSystem.Device.get(), renderSystem.renderPipelineModelList[RenderPipelineId], include);
+    DescriptorSetList = Pipeline_AllocateDescriptorSets(*renderSystem.Device.get(), DescriptorPool, renderSystem.renderPipelineModelList[RenderPipelineId], DescriptorSetLayoutList);
+    Pipeline_UpdateDescriptorSets(*renderSystem.Device.get(), DescriptorSetList, renderSystem.renderPipelineModelList[RenderPipelineId], include);
     PipelineLayout = Pipeline_CreatePipelineLayout(*renderSystem.Device.get(), DescriptorSetLayoutList, constBufferSize);
-    Pipeline = Pipeline_CreatePipeline(*renderSystem.Device.get(), renderPass, PipelineLayout, PipelineCache, model, renderPassResolution);
+    Pipeline = Pipeline_CreatePipeline(*renderSystem.Device.get(), renderPass, PipelineLayout, PipelineCache, renderSystem.renderPipelineModelList[RenderPipelineId], renderPassResolution);
 }
 
 JsonPipeline::~JsonPipeline()
 {
+}
+
+void JsonPipeline::RecreateSwapchain(VkRenderPass renderPass, uint constBufferSize, int newWidth, int newHeight)
+{
+    GPUIncludes include =
+    {
+        .vertexProperties = renderSystem.GetVertexPropertiesBuffer(),
+        .indexProperties = renderSystem.GetIndexPropertiesBuffer(),
+        //        .transformProperties = renderSystem.GetTransformPropertiesBuffer(gpuImport.MeshList),
+        .meshProperties = renderSystem.GetMeshPropertiesBuffer(),
+        .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderSystem.InputTextureList[RenderPipelineId]),
+        .materialProperties = renderSystem.GetMaterialPropertiesBuffer()
+    };
+
+    Destroy();
+
+    ivec2 renderPassResolution = ivec2(newWidth, newHeight);
+    DescriptorPool = Pipeline_CreateDescriptorPool(*renderSystem.Device.get(), renderSystem.renderPipelineModelList[RenderPipelineId], include);
+    DescriptorSetLayoutList = Pipeline_CreateDescriptorSetLayout(*renderSystem.Device.get(), renderSystem.renderPipelineModelList[RenderPipelineId], include);
+    DescriptorSetList = Pipeline_AllocateDescriptorSets(*renderSystem.Device.get(), DescriptorPool, renderSystem.renderPipelineModelList[RenderPipelineId], DescriptorSetLayoutList);
+    Pipeline_UpdateDescriptorSets(*renderSystem.Device.get(), DescriptorSetList, renderSystem.renderPipelineModelList[RenderPipelineId], include);
+    PipelineLayout = Pipeline_CreatePipelineLayout(*renderSystem.Device.get(), DescriptorSetLayoutList, constBufferSize);
+    Pipeline = Pipeline_CreatePipeline(*renderSystem.Device.get(), renderPass, PipelineLayout, PipelineCache, renderSystem.renderPipelineModelList[RenderPipelineId], renderPassResolution);
 }
 
 void JsonPipeline::Destroy()

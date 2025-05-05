@@ -22,29 +22,31 @@ class RenderSystem
     friend class JsonPipeline;
 private:
 
-    SharedPtr<uint32>                   ImageIndex;
-    SharedPtr<uint32>                   CommandIndex;
-    SharedPtr<uint32>			        SwapChainImageCount;
-    SharedPtr<uint32>		            GraphicsFamily;
-    SharedPtr<uint32>		            PresentFamily;
+    //SharedPtr<uint32>                   ImageIndex;
+    //SharedPtr<uint32>                   CommandIndex;
+    //SharedPtr<uint32>			        SwapChainImageCount;
+    //SharedPtr<uint32>		            GraphicsFamily;
+    //SharedPtr<uint32>		            PresentFamily;
 
-    SharedPtr<VkInstance>               Instance;
+    //SharedPtr<VkInstance>               Instance;
     SharedPtr<VkDevice>                 Device;
-    SharedPtr<VkPhysicalDevice>         PhysicalDevice;
-    SharedPtr<VkSurfaceKHR>             Surface;
-    SharedPtr<VkCommandPool>            CommandPool;
-    SharedPtr<VkDebugUtilsMessengerEXT> DebugMessenger;
-    SharedPtr<VkQueue>	                GraphicsQueue;
-    SharedPtr<VkQueue>	                PresentQueue;
-    Vector<SharedPtr<VkFence>>          InFlightFences;
-    Vector<SharedPtr<VkSemaphore>>      AcquireImageSemaphores;
-    Vector<SharedPtr<VkSemaphore>>      PresentImageSemaphores;
+    //SharedPtr<VkPhysicalDevice>         PhysicalDevice;
+    //SharedPtr<VkSurfaceKHR>             Surface;
+    //SharedPtr<VkCommandPool>            CommandPool;
+    //SharedPtr<VkDebugUtilsMessengerEXT> DebugMessenger;
+    //SharedPtr<VkQueue>	                GraphicsQueue;
+    //SharedPtr<VkQueue>	                PresentQueue;
+    //Vector<SharedPtr<VkFence>>          InFlightFences;
+    //Vector<SharedPtr<VkSemaphore>>      AcquireImageSemaphores;
+    //Vector<SharedPtr<VkSemaphore>>      PresentImageSemaphores;
 
-    VkFormat                 Format;
-    VkColorSpaceKHR          ColorSpace;
-    VkPresentModeKHR         PresentMode;
+    //VkFormat                 Format;
+    //VkColorSpaceKHR          ColorSpace;
+    //VkPresentModeKHR         PresentMode;
 
     VkResult CreateCommandBuffer();
+
+    void RecreateSwapchain();
 
     const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer();
     const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer();
@@ -84,12 +86,14 @@ public:
     UnorderedMap<RenderPassID, JsonRenderPass> RenderPassList;
     UnorderedMap<RenderPassID, DepthTexture> DepthTextureList;
     UnorderedMap<RenderPassID, VkRenderPassBeginInfo> RenderPassInfoList;
-    UnorderedMap<RenderPassID, VkRect2D> RenderPassResolutionList;
+    UnorderedMap<RenderPassID, ivec2> RenderPassResolutionList;
     UnorderedMap<RenderPassID, Vector<JsonPipeline>> RenderPipelineList;
     UnorderedMap<RenderPassID, Vector<RenderedTexture>> RenderedTextureList;
     UnorderedMap<RenderPassID, Vector<SpriteBatchLayer>> SpriteBatchLayerList;
     UnorderedMap<RenderPassID, Vector<VkClearValue>> ClearValueList;
+    UnorderedMap<RenderPassID, RenderPassBuildInfoModel> renderPassBuildInfoList;
 
+    UnorderedMap<UM_RenderPipelineID, RenderPipelineModel> renderPipelineModelList;
     UnorderedMap<UM_RenderPipelineID, Vector<SharedPtr<Texture>>> InputTextureList;
 
     UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer> SpriteInstanceBufferList;
