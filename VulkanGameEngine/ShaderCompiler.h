@@ -1,17 +1,10 @@
 #pragma once
 extern "C"
 {
-
-#include <CShaderCompiler.h>
-#include <io.h>
+	#include "CShaderCompiler.h"
+	#include <io.h>
 }
-#include <CoreVulkanRenderer.h>
-#include <string>
-#include <CShaderCompiler.h>
-#include <Windows.h>
-#include <dxcapi.h>
-#include <wrl/client.h>
-#include "Typedef.h"
+#include <TypeDef.h>
 
 class ShaderCompiler
 {

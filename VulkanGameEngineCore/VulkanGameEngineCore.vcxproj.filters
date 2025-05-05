@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CVulkanRenderer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VulkanError.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -35,9 +32,6 @@
     </ClCompile>
     <ClCompile Include="GLFWWindow.c">
       <Filter>Source Files\Window</Filter>
-    </ClCompile>
-    <ClCompile Include="CShaderCompiler.c">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="io.c">
       <Filter>Source Files</Filter>
@@ -51,29 +45,11 @@
     <ClCompile Include="GameController.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsDevice.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Memory.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CoreVulkanRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderCompiler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="File.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VulkanRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CVulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CTypedef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -88,9 +64,6 @@
     </ClInclude>
     <ClInclude Include="SDLWindow.h">
       <Filter>Header Files\Window</Filter>
-    </ClInclude>
-    <ClInclude Include="CShaderCompiler.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="io.h">
       <Filter>Header Files</Filter>
@@ -110,25 +83,10 @@
     <ClInclude Include="GameController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Memory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CoreVulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TypeDef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderCompiler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="json.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="File.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JsonStructs.h">

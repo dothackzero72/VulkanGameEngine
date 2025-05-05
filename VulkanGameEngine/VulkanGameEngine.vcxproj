@@ -152,7 +152,10 @@
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CBuffer.c" />
+    <ClCompile Include="CoreVulkanRenderer.cpp" />
+    <ClCompile Include="CShaderCompiler.c" />
     <ClCompile Include="CTexture.c" />
+    <ClCompile Include="CVulkanRenderer.c" />
     <ClCompile Include="DepthTexture.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
@@ -171,6 +174,7 @@
     <ClCompile Include="ProgramStats.cpp" />
     <ClCompile Include="RenderedTexture.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteBatchLayer.cpp" />
     <ClCompile Include="SystemClock.cpp" />
@@ -179,6 +183,7 @@
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VulkanPipeline.cpp" />
+    <ClCompile Include="VulkanRenderer.cpp" />
     <ClCompile Include="VulkanRenderPass.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -196,7 +201,10 @@
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CBuffer.h" />
+    <ClInclude Include="CoreVulkanRenderer.h" />
+    <ClInclude Include="CShaderCompiler.h" />
     <ClInclude Include="CTexture.h" />
+    <ClInclude Include="CVulkanRenderer.h" />
     <ClInclude Include="DepthTexture.h" />
     <ClInclude Include="ECGid.h" />
     <ClInclude Include="File.h" />
@@ -221,6 +229,7 @@
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SceneDataBuffer.h" />
+    <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteBatchLayer.h" />
     <ClInclude Include="SpriteVRAM.h" />
@@ -233,6 +242,7 @@
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VulkanBuffer.h" />
     <ClInclude Include="VulkanPipeline.h" />
+    <ClInclude Include="VulkanRenderer.h" />
     <ClInclude Include="VulkanRenderPass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

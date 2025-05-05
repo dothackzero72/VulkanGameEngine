@@ -154,28 +154,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CoreVulkanRenderer.cpp" />
-    <ClCompile Include="CShaderCompiler.c">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-    </ClCompile>
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GameController.c" />
     <ClCompile Include="GLFWWindow.c" />
-    <ClCompile Include="GraphicsDevice.c" />
     <ClCompile Include="io.c" />
     <ClCompile Include="Keyboard.c" />
-    <ClCompile Include="Memory.c" />
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="SDLWindow.c" />
-    <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="VulkanError.c" />
-    <ClCompile Include="CVulkanRenderer.c" />
-    <ClCompile Include="VulkanRenderer.cpp" />
     <ClCompile Include="VulkanWindow.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CoreVulkanRenderer.h" />
-    <ClInclude Include="CShaderCompiler.h" />
     <ClInclude Include="CTypedef.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GameController.h" />
@@ -185,18 +174,11 @@
     <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />
-    <ClInclude Include="Memory.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="pixel.h" />
     <ClInclude Include="SDLWindow.h" />
-    <ClInclude Include="ShaderCompiler.h" />
-    <ClInclude Include="TypeDef.h" />
     <ClInclude Include="VkGuid.h" />
     <ClInclude Include="VulkanError.h" />
-    <ClInclude Include="CVulkanRenderer.h" />
-    <ClInclude Include="VulkanRenderer.h" />
     <ClInclude Include="VulkanWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
