@@ -17,7 +17,7 @@ DepthTexture::DepthTexture(VkImageCreateInfo& createImageInfo, VkSamplerCreateIn
     CreateImage(createImageInfo);
     Texture_CreateTextureView(cRenderer.Device, &View, Image, TextureByteFormat, VK_IMAGE_ASPECT_DEPTH_BIT, MipMapLevels);
     CreateTextureSampler(samplerCreateInfo);
-    ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+   // ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
 

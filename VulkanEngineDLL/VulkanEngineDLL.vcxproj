@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)External\nlohmann\include;C:\Users\dotha\Documents\GitHub\VulkanGameEngine\External\glfw\include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\glfw\include\GLFW;$(SolutionDir)External\;$(SolutionDir)VulkanGameEngine;C:\VulkanSDK\1.4.304.0\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)External\nlohmann\include;C:\Users\dotha\Documents\GitHub\VulkanGameEngine\External\glfw\include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\glfw\include\GLFW;$(SolutionDir)External\;C:\VulkanSDK\1.4.304.0\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)x64\Debug;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\VulkanSDK\1.4.304.0\Lib;$(SolutionDir)External\sdl\lib;C:\Users\dotha\source\repos\WindowTest\External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -113,7 +113,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;VulkanGameEngine;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,13 +133,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CTypedef.h" />
+    <ClInclude Include="CVulkanRenderer.h" />
     <ClInclude Include="DLL.h" />
     <ClInclude Include="DLLStructs.h" />
-    <ClInclude Include="SwapChainDLL.h" />
-    <ClInclude Include="TextureDLL.h" />
-    <ClInclude Include="VulkanRendererDLL.h" />
-    <ClInclude Include="VulkanBufferDLL.h" />
-    <ClInclude Include="VulkanRenderPassDLL.h" />
+    <ClInclude Include="GLFWWindow.h" />
+    <ClInclude Include="Keyboard.h" />
+    <ClInclude Include="Macro.h" />
+    <ClInclude Include="Mouse.h" />
+    <ClInclude Include="SDLWindow.h" />
+    <ClInclude Include="VulkanError.h" />
+    <ClInclude Include="VulkanWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\External\imgui\backends\imgui_impl_glfw.cpp" />
@@ -152,11 +156,13 @@
     <ClCompile Include="..\External\ImPlot\implot.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
-    <ClCompile Include="SwapChainDLL.cpp" />
-    <ClCompile Include="TextureDLL.cpp" />
-    <ClCompile Include="VulkanRendererDLL.cpp" />
-    <ClCompile Include="VulkanBufferDLL.c" />
-    <ClCompile Include="VulkanRenderPassDLL.cpp" />
+    <ClCompile Include="CVulkanRenderer.c" />
+    <ClCompile Include="GLFWWindow.c" />
+    <ClCompile Include="Keyboard.c" />
+    <ClCompile Include="Mouse.c" />
+    <ClCompile Include="SDLWindow.cpp" />
+    <ClCompile Include="VulkanError.c" />
+    <ClCompile Include="VulkanWindow.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

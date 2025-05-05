@@ -1,12 +1,13 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include "Macro.h"
+#include "DLL.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-    const char* Renderer_GetError(VkResult result);
+    DLL_EXPORT const char* Renderer_GetError(VkResult result);
 
 #define VULKAN_RESULT(call) { \
     VkResult result = (call); \

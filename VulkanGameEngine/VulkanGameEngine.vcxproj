@@ -75,7 +75,7 @@
     <LibraryPath>C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;$(SolutionDir)x64\Debug;C:\VulkanSDK\1.4.304.0\Lib;$(SolutionDir)External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)External\nlohmann\include;$(SolutionDir)External\ImPlot;$(SolutionDir)External\Coral\Include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\glfw\include\GLFW;$(SolutionDir)External\;C:\VulkanSDK\1.4.304.0\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\VulkanEngineDLL;$(SolutionDir)External\nlohmann\include;$(SolutionDir)External\ImPlot;$(SolutionDir)External\Coral\Include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\glfw\include\GLFW;$(SolutionDir)External\;C:\VulkanSDK\1.4.304.0\Include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;$(SolutionDir)x64\Debug;C:\VulkanSDK\1.4.304.0\Lib;$(SolutionDir)External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -119,7 +119,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL3.lib;vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL3.lib;vulkan-1.lib;glfw3.lib;VulkanEngineDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -155,14 +155,12 @@
     <ClCompile Include="CoreVulkanRenderer.cpp" />
     <ClCompile Include="CShaderCompiler.c" />
     <ClCompile Include="CTexture.c" />
-    <ClCompile Include="CVulkanRenderer.c" />
     <ClCompile Include="DepthTexture.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="GameController.c" />
     <ClCompile Include="GameSystem.cpp" />
-    <ClCompile Include="GLFWWindow.c" />
     <ClCompile Include="HLSLShaderCompiler.cpp" />
     <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="InputSystem.cpp" />
@@ -170,16 +168,13 @@
     <ClCompile Include="io.c" />
     <ClCompile Include="JsonPipeline.cpp" />
     <ClCompile Include="JsonRenderPass.cpp" />
-    <ClCompile Include="Keyboard.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Mouse.c" />
     <ClCompile Include="OrthographicCamera2D.cpp" />
     <ClCompile Include="OrthographicCamera3D.cpp" />
     <ClCompile Include="ProgramStats.cpp" />
     <ClCompile Include="RenderedTexture.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
-    <ClCompile Include="SDLWindow.c" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteBatchLayer.cpp" />
@@ -188,11 +183,9 @@
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="VulkanError.c" />
     <ClCompile Include="VulkanPipeline.cpp" />
     <ClCompile Include="VulkanRenderer.cpp" />
     <ClCompile Include="VulkanRenderPass.cpp" />
-    <ClCompile Include="VulkanWindow.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\External\imgui\backends\imgui_impl_glfw.h" />
@@ -212,8 +205,6 @@
     <ClInclude Include="CoreVulkanRenderer.h" />
     <ClInclude Include="CShaderCompiler.h" />
     <ClInclude Include="CTexture.h" />
-    <ClInclude Include="CTypedef.h" />
-    <ClInclude Include="CVulkanRenderer.h" />
     <ClInclude Include="DepthTexture.h" />
     <ClInclude Include="ECGid.h" />
     <ClInclude Include="File.h" />
@@ -222,7 +213,6 @@
     <ClInclude Include="GameController.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSystem.h" />
-    <ClInclude Include="GLFWWindow.h" />
     <ClInclude Include="HLSLShaderCompiler.h" />
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InputSystem.h" />
@@ -232,12 +222,9 @@
     <ClInclude Include="JsonPipeline.h" />
     <ClInclude Include="JsonRenderPass.h" />
     <ClInclude Include="JsonStructs.h" />
-    <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="Macro.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Mouse.h" />
     <ClInclude Include="OrthographicCamera2D.h" />
     <ClInclude Include="OrthographicCamera3D.h" />
     <ClInclude Include="pixel.h" />
@@ -246,7 +233,6 @@
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SceneDataBuffer.h" />
-    <ClInclude Include="SDLWindow.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteBatchLayer.h" />
@@ -261,14 +247,9 @@
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VkGuid.h" />
     <ClInclude Include="VulkanBuffer.h" />
-    <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanPipeline.h" />
     <ClInclude Include="VulkanRenderer.h" />
     <ClInclude Include="VulkanRenderPass.h" />
-    <ClInclude Include="VulkanWindow.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="imgui.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

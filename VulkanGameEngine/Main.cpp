@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     SystemClock systemClock = SystemClock();
     FrameTimer deltaTime = FrameTimer();
     vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1920, 1080);
-    ImPlot::CreateContext();
+    //ImPlot::CreateContext();
 
     gameSystem.StartUp();
     while (!vulkanWindow->WindowShouldClose(vulkanWindow))
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     }
 
     vkDeviceWaitIdle(cRenderer.Device);
-    ImPlot::DestroyContext();
+    //ImPlot::DestroyContext();
     gameSystem.Destroy();
     vulkanWindow->DestroyWindow(vulkanWindow);
     return 0;

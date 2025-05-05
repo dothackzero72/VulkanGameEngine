@@ -147,7 +147,7 @@ VkResult Renderer_CreateSemaphores(VkDevice device, VkFence* inFlightFences, VkS
         .flags = VK_FENCE_CREATE_SIGNALED_BIT
     };
 
-    for (int x = 0; x < maxFramesInFlight; x++) 
+    for (int x = 0; x < maxFramesInFlight; x++)
     {
         VULKAN_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, NULL, &acquireImageSemaphores[x]));
         VULKAN_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, NULL, &presentImageSemaphores[x]));

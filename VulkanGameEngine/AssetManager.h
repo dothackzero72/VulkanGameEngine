@@ -11,6 +11,7 @@
 #include "ECGid.h"
 #include "SceneDataBuffer.h"
 #include "InputComponent.h"
+#include <DLL.h>
 
 typedef uint32 UM_TextureID;
 typedef uint32 UM_MaterialID;

@@ -2,7 +2,7 @@
 #include "Mouse.h"
 #include "Keyboard.h"
 
-static void error_callback(int error, const char* description) 
+static void error_callback(int error, const char* description)
 {
 	fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }

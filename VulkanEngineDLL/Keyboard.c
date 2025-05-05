@@ -43,9 +43,9 @@ void GameEngine_GLFW_KeyboardKeyPressed(GLFWwindow* window, int key, int scancod
     KeyboardKeyCode unifiedKey = ConvertGLFWKeyToUnified(key);
     switch (action)
     {
-        case GLFW_PRESS: vulkanWindow->keyboard.KeyPressed[unifiedKey] = KS_PRESSED; break;
-        case GLFW_REPEAT: vulkanWindow->keyboard.KeyPressed[unifiedKey] = KS_HELD; break;
-        case GLFW_RELEASE: vulkanWindow->keyboard.KeyPressed[unifiedKey] = KS_RELEASED; break;
+    case GLFW_PRESS: vulkanWindow->keyboard.KeyPressed[unifiedKey] = KS_PRESSED; break;
+    case GLFW_REPEAT: vulkanWindow->keyboard.KeyPressed[unifiedKey] = KS_HELD; break;
+    case GLFW_RELEASE: vulkanWindow->keyboard.KeyPressed[unifiedKey] = KS_RELEASED; break;
     }
 }
 
