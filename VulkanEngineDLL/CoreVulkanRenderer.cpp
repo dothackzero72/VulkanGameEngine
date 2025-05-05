@@ -126,7 +126,7 @@ VkInstance Renderer_CreateVulkanInstance()
 {
     VkInstance instance = VK_NULL_HANDLE;
     VkDebugUtilsMessengerEXT* debugMessenger = VK_NULL_HANDLE;
-    VkDebugUtilsMessengerCreateInfoEXT debugInfo = 
+    VkDebugUtilsMessengerCreateInfoEXT debugInfo =
     {
         .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
         .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
@@ -154,7 +154,7 @@ VkInstance Renderer_CreateVulkanInstance()
 
     uint32_t extensionCount = 0;
     char** enabledExtensions = nullptr;
-        Renderer_GetWin32Extensions(&extensionCount, &enabledExtensions);
+    Renderer_GetWin32Extensions(&extensionCount, &enabledExtensions);
 
     VkApplicationInfo applicationInfo = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -165,7 +165,7 @@ VkInstance Renderer_CreateVulkanInstance()
         .apiVersion = VK_API_VERSION_1_4
     };
 
-    VkInstanceCreateInfo vulkanCreateInfo = 
+    VkInstanceCreateInfo vulkanCreateInfo =
     {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pNext = nullptr,
@@ -181,7 +181,7 @@ VkInstance Renderer_CreateVulkanInstance()
     }
 
     VkResult result = vkCreateInstance(&vulkanCreateInfo, nullptr, &instance);
-    if (result != VK_SUCCESS) 
+    if (result != VK_SUCCESS)
     {
         fprintf(stderr, "Failed to create Vulkan instance\n");
         return VK_NULL_HANDLE;
@@ -471,7 +471,7 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
     VkPhysicalDeviceVulkan13Features physicalDeviceVulkan13Features =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
-        .pNext = &physicalDeviceRobustness2Features, 
+        .pNext = &physicalDeviceRobustness2Features,
         .robustImageAccess = VK_FALSE,
         .inlineUniformBlock = VK_FALSE,
         .descriptorBindingInlineUniformBlockUpdateAfterBind = VK_FALSE,
@@ -560,7 +560,7 @@ VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(Vector<VkSurfaceFormatKHR>& a
         }
     }
     fprintf(stderr, "Couldn't find a usable swap surface format.\n");
-    return VkSurfaceFormatKHR { VK_FORMAT_UNDEFINED, VK_COLOR_SPACE_MAX_ENUM_KHR };
+    return VkSurfaceFormatKHR{ VK_FORMAT_UNDEFINED, VK_COLOR_SPACE_MAX_ENUM_KHR };
 }
 
 VkPresentModeKHR SwapChain_FindSwapPresentMode(Vector<VkPresentModeKHR>& availablePresentModes)

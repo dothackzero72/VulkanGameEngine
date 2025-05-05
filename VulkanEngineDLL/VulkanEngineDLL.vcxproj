@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CoreVulkanRenderer.h" />
     <ClInclude Include="CTypedef.h" />
     <ClInclude Include="CVulkanRenderer.h" />
     <ClInclude Include="DLL.h" />
@@ -142,6 +143,7 @@
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="SDLWindow.h" />
+    <ClInclude Include="Typedef.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanWindow.h" />
   </ItemGroup>
@@ -156,6 +158,7 @@
     <ClCompile Include="..\External\ImPlot\implot.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
+    <ClCompile Include="CoreVulkanRenderer.cpp" />
     <ClCompile Include="CVulkanRenderer.c" />
     <ClCompile Include="GLFWWindow.c" />
     <ClCompile Include="Keyboard.c" />
