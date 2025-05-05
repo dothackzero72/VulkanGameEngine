@@ -48,12 +48,6 @@
     <ClCompile Include="Mouse.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CTimer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameTime.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameController.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -113,22 +107,10 @@
     <ClInclude Include="pixel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CTimer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameTime.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsDevice.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Memory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CoreVulkanRenderer.h">
@@ -150,9 +132,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JsonStructs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="uint128_t.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VkGuid.h">

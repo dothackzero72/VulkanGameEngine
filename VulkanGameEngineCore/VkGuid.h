@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <array>
 #include <iostream>
+#include "TypeDef.h"
 
 class VkGuid
 {

@@ -10,7 +10,6 @@ extern "C"
 #include <nlohmann/json.hpp>
 #include <ImPlot/implot.h>
 #include "SystemClock.h"
-#include "FrameTime.h"
 #include <iostream>
 #include "FrameTimer.h"
 #include "GameSystem.h"
