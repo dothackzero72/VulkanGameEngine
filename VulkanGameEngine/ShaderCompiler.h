@@ -4,7 +4,7 @@ extern "C"
 	#include "CShaderCompiler.h"
 	#include <io.h>
 }
-#include <TypeDef.h>
+#include "TypeDef.h"
 
 class ShaderCompiler
 {

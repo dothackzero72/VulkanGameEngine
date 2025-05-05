@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <queue>
-#include <TypeDef.h>
-#include <VkGuid.h>
+#include "TypeDef.h"
+#include "VkGuid.h"
 #include "GameObject.h"
 #include "Transform2DComponent.h"
 #include "Mesh.h"

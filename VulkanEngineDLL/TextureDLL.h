@@ -1,7 +1,7 @@
-#include <TypeDef.h>
+#include "TypeDef.h"
 #include "DLL.h"
-#include <CTexture.h>
-#include <Texture.h>
+#include "CTexture.h"
+#include "Texture.h"
 #include <imgui/imgui.h>
 
 extern "C"

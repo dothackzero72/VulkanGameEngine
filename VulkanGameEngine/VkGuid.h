@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
-#include <CTypedef.h>
+#include "CTypedef.h"
 #include <objbase.h>
 #include <stdexcept>
 #include <array>

@@ -1,4 +1,5 @@
 #include "File.h"
+#include "io.h"
 
 char* File::ReadFile(const String filePath)
 {

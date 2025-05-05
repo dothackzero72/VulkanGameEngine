@@ -1,7 +1,7 @@
 #pragma once
 extern "C"
 {
-#include <CTypedef.h>
+#include "CTypedef.h"
 }
 
 #include <ctype.h>

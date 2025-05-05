@@ -2,7 +2,7 @@
 extern "C"
 {
 #include "CTexture.h"
-#include <pixel.h>
+#include "pixel.h"
 }
 #include <cmath>
 #include <algorithm>

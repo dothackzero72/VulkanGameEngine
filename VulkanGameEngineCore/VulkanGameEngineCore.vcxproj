@@ -153,34 +153,6 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="File.cpp" />
-    <ClCompile Include="GameController.c" />
-    <ClCompile Include="GLFWWindow.c" />
-    <ClCompile Include="io.c" />
-    <ClCompile Include="Keyboard.c" />
-    <ClCompile Include="Mouse.c" />
-    <ClCompile Include="SDLWindow.c" />
-    <ClCompile Include="VulkanError.c" />
-    <ClCompile Include="VulkanWindow.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CTypedef.h" />
-    <ClInclude Include="File.h" />
-    <ClInclude Include="GameController.h" />
-    <ClInclude Include="GLFWWindow.h" />
-    <ClInclude Include="io.h" />
-    <ClInclude Include="json.h" />
-    <ClInclude Include="JsonStructs.h" />
-    <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="Macro.h" />
-    <ClInclude Include="Mouse.h" />
-    <ClInclude Include="pixel.h" />
-    <ClInclude Include="SDLWindow.h" />
-    <ClInclude Include="VkGuid.h" />
-    <ClInclude Include="VulkanError.h" />
-    <ClInclude Include="VulkanWindow.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
