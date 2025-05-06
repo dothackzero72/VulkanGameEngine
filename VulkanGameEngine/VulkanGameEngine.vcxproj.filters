@@ -22,18 +22,6 @@
     <Filter Include="Source Files\External">
       <UniqueIdentifier>{0e3d1b98-ee20-4d8d-b612-25128bc2fef7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Functions">
-      <UniqueIdentifier>{a2c78866-f2a4-4950-b08b-ddbf9d9599c9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Functions">
-      <UniqueIdentifier>{92375ef8-77e1-4a5b-96c0-57d2d733305b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\CFunctions">
-      <UniqueIdentifier>{57913146-a5ac-444c-ad05-7fe04de4350c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\C">
-      <UniqueIdentifier>{2a4140e7-b793-4286-979c-2560f4e0932c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -154,10 +142,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JsonPipeline.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JsonRenderPass.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -305,22 +293,22 @@
     <ClInclude Include="VulkanBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCompiler.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanRenderer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JsonStructs.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VkGuid.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="VulkanPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VulkanRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VkGuid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCompiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

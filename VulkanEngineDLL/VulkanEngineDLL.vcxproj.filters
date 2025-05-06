@@ -60,9 +60,6 @@
     <ClInclude Include="CBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CShaderCompiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -147,9 +144,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CBuffer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CTexture.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CShaderCompiler.c">
