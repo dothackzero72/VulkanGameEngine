@@ -1,6 +1,7 @@
 #include "ShaderCompiler.h"
 #include <iostream>
 #include <vector>
+#include <CShaderCompiler.c>
 
 //Microsoft::WRL::ComPtr<IDxcUtils> ShaderCompiler::dxc_utils;
 //Microsoft::WRL::ComPtr<IDxcCompiler3> ShaderCompiler::dxc_compiler;

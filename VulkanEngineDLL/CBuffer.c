@@ -1,7 +1,7 @@
 #include "CBuffer.h"
 #include "CVulkanRenderer.h"
 
- VkResult Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize)
+VkResult Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize)
 {
     if (dataToCopy == NULL || bufferSize == 0)
     {
@@ -22,25 +22,25 @@
     return VK_SUCCESS;
     {
     }
- }
+}
 
- void Buffer_CopyBufferMemory(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize bufferSize)
- {
-     VkBufferCopy copyRegion =
-     {
-         .srcOffset = 0,
-         .dstOffset = 0,
-         .size = bufferSize
-     };
+void Buffer_CopyBufferMemory(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize bufferSize)
+{
+    VkBufferCopy copyRegion =
+    {
+        .srcOffset = 0,
+        .dstOffset = 0,
+        .size = bufferSize
+    };
 
-     VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
-     vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-     Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);
- }
+    VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
+    vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+    Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);
+}
 
 VkResult Buffer_AllocateMemory(VkDevice device, VkPhysicalDevice physicalDevice, VkBuffer* bufferData, VkDeviceMemory* bufferMemory, VkMemoryPropertyFlags properties)
 {
-    if (bufferData == NULL || 
+    if (bufferData == NULL ||
         bufferMemory == NULL)
     {
         RENDERER_ERROR("Buffer data or buffer memory is NULL");
@@ -251,21 +251,21 @@ VkResult Buffer_DestroyBuffer(VkDevice device, VkBuffer* buffer, VkBuffer* stagi
         *buffer = VK_NULL_HANDLE;
     }
 
-    if (stagingBuffer && 
+    if (stagingBuffer &&
         *stagingBuffer != VK_NULL_HANDLE)
     {
         vkDestroyBuffer(device, *stagingBuffer, NULL);
         *stagingBuffer = VK_NULL_HANDLE;
     }
 
-    if (bufferMemory && 
+    if (bufferMemory &&
         *bufferMemory != VK_NULL_HANDLE)
     {
         Renderer_FreeDeviceMemory(device, bufferMemory);
         *bufferMemory = VK_NULL_HANDLE;
     }
 
-    if (stagingBufferMemory && 
+    if (stagingBufferMemory &&
         *stagingBufferMemory != VK_NULL_HANDLE)
     {
         Renderer_FreeDeviceMemory(device, stagingBufferMemory);

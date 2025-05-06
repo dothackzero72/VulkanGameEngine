@@ -2,6 +2,7 @@
 #include "VulkanRenderer.h"
 #include "SpriteBatchLayer.h"
 #include "TypeDef.h"
+#include "JsonPipeline.h"
 #include "JsonRenderPass.h"
 #include "AssetManager.h"
 #include "DepthTexture.h"

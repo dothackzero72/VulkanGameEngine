@@ -1,7 +1,7 @@
 #pragma once
 extern "C"
 {
-	#include "CShaderCompiler.h"
+	#include <CShaderCompiler.h>
 }
 #include "TypeDef.h"
 #include "File.h"

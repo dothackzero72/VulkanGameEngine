@@ -133,18 +133,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CBuffer.h" />
+    <ClInclude Include="CFile.h" />
     <ClInclude Include="CoreVulkanRenderer.h" />
+    <ClInclude Include="CShaderCompiler.h" />
+    <ClInclude Include="CTexture.h" />
     <ClInclude Include="CTypedef.h" />
     <ClInclude Include="CVulkanRenderer.h" />
     <ClInclude Include="DLL.h" />
     <ClInclude Include="DLLStructs.h" />
+    <ClInclude Include="GameController.h" />
     <ClInclude Include="GLFWWindow.h" />
+    <ClInclude Include="JsonFunc.h" />
+    <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="Pixel.h" />
     <ClInclude Include="SDLWindow.h" />
+    <ClInclude Include="TextureFunc.h" />
     <ClInclude Include="Typedef.h" />
     <ClInclude Include="VulkanError.h" />
+    <ClInclude Include="VulkanPipeline.h" />
+    <ClInclude Include="VulkanRenderPass.h" />
     <ClInclude Include="VulkanWindow.h" />
   </ItemGroup>
   <ItemGroup>
@@ -158,13 +169,22 @@
     <ClCompile Include="..\External\ImPlot\implot.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
+    <ClCompile Include="CBuffer.c" />
+    <ClCompile Include="CFile.c" />
     <ClCompile Include="CoreVulkanRenderer.cpp" />
+    <ClCompile Include="CShaderCompiler.c" />
+    <ClCompile Include="CTexture.c" />
     <ClCompile Include="CVulkanRenderer.c" />
+    <ClCompile Include="GameController.cpp" />
     <ClCompile Include="GLFWWindow.c" />
+    <ClCompile Include="JsonFunc.cpp" />
     <ClCompile Include="Keyboard.c" />
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="SDLWindow.cpp" />
+    <ClCompile Include="TextureFunc.cpp" />
     <ClCompile Include="VulkanError.c" />
+    <ClCompile Include="VulkanPipeline.cpp" />
+    <ClCompile Include="VulkanRenderPass.cpp" />
     <ClCompile Include="VulkanWindow.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

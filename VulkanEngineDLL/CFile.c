@@ -1,4 +1,4 @@
-#include "io.h"
+#include "CFile.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -39,13 +39,13 @@ char* File_RemoveFileExtention(const char* fileName)
 char* File_GetFileExtention(const char* fileName)
 {
     const char* dot = strrchr(fileName, '.');
-    if (!dot || dot == fileName) 
+    if (!dot || dot == fileName)
     {
         return NULL;
     }
 
     char* extension = (char*)malloc(strlen(dot));
-    if (extension == NULL) 
+    if (extension == NULL)
     {
         return NULL;
     }
@@ -107,18 +107,18 @@ FileState File_Read(const char* path)
     size_t n;
 
     while (true) {
-        if (used + IO_READ_CHUNK_SIZE + 1 > size) 
+        if (used + IO_READ_CHUNK_SIZE + 1 > size)
         {
             size = used + IO_READ_CHUNK_SIZE + 1;
 
-            if (size <= used) 
+            if (size <= used)
             {
                 free(data);
                 ERROR_RETURN(fileState, "Input file too large: %s\n", path);
             }
 
             tmp = (char*)realloc(data, size);
-            if (!tmp) 
+            if (!tmp)
             {
                 free(data);
                 ERROR_RETURN(fileState, IO_READ_ERROR_MEMORY, path);

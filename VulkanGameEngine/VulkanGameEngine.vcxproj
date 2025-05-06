@@ -151,20 +151,15 @@
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CBuffer.c" />
-    <ClCompile Include="CShaderCompiler.c" />
-    <ClCompile Include="CTexture.c" />
     <ClCompile Include="DepthTexture.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
-    <ClCompile Include="GameController.c" />
     <ClCompile Include="GameSystem.cpp" />
     <ClCompile Include="HLSLShaderCompiler.cpp" />
     <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
-    <ClCompile Include="io.c" />
     <ClCompile Include="JsonPipeline.cpp" />
     <ClCompile Include="JsonRenderPass.cpp" />
     <ClCompile Include="main.cpp" />
@@ -200,22 +195,17 @@
     <ClInclude Include="Animation2D.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="CBuffer.h" />
-    <ClInclude Include="CShaderCompiler.h" />
-    <ClInclude Include="CTexture.h" />
     <ClInclude Include="DepthTexture.h" />
     <ClInclude Include="ECGid.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="FrameTimer.h" />
-    <ClInclude Include="GameController.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSystem.h" />
     <ClInclude Include="HLSLShaderCompiler.h" />
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
-    <ClInclude Include="io.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="JsonPipeline.h" />
     <ClInclude Include="JsonRenderPass.h" />
@@ -225,7 +215,6 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="OrthographicCamera2D.h" />
     <ClInclude Include="OrthographicCamera3D.h" />
-    <ClInclude Include="pixel.h" />
     <ClInclude Include="ProgramStats.h" />
     <ClInclude Include="RenderedTexture.h" />
     <ClInclude Include="RenderSystem.h" />
@@ -247,6 +236,9 @@
     <ClInclude Include="VulkanPipeline.h" />
     <ClInclude Include="VulkanRenderer.h" />
     <ClInclude Include="VulkanRenderPass.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="imgui.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

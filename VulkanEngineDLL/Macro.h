@@ -1,6 +1,6 @@
 #pragma once
 #include <stdio.h>
-
+#include "DLL.h"
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 #define IO_READ_CHUNK_SIZE 2097152

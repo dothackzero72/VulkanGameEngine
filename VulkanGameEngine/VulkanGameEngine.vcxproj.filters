@@ -135,18 +135,6 @@
     <ClCompile Include="VulkanRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JsonPipeline.cpp">
-      <Filter>Source Files\Functions</Filter>
-    </ClCompile>
-    <ClCompile Include="JsonRenderPass.cpp">
-      <Filter>Source Files\Functions</Filter>
-    </ClCompile>
-    <ClCompile Include="CBuffer.c">
-      <Filter>Source Files\CFunctions</Filter>
-    </ClCompile>
-    <ClCompile Include="CTexture.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DepthTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -162,41 +150,14 @@
     <ClCompile Include="ShaderCompiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CShaderCompiler.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CoreVulkanRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CVulkanRenderer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VulkanRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameController.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="JsonPipeline.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLFWWindow.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="io.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Keyboard.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mouse.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SDLWindow.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VulkanError.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VulkanWindow.c">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="JsonRenderPass.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -329,18 +290,6 @@
     <ClInclude Include="InputSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanPipeline.h">
-      <Filter>Header Files\Functions</Filter>
-    </ClInclude>
-    <ClInclude Include="VulkanRenderPass.h">
-      <Filter>Header Files\Functions</Filter>
-    </ClInclude>
-    <ClInclude Include="CBuffer.h">
-      <Filter>Header Files\C</Filter>
-    </ClInclude>
-    <ClInclude Include="CTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DepthTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -359,64 +308,25 @@
     <ClInclude Include="ShaderCompiler.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="CShaderCompiler.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CoreVulkanRenderer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CVulkanRenderer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="VulkanRenderer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CTypedef.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameController.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GLFWWindow.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="io.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="JsonStructs.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Keyboard.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Macro.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mouse.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pixel.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SDLWindow.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TypeDef.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="VkGuid.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanError.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="VulkanPipeline.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanWindow.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="VulkanRenderPass.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui.ini">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
 </Project>

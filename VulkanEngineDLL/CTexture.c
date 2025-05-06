@@ -142,7 +142,7 @@ VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, VkImage* i
 		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 	}
 	else if (*oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-			 newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+		newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 	{
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
@@ -193,7 +193,7 @@ VkResult Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffe
 
 VkResult Texture_CopyBufferToTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkBuffer buffer, enum TextureUsageEnum textureType, int width, int height, int depth)
 {
-	VkBufferImageCopy BufferImage = 
+	VkBufferImageCopy BufferImage =
 	{
 		.bufferOffset = 0,
 		.bufferRowLength = 0,

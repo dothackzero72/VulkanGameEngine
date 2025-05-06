@@ -1,7 +1,7 @@
 #include "Texture.h"
 #include "CVulkanRenderer.h"
 #include "VulkanError.h"
-#include "CBuffer.h"
+#include <CBuffer.h>
 #include "pixel.h"
 
 #include "VulkanRenderer.h"
@@ -263,7 +263,7 @@ VkResult Texture::CreateTextureSampler(VkSamplerCreateInfo samplerCreateInfo)
 
 void Texture::SaveTexture(const char* filename, ExportTextureFormat textureFormat)
 {
-	return Texture_SaveTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, filename, SharedPtr<Texture>(this), textureFormat, ColorChannels);
+	//return Texture_SaveTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, filename, SharedPtr<Texture>(this), textureFormat, ColorChannels);
 }
 
 void Texture_CreateImageTexture(VkDevice device,
