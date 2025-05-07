@@ -19,33 +19,13 @@ SpriteBatchLayer::SpriteBatchLayer(RenderPassID renderPassId)
 	{
 		renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
 	}
-	renderSystem.SpriteMeshList[SpriteLayerMeshId] = SpriteMesh(renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, 0);
+	renderSystem.SpriteMeshList[SpriteLayerMeshId] = SpriteMesh(renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, VkGuid());
 	renderSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
 	renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = SpriteInstanceBuffer(renderSystem.SpriteInstanceList[SpriteBatchLayerID], renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferUsageSettings(), renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferPropertySettings(), false);
-
-
-
-	SortSpritesByLayer();
 }
 
 SpriteBatchLayer::~SpriteBatchLayer()
 {
-}
-
-void SpriteBatchLayer::AddSprite(uint gameObjectID)
-{
-	//GameObjectIDList.emplace_back(gameObjectID);
-	//SortSpritesByLayer(GameObjectIDList);
-}
-
-void SpriteBatchLayer::RemoveSprite(uint gameObjectID)
-{
-	//sprite->Destroy();
-	//GameObjectIDList.erase(std::remove_if(GameObjectIDList.begin(), GameObjectIDList.end(),
-	//	[&sprite](const uint32& compairGameObjectID = gameObjectID) {
-	//		return compairGameObjectID == gameObjectID;
-	//	}),
-	//	GameObjectIDList.end());
 }
 
 void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
@@ -61,21 +41,4 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 	{
 		renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID].UpdateBufferMemory(renderSystem.SpriteInstanceList[SpriteBatchLayerID]);
 	}
-}
-
-void SpriteBatchLayer::Destroy()
-{
-	renderSystem.SpriteMeshList[SpriteLayerMeshId].Destroy();
-}
-
-void SpriteBatchLayer::SortSpritesByLayer()
-{
-	//std::sort(sprites.begin(), sprites.end(), [](const SharedPtr<Sprite>& spriteA, const SharedPtr<Sprite>& spriteB) {
-	//		if (spriteA &&
-	//			spriteB)
-	//		{
-	//			return spriteA->SpriteLayer > spriteB->SpriteLayer;
-	//		}
-	//		return true;
-	//	});
 }

@@ -6,7 +6,7 @@
 #include "JsonPipeline.h"
 #include "GameObject.h"
 #include "JsonStructs.h"
-#include "ECGid.h"
+#include "ECSid.h"
 #include "SceneDataBuffer.h"
 
 class JsonRenderPass

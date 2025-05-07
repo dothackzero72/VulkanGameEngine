@@ -1,7 +1,7 @@
 #pragma once
 #include "TypeDef.h"
 #include "VkGuid.h"
-#include "ECGid.h"
+#include "ECSid.h"
 #include "vertex.h"
 
 class Sprite

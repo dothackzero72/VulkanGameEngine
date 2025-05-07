@@ -7,17 +7,22 @@
 #include "AssetManager.h"
 #include "DepthTexture.h"
 #include "RenderedTexture.h"
-#include "ECGid.h"
+#include "ECSid.h"
 #include "InterfaceRenderPass.h"
+#include "Mesh.h"
+#include "LevelLayer.h"
+#include "LevelTileSet.h"
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;
 typedef uint UM_RenderPassID;
 typedef uint UM_RenderPipelineID;
+typedef uint UM_LevelID;
 
 class Sprite;
 class JsonPipeline;
 class JsonRenderPass;
+
 class RenderSystem
 {
     friend class JsonPipeline;
@@ -83,6 +88,7 @@ public:
     UnorderedMap<VkGuid, Texture> TextureList;
     UnorderedMap<VkGuid, Material> MaterialList;
     UnorderedMap<VkGuid, SpriteVram> VramSpriteList;
+    UnorderedMap<VkGuid, LevelTileSet> LevelTileSetMap;
 
     UnorderedMap<RenderPassID, JsonRenderPass> RenderPassList;
     UnorderedMap<RenderPassID, DepthTexture> DepthTextureList;
@@ -102,6 +108,9 @@ public:
     UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>> SpriteInstanceList;
     UnorderedMap<UM_SpriteBatchID, SpriteMesh> SpriteMeshList;
 
+ 
+    UnorderedMap<UM_LevelID, LevelLayerMesh> LevelLayerMeshList;
+
     VkCommandBufferBeginInfo CommandBufferBeginInfo;
 
     RenderSystem();
@@ -117,6 +126,7 @@ public:
     RenderPassID AddRenderPass(const String& jsonPath, ivec2 renderPassResolution);
     RenderPassID AddRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution);
     VkGuid AddSpriteVRAM(const String& spritePath);
+    VkGuid AddTileSetVRAM(const String& tileSetPath);
     VkGuid LoadTexture(const String& texturePath);
     VkGuid LoadMaterial(const String& materialPath);
 

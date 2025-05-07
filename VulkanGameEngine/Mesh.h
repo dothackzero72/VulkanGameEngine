@@ -14,6 +14,7 @@ typedef VulkanBuffer<mat4>					TransformBuffer;
 typedef VulkanBuffer<SpriteInstanceStruct>  SpriteInstanceBuffer;
 typedef VulkanBuffer<MeshProperitiesStruct> MeshPropertiesBuffer;
 
+class RenderSystem;
 template<class T>
 class Mesh
 {
@@ -39,12 +40,11 @@ protected:
 
 public:
 	uint32 MeshId = 0;
-	uint32 MeshBufferIndex = 0;
+	VkGuid MaterialId;
 	uint32 VertexCount = 0;
 	uint32 IndexCount = 0;
 
 	MeshProperitiesStruct MeshProperties;
-	mat4 MeshTransform = mat4(0.0f);
 	vec3 MeshPosition = vec3(0.0f);
 	vec3 MeshRotation = vec3(0.0f);
 	vec3 MeshScale = vec3(1.0f);
@@ -58,18 +58,19 @@ public:
 	{
 	}
 
-	Mesh(Vector<T>& vertexList, Vector<uint32>& indexList, uint32 meshBufferIndex)
+	Mesh(Vector<T>& vertexList, Vector<uint32>& indexList, VkGuid materialId)
 	{
 		MeshId = ++NextMeshId;
-		MeshBufferIndex = meshBufferIndex;
+		MaterialId = materialId;
 		MeshVertexList = vertexList;
 		MeshIndexList = indexList;
 		VertexCount = vertexList.size();
 		IndexCount = indexList.size();
 
+		mat4 tempMat4;
 		MeshVertexBuffer = VulkanBuffer<T>(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		MeshTransformBuffer = TransformBuffer(static_cast<void*>(&MeshTransform), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		MeshTransformBuffer = TransformBuffer(static_cast<void*>(&tempMat4), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
 		//SharedPtr parentGameObject = ParentGameObject.lock();
@@ -103,10 +104,9 @@ public:
 		MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.y), vec3(0.0f, 1.0f, 0.0f));
 		MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.z), vec3(0.0f, 0.0f, 1.0f));
 		MeshMatrix = glm::scale(MeshMatrix, MeshScale);
-		MeshTransform = GameObjectMatrix * MeshMatrix;
-
+	
 		MeshProperties.MaterialIndex = (MeshMaterial) ? MeshMaterial->GetMaterialBufferIndex() : 0;
-		MeshProperties.MeshTransform = MeshTransform;
+		MeshProperties.MeshTransform = GameObjectMatrix * MeshMatrix;
 		PropertiesBuffer.UpdateBufferMemory(MeshProperties);
 	}
 
@@ -163,11 +163,10 @@ public:
 		if (this != &other)
 		{
 			MeshId = other.MeshId;
-			MeshBufferIndex = other.MeshBufferIndex;
+			MaterialId = other.MaterialId;
 			VertexCount = other.VertexCount;
 			IndexCount = other.IndexCount;
 			MeshProperties = other.MeshProperties;
-			MeshTransform = other.MeshTransform;
 			MeshPosition = other.MeshPosition;
 			MeshRotation = other.MeshRotation;
 			MeshScale = other.MeshScale;
@@ -198,5 +197,7 @@ public:
 };
 
 typedef Mesh<Vertex2D> SpriteMesh;
+typedef Mesh<Vertex2D> LevelLayerMesh;
 typedef VulkanBuffer<SpriteMesh>			SpriteMeshBuffer;
+typedef VulkanBuffer<LevelLayerMesh>		LevelLayerBuffer;
 uint32 SpriteMesh::NextMeshId = 0;

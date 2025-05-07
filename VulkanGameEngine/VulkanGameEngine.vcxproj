@@ -162,6 +162,10 @@
     <ClCompile Include="InterfaceRenderPass.cpp" />
     <ClCompile Include="JsonPipeline.cpp" />
     <ClCompile Include="JsonRenderPass.cpp" />
+    <ClCompile Include="Level2D.cpp" />
+    <ClCompile Include="LevelLayer.cpp" />
+    <ClCompile Include="LevelTile.cpp" />
+    <ClCompile Include="LevelTileSet.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="OrthographicCamera2D.cpp" />
@@ -176,7 +180,6 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileMap.cpp" />
-    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VulkanPipeline.cpp" />
     <ClCompile Include="VulkanRenderer.cpp" />
     <ClCompile Include="VulkanRenderPass.cpp" />
@@ -196,7 +199,7 @@
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DepthTexture.h" />
-    <ClInclude Include="ECGid.h" />
+    <ClInclude Include="ECSid.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="FrameTimer.h" />
@@ -210,6 +213,10 @@
     <ClInclude Include="JsonPipeline.h" />
     <ClInclude Include="JsonRenderPass.h" />
     <ClInclude Include="JsonStructs.h" />
+    <ClInclude Include="Level2D.h" />
+    <ClInclude Include="LevelLayer.h" />
+    <ClInclude Include="LevelTile.h" />
+    <ClInclude Include="LevelTileSet.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="Mesh.h" />
@@ -228,7 +235,6 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TileMap.h" />
-    <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform2DComponent.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VkGuid.h" />
@@ -236,9 +242,6 @@
     <ClInclude Include="VulkanPipeline.h" />
     <ClInclude Include="VulkanRenderer.h" />
     <ClInclude Include="VulkanRenderPass.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="imgui.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

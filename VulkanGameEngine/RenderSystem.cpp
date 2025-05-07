@@ -408,6 +408,28 @@ VkGuid RenderSystem::AddSpriteVRAM(const String& spritePath)
     return vramId;
 }
 
+VkGuid RenderSystem::AddTileSetVRAM(const String& tileSetPath)
+{
+    if (tileSetPath.empty() ||
+        tileSetPath == "")
+    {
+        return VkGuid();
+    }
+
+    nlohmann::json json = Json::ReadJson(tileSetPath);
+
+    VkGuid tileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
+    LevelTileSet levelTileSet = LevelTileSet
+    {
+        .TileSetId = VkGuid(json["TileSetId"].get<String>().c_str()),
+        .MaterialId = VkGuid(json["MaterialId"].get<String>().c_str()),
+        .TileSizeInPixels = ivec2{ json["TileSizeInPixels"][0], json["TileSizeInPixels"][1] },
+    };
+
+    LevelTileSetMap[tileSetId]
+    return tileSetId;
+}
+
 VkGuid RenderSystem::LoadTexture(const String& texturePath)
 {
     if (texturePath.empty() ||

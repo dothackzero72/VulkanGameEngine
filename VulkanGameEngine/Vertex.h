@@ -76,15 +76,16 @@ struct Vertex2D
     }
 };
 
+
 struct SpriteInstanceStruct
 {
-    vec2 SpritePosition;
-    vec4 UVOffset;
-    vec2 SpriteSize;        
+    vec2  SpritePosition;
+    vec4  UVOffset;
+    vec2  SpriteSize;        
     ivec2 FlipSprite;       
-    vec4 Color;            
-    mat4 InstanceTransform;  
-    uint MaterialID;
+    vec4  Color;            
+    mat4  InstanceTransform;  
+    uint  MaterialID;
 
     SpriteInstanceStruct()
     {

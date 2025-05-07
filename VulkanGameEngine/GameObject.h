@@ -5,7 +5,7 @@ extern "C"
 }
 #include <memory>
 #include "Material.h"
-#include "ECGid.h"
+#include "ECSid.h"
 
 struct GameObject
 {

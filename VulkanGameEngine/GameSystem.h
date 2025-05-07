@@ -4,7 +4,7 @@
 #include "InputSystem.h"
 #include "InterfaceRenderPass.h"
 #include "OrthographicCamera2D.h"
-
+#include "Level2D.h"
 
 class GameSystem
 {
@@ -15,6 +15,7 @@ private:
 
 public:
 	SceneDataBuffer						SceneProperties;
+	Level2D								Level;
 	SharedPtr<OrthographicCamera2D>		OrthographicCamera;
 	RenderPassID renderPass2DId;
 	RenderPassID frameBufferId;

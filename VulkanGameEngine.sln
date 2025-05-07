@@ -67,6 +67,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VulkanGameEngine", "VulkanG
 		{D22B29FB-1F02-471C-81AC-A352862F6951} = {D22B29FB-1F02-471C-81AC-A352862F6951}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TileSets", "TileSets", "{12565B15-EF6B-4DAF-8552-844EE28936D7}"
+	ProjectSection(SolutionItems) = preProject
+		TileSets\MetalManTileSet.json = TileSets\MetalManTileSet.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,6 +132,7 @@ Global
 		{9352A260-EB46-4E2B-AD94-08F0665C8B63} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
 		{77A09C99-A7BD-47E1-8EF3-661C0B9B55E0} = {9352A260-EB46-4E2B-AD94-08F0665C8B63}
 		{877021B2-F222-4B9F-BEBF-7C9A223DD6B0} = {9352A260-EB46-4E2B-AD94-08F0665C8B63}
+		{12565B15-EF6B-4DAF-8552-844EE28936D7} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F492211-3E89-431E-83CC-E65D5E8EBE55}

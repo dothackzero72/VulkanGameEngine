@@ -8,7 +8,7 @@
 #include "Mesh.h"
 #include "SpriteVRAM.h"
 #include "Sprite.h"
-#include "ECGid.h"
+#include "ECSid.h"
 #include "SceneDataBuffer.h"
 #include "InputComponent.h"
 #include <DLL.h>

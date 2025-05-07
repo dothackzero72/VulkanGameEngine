@@ -85,6 +85,8 @@ void GameSystem::LoadLevel()
         assetManager.CreateGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kInputComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
     }
 
+    Level
+
     renderPass2DId = renderSystem.AddRenderPass("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
     frameBufferId = renderSystem.AddRenderPass("../RenderPass/FrameBufferRenderPass.json", renderSystem.RenderedTextureList[renderPass2DId][0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
 }
