@@ -88,7 +88,7 @@ public:
     UnorderedMap<VkGuid, Texture> TextureList;
     UnorderedMap<VkGuid, Material> MaterialList;
     UnorderedMap<VkGuid, SpriteVram> VramSpriteList;
-    UnorderedMap<VkGuid, LevelTileSet> LevelTileSetMap;
+    UnorderedMap<VkGuid, LevelTileSet> LevelTileSetList;
 
     UnorderedMap<RenderPassID, JsonRenderPass> RenderPassList;
     UnorderedMap<RenderPassID, DepthTexture> DepthTextureList;

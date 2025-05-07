@@ -5,19 +5,21 @@ extern "C"
 }
 #include "TypeDef.h"
 #include "File.h"
+#include "HLSLShaderCompiler.h"
 
 class ShaderCompiler
 {
 private:
-	//static Microsoft::WRL::ComPtr<IDxcUtils> dxc_utils;
-	//static Microsoft::WRL::ComPtr<IDxcCompiler3> dxc_compiler;
-	//static Microsoft::WRL::ComPtr<IDxcIncludeHandler> DefaultIncludeHandler;
+	static Microsoft::WRL::ComPtr<IDxcUtils> dxc_utils;
+	static Microsoft::WRL::ComPtr<IDxcCompiler3> dxc_compiler;
+	static Microsoft::WRL::ComPtr<IDxcIncludeHandler> DefaultIncludeHandler;
 
-	//static String ConvertLPCWSTRToString(LPCWSTR lpcwszStr);
-	//static void uint32ToUnsignedCharString(uint32 value, String& string);
-	//static VkShaderModule CompileHLSLShader(const String& path, VkShaderStageFlagBits stage);
+	static String ConvertLPCWSTRToString(LPCWSTR lpcwszStr);
+	static void uint32ToUnsignedCharString(uint32 value, String& string);
+	static VkShaderModule CompileHLSLShader(const String& path, VkShaderStageFlagBits stage);
 	static VkShaderModule BuildGLSLShader(VkDevice device, const char* path);
-	//static Microsoft::WRL::ComPtr<IDxcBlob> BuildHLSLShader(const String& path, VkShaderStageFlagBits stage);
+	static Microsoft::WRL::ComPtr<IDxcBlob> BuildHLSLShader(const String& path, VkShaderStageFlagBits stage);
+	static VkShaderModule ReadShaderFile(const std::string& filename)
 public:
 	static void SetUpCompiler();
 	static VkPipelineShaderStageCreateInfo CreateShader(VkDevice device, const String& path, VkShaderStageFlagBits shaderStages);

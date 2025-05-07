@@ -6,15 +6,8 @@ struct LevelTileSet
 {
 	VkGuid TileSetId;
 	VkGuid MaterialId;
-	vec2   TileSizeInPixels;
-	vec2   TileUVOffset;
+	vec2   TilePixelSize;
 	ivec2  TileSetBounds;
-
-	LevelTileSet()
-	{
-
-	}
-
-	LevelTileSet
+	vec2   TileUVSize;
 };
 

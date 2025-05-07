@@ -51,9 +51,12 @@ void GameSystem::LoadLevel()
 {
     OrthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
 
-    auto textureId = renderSystem.LoadTexture("../Textures/TestTexture.json");
-    auto materialId = renderSystem.LoadMaterial("../Materials/Material1.json");
+    renderSystem.LoadTexture("../Textures/TestTexture.json");
+    renderSystem.LoadTexture("../Textures/SparkManTexture.json");
+    renderSystem.LoadMaterial("../Materials/Material1.json");
+    renderSystem.LoadMaterial("../Materials/SparkManTileSetMaterial.json");
     auto vramId = renderSystem.AddSpriteVRAM("../Sprites/TestSprite.json");
+    auto TileSetId = renderSystem.AddTileSetVRAM("../TileSets/SparkManTileSet.json");
 
     assetManager.AnimationFrameList[0] = Vector<ivec2>
     {
@@ -85,7 +88,7 @@ void GameSystem::LoadLevel()
         assetManager.CreateGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kInputComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
     }
 
-    Level
+    
 
     renderPass2DId = renderSystem.AddRenderPass("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
     frameBufferId = renderSystem.AddRenderPass("../RenderPass/FrameBufferRenderPass.json", renderSystem.RenderedTextureList[renderPass2DId][0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));

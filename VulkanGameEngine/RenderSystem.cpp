@@ -389,6 +389,13 @@ VkGuid RenderSystem::AddSpriteVRAM(const String& spritePath)
     VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
     VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
 
+    auto it = VramSpriteList.find(vramId);
+    if (it != VramSpriteList.end())
+    {
+        return vramId;
+    }
+
+
     const Material& material = MaterialList.at(materialId);
     const Texture& texture = TextureList.at(material.AlbedoMapId);
     SpriteVram sprite = SpriteVram
@@ -417,16 +424,26 @@ VkGuid RenderSystem::AddTileSetVRAM(const String& tileSetPath)
     }
 
     nlohmann::json json = Json::ReadJson(tileSetPath);
-
     VkGuid tileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
-    LevelTileSet levelTileSet = LevelTileSet
-    {
-        .TileSetId = VkGuid(json["TileSetId"].get<String>().c_str()),
-        .MaterialId = VkGuid(json["MaterialId"].get<String>().c_str()),
-        .TileSizeInPixels = ivec2{ json["TileSizeInPixels"][0], json["TileSizeInPixels"][1] },
-    };
+    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
 
-    LevelTileSetMap[tileSetId]
+    auto it = LevelTileSetList.find(tileSetId);
+    if (it != LevelTileSetList.end())
+    {
+        return tileSetId;
+    }
+
+    const Material& material = MaterialList[materialId];
+    const Texture& tileSetTexture = TextureList[material.AlbedoMapId];
+
+    LevelTileSet tileSet = LevelTileSet();
+    tileSet.TileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
+    tileSet.MaterialId = materialId;
+    tileSet.TilePixelSize = ivec2{ json["TilePixelSize"][0], json["TilePixelSize"][1] };
+    tileSet.TileSetBounds = ivec2{ tileSetTexture.Width / tileSet.TilePixelSize.x,  tileSetTexture.Height / tileSet.TilePixelSize.y };
+    tileSet.TileUVSize = vec2(1.0f / (float)tileSet.TileSetBounds.x, 1.0f / (float)tileSet.TileSetBounds.y);
+
+    LevelTileSetList[tileSetId] = tileSet;
     return tileSetId;
 }
 
@@ -440,6 +457,13 @@ VkGuid RenderSystem::LoadTexture(const String& texturePath)
 
     nlohmann::json json = Json::ReadJson(texturePath);
     VkGuid textureId = VkGuid(json["TextureId"].get<String>().c_str());
+    auto it = TextureList.find(textureId);
+    if (it != TextureList.end())
+    {
+        return textureId;
+    }
+
+
     String textureFilePath = json["TextureFilePath"];
     VkFormat textureByteFormat = json["TextureByteFormat"];
     VkImageAspectFlags imageType = json["ImageType"];
@@ -452,12 +476,21 @@ VkGuid RenderSystem::LoadTexture(const String& texturePath)
 
 VkGuid RenderSystem::LoadMaterial(const String& materialPath)
 {
-    nlohmann::json json = Json::ReadJson(materialPath);
+    if (materialPath.empty() ||
+        materialPath == "")
+    {
+        return VkGuid();
+    }
 
+    nlohmann::json json = Json::ReadJson(materialPath);
+    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
+    auto it = MaterialList.find(materialId);
+    if (it != MaterialList.end())
+    {
+        return materialId;
+    }
 
     String name = json["Name"];
-    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
-
     MaterialList[materialId] = Material(name, materialId);
     MaterialList[materialId].Albedo = vec3(json["Albedo"][0], json["Albedo"][1], json["Albedo"][2]);
     MaterialList[materialId].Metallic = json["Metallic"];

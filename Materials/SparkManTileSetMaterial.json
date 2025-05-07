@@ -1,0 +1,28 @@
+{
+  "Name": "Material1",
+  "MaterialId": "1654a0b5-9a07-4e54-9ac5-7a13acae8d13",
+  "AlbedoMapPath": "../Textures/SparkManTexture.json",
+  "MetallicRoughnessMapPath": "",
+  "MetallicMapPath": "",
+  "RoughnessMapPath": "",
+  "AmbientOcclusionMapPath": "",
+  "NormalMapPath": "",
+  "DepthMapPath": "",
+  "AlphaMapPath": "",
+  "EmissionMapPath": "",
+  "HeightMapPath": "",
+  "Albedo": [
+    0.0,
+    0.35,
+    0.45
+  ],
+  "Metallic": 0.0,
+  "Roughness": 0.0,
+  "AmbientOcclusion": 1.0,
+  "Emission": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "Alpha": 1.0
+}
