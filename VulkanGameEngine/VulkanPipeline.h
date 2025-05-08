@@ -3,7 +3,6 @@
 #include "CoreVulkanRenderer.h"
 #include "TypeDef.h"
 #include "JsonStructs.h"
-#include "ShaderCompiler.h"
 #include "Texture.h"
 
 struct GPUIncludes

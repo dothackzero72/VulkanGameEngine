@@ -12,6 +12,7 @@
 #include "Mesh.h"
 #include "LevelLayer.h"
 #include "LevelTileSet.h"
+#include "ShaderSystem.h"
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;

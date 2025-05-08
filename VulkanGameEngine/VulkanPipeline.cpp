@@ -1,4 +1,5 @@
 #include "VulkanPipeline.h"
+#include "ShaderSystem.h"
 
 VkDescriptorPool Pipeline_CreateDescriptorPool(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes)
 {
@@ -438,8 +439,8 @@ VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkP
 
     Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
     {
-        ShaderCompiler::CreateShader(device, model.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
-        ShaderCompiler::CreateShader(device, model.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
+        shaderSystem.CreateShader(device, model.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
+        shaderSystem.CreateShader(device, model.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
     };
 
     VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo = model.PipelineMultisampleStateCreateInfo;

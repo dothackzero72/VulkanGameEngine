@@ -156,7 +156,6 @@
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="GameSystem.cpp" />
-    <ClCompile Include="HLSLShaderCompiler.cpp" />
     <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
@@ -173,7 +172,7 @@
     <ClCompile Include="ProgramStats.cpp" />
     <ClCompile Include="RenderedTexture.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
-    <ClCompile Include="ShaderCompiler.cpp" />
+    <ClCompile Include="ShaderSystem.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteBatchLayer.cpp" />
     <ClCompile Include="SystemClock.cpp" />
@@ -205,7 +204,6 @@
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSystem.h" />
-    <ClInclude Include="HLSLShaderCompiler.h" />
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
@@ -227,7 +225,7 @@
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SceneDataBuffer.h" />
-    <ClInclude Include="ShaderCompiler.h" />
+    <ClInclude Include="ShaderSystem.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteBatchLayer.h" />
     <ClInclude Include="SpriteVRAM.h" />

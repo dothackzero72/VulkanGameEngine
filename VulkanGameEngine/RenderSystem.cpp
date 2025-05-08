@@ -15,6 +15,8 @@ RenderSystem::~RenderSystem()
 void RenderSystem::StartUp()
 {
     renderer.RendererSetUp();
+    shaderSystem.StartUp();
+
    // InterfaceRenderPass::StartUp();
 
     //ImageIndex = std::make_shared<uint>(cRenderer.ImageIndex);
