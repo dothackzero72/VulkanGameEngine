@@ -12,7 +12,7 @@ class Json : public nlohmann::json
 public:
 	static nlohmann::json ReadJson(const String filePath)
 	{
-		return File::ReadJsonFile(filePath);
+		return fileSystem.ReadJsonFile(filePath);
 	}
 
 	static void to_json(nlohmann::json& json, String& string)

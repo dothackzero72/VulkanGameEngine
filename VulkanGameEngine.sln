@@ -8,16 +8,17 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{D6D5958C-19B6-4B6E-BA4B-28E99E6BE703}"
 	ProjectSection(SolutionItems) = preProject
 		Shaders\fragshader.frag = Shaders\fragshader.frag
-		FrameBufferPixel.hlsl = FrameBufferPixel.hlsl
-		Shaders\FrameBufferShader.frag = Shaders\FrameBufferShader.frag
+		Shaders\FrameBufferPixel.hlsl = Shaders\FrameBufferPixel.hlsl
 		Shaders\FrameBufferShader.vert = Shaders\FrameBufferShader.vert
-		FrameBufferVertex.hlsl = FrameBufferVertex.hlsl
+		Shaders\FrameBufferVertex.hlsl = Shaders\FrameBufferVertex.hlsl
 		Shaders\LevelShader2D.frag = Shaders\LevelShader2D.frag
 		Shaders\LevelShader2D.vert = Shaders\LevelShader2D.vert
 		Shaders\Shader2D.vert = Shaders\Shader2D.vert
 		Shaders\Shader2D.frag = Shaders\Shader2D.frag
 		Shaders\SpriteInstanceShader.frag = Shaders\SpriteInstanceShader.frag
 		Shaders\SpriteInstanceShader.vert = Shaders\SpriteInstanceShader.vert
+		Shaders\SpritePixelShader.hlsl = Shaders\SpritePixelShader.hlsl
+		Shaders\SpriteVertexShader.hlsl = Shaders\SpriteVertexShader.hlsl
 		Shaders\vertshader.vert = Shaders\vertshader.vert
 	EndProjectSection
 EndProject

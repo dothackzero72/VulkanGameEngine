@@ -102,7 +102,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> ShaderCompiler::BuildHLSLShader(const String& f
 VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(VkDevice device, const String& filename, VkShaderStageFlagBits shaderStages)
 {
     VkShaderModule shaderModule = VK_NULL_HANDLE;
-    if (filename.c_str() == ".spv")
+    if (fileSystem.GetFileExtention(filename) == "hlsl")
     {
         shaderModule = CompileHLSLShader(filename.c_str(), shaderStages);
     }
@@ -113,39 +113,69 @@ VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(VkDevice device, co
     return Shader_CreateShader(shaderModule, shaderStages);
 }
 
-VkShaderModule ShaderCompiler::CompileHLSLShader(const String& filename, VkShaderStageFlagBits stage)
+VkShaderModule ShaderCompiler::CompileHLSLShader(const String& filePath, VkShaderStageFlagBits stage)
 {
-    if (File_Exists(File_RemoveFileExtention(File_Read(filename.c_str()).Data) + ".spv"))
-    {
-        auto shaderCodeLastModifiedTime = File_LastModifiedTime(File::OpenFile(filename));
-        auto compiledCodeLastModifiedTime = File_LastModifiedTime(File::RemoveFileExtenstion(File::OpenFile(filename)) + ".spv");
-
+    const String& filePathNoExt = fileSystem.RemoveFileExtention(filePath);
+    if(fileSystem.FileExists(filePath))
+    { 
+        time_t shaderCodeLastModifiedTime = fileSystem.LastModifiedTime(filePath);
+        time_t compiledCodeLastModifiedTime = fileSystem.LastModifiedTime(filePathNoExt + ".spv");
         if (shaderCodeLastModifiedTime > compiledCodeLastModifiedTime)
         {
-            Microsoft::WRL::ComPtr<IDxcBlob> spriv_buffer = HLSLShaderCompiler::BuildShader(filename, stage);
+            Microsoft::WRL::ComPtr<IDxcBlob> spriv_buffer = HLSLShaderCompiler::BuildShader(filePath, stage);
 
-            VkShaderModule shaderModule{};
-            VkShaderModuleCreateInfo ShaderModuleCreateInfo{};
-            ShaderModuleCreateInfo.codeSize = spriv_buffer->GetBufferSize();
-            ShaderModuleCreateInfo.pCode = (uint32*)spriv_buffer->GetBufferPointer();
-            vkCreateShaderModule(cRenderer.Device, &ShaderModuleCreateInfo, nullptr, &shaderModule);
+            VkShaderModule shaderModule = VK_NULL_HANDLE;
+            VkShaderModuleCreateInfo ShaderModuleCreateInfo = VkShaderModuleCreateInfo
+            {
+                .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+                .codeSize = spriv_buffer->GetBufferSize(),
+                .pCode = (uint32*)spriv_buffer->GetBufferPointer(),
+            };
+            VULKAN_RESULT(vkCreateShaderModule(cRenderer.Device, &ShaderModuleCreateInfo, nullptr, &shaderModule));
 
             return shaderModule;
         }
         else
         {
-            return ReadShaderFile(File::RemoveFileExtenstion(File::OpenFile(filename)) + ".spv");
+            std::ifstream file(filePath, std::ios::ate | std::ios::binary);
+
+            if (!file.is_open()) {
+                throw std::runtime_error("Failed to open file: " + filePath);
+            }
+
+            size_t fileSize = (size_t)file.tellg();
+            std::vector<char> buffer(fileSize);
+
+            file.seekg(0);
+            file.read(buffer.data(), fileSize);
+
+            file.close();
+
+            VkShaderModuleCreateInfo createInfo = VkShaderModuleCreateInfo
+            {
+                .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+                .codeSize = buffer.size(),
+                .pCode = reinterpret_cast<const uint32_t*>(buffer.data()),
+            };
+
+            VkShaderModule shaderModule = VK_NULL_HANDLE;
+            VULKAN_RESULT(vkCreateShaderModule(cRenderer.Device, &createInfo, nullptr, &shaderModule));
+
+            return shaderModule;
         }
     }
     else
     {
-        Microsoft::WRL::ComPtr<IDxcBlob> spriv_buffer = HLSLShaderCompiler::BuildShader(filename, stage);
+        Microsoft::WRL::ComPtr<IDxcBlob> spriv_buffer = HLSLShaderCompiler::BuildShader(filePath, stage);
 
-        VkShaderModule shaderModule{};
-        VkShaderModuleCreateInfo ShaderModuleCreateInfo{};
-        ShaderModuleCreateInfo.codeSize = spriv_buffer->GetBufferSize();
-        ShaderModuleCreateInfo.pCode = (uint32*)spriv_buffer->GetBufferPointer();
-        vkCreateShaderModule(cRenderer.Device, &ShaderModuleCreateInfo, nullptr, &shaderModule);
+        VkShaderModule shaderModule = VK_NULL_HANDLE;
+        VkShaderModuleCreateInfo ShaderModuleCreateInfo = VkShaderModuleCreateInfo
+        {
+            .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+            .codeSize = spriv_buffer->GetBufferSize(),
+            .pCode = (uint32*)spriv_buffer->GetBufferPointer(),
+        };
+        VULKAN_RESULT(vkCreateShaderModule(cRenderer.Device, &ShaderModuleCreateInfo, nullptr, &shaderModule));
 
         return shaderModule;
     }

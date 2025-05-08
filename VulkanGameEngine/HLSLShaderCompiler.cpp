@@ -1,6 +1,7 @@
 #include "HLSLShaderCompiler.h"
 #include <algorithm>
-#include <io.c>
+#include "File.h"
+
 
 Microsoft::WRL::ComPtr<IDxcUtils> HLSLShaderCompiler::dxc_utils;
 Microsoft::WRL::ComPtr<IDxcCompiler3> HLSLShaderCompiler::dxc_compiler;
@@ -31,8 +32,8 @@ void HLSLShaderCompiler::SetUpCompiler()
 
 Microsoft::WRL::ComPtr<IDxcBlob> HLSLShaderCompiler::BuildShader(const String filename, VkShaderStageFlagBits stage)
 {
-    FileState cShaderCode = File_Read(filename.c_str());
-    String shaderCode(cShaderCode.Data);
+    const char* cShaderCode = fileSystem.ReadFile(filename.c_str());
+    String shaderCode(cShaderCode);
 
     Microsoft::WRL::ComPtr<IDxcUtils> dxc_utils{};
     Microsoft::WRL::ComPtr<IDxcCompiler3> dxc_compiler{};
@@ -83,7 +84,7 @@ Microsoft::WRL::ComPtr<IDxcBlob> HLSLShaderCompiler::BuildShader(const String fi
 
         std::cout << string << std::endl;
         std::cout << "Error found in: " + filename << std::endl;
-        Renderer_DestroyRenderer();
+        //Renderer_DestroyRenderer();
         //GameEngine_DestroyWindow();
     }
 

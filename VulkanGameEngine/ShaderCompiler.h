@@ -19,7 +19,7 @@ private:
 	static VkShaderModule CompileHLSLShader(const String& path, VkShaderStageFlagBits stage);
 	static VkShaderModule BuildGLSLShader(VkDevice device, const char* path);
 	static Microsoft::WRL::ComPtr<IDxcBlob> BuildHLSLShader(const String& path, VkShaderStageFlagBits stage);
-	static VkShaderModule ReadShaderFile(const std::string& filename)
+
 public:
 	static void SetUpCompiler();
 	static VkPipelineShaderStageCreateInfo CreateShader(VkDevice device, const String& path, VkShaderStageFlagBits shaderStages);
