@@ -4,10 +4,10 @@
 
 struct LevelLayout
 {
-	VkGuid LevelLayoutId;
-	ivec2  LevelBounds;
-	ivec2  TileSizeinPixels;
-	Vector<LevelTile> LevelTileList;
-	Vector<uint>	  LevelMapList;
+	VkGuid					  LevelLayoutId;
+	ivec2					  LevelBounds;
+	ivec2					  TileSizeinPixels;
+	Vector<LevelTile>		  LevelTileList;
+	Vector<Vector<uint>>	  LevelMapList;
 };
 

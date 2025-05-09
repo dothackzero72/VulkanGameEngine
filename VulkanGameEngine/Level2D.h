@@ -12,7 +12,7 @@ private:
 	VkGuid				 TileSetId;
 	ivec2				 LevelBounds;
 	Vector<Vector<uint>> TileIdMapLayers;
-	Vector<LevelLayer>   LevelLayerList;
+	Vector<LevelLayer>	 LevelLayerList;
 
 public:
 	Level2D();

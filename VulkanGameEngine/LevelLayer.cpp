@@ -13,6 +13,8 @@ LevelLayer::LevelLayer(VkGuid& tileSetId, Vector<uint>& tileIdMap, ivec2& levelB
 	LevelBounds = levelBounds;
 	TileIdMap = tileIdMap;
 	LevelLayerIndex = levelLayerIndex;
+
+	LoadLevelMesh();
 }
 
 LevelLayer::~LevelLayer()

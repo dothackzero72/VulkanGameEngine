@@ -19,9 +19,10 @@ public:
 	SharedPtr<OrthographicCamera2D>		OrthographicCamera;
 
 	LevelGuid							LevelId;
-	RenderPassID levelRenderPass2DId;
-	RenderPassID spriteRenderPass2DId;
-	RenderPassID frameBufferId;
+	VkGuid								TileSetId;
+	RenderPassID						levelRenderPass2DId;
+	RenderPassID						spriteRenderPass2DId;
+	RenderPassID						frameBufferId;
 
 	GameSystem();
 	~GameSystem();

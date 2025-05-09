@@ -575,9 +575,14 @@ VkGuid RenderSystem::LoadLevelLayout(const String& levelLayoutPath)
         
         levelLayout.LevelTileList.emplace_back(tile);
     }
-    for (int x = 0; x < json["LevelLayout"].size(); x++)
+    for (int x = 0; x < json["LevelLayouts"].size(); x++)
     {
-        levelLayout.LevelMapList.emplace_back(json["LevelLayout"][x]);
+        Vector<uint> levelLayer;
+        for (int y = 0; y < json["LevelLayouts"][x].size(); y++)
+        {
+            levelLayer.emplace_back(json["LevelLayouts"][x][y]);
+        }
+        levelLayout.LevelMapList.emplace_back(levelLayer);
     }
 }
 
