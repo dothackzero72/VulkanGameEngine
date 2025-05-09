@@ -164,7 +164,6 @@
     <ClCompile Include="Level2D.cpp" />
     <ClCompile Include="LevelLayer.cpp" />
     <ClCompile Include="LevelTile.cpp" />
-    <ClCompile Include="LevelTileSet.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="OrthographicCamera2D.cpp" />
@@ -213,6 +212,7 @@
     <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="Level2D.h" />
     <ClInclude Include="LevelLayer.h" />
+    <ClInclude Include="LevelLayout.h" />
     <ClInclude Include="LevelTile.h" />
     <ClInclude Include="LevelTileSet.h" />
     <ClInclude Include="Material.h" />

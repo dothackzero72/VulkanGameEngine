@@ -17,7 +17,10 @@ public:
 	SceneDataBuffer						SceneProperties;
 	Level2D								Level;
 	SharedPtr<OrthographicCamera2D>		OrthographicCamera;
-	RenderPassID renderPass2DId;
+
+	LevelGuid							LevelId;
+	RenderPassID levelRenderPass2DId;
+	RenderPassID spriteRenderPass2DId;
 	RenderPassID frameBufferId;
 
 	GameSystem();

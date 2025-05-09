@@ -8,17 +8,14 @@ class LevelTile
 private:
 public:
 	uint				TileId;
-	vec2				TileSize;
-	ivec2				TileOffset;
-	vec2				TileUVSize;
-	vec2				TileUV;
+	vec2				TileUVOffset;
 	int					TileLayer;
-
+	bool				IsAnimatedTile;
 
 	LevelTile();
-	LevelTile(uint TileId, vec2& tileSize, ivec2& tileOffset, vec2& tileUVSize, int tileLayer);
+	LevelTile(uint TileId, vec2& tilePixelSize, ivec2& tileMapCoords, vec2& TileUVSize, int tileLayer);
 	~LevelTile();
 
-	void LoadTile(nlohmann::json& json);
+	void Update(const float& deltaTime);
 };
 

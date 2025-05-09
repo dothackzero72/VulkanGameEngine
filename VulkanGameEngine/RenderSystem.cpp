@@ -1,4 +1,5 @@
 #include "renderSystem.h"
+#include "LevelLayout.h"
 
 RenderSystem renderSystem = RenderSystem();
 
@@ -106,6 +107,42 @@ VkCommandBuffer RenderSystem::RenderFrameBuffer(RenderPassID renderPassId)
     return commandBuffer;
 }
 
+VkCommandBuffer RenderSystem::RenderLevel(LevelGuid& levelId, RenderPassID renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
+{
+    const JsonRenderPass& renderPass = RenderPassList[renderPassId];
+    const JsonPipeline& pipeline = RenderPipelineList[renderPassId][0];
+    const Vector<SpriteBatchLayer>& spriteLayerList = SpriteBatchLayerList[renderPassId];
+    const Vector<LevelLayerMesh>& levelLayerList = LevelLayerMeshList[levelId];
+    const VkCommandBuffer& commandBuffer = renderPass.CommandBuffer;
+
+    VkRenderPassBeginInfo renderPassBeginInfo = VkRenderPassBeginInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = renderPass.RenderPass,
+        .framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex],
+        .renderArea = renderPass.renderArea,
+        .clearValueCount = static_cast<uint32>(ClearValueList[renderPassId].size()),
+        .pClearValues = ClearValueList[renderPassId].data()
+    };
+
+    VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
+    VULKAN_RESULT(vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo));
+    vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+    for (auto levelLayer : levelLayerList)
+    {
+        VkDeviceSize offsets[] = { 0 };
+        vkCmdPushConstants(commandBuffer, pipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, levelLayer.GetVertexBuffer().get(), offsets);
+        vkCmdBindIndexBuffer(commandBuffer, *levelLayer.GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(commandBuffer, levelLayer.IndexCount, 1, 0, 0, 0);
+    }
+    vkCmdEndRenderPass(commandBuffer);
+    vkEndCommandBuffer(commandBuffer);
+    return commandBuffer;
+}
+
 VkCommandBuffer RenderSystem::RenderSprites(RenderPassID renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
 {
     const JsonRenderPass& renderPass = RenderPassList[renderPassId];
@@ -135,9 +172,9 @@ VkCommandBuffer RenderSystem::RenderSprites(RenderPassID renderPassId, const flo
         vkCmdPushConstants(commandBuffer, pipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, renderSystem.SpriteMeshList[spriteLayer.SpriteLayerMeshId].GetVertexBuffer().get(), offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, SpriteMeshList[spriteLayer.SpriteLayerMeshId].GetVertexBuffer().get(), offsets);
         vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
-        vkCmdBindIndexBuffer(commandBuffer, *renderSystem.SpriteMeshList[spriteLayer.SpriteLayerMeshId].GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(commandBuffer, *SpriteMeshList[spriteLayer.SpriteLayerMeshId].GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
     }
     vkCmdEndRenderPass(commandBuffer);
@@ -513,6 +550,35 @@ VkGuid RenderSystem::LoadMaterial(const String& materialPath)
     MaterialList[materialId].HeightMapId = LoadTexture(json["HeightMapPath"]);
 
     return materialId;
+}
+
+VkGuid RenderSystem::LoadLevelLayout(const String& levelLayoutPath)
+{
+    if (levelLayoutPath.empty() ||
+        levelLayoutPath == "")
+    {
+        return VkGuid();
+    }
+
+    nlohmann::json json = Json::ReadJson(levelLayoutPath);
+    VkGuid levelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
+  
+    levelLayout.LevelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
+    levelLayout.LevelBounds = ivec2(json["LevelBounds"][0], json["LevelBounds"][1]);
+    levelLayout.TileSizeinPixels = ivec2(json["TileSizeInPixels"][0], json["TileSizeInPixels"][1]);
+    for (int x = 0; x < json["LevelTileList"].size(); x++)
+    {
+        LevelTile tile;
+        tile.TileId = json["LevelTileList"][x]["TileId"];
+        tile.TileUVOffset = ivec2(json["LevelTileList"][x]["TileUVCellOffset"][0], json["LevelTileList"][x]["TileUVCellOffset"][1]);
+        tile.TileLayer = json["LevelTileList"][x]["TileLayer"];
+        
+        levelLayout.LevelTileList.emplace_back(tile);
+    }
+    for (int x = 0; x < json["LevelLayout"].size(); x++)
+    {
+        levelLayout.LevelMapList.emplace_back(json["LevelLayout"][x]);
+    }
 }
 
 void RenderSystem::Destroy()

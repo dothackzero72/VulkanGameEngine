@@ -1,9 +1,3 @@
-struct Vertex2D
-{
-    float2 Position; 
-    float2 UV;
-};
-
 struct VSInput
 {
     float2 SpritePosition : TEXCOORD0;
@@ -30,12 +24,18 @@ struct VSOutput
     float4 PS_UVOffset : TEXCOORD6;
 };
 
- struct SceneDataBuffer
+struct Vertex2D
 {
-int MeshBufferIndex; 
-float4x4 Projection; 
-float4x4 View; 
-float3 CameraPosition; 
+    float2 Position;
+    float2 UV;
+};
+
+struct SceneDataBuffer
+{
+    int MeshBufferIndex;
+    float4x4 Projection;
+    float4x4 View;
+    float3 CameraPosition;
 };
 
 [[vk::push_constant]] SceneDataBuffer sceneData;

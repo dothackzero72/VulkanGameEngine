@@ -147,9 +147,6 @@
     <ClCompile Include="LevelTile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LevelTileSet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -321,6 +318,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShaderSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelLayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

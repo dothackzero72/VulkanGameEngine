@@ -13,13 +13,14 @@
 #include "LevelLayer.h"
 #include "LevelTileSet.h"
 #include "ShaderSystem.h"
+#include "LevelLayout.h"
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;
 typedef uint UM_RenderPassID;
 typedef uint UM_RenderPipelineID;
 typedef uint UM_LevelID;
-
+typedef VkGuid LevelGuid;
 class Sprite;
 class JsonPipeline;
 class JsonRenderPass;
@@ -90,6 +91,7 @@ public:
     UnorderedMap<VkGuid, Material> MaterialList;
     UnorderedMap<VkGuid, SpriteVram> VramSpriteList;
     UnorderedMap<VkGuid, LevelTileSet> LevelTileSetList;
+    UnorderedMap<LevelGuid, Vector<LevelLayerMesh>> LevelLayerMeshList;
 
     UnorderedMap<RenderPassID, JsonRenderPass> RenderPassList;
     UnorderedMap<RenderPassID, DepthTexture> DepthTextureList;
@@ -110,7 +112,9 @@ public:
     UnorderedMap<UM_SpriteBatchID, SpriteMesh> SpriteMeshList;
 
  
-    UnorderedMap<UM_LevelID, LevelLayerMesh> LevelLayerMeshList;
+
+    Vector<LevelTile>                        LevelTiles;
+    LevelLayout levelLayout;
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo;
 
@@ -122,6 +126,7 @@ public:
     void UpdateBufferIndex();
 
     VkCommandBuffer RenderFrameBuffer(RenderPassID renderPassId);
+    VkCommandBuffer RenderLevel(LevelGuid& levelId, RenderPassID renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
     VkCommandBuffer RenderSprites(RenderPassID renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
  
     RenderPassID AddRenderPass(const String& jsonPath, ivec2 renderPassResolution);
@@ -130,6 +135,7 @@ public:
     VkGuid AddTileSetVRAM(const String& tileSetPath);
     VkGuid LoadTexture(const String& texturePath);
     VkGuid LoadMaterial(const String& materialPath);
+    VkGuid LoadLevelLayout(const String& levelLayoutPath);
 
     void Destroy();
 };
