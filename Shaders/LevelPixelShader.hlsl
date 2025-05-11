@@ -2,11 +2,6 @@ struct PSInput
 {
     float3 PS_Position : TEXCOORD0;
     float2 PS_UV : TEXCOORD1;
-    float2 PS_SpriteSize : TEXCOORD2;
-    nointerpolation int2 PS_FlipSprite : TEXCOORD3;
-    float4 PS_Color : TEXCOORD4;
-    nointerpolation uint PS_MaterialID : TEXCOORD5;
-    nointerpolation float4 PS_UVOffset : TEXCOORD6;
 };
 
 struct PSOutput
@@ -57,7 +52,7 @@ SamplerState Sampler : register(s0);
 PSOutput main(PSInput input)
 {
     PSOutput output;
-    MaterialProperitiesBuffer material = materialBuffer[input.PS_MaterialID];
+    MaterialProperitiesBuffer material = materialBuffer[meshBuffer[sceneDataBuffer.MeshBufferIndex].MaterialIndex];
     
     float4 albedoColor = TextureMap[material.AlbedoMap].Sample(Sampler, input.PS_UV);
     material.Albedo = albedoColor.rgb;

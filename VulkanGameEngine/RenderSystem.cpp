@@ -54,10 +54,22 @@ void RenderSystem::Update(const float& deltaTime)
 
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
 
-    RenderPassID id = RenderPassID(1);
-    for (auto& spriteLayer : SpriteBatchLayerList[id])
+    for (auto& renderPass : RenderPassList)
     {
-        spriteLayer.Update(commandBuffer, deltaTime);
+   /*     if (SpriteBatchLayerList.find(renderPass.second.RenderPassId) != SpriteBatchLayerList.end())
+        {
+            for (auto& spriteLayer : SpriteBatchLayerList[renderPass.second.RenderPassId])
+            {
+                spriteLayer.Update(commandBuffer, deltaTime);
+            }
+        }*/
+        if (SpriteBatchLayerList.find(renderPass.second.RenderPassId) != SpriteBatchLayerList.end())
+        {
+            for (auto& spriteLayer : SpriteBatchLayerList[renderPass.second.RenderPassId])
+            {
+                spriteLayer.Update(commandBuffer, deltaTime);
+            }
+        }
     }
     renderer.EndSingleTimeCommands(commandBuffer);
 }

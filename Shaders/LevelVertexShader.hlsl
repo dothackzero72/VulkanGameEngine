@@ -2,7 +2,6 @@ struct VSInput
 {
     float2 SpritePosition : TEXCOORD0;
     float4 UVOffset : TEXCOORD1;
-    uint MaterialID : TEXCOORD9;
 };
 
 struct VSOutput
@@ -10,7 +9,6 @@ struct VSOutput
     float4 WorldPos : SV_POSITION;
     float3 PS_Position : TEXCOORD0;
     float2 PS_UV : TEXCOORD1;
-    uint PS_MaterialID : TEXCOORD2;
 };
 
 struct SceneDataBuffer
@@ -72,7 +70,6 @@ VSOutput main(VSInput input, uint vertexID : SV_VertexID)
     output.WorldPos = clipPos;
     output.PS_Position = worldPos.xyz;
     output.PS_UV = vertex.UV;
-    output.PS_MaterialID = input.MaterialID;
     
     return output;
 }

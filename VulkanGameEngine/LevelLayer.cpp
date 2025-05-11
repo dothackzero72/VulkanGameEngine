@@ -48,10 +48,10 @@ void LevelLayer::LoadLevelMesh()
 			const uint& tileId = TileIdMap[(y * LevelBounds.x) + x];
 			const Tile& tile = tileSet.LevelTileList[tileId];
 
-			const float LefttSideUV =   tile.TileUVOffset.x * tile.TileUVOffset.x;
-			const float RightSideUV =  (tile.TileUVOffset.x * tile.TileUVOffset.x) + tile.TileUVOffset.x;
-			const float TopSideUV =     tile.TileUVOffset.y * tile.TileUVOffset.y;
-			const float BottomSideUV = (tile.TileUVOffset.y * tile.TileUVOffset.y) + tile.TileUVOffset.y;
+			const float LefttSideUV =   tileSet.TileUVSize.x * tile.TileUVOffset.x;
+			const float RightSideUV =  (tileSet.TileUVSize.x * tile.TileUVOffset.x) + tileSet.TileUVSize.x;
+			const float TopSideUV =		tileSet.TileUVSize.y * tile.TileUVOffset.y;
+			const float BottomSideUV = (tileSet.TileUVSize.y * tile.TileUVOffset.y) + tileSet.TileUVSize.y;
 
 			const uint VertexCount = VertexList.size();
 			const Vertex2D BottomLeftVertex =  { {  x * tileSet.TilePixelSize.x,						      y * tileSet.TilePixelSize.y},                             {LefttSideUV, BottomSideUV} };
