@@ -1,5 +1,6 @@
 #include "SpriteBatchLayer.h"
 #include "RenderSystem.h"
+#include "Typedef.h"
 
 uint32 SpriteBatchLayer::NextSpriteBatchLayerID = 0;
 
@@ -19,7 +20,9 @@ SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 	{
 		renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
 	}
-	renderSystem.SpriteMeshList[SpriteLayerMeshId] = SpriteMesh(renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, VkGuid());
+
+	Vector<VkGuid> renderPassIds = { RenderPassId };
+	renderSystem.SpriteMeshList[SpriteLayerMeshId] = SpriteMesh(renderPassIds, renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, VkGuid());
 	renderSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
 	renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = SpriteInstanceBuffer(renderSystem.SpriteInstanceList[SpriteBatchLayerID], renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferUsageSettings(), renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferPropertySettings(), false);
 }

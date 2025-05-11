@@ -8,6 +8,7 @@ struct LevelTileSet
 {
 	VkGuid			  TileSetId;
 	VkGuid			  MaterialId;
+	Vector<VkGuid>	  RenderPassIds;
 	ivec2			  TileSetBounds;
 	vec2			  TilePixelSize;
 	vec2			  TileUVSize;

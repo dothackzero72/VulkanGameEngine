@@ -33,6 +33,7 @@ protected:
 public:
 	String Name = "Texture";
 	VkGuid TextureId;
+	Vector<VkGuid> RenderPassIds;
 	int Width = 1;
 	int Height = 1;
 	int Depth = 1;
@@ -52,8 +53,8 @@ public:
 	VkSampler Sampler = VK_NULL_HANDLE;
 
 	Texture();
-	Texture(VkGuid textureID, Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps);
-	Texture(VkGuid textureID, const String& filePath, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum TextureType, bool useMipMaps);
+	Texture(Vector<VkGuid>& renderPassGuids, VkGuid textureID, Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps);
+	Texture(Vector<VkGuid>& renderPassGuids, VkGuid textureID, const String& filePath, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum TextureType, bool useMipMaps);
 	virtual ~Texture();
 
 	void UpdateTextureBufferIndex(uint64_t bufferIndex);

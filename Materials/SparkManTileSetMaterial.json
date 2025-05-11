@@ -1,6 +1,7 @@
 {
   "Name": "Material1",
   "MaterialId": "1654a0b5-9a07-4e54-9ac5-7a13acae8d13",
+  "RenderPassIds": [ "bc8eb7af-8d28-41b6-9ac4-10c5eb84c304" ],
   "AlbedoMapPath": "../Textures/SparkManTexture.json",
   "MetallicRoughnessMapPath": "",
   "MetallicMapPath": "",

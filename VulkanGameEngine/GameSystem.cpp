@@ -89,7 +89,8 @@ void GameSystem::LoadLevel()
         assetManager.CreateGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kInputComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
     }
 
-    Level = Level2D(VkGuid::GenerateGUID(), TileSetId, renderSystem.levelLayout.LevelBounds, renderSystem.levelLayout.LevelMapList);
+    const Vector<VkGuid>& renderPassIds = renderSystem.VramSpriteList[vramId].RenderPassIdList;
+    Level = Level2D(renderPassIds, VkGuid::GenerateGUID(), TileSetId, renderSystem.levelLayout.LevelBounds, renderSystem.levelLayout.LevelMapList);
 
    // levelRenderPass2DId = renderSystem.AddRenderPass("../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
     spriteRenderPass2DId = renderSystem.AddRenderPass("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));

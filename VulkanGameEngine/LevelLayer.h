@@ -4,6 +4,7 @@
 #include "Tile.h"
 #include "LevelTileSet.h"
 #include "Mesh.h"
+#include "VkGuid.h"
 
 class LevelLayer
 {
@@ -12,6 +13,7 @@ private:
 	void LoadLevelMesh();
 
 public:
+	Vector<VkGuid> 		RenderPassIds;
 	VkGuid				LevelId;
 	uint				MeshId;
 	VkGuid				MaterialId;
@@ -24,7 +26,7 @@ public:
 	Vector<uint32>		IndexList;
 
 	LevelLayer();
-	LevelLayer(VkGuid& levelId, VkGuid& tileSetId, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex);
+	LevelLayer(Vector<VkGuid>& renderPassIds, VkGuid& levelId, VkGuid& tileSetId, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex);
 	~LevelLayer();
 
 	void Update(const float& deltaTime);

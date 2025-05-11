@@ -5,16 +5,17 @@ Level2D::Level2D()
 {
 }
 
-Level2D::Level2D(const VkGuid& levelId, const VkGuid& tileSetId, const ivec2& levelBounds, const Vector<Vector<uint>>& tileIdMapLayers)
+Level2D::Level2D(const Vector<VkGuid>& renderPassIds, const VkGuid& levelId, const VkGuid& tileSetId, const ivec2& levelBounds, const Vector<Vector<uint>>& tileIdMapLayers)
 {
 	LevelId = levelId;
+	RenderPassIds = renderPassIds;
 	TileSetId = tileSetId;
 	LevelBounds = levelBounds;
 	TileIdMapLayers = tileIdMapLayers;
 
 	for (int x = 0; x < tileIdMapLayers.size(); x++)
 	{
-		LevelLayerList.emplace_back(LevelLayer(LevelId, TileSetId, TileIdMapLayers[x], LevelBounds, x));
+		LevelLayerList.emplace_back(LevelLayer(RenderPassIds, LevelId, TileSetId, TileIdMapLayers[x], LevelBounds, x));
 	}
 }
 

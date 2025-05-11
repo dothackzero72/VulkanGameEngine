@@ -1,14 +1,16 @@
 #include "LevelLayer.h"
 #include "RenderSystem.h"
 #include "LevelTileSet.h"
+
 LevelLayer::LevelLayer()
 {
 }
 
-LevelLayer::LevelLayer(VkGuid& levelId, VkGuid& tileSetId, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex)
+LevelLayer::LevelLayer(Vector<VkGuid>& renderPassIds, VkGuid& levelId, VkGuid& tileSetId, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex)
 {
 	const LevelTileSet& tileSet = renderSystem.LevelTileSetList[TileSetId];
 
+	RenderPassIds = renderPassIds;
 	LevelId = levelId;
 	TileSetId = tileSetId;
 	MaterialId = tileSet.MaterialId;
@@ -75,5 +77,5 @@ void LevelLayer::LoadLevelMesh()
 		}
 	}
 
-	renderSystem.LevelLayerMeshList[LevelId].emplace_back(LevelLayerMesh(VertexList, IndexList, MaterialId));
+	renderSystem.LevelLayerMeshList[LevelId].emplace_back(LevelLayerMesh(RenderPassIds, VertexList, IndexList, MaterialId));
 }

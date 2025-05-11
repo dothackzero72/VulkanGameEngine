@@ -19,9 +19,10 @@ Texture::Texture()
 
 }
 
-Texture::Texture(VkGuid textureID, Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
+Texture::Texture(Vector<VkGuid>& renderPassGuids, VkGuid textureID, Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
 {
 	TextureId = textureID;
+	RenderPassIds = renderPassGuids;
 	Width = width;
 	Height = height;
 	TextureType = textureType;
@@ -39,9 +40,10 @@ Texture::Texture(VkGuid textureID, Pixel clearColor, int width, int height, VkFo
 	//ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-Texture::Texture(VkGuid textureID, const String& filePath, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
+Texture::Texture(Vector<VkGuid>& renderPassGuids, VkGuid textureID, const String& filePath, VkFormat textureByteFormat, VkImageAspectFlags imageType, TextureTypeEnum textureType, bool useMipMaps)
 {
 	TextureId = textureID;
+	RenderPassIds = renderPassGuids;
 	TextureType = textureType;
 	TextureByteFormat = textureByteFormat;
 

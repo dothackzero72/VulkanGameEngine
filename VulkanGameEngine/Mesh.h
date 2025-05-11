@@ -41,6 +41,7 @@ protected:
 public:
 	uint32 MeshId = 0;
 	VkGuid MaterialId;
+	Vector<VkGuid> RenderPassIds;
 	uint32 VertexCount = 0;
 	uint32 IndexCount = 0;
 
@@ -58,10 +59,11 @@ public:
 	{
 	}
 
-	Mesh(Vector<T>& vertexList, Vector<uint32>& indexList, VkGuid materialId)
+	Mesh(Vector<VkGuid>& renderPassIds, Vector<T>& vertexList, Vector<uint32>& indexList, VkGuid materialId)
 	{
 		MeshId = ++NextMeshId;
 		MaterialId = materialId;
+		RenderPassIds = renderPassIds;
 		MeshVertexList = vertexList;
 		MeshIndexList = indexList;
 		VertexCount = vertexList.size();
