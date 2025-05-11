@@ -1,7 +1,8 @@
 #pragma once
+#include <vector>
 #include "Typedef.h"
 #include "VkGuid.h"
-#include "LevelTile.h"
+#include "Tile.h"
 
 struct LevelTileSet
 {
@@ -10,6 +11,6 @@ struct LevelTileSet
 	ivec2			  TileSetBounds;
 	vec2			  TilePixelSize;
 	vec2			  TileUVSize;
-	Vector<LevelTile> LevelTileList;
+	Vector<Tile>	  LevelTileList;
 };
 

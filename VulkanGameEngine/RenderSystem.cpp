@@ -481,7 +481,16 @@ VkGuid RenderSystem::AddTileSetVRAM(const String& tileSetPath)
     tileSet.TilePixelSize = ivec2{ json["TilePixelSize"][0], json["TilePixelSize"][1] };
     tileSet.TileSetBounds = ivec2{ tileSetTexture.Width / tileSet.TilePixelSize.x,  tileSetTexture.Height / tileSet.TilePixelSize.y };
     tileSet.TileUVSize = vec2(1.0f / (float)tileSet.TileSetBounds.x, 1.0f / (float)tileSet.TileSetBounds.y);
-
+    for (int x = 0; x < json["TileList"].size(); x++)
+    {
+        Tile tile;
+        tile.TileId = json["TileList"][x]["TileId"];
+        tile.TileUVCellOffset = ivec2(json["TileList"][x]["TileUVCellOffset"][0], json["TileList"][x]["TileUVCellOffset"][1]);
+        tile.TileLayer = json["TileList"][x]["TileLayer"];
+        tile.IsAnimatedTile = json["TileList"][x]["IsAnimatedTile"];
+        tile.TileUVOffset = vec2(tile.TileUVCellOffset.x * tileSet.TileUVSize.x, tile.TileUVCellOffset.y * tileSet.TileUVSize.y);
+        tileSet.LevelTileList.emplace_back(tile);
+    }
     LevelTileSetList[tileSetId] = tileSet;
     return tileSetId;
 }
@@ -566,15 +575,6 @@ VkGuid RenderSystem::LoadLevelLayout(const String& levelLayoutPath)
     levelLayout.LevelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
     levelLayout.LevelBounds = ivec2(json["LevelBounds"][0], json["LevelBounds"][1]);
     levelLayout.TileSizeinPixels = ivec2(json["TileSizeInPixels"][0], json["TileSizeInPixels"][1]);
-    for (int x = 0; x < json["LevelTileList"].size(); x++)
-    {
-        LevelTile tile;
-        tile.TileId = json["LevelTileList"][x]["TileId"];
-        tile.TileUVOffset = ivec2(json["LevelTileList"][x]["TileUVCellOffset"][0], json["LevelTileList"][x]["TileUVCellOffset"][1]);
-        tile.TileLayer = json["LevelTileList"][x]["TileLayer"];
-        
-        levelLayout.LevelTileList.emplace_back(tile);
-    }
     for (int x = 0; x < json["LevelLayouts"].size(); x++)
     {
         Vector<uint> levelLayer;

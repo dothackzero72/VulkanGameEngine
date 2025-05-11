@@ -390,30 +390,30 @@ VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkP
         for (auto& viewPort : model.ViewportList)
         {
             viewPortList.emplace_back(VkViewport
-                                     {
-                                        .x = viewPort.x,
-                                        .y = viewPort.y,
-                                        .width = static_cast<float>(extent.x),
-                                        .height = static_cast<float>(extent.y),
-                                        .minDepth = viewPort.minDepth,
-                                        .maxDepth = viewPort.maxDepth
-                                     });
+                {
+                    .x = viewPort.x,
+                    .y = viewPort.y,
+                    .width = static_cast<float>(extent.x),
+                    .height = static_cast<float>(extent.y),
+                    .minDepth = viewPort.minDepth,
+                    .maxDepth = viewPort.maxDepth
+                });
         }
         for (auto& viewPort : model.ViewportList)
         {
             scissorList.emplace_back(VkRect2D
-                                    {
-                                        .offset = VkOffset2D
-                                        {
-                                            .x = 0,
-                                            .y = 0
-                                        },
-                                        .extent = VkExtent2D
-                                        {
-                                          .width = static_cast<uint32>(extent.x),
-                                          .height = static_cast<uint32>(extent.y)
-                                        }
-                                    });
+            {
+                .offset = VkOffset2D
+                {
+                    .x = 0,
+                    .y = 0
+                },
+                .extent = VkExtent2D
+                {
+                    .width = static_cast<uint32>(extent.x),
+                    .height = static_cast<uint32>(extent.y)
+                }
+            });
         }
     }
 

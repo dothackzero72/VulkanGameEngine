@@ -48,6 +48,9 @@
       "_name": null
     }
   ],
+  "RenderPipelineList": [
+    "../Pipelines/FrameBufferPipeline.json"
+  ],
   "SubpassDependencyList": [
     {
       "srcSubpass": 4294967295,

@@ -1,7 +1,7 @@
 #pragma once
 #include "Typedef.h"
 #include "Vertex.h"
-#include "LevelTile.h"
+#include "Tile.h"
 #include "LevelTileSet.h"
 #include "Mesh.h"
 
@@ -19,12 +19,12 @@ public:
 	int					LevelLayerIndex;
 	ivec2				LevelBounds;
 	Vector<uint>		TileIdMap;
-	Vector<LevelTile>	TileList;
+	Vector<Tile>		TileMap;
 	Vector<Vertex2D>	VertexList;
 	Vector<uint32>		IndexList;
 
 	LevelLayer();
-	LevelLayer(VkGuid& tileSetId, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex);
+	LevelLayer(VkGuid& levelId, VkGuid& tileSetId, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex);
 	~LevelLayer();
 
 	void Update(const float& deltaTime);

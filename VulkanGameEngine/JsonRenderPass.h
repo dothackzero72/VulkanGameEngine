@@ -11,7 +11,6 @@
 class JsonRenderPass
 {
 protected:
-	void BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, SceneDataBuffer& sceneDataBuffer);
 	void BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo);
 	void BuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
 	void BuildCommandBuffer();

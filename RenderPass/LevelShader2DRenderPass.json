@@ -95,7 +95,9 @@
       "_name": null
     }
   ],
-  "RenderPipelineList": [],
+  "RenderPipelineList": [
+    "../Pipelines/LevelShader2DPipeline.json"
+  ],
   "SubpassDependencyList": [
     {
       "srcSubpass": 4294967295,

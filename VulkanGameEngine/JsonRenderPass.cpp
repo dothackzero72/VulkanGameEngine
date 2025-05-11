@@ -26,7 +26,7 @@ JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonP
 
 
     uint id = renderSystem.RenderPipelineList.size();
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/Default2DPipeline.json", RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, renderSystem.renderPassBuildInfoList[RenderPassId].RenderPipelineList[0], RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
 
     renderSystem.ClearValueList[RenderPassId] = renderSystem.renderPassBuildInfoList[RenderPassId].ClearValueList;
@@ -59,7 +59,7 @@ JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonP
 
     uint id = renderSystem.RenderPipelineList.size();
     renderSystem.InputTextureList[id].emplace_back(std::make_shared<Texture>(inputTexture));
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, "../Pipelines/FrameBufferPipeline.json", RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, renderSystem.renderPassBuildInfoList[RenderPassId].RenderPipelineList[0], RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
     renderArea = renderPassBuildInfo.RenderArea.RenderArea;
     renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
     renderSystem.RenderPassInfoList[RenderPassId] = VkRenderPassBeginInfo
@@ -110,14 +110,6 @@ void JsonRenderPass::RecreateSwapchain(int newWidth, int newHeight)
         .clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size()),
         .pClearValues = renderSystem.ClearValueList[RenderPassId].data()
     };
-}
-
-void JsonRenderPass::BuildRenderPipelines(const RenderPassBuildInfoModel& renderPassBuildInfo, SceneDataBuffer& sceneDataBuffer)
-{
-    for (int x = 0; x < renderPassBuildInfo.RenderPipelineList.size(); x++)
-    {
-      //  renderSystem.RenderPipelineList[RenderPassId] = Vector<JsonPipeline>{ JsonPipeline(1, renderPassBuildInfo.RenderPipelineList[x], RenderPass, sizeof(SceneDataBuffer), RenderPassResolution) };
-    }
 }
 
 void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo)

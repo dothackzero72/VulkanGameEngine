@@ -146,10 +146,10 @@ public:
         model._name = json["_name"];
         model.IsRenderedToSwapchain = json["IsRenderedToSwapchain"].get<bool>();
         model.RenderArea = RenderAreaModel::from_json(json["RenderArea"], textureResolution);
-      /*  for (int x = 0; x < json["RenderPipelineList"].size(); x++)
+        for (int x = 0; x < json["RenderPipelineList"].size(); x++)
         {
-            model.RenderPipelineList.emplace_back(json["RenderPipelineList"][x]["Path"]);
-        }*/
+            model.RenderPipelineList.emplace_back(json["RenderPipelineList"][x]);
+        }
         for (int x = 0; x < json["RenderedTextureInfoModelList"].size(); x++)
         {
             model.RenderedTextureInfoModelList.emplace_back(RenderedTextureInfoModel::from_json(json["RenderedTextureInfoModelList"][x], textureResolution));

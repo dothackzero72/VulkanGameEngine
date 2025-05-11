@@ -90,7 +90,7 @@ void GameSystem::LoadLevel()
     }
 
     
-    levelRenderPass2DId = renderSystem.AddRenderPass("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
+    levelRenderPass2DId = renderSystem.AddRenderPass("../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
     spriteRenderPass2DId = renderSystem.AddRenderPass("../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
     frameBufferId = renderSystem.AddRenderPass("../RenderPass/FrameBufferRenderPass.json", renderSystem.RenderedTextureList[spriteRenderPass2DId][0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
 
@@ -164,7 +164,7 @@ void GameSystem::DebugUpdate(const float& deltaTime)
 void GameSystem::Draw(const float& deltaTime)
 {
     VULKAN_RESULT(renderer.StartFrame());
-    CommandBufferSubmitList.emplace_back(renderSystem.RenderLevel(LevelId, levelRenderPass2DId, deltaTime, SceneProperties));
+  //  CommandBufferSubmitList.emplace_back(renderSystem.RenderLevel(LevelId, levelRenderPass2DId, deltaTime, SceneProperties));
     CommandBufferSubmitList.emplace_back(renderSystem.RenderSprites(spriteRenderPass2DId, deltaTime, SceneProperties));
     CommandBufferSubmitList.emplace_back(renderSystem.RenderFrameBuffer(frameBufferId));
    // CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());

@@ -163,7 +163,6 @@
     <ClCompile Include="JsonRenderPass.cpp" />
     <ClCompile Include="Level2D.cpp" />
     <ClCompile Include="LevelLayer.cpp" />
-    <ClCompile Include="LevelTile.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="OrthographicCamera2D.cpp" />
@@ -177,7 +176,6 @@
     <ClCompile Include="SystemClock.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Tile.cpp" />
-    <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="VulkanPipeline.cpp" />
     <ClCompile Include="VulkanRenderer.cpp" />
     <ClCompile Include="VulkanRenderPass.cpp" />
@@ -213,7 +211,6 @@
     <ClInclude Include="Level2D.h" />
     <ClInclude Include="LevelLayer.h" />
     <ClInclude Include="LevelLayout.h" />
-    <ClInclude Include="LevelTile.h" />
     <ClInclude Include="LevelTileSet.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MemoryPool.h" />
@@ -232,7 +229,6 @@
     <ClInclude Include="SystemClock.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Tile.h" />
-    <ClInclude Include="TileMap.h" />
     <ClInclude Include="Transform2DComponent.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VkGuid.h" />

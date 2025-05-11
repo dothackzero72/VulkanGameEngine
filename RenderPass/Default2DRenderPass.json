@@ -95,7 +95,9 @@
       "_name": null
     }
   ],
-  "RenderPipelineList": [],
+  "RenderPipelineList": [
+    "../Pipelines/Default2DPipeline.json"
+  ],
   "SubpassDependencyList": [
     {
       "srcSubpass": 4294967295,

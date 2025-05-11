@@ -14,7 +14,7 @@ Level2D::Level2D(const VkGuid& levelId, const VkGuid& tileSetId, const ivec2& le
 
 	for (int x = 0; x < tileIdMapLayers.size(); x++)
 	{
-		LevelLayerList.emplace_back(LevelLayer(TileSetId, TileIdMapLayers[x], LevelBounds, x));
+		LevelLayerList.emplace_back(LevelLayer(LevelId, TileSetId, TileIdMapLayers[x], LevelBounds, x));
 	}
 }
 

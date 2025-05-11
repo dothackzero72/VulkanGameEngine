@@ -14,6 +14,7 @@
 #include "LevelTileSet.h"
 #include "ShaderSystem.h"
 #include "LevelLayout.h"
+#include "Tile.h"
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;
@@ -113,8 +114,7 @@ public:
 
  
 
-    Vector<LevelTile>                        LevelTiles;
-    LevelLayout levelLayout;
+    LevelLayout                         levelLayout;
 
     VkCommandBufferBeginInfo CommandBufferBeginInfo;
 

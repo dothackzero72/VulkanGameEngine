@@ -1,13 +1,35 @@
 {
-  "VertexShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\SpriteInstanceShaderVert.spv",
-  "FragmentShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\SpriteInstanceShaderFrag.spv",
-  "ViewportList": [],
-  "ScissorList": [],
+  "VertexShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\LevelVertexShader.hlsl",
+  "FragmentShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\LevelPixelShader.hlsl",
+
+  "ViewportList": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "minDepth": 0.0,
+      "maxDepth": 1
+    }
+  ],
+  "ScissorList": [
+    {
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "extent": {
+        "width": 0,
+        "height": 0
+      }
+    }
+  ],
+  "VertexType": 1,
+  "DescriptorSetCount": 1,
+  "DescriptorSetLayoutCount": 1,
   "PipelineColorBlendAttachmentStateList": [
     {
-      "blendEnable": {
-        "Value": 1
-      },
+      "blendEnable": true,
       "srcColorBlendFactor": 6,
       "dstColorBlendFactor": 7,
       "colorBlendOp": 0,
@@ -35,7 +57,7 @@
     "depthClampEnable": false,
     "rasterizerDiscardEnable": false,
     "polygonMode": 0,
-    "cullMode": 0,
+    "cullMode": 2,
     "frontFace": 0,
     "depthBiasEnable": false,
     "depthBiasConstantFactor": 0.0,
@@ -109,5 +131,27 @@
       "DescriptorType": 7
     }
   ],
+  "VertexInputBindingDescriptionList": [
+    {
+      "binding": 1,
+      "stride": 124,
+      "inputRate": 1
+    }
+  ],
+  "VertexInputAttributeDescriptionList": [
+    {
+      "location": 0,
+      "binding": 1,
+      "format": 103,
+      "offset": 0
+    },
+    {
+      "location": 1,
+      "binding": 1,
+      "format": 109,
+      "offset": 8
+    }
+  ],
+  "IsRenderedToSwapchain": false,
   "_name": "DefaultPipeline"
 }

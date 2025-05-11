@@ -1,7 +1,7 @@
 #pragma once
 #include "Typedef.h"
 #include "Vertex.h"
-#include "LevelTile.h"
+#include "Tile.h"
 #include "Mesh.h"
 #include "LevelLayer.h"
 

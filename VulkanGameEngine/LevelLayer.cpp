@@ -5,10 +5,12 @@ LevelLayer::LevelLayer()
 {
 }
 
-LevelLayer::LevelLayer(VkGuid& tileSetId, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex)
+LevelLayer::LevelLayer(VkGuid& levelId, VkGuid& tileSetId, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex)
 {
 	const LevelTileSet& tileSet = renderSystem.LevelTileSetList[TileSetId];
 
+	LevelId = levelId;
+	TileSetId = tileSetId;
 	MaterialId = tileSet.MaterialId;
 	LevelBounds = levelBounds;
 	TileIdMap = tileIdMap;
@@ -23,28 +25,28 @@ LevelLayer::~LevelLayer()
 
 void LevelLayer::Update(const float& deltaTime)
 {
-	Vector<LevelTile> updateTileList;
-	std::copy_if(TileList.begin(), TileList.end(),
+	Vector<Tile> updateTileList;
+	std::copy_if(TileMap.begin(), TileMap.end(),
 		std::back_inserter(updateTileList),
-		[](const LevelTile& obj) {
+		[](const Tile& obj) {
 			return obj.IsAnimatedTile; 
 		});
 
 	for (auto& updateTile : updateTileList)
 	{
-		updateTile.Update(deltaTime);
+		//updateTile.Update(deltaTime);
 	}
 }
 
 void LevelLayer::LoadLevelMesh()
 {
 	const LevelTileSet& tileSet = renderSystem.LevelTileSetList[TileSetId];
-	for (unsigned int x = 0; x < LevelBounds.x; x++)
+	for (unsigned int x = 0; x < LevelBounds.x - 1; x++)
 	{
-		for (unsigned int y = 0; y < LevelBounds.y; y++)
+		for (unsigned int y = 0; y < LevelBounds.y - 1; y++)
 		{
-			const uint tileId = TileIdMap[(y * LevelBounds.x) + x];
-			const LevelTile tile = TileList[tileId];
+			const uint& tileId = TileIdMap[(y * LevelBounds.x) + x];
+			const Tile& tile = tileSet.LevelTileList[tileId];
 
 			const float LefttSideUV =   tile.TileUVOffset.x * tile.TileUVOffset.x;
 			const float RightSideUV =  (tile.TileUVOffset.x * tile.TileUVOffset.x) + tile.TileUVOffset.x;
@@ -68,8 +70,10 @@ void LevelLayer::LoadLevelMesh()
 			IndexList.emplace_back(VertexCount + 2);
 			IndexList.emplace_back(VertexCount + 3);
 			IndexList.emplace_back(VertexCount);
+
+			TileMap.emplace_back(tile);
 		}
 	}
 
-	renderSystem.LevelLayerMeshList[LevelId].emplace_back(LevelLayerMesh(renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, MaterialId));
+	renderSystem.LevelLayerMeshList[LevelId].emplace_back(LevelLayerMesh(VertexList, IndexList, MaterialId));
 }
