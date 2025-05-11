@@ -8,7 +8,7 @@ SpriteBatchLayer::SpriteBatchLayer()
 
 }
 
-SpriteBatchLayer::SpriteBatchLayer(RenderPassID renderPassId)
+SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 {
 	RenderPassId = renderPassId;
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;

@@ -22,10 +22,11 @@ typedef uint UM_RenderPassID;
 typedef uint UM_RenderPipelineID;
 typedef uint UM_LevelID;
 typedef VkGuid LevelGuid;
+typedef VkGuid RenderPassGuid;
+
 class Sprite;
 class JsonPipeline;
 class JsonRenderPass;
-
 class RenderSystem
 {
     friend class JsonPipeline;
@@ -87,34 +88,21 @@ public:
     VkSwapchainKHR                                                Swapchain;
     VkPhysicalDeviceFeatures                                      PhysicalDeviceFeatures;
 
-    UnorderedMap<VkGuid, Texture>                                 TextureList;
-    UnorderedMap<VkGuid, Material>                                MaterialList;
-    UnorderedMap<VkGuid, SpriteVram>                              VramSpriteList;
-    UnorderedMap<VkGuid, LevelTileSet>                            LevelTileSetList;
+    UnorderedMap<RenderPassGuid, Texture>                         TextureList;
+    UnorderedMap<RenderPassGuid, Material>                        MaterialList;
+    UnorderedMap<RenderPassGuid, SpriteVram>                      VramSpriteList;
+    UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetList;
     UnorderedMap<LevelGuid, Vector<LevelLayerMesh>>               LevelLayerMeshList;
 
-    UnorderedMap<RenderPassID, Vector<VkGuid>>                    TextureRenderPassList;
-    UnorderedMap<RenderPassID, Vector<VkGuid>>                    MaterialRenderPassList;
-    UnorderedMap<RenderPassID, Vector<VkGuid>>                    VramSpriteRenderPassList;
-    UnorderedMap<RenderPassID, Vector<VkGuid>>                    LevelTileSetRenderPassList;
-    UnorderedMap<RenderPassID, Vector<VkGuid>>                    LevelLayerMeshRenderPassList;
-
-    UnorderedMap<RenderPassID, JsonRenderPass>                    RenderPassList;
-    UnorderedMap<RenderPassID, DepthTexture>                      DepthTextureList;
-    UnorderedMap<RenderPassID, VkRenderPassBeginInfo>             RenderPassInfoList;
-    UnorderedMap<RenderPassID, ivec2>                             RenderPassResolutionList;
-    UnorderedMap<RenderPassID, Vector<JsonPipeline>>              RenderPipelineList;
-    UnorderedMap<RenderPassID, Vector<RenderedTexture>>           RenderedTextureList;
-    UnorderedMap<RenderPassID, Vector<SpriteBatchLayer>>          SpriteBatchLayerList;
-    UnorderedMap<RenderPassID, Vector<VkClearValue>>              ClearValueList;
-    UnorderedMap<RenderPassID, RenderPassBuildInfoModel>          renderPassBuildInfoList;
-
-    UnorderedMap<RenderPassID, Vector<VkDescriptorBufferInfo>>    VertexDescriptorBufferList;
-    UnorderedMap<RenderPassID, Vector<VkDescriptorBufferInfo>>    IndexDescriptorBufferList;
-    UnorderedMap<RenderPassID, Vector<VkDescriptorBufferInfo>>    TransformDescriptorBufferList;
-    UnorderedMap<RenderPassID, Vector<VkDescriptorBufferInfo>>    MeshDescriptorBufferList;
-    UnorderedMap<RenderPassID, Vector<VkDescriptorImageInfo>>     TextureDescriptorBufferList;
-    UnorderedMap<RenderPassID, Vector<VkDescriptorBufferInfo>>    MaterialDescriptorBufferList;
+    UnorderedMap<RenderPassGuid, JsonRenderPass>                  RenderPassList;
+    UnorderedMap<RenderPassGuid, DepthTexture>                    DepthTextureList;
+    UnorderedMap<RenderPassGuid, VkRenderPassBeginInfo>           RenderPassInfoList;
+    UnorderedMap<RenderPassGuid, ivec2>                           RenderPassResolutionList;
+    UnorderedMap<RenderPassGuid, Vector<JsonPipeline>>            RenderPipelineList;
+    UnorderedMap<RenderPassGuid, Vector<RenderedTexture>>         RenderedTextureList;
+    UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerList;
+    UnorderedMap<RenderPassGuid, Vector<VkClearValue>>            ClearValueList;
+    UnorderedMap<RenderPassGuid, RenderPassBuildInfoModel>        renderPassBuildInfoList;
 
     UnorderedMap<UM_RenderPipelineID, RenderPipelineModel>        renderPipelineModelList;
     UnorderedMap<UM_RenderPipelineID, Vector<SharedPtr<Texture>>> InputTextureList;
@@ -133,12 +121,12 @@ public:
     void Update(const float& deltaTime);
     void UpdateBufferIndex();
 
-    VkCommandBuffer RenderFrameBuffer(RenderPassID renderPassId);
-    VkCommandBuffer RenderLevel(LevelGuid& levelId, RenderPassID renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
-    VkCommandBuffer RenderSprites(RenderPassID renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
+    VkCommandBuffer RenderFrameBuffer(VkGuid& renderPassId);
+    VkCommandBuffer RenderLevel(LevelGuid& levelId, VkGuid& renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
+    VkCommandBuffer RenderSprites(VkGuid& renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
  
-    RenderPassID AddRenderPass(const String& jsonPath, ivec2 renderPassResolution);
-    RenderPassID AddRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution);
+    VkGuid AddRenderPass(const String& jsonPath, ivec2 renderPassResolution);
+    VkGuid AddRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution);
     VkGuid AddSpriteVRAM(const String& spritePath);
     VkGuid AddTileSetVRAM(const String& tileSetPath);
     VkGuid LoadTexture(const String& texturePath);

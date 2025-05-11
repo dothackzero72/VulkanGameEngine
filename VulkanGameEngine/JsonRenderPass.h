@@ -17,7 +17,7 @@ protected:
 
 	void RebuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo);
 public:
-	RenderPassID RenderPassId;
+	VkGuid RenderPassId;
 
 	VkSampleCountFlagBits SampleCount;
 	VkRect2D renderArea;
@@ -29,8 +29,8 @@ public:
 	VkCommandBuffer CommandBuffer = VK_NULL_HANDLE;
 
 	JsonRenderPass();
-	JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, ivec2& renderPassResolution);
-	JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution);
+	JsonRenderPass(RenderPassBuildInfoModel& model, ivec2& renderPassResolution);
+	JsonRenderPass(RenderPassBuildInfoModel& model, Texture& inputTexture, ivec2& renderPassResolution);
 	~JsonRenderPass();
 
 	void RecreateSwapchain(int newWidth, int newHeight);

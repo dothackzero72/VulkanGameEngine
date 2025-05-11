@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 #include "Typedef.h"
 #include "json.h"
+#include "VkGuid.h"
 
 enum RenderedTextureType
 {
@@ -128,42 +129,13 @@ struct PipelineDescriptorModel
 struct RenderPassBuildInfoModel : public RenderPassEditorBaseModel
 {
 public:
+    VkGuid RenderPassId;
     bool IsRenderedToSwapchain;
     Vector<String> RenderPipelineList;
     Vector<RenderedTextureInfoModel> RenderedTextureInfoModelList;
     Vector<VkSubpassDependency> SubpassDependencyModelList;
     Vector<VkClearValue> ClearValueList;
     RenderAreaModel RenderArea;
-
-    RenderPassBuildInfoModel()
-    {
-
-    }
-
-    static RenderPassBuildInfoModel from_json(const nlohmann::json& json, ivec2 textureResolution)
-    {
-        RenderPassBuildInfoModel model;
-        model._name = json["_name"];
-        model.IsRenderedToSwapchain = json["IsRenderedToSwapchain"].get<bool>();
-        model.RenderArea = RenderAreaModel::from_json(json["RenderArea"], textureResolution);
-        for (int x = 0; x < json["RenderPipelineList"].size(); x++)
-        {
-            model.RenderPipelineList.emplace_back(json["RenderPipelineList"][x]);
-        }
-        for (int x = 0; x < json["RenderedTextureInfoModelList"].size(); x++)
-        {
-            model.RenderedTextureInfoModelList.emplace_back(RenderedTextureInfoModel::from_json(json["RenderedTextureInfoModelList"][x], textureResolution));
-        }
-        for (int x = 0; x < json["SubpassDependencyList"].size(); x++)
-        {
-            model.SubpassDependencyModelList.emplace_back(Json::LoadSubpassDependency(json["SubpassDependencyList"][x]));
-        }
-        for (int x = 0; x < json["ClearValueList"].size(); x++)
-        {
-            model.ClearValueList.emplace_back(Json::LoadClearValue(json["ClearValueList"][x]));
-        }
-        return model;
-    }
 };
 
 struct RenderPipelineModel : RenderPassEditorBaseModel

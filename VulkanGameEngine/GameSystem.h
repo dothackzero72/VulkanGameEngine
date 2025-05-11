@@ -20,9 +20,9 @@ public:
 
 	LevelGuid							LevelId;
 	VkGuid								TileSetId;
-	RenderPassID						levelRenderPass2DId;
-	RenderPassID						spriteRenderPass2DId;
-	RenderPassID						frameBufferId;
+	RenderPassGuid						levelRenderPass2DId;
+	RenderPassGuid						spriteRenderPass2DId;
+	RenderPassGuid   					frameBufferId;
 
 	GameSystem();
 	~GameSystem();

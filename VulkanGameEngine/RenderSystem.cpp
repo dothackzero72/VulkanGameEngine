@@ -76,23 +76,23 @@ void RenderSystem::Update(const float& deltaTime)
 
 void RenderSystem::RecreateSwapchain()
 {
-    int width = 0;
-    int height = 0;
+    //int width = 0;
+    //int height = 0;
 
-    vkDeviceWaitIdle(*Device.get());
+    //vkDeviceWaitIdle(*Device.get());
 
-    vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
-    renderer.DestroySwapChainImageView();
-    renderer.DestroySwapChain();
-    renderer.SetUpSwapChain();
+    //vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
+    //renderer.DestroySwapChainImageView();
+    //renderer.DestroySwapChain();
+    //renderer.SetUpSwapChain();
 
-    RenderPassID id;
-    id.id = 2;
+    //RenderPassID id;
+    //id.id = 2;
 
-    RenderPassList[id].RecreateSwapchain(width, height);
+    //RenderPassList[id].RecreateSwapchain(width, height);
 }
 
-VkCommandBuffer RenderSystem::RenderFrameBuffer(RenderPassID renderPassId)
+VkCommandBuffer RenderSystem::RenderFrameBuffer(VkGuid& renderPassId)
 {
     JsonRenderPass renderPass = RenderPassList[renderPassId];
     const JsonPipeline& pipeline = RenderPipelineList[renderPassId][0];
@@ -119,7 +119,7 @@ VkCommandBuffer RenderSystem::RenderFrameBuffer(RenderPassID renderPassId)
     return commandBuffer;
 }
 
-VkCommandBuffer RenderSystem::RenderLevel(LevelGuid& levelId, RenderPassID renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
+VkCommandBuffer RenderSystem::RenderLevel(LevelGuid& levelId, VkGuid& renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
 {
     const JsonRenderPass& renderPass = RenderPassList[renderPassId];
     const JsonPipeline& pipeline = RenderPipelineList[renderPassId][0];
@@ -155,7 +155,7 @@ VkCommandBuffer RenderSystem::RenderLevel(LevelGuid& levelId, RenderPassID rende
     return commandBuffer;
 }
 
-VkCommandBuffer RenderSystem::RenderSprites(RenderPassID renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
+VkCommandBuffer RenderSystem::RenderSprites(VkGuid& renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
 {
     const JsonRenderPass& renderPass = RenderPassList[renderPassId];
     const JsonPipeline& pipeline = RenderPipelineList[renderPassId][0];
@@ -194,20 +194,64 @@ VkCommandBuffer RenderSystem::RenderSprites(RenderPassID renderPassId, const flo
     return commandBuffer;
 }
 
-RenderPassID RenderSystem::AddRenderPass(const String& jsonPath, ivec2 renderPassResolution)
+VkGuid RenderSystem::AddRenderPass(const String& jsonPath, ivec2 renderPassResolution)
 {
-    RenderPassID id;
-    id.id = RenderPassList.size() + 1;
-    RenderPassList[id] = JsonRenderPass(id, jsonPath, renderPassResolution);
-    return id;
+    nlohmann::json json = Json::ReadJson(jsonPath);
+
+    RenderPassBuildInfoModel model;
+    model._name = json["_name"];
+    model.RenderPassId = VkGuid(json["RenderPassId"].get<String>().c_str());
+    model.IsRenderedToSwapchain = json["IsRenderedToSwapchain"].get<bool>();
+    model.RenderArea = RenderAreaModel::from_json(json["RenderArea"], renderPassResolution);
+    for (int x = 0; x < json["RenderPipelineList"].size(); x++)
+    {
+        model.RenderPipelineList.emplace_back(json["RenderPipelineList"][x]);
+    }
+    for (int x = 0; x < json["RenderedTextureInfoModelList"].size(); x++)
+    {
+        model.RenderedTextureInfoModelList.emplace_back(RenderedTextureInfoModel::from_json(json["RenderedTextureInfoModelList"][x], renderPassResolution));
+    }
+    for (int x = 0; x < json["SubpassDependencyList"].size(); x++)
+    {
+        model.SubpassDependencyModelList.emplace_back(Json::LoadSubpassDependency(json["SubpassDependencyList"][x]));
+    }
+    for (int x = 0; x < json["ClearValueList"].size(); x++)
+    {
+        model.ClearValueList.emplace_back(Json::LoadClearValue(json["ClearValueList"][x]));
+    }
+
+    RenderPassList[model.RenderPassId] = JsonRenderPass(model, renderPassResolution);
+    return model.RenderPassId;
 }
 
-RenderPassID RenderSystem::AddRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
+VkGuid RenderSystem::AddRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
 {
-    RenderPassID id;
-    id.id = RenderPassList.size() + 1;
-    RenderPassList[id] = JsonRenderPass(id, jsonPath, inputTexture, renderPassResolution);
-    return id;
+    nlohmann::json json = Json::ReadJson(jsonPath);
+
+    RenderPassBuildInfoModel model;
+    model._name = json["_name"];
+    model.RenderPassId = VkGuid(json["RenderPassId"].get<String>().c_str());
+    model.IsRenderedToSwapchain = json["IsRenderedToSwapchain"].get<bool>();
+    model.RenderArea = RenderAreaModel::from_json(json["RenderArea"], renderPassResolution);
+    for (int x = 0; x < json["RenderPipelineList"].size(); x++)
+    {
+        model.RenderPipelineList.emplace_back(json["RenderPipelineList"][x]);
+    }
+    for (int x = 0; x < json["RenderedTextureInfoModelList"].size(); x++)
+    {
+        model.RenderedTextureInfoModelList.emplace_back(RenderedTextureInfoModel::from_json(json["RenderedTextureInfoModelList"][x], renderPassResolution));
+    }
+    for (int x = 0; x < json["SubpassDependencyList"].size(); x++)
+    {
+        model.SubpassDependencyModelList.emplace_back(Json::LoadSubpassDependency(json["SubpassDependencyList"][x]));
+    }
+    for (int x = 0; x < json["ClearValueList"].size(); x++)
+    {
+        model.ClearValueList.emplace_back(Json::LoadClearValue(json["ClearValueList"][x]));
+    }
+
+    RenderPassList[model.RenderPassId] = JsonRenderPass(model, inputTexture, renderPassResolution);
+    return model.RenderPassId;
 }
 
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetVertexPropertiesBuffer()

@@ -166,5 +166,6 @@
     "UseDefaultRenderArea": true
   },
   "IsRenderedToSwapchain": false,
-  "_name": "Default2DRenderPass"
+  "_name": "Default2DRenderPass",
+  "RenderPassId": "bc8eb7af-8d28-41b6-9ac4-10c5eb84c304"
 }

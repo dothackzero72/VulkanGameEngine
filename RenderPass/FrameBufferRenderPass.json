@@ -99,5 +99,6 @@
     "UseDefaultRenderArea": true
   },
   "_name": "BasicRenderPass",
-  "IsRenderedToSwapchain": true
+  "IsRenderedToSwapchain": true,
+  "RenderPassId": "76db13ab-75ab-4fb1-ae02-0c6dfb447856"
 }

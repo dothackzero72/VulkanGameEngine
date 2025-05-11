@@ -10,13 +10,12 @@ JsonRenderPass::JsonRenderPass()
 {
 }
 
-JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, ivec2& renderPassResolution)
+JsonRenderPass::JsonRenderPass(RenderPassBuildInfoModel& model, ivec2& renderPassResolution)
 {
-    RenderPassId = renderPassIndex;
+    RenderPassId = model.RenderPassId;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
-    nlohmann::json json = Json::ReadJson(jsonPath);
-    renderSystem.renderPassBuildInfoList[RenderPassId] = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
+    renderSystem.renderPassBuildInfoList[RenderPassId] = model;
     renderSystem.RenderPassResolutionList[RenderPassId] = renderPassResolution;
     UseFrameBufferResolution = renderSystem.renderPassBuildInfoList[RenderPassId].IsRenderedToSwapchain;
 
@@ -42,32 +41,30 @@ JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonP
     };
 }
 
-JsonRenderPass::JsonRenderPass(RenderPassID renderPassIndex, const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution)
+JsonRenderPass::JsonRenderPass(RenderPassBuildInfoModel& model, Texture& inputTexture, ivec2& renderPassResolution)
 {
-    RenderPassId = renderPassIndex;
+    RenderPassId = model.RenderPassId;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
-    nlohmann::json json = Json::ReadJson(jsonPath);
-    RenderPassBuildInfoModel renderPassBuildInfo = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
-    renderSystem.renderPassBuildInfoList[RenderPassId] = RenderPassBuildInfoModel::from_json(json, renderPassResolution);
+    renderSystem.renderPassBuildInfoList[RenderPassId] = model;
     renderSystem.RenderPassResolutionList[RenderPassId] = renderPassResolution;
     UseFrameBufferResolution = renderSystem.renderPassBuildInfoList[RenderPassId].IsRenderedToSwapchain;
 
-    BuildRenderPass(renderPassBuildInfo);
-    BuildFrameBuffer(renderPassBuildInfo);
+    BuildRenderPass(renderSystem.renderPassBuildInfoList[RenderPassId]);
+    BuildFrameBuffer(renderSystem.renderPassBuildInfoList[RenderPassId]);
     BuildCommandBuffer();
 
     uint id = renderSystem.RenderPipelineList.size();
     renderSystem.InputTextureList[id].emplace_back(std::make_shared<Texture>(inputTexture));
     renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(id, renderSystem.renderPassBuildInfoList[RenderPassId].RenderPipelineList[0], RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
-    renderArea = renderPassBuildInfo.RenderArea.RenderArea;
-    renderSystem.ClearValueList[RenderPassId] = renderPassBuildInfo.ClearValueList;
+    renderArea = renderSystem.renderPassBuildInfoList[RenderPassId].RenderArea.RenderArea;
+    renderSystem.ClearValueList[RenderPassId] = renderSystem.renderPassBuildInfoList[RenderPassId].ClearValueList;
     renderSystem.RenderPassInfoList[RenderPassId] = VkRenderPassBeginInfo
     {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = RenderPass,
         .framebuffer = FrameBufferList[cRenderer.ImageIndex],
-        .renderArea = renderPassBuildInfo.RenderArea.RenderArea,
+        .renderArea = renderSystem.renderPassBuildInfoList[RenderPassId].RenderArea.RenderArea,
         .clearValueCount = static_cast<uint32>(renderSystem.ClearValueList[RenderPassId].size()),
         .pClearValues = renderSystem.ClearValueList[RenderPassId].data()
     };

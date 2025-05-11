@@ -11,12 +11,12 @@ private:
 	static uint32 NextSpriteBatchLayerID;
 
 public:
-	RenderPassID RenderPassId;
+	VkGuid RenderPassId;
 	uint SpriteBatchLayerID = 0;
 	uint SpriteLayerMeshId = 0;
 
 	SpriteBatchLayer();
-	SpriteBatchLayer(RenderPassID renderPassId);
+	SpriteBatchLayer(VkGuid& renderPassId);
 	~SpriteBatchLayer();
 
 	void Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
