@@ -370,15 +370,30 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer()
     return meshPropertiesBuffer;
 }
 
-const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(Vector<SharedPtr<Texture>>& renderedTextureList)
+const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<Texture>>& renderedTextureList)
 {
     Vector<Texture> textureList;
     if (renderedTextureList.empty())
     {
-        textureList.reserve(TextureList.size());
+   /*     textureList.reserve(TextureList.size());
         std::transform(TextureList.begin(), TextureList.end(),
             std::back_inserter(textureList),
             [](const auto& pair) { return pair.second; });
+
+        std::copy_if(myList.begin(), myList.end(), std::back_inserter(textureList),
+            [targetId](const Texture& item) {
+                return item.RenderPassIds == targetId;
+            });*/
+        for (auto& texture : TextureList)
+        {
+            for (auto& renderPass : texture.second.RenderPassIds)
+            {
+                if (renderPass == renderPassId)
+                {
+                    textureList.emplace_back(texture.second);
+                }
+            }
+        }
     }
     else
     {
@@ -436,13 +451,24 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(Vec
     return texturePropertiesBuffer;
 }
 
-const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer()
+const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer(VkGuid& renderPassId)
 {
     Vector<Material> materialList;
-    materialList.reserve(MaterialList.size());
-    std::transform(MaterialList.begin(), MaterialList.end(),
-        std::back_inserter(materialList),
-        [](const auto& pair) { return pair.second; });
+    for (auto& material : MaterialList)
+    {
+        for (auto& renderPass : material.second.RenderPassIds)
+        {
+            if (renderPass == renderPassId)
+            {
+                materialList.emplace_back(material.second);
+            }
+        }
+    }
+
+    //materialList.reserve(MaterialList.size());
+    //std::transform(MaterialList.begin(), MaterialList.end(),
+    //    std::back_inserter(materialList),
+    //    [](const auto& pair) { return pair.second; });
 
     std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
     if (materialList.empty())

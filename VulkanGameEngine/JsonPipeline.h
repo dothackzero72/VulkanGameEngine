@@ -3,6 +3,7 @@
 #include "json.h"
 #include "Typedef.h"
 #include "ECSid.h"
+#include "VkGuid.h"
 
 class JsonPipeline
 {
@@ -17,7 +18,7 @@ public:
     VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 
     JsonPipeline();
-    JsonPipeline(uint renderPipelineId, String jsonPath, VkRenderPass renderPass, uint constBufferSize, ivec2& renderPassResolution);
+    JsonPipeline(VkGuid& renderPassId, uint renderPipelineId, String jsonPath, VkRenderPass renderPass, uint constBufferSize, ivec2& renderPassResolution);
     ~JsonPipeline();
 
     void RecreateSwapchain(VkRenderPass renderPass, uint constBufferSize, int newWidth, int newHeight);
