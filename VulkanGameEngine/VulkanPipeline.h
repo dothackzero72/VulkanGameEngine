@@ -11,6 +11,7 @@ struct GPUIncludes
 	Vector<VkDescriptorBufferInfo> indexProperties;
 	Vector<VkDescriptorBufferInfo> transformProperties;
 	Vector<VkDescriptorBufferInfo> meshProperties;
+	Vector<VkDescriptorBufferInfo> LevelLayermeshProperties;
 	Vector<VkDescriptorImageInfo>  texturePropertiesList;
 	Vector<VkDescriptorBufferInfo> materialProperties;
 };

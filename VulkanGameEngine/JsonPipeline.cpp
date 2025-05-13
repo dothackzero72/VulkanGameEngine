@@ -7,7 +7,7 @@ JsonPipeline::JsonPipeline()
 {
 }
 
-JsonPipeline::JsonPipeline(VkGuid& renderPassId, uint renderPipelineId, String jsonPath, VkRenderPass renderPass, uint constBufferSize, ivec2& renderPassResolution)
+JsonPipeline::JsonPipeline(VkGuid& renderPassId, VkGuid& levelLayerId, uint renderPipelineId, String jsonPath, VkRenderPass renderPass, uint constBufferSize, ivec2& renderPassResolution)
 {
     RenderPipelineId = renderPipelineId;
     nlohmann::json json = Json::ReadJson(jsonPath);
@@ -18,7 +18,7 @@ JsonPipeline::JsonPipeline(VkGuid& renderPassId, uint renderPipelineId, String j
         .vertexProperties = renderSystem.GetVertexPropertiesBuffer(),
         .indexProperties = renderSystem.GetIndexPropertiesBuffer(),
         //        .transformProperties = renderSystem.GetTransformPropertiesBuffer(gpuImport.MeshList),
-        .meshProperties = renderSystem.GetMeshPropertiesBuffer(),
+        .meshProperties = renderSystem.GetMeshPropertiesBuffer(levelLayerId),
         .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderPassId, renderSystem.InputTextureList[RenderPipelineId]),
         .materialProperties = renderSystem.GetMaterialPropertiesBuffer(renderPassId)
     };

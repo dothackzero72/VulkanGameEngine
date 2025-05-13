@@ -56,13 +56,6 @@ void RenderSystem::Update(const float& deltaTime)
 
     for (auto& renderPass : RenderPassList)
     {
-   /*     if (SpriteBatchLayerList.find(renderPass.second.RenderPassId) != SpriteBatchLayerList.end())
-        {
-            for (auto& spriteLayer : SpriteBatchLayerList[renderPass.second.RenderPassId])
-            {
-                spriteLayer.Update(commandBuffer, deltaTime);
-            }
-        }*/
         if (SpriteBatchLayerList.find(renderPass.second.RenderPassId) != SpriteBatchLayerList.end())
         {
             for (auto& spriteLayer : SpriteBatchLayerList[renderPass.second.RenderPassId])
@@ -146,8 +139,8 @@ VkCommandBuffer RenderSystem::RenderLevel(LevelGuid& levelId, VkGuid& renderPass
         vkCmdPushConstants(commandBuffer, pipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, levelLayer.GetVertexBuffer().get(), offsets);
-        vkCmdBindIndexBuffer(commandBuffer, *levelLayer.GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &levelLayer.MeshVertexBuffer.Buffer, offsets);
+        vkCmdBindIndexBuffer(commandBuffer, levelLayer.MeshIndexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, levelLayer.IndexCount, 1, 0, 0, 0);
     }
     vkCmdEndRenderPass(commandBuffer);
@@ -179,14 +172,15 @@ VkCommandBuffer RenderSystem::RenderSprites(VkGuid& renderPassId, const float de
     {
         const Vector<SpriteInstanceStruct>& spriteInstanceList = SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
         const SpriteInstanceBuffer& spriteInstanceBuffer = SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID];
+        const SpriteMesh& spriteMesh = SpriteMeshList[spriteLayer.SpriteLayerMeshId];
 
         VkDeviceSize offsets[] = { 0 };
         vkCmdPushConstants(commandBuffer, pipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, SpriteMeshList[spriteLayer.SpriteLayerMeshId].GetVertexBuffer().get(), offsets);
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &spriteMesh.MeshVertexBuffer.Buffer, offsets);
         vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
-        vkCmdBindIndexBuffer(commandBuffer, *SpriteMeshList[spriteLayer.SpriteLayerMeshId].GetIndexBuffer().get(), 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(commandBuffer, spriteMesh.MeshIndexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
     }
     vkCmdEndRenderPass(commandBuffer);
@@ -194,7 +188,7 @@ VkCommandBuffer RenderSystem::RenderSprites(VkGuid& renderPassId, const float de
     return commandBuffer;
 }
 
-VkGuid RenderSystem::AddRenderPass(const String& jsonPath, ivec2 renderPassResolution)
+VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec2 renderPassResolution)
 {
     nlohmann::json json = Json::ReadJson(jsonPath);
 
@@ -220,11 +214,11 @@ VkGuid RenderSystem::AddRenderPass(const String& jsonPath, ivec2 renderPassResol
         model.ClearValueList.emplace_back(Json::LoadClearValue(json["ClearValueList"][x]));
     }
 
-    RenderPassList[model.RenderPassId] = JsonRenderPass(model, renderPassResolution);
+    RenderPassList[model.RenderPassId] = JsonRenderPass(levelId, model, renderPassResolution);
     return model.RenderPassId;
 }
 
-VkGuid RenderSystem::AddRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
+VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
 {
     nlohmann::json json = Json::ReadJson(jsonPath);
 
@@ -250,7 +244,7 @@ VkGuid RenderSystem::AddRenderPass(const String& jsonPath, Texture& inputTexture
         model.ClearValueList.emplace_back(Json::LoadClearValue(json["ClearValueList"][x]));
     }
 
-    RenderPassList[model.RenderPassId] = JsonRenderPass(model, inputTexture, renderPassResolution);
+    RenderPassList[model.RenderPassId] = JsonRenderPass(levelId, model, inputTexture, renderPassResolution);
     return model.RenderPassId;
 }
 
@@ -341,13 +335,34 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetGameObjectTransformBuffer(
     return transformPropertiesBuffer;
 }
 
-const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer()
+const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGuid& levelLayerId)
 {
     Vector<SpriteMesh> meshList;
-    meshList.reserve(renderSystem.SpriteMeshList.size());
-    std::transform(renderSystem.SpriteMeshList.begin(), renderSystem.SpriteMeshList.end(),
-        std::back_inserter(meshList),
-        [](const auto& pair) { return pair.second; });
+    if (levelLayerId == VkGuid())
+    {
+        /*   meshList.reserve(renderSystem.SpriteMeshList.size());
+           std::transform(renderSystem.SpriteMeshList.begin(), renderSystem.SpriteMeshList.end(),
+               std::back_inserter(meshList),
+               [](const auto& pair) { return pair.second; });*/
+
+        for (auto& sprite : SpriteMeshList)
+        {
+            meshList.emplace_back(sprite.second);
+
+        }
+    }
+    else
+    {
+        /*      meshList.reserve(renderSystem.LevelLayerMeshList.size());
+              std::transform(renderSystem.LevelLayerMeshList.begin(), renderSystem.LevelLayerMeshList.end(),
+                  std::back_inserter(meshList),
+                  [](const auto& pair) { return pair.second; });*/
+
+        for (auto& layer : LevelLayerMeshList[levelLayerId])
+        {
+            meshList.emplace_back(layer);
+        }
+    }
 
     Vector<VkDescriptorBufferInfo> meshPropertiesBuffer;
     if (meshList.empty())
@@ -369,6 +384,7 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer()
 
     return meshPropertiesBuffer;
 }
+
 
 const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<Texture>>& renderedTextureList)
 {

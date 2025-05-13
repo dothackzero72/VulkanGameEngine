@@ -1,4 +1,4 @@
-#version 460
+#version 450
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_EXT_nonuniform_qualifier : enable
 #extension GL_KHR_Vulkan_GLSL : enable 
@@ -10,64 +10,49 @@ layout (location = 1)  in vec2  VS_UV;
 
 layout (location = 0) out vec3  PS_Position;
 layout (location = 1) out vec2  PS_UV;
-layout (location = 2) out uint  PS_MaterialID;
 
-layout(push_constant) uniform SceneDataBuffer
-{
-    int	 MeshBufferIndex;
-	mat4 Projection;
-	mat4 View;
-	vec3 CameraPosition;
-}sceneData;
+layout(push_constant) uniform SceneDataBuffer {
+    int MeshBufferIndex;
+    mat4 Projection;
+    mat4 View;
+    vec3 CameraPosition;
+} sceneData;
 
-struct MeshProperitiesBuffer
+layout(binding = 0) buffer meshPropertiesBuffer
 {
-	uint   MaterialIndex;
+	int	   MaterialIndex;
 	mat4   MeshTransform;
-};
-
-struct MaterialProperitiesBuffer
-{
-	vec3 Albedo;
-	float Metallic;
-	float Roughness;
-	float AmbientOcclusion;
-	vec3 Emission;
-	float Alpha;
-
-	uint AlbedoMap;
-	uint MetallicRoughnessMap;
-	uint MetallicMap;
-	uint RoughnessMap;
-	uint AmbientOcclusionMap;
-	uint NormalMap;
-	uint DepthMap;
-	uint AlphaMap;
-	uint EmissionMap;
-	uint HeightMap;
-};
-
-struct Vertex2D
-{
-	vec2 Position;
-	vec2 UV;
-};
-
-layout(binding = 0) readonly buffer MeshProperities { MeshProperitiesBuffer meshProperties; } meshBuffer[];
+} meshProperties[];
 layout(binding = 1) uniform sampler2D TextureMap[];
-layout(binding = 2) buffer MaterialProperities { MaterialProperitiesBuffer materialProperties; } materialBuffer[];
+layout(binding = 2) buffer MaterialPropertiesBuffer {
+    vec3 Albedo;
+    float Metallic;
+    float Roughness;
+    float AmbientOcclusion;
+    vec3 Emission;
+    float Alpha;
+    uint AlbedoMap;
+    uint MetallicRoughnessMap;
+    uint MetallicMap;
+    uint RoughnessMap;
+    uint AmbientOcclusionMap;
+    uint NormalMap;
+    uint DepthMap;
+    uint AlphaMap;
+    uint EmissionMap;
+    uint HeightMap;
+} materialBuffer[];
 
-void main() 
+void main()
 {
-	MeshProperitiesBuffer meshProperties = meshBuffer[sceneData.MeshBufferIndex].meshProperties;
+    int meshIndex = sceneData.MeshBufferIndex;
+    mat4 meshTransform = meshProperties[meshIndex].MeshTransform;
 
-    PS_Position = vec3(meshProperties.MeshTransform * vec4(VS_Position.xy, 0.0f, 1.0f));
-	PS_UV = VS_UV;
-	PS_MaterialID = meshProperties.MaterialIndex;
-
+    PS_Position = vec3(meshTransform * vec4(VS_Position.xy, 0.0f, 1.0f));
+	PS_UV = VS_UV.xy;
 
     gl_Position = sceneData.Projection * 
                   sceneData.View *  
-                  meshProperties.MeshTransform *
+                  meshTransform *
                   vec4(VS_Position.xy, 0.0f, 1.0f);
 }

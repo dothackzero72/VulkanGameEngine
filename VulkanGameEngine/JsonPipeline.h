@@ -18,7 +18,7 @@ public:
     VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 
     JsonPipeline();
-    JsonPipeline(VkGuid& renderPassId, uint renderPipelineId, String jsonPath, VkRenderPass renderPass, uint constBufferSize, ivec2& renderPassResolution);
+    JsonPipeline(VkGuid& renderPassId, VkGuid& levelLayerId, uint renderPipelineId, String jsonPath, VkRenderPass renderPass, uint constBufferSize, ivec2& renderPassResolution);
     ~JsonPipeline();
 
     void RecreateSwapchain(VkRenderPass renderPass, uint constBufferSize, int newWidth, int newHeight);

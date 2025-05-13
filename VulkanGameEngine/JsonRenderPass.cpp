@@ -10,7 +10,7 @@ JsonRenderPass::JsonRenderPass()
 {
 }
 
-JsonRenderPass::JsonRenderPass(RenderPassBuildInfoModel& model, ivec2& renderPassResolution)
+JsonRenderPass::JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model, ivec2& renderPassResolution)
 {
     RenderPassId = model.RenderPassId;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -25,7 +25,7 @@ JsonRenderPass::JsonRenderPass(RenderPassBuildInfoModel& model, ivec2& renderPas
 
 
     uint id = renderSystem.RenderPipelineList.size();
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(RenderPassId, id, renderSystem.renderPassBuildInfoList[RenderPassId].RenderPipelineList[0], RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(RenderPassId, levelId, id, renderSystem.renderPassBuildInfoList[RenderPassId].RenderPipelineList[0], RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
 
     renderSystem.ClearValueList[RenderPassId] = renderSystem.renderPassBuildInfoList[RenderPassId].ClearValueList;
@@ -41,7 +41,7 @@ JsonRenderPass::JsonRenderPass(RenderPassBuildInfoModel& model, ivec2& renderPas
     };
 }
 
-JsonRenderPass::JsonRenderPass(RenderPassBuildInfoModel& model, Texture& inputTexture, ivec2& renderPassResolution)
+JsonRenderPass::JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model, Texture& inputTexture, ivec2& renderPassResolution)
 {
     RenderPassId = model.RenderPassId;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -56,7 +56,7 @@ JsonRenderPass::JsonRenderPass(RenderPassBuildInfoModel& model, Texture& inputTe
 
     uint id = renderSystem.RenderPipelineList.size();
     renderSystem.InputTextureList[id].emplace_back(std::make_shared<Texture>(inputTexture));
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(RenderPassId, id, renderSystem.renderPassBuildInfoList[RenderPassId].RenderPipelineList[0], RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
+    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(RenderPassId, levelId, id, renderSystem.renderPassBuildInfoList[RenderPassId].RenderPipelineList[0], RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
     renderArea = renderSystem.renderPassBuildInfoList[RenderPassId].RenderArea.RenderArea;
     renderSystem.ClearValueList[RenderPassId] = renderSystem.renderPassBuildInfoList[RenderPassId].ClearValueList;
     renderSystem.RenderPassInfoList[RenderPassId] = VkRenderPassBeginInfo

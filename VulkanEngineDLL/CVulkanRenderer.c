@@ -29,8 +29,22 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     }
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType, const VkDebugUtilsMessengerCallbackDataEXT* CallBackData, void* UserData)
+VkBool32 VKAPI_CALL Vulkan_DebugCallBack(
+    VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT MessageType,
+    const VkDebugUtilsMessengerCallbackDataEXT* CallBackData,
+    void* UserData)
 {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hConsole == INVALID_HANDLE_VALUE) {
+        printf("Failed to get console handle.\n");
+        return 1;
+    }
+
+    CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+    WORD originalAttributes = consoleInfo.wAttributes;
+
     RichTextBoxCallback callback = (RichTextBoxCallback)UserData;
     if (callback)
     {
@@ -39,29 +53,43 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
     else
     {
         char message[4096];
-        snprintf(message, sizeof(message), "Vulkan Message [Severity: %d, Type: %d]: %s",
-            MessageSeverity, MessageType, CallBackData->pMessage);
+        snprintf(message, sizeof(message), "%s", CallBackData->pMessage);
 
         switch (MessageSeverity)
         {
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-            fprintf(stdout, "VERBOSE: %s\n", message);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+            fprintf(stdout, "VERBOSE: ");
+            SetConsoleTextAttribute(hConsole, originalAttributes);
+            fprintf(stdout, "%s\n", message);
             break;
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-            fprintf(stdout, "INFO: %s\n", message);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+            fprintf(stdout, "INFO: ");
+            SetConsoleTextAttribute(hConsole, originalAttributes);
+            fprintf(stdout, "%s\n", message);
             break;
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-            fprintf(stderr, "WARNING: %s\n", message);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+            fprintf(stdout, "WARNING: ");
+            SetConsoleTextAttribute(hConsole, originalAttributes);
+            fprintf(stdout, "%s\n", message);
             break;
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-            fprintf(stderr, "ERROR: %s\n", message);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+            fprintf(stdout, "ERROR: ");
+            SetConsoleTextAttribute(hConsole, originalAttributes);
+            fprintf(stdout, "%s\n", message);
             break;
         default:
             fprintf(stderr, "UNKNOWN SEVERITY: %s\n", message);
             break;
         }
+
         if (callback)
+        {
             callback(message);
+        }
     }
     return VK_FALSE;
 }

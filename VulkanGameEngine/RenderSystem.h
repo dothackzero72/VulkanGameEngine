@@ -61,7 +61,7 @@ private:
     const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer();
     const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer();
     const Vector<VkDescriptorBufferInfo> GetGameObjectTransformBuffer();
-    const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer();
+    const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer(VkGuid& levelLayerId);
     const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<Texture>>& renderedTextureList);
     const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer(VkGuid& renderPassId);
 
@@ -125,8 +125,8 @@ public:
     VkCommandBuffer RenderLevel(LevelGuid& levelId, VkGuid& renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
     VkCommandBuffer RenderSprites(VkGuid& renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
  
-    VkGuid AddRenderPass(const String& jsonPath, ivec2 renderPassResolution);
-    VkGuid AddRenderPass(const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution);
+    VkGuid AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec2 renderPassResolution);
+    VkGuid AddRenderPass(VkGuid& levelId, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution);
     VkGuid AddSpriteVRAM(const String& spritePath);
     VkGuid AddTileSetVRAM(const String& tileSetPath);
     VkGuid LoadTexture(const String& texturePath);

@@ -1,68 +1,57 @@
-#version 460
+#version 450
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_EXT_nonuniform_qualifier : enable
+#extension GL_KHR_Vulkan_GLSL : enable 
 #extension GL_EXT_scalar_block_layout : enable
 #extension GL_EXT_debug_printf : enable
 
-layout (location = 0) in vec3  PS_Position;
-layout (location = 1) in vec2  PS_UV;
-layout (location = 2) in uint  PS_MaterialID;
+layout(location = 0) in vec3 inPS_Position; 
+layout(location = 1) in vec2 inPS_UV;    
 
-layout(location = 0) out vec4 OutputColor;
+layout(location = 0) out vec4 outColor;
 
-layout(push_constant) uniform SceneDataBuffer
-{
-	int	 MeshBufferIndex;
-	mat4 Projection;
-	mat4 View;
-	vec3 CameraPosition;
-}sceneData;
+layout(push_constant) uniform SceneDataBuffer {
+    int MeshBufferIndex;
+    mat4 Projection;
+    mat4 View;
+    vec3 CameraPosition;
+} sceneData;
 
-struct MeshProperitiesBuffer
+layout(binding = 0) buffer MeshProperitiesBuffer
 {
 	int	   MaterialIndex;
 	mat4   MeshTransform;
-};
-
-struct MaterialProperitiesBuffer
-{
-	vec3 Albedo;
-	float Metallic;
-	float Roughness;
-	float AmbientOcclusion;
-	vec3 Emission;
-	float Alpha;
-
-	uint AlbedoMap;
-	uint MetallicRoughnessMap;
-	uint MetallicMap;
-	uint RoughnessMap;
-	uint AmbientOcclusionMap;
-	uint NormalMap;
-	uint DepthMap;
-	uint AlphaMap;
-	uint EmissionMap;
-	uint HeightMap;
-};
-
-layout(binding = 0) buffer MeshProperities { MeshProperitiesBuffer meshProperties; } meshBuffer[];
+} meshProperities[];
 layout(binding = 1) uniform sampler2D TextureMap[];
-layout(binding = 2) buffer MaterialProperities { MaterialProperitiesBuffer materialProperties; } materialBuffer[];
+layout(binding = 2) buffer MaterialProperitiesBuffer {
+    vec3 Albedo;
+    float Metallic;
+    float Roughness;
+    float AmbientOcclusion;
+    vec3 Emission;
+    float Alpha;
+    uint AlbedoMap;
+    uint MetallicRoughnessMap;
+    uint MetallicMap;
+    uint RoughnessMap;
+    uint AmbientOcclusionMap;
+    uint NormalMap;
+    uint DepthMap;
+    uint AlphaMap;
+    uint EmissionMap;
+    uint HeightMap;
+} materialBuffer[];
 
-void main() 
+void main()
 {
-	MaterialProperitiesBuffer material = materialBuffer[PS_MaterialID].materialProperties;
+    vec4 albedoColor = texture(TextureMap[materialBuffer[meshProperities[sceneData.MeshBufferIndex].MaterialIndex].AlbedoMap], inPS_UV);
+    vec3 Albedo = albedoColor.rgb;
+    float Alpha = albedoColor.a;
 
-	vec2 UV = PS_UV;
-	vec4 albedoColor = texture(TextureMap[material.AlbedoMap], UV);
-	material.Albedo = albedoColor.rgb;
-	material.Alpha = albedoColor.a;
-	
-	if(material.Alpha == 0.0f)
-	{
-		discard;
-	}
-  
-    float gamma = 2.2f;
-    OutputColor = vec4(pow(material.Albedo.rgb, vec3(1.0f/gamma)), material.Alpha);
+    if (Alpha == 0.0)
+        discard;
+
+    float gamma = 2.2;
+    vec3 color = pow(Albedo, vec3(1.0 / gamma));
+    outColor = vec4(color, Alpha);
 }

@@ -1,6 +1,6 @@
 {
-  "VertexShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\SpriteVertexShader.hlsl",
-  "FragmentShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\SpritePixelShader.hlsl",
+  "VertexShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\SpriteInstanceShaderVert.spv",
+  "FragmentShader": "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Shaders\\SpriteInstanceShaderFrag.spv",
   "ViewportList": [
     {
       "x": 0,

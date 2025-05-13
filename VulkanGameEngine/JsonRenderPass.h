@@ -29,8 +29,8 @@ public:
 	VkCommandBuffer CommandBuffer = VK_NULL_HANDLE;
 
 	JsonRenderPass();
-	JsonRenderPass(RenderPassBuildInfoModel& model, ivec2& renderPassResolution);
-	JsonRenderPass(RenderPassBuildInfoModel& model, Texture& inputTexture, ivec2& renderPassResolution);
+	JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model, ivec2& renderPassResolution);
+	JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model, Texture& inputTexture, ivec2& renderPassResolution);
 	~JsonRenderPass();
 
 	void RecreateSwapchain(int newWidth, int newHeight);

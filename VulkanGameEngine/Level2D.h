@@ -7,7 +7,7 @@
 
 class Level2D
 {
-private:
+public:
 	VkGuid				 LevelId;
 	VkGuid				 TileSetId;
 	Vector<VkGuid>		 RenderPassIds;
@@ -15,7 +15,6 @@ private:
 	Vector<Vector<uint>> TileIdMapLayers;
 	Vector<LevelLayer>	 LevelLayerList;
 
-public:
 	Level2D();
 	Level2D(const Vector<VkGuid>& RenderPassIds, const VkGuid& levelId, const VkGuid& tileSetId, const ivec2& levelBounds, const Vector<Vector<uint>>& tileIdMapLayers);
 	~Level2D();
