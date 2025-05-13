@@ -75,16 +75,16 @@ void GameSystem::LoadLevel()
 
     assetManager.AnimationList[0] = Animation2D
     {
-        .FrameHoldTime = 0.2f,
+        .FrameHoldTime = 1.0f,
         .AnimationFrameId = 0
     };
     assetManager.AnimationList[1] = Animation2D
     {
-        .FrameHoldTime = 0.2f,
+        .FrameHoldTime = 0.3f,
         .AnimationFrameId = 1
     };
 
-    for (int x = 0; x < 5; x++)
+    for (int x = 0; x < 1; x++)
     {
         assetManager.CreateGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kInputComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
     }
@@ -93,8 +93,7 @@ void GameSystem::LoadLevel()
     Level = Level2D(renderPassIds, VkGuid::GenerateGUID(), TileSetId, renderSystem.levelLayout.LevelBounds, renderSystem.levelLayout.LevelMapList);
 
     VkGuid dummyGuid = VkGuid();
-    levelRenderPass2DId = renderSystem.AddRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
-    spriteRenderPass2DId = renderSystem.AddRenderPass(dummyGuid, "../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
+    spriteRenderPass2DId = renderSystem.AddRenderPass(Level.LevelId, "../RenderPass/Default2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
     frameBufferId = renderSystem.AddRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", renderSystem.RenderedTextureList[spriteRenderPass2DId][0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
 }
 
@@ -144,7 +143,7 @@ void GameSystem::Update(const float& deltaTime)
     }
     renderer.EndSingleTimeCommands(commandBuffer);
 
-   // Level.Update(deltaTime);
+    Level.Update(deltaTime);
 
 }
 
@@ -164,8 +163,7 @@ void GameSystem::DebugUpdate(const float& deltaTime)
 void GameSystem::Draw(const float& deltaTime)
 {
     VULKAN_RESULT(renderer.StartFrame());
-    CommandBufferSubmitList.emplace_back(renderSystem.RenderLevel(Level.LevelId, levelRenderPass2DId, deltaTime, SceneProperties));
-    CommandBufferSubmitList.emplace_back(renderSystem.RenderSprites(spriteRenderPass2DId, deltaTime, SceneProperties));
+    CommandBufferSubmitList.emplace_back(renderSystem.RenderLevel(spriteRenderPass2DId, Level.LevelId, deltaTime, SceneProperties));
     CommandBufferSubmitList.emplace_back(renderSystem.RenderFrameBuffer(frameBufferId));
    // CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
     VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));

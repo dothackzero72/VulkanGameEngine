@@ -122,8 +122,7 @@ public:
     void UpdateBufferIndex();
 
     VkCommandBuffer RenderFrameBuffer(VkGuid& renderPassId);
-    VkCommandBuffer RenderLevel(LevelGuid& levelId, VkGuid& renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
-    VkCommandBuffer RenderSprites(VkGuid& renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
+    VkCommandBuffer RenderLevel(VkGuid& renderPassId, VkGuid& levelId, const float deltaTime, SceneDataBuffer& sceneDataBuffer);
  
     VkGuid AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec2 renderPassResolution);
     VkGuid AddRenderPass(VkGuid& levelId, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution);

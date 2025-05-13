@@ -56,10 +56,10 @@ void LevelLayer::LoadLevelMesh()
 			const float BottomSideUV = (tileSet.TileUVSize.y * tile.TileUVOffset.y) + tileSet.TileUVSize.y;
 
 			const uint VertexCount = VertexList.size();
-			const Vertex2D BottomLeftVertex =  { {  x * tileSet.TilePixelSize.x,						      y * tileSet.TilePixelSize.y},                             {LefttSideUV, BottomSideUV} };
-			const Vertex2D BottomRightVertex = { { (x * tileSet.TilePixelSize.x) + tileSet.TilePixelSize.x,   y * tileSet.TilePixelSize.y},                             {RightSideUV, BottomSideUV} };
-			const Vertex2D TopRightVertex =    { { (x * tileSet.TilePixelSize.x) + tileSet.TilePixelSize.x,  (y * tileSet.TilePixelSize.y) + tileSet.TilePixelSize.y},  {RightSideUV, TopSideUV   } };
-			const Vertex2D TopLeftVertex =     { {  x * tileSet.TilePixelSize.x,						     (y * tileSet.TilePixelSize.y) + tileSet.TilePixelSize.y},  {LefttSideUV, TopSideUV   } };
+			 Vertex2D BottomLeftVertex =  { {  x * tileSet.TilePixelSize.x,						      y * tileSet.TilePixelSize.y},                             {LefttSideUV, BottomSideUV} };
+			 Vertex2D BottomRightVertex = { { (x * tileSet.TilePixelSize.x) + tileSet.TilePixelSize.x,   y * tileSet.TilePixelSize.y},                             {RightSideUV, BottomSideUV} };
+			 Vertex2D TopRightVertex =    { { (x * tileSet.TilePixelSize.x) + tileSet.TilePixelSize.x,  (y * tileSet.TilePixelSize.y) + tileSet.TilePixelSize.y},  {RightSideUV, TopSideUV   } };
+			 Vertex2D TopLeftVertex =     { {  x * tileSet.TilePixelSize.x,						     (y * tileSet.TilePixelSize.y) + tileSet.TilePixelSize.y},  {LefttSideUV, TopSideUV   } };
 
 			VertexList.emplace_back(BottomLeftVertex);
 			VertexList.emplace_back(BottomRightVertex);

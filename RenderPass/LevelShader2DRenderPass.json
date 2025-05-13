@@ -96,6 +96,7 @@
     }
   ],
   "RenderPipelineList": [
+    "../Pipelines/Default2DPipeline.json",
     "../Pipelines/LevelShader2DPipeline.json"
   ],
   "SubpassDependencyList": [

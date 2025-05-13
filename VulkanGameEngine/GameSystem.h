@@ -18,7 +18,6 @@ public:
 	Level2D								Level;
 	SharedPtr<OrthographicCamera2D>		OrthographicCamera;
 
-	LevelGuid							LevelId;
 	VkGuid								TileSetId;
 	RenderPassGuid						levelRenderPass2DId;
 	RenderPassGuid						spriteRenderPass2DId;

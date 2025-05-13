@@ -112,10 +112,11 @@ VkCommandBuffer RenderSystem::RenderFrameBuffer(VkGuid& renderPassId)
     return commandBuffer;
 }
 
-VkCommandBuffer RenderSystem::RenderLevel(LevelGuid& levelId, VkGuid& renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
+VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
 {
     const JsonRenderPass& renderPass = RenderPassList[renderPassId];
-    const JsonPipeline& pipeline = RenderPipelineList[renderPassId][0];
+    const JsonPipeline& spritePipeline = RenderPipelineList[renderPassId][0];
+    const JsonPipeline& levelPipeline = RenderPipelineList[renderPassId][1];
     const Vector<SpriteBatchLayer>& spriteLayerList = SpriteBatchLayerList[renderPassId];
     const Vector<LevelLayerMesh>& levelLayerList = LevelLayerMeshList[levelId];
     const VkCommandBuffer& commandBuffer = renderPass.CommandBuffer;
@@ -133,41 +134,18 @@ VkCommandBuffer RenderSystem::RenderLevel(LevelGuid& levelId, VkGuid& renderPass
     VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
     VULKAN_RESULT(vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+
     for (auto levelLayer : levelLayerList)
     {
         VkDeviceSize offsets[] = { 0 };
-        vkCmdPushConstants(commandBuffer, pipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
+        vkCmdPushConstants(commandBuffer, levelPipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, levelPipeline.Pipeline);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, levelPipeline.PipelineLayout, 0, levelPipeline.DescriptorSetList.size(), levelPipeline.DescriptorSetList.data(), 0, nullptr);
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &levelLayer.MeshVertexBuffer.Buffer, offsets);
         vkCmdBindIndexBuffer(commandBuffer, levelLayer.MeshIndexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(commandBuffer, levelLayer.IndexCount, 1, 0, 0, 0);
     }
-    vkCmdEndRenderPass(commandBuffer);
-    vkEndCommandBuffer(commandBuffer);
-    return commandBuffer;
-}
-
-VkCommandBuffer RenderSystem::RenderSprites(VkGuid& renderPassId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
-{
-    const JsonRenderPass& renderPass = RenderPassList[renderPassId];
-    const JsonPipeline& pipeline = RenderPipelineList[renderPassId][0];
-    const Vector<SpriteBatchLayer>& spriteLayerList = SpriteBatchLayerList[renderPassId];
-    const VkCommandBuffer& commandBuffer = renderPass.CommandBuffer;
-
-    VkRenderPassBeginInfo renderPassBeginInfo = VkRenderPassBeginInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .renderPass = renderPass.RenderPass,
-        .framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex],
-        .renderArea = renderPass.renderArea,
-        .clearValueCount = static_cast<uint32>(ClearValueList[renderPassId].size()),
-        .pClearValues = ClearValueList[renderPassId].data()
-    };
-
-    VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
-    VULKAN_RESULT(vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo));
-    vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
     for (auto spriteLayer : spriteLayerList)
     {
         const Vector<SpriteInstanceStruct>& spriteInstanceList = SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
@@ -175,9 +153,9 @@ VkCommandBuffer RenderSystem::RenderSprites(VkGuid& renderPassId, const float de
         const SpriteMesh& spriteMesh = SpriteMeshList[spriteLayer.SpriteLayerMeshId];
 
         VkDeviceSize offsets[] = { 0 };
-        vkCmdPushConstants(commandBuffer, pipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
-        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetList.size(), pipeline.DescriptorSetList.data(), 0, nullptr);
+        vkCmdPushConstants(commandBuffer, spritePipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, spritePipeline.Pipeline);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, spritePipeline.PipelineLayout, 0, spritePipeline.DescriptorSetList.size(), spritePipeline.DescriptorSetList.data(), 0, nullptr);
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &spriteMesh.MeshVertexBuffer.Buffer, offsets);
         vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
         vkCmdBindIndexBuffer(commandBuffer, spriteMesh.MeshIndexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);

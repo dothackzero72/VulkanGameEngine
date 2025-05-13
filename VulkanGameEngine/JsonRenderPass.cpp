@@ -23,9 +23,11 @@ JsonRenderPass::JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model,
     BuildFrameBuffer(renderSystem.renderPassBuildInfoList[RenderPassId]);
     BuildCommandBuffer();
 
-
-    uint id = renderSystem.RenderPipelineList.size();
-    renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(RenderPassId, levelId, id, renderSystem.renderPassBuildInfoList[RenderPassId].RenderPipelineList[0], RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
+    for (auto& renderPipeline : model.RenderPipelineList)
+    {
+        uint id = renderSystem.RenderPipelineList.size();
+        renderSystem.RenderPipelineList[RenderPassId].emplace_back(JsonPipeline(RenderPassId, levelId, id, renderPipeline, RenderPass, sizeof(SceneDataBuffer), renderPassResolution));
+    }
     renderSystem.SpriteBatchLayerList[RenderPassId].emplace_back(SpriteBatchLayer(RenderPassId));
 
     renderSystem.ClearValueList[RenderPassId] = renderSystem.renderPassBuildInfoList[RenderPassId].ClearValueList;
@@ -122,10 +124,7 @@ void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassB
             case InputAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
             case ResolveAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
             case DepthRenderedTexture: renderSystem.DepthTextureList[RenderPassId] = DepthTexture(imageCreateInfo, samplerCreateInfo); break;
-        default:
-        {
-            throw std::runtime_error("Case doesn't exist: RenderedTextureType");
-        }
+            default: throw std::runtime_error("Case doesn't exist: RenderedTextureType");
         };
     }
 
