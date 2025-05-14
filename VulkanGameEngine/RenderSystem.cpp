@@ -52,8 +52,8 @@ void RenderSystem::Update(const float& deltaTime)
         cRenderer.RebuildRendererFlag = false;
     }
 
+    UpdateBufferIndex();
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-
     for (auto& renderPass : RenderPassList)
     {
         if (SpriteBatchLayerList.find(renderPass.second.RenderPassId) != SpriteBatchLayerList.end())
@@ -682,7 +682,10 @@ VkGuid RenderSystem::LoadLevelLayout(const String& levelLayoutPath)
         Vector<uint> levelLayer;
         for (int y = 0; y < json["LevelLayouts"][x].size(); y++)
         {
-            levelLayer.emplace_back(json["LevelLayouts"][x][y]);
+            for (int z = 0; z < json["LevelLayouts"][x][y].size(); z++)
+            {
+                levelLayer.emplace_back(json["LevelLayouts"][x][y][z]);
+            }
         }
         levelLayout.LevelMapList.emplace_back(levelLayer);
     }

@@ -29,3 +29,19 @@ VkShaderModule Shader_BuildGLSLShaderFile(VkDevice device, const char* path)
 
     return shaderModule;
 }
+
+bool Shader_BuildGLSLShaders(const char* command)
+{
+    STARTUPINFO startUpInfo = { sizeof(startUpInfo) };
+    PROCESS_INFORMATION processInfo;
+    if (CreateProcess(NULL, (LPSTR)command, NULL, NULL, FALSE, 0, NULL, NULL, &startUpInfo, &processInfo)) {
+        WaitForSingleObject(processInfo.hProcess, INFINITE);
+
+        DWORD exitCode;
+        GetExitCodeProcess(processInfo.hProcess, &exitCode);
+        CloseHandle(processInfo.hProcess);
+        CloseHandle(processInfo.hThread);
+        return exitCode == 0;
+    }
+    return false;
+}

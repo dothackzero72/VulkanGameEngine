@@ -46,12 +46,8 @@ void main()
 {
     vec4 albedoColor = texture(TextureMap[materialBuffer[meshProperities[sceneData.MeshBufferIndex].MaterialIndex].AlbedoMap], inPS_UV);
     vec3 Albedo = albedoColor.rgb;
-    float Alpha = albedoColor.a;
-
-    if (Alpha == 0.0)
-        discard;
 
     float gamma = 2.2;
     vec3 color = pow(Albedo, vec3(1.0 / gamma));
-    outColor = vec4(color, Alpha);
+    outColor = vec4(color, 1.0f);
 }

@@ -1,8 +1,8 @@
 {
   "Name": "Material1",
   "MaterialId": "0ecd3d14-9b7e-4743-bc5d-d3666f6167c6",
-  "AlbedoMapPath": "../Textures/TestTexture.json",
   "RenderPassIds": [ "aa18e942-497b-4981-b917-d93a5b1de6eb" ],
+  "AlbedoMapPath": "../Textures/TestTexture.json",
   "MetallicRoughnessMapPath": "",
   "MetallicMapPath": "",
   "RoughnessMapPath": "",
