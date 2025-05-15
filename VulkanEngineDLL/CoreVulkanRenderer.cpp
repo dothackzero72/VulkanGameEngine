@@ -412,7 +412,7 @@ VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFa
         .pNext = &physicalDeviceFeatures2,
         .samplerMirrorClampToEdge = VK_FALSE,
         .drawIndirectCount = VK_FALSE,
-        .storageBuffer8BitAccess = VK_FALSE,
+        .storageBuffer8BitAccess = VK_TRUE,
         .uniformAndStorageBuffer8BitAccess = VK_TRUE,
         .storagePushConstant8 = VK_FALSE,
         .shaderBufferInt64Atomics = VK_FALSE,

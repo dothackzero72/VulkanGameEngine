@@ -494,6 +494,7 @@ void RenderSystem::UpdateBufferIndex()
     int xz = 0;
     for (auto& [id, material] : renderSystem.MaterialList) {
         material.UpdateMaterialBufferIndex(xz);
+        material.UpdateBuffer();
         ++xz;
     }
 }

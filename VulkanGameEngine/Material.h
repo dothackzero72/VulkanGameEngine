@@ -82,7 +82,6 @@ public:
 class Material
 {
 private:
-	void UpdateBuffer();
 
 public:
 	static uint32 NextMaterialId;
@@ -110,13 +109,13 @@ public:
 	VkGuid EmissionMapId;
 	VkGuid HeightMapId;
 
-	MaterialProperitiesBuffer MaterialInfo;
 	VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;
 
 	Material();
 	Material(const String& materialName, Vector<VkGuid>& renderPassIds, VkGuid& materialId);
 	virtual ~Material();
 
+	void UpdateBuffer();
 	void GetMaterialPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& materialBufferList);
 	void UpdateMaterialBufferIndex(uint32 bufferIndex);
 	void Destroy();

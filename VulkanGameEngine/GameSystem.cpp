@@ -52,7 +52,7 @@ void GameSystem::LoadLevel()
     OrthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
 
     renderSystem.LoadTexture("../Textures/TestTexture.json");
-    renderSystem.LoadTexture("../Textures/SparkManTexture.json");
+    VkGuid id =  renderSystem.LoadTexture("../Textures/SparkManTexture.json");
     renderSystem.LoadMaterial("../Materials/Material1.json");
     renderSystem.LoadMaterial("../Materials/SparkManTileSetMaterial.json");
     auto vramId = renderSystem.AddSpriteVRAM("../Sprites/TestSprite.json");
@@ -89,7 +89,8 @@ void GameSystem::LoadLevel()
         assetManager.CreateGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kInputComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
     }
 
-    const Vector<VkGuid>& renderPassIds = renderSystem.VramSpriteList[vramId].RenderPassIdList;
+    const Texture& texture = renderSystem.TextureList[id];
+    const Vector<VkGuid>& renderPassIds = renderSystem.VramSpriteList[texture.RenderPassIds[0]].RenderPassIdList;
     Level = Level2D(renderPassIds, VkGuid::GenerateGUID(), TileSetId, renderSystem.levelLayout.LevelBounds, renderSystem.levelLayout.LevelMapList);
 
     VkGuid dummyGuid = VkGuid();
@@ -164,7 +165,7 @@ void GameSystem::Draw(const float& deltaTime)
 {
     VULKAN_RESULT(renderer.StartFrame());
     CommandBufferSubmitList.emplace_back(renderSystem.RenderLevel(spriteRenderPass2DId, Level.LevelId, deltaTime, SceneProperties));
-    CommandBufferSubmitList.emplace_back(renderSystem.RenderFrameBuffer(frameBufferId));
+   // CommandBufferSubmitList.emplace_back(renderSystem.RenderFrameBuffer(frameBufferId));
    // CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
     VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
     CommandBufferSubmitList.clear();
