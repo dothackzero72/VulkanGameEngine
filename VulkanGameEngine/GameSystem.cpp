@@ -165,8 +165,8 @@ void GameSystem::Draw(const float& deltaTime)
 {
     VULKAN_RESULT(renderer.StartFrame());
     CommandBufferSubmitList.emplace_back(renderSystem.RenderLevel(spriteRenderPass2DId, Level.LevelId, deltaTime, SceneProperties));
-   // CommandBufferSubmitList.emplace_back(renderSystem.RenderFrameBuffer(frameBufferId));
-   // CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
+    CommandBufferSubmitList.emplace_back(renderSystem.RenderFrameBuffer(frameBufferId));
+  //  CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
     VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
     CommandBufferSubmitList.clear();
 }
