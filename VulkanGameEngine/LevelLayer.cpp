@@ -42,9 +42,9 @@ void LevelLayer::Update(const float& deltaTime)
 void LevelLayer::LoadLevelMesh()
 {
     const LevelTileSet& tileSet = renderSystem.LevelTileSetList[TileSetId];
-    for (unsigned int x = 0; x < LevelBounds.x; x++)
+    for (uint x = 0; x < LevelBounds.x; x++)
     {
-        for (unsigned int y = 0; y < LevelBounds.y; y++)
+        for (uint y = 0; y < LevelBounds.y; y++)
         {
             const uint& tileId = TileIdMap[(y * LevelBounds.x) + x];
             const Tile& tile = tileSet.LevelTileList[tileId];
@@ -56,7 +56,7 @@ void LevelLayer::LoadLevelMesh()
 
             const uint VertexCount =   VertexList.size();
             const vec2 TilePixelSize = tileSet.TilePixelSize * tileSet.TileScale;
-            const Vertex2D BottomLeftVertex =  { {  x * TilePixelSize.x,                        y * TilePixelSize.y},                     {LefttSideUV, BottomSideUV} };
+            const Vertex2D BottomLeftVertex =  { { x * TilePixelSize.x,                         y * TilePixelSize.y},                     {LefttSideUV, BottomSideUV} };
             const Vertex2D BottomRightVertex = { {(x * TilePixelSize.x) + TilePixelSize.x,      y * TilePixelSize.y},                     {RightSideUV, BottomSideUV} };
             const Vertex2D TopRightVertex =    { {(x * TilePixelSize.x) + TilePixelSize.x,     (y * TilePixelSize.y) + TilePixelSize.y},  {RightSideUV, TopSideUV} };
             const Vertex2D TopLeftVertex =     { { x * TilePixelSize.x,                        (y * TilePixelSize.y) + TilePixelSize.y},  {LefttSideUV, TopSideUV} };
