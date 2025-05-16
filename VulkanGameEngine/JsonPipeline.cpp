@@ -20,7 +20,7 @@ JsonPipeline::JsonPipeline(VkGuid& renderPassId, VkGuid& levelLayerId, uint rend
         //        .transformProperties = renderSystem.GetTransformPropertiesBuffer(gpuImport.MeshList),
         .meshProperties = renderSystem.GetMeshPropertiesBuffer(levelLayerId),
         .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderPassId, renderSystem.InputTextureList[RenderPipelineId]),
-        .materialProperties = renderSystem.GetMaterialPropertiesBuffer(renderPassId)
+        .materialProperties = renderSystem.GetMaterialPropertiesBuffer()
     };
 
     DescriptorPool = Pipeline_CreateDescriptorPool(*renderSystem.Device.get(), renderSystem.renderPipelineModelList[RenderPipelineId], include);

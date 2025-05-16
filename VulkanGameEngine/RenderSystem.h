@@ -63,7 +63,7 @@ private:
     const Vector<VkDescriptorBufferInfo> GetGameObjectTransformBuffer();
     const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer(VkGuid& levelLayerId);
     const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<Texture>>& renderedTextureList);
-    const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer(VkGuid& renderPassId);
+    const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer();
 
 public:
     Vector<Vertex2D> SpriteVertexList =

@@ -26,7 +26,7 @@ public:
 	GameSystem();
 	~GameSystem();
 
-	void LoadLevel();
+	void LoadLevel(const String& levelPath);
 
 	void StartUp();
 	void Input(const float& deltaTime);

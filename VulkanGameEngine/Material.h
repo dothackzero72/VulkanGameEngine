@@ -88,7 +88,6 @@ public:
 
 	String Name;
 	VkGuid MaterialId;
-	Vector<VkGuid> RenderPassIds;
 	uint MaterialBufferIndex = 0;
 
 	vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
@@ -112,7 +111,7 @@ public:
 	VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;
 
 	Material();
-	Material(const String& materialName, Vector<VkGuid>& renderPassIds, VkGuid& materialId);
+	Material(const String& materialName, VkGuid& materialId);
 	virtual ~Material();
 
 	void UpdateBuffer();

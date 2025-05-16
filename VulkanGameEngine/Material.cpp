@@ -5,10 +5,9 @@ Material::Material()
 {
 }
 
-Material::Material(const String& materialName, Vector<VkGuid>& renderPassIds, VkGuid& materialId)
+Material::Material(const String& materialName, VkGuid& materialId)
 {
 	Name = materialName;
-	RenderPassIds = renderPassIds;
 	MaterialId = materialId;
 	MaterialBufferIndex = 0;
 	MaterialBuffer = VulkanBuffer<MaterialProperitiesBuffer>(MaterialProperitiesBuffer(), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 

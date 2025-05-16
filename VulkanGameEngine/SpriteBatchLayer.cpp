@@ -11,7 +11,7 @@ SpriteBatchLayer::SpriteBatchLayer()
 
 SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 {
-	RenderPassId = renderPassId;
+	RenderPassId = renderPassId;                                   
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 
 	SpriteLayerMeshId = SpriteMesh::GetNextIdNumber();
@@ -21,8 +21,7 @@ SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 		renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
 	}
 
-	Vector<VkGuid> renderPassIds = { RenderPassId };
-	renderSystem.SpriteMeshList[SpriteLayerMeshId] = SpriteMesh(renderPassIds, renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, VkGuid());
+	renderSystem.SpriteMeshList[SpriteLayerMeshId] = SpriteMesh(renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, VkGuid());
 	renderSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
 	renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = SpriteInstanceBuffer(renderSystem.SpriteInstanceList[SpriteBatchLayerID], renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferUsageSettings(), renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferPropertySettings(), false);
 }

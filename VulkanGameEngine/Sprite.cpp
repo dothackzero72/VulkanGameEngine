@@ -25,7 +25,7 @@ SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float&
     const Transform2DComponent& transform2D = assetManager.TransformComponentList.at(GameObjectId);
     const SpriteVram& vram = renderSystem.VramSpriteList.at(SpriteVramId);
     const Animation2D& animation = assetManager.AnimationList.at(CurrentAnimationID);
-    const Vector<ivec2>& frameList = assetManager.AnimationFrameList.at(animation.AnimationFrameId);
+    const Vector<ivec2>& frameList = assetManager.AnimationFrameList[vram.VramSpriteID][CurrentAnimationID];
     const Material& material = renderSystem.MaterialList.at(vram.SpriteMaterialID);
     const ivec2& currentFrame = frameList[CurrentFrame];
 

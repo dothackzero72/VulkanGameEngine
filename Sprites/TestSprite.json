@@ -1,8 +1,8 @@
 {
   "VramSpriteId": "129950e8-683a-4379-96df-36dc07b810d5",
   "MaterialId": "0ecd3d14-9b7e-4743-bc5d-d3666f6167c6",
-  "RenderPassIds": [ "aa18e942-497b-4981-b917-d93a5b1de6eb" ],
   "SpriteLayer": 0,
+  "SpriteScale": [ 5.0, 5.0 ],
   "SpritePixelSize": [
     32,
     32
@@ -15,7 +15,7 @@
   ],
   "AnimationList": [
     {
-      "AnimationName": "Standing",
+      "AnimationId": 0,
       "FrameHoldTime": 0.2,
       "FrameList": [
         [
@@ -29,7 +29,7 @@
       ]
     },
     {
-      "AnimationName": "Walking",
+      "AnimationId": 1,
       "FrameHoldTime": 0.2,
       "FrameList": [
         [

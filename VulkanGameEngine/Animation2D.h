@@ -3,7 +3,7 @@
 
 struct Animation2D
 {
+	uint  AnimationId;
 	float FrameHoldTime;
-	uint  AnimationFrameId;
 };
 

@@ -47,51 +47,40 @@ GameSystem::~GameSystem()
 {
 }
 
-void GameSystem::LoadLevel()
+void GameSystem::LoadLevel(const String& levelPath)
 {
     OrthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
 
-    renderSystem.LoadTexture("../Textures/TestTexture.json");
-    VkGuid id =  renderSystem.LoadTexture("../Textures/SparkManTexture.json");
-    renderSystem.LoadMaterial("../Materials/Material1.json");
-    renderSystem.LoadMaterial("../Materials/SparkManTileSetMaterial.json");
-    auto vramId = renderSystem.AddSpriteVRAM("../Sprites/TestSprite.json");
-    TileSetId = renderSystem.AddTileSetVRAM("../TileSets/SparkManTileSet.json");
-    renderSystem.LoadLevelLayout("../LevelMapLevelLayout/TestMapLevelLayout.json");
+    VkGuid vramId;
+    VkGuid tileSetId;
 
-    assetManager.AnimationFrameList[0] = Vector<ivec2>
+    nlohmann::json json = Json::ReadJson(levelPath);
+    VkGuid LevelId = VkGuid(json["LevelID"].get<String>().c_str());
+    for (int x = 0; x < json["LoadTextures"].size(); x++)
     {
-        ivec2(0, 0),
-        ivec2(1, 0)
-    };
-
-    assetManager.AnimationFrameList[1] = Vector<ivec2>
-    {
-        ivec2(3, 0),
-        ivec2(4, 0),
-        ivec2(5, 0),
-        ivec2(4, 0)
-    };
-
-    assetManager.AnimationList[0] = Animation2D
-    {
-        .FrameHoldTime = 1.0f,
-        .AnimationFrameId = 0
-    };
-    assetManager.AnimationList[1] = Animation2D
-    {
-        .FrameHoldTime = 0.3f,
-        .AnimationFrameId = 1
-    };
-
-    for (int x = 0; x < 1; x++)
-    {
-        assetManager.CreateGameObject("Obj3", Vector<ComponentTypeEnum> { kTransform2DComponent, kInputComponent, kSpriteComponent }, vramId, vec2((32 * x), (32 * x)));
+        renderSystem.LoadTexture(json["LoadTextures"][x]);
     }
+    for (int x = 0; x < json["LoadMaterials"].size(); x++)
+    {
+        renderSystem.LoadMaterial(json["LoadMaterials"][x]);
+    }
+    for (int x = 0; x < json["LoadSpriteVRAM"].size(); x++)
+    {
+        vramId = renderSystem.AddSpriteVRAM(json["LoadSpriteVRAM"][x]);
+    }
+    for (int x = 0; x < json["LoadTileSetVRAM"].size(); x++)
+    {
+        tileSetId = renderSystem.AddTileSetVRAM(json["LoadTileSetVRAM"][x]);
+    }
+    for (int x = 0; x < json["GameObjectList"].size(); x++)
+    {
+        String objectJson = json["GameObjectList"][x]["GameObjectPath"];
+        vec2   positionOverride = vec2(json["GameObjectList"][x]["GameObjectPositionOverride"][0], json["GameObjectList"][x]["GameObjectPositionOverride"][1]);
+        assetManager.CreateGameObject(objectJson, positionOverride);
+    }
+    renderSystem.LoadLevelLayout(json["LoadLevelLayout"]);
 
-    const Texture& texture = renderSystem.TextureList[id];
-    const Vector<VkGuid>& renderPassIds = renderSystem.VramSpriteList[texture.RenderPassIds[0]].RenderPassIdList;
-    Level = Level2D(renderPassIds, VkGuid::GenerateGUID(), TileSetId, renderSystem.levelLayout.LevelBounds, renderSystem.levelLayout.LevelMapList);
+    Level = Level2D(LevelId, tileSetId, renderSystem.levelLayout.LevelBounds, renderSystem.levelLayout.LevelMapList);
 
     VkGuid dummyGuid = VkGuid();
     spriteRenderPass2DId = renderSystem.AddRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
@@ -101,7 +90,7 @@ void GameSystem::LoadLevel()
 void GameSystem::StartUp()
 {
     renderSystem.StartUp();
-    LoadLevel();
+    LoadLevel("../Levels/TestLevel.json");
 }
 
 void GameSystem::Input(const float& deltaTime)

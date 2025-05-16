@@ -36,7 +36,7 @@ public:
 	//UnorderedMap<GameObjectID, SpriteMesh> MeshList;
 
 	UnorderedMap<UM_AnimationListID, Animation2D> AnimationList;
-	UnorderedMap<UM_AnimationFrameId, Vector<ivec2>> AnimationFrameList;
+	UnorderedMap<VkGuid, Vector<Vector<ivec2>>> AnimationFrameList;
 
 	AssetManager();
 	~AssetManager();
@@ -46,6 +46,10 @@ public:
 
 	//CreateGameObject();
 	void CreateGameObject(const String& name, const Vector<ComponentTypeEnum>& gameObjectComponentTypeList, VkGuid vramId, vec2 objectPosition);
+	void CreateGameObject(const String& gameObjectPath, const vec2& gameObjectPosition);
+	void AddTransformComponent(const nlohmann::json& json, GameObjectID id, const vec2& gameObjectPosition);
+	void AddInputComponent(const nlohmann::json& json, GameObjectID id);
+	void AddSpriteComponent(const nlohmann::json& json, GameObjectID id);
 	void DestroyEntity(RenderPassID id);
 
 	void DestroyGameObject(GameObjectID id);

@@ -94,6 +94,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LevelMapLevelLayout", "Leve
 		LevelMapLevelLayout\TestMapLevelLayout.json = LevelMapLevelLayout\TestMapLevelLayout.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GameObjects", "GameObjects", "{21F6500D-6E92-4717-815C-AB3C6E100B64}"
+	ProjectSection(SolutionItems) = preProject
+		GameObjects\TestGameObject.json = GameObjects\TestGameObject.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,6 +162,7 @@ Global
 		{12565B15-EF6B-4DAF-8552-844EE28936D7} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
 		{16D06342-80A9-4368-B5A9-860273C3CE12} = {D6D5958C-19B6-4B6E-BA4B-28E99E6BE703}
 		{740E1C1F-320C-4A8F-A58D-B46058521506} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
+		{21F6500D-6E92-4717-815C-AB3C6E100B64} = {E282A3D5-3DCC-485B-AA01-B66AB307DBE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F492211-3E89-431E-83CC-E65D5E8EBE55}

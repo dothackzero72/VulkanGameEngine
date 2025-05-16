@@ -369,24 +369,9 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkG
     Vector<Texture> textureList;
     if (renderedTextureList.empty())
     {
-   /*     textureList.reserve(TextureList.size());
-        std::transform(TextureList.begin(), TextureList.end(),
-            std::back_inserter(textureList),
-            [](const auto& pair) { return pair.second; });
-
-        std::copy_if(myList.begin(), myList.end(), std::back_inserter(textureList),
-            [targetId](const Texture& item) {
-                return item.RenderPassIds == targetId;
-            });*/
         for (auto& texture : TextureList)
         {
-            for (auto& renderPass : texture.second.RenderPassIds)
-            {
-                if (renderPass == renderPassId)
-                {
-                    textureList.emplace_back(texture.second);
-                }
-            }
+            textureList.emplace_back(texture.second);
         }
     }
     else
@@ -445,24 +430,13 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkG
     return texturePropertiesBuffer;
 }
 
-const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer(VkGuid& renderPassId)
+const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer()
 {
     Vector<Material> materialList;
     for (auto& material : MaterialList)
     {
-        for (auto& renderPass : material.second.RenderPassIds)
-        {
-            if (renderPass == renderPassId)
-            {
-                materialList.emplace_back(material.second);
-            }
-        }
+        materialList.emplace_back(material.second);
     }
-
-    //materialList.reserve(MaterialList.size());
-    //std::transform(MaterialList.begin(), MaterialList.end(),
-    //    std::back_inserter(materialList),
-    //    [](const auto& pair) { return pair.second; });
 
     std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
     if (materialList.empty())
@@ -505,34 +479,45 @@ VkGuid RenderSystem::AddSpriteVRAM(const String& spritePath)
     VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
     VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
 
-    Vector<VkGuid> renderPassIds;
-    for (int x = 0; x < json["RenderPassIds"].size(); x++)
-    {
-        renderPassIds.emplace_back(VkGuid(json["RenderPassIds"][x].get<String>().c_str()));
-    }
-
     auto it = VramSpriteList.find(vramId);
     if (it != VramSpriteList.end())
     {
         return vramId;
     }
 
-
     const Material& material = MaterialList.at(materialId);
     const Texture& texture = TextureList.at(material.AlbedoMapId);
+
     SpriteVram sprite = SpriteVram
     {
         .VramSpriteID = vramId,
         .SpriteMaterialID = materialId,
-        .RenderPassIdList = renderPassIds,
         .SpriteLayer = json["SpriteLayer"],
         .SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] },
         .SpritePixelSize = ivec2{ json["SpritePixelSize"][0], json["SpritePixelSize"][1] },
-        .SpriteScale = vec2(5.0f),
+        .SpriteScale = ivec2{ json["SpriteScale"][0], json["SpriteScale"][1] },
         .SpriteCells = ivec2(texture.Width / sprite.SpritePixelSize.x, texture.Height / sprite.SpritePixelSize.y),
         .SpriteUVSize = vec2(1.0f / (float)sprite.SpriteCells.x, 1.0f / (float)sprite.SpriteCells.y),
         .SpriteSize = vec2(sprite.SpritePixelSize.x * sprite.SpriteScale.x, sprite.SpritePixelSize.y * sprite.SpriteScale.y),
     };
+
+    for (int x = 0; x < json["AnimationList"].size(); x++)
+    {
+        Animation2D animation = Animation2D
+        {
+            .AnimationId = json["AnimationList"][x]["AnimationId"],
+            .FrameHoldTime = json["AnimationList"][x]["FrameHoldTime"]
+        };
+
+        Vector<ivec2> FrameList;
+        for (int y = 0; y < json["AnimationList"][x]["FrameList"].size(); y++)
+        {
+            FrameList.emplace_back(ivec2{ json["AnimationList"][x]["FrameList"][y][0], json["AnimationList"][x]["FrameList"][y][1] });
+        }
+
+        assetManager.AnimationList[animation.AnimationId] = animation;
+        assetManager.AnimationFrameList[vramId].emplace_back(FrameList);
+    }
 
     VramSpriteList[vramId] = sprite;
     return vramId;
@@ -549,12 +534,7 @@ VkGuid RenderSystem::AddTileSetVRAM(const String& tileSetPath)
     nlohmann::json json = Json::ReadJson(tileSetPath);
     VkGuid tileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
     VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
-    Vector<VkGuid> renderPassIds;
-    for (int x = 0; x < json["RenderPassIds"].size(); x++)
-    {
-        renderPassIds.emplace_back(VkGuid(json["RenderPassIds"][x].get<String>().c_str()));
-    }
-
+ 
     auto it = LevelTileSetList.find(tileSetId);
     if (it != LevelTileSetList.end())
     {
@@ -567,7 +547,6 @@ VkGuid RenderSystem::AddTileSetVRAM(const String& tileSetPath)
     LevelTileSet tileSet = LevelTileSet();
     tileSet.TileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
     tileSet.MaterialId = materialId;
-    tileSet.RenderPassIds = renderPassIds;
     tileSet.TilePixelSize = ivec2{ json["TilePixelSize"][0], json["TilePixelSize"][1] };
     tileSet.TileSetBounds = ivec2{ tileSetTexture.Width / tileSet.TilePixelSize.x,  tileSetTexture.Height / tileSet.TilePixelSize.y };
     tileSet.TileUVSize = vec2(1.0f / (float)tileSet.TileSetBounds.x, 1.0f / (float)tileSet.TileSetBounds.y);
@@ -595,12 +574,6 @@ VkGuid RenderSystem::LoadTexture(const String& texturePath)
 
     nlohmann::json json = Json::ReadJson(texturePath);
     VkGuid textureId = VkGuid(json["TextureId"].get<String>().c_str());
-  
-    Vector<VkGuid> renderPassIds;
-    for (int x = 0; x < json["RenderPassIds"].size(); x++)
-    {
-        renderPassIds.emplace_back(VkGuid(json["RenderPassIds"][x].get<String>().c_str()));
-    }
 
     auto it = TextureList.find(textureId);
     if (it != TextureList.end())
@@ -614,7 +587,7 @@ VkGuid RenderSystem::LoadTexture(const String& texturePath)
     TextureTypeEnum textureType = json["TextureType"];
     bool useMipMaps = json["UseMipMaps"];
 
-    TextureList[textureId] = Texture(renderPassIds, textureId, textureFilePath, textureByteFormat, imageType, textureType, useMipMaps);
+    TextureList[textureId] = Texture(textureId, textureFilePath, textureByteFormat, imageType, textureType, useMipMaps);
     return textureId;
 }
 
@@ -629,12 +602,6 @@ VkGuid RenderSystem::LoadMaterial(const String& materialPath)
     nlohmann::json json = Json::ReadJson(materialPath);
     VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
 
-    Vector<VkGuid> renderPassIds;
-    for (int x = 0; x < json["RenderPassIds"].size(); x++)
-    {
-        renderPassIds.emplace_back(VkGuid(json["RenderPassIds"][x].get<String>().c_str()));
-    }
-
     auto it = MaterialList.find(materialId);
     if (it != MaterialList.end())
     {
@@ -642,7 +609,7 @@ VkGuid RenderSystem::LoadMaterial(const String& materialPath)
     }
 
     String name = json["Name"];
-    MaterialList[materialId] = Material(name, renderPassIds, materialId);
+    MaterialList[materialId] = Material(name, materialId);
     MaterialList[materialId].Albedo = vec3(json["Albedo"][0], json["Albedo"][1], json["Albedo"][2]);
     MaterialList[materialId].Metallic = json["Metallic"];
     MaterialList[materialId].Roughness = json["Roughness"];
