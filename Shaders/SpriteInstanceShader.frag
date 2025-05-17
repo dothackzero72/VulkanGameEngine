@@ -60,11 +60,11 @@ void main()
 	vec2 UV = PS_UV;
     if (PS_FlipSprite.x == 1) 
 	{
-        UV.x = UV.x + (PS_UVOffset.z) - (UV.x - PS_UVOffset.x);
+		UV.x = PS_UVOffset.x + PS_UVOffset.z - (UV.x - PS_UVOffset.x);
     }
     if (PS_FlipSprite.y == 1) 
 	{
-        UV.y = UV.y + (PS_UVOffset.w) - (UV.y - PS_UVOffset.y);
+		UV.y = PS_UVOffset.y + PS_UVOffset.w - (UV.y - PS_UVOffset.y);
     }
 
 	vec4 albedoColor = texture(TextureMap[material.AlbedoMap], UV);
