@@ -90,7 +90,7 @@ void JsonRenderPass::RecreateSwapchain(int newWidth, int newHeight)
     VkImageView depthTexture = renderSystem.DepthTextureList[RenderPassId].View;
 
     RenderPass = RenderPass_BuildRenderPass(cRenderer.Device, renderSystem.renderPassBuildInfoList[RenderPassId]);
-    FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, RenderPass, renderSystem.renderPassBuildInfoList[RenderPassId], imageViewList, &depthTexture, cRenderer.SwapChain.SwapChainImageViews, renderSystem.RenderPassResolutionList[RenderPassId]);
+    FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, RenderPass, renderSystem.renderPassBuildInfoList[RenderPassId], imageViewList, &depthTexture, cRenderer.SwapChainImageViews, renderSystem.RenderPassResolutionList[RenderPassId]);
     BuildCommandBuffer();
 
     for (auto& pipeline : renderSystem.RenderPipelineList[RenderPassId])
@@ -145,15 +145,15 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
     }
 
     VkRenderPass& renderPass = RenderPass;
-    FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
-    FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, imageViewList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, renderSystem.RenderPassResolutionList[RenderPassId]);
+    FrameBufferList.resize(cRenderer.SwapChainImageCount);
+    FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, imageViewList, depthTextureView.get(), cRenderer.SwapChainImageViews, renderSystem.RenderPassResolutionList[RenderPassId]);
 }
 
 void JsonRenderPass::RebuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
     VkRenderPass& renderPass = RenderPass;
     Vector<RenderedTexture> renderedTextureList = renderSystem.RenderedTextureList[RenderPassId];
-    FrameBufferList.resize(cRenderer.SwapChain.SwapChainImageCount);
+    FrameBufferList.resize(cRenderer.SwapChainImageCount);
    // FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, renderedTextureList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, renderSystem.RenderPassResolutionList[RenderPassId]);
 }
 

@@ -70,12 +70,12 @@ private:
 
     static void CreateRendererFramebuffers()
     {
-        SwapChainFramebuffers.resize(cRenderer.SwapChain.SwapChainImageCount);
-        for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++) 
+        SwapChainFramebuffers.resize(cRenderer.SwapChainImageCount);
+        for (size_t x = 0; x < cRenderer.SwapChainImageCount; x++) 
         {
             std::vector<VkImageView> attachments = 
             {
-                cRenderer.SwapChain.SwapChainImageViews[x]
+                cRenderer.SwapChainImageViews[x]
             };
 
             VkFramebufferCreateInfo frameBufferInfo =
@@ -84,8 +84,8 @@ private:
                 .renderPass = RenderPass,
                 .attachmentCount = static_cast<uint32>(attachments.size()),
                 .pAttachments = attachments.data(),
-                .width = cRenderer.SwapChain.SwapChainResolution.width,
-                .height = cRenderer.SwapChain.SwapChainResolution.height,
+                .width = cRenderer.SwapChainResolution.width,
+                .height = cRenderer.SwapChainResolution.height,
                 .layers = 1
             };
             VULKAN_RESULT(vkCreateFramebuffer(cRenderer.Device, &frameBufferInfo, nullptr, &SwapChainFramebuffers[x]));
@@ -153,7 +153,7 @@ public:
         };
         VULKAN_RESULT(renderer.CreateDescriptorPool(ImGuiDescriptorPool, pool_info));
 
-        for (size_t x = 0; x < cRenderer.SwapChain.SwapChainImageCount; x++)
+        for (size_t x = 0; x < cRenderer.SwapChainImageCount; x++)
         {
             VkCommandBufferAllocateInfo commandBufferAllocateInfo
             {
@@ -170,12 +170,12 @@ public:
             .Instance = cRenderer.Instance,
             .PhysicalDevice = cRenderer.PhysicalDevice,
             .Device = cRenderer.Device,
-            .QueueFamily = cRenderer.SwapChain.GraphicsFamily,
-            .Queue = cRenderer.SwapChain.GraphicsQueue,
+            .QueueFamily = cRenderer.GraphicsFamily,
+            .Queue = cRenderer.GraphicsQueue,
             .DescriptorPool = ImGuiDescriptorPool,
             .RenderPass = RenderPass,
-            .MinImageCount = cRenderer.SwapChain.SwapChainImageCount,
-            .ImageCount = cRenderer.SwapChain.SwapChainImageCount,
+            .MinImageCount = cRenderer.SwapChainImageCount,
+            .ImageCount = cRenderer.SwapChainImageCount,
             .PipelineCache = VK_NULL_HANDLE,
             .Allocator = nullptr,
             .CheckVkResultFn = check_vk_result
@@ -243,7 +243,7 @@ public:
              .renderArea
              {
                  .offset = { 0, 0 },
-                 .extent = cRenderer.SwapChain.SwapChainResolution,
+                 .extent = cRenderer.SwapChainResolution,
              },
              .clearValueCount = static_cast<uint32>(clearValues.size()),
              .pClearValues = clearValues.data()

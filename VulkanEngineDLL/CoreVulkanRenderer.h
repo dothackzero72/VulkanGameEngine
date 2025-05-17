@@ -32,8 +32,7 @@ static Vector<VkValidationFeatureDisableEXT> disabledList = { VK_VALIDATION_FEAT
 																VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT,
 																VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT };
 
-
-typedef struct swapChainState
+typedef struct rendererState
 {
 	uint32			   SwapChainImageCount;
 	uint32			   GraphicsFamily;
@@ -44,14 +43,6 @@ typedef struct swapChainState
 	VkColorSpaceKHR    ColorSpace;
 	VkPresentModeKHR   PresentMode;
 
-	Vector<VkImage> SwapChainImages;
-	Vector<VkImageView> SwapChainImageViews;
-	VkExtent2D SwapChainResolution;
-	VkSwapchainKHR Swapchain;
-}SwapChainState;
-
-typedef struct rendererState
-{
 	VkInstance Instance;
 	VkDevice Device;
 	VkPhysicalDevice PhysicalDevice;
@@ -60,12 +51,15 @@ typedef struct rendererState
 	uint32 ImageIndex;
 	uint32 CommandIndex;
 	VkDebugUtilsMessengerEXT DebugMessenger;
-	SwapChainState SwapChain;
 	VkPhysicalDeviceFeatures PhysicalDeviceFeatures;
 
 	Vector<VkFence> InFlightFences;
 	Vector<VkSemaphore> AcquireImageSemaphores;
 	Vector<VkSemaphore> PresentImageSemaphores;
+	Vector<VkImage> SwapChainImages;
+	Vector<VkImageView> SwapChainImageViews;
+	VkExtent2D SwapChainResolution;
+	VkSwapchainKHR Swapchain;
 	bool RebuildRendererFlag;
 }RendererState;
 DLL_EXPORT extern RendererState cRenderer;

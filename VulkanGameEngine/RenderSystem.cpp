@@ -46,8 +46,8 @@ void RenderSystem::Update(const float& deltaTime)
 {
     if (cRenderer.RebuildRendererFlag)
     {
-        int width = cRenderer.SwapChain.SwapChainResolution.width;
-        int height = cRenderer.SwapChain.SwapChainResolution.height;
+        int width = cRenderer.SwapChainResolution.width;
+        int height = cRenderer.SwapChainResolution.height;
         RecreateSwapchain();
         cRenderer.RebuildRendererFlag = false;
     }

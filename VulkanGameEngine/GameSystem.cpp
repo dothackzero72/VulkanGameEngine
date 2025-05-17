@@ -49,7 +49,7 @@ GameSystem::~GameSystem()
 
 void GameSystem::LoadLevel(const String& levelPath)
 {
-    OrthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)cRenderer.SwapChain.SwapChainResolution.width, (float)cRenderer.SwapChain.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
+    OrthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)cRenderer.SwapChainResolution.width, (float)cRenderer.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
 
     VkGuid vramId;
     VkGuid tileSetId;
@@ -83,8 +83,8 @@ void GameSystem::LoadLevel(const String& levelPath)
     Level = Level2D(LevelId, tileSetId, renderSystem.levelLayout.LevelBounds, renderSystem.levelLayout.LevelMapList);
 
     VkGuid dummyGuid = VkGuid();
-    spriteRenderPass2DId = renderSystem.AddRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
-    frameBufferId = renderSystem.AddRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", renderSystem.RenderedTextureList[spriteRenderPass2DId][0], ivec2(cRenderer.SwapChain.SwapChainResolution.width, cRenderer.SwapChain.SwapChainResolution.height));
+    spriteRenderPass2DId = renderSystem.AddRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
+    frameBufferId = renderSystem.AddRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", renderSystem.RenderedTextureList[spriteRenderPass2DId][0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
 }
 
 void GameSystem::StartUp()

@@ -10,17 +10,17 @@ VkResult VulkanRenderer::SetUpSwapChain()
 
     VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities(cRenderer.PhysicalDevice, cRenderer.Surface);
     Vector<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats(cRenderer.PhysicalDevice, cRenderer.Surface);
-    VULKAN_RESULT(SwapChain_GetQueueFamilies(cRenderer.PhysicalDevice, cRenderer.Surface, cRenderer.SwapChain.GraphicsFamily, cRenderer.SwapChain.PresentFamily));
+    VULKAN_RESULT(SwapChain_GetQueueFamilies(cRenderer.PhysicalDevice, cRenderer.Surface, cRenderer.GraphicsFamily, cRenderer.PresentFamily));
     Vector<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(cRenderer.PhysicalDevice, cRenderer.Surface);
     VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
     VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
     vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
-    cRenderer.SwapChain.Swapchain = SwapChain_SetUpSwapChain(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.Surface, cRenderer.SwapChain.GraphicsFamily, cRenderer.SwapChain.PresentFamily, width, height, cRenderer.SwapChain.SwapChainImageCount);
-    cRenderer.SwapChain.SwapChainImages = SwapChain_SetUpSwapChainImages(cRenderer.Device, cRenderer.SwapChain.Swapchain, MAX_FRAMES_IN_FLIGHT);
-    cRenderer.SwapChain.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(cRenderer.Device, cRenderer.SwapChain.SwapChainImages, swapChainImageFormat);
+    cRenderer.Swapchain = SwapChain_SetUpSwapChain(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.Surface, cRenderer.GraphicsFamily, cRenderer.PresentFamily, width, height, cRenderer.SwapChainImageCount);
+    cRenderer.SwapChainImages = SwapChain_SetUpSwapChainImages(cRenderer.Device, cRenderer.Swapchain, MAX_FRAMES_IN_FLIGHT);
+    cRenderer.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(cRenderer.Device, cRenderer.SwapChainImages, swapChainImageFormat);
 
-    cRenderer.SwapChain.SwapChainResolution.width = width;
-    cRenderer.SwapChain.SwapChainResolution.height = height;
+    cRenderer.SwapChainResolution.width = width;
+    cRenderer.SwapChainResolution.height = height;
     return VK_SUCCESS;
 }
 
@@ -31,12 +31,12 @@ VkResult VulkanRenderer::RendererSetUp()
     cRenderer.Instance = Renderer_CreateVulkanInstance();
     cRenderer.DebugMessenger = Renderer_SetupDebugMessenger(cRenderer.Instance);
     vulkanWindow->CreateSurface(vulkanWindow, &cRenderer.Instance, &cRenderer.Surface);
-    cRenderer.PhysicalDevice = Renderer_SetUpPhysicalDevice(cRenderer.Instance, cRenderer.Surface, cRenderer.SwapChain.GraphicsFamily, cRenderer.SwapChain.PresentFamily);
-    cRenderer.Device = Renderer_SetUpDevice(cRenderer.PhysicalDevice, cRenderer.SwapChain.GraphicsFamily, cRenderer.SwapChain.PresentFamily);
+    cRenderer.PhysicalDevice = Renderer_SetUpPhysicalDevice(cRenderer.Instance, cRenderer.Surface, cRenderer.GraphicsFamily, cRenderer.PresentFamily);
+    cRenderer.Device = Renderer_SetUpDevice(cRenderer.PhysicalDevice, cRenderer.GraphicsFamily, cRenderer.PresentFamily);
     VULKAN_RESULT(renderer.SetUpSwapChain());
-    cRenderer.CommandPool = Renderer_SetUpCommandPool(cRenderer.Device, cRenderer.SwapChain.GraphicsFamily);
+    cRenderer.CommandPool = Renderer_SetUpCommandPool(cRenderer.Device, cRenderer.GraphicsFamily);
     VULKAN_RESULT(Renderer_SetUpSemaphores(cRenderer.Device, cRenderer.InFlightFences, cRenderer.AcquireImageSemaphores, cRenderer.PresentImageSemaphores));
-    VULKAN_RESULT(Renderer_GetDeviceQueue(cRenderer.Device, cRenderer.SwapChain.GraphicsFamily, cRenderer.SwapChain.PresentFamily, cRenderer.SwapChain.GraphicsQueue, cRenderer.SwapChain.PresentQueue));
+    VULKAN_RESULT(Renderer_GetDeviceQueue(cRenderer.Device, cRenderer.GraphicsFamily, cRenderer.PresentFamily, cRenderer.GraphicsQueue, cRenderer.PresentQueue));
     return VK_SUCCESS;
 }
 
@@ -45,8 +45,8 @@ VkResult VulkanRenderer::RebuildSwapChain()
     cRenderer.RebuildRendererFlag = true;
 
     VULKAN_RESULT(vkDeviceWaitIdle(cRenderer.Device));
-    Renderer_DestroySwapChainImageView(cRenderer.Device, cRenderer.Surface, &cRenderer.SwapChain.SwapChainImageViews[0], MAX_FRAMES_IN_FLIGHT);
-    vkDestroySwapchainKHR(cRenderer.Device, cRenderer.SwapChain.Swapchain, NULL);
+    Renderer_DestroySwapChainImageView(cRenderer.Device, cRenderer.Surface, &cRenderer.SwapChainImageViews[0], MAX_FRAMES_IN_FLIGHT);
+    vkDestroySwapchainKHR(cRenderer.Device, cRenderer.Swapchain, NULL);
     renderer.SetUpSwapChain();
     return VK_SUCCESS;
 }
@@ -54,7 +54,7 @@ VkResult VulkanRenderer::RebuildSwapChain()
 VkResult VulkanRenderer::StartFrame()
 {
     return Renderer_StartFrame(cRenderer.Device,
-        cRenderer.SwapChain.Swapchain,
+        cRenderer.Swapchain,
         cRenderer.InFlightFences.data(),
         cRenderer.AcquireImageSemaphores.data(),
         &cRenderer.ImageIndex,
@@ -64,12 +64,12 @@ VkResult VulkanRenderer::StartFrame()
 
 VkResult VulkanRenderer::EndFrame(Vector<VkCommandBuffer> commandBufferSubmitList)
 {
-    return Renderer_EndFrame(cRenderer.SwapChain.Swapchain,
+    return Renderer_EndFrame(cRenderer.Swapchain,
         cRenderer.AcquireImageSemaphores.data(),
         cRenderer.PresentImageSemaphores.data(),
         cRenderer.InFlightFences.data(),
-        cRenderer.SwapChain.GraphicsQueue,
-        cRenderer.SwapChain.PresentQueue,
+        cRenderer.GraphicsQueue,
+        cRenderer.PresentQueue,
         cRenderer.CommandIndex,
         cRenderer.ImageIndex,
         commandBufferSubmitList.data(),
@@ -195,8 +195,8 @@ VkResult  VulkanRenderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer) {
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
 
-    VkResult result = vkQueueSubmit(cRenderer.SwapChain.GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    result = vkQueueWaitIdle(cRenderer.SwapChain.GraphicsQueue);
+    VkResult result = vkQueueSubmit(cRenderer.GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    result = vkQueueWaitIdle(cRenderer.GraphicsQueue);
 
     vkFreeCommandBuffers(cRenderer.Device, cRenderer.CommandPool, 1, &commandBuffer);
 
@@ -211,8 +211,8 @@ VkResult  VulkanRenderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer, V
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
 
-    VkResult result = vkQueueSubmit(cRenderer.SwapChain.GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    result = vkQueueWaitIdle(cRenderer.SwapChain.GraphicsQueue);
+    VkResult result = vkQueueSubmit(cRenderer.GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    result = vkQueueWaitIdle(cRenderer.GraphicsQueue);
 
     vkFreeCommandBuffers(cRenderer.Device, commandPool, 1, &commandBuffer);
 
@@ -286,12 +286,12 @@ void VulkanRenderer::FreeDeviceMemory(VkDeviceMemory& memory)
 
 void VulkanRenderer::DestroySwapChainImageView()
 {
-    Renderer_DestroySwapChainImageView(cRenderer.Device, cRenderer.Surface, &cRenderer.SwapChain.SwapChainImageViews[0], MAX_FRAMES_IN_FLIGHT);
+    Renderer_DestroySwapChainImageView(cRenderer.Device, cRenderer.Surface, &cRenderer.SwapChainImageViews[0], MAX_FRAMES_IN_FLIGHT);
 }
 
 void VulkanRenderer::DestroySwapChain()
 {
-    Renderer_DestroySwapChain(cRenderer.Device, &cRenderer.SwapChain.Swapchain);
+    Renderer_DestroySwapChain(cRenderer.Device, &cRenderer.Swapchain);
 }
 
 void VulkanRenderer::DestroyImageView(VkImageView& imageView)

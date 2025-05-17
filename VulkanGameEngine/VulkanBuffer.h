@@ -36,7 +36,7 @@ protected:
 
 	VkResult CreateStagingBuffer(void* bufferData)
 	{
-		return Buffer_CreateStagingBuffer(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, &StagingBuffer, &Buffer, &StagingBufferMemory, &BufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
+		return Buffer_CreateStagingBuffer(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, &StagingBuffer, &Buffer, &StagingBufferMemory, &BufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
 	}
 
 	VkResult UpdateBufferSize(VkBuffer buffer, VkDeviceMemory bufferMemory, VkDeviceSize newBufferSize)
@@ -144,7 +144,7 @@ public:
 
 	static VkResult CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 	{
-		return Buffer_CopyBuffer(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, srcBuffer, dstBuffer, size);
+		return Buffer_CopyBuffer(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, srcBuffer, dstBuffer, size);
 	}
 
 	void UpdateBufferMemory(T& bufferData)
@@ -152,7 +152,7 @@ public:
 		void* rawBufferData = static_cast<void*>(&bufferData);
 		if (UsingStagingBuffer)
 		{
-			Buffer_UpdateStagingBufferData(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, rawBufferData, BufferSize);
+			Buffer_UpdateStagingBufferData(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, rawBufferData, BufferSize);
 		}
 		else
 		{
@@ -174,7 +174,7 @@ public:
 				}
 			}
 
-			Buffer_UpdateStagingBufferData(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData.data(), BufferSize);
+			Buffer_UpdateStagingBufferData(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData.data(), BufferSize);
 		}
 		else
 		{
@@ -210,7 +210,7 @@ public:
 				}
 			}
 
-			Buffer_UpdateStagingBufferData(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData, BufferSize);
+			Buffer_UpdateStagingBufferData(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData, BufferSize);
 		}
 		else
 		{

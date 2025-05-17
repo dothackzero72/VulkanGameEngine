@@ -79,7 +79,7 @@ void Texture::CreateImageTexture(const Pixel& clearColor, bool useMipMaps)
 	Texture_CreateImageTexture(cRenderer.Device,
 		cRenderer.PhysicalDevice,
 		cRenderer.CommandPool,
-		cRenderer.SwapChain.GraphicsQueue,
+		cRenderer.GraphicsQueue,
 		width,
 		height,
 		depth,
@@ -118,7 +118,7 @@ void Texture::CreateImageTexture(const String& filePath, bool useMipMaps)
 	Texture_CreateImageTexture(cRenderer.Device,
 		cRenderer.PhysicalDevice,
 		cRenderer.CommandPool,
-		cRenderer.SwapChain.GraphicsQueue,
+		cRenderer.GraphicsQueue,
 		width,
 		height,
 		depth,
@@ -194,12 +194,12 @@ void Texture::GetTexturePropertiesBuffer(std::vector<VkDescriptorImageInfo>& tex
 
 void Texture::UpdateTextureLayout(VkImageLayout newImageLayout)
 {
-	Texture_UpdateTextureLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, &TextureImageLayout, &newImageLayout, MipMapLevels);
+	Texture_UpdateTextureLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, Image, &TextureImageLayout, &newImageLayout, MipMapLevels);
 }
 
 void Texture::UpdateTextureLayout(VkImageLayout newImageLayout, uint32_t mipLevel)
 {
-	Texture_UpdateTextureLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, &TextureImageLayout, &newImageLayout, mipLevel);
+	Texture_UpdateTextureLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, Image, &TextureImageLayout, &newImageLayout, mipLevel);
 }
 
 void Texture::UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout)
@@ -229,12 +229,12 @@ VkResult Texture::CreateImage(VkImageCreateInfo& imageCreateInfo)
 
 VkResult Texture::TransitionImageLayout(VkImageLayout newLayout)
 {
-	return Texture_QuickTransitionImageLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, MipMapLevels, &TextureImageLayout, &newLayout);
+	return Texture_QuickTransitionImageLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, Image, MipMapLevels, &TextureImageLayout, &newLayout);
 }
 
 VkResult Texture::TransitionImageLayout(VkImageLayout& oldLayout, VkImageLayout newLayout)
 {
-	return Texture_QuickTransitionImageLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, MipMapLevels, &oldLayout, &newLayout);
+	return Texture_QuickTransitionImageLayout(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, Image, MipMapLevels, &oldLayout, &newLayout);
 }
 
 VkResult Texture::TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout)
@@ -249,7 +249,7 @@ VkResult Texture::TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLa
 
 VkResult Texture::CopyBufferToTexture(VkBuffer buffer)
 {
-	return Texture_CopyBufferToTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, Image, buffer, TextureUsage, Width, Height, Depth);
+	return Texture_CopyBufferToTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, Image, buffer, TextureUsage, Width, Height, Depth);
 }
 
 VkResult Texture::CreateTextureSampler(VkSamplerCreateInfo samplerCreateInfo)
