@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 #include "Typedef.h"
 #include "JsonFunc.h"
+#include "VkGuid.h"
 
 enum RenderedTextureType
 {
@@ -128,6 +129,7 @@ struct PipelineDescriptorModel
 struct RenderPassBuildInfoModel : public RenderPassEditorBaseModel
 {
 public:
+    VkGuid RenderPassId;
     bool IsRenderedToSwapchain;
     Vector<String> RenderPipelineList;
     Vector<RenderedTextureInfoModel> RenderedTextureInfoModelList;

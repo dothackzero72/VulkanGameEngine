@@ -1,8 +1,61 @@
 #include "CoreVulkanRenderer.h"
 #include <cstdlib>
 #include <iostream>
+#include <imgui/imgui.h>
+#include <imgui/backends/imgui_impl_glfw.h>
 
 RendererState cRenderer = { 0 };
+
+ VkResult Renderer_SetUpSwapChain(RendererState& renderState)
+{
+    int width = 0;
+    int height = 0;
+    uint32 surfaceFormatCount = 0;
+    uint32 presentModeCount = 0;
+
+    VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities(renderState.PhysicalDevice, renderState.Surface);
+    Vector<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats(renderState.PhysicalDevice, renderState.Surface);
+    VULKAN_RESULT(SwapChain_GetQueueFamilies(renderState.PhysicalDevice, renderState.Surface, renderState.GraphicsFamily, renderState.PresentFamily));
+    Vector<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(renderState.PhysicalDevice, renderState.Surface);
+    VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
+    VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
+    vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
+    renderState.Swapchain = SwapChain_SetUpSwapChain(renderState.Device, renderState.PhysicalDevice, renderState.Surface, renderState.GraphicsFamily, renderState.PresentFamily, width, height, renderState.SwapChainImageCount);
+    renderState.SwapChainImages = SwapChain_SetUpSwapChainImages(renderState.Device, renderState.Swapchain, MAX_FRAMES_IN_FLIGHT);
+    renderState.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderState.Device, renderState.SwapChainImages, swapChainImageFormat);
+
+    renderState.SwapChainResolution.width = width;
+    renderState.SwapChainResolution.height = height;
+    return VK_SUCCESS;
+}
+
+ RendererState Renderer_RendererSetUp()
+{
+    RendererState renderState;
+    renderState.RebuildRendererFlag = false;
+    VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
+    renderState.Instance = Renderer_CreateVulkanInstance();
+    renderState.DebugMessenger = Renderer_SetupDebugMessenger(renderState.Instance);
+    vulkanWindow->CreateSurface(vulkanWindow, &renderState.Instance, &renderState.Surface);
+    renderState.PhysicalDevice = Renderer_SetUpPhysicalDevice(renderState.Instance, renderState.Surface, renderState.GraphicsFamily, renderState.PresentFamily);
+    renderState.Device = Renderer_SetUpDevice(renderState.PhysicalDevice, renderState.GraphicsFamily, renderState.PresentFamily);
+    VULKAN_RESULT(Renderer_SetUpSwapChain(renderState));
+    renderState.CommandPool = Renderer_SetUpCommandPool(renderState.Device, renderState.GraphicsFamily);
+    VULKAN_RESULT(Renderer_SetUpSemaphores(renderState.Device, renderState.InFlightFences, renderState.AcquireImageSemaphores, renderState.PresentImageSemaphores));
+    VULKAN_RESULT(Renderer_GetDeviceQueue(renderState.Device, renderState.GraphicsFamily, renderState.PresentFamily, renderState.GraphicsQueue, renderState.PresentQueue));
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    ImGui::StyleColorsDark();
+    switch (vulkanWindow->WindowType)
+    {
+        //case SDL: ImGui_ImplSDL3_InitForVulkan((SDL_Window*)vulkanWindow->WindowHandle); break;
+    case GLFW: ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)vulkanWindow->WindowHandle, true); break;
+    }
+    return renderState;
+}
 
 Vector<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice)
 {
