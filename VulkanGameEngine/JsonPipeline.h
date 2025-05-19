@@ -4,19 +4,8 @@
 #include "Typedef.h"
 #include "ECSid.h"
 #include "VkGuid.h"
-#include "JsonStructs.h"
-
-struct GPUIncludes
-{
-    Vector<VkDescriptorBufferInfo> vertexProperties;
-    Vector<VkDescriptorBufferInfo> indexProperties;
-    Vector<VkDescriptorBufferInfo> transformProperties;
-    Vector<VkDescriptorBufferInfo> meshProperties;
-    Vector<VkDescriptorBufferInfo> LevelLayermeshProperties;
-    Vector<VkDescriptorImageInfo>  texturePropertiesList;
-    Vector<VkDescriptorBufferInfo> materialProperties;
-};
-
+#include <JsonStructs.h>
+#include <CoreVulkanRenderer.h>
 
 class JsonPipeline
 {

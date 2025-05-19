@@ -229,7 +229,6 @@
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Transform2DComponent.h" />
     <ClInclude Include="Vertex.h" />
-    <ClInclude Include="VkGuid.h" />
     <ClInclude Include="VulkanBuffer.h" />
     <ClInclude Include="VulkanRenderer.h" />
   </ItemGroup>
