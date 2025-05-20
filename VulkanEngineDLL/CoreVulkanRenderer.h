@@ -11,6 +11,7 @@ extern "C"
 #include "Typedef.h"
 #include "VulkanError.h"
 #include "JsonStructs.h"
+#include "VkGuid.h"
 
 static const char* DeviceExtensionList[] =
 {

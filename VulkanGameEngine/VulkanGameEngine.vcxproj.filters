@@ -120,9 +120,6 @@
     <ClCompile Include="VulkanRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JsonPipeline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="JsonRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -136,6 +133,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -162,9 +162,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="json.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JsonPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JsonRenderPass.h">
@@ -272,9 +269,6 @@
     <ClInclude Include="VulkanRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VkGuid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="JsonStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -297,6 +291,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

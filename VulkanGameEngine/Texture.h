@@ -8,6 +8,7 @@
 #include "VulkanBuffer.h"
 #include <objbase.h>
 #include "VkGuid.h"
+#include <TextureFunc.h>
 
 enum ExportTextureFormat
 {

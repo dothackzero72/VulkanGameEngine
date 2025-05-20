@@ -159,7 +159,6 @@
     <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
-    <ClCompile Include="JsonPipeline.cpp" />
     <ClCompile Include="JsonRenderPass.cpp" />
     <ClCompile Include="Level2D.cpp" />
     <ClCompile Include="LevelLayer.cpp" />
@@ -175,6 +174,7 @@
     <ClCompile Include="SpriteBatchLayer.cpp" />
     <ClCompile Include="SystemClock.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureSystem.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="VulkanRenderer.cpp" />
   </ItemGroup>
@@ -203,7 +203,6 @@
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
     <ClInclude Include="json.h" />
-    <ClInclude Include="JsonPipeline.h" />
     <ClInclude Include="JsonRenderPass.h" />
     <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="Level2D.h" />
@@ -226,6 +225,7 @@
     <ClInclude Include="SpriteVRAM.h" />
     <ClInclude Include="SystemClock.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureSystem.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Transform2DComponent.h" />
     <ClInclude Include="Vertex.h" />

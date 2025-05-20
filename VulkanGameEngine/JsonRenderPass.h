@@ -2,7 +2,8 @@
 #include <vulkan/vulkan_core.h>
 #include "Texture.h"
 #include "vertex.h"
-#include "JsonPipeline.h"
+#include <VulkanRenderPass.h>
+#include <VulkanPipeline.h>
 #include "GameObject.h"
 #include "JsonStructs.h"
 #include "ECSid.h"
@@ -36,6 +37,3 @@ public:
 	void RecreateSwapchain(int newWidth, int newHeight);
 	void Destroy();
 };
-
-VkRenderPass RenderPass_BuildRenderPass(VkDevice device, const RenderPassBuildInfoModel& renderPassBuildInfo);
-Vector<VkFramebuffer> RenderPass_BuildFrameBuffer(VkDevice device, VkRenderPass renderPass, const RenderPassBuildInfoModel& renderPassBuildInfo, Vector<VkImageView>& imageViewList, VkImageView* depthImageView, Vector<VkImageView>& swapChainImageViews, ivec2 renderPassResolution);

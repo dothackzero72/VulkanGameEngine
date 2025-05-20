@@ -2,7 +2,7 @@
 #include "VulkanRenderer.h"
 #include "SpriteBatchLayer.h"
 #include "TypeDef.h"
-#include "JsonPipeline.h"
+#include <VulkanPipeline.h>
 #include "JsonRenderPass.h"
 #include "AssetManager.h"
 #include "DepthTexture.h"
@@ -29,6 +29,7 @@ class JsonPipeline;
 class JsonRenderPass;
 class RenderSystem
 {
+    friend class JsonRenderPass;
     friend class JsonPipeline;
 private:
 
@@ -65,6 +66,8 @@ private:
     const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<Texture>>& renderedTextureList);
     const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer();
 
+    void DestroyGraphicsPipeline(VkGuid& guid);
+
 public:
     Vector<Vertex2D> SpriteVertexList =
     {
@@ -98,13 +101,12 @@ public:
     UnorderedMap<RenderPassGuid, DepthTexture>                    DepthTextureList;
     UnorderedMap<RenderPassGuid, VkRenderPassBeginInfo>           RenderPassInfoList;
     UnorderedMap<RenderPassGuid, ivec2>                           RenderPassResolutionList;
-    UnorderedMap<RenderPassGuid, Vector<JsonPipeline>>            RenderPipelineList;
+    UnorderedMap<RenderPassGuid, Vector<VulkanPipeline>>          RenderPipelineList;
     UnorderedMap<RenderPassGuid, Vector<RenderedTexture>>         RenderedTextureList;
     UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerList;
     UnorderedMap<RenderPassGuid, Vector<VkClearValue>>            ClearValueList;
     UnorderedMap<RenderPassGuid, RenderPassBuildInfoModel>        renderPassBuildInfoList;
 
-    UnorderedMap<UM_RenderPipelineID, RenderPipelineModel>        renderPipelineModelList;
     UnorderedMap<UM_RenderPipelineID, Vector<SharedPtr<Texture>>> InputTextureList;
 
     UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer>          SpriteInstanceBufferList;

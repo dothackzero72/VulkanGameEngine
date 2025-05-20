@@ -204,22 +204,22 @@ void Texture::UpdateTextureLayout(VkImageLayout newImageLayout, uint32_t mipLeve
 
 void Texture::UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout)
 {
-	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, oldImageLayout, &newImageLayout, MipMapLevels);
+	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, &oldImageLayout, &newImageLayout, MipMapLevels);
 }
 
 void Texture::UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, uint32_t mipLevel)
 {
-	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, oldImageLayout, &newImageLayout, mipLevel);
+	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, &oldImageLayout, &newImageLayout, mipLevel);
 }
 
 void Texture::UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout)
 {
-	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, TextureImageLayout, &newImageLayout, MipMapLevels);
+	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, &TextureImageLayout, &newImageLayout, MipMapLevels);
 }
 
 void Texture::UpdateTextureLayout(VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout, uint32_t mipLevel)
 {
-	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, TextureImageLayout, &newImageLayout, mipLevel);
+	Texture_UpdateCmdTextureLayout(&commandBuffer, Image, &TextureImageLayout, &newImageLayout, mipLevel);
 }
 
 VkResult Texture::CreateImage(VkImageCreateInfo& imageCreateInfo)
@@ -239,12 +239,12 @@ VkResult Texture::TransitionImageLayout(VkImageLayout& oldLayout, VkImageLayout 
 
 VkResult Texture::TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout newLayout)
 {
-	return Texture_CommandBufferTransitionImageLayout(commandBuffer, Image, MipMapLevels, TextureImageLayout, newLayout);
+	return Texture_CommandBufferTransitionImageLayout(commandBuffer, Image, MipMapLevels, &TextureImageLayout, newLayout);
 }
 
 VkResult Texture::TransitionImageLayout(VkCommandBuffer commandBuffer, VkImageLayout& oldLayout, VkImageLayout newLayout)
 {
-	return Texture_CommandBufferTransitionImageLayout(commandBuffer, Image, MipMapLevels, oldLayout, newLayout);
+	return Texture_CommandBufferTransitionImageLayout(commandBuffer, Image, MipMapLevels, &oldLayout, newLayout);
 }
 
 VkResult Texture::CopyBufferToTexture(VkBuffer buffer)
