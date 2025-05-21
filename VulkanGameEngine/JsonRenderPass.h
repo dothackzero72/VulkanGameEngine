@@ -31,7 +31,7 @@ public:
 
 	JsonRenderPass();
 	JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model, ivec2& renderPassResolution);
-	JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model, Texture& inputTexture, ivec2& renderPassResolution);
+	JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model, TextureStruct& inputTexture, ivec2& renderPassResolution);
 	~JsonRenderPass();
 
 	void RecreateSwapchain(int newWidth, int newHeight);

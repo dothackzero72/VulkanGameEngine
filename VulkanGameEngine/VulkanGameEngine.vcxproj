@@ -202,9 +202,7 @@
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
-    <ClInclude Include="json.h" />
     <ClInclude Include="JsonRenderPass.h" />
-    <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="Level2D.h" />
     <ClInclude Include="LevelLayer.h" />
     <ClInclude Include="LevelLayout.h" />

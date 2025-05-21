@@ -161,9 +161,6 @@
     <ClInclude Include="InterfaceRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="json.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="JsonRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -267,9 +264,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JsonStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ECSid.h">

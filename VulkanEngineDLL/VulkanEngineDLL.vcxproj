@@ -144,6 +144,7 @@
     <ClInclude Include="GameController.h" />
     <ClInclude Include="GLFWWindow.h" />
     <ClInclude Include="ImGuiFunc.h" />
+    <ClInclude Include="json.h" />
     <ClInclude Include="JsonFunc.h" />
     <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="Keyboard.h" />

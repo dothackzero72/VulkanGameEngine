@@ -197,7 +197,7 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec
     return model.RenderPassId;
 }
 
-VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
+VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, TextureStruct& inputTexture, ivec2 renderPassResolution)
 {
     nlohmann::json json = Json::ReadJson(jsonPath);
 
@@ -365,9 +365,9 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGui
 }
 
 
-const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<Texture>>& renderedTextureList)
+const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<TextureStruct>>& renderedTextureList)
 {
-    Vector<Texture> textureList;
+    Vector<TextureStruct> textureList;
     if (renderedTextureList.empty())
     {
         for (auto& texture : TextureList)
@@ -424,7 +424,7 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkG
     {
         for (auto& texture : textureList)
         {
-            texture.GetTexturePropertiesBuffer(texturePropertiesBuffer);
+            Texture_GetTexturePropertiesBuffer(texture, texturePropertiesBuffer);
         }
     }
 
@@ -471,7 +471,7 @@ void RenderSystem::UpdateBufferIndex()
 {
     int xy = 0;
     for (auto& [id, texture] : renderSystem.TextureList) {
-        texture.UpdateTextureBufferIndex(xy);
+        Texture_UpdateTextureBufferIndex(texture, xy);
         ++xy;
     }
     int xz = 0;
@@ -495,7 +495,7 @@ VkGuid RenderSystem::AddSpriteVRAM(const String& spritePath)
     }
 
     const Material& material = MaterialList.at(materialId);
-    const Texture& texture = TextureList.at(material.AlbedoMapId);
+    const TextureStruct& texture = TextureList.at(material.AlbedoMapId);
 
     SpriteVram sprite = SpriteVram
     {
@@ -505,7 +505,7 @@ VkGuid RenderSystem::AddSpriteVRAM(const String& spritePath)
         .SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] },
         .SpritePixelSize = ivec2{ json["SpritePixelSize"][0], json["SpritePixelSize"][1] },
         .SpriteScale = ivec2{ json["SpriteScale"][0], json["SpriteScale"][1] },
-        .SpriteCells = ivec2(texture.Width / sprite.SpritePixelSize.x, texture.Height / sprite.SpritePixelSize.y),
+        .SpriteCells = ivec2(texture.width / sprite.SpritePixelSize.x, texture.height / sprite.SpritePixelSize.y),
         .SpriteUVSize = vec2(1.0f / (float)sprite.SpriteCells.x, 1.0f / (float)sprite.SpriteCells.y),
         .SpriteSize = vec2(sprite.SpritePixelSize.x * sprite.SpriteScale.x, sprite.SpritePixelSize.y * sprite.SpriteScale.y),
     };
@@ -551,13 +551,13 @@ VkGuid RenderSystem::AddTileSetVRAM(const String& tileSetPath)
     }
 
     const Material& material = MaterialList[materialId];
-    const Texture& tileSetTexture = TextureList[material.AlbedoMapId];
+    const TextureStruct& tileSetTexture = TextureList[material.AlbedoMapId];
 
     LevelTileSet tileSet = LevelTileSet();
     tileSet.TileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
     tileSet.MaterialId = materialId;
     tileSet.TilePixelSize = ivec2{ json["TilePixelSize"][0], json["TilePixelSize"][1] };
-    tileSet.TileSetBounds = ivec2{ tileSetTexture.Width / tileSet.TilePixelSize.x,  tileSetTexture.Height / tileSet.TilePixelSize.y };
+    tileSet.TileSetBounds = ivec2{ tileSetTexture.width / tileSet.TilePixelSize.x,  tileSetTexture.height / tileSet.TilePixelSize.y };
     tileSet.TileUVSize = vec2(1.0f / (float)tileSet.TileSetBounds.x, 1.0f / (float)tileSet.TileSetBounds.y);
     for (int x = 0; x < json["TileList"].size(); x++)
     {
@@ -590,13 +590,7 @@ VkGuid RenderSystem::LoadTexture(const String& texturePath)
         return textureId;
     }
 
-    String textureFilePath = json["TextureFilePath"];
-    VkFormat textureByteFormat = json["TextureByteFormat"];
-    VkImageAspectFlags imageType = json["ImageType"];
-    TextureTypeEnum textureType = json["TextureType"];
-    bool useMipMaps = json["UseMipMaps"];
-
-    TextureList[textureId] = Texture(textureId, textureFilePath, textureByteFormat, imageType, textureType, useMipMaps);
+    TextureList[textureId] = Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, texturePath);
     return textureId;
 }
 

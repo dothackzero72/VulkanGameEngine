@@ -4,15 +4,14 @@
 #include <glm/glm.hpp>
 #include "Typedef.h"
 #include <iostream>
-#include "File.h"
 #include <objbase.h>
-
+#include "CFile.h"
 class Json : public nlohmann::json
 {
 public:
 	static nlohmann::json ReadJson(const String filePath)
 	{
-		return fileSystem.ReadJsonFile(filePath);
+		return nlohmann::json::parse(File_Read(filePath.c_str()).Data);
 	}
 
 	static void to_json(nlohmann::json& json, String& string)

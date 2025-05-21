@@ -59,7 +59,7 @@ JsonRenderPass::JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model,
     };
 }
 
-JsonRenderPass::JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model, Texture& inputTexture, ivec2& renderPassResolution)
+JsonRenderPass::JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model, TextureStruct& inputTexture, ivec2& renderPassResolution)
 {
     RenderPassId = model.RenderPassId;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -75,7 +75,7 @@ JsonRenderPass::JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model,
     uint id = renderSystem.RenderPipelineList.size();
     nlohmann::json json = Json::ReadJson(model.RenderPipelineList[0]);
     RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
-    renderSystem.InputTextureList[id].emplace_back(std::make_shared<Texture>(inputTexture));
+    renderSystem.InputTextureList[id].emplace_back(std::make_shared<TextureStruct>(inputTexture));
 
     GPUIncludes include =
     {
@@ -123,7 +123,7 @@ void JsonRenderPass::RecreateSwapchain(int newWidth, int newHeight)
     Vector<VkImageView> imageViewList;
     for (auto& renderedTexture : renderSystem.RenderedTextureList[RenderPassId])
     {
-        imageViewList.emplace_back(renderedTexture.View);
+        imageViewList.emplace_back(renderedTexture.textureView);
     }
     VkImageView depthTexture = renderSystem.DepthTextureList[RenderPassId].View;
 
@@ -150,16 +150,16 @@ void JsonRenderPass::RecreateSwapchain(int newWidth, int newHeight)
 
 void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
-    Vector<RenderedTexture> RenderedColorTextureList;
+    Vector<TextureStruct> RenderedColorTextureList;
     for (auto& texture : renderPassBuildInfo.RenderedTextureInfoModelList)
     {
         VkImageCreateInfo imageCreateInfo = texture.ImageCreateInfo;
         VkSamplerCreateInfo samplerCreateInfo = texture.SamplerCreateInfo;
         switch (texture.TextureType)
         {
-            case ColorRenderedTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-            case InputAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-            case ResolveAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(RenderedTexture(VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
+            case ColorRenderedTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
+            case InputAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
+            case ResolveAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
             case DepthRenderedTexture: renderSystem.DepthTextureList[RenderPassId] = DepthTexture(imageCreateInfo, samplerCreateInfo); break;
             default: throw std::runtime_error("Case doesn't exist: RenderedTextureType");
         };
@@ -173,7 +173,7 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
     Vector<VkImageView> imageViewList;
     for (int x = 0; x < renderSystem.RenderedTextureList[RenderPassId].size(); x++)
     {
-        imageViewList.emplace_back(renderSystem.RenderedTextureList[RenderPassId][x].View);
+        imageViewList.emplace_back(renderSystem.RenderedTextureList[RenderPassId][x].textureView);
     }
 
     SharedPtr<VkImageView> depthTextureView = nullptr;
@@ -190,7 +190,7 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
 void JsonRenderPass::RebuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
     VkRenderPass& renderPass = RenderPass;
-    Vector<RenderedTexture> renderedTextureList = renderSystem.RenderedTextureList[RenderPassId];
+    Vector<TextureStruct> renderedTextureList = renderSystem.RenderedTextureList[RenderPassId];
     FrameBufferList.resize(cRenderer.SwapChainImageCount);
    // FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, renderedTextureList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, renderSystem.RenderPassResolutionList[RenderPassId]);
 }
@@ -204,7 +204,7 @@ void JsonRenderPass::Destroy()
 {
     for (auto renderedTexture : renderSystem.RenderedTextureList[RenderPassId])
     {
-        renderedTexture.Destroy();
+        Texture_DestroyTexture(cRenderer.Device, renderedTexture);
     }
 
     renderer.DestroyRenderPass(RenderPass);
