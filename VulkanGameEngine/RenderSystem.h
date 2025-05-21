@@ -5,8 +5,6 @@
 #include <VulkanPipeline.h>
 #include "JsonRenderPass.h"
 #include "AssetManager.h"
-#include "DepthTexture.h"
-#include "RenderedTexture.h"
 #include "ECSid.h"
 #include "InterfaceRenderPass.h"
 #include "Mesh.h"
@@ -25,12 +23,10 @@ typedef VkGuid LevelGuid;
 typedef VkGuid RenderPassGuid;
 
 class Sprite;
-class JsonPipeline;
 class JsonRenderPass;
 class RenderSystem
 {
     friend class JsonRenderPass;
-    friend class JsonPipeline;
 private:
 
     //SharedPtr<uint32>                   ImageIndex;
@@ -98,7 +94,7 @@ public:
     UnorderedMap<LevelGuid, Vector<LevelLayerMesh>>               LevelLayerMeshList;
 
     UnorderedMap<RenderPassGuid, JsonRenderPass>                  RenderPassList;
-    UnorderedMap<RenderPassGuid, DepthTexture>                    DepthTextureList;
+    UnorderedMap<RenderPassGuid, TextureStruct>                    DepthTextureList;
     UnorderedMap<RenderPassGuid, VkRenderPassBeginInfo>           RenderPassInfoList;
     UnorderedMap<RenderPassGuid, ivec2>                           RenderPassResolutionList;
     UnorderedMap<RenderPassGuid, Vector<VulkanPipeline>>          RenderPipelineList;

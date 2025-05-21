@@ -18,29 +18,9 @@ TextureStruct Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDe
 	texture.mipMapLevels = useMipMaps ? static_cast<uint32>(std::floor(std::log2(std::max(texture.width, texture.height)))) + 1 : 1;
 	texture.textureType = json["TextureType"];
 
-	VkSamplerCreateInfo textureImageSamplerInfo =
-	{
-		.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-		.magFilter = VK_FILTER_NEAREST,
-		.minFilter = VK_FILTER_NEAREST,
-		.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST,
-		.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-		.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-		.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-		.mipLodBias = 0,
-		.anisotropyEnable = VK_FALSE,
-		.maxAnisotropy = 1.0f,
-		.compareEnable = VK_FALSE,
-		.compareOp = VK_COMPARE_OP_ALWAYS,
-		.minLod = 0,
-		.maxLod = (float)1,
-		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
-		.unnormalizedCoordinates = VK_FALSE,
-	};
-
 	Texture_CreateTextureImage2(device, physicalDevice, commandPool, queue, texture, textureFilePath);
 	Texture_CreateTextureView2(device, texture, imageType);
-	Texture_CreateTextureSampler2(device, textureImageSamplerInfo, texture.textureSampler);
+	Texture_CreateSpriteTextureSampler2(device, texture.textureSampler);
 	return texture;
 }
 
@@ -57,7 +37,7 @@ TextureStruct Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDe
 
 	Texture_CreateTextureImage2(device, physicalDevice, commandPool, graphicsQueue, texture, createImageInfo);
 	Texture_CreateTextureView2(device, texture, imageType);
-	Texture_CreateTextureSampler2(device, samplerCreateInfo, texture.textureSampler);
+	Texture_CreateRenderedTextureSampler2(device, texture.textureSampler);
 	return texture;
 }
 
@@ -74,7 +54,7 @@ TextureStruct Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDe
 
 	Texture_CreateTextureImage2(device, physicalDevice, commandPool, graphicsQueue, texture, texturePath);
 	Texture_CreateTextureView2(device, texture, imageType);
-	Texture_CreateTextureSampler2(device, samplerCreateInfo, texture.textureSampler);
+	Texture_CreateRenderedTextureSampler2(device, texture.textureSampler);
 	return texture;
 }
 
@@ -91,7 +71,7 @@ TextureStruct Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDe
 
 	Texture_CreateTextureImage2(device, physicalDevice, commandPool, graphicsQueue, texture, clearColor);
 	Texture_CreateTextureView2(device, texture, imageType);
-	Texture_CreateTextureSampler2(device, samplerCreateInfo, texture.textureSampler);
+	Texture_CreateRenderedTextureSampler2(device, texture.textureSampler);
 	return texture;
 }
 
@@ -754,9 +734,73 @@ VkResult Texture_CreateTextureView2(VkDevice device, TextureStruct& texture, VkI
 	return vkCreateImageView(device, &TextureImageViewInfo, NULL, &texture.textureView);
 }
 
-VkResult Texture_CreateTextureSampler2(VkDevice device, VkSamplerCreateInfo& samplerCreateInfo, VkSampler& smapler)
+ VkResult Texture_CreateSpriteTextureSampler2(VkDevice device, VkSampler& smapler)
 {
-	return vkCreateSampler(device, &samplerCreateInfo, NULL, &smapler);
+	 VkSamplerCreateInfo spriteSamplerInfo = {
+	.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+	.magFilter = VK_FILTER_NEAREST,           
+	.minFilter = VK_FILTER_NEAREST,         
+	.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST, 
+	.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+	.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 
+	.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 
+	.mipLodBias = 0,                          
+	.anisotropyEnable = VK_FALSE,          
+	.maxAnisotropy = 1.0f,                   
+	.compareEnable = VK_FALSE,             
+	.compareOp = VK_COMPARE_OP_ALWAYS,        
+	.minLod = 0,                             
+	.maxLod = 0,                 
+	.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK, 
+	.unnormalizedCoordinates = VK_FALSE, 
+	 };
+	 return vkCreateSampler(device, &spriteSamplerInfo, NULL, &smapler);
+}
+
+ VkResult Texture_CreateRenderedTextureSampler2(VkDevice device, VkSampler& smapler)
+{
+	 VkSamplerCreateInfo renderPassSamplerInfo = {
+	.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+	.magFilter = VK_FILTER_LINEAR,          
+	.minFilter = VK_FILTER_LINEAR,          
+	.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR, 
+	.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+	.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 
+	.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+	.mipLodBias = 0,                         
+	.anisotropyEnable = VK_FALSE,            
+	.maxAnisotropy = 1.0f,                  
+	.compareEnable = VK_FALSE,              
+	.compareOp = VK_COMPARE_OP_ALWAYS,       
+	.minLod = 0,                           
+	.maxLod = 0,                          
+	.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+	.unnormalizedCoordinates = VK_FALSE,    
+	 };
+	 return vkCreateSampler(device, &renderPassSamplerInfo, NULL, &smapler);
+}
+
+ VkResult Texture_CreateDepthTextureSampler2(VkDevice device, VkSampler& smapler)
+{
+	 VkSamplerCreateInfo depthMapSamplerInfo = {
+	.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+	.magFilter = VK_FILTER_LINEAR,           
+	.minFilter = VK_FILTER_LINEAR,         
+	.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST,
+	.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, 
+	.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+	.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+	.mipLodBias = 0,                     
+	.anisotropyEnable = VK_FALSE,            
+	.maxAnisotropy = 1.0f,                   
+	.compareEnable = VK_TRUE,                
+	.compareOp = VK_COMPARE_OP_LESS,         
+	.minLod = 0,                           
+	.maxLod = 0,                            
+	.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+	.unnormalizedCoordinates = VK_FALSE,     
+	 };
+	 return vkCreateSampler(device, &depthMapSamplerInfo, NULL, &smapler);
 }
 
 VkResult Texture_TransitionImageLayout2(VkCommandBuffer commandBuffer, TextureStruct& texture, VkImageLayout newLayout)

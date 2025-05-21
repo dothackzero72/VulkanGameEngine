@@ -146,7 +146,9 @@ extern "C" {
 
     DLL_EXPORT VkResult Texture_CreateImage2(VkDevice device, VkPhysicalDevice physicalDevice, TextureStruct& texture, VkImageCreateInfo& imageCreateInfo);
     DLL_EXPORT VkResult Texture_CreateTextureView2(VkDevice device, TextureStruct& texture, VkImageAspectFlags imageAspectFlags);
-    DLL_EXPORT VkResult Texture_CreateTextureSampler2(VkDevice device, VkSamplerCreateInfo& samplerCreateInfo, VkSampler& smapler);
+    DLL_EXPORT VkResult Texture_CreateSpriteTextureSampler2(VkDevice device, VkSampler& smapler);
+    DLL_EXPORT VkResult Texture_CreateRenderedTextureSampler2(VkDevice device, VkSampler& smapler);
+    DLL_EXPORT VkResult Texture_CreateDepthTextureSampler2(VkDevice device, VkSampler& smapler);
 
     DLL_EXPORT VkResult Texture_TransitionImageLayout2(VkCommandBuffer commandBuffer, TextureStruct& texture, VkImageLayout newLayout);
     DLL_EXPORT VkResult Texture_QuickTransitionImageLayout2(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, TextureStruct& texture, VkImageLayout& newLayout);

@@ -151,7 +151,6 @@
     <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="DepthTexture.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
@@ -167,7 +166,6 @@
     <ClCompile Include="OrthographicCamera2D.cpp" />
     <ClCompile Include="OrthographicCamera3D.cpp" />
     <ClCompile Include="ProgramStats.cpp" />
-    <ClCompile Include="RenderedTexture.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="ShaderSystem.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -192,7 +190,6 @@
     <ClInclude Include="Animation2D.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="DepthTexture.h" />
     <ClInclude Include="ECSid.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FPSGraph.h" />
@@ -213,7 +210,6 @@
     <ClInclude Include="OrthographicCamera2D.h" />
     <ClInclude Include="OrthographicCamera3D.h" />
     <ClInclude Include="ProgramStats.h" />
-    <ClInclude Include="RenderedTexture.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SceneDataBuffer.h" />

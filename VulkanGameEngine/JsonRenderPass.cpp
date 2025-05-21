@@ -125,7 +125,7 @@ void JsonRenderPass::RecreateSwapchain(int newWidth, int newHeight)
     {
         imageViewList.emplace_back(renderedTexture.textureView);
     }
-    VkImageView depthTexture = renderSystem.DepthTextureList[RenderPassId].View;
+    VkImageView depthTexture = renderSystem.DepthTextureList[RenderPassId].textureView;
 
     RenderPass = RenderPass_BuildRenderPass(cRenderer.Device, renderSystem.renderPassBuildInfoList[RenderPassId]);
     FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, RenderPass, renderSystem.renderPassBuildInfoList[RenderPassId], imageViewList, &depthTexture, cRenderer.SwapChainImageViews, renderSystem.RenderPassResolutionList[RenderPassId]);
@@ -160,7 +160,7 @@ void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassB
             case ColorRenderedTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
             case InputAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
             case ResolveAttachmentTexture: renderSystem.RenderedTextureList[RenderPassId].emplace_back(Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-            case DepthRenderedTexture: renderSystem.DepthTextureList[RenderPassId] = DepthTexture(imageCreateInfo, samplerCreateInfo); break;
+            case DepthRenderedTexture: renderSystem.DepthTextureList[RenderPassId] = Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo); break;
             default: throw std::runtime_error("Case doesn't exist: RenderedTextureType");
         };
     }
@@ -179,7 +179,7 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
     SharedPtr<VkImageView> depthTextureView = nullptr;
     if (renderSystem.DepthTextureList.find(RenderPassId) != renderSystem.DepthTextureList.end())
     {
-        depthTextureView = std::make_shared<VkImageView>(renderSystem.DepthTextureList[RenderPassId].View);
+        depthTextureView = std::make_shared<VkImageView>(renderSystem.DepthTextureList[RenderPassId].textureView);
     }
 
     VkRenderPass& renderPass = RenderPass;
