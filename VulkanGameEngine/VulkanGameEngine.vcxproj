@@ -171,7 +171,6 @@
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteBatchLayer.cpp" />
     <ClCompile Include="SystemClock.cpp" />
-    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureSystem.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="VulkanRenderer.cpp" />
@@ -218,7 +217,6 @@
     <ClInclude Include="SpriteBatchLayer.h" />
     <ClInclude Include="SpriteVRAM.h" />
     <ClInclude Include="SystemClock.h" />
-    <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureSystem.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Transform2DComponent.h" />

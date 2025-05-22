@@ -136,7 +136,6 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
     VULKAN_RESULT(vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-
     for (auto levelLayer : levelLayerList)
     {
         VkDeviceSize offsets[] = { 0 };
@@ -197,7 +196,7 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec
     return model.RenderPassId;
 }
 
-VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, TextureStruct& inputTexture, ivec2 renderPassResolution)
+VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
 {
     nlohmann::json json = Json::ReadJson(jsonPath);
 
@@ -365,9 +364,9 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGui
 }
 
 
-const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<TextureStruct>>& renderedTextureList)
+const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<Texture>>& renderedTextureList)
 {
-    Vector<TextureStruct> textureList;
+    Vector<Texture> textureList;
     if (renderedTextureList.empty())
     {
         for (auto& texture : TextureList)
@@ -495,7 +494,7 @@ VkGuid RenderSystem::AddSpriteVRAM(const String& spritePath)
     }
 
     const Material& material = MaterialList.at(materialId);
-    const TextureStruct& texture = TextureList.at(material.AlbedoMapId);
+    const Texture& texture = TextureList.at(material.AlbedoMapId);
 
     SpriteVram sprite = SpriteVram
     {
@@ -551,7 +550,7 @@ VkGuid RenderSystem::AddTileSetVRAM(const String& tileSetPath)
     }
 
     const Material& material = MaterialList[materialId];
-    const TextureStruct& tileSetTexture = TextureList[material.AlbedoMapId];
+    const Texture& tileSetTexture = TextureList[material.AlbedoMapId];
 
     LevelTileSet tileSet = LevelTileSet();
     tileSet.TileSetId = VkGuid(json["TileSetId"].get<String>().c_str());

@@ -59,7 +59,7 @@ JsonRenderPass::JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model,
     };
 }
 
-JsonRenderPass::JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model, TextureStruct& inputTexture, ivec2& renderPassResolution)
+JsonRenderPass::JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model, Texture& inputTexture, ivec2& renderPassResolution)
 {
     RenderPassId = model.RenderPassId;
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -75,7 +75,7 @@ JsonRenderPass::JsonRenderPass(VkGuid& levelId, RenderPassBuildInfoModel& model,
     uint id = renderSystem.RenderPipelineList.size();
     nlohmann::json json = Json::ReadJson(model.RenderPipelineList[0]);
     RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
-    renderSystem.InputTextureList[id].emplace_back(std::make_shared<TextureStruct>(inputTexture));
+    renderSystem.InputTextureList[id].emplace_back(std::make_shared<Texture>(inputTexture));
 
     GPUIncludes include =
     {
@@ -150,7 +150,7 @@ void JsonRenderPass::RecreateSwapchain(int newWidth, int newHeight)
 
 void JsonRenderPass::BuildRenderPass(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
-    Vector<TextureStruct> RenderedColorTextureList;
+    Vector<Texture> RenderedColorTextureList;
     for (auto& texture : renderPassBuildInfo.RenderedTextureInfoModelList)
     {
         VkImageCreateInfo imageCreateInfo = texture.ImageCreateInfo;
@@ -190,7 +190,7 @@ void JsonRenderPass::BuildFrameBuffer(const RenderPassBuildInfoModel& renderPass
 void JsonRenderPass::RebuildFrameBuffer(const RenderPassBuildInfoModel& renderPassBuildInfo)
 {
     VkRenderPass& renderPass = RenderPass;
-    Vector<TextureStruct> renderedTextureList = renderSystem.RenderedTextureList[RenderPassId];
+    Vector<Texture> renderedTextureList = renderSystem.RenderedTextureList[RenderPassId];
     FrameBufferList.resize(cRenderer.SwapChainImageCount);
    // FrameBufferList = RenderPass_BuildFrameBuffer(cRenderer.Device, renderPass, renderPassBuildInfo, renderedTextureList, depthTextureView.get(), cRenderer.SwapChain.SwapChainImageViews, renderSystem.RenderPassResolutionList[RenderPassId]);
 }

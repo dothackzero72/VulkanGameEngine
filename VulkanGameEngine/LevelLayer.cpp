@@ -76,6 +76,5 @@ void LevelLayer::LoadLevelMesh()
             TileMap.emplace_back(tile);
         }
     }
-
     renderSystem.LevelLayerMeshList[LevelId].emplace_back(LevelLayerMesh(VertexList, IndexList, MaterialId));
 }
