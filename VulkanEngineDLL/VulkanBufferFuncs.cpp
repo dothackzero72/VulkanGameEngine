@@ -1,4 +1,4 @@
-#include "CBuffer.h"
+#include "VulkanBufferFuncs.h"
 #include "CVulkanRenderer.h"
 
 VkResult Buffer_UpdateBufferMemory(VkDevice device, VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize)
@@ -57,9 +57,9 @@ VkResult Buffer_AllocateMemory(VkDevice device, VkPhysicalDevice physicalDevice,
     VkMemoryAllocateInfo allocInfo =
     {
         .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+        .pNext = &ExtendedAllocFlagsInfo,
         .allocationSize = memRequirements.size,
         .memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties),
-        .pNext = &ExtendedAllocFlagsInfo,
     };
 
     return vkAllocateMemory(device, &allocInfo, NULL, bufferMemory);

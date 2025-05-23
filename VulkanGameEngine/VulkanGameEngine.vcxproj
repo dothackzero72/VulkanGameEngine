@@ -139,20 +139,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\External\imgui\backends\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\External\imgui\backends\imgui_impl_vulkan.cpp" />
-    <ClCompile Include="..\External\imgui\imgui.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_draw.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_tables.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="..\External\ImPlot\implot.cpp" />
-    <ClCompile Include="..\External\ImPlot\implot_demo.cpp" />
-    <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="File.cpp" />
-    <ClCompile Include="FPSGraph.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="GameSystem.cpp" />
     <ClCompile Include="InputComponent.cpp" />
@@ -165,7 +154,6 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="OrthographicCamera2D.cpp" />
     <ClCompile Include="OrthographicCamera3D.cpp" />
-    <ClCompile Include="ProgramStats.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="ShaderSystem.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -176,22 +164,11 @@
     <ClCompile Include="VulkanRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\External\imgui\backends\imgui_impl_glfw.h" />
-    <ClInclude Include="..\External\imgui\backends\imgui_impl_vulkan.h" />
-    <ClInclude Include="..\External\imgui\imconfig.h" />
-    <ClInclude Include="..\External\imgui\imgui.h" />
-    <ClInclude Include="..\External\imgui\imgui_internal.h" />
-    <ClInclude Include="..\External\imgui\imstb_rectpack.h" />
-    <ClInclude Include="..\External\imgui\imstb_textedit.h" />
-    <ClInclude Include="..\External\imgui\imstb_truetype.h" />
-    <ClInclude Include="..\External\ImPlot\implot.h" />
-    <ClInclude Include="..\External\ImPlot\implot_internal.h" />
     <ClInclude Include="Animation2D.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ECSid.h" />
     <ClInclude Include="File.h" />
-    <ClInclude Include="FPSGraph.h" />
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameSystem.h" />
@@ -208,7 +185,6 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="OrthographicCamera2D.h" />
     <ClInclude Include="OrthographicCamera3D.h" />
-    <ClInclude Include="ProgramStats.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SceneDataBuffer.h" />

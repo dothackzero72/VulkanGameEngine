@@ -9,10 +9,23 @@
 #include "VulkanWindow.h"
 #include "CoreVulkanRenderer.h"
 
+struct ImGuiRenderer
+{
+	VkRenderPass RenderPass = VK_NULL_HANDLE;
+	VkDescriptorPool ImGuiDescriptorPool = VK_NULL_HANDLE;
+	VkCommandBuffer ImGuiCommandBuffer = VK_NULL_HANDLE;
+	Vector<VkFramebuffer> SwapChainFramebuffers;
+};
 
-	void ImGui_StartUp(const RendererState& rendererState, VkDescriptorPool& ImGuiDescriptorPool, VkCommandBuffer& ImGuiCommandBuffer);
-	VkRenderPass ImGui_CreateRenderPass(const RendererState& rendererState);
-	void ImGui_CreateRendererFramebuffers(const RendererState& rendererState, const VkRenderPass& renderPass, Vector<VkFramebuffer>& frameBuffers);
-	void ImGui_VkResult(VkResult err);
+DLL_EXPORT ImGuiRenderer ImGui_StartUp(const RendererState& rendererState);
+DLL_EXPORT void ImGui_StartFrame();
+DLL_EXPORT void ImGui_EndFrame();
+DLL_EXPORT VkCommandBuffer ImGui_Draw(const RendererState& rendererState, ImGuiRenderer& imGuiRenderer);
+DLL_EXPORT void RebuildSwapChain(const RendererState& rendererState, ImGuiRenderer& imGuiRenderer);
+DLL_EXPORT void ImGui_Destroy(RendererState& rendererState, ImGuiRenderer& imGuiRenderer);
+
+VkRenderPass ImGui_CreateRenderPass(const RendererState& rendererState);
+Vector<VkFramebuffer> ImGui_CreateRendererFramebuffers(const RendererState& rendererState, const VkRenderPass& renderPass);
+void ImGui_VkResult(VkResult err);
 
 

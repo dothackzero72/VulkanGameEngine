@@ -13,6 +13,18 @@
 //    //return DLL_EXPORT VulkanRenderPass();
 //}
 
+void RenderPass_DestroyRenderPass(RendererState& rendererState, VulkanRenderPass& renderPass, Vector<Texture>& renderedTextureList)
+{
+    for (auto renderedTexture : renderedTextureList)
+    {
+        Texture_DestroyTexture(rendererState.Device, renderedTexture);
+    }
+
+    Renderer_DestroyRenderPass(rendererState.Device, &renderPass.RenderPass);
+    Renderer_DestroyCommandBuffers(rendererState.Device, &rendererState.CommandPool, &renderPass.CommandBuffer, rendererState.SwapChainImageCount);
+    Renderer_DestroyFrameBuffers(rendererState.Device, &renderPass.FrameBufferList[0], rendererState.SwapChainImageCount);
+}
+
 VkResult RenderPass_CreateCommandBuffers(VkDevice device, VkCommandPool commandPool, VkCommandBuffer* commandBufferList, uint32 commandBufferCount)
 {
     for (size_t x = 0; x < commandBufferCount; x++)

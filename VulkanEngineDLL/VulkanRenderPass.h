@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreVulkanRenderer.h"
+#include "Texture.h"
 
 struct VulkanRenderPass
 {
@@ -13,6 +14,7 @@ struct VulkanRenderPass
 };
 
 //DLL_EXPORT VulkanRenderPass RenderPass_CreateVulkanRenderPass(VkDevice device, VkGuid& levelId, RenderPassBuildInfoModel& model, ivec2& renderPassResolution);
+DLL_EXPORT void RenderPass_DestroyRenderPass(RendererState& rendererState, VulkanRenderPass& renderPass, Vector<Texture>& renderedTextureList);
 
 DLL_EXPORT VkResult RenderPass_CreateCommandBuffers(VkDevice device, VkCommandPool commandPool, VkCommandBuffer* commandBufferList, uint32 commandBufferCount);
 DLL_EXPORT VkResult RenderPass_CreateFrameBuffer(VkDevice device, VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);

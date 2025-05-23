@@ -13,6 +13,7 @@
 #include "ShaderSystem.h"
 #include "LevelLayout.h"
 #include "Tile.h"
+#include "ImGuiFunc.h"
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;
@@ -80,6 +81,7 @@ public:
         1, 3, 2
     };
 
+    ImGuiRenderer                                                 imGuiRenderer;
     LevelLayout                                                   levelLayout;
 
     Vector<VkImage>                                               SwapChainImages;

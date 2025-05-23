@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{d22b29fb-1f02-471c-81ac-a352862f6951}</ProjectGuid>
-    <RootNamespace>VulkanEngineDLL</RootNamespace>
+    <ProjectGuid>{b562c5fe-e1e7-4fa2-a333-8101d3e4bee9}</ProjectGuid>
+    <RootNamespace>ImGuiDLL</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -40,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)External\nlohmann\include;C:\Users\dotha\Documents\GitHub\VulkanGameEngine\External\glfw\include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\glfw\include\GLFW;$(SolutionDir)External\;C:\VulkanSDK\1.4.313.0\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)x64\Debug;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw\lib-vc2022;C:\Users\dotha\Documents\GitHub\2D-Game-Engine\External\glfw;C:\VulkanSDK\1.4.313.0\Lib;$(SolutionDir)External\sdl\lib;C:\Users\dotha\source\repos\WindowTest\External\sdl\lib;$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\VulkanSDK\1.4.313.0\Include;$(SolutionDir)External\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)x64\Debug;C:\VulkanSDK\1.4.313.0\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -106,14 +106,13 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,61 +132,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CFile.h" />
-    <ClInclude Include="CoreVulkanRenderer.h" />
-    <ClInclude Include="CShaderCompiler.h" />
-    <ClInclude Include="CTypedef.h" />
-    <ClInclude Include="CVulkanRenderer.h" />
     <ClInclude Include="DLL.h" />
-    <ClInclude Include="DLLStructs.h" />
-    <ClInclude Include="GameController.h" />
-    <ClInclude Include="GLFWWindow.h" />
     <ClInclude Include="ImGuiFunc.h" />
-    <ClInclude Include="json.h" />
-    <ClInclude Include="JsonFunc.h" />
-    <ClInclude Include="JsonStructs.h" />
-    <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="Macro.h" />
-    <ClInclude Include="Mouse.h" />
-    <ClInclude Include="Pixel.h" />
-    <ClInclude Include="SDLWindow.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="Typedef.h" />
-    <ClInclude Include="VkGuid.h" />
-    <ClInclude Include="VulkanBufferFuncs.h" />
-    <ClInclude Include="VulkanError.h" />
-    <ClInclude Include="VulkanPipeline.h" />
-    <ClInclude Include="VulkanRenderPass.h" />
-    <ClInclude Include="VulkanWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\External\imgui\backends\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\External\imgui\backends\imgui_impl_vulkan.cpp" />
-    <ClCompile Include="..\External\imgui\imgui.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_draw.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_tables.cpp" />
-    <ClCompile Include="..\External\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="..\External\ImPlot\implot.cpp" />
-    <ClCompile Include="..\External\ImPlot\implot_demo.cpp" />
-    <ClCompile Include="..\External\ImPlot\implot_items.cpp" />
-    <ClCompile Include="CFile.c" />
-    <ClCompile Include="CoreVulkanRenderer.cpp" />
-    <ClCompile Include="CShaderCompiler.c" />
-    <ClCompile Include="CVulkanRenderer.c" />
-    <ClCompile Include="GameController.cpp" />
-    <ClCompile Include="GLFWWindow.c" />
     <ClCompile Include="ImGuiFunc.cpp" />
-    <ClCompile Include="JsonFunc.cpp" />
-    <ClCompile Include="Keyboard.c" />
-    <ClCompile Include="Mouse.c" />
-    <ClCompile Include="SDLWindow.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VulkanBufferFuncs.cpp" />
-    <ClCompile Include="VulkanError.c" />
-    <ClCompile Include="VulkanPipeline.cpp" />
-    <ClCompile Include="VulkanRenderPass.cpp" />
-    <ClCompile Include="VulkanWindow.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

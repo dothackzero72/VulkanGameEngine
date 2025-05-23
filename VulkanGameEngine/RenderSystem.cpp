@@ -18,6 +18,7 @@ RenderSystem::~RenderSystem()
 void RenderSystem::StartUp()
 {
     renderer.RendererSetUp(vulkanWindow->WindowHandle);
+    imGuiRenderer = ImGui_StartUp(cRenderer);
     shaderSystem.StartUp();
 
    // InterfaceRenderPass::StartUp();
@@ -643,6 +644,6 @@ VkGuid RenderSystem::LoadLevelLayout(const String& levelLayoutPath)
 
 void RenderSystem::Destroy()
 {
-    InterfaceRenderPass::Destroy();
+    ImGui_Destroy(cRenderer, imGuiRenderer);
     renderer.DestroyRenderer();
 }

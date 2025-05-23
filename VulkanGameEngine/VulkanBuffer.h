@@ -1,14 +1,10 @@
 #pragma once
-extern "C"
-{
-#include <CBuffer.h>
-}
-
 #include <iostream>
 #include <memory>
 #include <vector>
 #include "Typedef.h"
 #include "VulkanRenderer.h"
+#include <VulkanBufferFuncs.h>
 
 template <class T>
 class VulkanBuffer

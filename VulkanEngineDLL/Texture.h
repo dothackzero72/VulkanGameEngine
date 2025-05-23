@@ -8,6 +8,7 @@ extern "C"
 #include "Typedef.h"
 #include "VkGuid.h"
 #include "json.h"
+#include "VulkanBufferFuncs.h"
 
 typedef enum ColorChannelUsed
 {
