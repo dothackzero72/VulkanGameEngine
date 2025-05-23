@@ -1,13 +1,13 @@
 #pragma once
 extern "C"
 {
-    #include "CVulkanRenderer.h"
+#include "CVulkanRenderer.h"
 }
-
 #include "pixel.h"
 #include "Typedef.h"
 #include "VkGuid.h"
 #include "json.h"
+#include "CoreVulkanRenderer.h"
 #include "VulkanBufferFuncs.h"
 
 typedef enum ColorChannelUsed
@@ -81,41 +81,40 @@ struct Texture
     ColorChannelUsed colorChannels = ColorChannelUsed::ChannelRGBA;
 };
 
-
-    DLL_EXPORT Texture Texture_LoadTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, const String& jsonPath);
-    DLL_EXPORT Texture Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
-    DLL_EXPORT Texture Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
-    DLL_EXPORT Texture Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
+    DLL_EXPORT Texture Texture_LoadTexture(const RendererState& rendererState, const String& jsonPath);
+    DLL_EXPORT Texture Texture_CreateTexture(const RendererState& rendererState, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
+    DLL_EXPORT Texture Texture_CreateTexture(const RendererState& rendererState, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
+    DLL_EXPORT Texture Texture_CreateTexture(const RendererState& rendererState, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
+    DLL_EXPORT void Texture_UpdateTextureSize(const RendererState& rendererState, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution);
     DLL_EXPORT void Texture_UpdateTextureBufferIndex(Texture& texture, uint32 bufferIndex);
-    DLL_EXPORT void Texture_UpdateTextureSize(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture & texture, VkImageAspectFlags imageType, vec2& TextureResolution);
     DLL_EXPORT void Texture_GetTexturePropertiesBuffer(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList);
-    DLL_EXPORT void Texture_DestroyTexture(VkDevice device, Texture& texture);
+    DLL_EXPORT void Texture_DestroyTexture(const RendererState& rendererState, Texture& texture);
 
-    void Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture & texture, const Pixel & clearColor);
-    void Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture & texture, const String & filePath);
-    void Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture & texture, VkImageCreateInfo & createImageInfo);
+    void Texture_CreateTextureImage(const RendererState& rendererState, Texture & texture, const Pixel & clearColor);
+    void Texture_CreateTextureImage(const RendererState& rendererState, Texture & texture, const String & filePath);
+    void Texture_CreateTextureImage(const RendererState& rendererState, Texture & texture, VkImageCreateInfo & createImageInfo);
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
     
-        DLL_EXPORT void Texture_UpdateCmdTextureLayout(VkCommandBuffer & commandBuffer, Texture & texture, VkImageLayout & newImageLayout);
-        DLL_EXPORT void Texture_UpdateTextureLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, Texture & texture, VkImageLayout & newImageLayout);
+        DLL_EXPORT void Texture_UpdateCmdTextureLayout(const RendererState& rendererState, VkCommandBuffer& commandBuffer, Texture& texture, VkImageLayout& newImageLayout);
+        DLL_EXPORT void Texture_UpdateTextureLayout(const RendererState& rendererState, Texture& texture, VkImageLayout& newImageLayout);
 
-        VkResult Texture_UpdateImage(VkDevice device, VkPhysicalDevice physicalDevice, Texture & texture);
-        VkResult Texture_CreateImage(VkDevice device, VkPhysicalDevice physicalDevice, Texture & texture, VkImageCreateInfo & imageCreateInfo);
-        VkResult Texture_CreateTextureView(VkDevice device, Texture & texture, VkImageAspectFlags imageAspectFlags);
-        VkResult Texture_CreateSpriteTextureSampler(VkDevice device, VkSampler & smapler);
-        VkResult Texture_CreateRenderedTextureSampler(VkDevice device, VkSampler & smapler);
-        VkResult Texture_CreateDepthTextureSampler(VkDevice device, VkSampler & smapler);
+        VkResult Texture_UpdateImage(const RendererState& rendererState, Texture & texture);
+        VkResult Texture_CreateImage(const RendererState& rendererState, Texture & texture, VkImageCreateInfo& imageCreateInfo);
+        VkResult Texture_CreateTextureView(const RendererState& rendererState, Texture & texture, VkImageAspectFlags imageAspectFlags);
+        VkResult Texture_CreateSpriteTextureSampler(const RendererState& rendererState, VkSampler& smapler);
+        VkResult Texture_CreateRenderedTextureSampler(const RendererState& rendererState, VkSampler& smapler);
+        VkResult Texture_CreateDepthTextureSampler(const RendererState& rendererState, VkSampler& smapler);
 
-        VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, Texture & texture, VkImageLayout newLayout);
-        VkResult Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, Texture & texture, VkImageLayout & newLayout);
-        VkResult Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffer, Texture & texture, VkImageLayout newLayout);
+        VkResult Texture_TransitionImageLayout(const RendererState& rendererState, VkCommandBuffer& commandBuffer, Texture& texture, VkImageLayout newLayout);
+        VkResult Texture_QuickTransitionImageLayout(const RendererState& rendererState, Texture& texture, VkImageLayout& newLayout);
+        VkResult Texture_CommandBufferTransitionImageLayout(const RendererState& rendererState, VkCommandBuffer commandBuffer, Texture& texture, VkImageLayout newLayout);
 
-        VkResult Texture_CopyBufferToTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, Texture & texture, VkBuffer buffer);
-        VkResult Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture & texture);
+        VkResult Texture_CopyBufferToTexture(const RendererState& rendererState, Texture & texture, VkBuffer buffer);
+        VkResult Texture_GenerateMipmaps(const RendererState& rendererState, Texture & texture);
     
 #ifdef __cplusplus
 }

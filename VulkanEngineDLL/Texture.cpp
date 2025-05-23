@@ -5,7 +5,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-Texture Texture_LoadTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, const String& jsonPath)
+Texture Texture_LoadTexture(const RendererState& rendererState, const String& jsonPath)
 {
 	nlohmann::json json = Json::ReadJson(jsonPath);
 	String textureFilePath = json["TextureFilePath"];
@@ -18,13 +18,13 @@ Texture Texture_LoadTexture(VkDevice device, VkPhysicalDevice physicalDevice, Vk
 	texture.mipMapLevels = useMipMaps ? static_cast<uint32>(std::floor(std::log2(std::max(texture.width, texture.height)))) + 1 : 1;
 	texture.textureType = json["TextureType"];
 
-	Texture_CreateTextureImage(device, physicalDevice, commandPool, queue, texture, textureFilePath);
-	Texture_CreateTextureView(device, texture, imageType);
-	Texture_CreateSpriteTextureSampler(device, texture.textureSampler);
+	Texture_CreateTextureImage(rendererState, texture, textureFilePath);
+	Texture_CreateTextureView(rendererState, texture, imageType);
+	Texture_CreateSpriteTextureSampler(rendererState, texture.textureSampler);
 	return texture;
 }
 
-Texture Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
+Texture Texture_CreateTexture(const RendererState& rendererState, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
 {
 	Texture texture;
 	texture.width = static_cast<int>(createImageInfo.extent.width);
@@ -35,13 +35,13 @@ Texture Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, 
 	texture.sampleCount = createImageInfo.samples;
 	texture.mipMapLevels = 1;
 
-	Texture_CreateTextureImage(device, physicalDevice, commandPool, graphicsQueue, texture, createImageInfo);
-	Texture_CreateTextureView(device, texture, imageType);
-	Texture_CreateRenderedTextureSampler(device, texture.textureSampler);
+	Texture_CreateTextureImage(rendererState, texture, createImageInfo);
+	Texture_CreateTextureView(rendererState, texture, imageType);
+	Texture_CreateRenderedTextureSampler(rendererState, texture.textureSampler);
 	return texture;
 }
 
-Texture Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
+Texture Texture_CreateTexture(const RendererState& rendererState, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
 {
 	Texture texture;
 	texture.width = static_cast<int>(createImageInfo.extent.width);
@@ -52,13 +52,13 @@ Texture Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, 
 	texture.sampleCount = createImageInfo.samples;
 	texture.mipMapLevels = useMipMaps ? static_cast<uint32>(std::floor(std::log2(std::max(texture.width, texture.height)))) + 1 : 1;
 
-	Texture_CreateTextureImage(device, physicalDevice, commandPool, graphicsQueue, texture, texturePath);
-	Texture_CreateTextureView(device, texture, imageType);
-	Texture_CreateRenderedTextureSampler(device, texture.textureSampler);
+	Texture_CreateTextureImage(rendererState, texture, texturePath);
+	Texture_CreateTextureView(rendererState, texture, imageType);
+	Texture_CreateRenderedTextureSampler(rendererState, texture.textureSampler);
 	return texture;
 }
 
-Texture Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
+Texture Texture_CreateTexture(const RendererState& rendererState, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
 {
 	Texture texture;
 	texture.width = static_cast<int>(createImageInfo.extent.width);
@@ -69,9 +69,9 @@ Texture Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, 
 	texture.sampleCount = createImageInfo.samples;
 	texture.mipMapLevels = useMipMaps ? static_cast<uint32>(std::floor(std::log2(std::max(texture.width, texture.height)))) + 1 : 1;
 
-	Texture_CreateTextureImage(device, physicalDevice, commandPool, graphicsQueue, texture, clearColor);
-	Texture_CreateTextureView(device, texture, imageType);
-	Texture_CreateRenderedTextureSampler(device, texture.textureSampler);
+	Texture_CreateTextureImage(rendererState, texture, clearColor);
+	Texture_CreateTextureView(rendererState, texture, imageType);
+	Texture_CreateRenderedTextureSampler(rendererState, texture.textureSampler);
 	return texture;
 }
 
@@ -80,15 +80,15 @@ void Texture_UpdateTextureBufferIndex(Texture& texture, uint32 bufferIndex)
 	texture.textureBufferIndex = bufferIndex;
 }
 
-void Texture_UpdateTextureSize(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution)
+void Texture_UpdateTextureSize(const RendererState& rendererState, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution)
 {
 	texture.width = TextureResolution.x;
 	texture.height = TextureResolution.y;
 
-	Texture_DestroyTexture(device, texture);
-	Texture_UpdateImage(device, physicalDevice, texture);
-	Texture_CreateTextureView(device, texture, imageType);
-	Texture_CreateRenderedTextureSampler(device, texture.textureSampler);
+	Texture_DestroyTexture(rendererState, texture);
+	Texture_UpdateImage(rendererState, texture);
+	Texture_CreateTextureView(rendererState, texture, imageType);
+	Texture_CreateRenderedTextureSampler(rendererState, texture.textureSampler);
 
 	//ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
@@ -104,15 +104,15 @@ void Texture_GetTexturePropertiesBuffer(Texture& texture, Vector<VkDescriptorIma
 	textureDescriptorList.emplace_back(textureDescriptor);
 }
 
-void Texture_DestroyTexture(VkDevice device, Texture& texture)
+void Texture_DestroyTexture(const RendererState& rendererState, Texture& texture)
 {
-	Renderer_DestroyImageView(device, &texture.textureView);
-	Renderer_DestroySampler(device, &texture.textureSampler);
-	Renderer_DestroyImage(device, &texture.textureImage);
-	Renderer_FreeDeviceMemory(device, &texture.textureMemory);
+	Renderer_DestroyImageView(rendererState.Device, &texture.textureView);
+	Renderer_DestroySampler(rendererState.Device, &texture.textureSampler);
+	Renderer_DestroyImage(rendererState.Device, &texture.textureImage);
+	Renderer_FreeDeviceMemory(rendererState.Device, &texture.textureMemory);
 }
 
-void Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture& texture, const Pixel& clearColor)
+void Texture_CreateTextureImage(const RendererState& rendererState, Texture& texture, const Pixel& clearColor)
 {
 	VkBuffer buffer = VK_NULL_HANDLE;
 	VkBuffer stagingBuffer = VK_NULL_HANDLE;
@@ -124,7 +124,7 @@ void Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice
 	VkBufferUsageFlags bufferUsage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
 	std::vector<Pixel> pixels(texture.width * texture.height, clearColor);
-	Buffer_CreateStagingBuffer(device, physicalDevice, commandPool, graphicsQueue, &stagingBuffer, &buffer, &stagingBufferMemory, &bufferMemory, (void*)pixels.data(), bufferSize, bufferUsage, bufferProperties);
+	Buffer_CreateStagingBuffer(rendererState.Device, rendererState.PhysicalDevice, rendererState.CommandPool, rendererState.GraphicsQueue, &stagingBuffer, &buffer, &stagingBufferMemory, &bufferMemory, (void*)pixels.data(), bufferSize, bufferUsage, bufferProperties);
 
 	VkImageCreateInfo imageCreateInfo = 
 	{
@@ -147,16 +147,16 @@ void Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice
 	};
 
 	VkImageLayout newTextureLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-	VULKAN_RESULT(Texture_CreateImage(device, physicalDevice, texture, imageCreateInfo));
-	VULKAN_RESULT(Texture_QuickTransitionImageLayout(device, commandPool, graphicsQueue, texture, newTextureLayout));
-	VULKAN_RESULT(Texture_CopyBufferToTexture(device, commandPool, graphicsQueue, texture, buffer));
-	VULKAN_RESULT(Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, texture));
+	VULKAN_RESULT(Texture_CreateImage(rendererState, texture, imageCreateInfo));
+	VULKAN_RESULT(Texture_QuickTransitionImageLayout(rendererState, texture, newTextureLayout));
+	VULKAN_RESULT(Texture_CopyBufferToTexture(rendererState, texture, buffer));
+	VULKAN_RESULT(Texture_GenerateMipmaps(rendererState, texture));
 
-	Renderer_DestroyBuffer(device, &stagingBuffer);
-	Renderer_FreeDeviceMemory(device, &stagingBufferMemory);
+	Renderer_DestroyBuffer(rendererState.Device, &stagingBuffer);
+	Renderer_FreeDeviceMemory(rendererState.Device, &stagingBufferMemory);
 }
 
-void Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture& texture, const String& filePath)
+void Texture_CreateTextureImage(const RendererState& rendererState, Texture& texture, const String& filePath)
 {
 	VkBuffer buffer = VK_NULL_HANDLE;
 	VkBuffer stagingBuffer = VK_NULL_HANDLE;
@@ -168,7 +168,7 @@ void Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice
 	VkBufferUsageFlags bufferUsage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 	VkMemoryPropertyFlags bufferProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-	Buffer_CreateStagingBuffer(device, physicalDevice, commandPool, graphicsQueue, &stagingBuffer, &buffer, &stagingBufferMemory, &bufferMemory, data, bufferSize, bufferUsage, bufferProperties);
+	Buffer_CreateStagingBuffer(rendererState.Device, rendererState.PhysicalDevice, rendererState.CommandPool, rendererState.GraphicsQueue, &stagingBuffer, &buffer, &stagingBufferMemory, &bufferMemory, data, bufferSize, bufferUsage, bufferProperties);
 
 	VkImageCreateInfo imageCreateInfo =
 	{
@@ -191,34 +191,34 @@ void Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice
 	};
 
 	VkImageLayout newTextureLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-	VULKAN_RESULT(Texture_CreateImage(device, physicalDevice, texture, imageCreateInfo));
-	VULKAN_RESULT(Texture_QuickTransitionImageLayout(device, commandPool, graphicsQueue, texture, newTextureLayout));
-	VULKAN_RESULT(Texture_CopyBufferToTexture(device, commandPool, graphicsQueue, texture, buffer));
-	VULKAN_RESULT(Texture_GenerateMipmaps(device, physicalDevice, commandPool, graphicsQueue, texture));
+	VULKAN_RESULT(Texture_CreateImage(rendererState, texture, imageCreateInfo));
+	VULKAN_RESULT(Texture_QuickTransitionImageLayout(rendererState, texture, newTextureLayout));
+	VULKAN_RESULT(Texture_CopyBufferToTexture(rendererState, texture, buffer));
+	VULKAN_RESULT(Texture_GenerateMipmaps(rendererState, texture));
 
-	Renderer_DestroyBuffer(device, &stagingBuffer);
-	Renderer_FreeDeviceMemory(device, &stagingBufferMemory);
+	Renderer_DestroyBuffer(rendererState.Device, &stagingBuffer);
+	Renderer_FreeDeviceMemory(rendererState.Device, &stagingBufferMemory);
 	stbi_image_free(data);
 }
 
-void Texture_CreateTextureImage(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture& texture, VkImageCreateInfo& createImageInfo)
+void Texture_CreateTextureImage(const RendererState& rendererState, Texture& texture, VkImageCreateInfo& createImageInfo)
 {
-	VULKAN_RESULT(vkCreateImage(device, &createImageInfo, nullptr, &texture.textureImage));
+	VULKAN_RESULT(vkCreateImage(rendererState.Device, &createImageInfo, nullptr, &texture.textureImage));
 
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(device, texture.textureImage, &memRequirements);
+	vkGetImageMemoryRequirements(rendererState.Device, texture.textureImage, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo =
 	{
 		.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 		.allocationSize = memRequirements.size,
-		.memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+		.memoryTypeIndex = Renderer_GetMemoryType(rendererState.PhysicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 	};
-	VULKAN_RESULT(vkAllocateMemory(device, &allocInfo, nullptr, &texture.textureMemory));
-	VULKAN_RESULT(vkBindImageMemory(device, texture.textureImage, texture.textureMemory, 0));
+	VULKAN_RESULT(vkAllocateMemory(rendererState.Device, &allocInfo, nullptr, &texture.textureMemory));
+	VULKAN_RESULT(vkBindImageMemory(rendererState.Device, texture.textureImage, texture.textureMemory, 0));
 }
 
-VkResult Texture_UpdateImage(VkDevice device, VkPhysicalDevice physicalDevice, Texture& texture)
+VkResult Texture_UpdateImage(const RendererState& rendererState, Texture& texture)
 {
 	VkImageCreateInfo imageCreateInfo = 
 	{
@@ -239,39 +239,39 @@ VkResult Texture_UpdateImage(VkDevice device, VkPhysicalDevice physicalDevice, T
 		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 	};
-	VULKAN_RESULT(vkCreateImage(device, &imageCreateInfo, NULL, &texture.textureImage));
+	VULKAN_RESULT(vkCreateImage(rendererState.Device, &imageCreateInfo, NULL, &texture.textureImage));
 
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(device, texture.textureImage, &memRequirements);
+	vkGetImageMemoryRequirements(rendererState.Device, texture.textureImage, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo =
 	{
 		.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 		.allocationSize = memRequirements.size,
-		.memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+		.memoryTypeIndex = Renderer_GetMemoryType(rendererState.PhysicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 	};
-	VULKAN_RESULT(vkAllocateMemory(device, &allocInfo, NULL, &texture.textureMemory));
-	return vkBindImageMemory(device, texture.textureImage, texture.textureMemory, 0);
+	VULKAN_RESULT(vkAllocateMemory(rendererState.Device, &allocInfo, NULL, &texture.textureMemory));
+	return vkBindImageMemory(rendererState.Device, texture.textureImage, texture.textureMemory, 0);
 }
 
-VkResult Texture_CreateImage(VkDevice device, VkPhysicalDevice physicalDevice, Texture& texture, VkImageCreateInfo& imageCreateInfo)
+VkResult Texture_CreateImage(const RendererState& rendererState, Texture& texture, VkImageCreateInfo& imageCreateInfo)
 {
-	VULKAN_RESULT(vkCreateImage(device, &imageCreateInfo, NULL, &texture.textureImage));
+	VULKAN_RESULT(vkCreateImage(rendererState.Device, &imageCreateInfo, NULL, &texture.textureImage));
 
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(device, texture.textureImage, &memRequirements);
+	vkGetImageMemoryRequirements(rendererState.Device, texture.textureImage, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo =
 	{
 		.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 		.allocationSize = memRequirements.size,
-		.memoryTypeIndex = Renderer_GetMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+		.memoryTypeIndex = Renderer_GetMemoryType(rendererState.PhysicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 	};
-	VULKAN_RESULT(vkAllocateMemory(device, &allocInfo, NULL, &texture.textureMemory));
-	return vkBindImageMemory(device, texture.textureImage, texture.textureMemory, 0);
+	VULKAN_RESULT(vkAllocateMemory(rendererState.Device, &allocInfo, NULL, &texture.textureMemory));
+	return vkBindImageMemory(rendererState.Device, texture.textureImage, texture.textureMemory, 0);
 }
 
-VkResult Texture_CreateTextureView(VkDevice device, Texture& texture, VkImageAspectFlags imageAspectFlags)
+VkResult Texture_CreateTextureView(const RendererState& rendererState, Texture& texture, VkImageAspectFlags imageAspectFlags)
 {
 	VkImageViewCreateInfo TextureImageViewInfo =
 	{
@@ -288,10 +288,10 @@ VkResult Texture_CreateTextureView(VkDevice device, Texture& texture, VkImageAsp
 			.layerCount = 1,
 		}
 	};
-	return vkCreateImageView(device, &TextureImageViewInfo, NULL, &texture.textureView);
+	return vkCreateImageView(rendererState.Device, &TextureImageViewInfo, NULL, &texture.textureView);
 }
 
- VkResult Texture_CreateSpriteTextureSampler(VkDevice device, VkSampler& smapler)
+ VkResult Texture_CreateSpriteTextureSampler(const RendererState& rendererState, VkSampler& smapler)
 {
 	 VkSamplerCreateInfo spriteSamplerInfo = {
 	.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
@@ -311,10 +311,10 @@ VkResult Texture_CreateTextureView(VkDevice device, Texture& texture, VkImageAsp
 	.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK, 
 	.unnormalizedCoordinates = VK_FALSE, 
 	 };
-	 return vkCreateSampler(device, &spriteSamplerInfo, NULL, &smapler);
+	 return vkCreateSampler(rendererState.Device, &spriteSamplerInfo, NULL, &smapler);
 }
 
- VkResult Texture_CreateRenderedTextureSampler(VkDevice device, VkSampler& smapler)
+ VkResult Texture_CreateRenderedTextureSampler(const RendererState& rendererState, VkSampler& smapler)
 {
 	 VkSamplerCreateInfo renderPassSamplerInfo = {
 	.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
@@ -334,10 +334,10 @@ VkResult Texture_CreateTextureView(VkDevice device, Texture& texture, VkImageAsp
 	.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
 	.unnormalizedCoordinates = VK_FALSE,    
 	 };
-	 return vkCreateSampler(device, &renderPassSamplerInfo, NULL, &smapler);
+	 return vkCreateSampler(rendererState.Device, &renderPassSamplerInfo, NULL, &smapler);
 }
 
- VkResult Texture_CreateDepthTextureSampler(VkDevice device, VkSampler& smapler)
+ VkResult Texture_CreateDepthTextureSampler(const RendererState& rendererState, VkSampler& smapler)
 {
 	 VkSamplerCreateInfo depthMapSamplerInfo = {
 	.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
@@ -357,10 +357,10 @@ VkResult Texture_CreateTextureView(VkDevice device, Texture& texture, VkImageAsp
 	.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
 	.unnormalizedCoordinates = VK_FALSE,     
 	 };
-	 return vkCreateSampler(device, &depthMapSamplerInfo, NULL, &smapler);
+	 return vkCreateSampler(rendererState.Device, &depthMapSamplerInfo, NULL, &smapler);
 }
 
-VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, Texture& texture, VkImageLayout newLayout)
+VkResult Texture_TransitionImageLayout(const RendererState& rendererState, VkCommandBuffer& commandBuffer, Texture& texture, VkImageLayout newLayout)
 {
 	VkPipelineStageFlags sourceStage = VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM;
 	VkPipelineStageFlags destinationStage = VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM;
@@ -405,13 +405,13 @@ VkResult Texture_TransitionImageLayout(VkCommandBuffer commandBuffer, Texture& t
 	return VK_SUCCESS;
 }
 
-VkResult Texture_CommandBufferTransitionImageLayout(VkCommandBuffer commandBuffer, Texture& texture, VkImageLayout newLayout)
+VkResult Texture_CommandBufferTransitionImageLayout(const RendererState& rendererState, VkCommandBuffer commandBuffer, Texture& texture, VkImageLayout newLayout)
 {
-	Texture_TransitionImageLayout(commandBuffer, texture, newLayout);
+	Texture_TransitionImageLayout(rendererState, commandBuffer, texture, newLayout);
 	return VK_SUCCESS;
 }
 
-void Texture_UpdateCmdTextureLayout(VkCommandBuffer& commandBuffer, Texture& texture, VkImageLayout& newImageLayout)
+void Texture_UpdateCmdTextureLayout(const RendererState& rendererState, VkCommandBuffer& commandBuffer, Texture& texture, VkImageLayout& newImageLayout)
 {
 	VkImageMemoryBarrier imageMemoryBarrier =
 	{
@@ -434,7 +434,7 @@ void Texture_UpdateCmdTextureLayout(VkCommandBuffer& commandBuffer, Texture& tex
 	texture.textureImageLayout = newImageLayout;
 }
 
-void Texture_UpdateTextureLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, Texture& texture, VkImageLayout& newImageLayout)
+void Texture_UpdateTextureLayout(const RendererState& rendererState, Texture& texture, VkImageLayout& newImageLayout)
 {
 	VkImageMemoryBarrier imageMemoryBarrier =
 	{
@@ -453,20 +453,20 @@ void Texture_UpdateTextureLayout(VkDevice device, VkCommandPool commandPool, VkQ
 		}
 	};
 
-	auto singleCommand = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
+	auto singleCommand = Renderer_BeginSingleUseCommandBuffer(rendererState.Device, rendererState.CommandPool);
 	vkCmdPipelineBarrier(singleCommand, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, NULL, 0, NULL, 1, &imageMemoryBarrier);
-	VkResult result = Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, singleCommand);
+	VkResult result = Renderer_EndSingleUseCommandBuffer(rendererState.Device, rendererState.CommandPool, rendererState.GraphicsQueue, singleCommand);
 	if (result == VK_SUCCESS)
 	{
 		texture.textureImageLayout = newImageLayout;
 	}
 }
 
-VkResult Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, Texture& texture, VkImageLayout& newLayout)
+VkResult Texture_QuickTransitionImageLayout(const RendererState& rendererState, Texture& texture, VkImageLayout& newLayout)
 {
-	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
-	Texture_TransitionImageLayout(commandBuffer, texture, newLayout);
-	VkResult result = Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);
+	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(rendererState.Device, rendererState.CommandPool);
+	Texture_TransitionImageLayout(rendererState, commandBuffer, texture, newLayout);
+	VkResult result = Renderer_EndSingleUseCommandBuffer(rendererState.Device, rendererState.CommandPool, rendererState.GraphicsQueue, commandBuffer);
 	if (result == VK_SUCCESS)
 	{
 		texture.textureImageLayout = newLayout;
@@ -474,7 +474,7 @@ VkResult Texture_QuickTransitionImageLayout(VkDevice device, VkCommandPool comma
 	return result;
 }
 
-VkResult Texture_CopyBufferToTexture(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, Texture& texture, VkBuffer buffer)
+VkResult Texture_CopyBufferToTexture(const RendererState& rendererState, Texture& texture, VkBuffer buffer)
 {
 	VkBufferImageCopy BufferImage =
 	{
@@ -501,12 +501,12 @@ VkResult Texture_CopyBufferToTexture(VkDevice device, VkCommandPool commandPool,
 			.depth = static_cast<uint>(texture.depth),
 		}
 	};
-	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
+	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(rendererState.Device, rendererState.CommandPool);
 	vkCmdCopyBufferToImage(commandBuffer, buffer, texture.textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &BufferImage);
-	return Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);
+	return Renderer_EndSingleUseCommandBuffer(rendererState.Device, rendererState.CommandPool, rendererState.GraphicsQueue, commandBuffer);
 }
 
-VkResult Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture& texture)
+VkResult Texture_GenerateMipmaps(const RendererState& rendererState, Texture& texture)
 {
 	if (texture.mipMapLevels == 1)
 	{
@@ -517,13 +517,13 @@ VkResult Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevic
 	int32 mipHeight = texture.height;
 
 	VkFormatProperties formatProperties;
-	vkGetPhysicalDeviceFormatProperties(physicalDevice, texture.textureByteFormat, &formatProperties);
+	vkGetPhysicalDeviceFormatProperties(rendererState.PhysicalDevice, texture.textureByteFormat, &formatProperties);
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
 	{
 		RENDERER_ERROR("Texture image format does not support linear blitting.");
 	}
 
-	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(device, commandPool);
+	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(rendererState.Device, rendererState.CommandPool);
 	VkImageMemoryBarrier ImageMemoryBarrier =
 	{
 		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -620,5 +620,5 @@ VkResult Texture_GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevic
 	ImageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
 	vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, NULL, 0, NULL, 1, &ImageMemoryBarrier);
-	return Renderer_EndSingleUseCommandBuffer(device, commandPool, graphicsQueue, commandBuffer);
+	return Renderer_EndSingleUseCommandBuffer(rendererState.Device, rendererState.CommandPool, rendererState.GraphicsQueue, commandBuffer);
 }

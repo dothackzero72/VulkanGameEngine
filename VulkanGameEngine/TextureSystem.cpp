@@ -19,23 +19,23 @@ VkGuid TextureSystem::LoadTexture(const String& texturePath)
         return textureId;
     }
 
-	TextureList[textureId] = Texture_LoadTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, texturePath);
+	TextureList[textureId] = Texture_LoadTexture(cRenderer, texturePath);
     return textureId;
 }
 
 Texture TextureSystem::CreateTexture(VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
 {
-	return Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, imageType, createImageInfo, samplerCreateInfo);
+	return Texture_CreateTexture(cRenderer, imageType, createImageInfo, samplerCreateInfo);
 }
 
 Texture TextureSystem::CreateTexture(const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
 {
-	return Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, texturePath, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
+	return Texture_CreateTexture(cRenderer, texturePath, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
 }
 
 Texture TextureSystem::CreateTexture(Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
 {
-	return Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, clearColor, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
+	return Texture_CreateTexture(cRenderer, clearColor, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
 }
 
 void TextureSystem::UpdateTextureBufferIndex(Texture& texture, uint32 bufferIndex)
@@ -43,9 +43,9 @@ void TextureSystem::UpdateTextureBufferIndex(Texture& texture, uint32 bufferInde
 	Texture_UpdateTextureBufferIndex(texture, bufferIndex);
 }
 
-void TextureSystem::UpdateTextureSize(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution)
+void TextureSystem::UpdateTextureSize(Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution)
 {
-	Texture_UpdateTextureSize( device,  physicalDevice,  commandPool,  graphicsQueue, texture,  imageType, TextureResolution);
+	Texture_UpdateTextureSize(cRenderer, texture, imageType, TextureResolution);
 }
 
 void TextureSystem::GetTexturePropertiesBuffer(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList)
@@ -55,10 +55,10 @@ void TextureSystem::GetTexturePropertiesBuffer(Texture& texture, Vector<VkDescri
 
 void TextureSystem::UpdateTextureLayout(Texture& texture, VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout)
 {
-	Texture_UpdateCmdTextureLayout(commandBuffer, texture, newImageLayout);
+	Texture_UpdateCmdTextureLayout(cRenderer, commandBuffer, texture, newImageLayout);
 }
 
-void TextureSystem::DestroyTexture(VkDevice device, Texture& texture)
+void TextureSystem::DestroyTexture(Texture& texture)
 {
-	Texture_DestroyTexture(device, texture);
+	Texture_DestroyTexture(cRenderer, texture);
 }

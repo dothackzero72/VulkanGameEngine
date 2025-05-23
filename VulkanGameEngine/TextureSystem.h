@@ -19,9 +19,9 @@ public:
     Texture CreateTexture(Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
 
 	void UpdateTextureBufferIndex(Texture& texture, uint32 bufferIndex);
-	void UpdateTextureSize(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution);
+	void UpdateTextureSize(Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution);
 	void GetTexturePropertiesBuffer(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList);
 	void UpdateTextureLayout(Texture& texture, VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout);
-	void DestroyTexture(VkDevice device, Texture& texture);
+	void DestroyTexture(Texture& texture);
 };
 extern TextureSystem textureSystem;

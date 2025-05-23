@@ -187,7 +187,7 @@ void JsonRenderPass::Destroy()
 {
     for (auto renderedTexture : textureSystem.RenderedTextureList[RenderPassId])
     {
-        textureSystem.DestroyTexture(cRenderer.Device, renderedTexture);
+        textureSystem.DestroyTexture(renderedTexture);
     }
 
     renderer.DestroyRenderPass(RenderPass);
