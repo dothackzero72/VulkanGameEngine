@@ -2,24 +2,40 @@
 
 TextureSystem textureSystem = TextureSystem();
 
-Texture TextureSystem::CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, const String& jsonPath)
+VkGuid TextureSystem::LoadTexture(const String& texturePath)
 {
-	return Texture_CreateTexture(device, physicalDevice, commandPool, queue, jsonPath);
+    if (texturePath.empty() ||
+        texturePath == "")
+    {
+        return VkGuid();
+    }
+
+    nlohmann::json json = Json::ReadJson(texturePath);
+    VkGuid textureId = VkGuid(json["TextureId"].get<String>().c_str());
+
+    auto it = textureSystem.TextureList.find(textureId);
+    if (it != textureSystem.TextureList.end())
+    {
+        return textureId;
+    }
+
+	TextureList[textureId] = Texture_LoadTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, texturePath);
+    return textureId;
 }
 
-Texture TextureSystem::CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
+Texture TextureSystem::CreateTexture(VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
 {
-	return Texture_CreateTexture(device, physicalDevice, commandPool, queue, imageType, createImageInfo, samplerCreateInfo);
+	return Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, imageType, createImageInfo, samplerCreateInfo);
 }
 
-Texture TextureSystem::CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
+Texture TextureSystem::CreateTexture(const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
 {
-	return Texture_CreateTexture(device, physicalDevice, commandPool, queue, texturePath, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
+	return Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, texturePath, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
 }
 
-Texture TextureSystem::CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
+Texture TextureSystem::CreateTexture(Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
 {
-	return Texture_CreateTexture(device, physicalDevice, commandPool, queue, clearColor, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
+	return Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, clearColor, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
 }
 
 void TextureSystem::UpdateTextureBufferIndex(Texture& texture, uint32 bufferIndex)

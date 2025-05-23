@@ -34,8 +34,7 @@ extern "C" {
 
 	DLL_EXPORT VkResult Renderer_GetWin32Extensions(uint32_t* extensionCount, char*** enabledExtensions);
 
-	DLL_EXPORT VkResult Renderer_CreateCommandBuffers(VkDevice device, VkCommandPool commandPool, VkCommandBuffer* commandBufferList, uint32 commandBufferCount);
-	DLL_EXPORT VkResult Renderer_CreateFrameBuffer(VkDevice device, VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);
+
 	DLL_EXPORT VkResult Renderer_CreateRenderPass(VkDevice device, RenderPassCreateInfoStruct* renderPassCreateInfo);
 	DLL_EXPORT VkResult Renderer_CreateDescriptorPool(VkDevice device, VkDescriptorPool* descriptorPool, VkDescriptorPoolCreateInfo* descriptorPoolCreateInfo);
 	DLL_EXPORT VkResult Renderer_CreateDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayout, VkDescriptorSetLayoutCreateInfo* descriptorSetLayoutCreateInfo);
@@ -57,27 +56,27 @@ extern "C" {
 	DLL_EXPORT VkCommandBuffer Renderer_BeginSingleUseCommandBuffer(VkDevice device, VkCommandPool commandPool);
 	DLL_EXPORT VkResult Renderer_EndSingleUseCommandBuffer(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkCommandBuffer commandBuffer);
 
-	DLL_EXPORT void Renderer_DestroyFences(VkDevice device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount);
-	DLL_EXPORT void Renderer_DestroyCommandPool(VkDevice device, VkCommandPool* commandPool);
-	DLL_EXPORT void Renderer_DestroyDevice(VkDevice device);
-	DLL_EXPORT void Renderer_DestroySurface(VkInstance instance, VkSurfaceKHR* surface);
-	DLL_EXPORT void Renderer_DestroyDebugger(VkInstance* instance, VkDebugUtilsMessengerEXT debugUtilsMessengerEXT);
-	DLL_EXPORT void Renderer_DestroyInstance(VkInstance* instance);
+	 void Renderer_DestroyFences(VkDevice device, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, VkFence* fences, size_t semaphoreCount);
+	 void Renderer_DestroyCommandPool(VkDevice device, VkCommandPool* commandPool);
+	 void Renderer_DestroyDevice(VkDevice device);
+	 void Renderer_DestroySurface(VkInstance instance, VkSurfaceKHR* surface);
+	 void Renderer_DestroyDebugger(VkInstance* instance, VkDebugUtilsMessengerEXT debugUtilsMessengerEXT);
+	 void Renderer_DestroyInstance(VkInstance* instance);
 	DLL_EXPORT void Renderer_DestroyRenderPass(VkDevice device, VkRenderPass* renderPass);
 	DLL_EXPORT void Renderer_DestroyFrameBuffers(VkDevice device, VkFramebuffer* frameBufferList, uint32 count);
-	DLL_EXPORT void Renderer_DestroyDescriptorPool(VkDevice device, VkDescriptorPool* descriptorPool);
-	DLL_EXPORT void Renderer_DestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayout);
+	 void Renderer_DestroyDescriptorPool(VkDevice device, VkDescriptorPool* descriptorPool);
+	 void Renderer_DestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout* descriptorSetLayout);
 	DLL_EXPORT void Renderer_DestroyCommandBuffers(VkDevice device, VkCommandPool* commandPool, VkCommandBuffer* commandBufferList, uint32 count);
 	DLL_EXPORT void Renderer_DestroyBuffer(VkDevice device, VkBuffer* buffer);
-	DLL_EXPORT void Renderer_FreeDeviceMemory(VkDevice device, VkDeviceMemory* memory);
-	DLL_EXPORT void Renderer_DestroySwapChainImageView(VkDevice device, VkSurfaceKHR surface, VkImageView* pSwapChainImageViewList, uint32 count);
-	DLL_EXPORT void Renderer_DestroySwapChain(VkDevice device, VkSwapchainKHR* swapChain);
-	DLL_EXPORT void Renderer_DestroyImageView(VkDevice device, VkImageView* imageView);
-	DLL_EXPORT void Renderer_DestroyImage(VkDevice device, VkImage* image);
-	DLL_EXPORT void Renderer_DestroySampler(VkDevice device, VkSampler* sampler);
-	DLL_EXPORT void Renderer_DestroyPipeline(VkDevice device, VkPipeline* pipeline);
-	DLL_EXPORT void Renderer_DestroyPipelineLayout(VkDevice device, VkPipelineLayout* pipelineLayout);
-	DLL_EXPORT void Renderer_DestroyPipelineCache(VkDevice device, VkPipelineCache* pipelineCache);
+	 void Renderer_FreeDeviceMemory(VkDevice device, VkDeviceMemory* memory);
+	 void Renderer_DestroySwapChainImageView(VkDevice device, VkSurfaceKHR surface, VkImageView* pSwapChainImageViewList, uint32 count);
+	 void Renderer_DestroySwapChain(VkDevice device, VkSwapchainKHR* swapChain);
+	 void Renderer_DestroyImageView(VkDevice device, VkImageView* imageView);
+	 void Renderer_DestroyImage(VkDevice device, VkImage* image);
+	 void Renderer_DestroySampler(VkDevice device, VkSampler* sampler);
+	 void Renderer_DestroyPipeline(VkDevice device, VkPipeline* pipeline);
+	 void Renderer_DestroyPipelineLayout(VkDevice device, VkPipelineLayout* pipelineLayout);
+	 void Renderer_DestroyPipelineCache(VkDevice device, VkPipelineCache* pipelineCache);
 
 #ifdef __cplusplus
 }

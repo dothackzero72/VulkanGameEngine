@@ -90,14 +90,14 @@ const char** Window_GLFW_GetInstanceExtensions(struct VulkanWindow* self, uint32
 	return extensions;
 }
 
-void Window_GLFW_CreateSurface(VulkanWindow* self, VkInstance* instance, VkSurfaceKHR* surface)
+void Window_GLFW_CreateSurface(void* windowHandle, VkInstance* instance, VkSurfaceKHR* surface)
 {
-	glfwCreateWindowSurface(*instance, self->WindowHandle, NULL, surface);
+	glfwCreateWindowSurface(*instance, windowHandle, NULL, surface);
 }
 
-void Window_GLFW_GetFrameBufferSize(VulkanWindow* self, int* width, int* height)
+void Window_GLFW_GetFrameBufferSize(void* windowHandle, int* width, int* height)
 {
-	glfwGetFramebufferSize(self->WindowHandle, &*width, &*height);
+	glfwGetFramebufferSize(windowHandle, &*width, &*height);
 }
 
 void Window_GLFW_DestroyWindow(VulkanWindow* self)

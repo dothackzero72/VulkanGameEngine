@@ -1,6 +1,7 @@
 #include "GameSystem.h"
 #include <imgui/backends/imgui_impl_glfw.h>
 #include "json.h"
+#include "TextureSystem.h"
 
 GameSystem gameSystem = GameSystem();
 
@@ -58,7 +59,7 @@ void GameSystem::LoadLevel(const String& levelPath)
     VkGuid LevelId = VkGuid(json["LevelID"].get<String>().c_str());
     for (int x = 0; x < json["LoadTextures"].size(); x++)
     {
-        renderSystem.LoadTexture(json["LoadTextures"][x]);
+        textureSystem.LoadTexture(json["LoadTextures"][x]);
     }
     for (int x = 0; x < json["LoadMaterials"].size(); x++)
     {
@@ -84,7 +85,7 @@ void GameSystem::LoadLevel(const String& levelPath)
 
     VkGuid dummyGuid = VkGuid();
     spriteRenderPass2DId = renderSystem.AddRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
-    frameBufferId = renderSystem.AddRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", renderSystem.RenderedTextureList[spriteRenderPass2DId][0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
+    frameBufferId = renderSystem.AddRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.RenderedTextureList[spriteRenderPass2DId][0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
 }
 
 void GameSystem::StartUp()

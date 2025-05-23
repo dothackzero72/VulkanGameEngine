@@ -1,6 +1,7 @@
 #include "renderSystem.h"
 #include "LevelLayout.h"
 #include "json.h"
+#include "TextureSystem.h"
 
 RenderSystem renderSystem = RenderSystem();
 
@@ -16,7 +17,7 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::StartUp()
 {
-    renderer.RendererSetUp();
+    renderer.RendererSetUp(vulkanWindow->WindowHandle);
     shaderSystem.StartUp();
 
    // InterfaceRenderPass::StartUp();
@@ -369,7 +370,7 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkG
     Vector<Texture> textureList;
     if (renderedTextureList.empty())
     {
-        for (auto& texture : TextureList)
+        for (auto& texture : textureSystem.TextureList)
         {
             textureList.emplace_back(texture.second);
         }
@@ -423,7 +424,7 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkG
     {
         for (auto& texture : textureList)
         {
-            Texture_GetTexturePropertiesBuffer(texture, texturePropertiesBuffer);
+            textureSystem.GetTexturePropertiesBuffer(texture, texturePropertiesBuffer);
         }
     }
 
@@ -469,8 +470,8 @@ void RenderSystem::DestroyGraphicsPipeline(VkGuid& guid)
 void RenderSystem::UpdateBufferIndex()
 {
     int xy = 0;
-    for (auto& [id, texture] : renderSystem.TextureList) {
-        Texture_UpdateTextureBufferIndex(texture, xy);
+    for (auto& [id, texture] : textureSystem.TextureList) {
+        textureSystem.UpdateTextureBufferIndex(texture, xy);
         ++xy;
     }
     int xz = 0;
@@ -494,7 +495,7 @@ VkGuid RenderSystem::AddSpriteVRAM(const String& spritePath)
     }
 
     const Material& material = MaterialList.at(materialId);
-    const Texture& texture = TextureList.at(material.AlbedoMapId);
+    const Texture& texture = textureSystem.TextureList.at(material.AlbedoMapId);
 
     SpriteVram sprite = SpriteVram
     {
@@ -550,7 +551,7 @@ VkGuid RenderSystem::AddTileSetVRAM(const String& tileSetPath)
     }
 
     const Material& material = MaterialList[materialId];
-    const Texture& tileSetTexture = TextureList[material.AlbedoMapId];
+    const Texture& tileSetTexture = textureSystem.TextureList[material.AlbedoMapId];
 
     LevelTileSet tileSet = LevelTileSet();
     tileSet.TileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
@@ -570,27 +571,6 @@ VkGuid RenderSystem::AddTileSetVRAM(const String& tileSetPath)
     }
     LevelTileSetList[tileSetId] = tileSet;
     return tileSetId;
-}
-
-VkGuid RenderSystem::LoadTexture(const String& texturePath)
-{
-    if (texturePath.empty() ||
-        texturePath == "")
-    {
-        return VkGuid();
-    }
-
-    nlohmann::json json = Json::ReadJson(texturePath);
-    VkGuid textureId = VkGuid(json["TextureId"].get<String>().c_str());
-
-    auto it = TextureList.find(textureId);
-    if (it != TextureList.end())
-    {
-        return textureId;
-    }
-
-    TextureList[textureId] = Texture_CreateTexture(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, texturePath);
-    return textureId;
 }
 
 VkGuid RenderSystem::LoadMaterial(const String& materialPath)
@@ -619,16 +599,16 @@ VkGuid RenderSystem::LoadMaterial(const String& materialPath)
     MaterialList[materialId].Emission = vec3(json["Emission"][0], json["Emission"][1], json["Emission"][2]);
     MaterialList[materialId].Alpha = json["Alpha"];
 
-    MaterialList[materialId].AlbedoMapId = LoadTexture(json["AlbedoMapPath"]);
-    MaterialList[materialId].MetallicRoughnessMapId = LoadTexture(json["MetallicRoughnessMapPath"]);
-    MaterialList[materialId].MetallicMapId = LoadTexture(json["MetallicMapPath"]);
-    MaterialList[materialId].RoughnessMapId = LoadTexture(json["RoughnessMapPath"]);
-    MaterialList[materialId].AmbientOcclusionMapId = LoadTexture(json["AmbientOcclusionMapPath"]);
-    MaterialList[materialId].NormalMapId = LoadTexture(json["NormalMapPath"]);
-    MaterialList[materialId].DepthMapId = LoadTexture(json["DepthMapPath"]);
-    MaterialList[materialId].AlphaMapId = LoadTexture(json["AlphaMapPath"]);
-    MaterialList[materialId].EmissionMapId = LoadTexture(json["EmissionMapPath"]);
-    MaterialList[materialId].HeightMapId = LoadTexture(json["HeightMapPath"]);
+    MaterialList[materialId].AlbedoMapId = textureSystem.LoadTexture(json["AlbedoMapPath"]);
+    MaterialList[materialId].MetallicRoughnessMapId = textureSystem.LoadTexture(json["MetallicRoughnessMapPath"]);
+    MaterialList[materialId].MetallicMapId = textureSystem.LoadTexture(json["MetallicMapPath"]);
+    MaterialList[materialId].RoughnessMapId = textureSystem.LoadTexture(json["RoughnessMapPath"]);
+    MaterialList[materialId].AmbientOcclusionMapId = textureSystem.LoadTexture(json["AmbientOcclusionMapPath"]);
+    MaterialList[materialId].NormalMapId = textureSystem.LoadTexture(json["NormalMapPath"]);
+    MaterialList[materialId].DepthMapId = textureSystem.LoadTexture(json["DepthMapPath"]);
+    MaterialList[materialId].AlphaMapId = textureSystem.LoadTexture(json["AlphaMapPath"]);
+    MaterialList[materialId].EmissionMapId = textureSystem.LoadTexture(json["EmissionMapPath"]);
+    MaterialList[materialId].HeightMapId = textureSystem.LoadTexture(json["HeightMapPath"]);
 
     return materialId;
 }

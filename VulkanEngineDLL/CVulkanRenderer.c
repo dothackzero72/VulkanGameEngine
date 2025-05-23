@@ -185,28 +185,6 @@ VkResult Renderer_CreateSemaphores(VkDevice device, VkFence* inFlightFences, VkS
     return VK_SUCCESS;
 }
 
-VkResult Renderer_CreateCommandBuffers(VkDevice device, VkCommandPool commandPool, VkCommandBuffer* commandBufferList, uint32 commandBufferCount)
-{
-    for (size_t x = 0; x < commandBufferCount; x++)
-    {
-        VkCommandBufferAllocateInfo commandBufferAllocateInfo =
-        {
-            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-            .commandPool = commandPool,
-            .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-            .commandBufferCount = 1
-        };
-
-        VULKAN_RESULT(vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, &commandBufferList[x]));
-    }
-    return VK_SUCCESS;
-}
-
-VkResult Renderer_CreateFrameBuffer(VkDevice device, VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo)
-{
-    return vkCreateFramebuffer(device, *&frameBufferCreateInfo, NULL, pFrameBuffer);
-}
-
 VkResult Renderer_CreateRenderPass(VkDevice device, RenderPassCreateInfoStruct* renderPassCreateInfo)
 {
     VkRenderPassCreateInfo renderPassInfo =

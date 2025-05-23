@@ -24,6 +24,7 @@ typedef VkGuid RenderPassGuid;
 
 class Sprite;
 class JsonRenderPass;
+class TextureSystem;
 class RenderSystem
 {
     friend class JsonRenderPass;
@@ -87,23 +88,18 @@ public:
     VkSwapchainKHR                                                Swapchain;
     VkPhysicalDeviceFeatures                                      PhysicalDeviceFeatures;
 
-    UnorderedMap<RenderPassGuid, Texture>                         TextureList;
     UnorderedMap<RenderPassGuid, Material>                        MaterialList;
     UnorderedMap<RenderPassGuid, SpriteVram>                      VramSpriteList;
     UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetList;
     UnorderedMap<LevelGuid, Vector<LevelLayerMesh>>               LevelLayerMeshList;
 
     UnorderedMap<RenderPassGuid, JsonRenderPass>                  RenderPassList;
-    UnorderedMap<RenderPassGuid, Texture>                         DepthTextureList;
     UnorderedMap<RenderPassGuid, VkRenderPassBeginInfo>           RenderPassInfoList;
     UnorderedMap<RenderPassGuid, ivec2>                           RenderPassResolutionList;
     UnorderedMap<RenderPassGuid, Vector<VulkanPipeline>>          RenderPipelineList;
-    UnorderedMap<RenderPassGuid, Vector<Texture>>                 RenderedTextureList;
     UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerList;
     UnorderedMap<RenderPassGuid, Vector<VkClearValue>>            ClearValueList;
     UnorderedMap<RenderPassGuid, RenderPassBuildInfoModel>        renderPassBuildInfoList;
-
-    UnorderedMap<UM_RenderPipelineID, Vector<SharedPtr<Texture>>> InputTextureList;
 
     UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer>          SpriteInstanceBufferList;
     UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>>          SpriteBatchLayerObjectList;
@@ -126,7 +122,6 @@ public:
     VkGuid AddRenderPass(VkGuid& levelId, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution);
     VkGuid AddSpriteVRAM(const String& spritePath);
     VkGuid AddTileSetVRAM(const String& tileSetPath);
-    VkGuid LoadTexture(const String& texturePath);
     VkGuid LoadMaterial(const String& materialPath);
     VkGuid LoadLevelLayout(const String& levelLayoutPath);
 

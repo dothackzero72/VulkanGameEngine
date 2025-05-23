@@ -237,8 +237,8 @@ extern "C" {
         void (*PollEventHandler)(struct VulkanWindow* self);
         void (*SwapBuffer)(struct VulkanWindow* self);
         const char** (*GetInstanceExtensions)(struct VulkanWindow* self, uint32_t* outExtensionCount, bool enableValidationLayers);
-        void (*CreateSurface)(struct VulkanWindow* self, VkInstance* instance, VkSurfaceKHR* surface);
-        void (*GetFrameBufferSize)(struct VulkanWindow* self, int* width, int* height);
+        void (*CreateSurface)(void* windowHandle, VkInstance* instance, VkSurfaceKHR* surface);
+        void (*GetFrameBufferSize)(void* windowHandle, int* width, int* height);
         void (*DestroyWindow)(struct VulkanWindow* self);
         bool (*WindowShouldClose)(struct VulkanWindow* self);
     } VulkanWindow;

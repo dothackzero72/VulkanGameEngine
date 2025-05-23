@@ -5,7 +5,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-Texture Texture_CreateTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, const String& jsonPath)
+Texture Texture_LoadTexture(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue queue, const String& jsonPath)
 {
 	nlohmann::json json = Json::ReadJson(jsonPath);
 	String textureFilePath = json["TextureFilePath"];
@@ -93,7 +93,7 @@ void Texture_UpdateTextureSize(VkDevice device, VkPhysicalDevice physicalDevice,
 	//ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-void Texture_GetTexturePropertiesBuffer(Texture& texture, std::vector<VkDescriptorImageInfo>& textureDescriptorList)
+void Texture_GetTexturePropertiesBuffer(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList)
 {
 	VkDescriptorImageInfo textureDescriptor =
 	{

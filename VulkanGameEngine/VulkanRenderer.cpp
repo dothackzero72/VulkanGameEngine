@@ -1,53 +1,21 @@
 #include "VulkanRenderer.h"
 #include <iostream>
 
-VkResult VulkanRenderer::SetUpSwapChain()
+VkResult VulkanRenderer::RendererSetUp(void* windowHandle)
 {
-    int width = 0;
-    int height = 0;
-    uint32 surfaceFormatCount = 0;
-    uint32 presentModeCount = 0;
-
-    VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities(cRenderer.PhysicalDevice, cRenderer.Surface);
-    Vector<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats(cRenderer.PhysicalDevice, cRenderer.Surface);
-    VULKAN_RESULT(SwapChain_GetQueueFamilies(cRenderer.PhysicalDevice, cRenderer.Surface, cRenderer.GraphicsFamily, cRenderer.PresentFamily));
-    Vector<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(cRenderer.PhysicalDevice, cRenderer.Surface);
-    VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
-    VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
-    vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
-    cRenderer.Swapchain = SwapChain_SetUpSwapChain(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.Surface, cRenderer.GraphicsFamily, cRenderer.PresentFamily, width, height, cRenderer.SwapChainImageCount);
-    cRenderer.SwapChainImages = SwapChain_SetUpSwapChainImages(cRenderer.Device, cRenderer.Swapchain, MAX_FRAMES_IN_FLIGHT);
-    cRenderer.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(cRenderer.Device, cRenderer.SwapChainImages, swapChainImageFormat);
-
-    cRenderer.SwapChainResolution.width = width;
-    cRenderer.SwapChainResolution.height = height;
-    return VK_SUCCESS;
-}
-
-VkResult VulkanRenderer::RendererSetUp()
-{
-    cRenderer.RebuildRendererFlag = false;
-    VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
-    cRenderer.Instance = Renderer_CreateVulkanInstance();
-    cRenderer.DebugMessenger = Renderer_SetupDebugMessenger(cRenderer.Instance);
-    vulkanWindow->CreateSurface(vulkanWindow, &cRenderer.Instance, &cRenderer.Surface);
-    cRenderer.PhysicalDevice = Renderer_SetUpPhysicalDevice(cRenderer.Instance, cRenderer.Surface, cRenderer.GraphicsFamily, cRenderer.PresentFamily);
-    cRenderer.Device = Renderer_SetUpDevice(cRenderer.PhysicalDevice, cRenderer.GraphicsFamily, cRenderer.PresentFamily);
-    VULKAN_RESULT(renderer.SetUpSwapChain());
-    cRenderer.CommandPool = Renderer_SetUpCommandPool(cRenderer.Device, cRenderer.GraphicsFamily);
-    VULKAN_RESULT(Renderer_SetUpSemaphores(cRenderer.Device, cRenderer.InFlightFences, cRenderer.AcquireImageSemaphores, cRenderer.PresentImageSemaphores));
-    VULKAN_RESULT(Renderer_GetDeviceQueue(cRenderer.Device, cRenderer.GraphicsFamily, cRenderer.PresentFamily, cRenderer.GraphicsQueue, cRenderer.PresentQueue));
+    RendererState state = Renderer_RendererSetUp(windowHandle);
+    cRenderer = state;
     return VK_SUCCESS;
 }
 
 VkResult VulkanRenderer::RebuildSwapChain()
 {
-    cRenderer.RebuildRendererFlag = true;
+    //cRenderer.RebuildRendererFlag = true;
 
-    VULKAN_RESULT(vkDeviceWaitIdle(cRenderer.Device));
-    Renderer_DestroySwapChainImageView(cRenderer.Device, cRenderer.Surface, &cRenderer.SwapChainImageViews[0], MAX_FRAMES_IN_FLIGHT);
-    vkDestroySwapchainKHR(cRenderer.Device, cRenderer.Swapchain, NULL);
-    renderer.SetUpSwapChain();
+    //VULKAN_RESULT(vkDeviceWaitIdle(cRenderer.Device));
+    //Renderer_DestroySwapChainImageView(cRenderer.Device, cRenderer.Surface, &cRenderer.SwapChainImageViews[0], MAX_FRAMES_IN_FLIGHT);
+    //vkDestroySwapchainKHR(cRenderer.Device, cRenderer.Swapchain, NULL);
+    //renderer.SetUpSwapChain(vulkanWindow->WindowHandle);
     return VK_SUCCESS;
 }
 
@@ -79,24 +47,7 @@ VkResult VulkanRenderer::EndFrame(Vector<VkCommandBuffer> commandBufferSubmitLis
 
 void VulkanRenderer::DestroyRenderer()
 {
-    renderer.DestroySwapChainImageView();
-    renderer.DestroySwapChain();
-    renderer.DestroyFences();
-    renderer.DestroyCommandPool();
-    renderer.DestroyDevice();
-    renderer.DestroyDebugger();
-    renderer.DestroySurface();
-    renderer.DestroyInstance();
-}
-
-VkResult VulkanRenderer::CreateCommandBuffer(VkCommandBuffer& commandBuffer)
-{
-    return Renderer_CreateCommandBuffers(cRenderer.Device, cRenderer.CommandPool, &commandBuffer, 1);
-}
-
-VkResult VulkanRenderer::CreateFrameBuffer(VkFramebuffer frameBuffer, VkFramebufferCreateInfo& frameBufferCreateInfo)
-{
-    return Renderer_CreateFrameBuffer(cRenderer.Device, &frameBuffer, &frameBufferCreateInfo);
+    Renderer_DestroyRenderer(cRenderer);
 }
 
 VkResult VulkanRenderer::CreateRenderPass(RenderPassCreateInfoStruct& renderPassCreateInfo)
@@ -219,36 +170,6 @@ VkResult  VulkanRenderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer, V
     return result;
 }
 
-void VulkanRenderer::DestroyFences()
-{
-    Renderer_DestroyFences(cRenderer.Device, &cRenderer.AcquireImageSemaphores[0], &cRenderer.PresentImageSemaphores[0], &cRenderer.InFlightFences[0], MAX_FRAMES_IN_FLIGHT);
-}
-
-void VulkanRenderer::DestroyCommandPool()
-{
-    Renderer_DestroyCommandPool(cRenderer.Device, &cRenderer.CommandPool);
-}
-
-void VulkanRenderer::DestroyDevice()
-{
-    Renderer_DestroyDevice(cRenderer.Device);
-}
-
-void VulkanRenderer::DestroySurface()
-{
-    Renderer_DestroySurface(cRenderer.Instance, &cRenderer.Surface);
-}
-
-void VulkanRenderer::DestroyDebugger()
-{
-    Renderer_DestroyDebugger(&cRenderer.Instance, cRenderer.DebugMessenger);
-}
-
-void VulkanRenderer::DestroyInstance()
-{
-    Renderer_DestroyInstance(&cRenderer.Instance);
-}
-
 void VulkanRenderer::DestroyRenderPass(VkRenderPass& renderPass)
 {
     Renderer_DestroyRenderPass(cRenderer.Device, &renderPass);
@@ -259,16 +180,6 @@ void VulkanRenderer::DestroyFrameBuffers(Vector<VkFramebuffer>& frameBufferList)
     Renderer_DestroyFrameBuffers(cRenderer.Device, frameBufferList.data(), frameBufferList.size());
 }
 
-void VulkanRenderer::DestroyDescriptorPool(VkDescriptorPool& descriptorPool)
-{
-    Renderer_DestroyDescriptorPool(cRenderer.Device, &descriptorPool);
-}
-
-void VulkanRenderer::DestroyDescriptorSetLayout(VkDescriptorSetLayout& descriptorSetLayout)
-{
-    Renderer_DestroyDescriptorSetLayout(cRenderer.Device, &descriptorSetLayout);
-}
-
 void VulkanRenderer::DestroyCommandBuffers(VkCommandBuffer& commandBuffer)
 {
     Renderer_DestroyCommandBuffers(cRenderer.Device, &cRenderer.CommandPool, &commandBuffer, 1);
@@ -277,49 +188,4 @@ void VulkanRenderer::DestroyCommandBuffers(VkCommandBuffer& commandBuffer)
 void VulkanRenderer::DestroyBuffer(VkBuffer& buffer)
 {
     Renderer_DestroyBuffer(cRenderer.Device, &buffer);
-}
-
-void VulkanRenderer::FreeDeviceMemory(VkDeviceMemory& memory)
-{
-    Renderer_FreeDeviceMemory(cRenderer.Device, &memory);
-}
-
-void VulkanRenderer::DestroySwapChainImageView()
-{
-    Renderer_DestroySwapChainImageView(cRenderer.Device, cRenderer.Surface, &cRenderer.SwapChainImageViews[0], MAX_FRAMES_IN_FLIGHT);
-}
-
-void VulkanRenderer::DestroySwapChain()
-{
-    Renderer_DestroySwapChain(cRenderer.Device, &cRenderer.Swapchain);
-}
-
-void VulkanRenderer::DestroyImageView(VkImageView& imageView)
-{
-    Renderer_DestroyImageView(cRenderer.Device, &imageView);
-}
-
-void VulkanRenderer::DestroyImage(VkImage& image)
-{
-    Renderer_DestroyImage(cRenderer.Device, &image);
-}
-
-void VulkanRenderer::DestroySampler(VkSampler& sampler)
-{
-    Renderer_DestroySampler(cRenderer.Device, &sampler);
-}
-
-void VulkanRenderer::DestroyPipeline(VkPipeline& pipeline)
-{
-    Renderer_DestroyPipeline(cRenderer.Device, &pipeline);
-}
-
-void VulkanRenderer::DestroyPipelineLayout(VkPipelineLayout& pipelineLayout)
-{
-    Renderer_DestroyPipelineLayout(cRenderer.Device, &pipelineLayout);
-}
-
-void VulkanRenderer::DestroyPipelineCache(VkPipelineCache& pipelineCache)
-{
-    Renderer_DestroyPipelineCache(cRenderer.Device, &pipelineCache);
 }

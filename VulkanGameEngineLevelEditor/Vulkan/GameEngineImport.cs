@@ -11,6 +11,10 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         private const string DLLPath = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanEngineDLL.dll";
 
         ///Renderer
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern RendererState Renderer_RendererSetUp(void* windowHandle);
+
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkInstance DLL_Renderer_CreateVulkanInstance();
 

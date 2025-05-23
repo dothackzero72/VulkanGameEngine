@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Silk.NET.Vulkan;
+using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -14,6 +16,37 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public ListPtr<VkImageView> imageViews { get; set; }
         public VkExtent2D SwapChainResolution { get; set; }
         public VkSwapchainKHR Swapchain { get; set; }
+    }
+
+    public struct RendererState
+    {
+        public uint SwapChainImageCount  { get; set; }
+        public uint GraphicsFamily  { get; set; }
+        public uint PresentFamily  { get; set; }
+        public VkQueue GraphicsQueue  { get; set; }
+        public VkQueue PresentQueue  { get; set; }
+        public VkFormat Format  { get; set; }
+        public VkColorSpaceKHR ColorSpace  { get; set; }
+        public VkPresentModeKHR PresentMode  { get; set; }
+
+        public VkInstance Instance  { get; set; }
+        public VkDevice Device  { get; set; }
+        public VkPhysicalDevice PhysicalDevice  { get; set; }
+        public VkSurfaceKHR Surface  { get; set; }
+        public VkCommandPool CommandPool  { get; set; }
+        public uint ImageIndex  { get; set; }
+        public uint CommandIndex  { get; set; }
+        public VkDebugUtilsMessengerEXT DebugMessenger  { get; set; }
+        //  VkPhysicalDeviceFeatures PhysicalDeviceFeatures  { get; set; }
+
+        public Vector<VkFence> InFlightFences  { get; set; }
+        public Vector<VkSemaphore> AcquireImageSemaphores  { get; set; }
+        public Vector<VkSemaphore> PresentImageSemaphores  { get; set; }
+        public Vector<VkImage> SwapChainImages  { get; set; }
+        public Vector<VkImageView> SwapChainImageViews  { get; set; }
+        public VkExtent2D SwapChainResolution  { get; set; }
+        public VkSwapchainKHR Swapchain  { get; set; }
+        public bool RebuildRendererFlag  { get; set; }
     }
 
     public unsafe static class VulkanRenderer
@@ -41,15 +74,16 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static void CreateVulkanRenderer(IntPtr window)
         {
             windowPtr = window;
-            instance = GameEngineImport.DLL_Renderer_CreateVulkanInstance();
-            debugMessenger = GameEngineImport.DLL_Renderer_SetupDebugMessenger(instance);
-            CreateSurface(windowPtr);
-            physicalDevice = GameEngineImport.DLL_Renderer_SetUpPhysicalDevice(instance, surface, GraphicsFamily, PresentFamily);
-            device = GameEngineImport.DLL_Renderer_SetUpDevice(physicalDevice, GraphicsFamily, PresentFamily);
-            CreateDeviceQueue();
-            CreateSwapChain(windowPtr);
-            CreateSemaphores(MAX_FRAMES_IN_FLIGHT);
-            CreateCommandPool();
+            RendererState a = GameEngineImport.Renderer_RendererSetUp(window.ToPointer());
+            //instance = GameEngineImport.DLL_Renderer_CreateVulkanInstance();
+            //debugMessenger = GameEngineImport.DLL_Renderer_SetupDebugMessenger(instance);
+            //CreateSurface(windowPtr);
+            //physicalDevice = GameEngineImport.DLL_Renderer_SetUpPhysicalDevice(instance, surface, GraphicsFamily, PresentFamily);
+            //device = GameEngineImport.DLL_Renderer_SetUpDevice(physicalDevice, GraphicsFamily, PresentFamily);
+            //CreateDeviceQueue();
+            //CreateSwapChain(windowPtr);
+            //CreateSemaphores(MAX_FRAMES_IN_FLIGHT);
+            //CreateCommandPool();
         }
 
         public static void CreateSwapChain(IntPtr window)

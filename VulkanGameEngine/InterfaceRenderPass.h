@@ -277,7 +277,7 @@ public:
     {
         DestroyCommandBuffers();
         ImGui_ImplVulkan_Shutdown(); 
-        renderer.DestroyDescriptorPool(ImGuiDescriptorPool);
+       // renderer.DestroyDescriptorPool(ImGuiDescriptorPool);
         //renderer.DestroyCommandPool();
         renderer.DestroyRenderPass(RenderPass);
         DestroyFrameBuffers();

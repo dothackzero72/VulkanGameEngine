@@ -6,7 +6,7 @@
 
 RendererState cRenderer = { 0 };
 
- VkResult Renderer_SetUpSwapChain(RendererState& renderState)
+ VkResult Renderer_SetUpSwapChain(void* windowHandle, RendererState& renderState)
 {
     int width = 0;
     int height = 0;
@@ -19,7 +19,7 @@ RendererState cRenderer = { 0 };
     Vector<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(renderState.PhysicalDevice, renderState.Surface);
     VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
     VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
-    vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
+    vulkanWindow->GetFrameBufferSize(windowHandle, &width, &height);
     renderState.Swapchain = SwapChain_SetUpSwapChain(renderState.Device, renderState.PhysicalDevice, renderState.Surface, renderState.GraphicsFamily, renderState.PresentFamily, width, height, renderState.SwapChainImageCount);
     renderState.SwapChainImages = SwapChain_SetUpSwapChainImages(renderState.Device, renderState.Swapchain, MAX_FRAMES_IN_FLIGHT);
     renderState.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderState.Device, renderState.SwapChainImages, swapChainImageFormat);
@@ -29,17 +29,17 @@ RendererState cRenderer = { 0 };
     return VK_SUCCESS;
 }
 
- RendererState Renderer_RendererSetUp()
+ RendererState Renderer_RendererSetUp(void* windowHandle)
 {
     RendererState renderState;
     renderState.RebuildRendererFlag = false;
     VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
     renderState.Instance = Renderer_CreateVulkanInstance();
     renderState.DebugMessenger = Renderer_SetupDebugMessenger(renderState.Instance);
-    vulkanWindow->CreateSurface(vulkanWindow, &renderState.Instance, &renderState.Surface);
+    vulkanWindow->CreateSurface(windowHandle, &renderState.Instance, &renderState.Surface);
     renderState.PhysicalDevice = Renderer_SetUpPhysicalDevice(renderState.Instance, renderState.Surface, renderState.GraphicsFamily, renderState.PresentFamily);
     renderState.Device = Renderer_SetUpDevice(renderState.PhysicalDevice, renderState.GraphicsFamily, renderState.PresentFamily);
-    VULKAN_RESULT(Renderer_SetUpSwapChain(renderState));
+    VULKAN_RESULT(Renderer_SetUpSwapChain(windowHandle, renderState));
     renderState.CommandPool = Renderer_SetUpCommandPool(renderState.Device, renderState.GraphicsFamily);
     VULKAN_RESULT(Renderer_SetUpSemaphores(renderState.Device, renderState.InFlightFences, renderState.AcquireImageSemaphores, renderState.PresentImageSemaphores));
     VULKAN_RESULT(Renderer_GetDeviceQueue(renderState.Device, renderState.GraphicsFamily, renderState.PresentFamily, renderState.GraphicsQueue, renderState.PresentQueue));
@@ -56,6 +56,18 @@ RendererState cRenderer = { 0 };
     }
     return renderState;
 }
+
+ void Renderer_DestroyRenderer(RendererState& renderer)
+ {
+     Renderer_DestroySwapChainImageView(renderer.Device, renderer.Surface, &renderer.SwapChainImageViews[0], MAX_FRAMES_IN_FLIGHT);
+     Renderer_DestroySwapChain(renderer.Device, &renderer.Swapchain);
+     Renderer_DestroyFences(renderer.Device, &renderer.AcquireImageSemaphores[0], &renderer.PresentImageSemaphores[0], &renderer.InFlightFences[0], MAX_FRAMES_IN_FLIGHT);
+     Renderer_DestroyCommandPool(renderer.Device, &renderer.CommandPool);
+     Renderer_DestroyDevice(renderer.Device);
+     Renderer_DestroyDebugger(&renderer.Instance, renderer.DebugMessenger);
+     Renderer_DestroySurface(renderer.Instance, &renderer.Surface);
+     Renderer_DestroyInstance(&renderer.Instance);
+ }
 
 Vector<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice)
 {
@@ -298,7 +310,7 @@ Vector<VkPhysicalDevice> Renderer_GetPhysicalDeviceList(VkInstance& instance)
     return physicalDeviceList;
 }
 
-VkPhysicalDevice Renderer_SetUpPhysicalDevice(VkInstance instance, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily)
+VkPhysicalDevice Renderer_SetUpPhysicalDevice(VkInstance instance, VkSurfaceKHR surface, uint32& graphicsFamily, uint32& presentFamily)
 {
     Vector<VkPhysicalDevice> physicalDeviceList = Renderer_GetPhysicalDeviceList(instance);
     for (auto& physicalDevice : physicalDeviceList)
