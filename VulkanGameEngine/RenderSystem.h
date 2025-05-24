@@ -14,6 +14,7 @@
 #include "LevelLayout.h"
 #include "Tile.h"
 #include "ImGuiFunc.h"
+#include <VulkanRenderPass.h>
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;
@@ -95,12 +96,11 @@ public:
     UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetList;
     UnorderedMap<LevelGuid, Vector<LevelLayerMesh>>               LevelLayerMeshList;
 
-    UnorderedMap<RenderPassGuid, JsonRenderPass>                  RenderPassList;
+    UnorderedMap<RenderPassGuid, VulkanRenderPass>                RenderPassList;
     UnorderedMap<RenderPassGuid, VkRenderPassBeginInfo>           RenderPassInfoList;
     UnorderedMap<RenderPassGuid, ivec2>                           RenderPassResolutionList;
     UnorderedMap<RenderPassGuid, Vector<VulkanPipeline>>          RenderPipelineList;
     UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerList;
-    UnorderedMap<RenderPassGuid, Vector<VkClearValue>>            ClearValueList;
     UnorderedMap<RenderPassGuid, RenderPassBuildInfoModel>        renderPassBuildInfoList;
 
     UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer>          SpriteInstanceBufferList;

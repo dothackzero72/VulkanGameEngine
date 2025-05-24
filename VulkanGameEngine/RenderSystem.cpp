@@ -90,7 +90,7 @@ void RenderSystem::RecreateSwapchain()
 
 VkCommandBuffer RenderSystem::RenderFrameBuffer(VkGuid& renderPassId)
 {
-    JsonRenderPass renderPass = RenderPassList[renderPassId];
+    VulkanRenderPass renderPass = RenderPassList[renderPassId];
     const VulkanPipeline& pipeline = RenderPipelineList[renderPassId][0];
     const VkCommandBuffer& commandBuffer = renderPass.CommandBuffer;
 
@@ -99,9 +99,9 @@ VkCommandBuffer RenderSystem::RenderFrameBuffer(VkGuid& renderPassId)
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = renderPass.RenderPass,
         .framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex],
-        .renderArea = renderPass.renderArea,
-        .clearValueCount = static_cast<uint32>(ClearValueList[renderPassId].size()),
-        .pClearValues = ClearValueList[renderPassId].data()
+        .renderArea = renderPass.RenderArea,
+        .clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size()),
+        .pClearValues = renderPass.ClearValueList.data()
     };
 
     VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
@@ -117,7 +117,7 @@ VkCommandBuffer RenderSystem::RenderFrameBuffer(VkGuid& renderPassId)
 
 VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
 {
-    const JsonRenderPass& renderPass = RenderPassList[renderPassId];
+    const VulkanRenderPass& renderPass = RenderPassList[renderPassId];
     const VulkanPipeline& spritePipeline = RenderPipelineList[renderPassId][0];
     const VulkanPipeline& levelPipeline = RenderPipelineList[renderPassId][1];
     const Vector<SpriteBatchLayer>& spriteLayerList = SpriteBatchLayerList[renderPassId];
@@ -129,9 +129,9 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = renderPass.RenderPass,
         .framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex],
-        .renderArea = renderPass.renderArea,
-        .clearValueCount = static_cast<uint32>(ClearValueList[renderPassId].size()),
-        .pClearValues = ClearValueList[renderPassId].data()
+        .renderArea = renderPass.RenderArea,
+        .clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size()),
+        .pClearValues = renderPass.ClearValueList.data()
     };
 
     VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
@@ -194,7 +194,33 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec
         model.ClearValueList.emplace_back(Json::LoadClearValue(json["ClearValueList"][x]));
     }
 
-    RenderPassList[model.RenderPassId] = JsonRenderPass(levelId, model, renderPassResolution);
+    RenderPassList[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), textureSystem.RenderedTextureList[model.RenderPassId], textureSystem.DepthTextureList[model.RenderPassId]);
+    SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
+
+    for (int x = 0; x < model.RenderPipelineList.size(); x++)
+    {
+        uint pipeLineId = renderSystem.RenderPipelineList.size();
+        nlohmann::json json = Json::ReadJson(model.RenderPipelineList[x]);
+        RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
+        GPUIncludes include =
+        {
+            .vertexProperties = renderSystem.GetVertexPropertiesBuffer(),
+            .indexProperties = renderSystem.GetIndexPropertiesBuffer(),
+            //        .transformProperties = renderSystem.GetTransformPropertiesBuffer(gpuImport.MeshList),
+            .meshProperties = renderSystem.GetMeshPropertiesBuffer(levelId),
+            .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(model.RenderPassId, textureSystem.InputTextureList[pipeLineId]),
+            .materialProperties = renderSystem.GetMaterialPropertiesBuffer()
+        };
+
+        Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
+        {
+            shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
+            shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
+        };
+
+        renderSystem.RenderPipelineList[model.RenderPassId].emplace_back(Pipeline_CreateRenderPipeline(cRenderer.Device, model.RenderPassId, pipeLineId, renderPipelineModel, RenderPassList[model.RenderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, pipelineShaderStageCreateInfoList));
+    }
+
     return model.RenderPassId;
 }
 
@@ -224,7 +250,34 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Text
         model.ClearValueList.emplace_back(Json::LoadClearValue(json["ClearValueList"][x]));
     }
 
-    RenderPassList[model.RenderPassId] = JsonRenderPass(levelId, model, inputTexture, renderPassResolution);
+    RenderPassList[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), textureSystem.RenderedTextureList[model.RenderPassId], textureSystem.DepthTextureList[model.RenderPassId]);
+    SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
+
+    for (int x = 0; x < model.RenderPipelineList.size(); x++)
+    {
+        uint pipeLineId = renderSystem.RenderPipelineList.size();
+        nlohmann::json json = Json::ReadJson(model.RenderPipelineList[x]);
+        RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
+
+        textureSystem.InputTextureList[pipeLineId].emplace_back(std::make_shared<Texture>(inputTexture));
+        GPUIncludes include =
+        {
+            .vertexProperties = renderSystem.GetVertexPropertiesBuffer(),
+            .indexProperties = renderSystem.GetIndexPropertiesBuffer(),
+            //        .transformProperties = renderSystem.GetTransformPropertiesBuffer(gpuImport.MeshList),
+            .meshProperties = renderSystem.GetMeshPropertiesBuffer(levelId),
+            .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(model.RenderPassId, textureSystem.InputTextureList[pipeLineId]),
+            .materialProperties = renderSystem.GetMaterialPropertiesBuffer()
+        };
+
+        Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
+        {
+            shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
+            shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
+        };
+        renderSystem.RenderPipelineList[model.RenderPassId].emplace_back(Pipeline_CreateRenderPipeline(cRenderer.Device, model.RenderPassId, pipeLineId, renderPipelineModel, RenderPassList[model.RenderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, pipelineShaderStageCreateInfoList));
+    }
+
     return model.RenderPassId;
 }
 
