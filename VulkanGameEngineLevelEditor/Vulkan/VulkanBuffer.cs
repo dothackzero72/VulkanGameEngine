@@ -8,10 +8,10 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 {
     public unsafe class VulkanBuffer<T> where T : unmanaged
     {
-        protected VkDevice _device => VulkanRenderer.device;
-        protected VkPhysicalDevice _physicalDevice => VulkanRenderer.physicalDevice;
-        protected VkCommandPool _commandPool => VulkanRenderer.commandPool;
-        protected VkQueue _graphicsQueue => VulkanRenderer.graphicsQueue;
+        protected VkDevice _device => RenderSystem.Device;
+        protected VkPhysicalDevice _physicalDevice => RenderSystem.PhysicalDevice;
+        protected VkCommandPool _commandPool => RenderSystem.CommandPool;
+        protected VkQueue _graphicsQueue => RenderSystem.GraphicsQueue;
 
         public VkBuffer StagingBuffer;
         public VkDeviceMemory StagingBufferMemory;
@@ -168,9 +168,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static VkResult CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
         {
-            VkDevice _device = VulkanRenderer.device;
-            VkCommandPool _commandPool = VulkanRenderer.commandPool;
-            VkQueue _graphicsQueue = VulkanRenderer.graphicsQueue;
+            VkDevice _device = RenderSystem.Device;
+            VkCommandPool _commandPool = RenderSystem.CommandPool;
+            VkQueue _graphicsQueue = RenderSystem.GraphicsQueue;
             return GameEngineImport.DLL_Buffer_CopyBuffer(_device, _commandPool, _graphicsQueue, srcBuffer, dstBuffer, size);
         }
 

@@ -78,9 +78,48 @@ typedef struct rendererState
 }RendererState;
 DLL_EXPORT extern RendererState cRenderer;
 
+struct RendererStateCS
+{
+	VkInstance Instance;
+	VkDevice Device;
+	VkPhysicalDevice PhysicalDevice;
+	VkSurfaceKHR Surface;
+	VkCommandPool CommandPool;
+	VkDebugUtilsMessengerEXT DebugMessenger;
+	VkFence* InFlightFences;
+	VkSemaphore* AcquireImageSemaphores;
+	VkSemaphore* PresentImageSemaphores;
+	VkImage* SwapChainImages;
+	VkImageView* SwapChainImageViews;
+	VkExtent2D SwapChainResolution;
+	VkSwapchainKHR Swapchain;
+	VkQueue			   GraphicsQueue;
+	VkQueue			   PresentQueue;
+	uint32 InFlightFencesCount;
+	uint32 AcquireImageSemaphoresCount;
+	uint32 PresentImageSemaphoresCount;
+	uint32 SwapChainImagesCount;
+	uint32 SwapChainImageViewsCount;
+	uint32			   SwapChainImageCount;
+	uint32			   GraphicsFamily;
+	uint32			   PresentFamily;
+	uint32 ImageIndex;
+	uint32 CommandIndex;
+	bool RebuildRendererFlag;
+};
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 DLL_EXPORT RendererState Renderer_RendererSetUp(void* windowHandle);
 DLL_EXPORT void Renderer_DestroyRenderer(RendererState& renderer);
 
+DLL_EXPORT RendererStateCS Renderer_RendererSetUp_CS(void* windowHandle);
+//DLL_EXPORT void Renderer_DestroyRendererCS(RendererStateCS& renderer);
+#ifdef __cplusplus
+}
+#endif
+VkResult Renderer_SetUpSwapChainCS(RendererState& renderState);
 	Vector<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice);
 	Vector<VkSurfaceFormatKHR> Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 	Vector<VkPresentModeKHR> Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);

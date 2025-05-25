@@ -3,6 +3,7 @@
 #include <iostream>
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
+#include "../../../../../../VulkanSDK/1.4.304.0/Include/vulkan/vulkan_win32.h"
 
 RendererState cRenderer = { 0 };
 
@@ -57,6 +58,85 @@ RendererState cRenderer = { 0 };
      Renderer_DestroyDebugger(&renderer.Instance, renderer.DebugMessenger);
      Renderer_DestroySurface(renderer.Instance, &renderer.Surface);
      Renderer_DestroyInstance(&renderer.Instance);
+ }
+
+  RendererStateCS Renderer_RendererSetUp_CS(void* windowHandle)
+ {
+      RendererState renderState;
+      renderState.RebuildRendererFlag = false;
+      VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
+      renderState.Instance = Renderer_CreateVulkanInstance();
+      renderState.DebugMessenger = Renderer_SetupDebugMessenger(renderState.Instance);
+
+      VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = VkWin32SurfaceCreateInfoKHR
+      {
+          .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+          .pNext = nullptr,
+          .hinstance = GetModuleHandle(nullptr),
+          .hwnd = (HWND)windowHandle,
+      };
+      vkCreateWin32SurfaceKHR(renderState.Instance, &surfaceCreateInfo, nullptr, &renderState.Surface);
+
+      renderState.PhysicalDevice = Renderer_SetUpPhysicalDevice(renderState.Instance, renderState.Surface, renderState.GraphicsFamily, renderState.PresentFamily);
+      renderState.Device = Renderer_SetUpDevice(renderState.PhysicalDevice, renderState.GraphicsFamily, renderState.PresentFamily);
+      VULKAN_RESULT(Renderer_SetUpSwapChainCS(renderState));
+      renderState.CommandPool = Renderer_SetUpCommandPool(renderState.Device, renderState.GraphicsFamily);
+      VULKAN_RESULT(Renderer_SetUpSemaphores(renderState.Device, renderState.InFlightFences, renderState.AcquireImageSemaphores, renderState.PresentImageSemaphores));
+      VULKAN_RESULT(Renderer_GetDeviceQueue(renderState.Device, renderState.GraphicsFamily, renderState.PresentFamily, renderState.GraphicsQueue, renderState.PresentQueue));
+
+      RendererStateCS rscs = RendererStateCS
+      {
+         .Instance = renderState.Instance,
+         .Device = renderState.Device,
+         .PhysicalDevice = renderState.PhysicalDevice,
+         .Surface = renderState.Surface,
+         .CommandPool = renderState.CommandPool,
+         .DebugMessenger = renderState.DebugMessenger,
+         .InFlightFences = renderState.InFlightFences.data(),
+         .AcquireImageSemaphores = renderState.AcquireImageSemaphores.data(),
+         .PresentImageSemaphores = renderState.PresentImageSemaphores.data(),
+         .SwapChainImages = renderState.SwapChainImages.data(),
+         .SwapChainImageViews = renderState.SwapChainImageViews.data(),
+         .SwapChainResolution = renderState.SwapChainResolution,
+         .Swapchain = renderState.Swapchain,
+         .GraphicsQueue = renderState.GraphicsQueue,
+         .PresentQueue = renderState.PresentQueue,
+         .InFlightFencesCount = static_cast<uint32>(renderState.InFlightFences.size()),
+         .AcquireImageSemaphoresCount = static_cast<uint32>(renderState.AcquireImageSemaphores.size()),
+         .PresentImageSemaphoresCount = static_cast<uint32>(renderState.PresentImageSemaphores.size()),
+         .SwapChainImagesCount = static_cast<uint32>(renderState.SwapChainImages.size()),
+         .SwapChainImageViewsCount = static_cast<uint32>(renderState.SwapChainImageViews.size()),
+         .SwapChainImageCount = renderState.SwapChainImageCount,
+         .GraphicsFamily = renderState.GraphicsFamily,
+         .PresentFamily = renderState.PresentFamily,
+         .ImageIndex = renderState.ImageIndex,
+         .CommandIndex = renderState.CommandIndex,
+         .RebuildRendererFlag = renderState.RebuildRendererFlag,
+      };
+     return rscs;
+ }
+
+  VkResult Renderer_SetUpSwapChainCS(RendererState& renderState)
+ {
+      int width = 0;
+      int height = 0;
+      uint32 surfaceFormatCount = 0;
+      uint32 presentModeCount = 0;
+
+      VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities(renderState.PhysicalDevice, renderState.Surface);
+      Vector<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats(renderState.PhysicalDevice, renderState.Surface);
+      VULKAN_RESULT(SwapChain_GetQueueFamilies(renderState.PhysicalDevice, renderState.Surface, renderState.GraphicsFamily, renderState.PresentFamily));
+      Vector<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(renderState.PhysicalDevice, renderState.Surface);
+      VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
+      VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
+      renderState.Swapchain = SwapChain_SetUpSwapChain(renderState.Device, renderState.PhysicalDevice, renderState.Surface, renderState.GraphicsFamily, renderState.PresentFamily, surfaceCapabilities.currentExtent.width, surfaceCapabilities.currentExtent.height, renderState.SwapChainImageCount);
+      renderState.SwapChainImages = SwapChain_SetUpSwapChainImages(renderState.Device, renderState.Swapchain, MAX_FRAMES_IN_FLIGHT);
+      renderState.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderState.Device, renderState.SwapChainImages, swapChainImageFormat);
+
+      renderState.SwapChainResolution.width = width;
+      renderState.SwapChainResolution.height = height;
+
+      return VK_SUCCESS;
  }
 
 Vector<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice)

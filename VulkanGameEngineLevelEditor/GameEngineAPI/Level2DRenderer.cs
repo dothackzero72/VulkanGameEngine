@@ -26,7 +26,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             RenderPassResolution = renderPassResolution;
 
-            VulkanRenderer.CreateCommandBuffers(commandBufferList);
+            RenderSystem.CreateCommandBuffers(commandBufferList);
             base.CreateJsonRenderPass(json, renderPassResolution);
             StartLevelRenderer(gameObjectList, gpuImport);
         }
@@ -59,8 +59,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public override VkCommandBuffer Draw(List<GameObject> meshList, SceneDataBuffer sceneDataBuffer)
         {
-            var imageIndex = VulkanRenderer.ImageIndex;
-            var commandIndex = VulkanRenderer.CommandIndex;
+            var imageIndex = RenderSystem.ImageIndex;
+            var commandIndex = RenderSystem.CommandIndex;
             var commandBuffer = commandBufferList[(int)commandIndex];
 
             var renderPassInfo = RenderPassInfo;

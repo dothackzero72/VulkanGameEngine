@@ -5,7 +5,6 @@ extern "C"
 }
 #include "VulkanRenderer.h"
 #include <stdio.h>
-#include "InterfaceRenderPass.h"
 
 #include <nlohmann/json.hpp>
 #include <ImPlot/implot.h>

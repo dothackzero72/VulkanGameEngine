@@ -59,11 +59,15 @@ namespace VulkanGameEngineLevelEditor
 
             _count = size;
             _capacity = size;
-            _ptr = ptr;
+            _ptr = (T*)Marshal.AllocHGlobal(sizeof(T) * (int)_capacity);
             _debugList = new T*[_capacity];
 
-            UpdateList();
+            for (uint x = 0; x < size; x++)
+            {
+                _ptr[x] = ptr[x];
+            }
 
+            UpdateList();
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
         }
 

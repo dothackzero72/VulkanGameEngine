@@ -25,11 +25,11 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>();
         public void StartUp()
         {
-            var res = new vec2((float)VulkanRenderer.SwapChain.SwapChainResolution.width, (float)VulkanRenderer.SwapChain.SwapChainResolution.height);
+            var res = new vec2((float)RenderSystem.SwapChainResolution.width, (float)RenderSystem.SwapChainResolution.height);
             var pos = new vec2(0.0f, 0.0f);
             orthographicCamera = new OrthographicCamera2D(res, pos);
 
-            level2DRenderer = new Level2D("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json", new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height));
+            level2DRenderer = new Level2D("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\Default2DRenderPass.json", new ivec2((int)RenderSystem.SwapChainResolution.width, (int)RenderSystem.SwapChainResolution.height));
 
             GPUImport<NullVertex> imports = new GPUImport<NullVertex>()
             {
@@ -52,12 +52,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void Update(float deltaTime)
         {
-            VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            VkCommandBuffer commandBuffer = RenderSystem.BeginSingleUseCommandBuffer();
             foreach (var gameObject in GameObjectList)
             {
                 gameObject.Update(commandBuffer, startTime);
             }
-            VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+            RenderSystem.EndSingleUseCommandBuffer(commandBuffer);
 
             orthographicCamera.Update(ref sceneProperties);
             level2DRenderer.Update(deltaTime);
@@ -65,16 +65,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void DrawFrame()
         {
-            uint imageIndex = VulkanRenderer.ImageIndex;
-            uint commandIndex = VulkanRenderer.CommandIndex;
-            bool rebuildRendererFlag = VulkanRenderer.RebuildRendererFlag;
+            uint imageIndex = RenderSystem.ImageIndex;
+            uint commandIndex = RenderSystem.CommandIndex;
+            bool rebuildRendererFlag = RenderSystem.RebuildRendererFlag;
 
-            VulkanRenderer.StartFrame();
+            RenderSystem.StartFrame();
             //            GameEngineImport.DLL_Renderer_StartFrame(VulkanRenderer.device, VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.AcquireImageSemaphores.Ptr, &imageIndex, &commandIndex, &rebuildRendererFlag);
             commandBufferList.Add(level2DRenderer.Draw(sceneProperties));
             commandBufferList.Add(frameBufferRenderPass.Draw());
             //          GameEngineImport.DLL_Renderer_EndFrame(VulkanRenderer.SwapChain.Swapchain, VulkanRenderer.AcquireImageSemaphores.Ptr, VulkanRenderer.PresentImageSemaphores.Ptr, VulkanRenderer.InFlightFences.Ptr, VulkanRenderer.graphicsQueue, VulkanRenderer.presentQueue, commandIndex, imageIndex, commandBufferList.Ptr, commandBufferList.UCount, &rebuildRendererFlag);
-            VulkanRenderer.EndFrame(commandBufferList);
+            RenderSystem.EndFrame(commandBufferList);
             commandBufferList.Clear();
         }
 
@@ -85,7 +85,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void Destroy()
         {
-            VulkanRenderer.Destroy();
+          //  RenderSystem.Destroy();
         }
     }
 }

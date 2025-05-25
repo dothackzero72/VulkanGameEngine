@@ -286,7 +286,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 };
 
                 var tempRenderPass = new VkRenderPass();
-                VkFunc.vkCreateRenderPass(VulkanRenderer.device, &renderPassCreateInfo, null, &tempRenderPass);
+                VkFunc.vkCreateRenderPass(RenderSystem.Device, &renderPassCreateInfo, null, &tempRenderPass);
                 renderPass = tempRenderPass;
             }
             return renderPass;
@@ -294,14 +294,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void CreateFramebuffer()
         {
-            VkFramebuffer[] frameBufferList = new VkFramebuffer[VulkanRenderer.SwapChain.ImageCount];
-            for (int x = 0; x < VulkanRenderer.SwapChain.ImageCount; x++)
+            VkFramebuffer[] frameBufferList = new VkFramebuffer[RenderSystem.SwapChainImageCount];
+            for (int x = 0; x < RenderSystem.SwapChainImageCount; x++)
             {
                 List<VkImageView> TextureAttachmentList = new List<VkImageView>();
                 foreach (var texture in RenderedColorTextureList)
                 {
 
-                    TextureAttachmentList.Add(VulkanRenderer.SwapChain.imageViews[x]);
+                    TextureAttachmentList.Add(RenderSystem.SwapChainImageViews[x]);
 
                 }
                 if (depthTexture != null)
@@ -325,7 +325,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     };
 
                     VkFramebuffer frameBuffer = FrameBufferList[x];
-                    VkFunc.vkCreateFramebuffer(VulkanRenderer.device, &framebufferInfo, null, &frameBuffer);
+                    VkFunc.vkCreateFramebuffer(RenderSystem.Device, &framebufferInfo, null, &frameBuffer);
                     FrameBufferList[x] = frameBuffer;
                 }
             }
@@ -333,8 +333,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public VkCommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
         {
-            var commandIndex = VulkanRenderer.CommandIndex;
-            var imageIndex = VulkanRenderer.ImageIndex;
+            var commandIndex = RenderSystem.CommandIndex;
+            var imageIndex = RenderSystem.ImageIndex;
             var commandBuffer = commandBufferList[(int)commandIndex];
 
             List<VkClearValue> clearValues = new List<VkClearValue>
@@ -357,19 +357,19 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     framebuffer = FrameBufferList[(int)imageIndex],
                     clearValueCount = 2,
                     pClearValues = pClearValue,
-                    renderArea = new(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution)
+                    renderArea = new(new VkOffset2D(0, 0), RenderSystem.SwapChainResolution)
                 };
 
                 var viewport = new VkViewport
                 {
                     x = 0.0f,
                     y = 0.0f,
-                    width = VulkanRenderer.SwapChain.SwapChainResolution.width,
-                    height = VulkanRenderer.SwapChain.SwapChainResolution.height,
+                    width = RenderSystem.SwapChainResolution.width,
+                    height = RenderSystem.SwapChainResolution.height,
                     minDepth = 0.0f,
                     maxDepth = 1.0f
                 };
-                var scissor = new VkRect2D(new VkOffset2D(0, 0), VulkanRenderer.SwapChain.SwapChainResolution);
+                var scissor = new VkRect2D(new VkOffset2D(0, 0), RenderSystem.SwapChainResolution);
 
                 var commandInfo = new VkCommandBufferBeginInfo { flags = 0 };
                 VkFunc.vkBeginCommandBuffer(commandBuffer, &commandInfo);

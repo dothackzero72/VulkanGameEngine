@@ -64,7 +64,7 @@ namespace VulkanGameEngineLevelEditor
 
             this.Invoke(new Action(() =>
             {
-                VulkanRenderer.CreateVulkanRenderer(pictureBox1.Handle);
+                RenderSystem.CreateVulkanRenderer(this.Handle, pictureBox1.Handle);
             }));
 
             stopwatch.Start();

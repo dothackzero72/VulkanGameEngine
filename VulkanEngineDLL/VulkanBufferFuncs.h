@@ -8,41 +8,6 @@
 #include "Macro.h"
 #include "Typedef.h"
 
-template <class T>
-struct VulkanBufferFuncs
-{
-	void* BufferData;
-	bool IsMapped = false;
-	bool UsingStagingBuffer = false;
-
-	VkDeviceSize BufferSize = 0;
-	uint64 BufferDeviceAddress = 0;
-
-	VkBufferUsageFlags BufferUsage;
-	VkMemoryPropertyFlags BufferProperties;
-	VkBuffer Buffer = VK_NULL_HANDLE;
-	VkBuffer StagingBuffer = VK_NULL_HANDLE;
-	VkDeviceMemory StagingBufferMemory = VK_NULL_HANDLE;
-	VkDeviceMemory BufferMemory = VK_NULL_HANDLE;
-	VkAccelerationStructureKHR BufferHandle = VK_NULL_HANDLE;
-};
-
-
-//VulkanBufferFuncs Buffer_VulkanBuffer(VkBuffer& stagingBuffer, VkDeviceMemory& stagingBufferMemory, VkDeviceMemory& bufferMemory, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags bufferProperties);
-//VulkanBufferFuncs Buffer_VulkanBuffer(void* bufferData, uint32 bufferElementCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
-//VulkanBufferFuncs Buffer_VulkanBuffer(T bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
-//VulkanBufferFuncs Buffer_VulkanBuffer(Vector<T> bufferDataList, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
-//VulkanBufferFuncs Buffer_VulkanBuffer(Vector<T> bufferDataList, uint reserveCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
-//	VkResult Buffer_CreateBuffer(void* bufferData);
-//	VkResult Buffer_CreateStagingBuffer(void* bufferData);
-//	VkResult Buffer_UpdateBufferSize(VkBuffer buffer, VkDeviceMemory bufferMemory, VkDeviceSize newBufferSize);
-//	VkResult Buffer_CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
-//	void Buffer_UpdateBufferMemory(T& bufferData);
-//	void Buffer_UpdateBufferMemory(Vector<T>& bufferData);
-//	void Buffer_UpdateBufferMemory(void* bufferData, VkDeviceSize totalBufferSize);
-//	Vector<T> Buffer_CheckBufferContents();
-//	void Buffer_DestroyBuffer();
-
 #ifdef __cplusplus
 extern "C" {
 #endif

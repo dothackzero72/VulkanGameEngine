@@ -3,10 +3,8 @@
 #include "SpriteBatchLayer.h"
 #include "TypeDef.h"
 #include <VulkanPipeline.h>
-#include "JsonRenderPass.h"
 #include "AssetManager.h"
 #include "ECSid.h"
-#include "InterfaceRenderPass.h"
 #include "Mesh.h"
 #include "LevelLayer.h"
 #include "LevelTileSet.h"

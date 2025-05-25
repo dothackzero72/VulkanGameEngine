@@ -11,7 +11,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public unsafe class JsonRenderPass<T>
     {
-        private VkDevice device => VulkanRenderer.device;
+        private VkDevice device => RenderSystem.Device;
         public List<RenderedTexture> RenderedColorTextureList { get; private set; } = new List<RenderedTexture>();
         public DepthTexture depthTexture { get; set; } = new DepthTexture();
         public ivec2 RenderPassResolution { get; set; }
@@ -46,9 +46,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 };
             }
 
-            renderPass = GameEngineImport.DLL_RenderPass_BuildRenderPass(VulkanRenderer.device, model.ToDLL());
+            renderPass = GameEngineImport.DLL_RenderPass_BuildRenderPass(RenderSystem.Device, model.ToDLL());
             frameBufferList = CreateRenderPassImages(model);
-            VulkanRenderer.CreateCommandBuffers(commandBufferList);
+            RenderSystem.CreateCommandBuffers(commandBufferList);
 
             VkExtent2D extent = new VkExtent2D
             {
@@ -97,7 +97,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             ListPtr<VkImageView> imageViews = new ListPtr<VkImageView>(RenderedColorTextureList.Select(x => x.View).ToList());
             VkImageView depthView = depthTexture.View;
-            return new ListPtr<VkFramebuffer>(GameEngineImport.DLL_RenderPass_BuildFrameBuffer(device, renderPass, model.ToDLL(), imageViews.Ptr, &depthView, VulkanRenderer.SwapChain.imageViews.Ptr, VulkanRenderer.SwapChain.imageViews.UCount, imageViews.UCount, new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height)), VulkanRenderer.SwapChain.imageViews.UCount);
+            return new ListPtr<VkFramebuffer>(GameEngineImport.DLL_RenderPass_BuildFrameBuffer(device, renderPass, model.ToDLL(), imageViews.Ptr, &depthView, RenderSystem.SwapChainImageViews.Ptr, RenderSystem.SwapChainImageViews.UCount, imageViews.UCount, new ivec2((int)RenderSystem.SwapChainResolution.width, (int)RenderSystem.SwapChainResolution.height)), RenderSystem.SwapChainImageViews.UCount);
         }
 
         public virtual void Update(float deltaTime)
@@ -107,8 +107,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public virtual VkCommandBuffer Draw(List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
         {
-            var imageIndex = VulkanRenderer.ImageIndex;
-            var commandBuffer = commandBufferList[(int)VulkanRenderer.CommandIndex];
+            var imageIndex = RenderSystem.ImageIndex;
+            var commandBuffer = commandBufferList[(int)RenderSystem.CommandIndex];
 
             VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo
             {

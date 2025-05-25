@@ -99,10 +99,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ColorComponents colorChannelUsed = ColorChannels;
 
             GameEngineImport.DLL_Texture_CreateImageTextureFromClearColor(
-                VulkanRenderer.device,
-                VulkanRenderer.physicalDevice,
-                VulkanRenderer.commandPool,
-                VulkanRenderer.graphicsQueue,
+                RenderSystem.Device,
+                RenderSystem.PhysicalDevice,
+                RenderSystem.CommandPool,
+                RenderSystem.GraphicsQueue,
                 ref width,
                 ref height,
                 ref depth,
@@ -143,10 +143,10 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ColorComponents colorChannelUsed = ColorChannels;
 
             GameEngineImport.DLL_Texture_CreateImageTextureFromFile(
-                VulkanRenderer.device,
-                VulkanRenderer.physicalDevice,
-                VulkanRenderer.commandPool,
-                VulkanRenderer.graphicsQueue,
+                RenderSystem.Device,
+                RenderSystem.PhysicalDevice,
+                RenderSystem.CommandPool,
+                RenderSystem.GraphicsQueue,
                 ref width,
                 ref height,
                 ref depth,
@@ -174,7 +174,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public virtual VkResult CreateTextureView(VkImageAspectFlagBits imageType)
         {
-            var result = GameEngineImport.DLL_Texture_CreateTextureView(VulkanRenderer.device, out VkImageView view, Image, TextureByteFormat, imageType, MipMapLevels);
+            var result = GameEngineImport.DLL_Texture_CreateTextureView(RenderSystem.Device, out VkImageView view, Image, TextureByteFormat, imageType, MipMapLevels);
             View = view;
 
             return result;
@@ -207,13 +207,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         virtual protected void CreateTextureSampler(VkSamplerCreateInfo samplerCreateInfo)
         {
-            GameEngineImport.DLL_Texture_CreateTextureSampler(VulkanRenderer.device, samplerCreateInfo, out VkSampler sampler);
+            GameEngineImport.DLL_Texture_CreateTextureSampler(RenderSystem.Device, samplerCreateInfo, out VkSampler sampler);
             Sampler = sampler;
         }
 
         protected VkResult CreateImage(VkImageCreateInfo imageCreateInfo)
         {
-            var result = GameEngineImport.DLL_Texture_CreateImage(VulkanRenderer.device, VulkanRenderer.physicalDevice, out VkImage image, out VkDeviceMemory memory, imageCreateInfo);
+            var result = GameEngineImport.DLL_Texture_CreateImage(RenderSystem.Device, RenderSystem.PhysicalDevice, out VkImage image, out VkDeviceMemory memory, imageCreateInfo);
             Image = image;
             Memory = memory;
 

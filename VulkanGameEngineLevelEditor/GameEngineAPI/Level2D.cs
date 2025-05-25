@@ -73,13 +73,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public void Update(float deltaTime)
         {
             DestroyDeadGameObjects();
-            VkCommandBuffer commandBuffer = VulkanRenderer.BeginSingleUseCommandBuffer();
+            VkCommandBuffer commandBuffer = RenderSystem.BeginSingleUseCommandBuffer();
             foreach (var obj in GameObjectList)
             {
                 obj.Update(commandBuffer, deltaTime);
             }
             LevelRenderer.Update(commandBuffer, deltaTime);
-            VulkanRenderer.EndSingleUseCommandBuffer(commandBuffer);
+            RenderSystem.EndSingleUseCommandBuffer(commandBuffer);
         }
 
         public VkCommandBuffer Draw(SceneDataBuffer sceneDataBuffer)

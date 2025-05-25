@@ -14,16 +14,16 @@ VulkanRenderPass RenderPass_CreateVulkanRenderPass(const RendererState& renderSt
        return vulkanRenderPass;
 }
 
-void RenderPass_DestroyRenderPass(const RendererState& renderState, VulkanRenderPass& renderPass, Vector<Texture>& renderedTextureList)
+void RenderPass_DestroyRenderPass(RendererState& renderState, VulkanRenderPass& renderPass, Vector<Texture>& renderedTextureList)
 {
-    //for (auto renderedTexture : renderedTextureList)
-    //{
-    //    Texture_DestroyTexture(rendererState.Device, renderedTexture);
-    //}
+    for (auto renderedTexture : renderedTextureList)
+    {
+        Texture_DestroyTexture(renderState, renderedTexture);
+    }
 
-    //Renderer_DestroyRenderPass(rendererState.Device, &renderPass.RenderPass);
-    //Renderer_DestroyCommandBuffers(rendererState.Device, &rendererState.CommandPool, &renderPass.CommandBuffer, rendererState.SwapChainImageCount);
-    //Renderer_DestroyFrameBuffers(rendererState.Device, &renderPass.FrameBufferList[0], rendererState.SwapChainImageCount);
+    Renderer_DestroyRenderPass(renderState.Device, &renderPass.RenderPass);
+    Renderer_DestroyCommandBuffers(renderState.Device, &renderState.CommandPool, &renderPass.CommandBuffer, renderState.SwapChainImageCount);
+    Renderer_DestroyFrameBuffers(renderState.Device, &renderPass.FrameBufferList[0], renderState.SwapChainImageCount);
 }
 
 VkResult RenderPass_CreateCommandBuffers(const RendererState& renderState, VkCommandBuffer* commandBufferList, uint32 commandBufferCount)

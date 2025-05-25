@@ -22,14 +22,14 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             RenderPassResolution = new ivec2
             {
-                x = (int)VulkanRenderer.SwapChain.SwapChainResolution.width,
-                y = (int)VulkanRenderer.SwapChain.SwapChainResolution.height
+                x = (int)RenderSystem.SwapChainResolution.width,
+                y = (int)RenderSystem.SwapChainResolution.height
             };
             sampleCount = SampleCountFlags.Count1Bit;
 
-            FrameBufferList = new ListPtr<VkFramebuffer>(VulkanRenderer.SwapChain.ImageCount);
-            commandBufferList = new ListPtr<VkCommandBuffer>(VulkanRenderer.SwapChain.ImageCount);
-            VulkanRenderer.CreateCommandBuffers(commandBufferList);
+            FrameBufferList = new ListPtr<VkFramebuffer>(RenderSystem.SwapChainImageCount);
+            commandBufferList = new ListPtr<VkCommandBuffer>(RenderSystem.SwapChainImageCount);
+            RenderSystem.CreateCommandBuffers(commandBufferList);
         }
     }
 }

@@ -2,7 +2,6 @@
 #include "AssetManager.h"
 #include "RenderSystem.h"
 #include "InputSystem.h"
-#include "InterfaceRenderPass.h"
 #include "OrthographicCamera2D.h"
 #include "Level2D.h"
 

@@ -15,7 +15,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public void BuildRenderPass(String jsonFile, GPUImport<NullVertex> renderGraphics)
         {
-            RenderPassResolution = new ivec2((int)VulkanRenderer.SwapChain.SwapChainResolution.width, (int)VulkanRenderer.SwapChain.SwapChainResolution.height);
+            RenderPassResolution = new ivec2((int)RenderSystem.SwapChainResolution.width, (int)RenderSystem.SwapChainResolution.height);
             ListPtr<VkVertexInputBindingDescription> vertexBinding = NullVertex.GetBindingDescriptions();
             ListPtr<VkVertexInputAttributeDescription> vertexAttribute = NullVertex.GetAttributeDescriptions();
 
@@ -25,8 +25,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public unsafe VkCommandBuffer Draw()
         {
-            var commandIndex = VulkanRenderer.CommandIndex;
-            var imageIndex = VulkanRenderer.ImageIndex;
+            var commandIndex = RenderSystem.CommandIndex;
+            var imageIndex = RenderSystem.ImageIndex;
             var commandBuffer = commandBufferList[(int)commandIndex];
 
             var renderPassInfo = RenderPassInfo;

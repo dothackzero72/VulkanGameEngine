@@ -13,7 +13,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         ///Renderer
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern RendererState Renderer_RendererSetUp(void* windowHandle);
+        public static extern RendererStateCS Renderer_RendererSetUp_CS(void* windowHandle);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkInstance DLL_Renderer_CreateVulkanInstance();

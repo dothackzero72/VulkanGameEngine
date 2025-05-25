@@ -17,8 +17,23 @@ struct VulkanRenderPass
 	bool UseFrameBufferResolution = true;
 };
 
+struct VulkanRenderPassCS
+{
+	RenderPassGuid RenderPassId;
+	VkSampleCountFlagBits SampleCount;
+	VkRect2D RenderArea;
+	VkRenderPass RenderPass = VK_NULL_HANDLE;
+	VkFramebuffer FrameBufferList;
+	VkClearValue  ClearValueList;
+	int FrameBufferCount;
+	int ClearValueCount;
+	VkCommandBuffer CommandBuffer = VK_NULL_HANDLE;
+	bool UseFrameBufferResolution = true;
+};
+
 DLL_EXPORT VulkanRenderPass RenderPass_CreateVulkanRenderPass(const RendererState& renderState, RenderPassBuildInfoModel& model, ivec2& renderPassResolution, int ConstBuffer, Vector<Texture>& renderedTextureList, Texture& depthTexture);
-DLL_EXPORT void RenderPass_DestroyRenderPass(const RendererState& renderState, VulkanRenderPass& renderPass, Vector<Texture>& renderedTextureList);
+DLL_EXPORT VulkanRenderPassCS RenderPass_ConvertToCS(void* renderState);
+DLL_EXPORT void RenderPass_DestroyRenderPass(RendererState& renderState, VulkanRenderPass& renderPass, Vector<Texture>& renderedTextureList);
 
 VkResult RenderPass_CreateCommandBuffers(const RendererState& renderState, VkCommandBuffer* commandBufferList, uint32 commandBufferCount);
 VkResult RenderPass_CreateFrameBuffer(const RendererState& renderState, VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);

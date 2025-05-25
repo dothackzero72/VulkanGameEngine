@@ -51,7 +51,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
     public unsafe class JsonPipeline<T>
     {
-        private VkDevice _device { get; set; } = VulkanRenderer.device;
+        private VkDevice _device { get; set; } = RenderSystem.Device;
         public GPUImport<T> _GPUImport { get; protected set; }
         public VkDescriptorPool descriptorPool { get; protected set; }
         public ListPtr<VkDescriptorSetLayout> descriptorSetLayoutList { get; protected set; } = new ListPtr<VkDescriptorSetLayout>();
@@ -95,9 +95,9 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 materialPropertiesCount = materialProperties.UCount
             };
 
-            descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(VulkanRenderer.device, model, &includes);
-            descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(VulkanRenderer.device, model, includes), model.DescriptorSetLayoutCount);
-            descriptorSetList = new ListPtr<VkDescriptorSet>(GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(VulkanRenderer.device, descriptorPool, model, descriptorSetLayoutList.Ptr), model.DescriptorSetCount);
+            descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(RenderSystem.Device, model, &includes);
+            descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(RenderSystem.Device, model, includes), model.DescriptorSetLayoutCount);
+            descriptorSetList = new ListPtr<VkDescriptorSet>(GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(RenderSystem.Device, descriptorPool, model, descriptorSetLayoutList.Ptr), model.DescriptorSetCount);
             GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(_device, model, includes, descriptorSetList.Ptr);
             pipelineLayout = GameEngineImport.DLL_Pipeline_CreatePipelineLayout(_device, model, ConstBufferSize, descriptorSetLayoutList.Ptr);
             pipeline = GameEngineImport.DLL_Pipeline_CreatePipeline(_device, renderPass, pipelineLayout, pipelineCache, model, renderPassResolution);
@@ -105,8 +105,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public VkCommandBuffer Draw(VkCommandBuffer[] commandBufferList, VkRenderPass renderPass, VkFramebuffer[] frameBufferList, ivec2 renderPassResolution, List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)
         {
-            var commandIndex = (int)VulkanRenderer.CommandIndex;
-            var imageIndex = (int)VulkanRenderer.ImageIndex;
+            var commandIndex = (int)RenderSystem.CommandIndex;
+            var imageIndex = (int)RenderSystem.ImageIndex;
             var commandBuffer = commandBufferList[commandIndex];
 
             List<VkClearValue> clearValueList = new List<VkClearValue>()
@@ -275,7 +275,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                     borderColor = VkBorderColor.VK_BORDER_COLOR_INT_OPAQUE_BLACK,
                     unnormalizedCoordinates = false,
                 };
-                VkFunc.vkCreateSampler(VulkanRenderer.device, &NullSamplerInfo, null, out VkSampler nullSampler);
+                VkFunc.vkCreateSampler(RenderSystem.Device, &NullSamplerInfo, null, out VkSampler nullSampler);
 
                 VkDescriptorImageInfo nullBuffer = new VkDescriptorImageInfo
                 {
