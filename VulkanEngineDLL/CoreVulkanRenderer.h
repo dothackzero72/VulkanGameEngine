@@ -116,6 +116,10 @@ DLL_EXPORT void Renderer_DestroyRenderer(RendererState& renderer);
 
 DLL_EXPORT RendererStateCS Renderer_RendererSetUp_CS(void* windowHandle);
 //DLL_EXPORT void Renderer_DestroyRendererCS(RendererStateCS& renderer);
+
+RendererState Renderer_RendererStateCStoCPP(const RendererStateCS& renderStateCS);
+RendererStateCS Renderer_RendererStateCPPtoCS(RendererState& renderState);
+
 #ifdef __cplusplus
 }
 #endif

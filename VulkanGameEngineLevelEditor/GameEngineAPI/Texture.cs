@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
+using Silk.NET.SDL;
 using StbImageSharp;
 using System;
 using VulkanGameEngineLevelEditor.Vulkan;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
+
     public unsafe class Texture
     {
         [JsonIgnore]

@@ -84,7 +84,40 @@ RendererState cRenderer = { 0 };
       VULKAN_RESULT(Renderer_SetUpSemaphores(renderState.Device, renderState.InFlightFences, renderState.AcquireImageSemaphores, renderState.PresentImageSemaphores));
       VULKAN_RESULT(Renderer_GetDeviceQueue(renderState.Device, renderState.GraphicsFamily, renderState.PresentFamily, renderState.GraphicsQueue, renderState.PresentQueue));
 
-      RendererStateCS rscs = RendererStateCS
+     return Renderer_RendererStateCPPtoCS(renderState);
+ }
+
+  RendererState Renderer_RendererStateCStoCPP(const RendererStateCS& renderStateCS)
+  {
+      return RendererState
+      {
+          .SwapChainImageCount = renderStateCS.SwapChainImageCount,
+          .GraphicsFamily = renderStateCS.GraphicsFamily,
+          .PresentFamily = renderStateCS.PresentFamily,
+          .GraphicsQueue = renderStateCS.GraphicsQueue,
+          .PresentQueue = renderStateCS.PresentQueue,
+          .Instance = renderStateCS.Instance,
+          .Device = renderStateCS.Device,
+          .PhysicalDevice = renderStateCS.PhysicalDevice,
+          .Surface = renderStateCS.Surface,
+          .CommandPool = renderStateCS.CommandPool,
+          .ImageIndex = renderStateCS.ImageIndex,
+          .CommandIndex = renderStateCS.CommandIndex,
+          .DebugMessenger = renderStateCS.DebugMessenger,
+          .InFlightFences = Vector<VkFence>(renderStateCS.InFlightFences, renderStateCS.InFlightFences + renderStateCS.InFlightFencesCount),
+          .AcquireImageSemaphores = Vector<VkSemaphore>(renderStateCS.AcquireImageSemaphores, renderStateCS.AcquireImageSemaphores + renderStateCS.AcquireImageSemaphoresCount),
+          .PresentImageSemaphores = Vector<VkSemaphore>(renderStateCS.PresentImageSemaphores, renderStateCS.PresentImageSemaphores + renderStateCS.PresentImageSemaphoresCount),
+          .SwapChainImages = Vector<VkImage>(renderStateCS.SwapChainImages, renderStateCS.SwapChainImages + renderStateCS.SwapChainImagesCount),
+          .SwapChainImageViews = Vector<VkImageView>(renderStateCS.SwapChainImageViews, renderStateCS.SwapChainImageViews + renderStateCS.SwapChainImageViewsCount),
+          .SwapChainResolution = renderStateCS.SwapChainResolution,
+          .Swapchain = renderStateCS.Swapchain,
+          .RebuildRendererFlag = renderStateCS.RebuildRendererFlag,
+      };
+  }
+
+  RendererStateCS Renderer_RendererStateCPPtoCS( RendererState& renderState)
+  {
+      return RendererStateCS
       {
          .Instance = renderState.Instance,
          .Device = renderState.Device,
@@ -113,8 +146,7 @@ RendererState cRenderer = { 0 };
          .CommandIndex = renderState.CommandIndex,
          .RebuildRendererFlag = renderState.RebuildRendererFlag,
       };
-     return rscs;
- }
+  }
 
   VkResult Renderer_SetUpSwapChainCS(RendererState& renderState)
  {

@@ -112,6 +112,36 @@ void Texture_DestroyTexture(const RendererState& rendererState, Texture& texture
 	Renderer_FreeDeviceMemory(rendererState.Device, &texture.textureMemory);
 }
 
+ Texture Texture_LoadTexture_CS(const RendererStateCS& rendererStateCS, const String& jsonPath)
+ {
+	 RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
+	 return Texture_LoadTexture(renderState, jsonPath);
+ }
+
+ Texture Texture_CreateTexture_CS(const RendererStateCS& rendererStateCS, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
+ {
+	 RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
+	 return Texture_CreateTexture(renderState, imageType, createImageInfo, samplerCreateInfo);
+ }
+
+ Texture Texture_CreateTexture_CS(const RendererStateCS& rendererStateCS, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
+ {
+	 RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
+	 return Texture_CreateTexture(renderState, texturePath, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
+ }
+
+ Texture Texture_CreateTexture_CS(const RendererStateCS& rendererStateCS, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
+ {
+	 RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
+	 return Texture_CreateTexture(renderState, clearColor, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
+ }
+
+ void Texture_UpdateTextureSize_CS(const RendererStateCS& rendererStateCS, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution)
+ {
+	 RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
+	 return Texture_UpdateTextureSize(renderState, texture, imageType, TextureResolution);
+ }
+
 void Texture_CreateTextureImage(const RendererState& rendererState, Texture& texture, const Pixel& clearColor)
 {
 	VkBuffer buffer = VK_NULL_HANDLE;

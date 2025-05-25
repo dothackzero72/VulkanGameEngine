@@ -84,7 +84,7 @@ namespace VulkanGameEngineLevelEditor
 
             this.Invoke(new Action(() =>
             {
-                RenderSystem.CreateVulkanRenderer(this.Handle, this.pictureBox1.Handle);
+                GameSystem.StartUp(this.Handle, this.pictureBox1.Handle);
             }));
 
             scene = new Scene();

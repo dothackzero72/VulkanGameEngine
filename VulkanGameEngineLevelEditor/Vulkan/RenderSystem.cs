@@ -41,22 +41,22 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
     public unsafe static class RenderSystem
     {
-        public static uint SwapChainImageCount { get; set; }
+        public static uint SwapChainImageCount  { get; set; } 
         public static uint GraphicsFamily { get; set; }
         public static uint PresentFamily { get; set; }
         public static uint ImageIndex { get; set; }
         public static uint CommandIndex { get; set; }
 
-        public static VkInstance Instance { get; set; }
-        public static VkDevice Device { get; set; }
-        public static VkPhysicalDevice PhysicalDevice { get; set; }
-        public static VkSurfaceKHR Surface { get; set; }
-        public static VkCommandPool CommandPool { get; set; }
-        public static VkDebugUtilsMessengerEXT DebugMessenger { get; set; }
+        public static VkInstance Instance { get; set; } = VulkanConst.VK_NULL_HANDLE;
+        public static VkDevice Device { get; set; } = VulkanConst.VK_NULL_HANDLE;
+        public static VkPhysicalDevice PhysicalDevice { get; set; } = VulkanConst.VK_NULL_HANDLE;
+        public static VkSurfaceKHR Surface { get; set; } = VulkanConst.VK_NULL_HANDLE;
+        public static VkCommandPool CommandPool { get; set; } = VulkanConst.VK_NULL_HANDLE;
+        public static VkDebugUtilsMessengerEXT DebugMessenger { get; set; } = VulkanConst.VK_NULL_HANDLE;
         public static VkExtent2D SwapChainResolution { get; set; }
-        public static VkSwapchainKHR Swapchain { get; set; }
-        public static VkQueue GraphicsQueue { get; set; }
-        public static VkQueue PresentQueue { get; set; }
+        public static VkSwapchainKHR Swapchain { get; set; } = VulkanConst.VK_NULL_HANDLE;
+        public static VkQueue GraphicsQueue { get; set; } = VulkanConst.VK_NULL_HANDLE;
+        public static VkQueue PresentQueue { get; set; } = VulkanConst.VK_NULL_HANDLE;
         public static ListPtr<VkFence> InFlightFences { get; set; } = new ListPtr<VkFence>();
         public static ListPtr<VkSemaphore> AcquireImageSemaphores { get; set; } = new ListPtr<VkSemaphore>();
         public static ListPtr<VkSemaphore> PresentImageSemaphores { get; set; } = new ListPtr<VkSemaphore>();
@@ -228,6 +228,39 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 VkFunc.vkAllocateCommandBuffers(Device, in commandBufferAllocateInfo, out commandBuffer);
                 commandBufferList.Add(commandBuffer);
             }
+        }
+
+        public static RendererStateCS ToStruct()
+        {
+            return new RendererStateCS()
+            {
+                AcquireImageSemaphores = AcquireImageSemaphores.Ptr,
+                AcquireImageSemaphoresCount = AcquireImageSemaphores.UCount,
+                CommandIndex = CommandIndex,
+                CommandPool = CommandPool,
+                DebugMessenger = DebugMessenger,
+                Device = Device,
+                GraphicsFamily = GraphicsFamily,
+                GraphicsQueue = GraphicsQueue,
+                ImageIndex = ImageIndex,
+                InFlightFences = InFlightFences.Ptr,
+                InFlightFencesCount = InFlightFences.UCount,
+                Instance = Instance,
+                PhysicalDevice = PhysicalDevice,
+                PresentFamily = PresentFamily,
+                PresentImageSemaphores = PresentImageSemaphores.Ptr,
+                PresentImageSemaphoresCount = PresentImageSemaphores.UCount,
+                PresentQueue = PresentQueue,
+                RebuildRendererFlag = RebuildRendererFlag,
+                Surface = Surface,
+                Swapchain = Swapchain,
+                SwapChainImageCount = SwapChainImageCount,
+                SwapChainImages = SwapChainImages.Ptr,
+                SwapChainImagesCount = SwapChainImages.UCount,
+                SwapChainImageViews = SwapChainImageViews.Ptr,
+                SwapChainImageViewsCount = SwapChainImageViews.UCount,
+                SwapChainResolution = SwapChainResolution
+            };
         }
     }
 }

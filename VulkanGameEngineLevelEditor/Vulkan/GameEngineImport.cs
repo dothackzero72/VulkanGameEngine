@@ -1,4 +1,5 @@
 ﻿using GlmSharp;
+using Silk.NET.Vulkan;
 using StbImageSharp;
 using System.Runtime.InteropServices;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
@@ -14,6 +15,22 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern RendererStateCS Renderer_RendererSetUp_CS(void* windowHandle);
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern TextureStruct Texture_LoadTexture_CS(RendererStateCS rendererStateCS, string jsonPath);
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern TextureStruct Texture_CreateTexture_CS( RendererStateCS rendererStateCS, VkImageAspectFlagBits imageType, VkImageCreateInfo createImageInfo, VkSamplerCreateInfo samplerCreateInfo);
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern TextureStruct Texture_CreateTexture_CS( RendererStateCS rendererStateCS,  string texturePath, VkImageAspectFlagBits imageType, VkImageCreateInfo createImageInfo, VkSamplerCreateInfo samplerCreateInfo, bool useMipMaps);
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern TextureStruct Texture_CreateTexture_CS( RendererStateCS rendererStateCS, Pixel clearColor, VkImageAspectFlagBits imageType, VkImageCreateInfo createImageInfo, VkSamplerCreateInfo samplerCreateInfo, bool useMipMaps);
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern void Texture_UpdateTextureSize_CS( RendererStateCS rendererStateCS, TextureStruct texture, VkImageAspectFlagBits imageType, vec2 TextureResolution);
+
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkInstance DLL_Renderer_CreateVulkanInstance();
