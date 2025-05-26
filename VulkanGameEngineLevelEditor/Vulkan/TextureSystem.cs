@@ -1,17 +1,30 @@
 ﻿using CSScripting;
 using Newtonsoft.Json;
 using Silk.NET.SDL;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
+    public struct TextureJsonLoader
+    {
+        public string TextureFilePath { get; set; }
+        public Guid TextureId { get; set; }
+        public VkFormat TextureByteFormat { get; set; }
+        public VkImageAspectFlagBits ImageType { get; set; }
+        public TextureTypeEnum TextureType { get; set; }
+        public bool UseMipMaps { get; set; }
+    }
+
     public struct TextureStruct
     {
         public Guid textureId { get; set; }
@@ -54,14 +67,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
 
             string jsonContent = File.ReadAllText(texturePath);
-            TextureStruct textureJson = JsonConvert.DeserializeObject<TextureStruct>(jsonContent);
+            TextureJsonLoader textureJson = JsonConvert.DeserializeObject<TextureJsonLoader>(jsonContent);
             //if (TextureList.Where(x => x.Key == textureJson.textureId).Any())
             //{
             //    return textureJson.textureId;
             //}
 
-            TextureList[textureJson.textureId] = GameEngineImport.Texture_LoadTexture_CS(RenderSystem.ToStruct(), texturePath);
-            return textureJson.textureId;
+            TextureList[textureJson.TextureId] = GameEngineImport.Texture_LoadTexture_CS(RenderSystem.ToStruct(), textureJson);
+            return textureJson.TextureId;
         }
     }
 }

@@ -5,21 +5,16 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-Texture Texture_LoadTexture(const RendererState& rendererState, const String& jsonPath)
+Texture Texture_LoadTexture(const RendererState& rendererState, const TextureJsonLoader& textureLoader)
 {
-	nlohmann::json json = Json::ReadJson(jsonPath);
-	String textureFilePath = json["TextureFilePath"];
-	VkImageAspectFlags imageType = json["ImageType"];
-	bool useMipMaps = json["UseMipMaps"];
-
 	Texture texture;
-	texture.textureId = VkGuid(json["TextureId"].get<String>().c_str());
-	texture.textureByteFormat = json["TextureByteFormat"];
-	texture.mipMapLevels = useMipMaps ? static_cast<uint32>(std::floor(std::log2(std::max(texture.width, texture.height)))) + 1 : 1;
-	texture.textureType = json["TextureType"];
+	texture.textureId = textureLoader.TextureId;
+	texture.textureByteFormat = textureLoader.TextureByteFormat;
+	texture.mipMapLevels = textureLoader.UseMipMaps ? static_cast<uint32>(std::floor(std::log2(std::max(texture.width, texture.height)))) + 1 : 1;
+	texture.textureType = textureLoader.TextureType;
 
-	Texture_CreateTextureImage(rendererState, texture, textureFilePath);
-	Texture_CreateTextureView(rendererState, texture, imageType);
+	Texture_CreateTextureImage(rendererState, texture, textureLoader.TextureFilePath);
+	Texture_CreateTextureView(rendererState, texture, textureLoader.ImageType);
 	Texture_CreateSpriteTextureSampler(rendererState, texture.textureSampler);
 	return texture;
 }
@@ -112,10 +107,10 @@ void Texture_DestroyTexture(const RendererState& rendererState, Texture& texture
 	Renderer_FreeDeviceMemory(rendererState.Device, &texture.textureMemory);
 }
 
- Texture Texture_LoadTexture_CS(const RendererStateCS& rendererStateCS, const String& jsonPath)
+ Texture Texture_LoadTexture_CS(const RendererStateCS& rendererStateCS, const TextureJsonLoader& textureJsonLoader)
  {
 	 RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
-	 return Texture_LoadTexture(renderState, jsonPath);
+	 return Texture_LoadTexture(renderState, textureJsonLoader);
  }
 
  Texture Texture_CreateTexture_CS(const RendererStateCS& rendererStateCS, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)

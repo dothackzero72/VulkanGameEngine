@@ -84,7 +84,76 @@ RendererState cRenderer = { 0 };
       VULKAN_RESULT(Renderer_SetUpSemaphores(renderState.Device, renderState.InFlightFences, renderState.AcquireImageSemaphores, renderState.PresentImageSemaphores));
       VULKAN_RESULT(Renderer_GetDeviceQueue(renderState.Device, renderState.GraphicsFamily, renderState.PresentFamily, renderState.GraphicsQueue, renderState.PresentQueue));
 
-     return Renderer_RendererStateCPPtoCS(renderState);
+      RendererStateCS renderStateCS = Renderer_RendererStateCPPtoCS(renderState);;
+
+          // Print RendererStateCS values
+          std::cout << "RendererStateCS (C++):\n";
+      std::cout << std::hex << std::showbase; // Show values in hex for clarity
+      std::cout << "  Instance: " << renderStateCS.Instance << "\n";
+      std::cout << "  Device: " << renderStateCS.Device << "\n";
+      std::cout << "  PhysicalDevice: " << renderStateCS.PhysicalDevice << "\n";
+      std::cout << "  Surface: " << renderStateCS.Surface << "\n";
+      std::cout << "  CommandPool: " << renderStateCS.CommandPool << "\n";
+      std::cout << "  DebugMessenger: " << renderStateCS.DebugMessenger << "\n";
+      std::cout << "  Swapchain: " << renderStateCS.Swapchain << "\n";
+      std::cout << "  GraphicsQueue: " << renderStateCS.GraphicsQueue << "\n";
+      std::cout << "  PresentQueue: " << renderStateCS.PresentQueue << "\n";
+      std::cout << std::dec; // Switch back to decimal for counts and scalars
+      std::cout << "  SwapChainImageCount: " << renderStateCS.SwapChainImageCount << "\n";
+      std::cout << "  GraphicsFamily: " << renderStateCS.GraphicsFamily << "\n";
+      std::cout << "  PresentFamily: " << renderStateCS.PresentFamily << "\n";
+      std::cout << "  ImageIndex: " << renderStateCS.ImageIndex << "\n";
+      std::cout << "  CommandIndex: " << renderStateCS.CommandIndex << "\n";
+      std::cout << "  RebuildRendererFlag: " << (renderStateCS.RebuildRendererFlag ? "true" : "false") << "\n";
+      std::cout << "  SwapChainResolution: (" << renderStateCS.SwapChainResolution.width << ", " << renderStateCS.SwapChainResolution.height << ")\n";
+
+      // Print pointer arrays (first element or "null" if empty)
+      std::cout << std::hex;
+      std::cout << "  InFlightFences (count=" << std::dec << renderStateCS.InFlightFencesCount << std::hex << "): ";
+      if (renderStateCS.InFlightFences && renderStateCS.InFlightFencesCount > 0) {
+          std::cout << renderStateCS.InFlightFences[0];
+      }
+      else {
+          std::cout << "null";
+      }
+      std::cout << "\n";
+
+      std::cout << "  AcquireImageSemaphores (count=" << std::dec << renderStateCS.AcquireImageSemaphoresCount << std::hex << "): ";
+      if (renderStateCS.AcquireImageSemaphores && renderStateCS.AcquireImageSemaphoresCount > 0) {
+          std::cout << renderStateCS.AcquireImageSemaphores[0];
+      }
+      else {
+          std::cout << "null";
+      }
+      std::cout << "\n";
+
+      std::cout << "  PresentImageSemaphores (count=" << std::dec << renderStateCS.PresentImageSemaphoresCount << std::hex << "): ";
+      if (renderStateCS.PresentImageSemaphores && renderStateCS.PresentImageSemaphoresCount > 0) {
+          std::cout << renderStateCS.PresentImageSemaphores[0];
+      }
+      else {
+          std::cout << "null";
+      }
+      std::cout << "\n";
+
+      std::cout << "  SwapChainImages (count=" << std::dec << renderStateCS.SwapChainImagesCount << std::hex << "): ";
+      if (renderStateCS.SwapChainImages && renderStateCS.SwapChainImagesCount > 0) {
+          std::cout << renderStateCS.SwapChainImages[0];
+      }
+      else {
+          std::cout << "null";
+      }
+      std::cout << "\n";
+
+      std::cout << "  SwapChainImageViews (count=" << std::dec << renderStateCS.SwapChainImageViewsCount << std::hex << "): ";
+      if (renderStateCS.SwapChainImageViews && renderStateCS.SwapChainImageViewsCount > 0) {
+          std::cout << renderStateCS.SwapChainImageViews[0];
+      }
+      else {
+          std::cout << "null";
+      }
+      std::cout << "\n";
+     return renderStateCS;
  }
 
   RendererState Renderer_RendererStateCStoCPP(const RendererStateCS& renderStateCS)
@@ -117,7 +186,7 @@ RendererState cRenderer = { 0 };
 
   RendererStateCS Renderer_RendererStateCPPtoCS( RendererState& renderState)
   {
-      return RendererStateCS
+      RendererStateCS renderStateCS = 
       {
          .Instance = renderState.Instance,
          .Device = renderState.Device,
@@ -125,11 +194,11 @@ RendererState cRenderer = { 0 };
          .Surface = renderState.Surface,
          .CommandPool = renderState.CommandPool,
          .DebugMessenger = renderState.DebugMessenger,
-         .InFlightFences = renderState.InFlightFences.data(),
-         .AcquireImageSemaphores = renderState.AcquireImageSemaphores.data(),
-         .PresentImageSemaphores = renderState.PresentImageSemaphores.data(),
-         .SwapChainImages = renderState.SwapChainImages.data(),
-         .SwapChainImageViews = renderState.SwapChainImageViews.data(),
+         .InFlightFences = new VkFence[renderState.InFlightFences.size()],
+         .AcquireImageSemaphores = new VkSemaphore[renderState.AcquireImageSemaphores.size()],
+         .PresentImageSemaphores = new VkSemaphore[renderState.PresentImageSemaphores.size()],
+         .SwapChainImages = new VkImage[renderState.SwapChainImages.size()],
+         .SwapChainImageViews = new VkImageView[renderState.SwapChainImageViews.size()],
          .SwapChainResolution = renderState.SwapChainResolution,
          .Swapchain = renderState.Swapchain,
          .GraphicsQueue = renderState.GraphicsQueue,
@@ -146,6 +215,13 @@ RendererState cRenderer = { 0 };
          .CommandIndex = renderState.CommandIndex,
          .RebuildRendererFlag = renderState.RebuildRendererFlag,
       };
+
+      std::memcpy(renderStateCS.InFlightFences, renderState.InFlightFences.data(), renderState.InFlightFences.size() * sizeof(VkFence));
+      std::memcpy(renderStateCS.AcquireImageSemaphores, renderState.AcquireImageSemaphores.data(), renderState.AcquireImageSemaphores.size() * sizeof(VkSemaphore));
+      std::memcpy(renderStateCS.PresentImageSemaphores, renderState.PresentImageSemaphores.data(), renderState.PresentImageSemaphores.size() * sizeof(VkSemaphore));
+      std::memcpy(renderStateCS.SwapChainImages, renderState.SwapChainImages.data(), renderState.SwapChainImages.size() * sizeof(VkImage));
+      std::memcpy(renderStateCS.SwapChainImageViews, renderState.SwapChainImageViews.data(), renderState.SwapChainImageViews.size() * sizeof(VkImageView));
+      return renderStateCS;
   }
 
   VkResult Renderer_SetUpSwapChainCS(RendererState& renderState)
@@ -165,8 +241,8 @@ RendererState cRenderer = { 0 };
       renderState.SwapChainImages = SwapChain_SetUpSwapChainImages(renderState.Device, renderState.Swapchain, MAX_FRAMES_IN_FLIGHT);
       renderState.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderState.Device, renderState.SwapChainImages, swapChainImageFormat);
 
-      renderState.SwapChainResolution.width = width;
-      renderState.SwapChainResolution.height = height;
+      renderState.SwapChainResolution.width = surfaceCapabilities.currentExtent.width;
+      renderState.SwapChainResolution.height = surfaceCapabilities.currentExtent.height;
 
       return VK_SUCCESS;
  }

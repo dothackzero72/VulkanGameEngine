@@ -19,7 +19,8 @@ VkGuid TextureSystem::LoadTexture(const String& texturePath)
         return textureId;
     }
 
-	TextureList[textureId] = Texture_LoadTexture(cRenderer, texturePath);
+    TextureJsonLoader textureJsonLoader = TextureJsonLoader(texturePath);
+	TextureList[textureId] = Texture_LoadTexture(cRenderer, textureJsonLoader);
     return textureId;
 }
 
