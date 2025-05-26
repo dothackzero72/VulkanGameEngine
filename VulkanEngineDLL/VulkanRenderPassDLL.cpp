@@ -44,7 +44,7 @@ void DLL_Pipeline_AllocateDescriptorSets(
 	VkDescriptorSetLayout* descriptorSetLayoutList,
 	VkDescriptorSet* descriptorSetListPtr,
 	uint descriptorSetLayoutCount)
-{
+{ 
 	Vector<VkDescriptorSetLayout> descriptorLayoutSets(descriptorSetLayoutList, descriptorSetLayoutList + descriptorSetLayoutCount);
 	Vector<VkDescriptorSet> descriptorSets = Pipeline_AllocateDescriptorSets(device, descriptorPool, descriptorLayoutSets);
 	std::memcpy(descriptorSetListPtr, descriptorSets.data(), descriptorSetLayoutCount * sizeof(VkDescriptorSet));

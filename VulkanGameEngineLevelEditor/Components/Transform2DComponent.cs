@@ -1,4 +1,4 @@
-﻿using Coral.Managed.Interop;
+﻿
 using GlmSharp;
 using System;
 using System.Collections.Generic;
