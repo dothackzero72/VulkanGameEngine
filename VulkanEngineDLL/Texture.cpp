@@ -149,7 +149,7 @@ void Texture_CreateTextureImage(const RendererState& rendererState, Texture& tex
 	VkBufferUsageFlags bufferUsage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
 	std::vector<Pixel> pixels(texture.width * texture.height, clearColor);
-	Buffer_CreateStagingBuffer(rendererState.Device, rendererState.PhysicalDevice, rendererState.CommandPool, rendererState.GraphicsQueue, &stagingBuffer, &buffer, &stagingBufferMemory, &bufferMemory, (void*)pixels.data(), bufferSize, bufferUsage, bufferProperties);
+	Buffer_CreateStagingBuffer(rendererState, &stagingBuffer, &buffer, &stagingBufferMemory, &bufferMemory, (void*)pixels.data(), bufferSize, bufferUsage, bufferProperties);
 
 	VkImageCreateInfo imageCreateInfo = 
 	{
@@ -193,7 +193,7 @@ void Texture_CreateTextureImage(const RendererState& rendererState, Texture& tex
 	VkBufferUsageFlags bufferUsage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 	VkMemoryPropertyFlags bufferProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-	Buffer_CreateStagingBuffer(rendererState.Device, rendererState.PhysicalDevice, rendererState.CommandPool, rendererState.GraphicsQueue, &stagingBuffer, &buffer, &stagingBufferMemory, &bufferMemory, data, bufferSize, bufferUsage, bufferProperties);
+	Buffer_CreateStagingBuffer(rendererState, &stagingBuffer, &buffer, &stagingBufferMemory, &bufferMemory, data, bufferSize, bufferUsage, bufferProperties);
 
 	VkImageCreateInfo imageCreateInfo =
 	{

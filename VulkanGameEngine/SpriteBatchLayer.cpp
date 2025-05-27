@@ -23,7 +23,7 @@ SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 
 	renderSystem.SpriteMeshList[SpriteLayerMeshId] = SpriteMesh(renderSystem.SpriteVertexList, renderSystem.SpriteIndexList, VkGuid());
 	renderSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
-	renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = SpriteInstanceBuffer(renderSystem.SpriteInstanceList[SpriteBatchLayerID], renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferUsageSettings(), renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferPropertySettings(), false);
+	renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = SpriteInstanceBuffer(cRenderer, renderSystem.SpriteInstanceList[SpriteBatchLayerID], renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferUsageSettings(), renderSystem.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferPropertySettings(), false);
 }
 
 SpriteBatchLayer::~SpriteBatchLayer()
@@ -41,6 +41,6 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 
 	if (renderSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size())
 	{
-		renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID].UpdateBufferMemory(renderSystem.SpriteInstanceList[SpriteBatchLayerID]);
+		renderSystem.SpriteInstanceBufferList[SpriteBatchLayerID].UpdateBufferMemory(cRenderer, renderSystem.SpriteInstanceList[SpriteBatchLayerID]);
 	}
 }

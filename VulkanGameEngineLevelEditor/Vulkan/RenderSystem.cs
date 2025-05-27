@@ -1,13 +1,54 @@
-﻿using Silk.NET.Vulkan;
+﻿using GlmSharp;
+using Silk.NET.SDL;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
+    public struct TextureJsonLoader
+    {
+        public string TextureFilePath { get; set; }
+        public Guid TextureId { get; set; }
+        public VkFormat TextureByteFormat { get; set; }
+        public VkImageAspectFlagBits ImageType { get; set; }
+        public TextureTypeEnum TextureType { get; set; }
+        public bool UseMipMaps { get; set; }
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
+    public struct MaterialJsonLoader
+    {
+        Guid MaterialId;
+        uint MaterialBufferIndex;
+
+        vec3 Albedo;
+        float Metallic;
+        float Roughness;
+        float AmbientOcclusion;
+        vec3 Emission;
+        float Alpha;
+
+        Guid AlbedoMapId;
+        Guid MetallicRoughnessMapId;
+        Guid MetallicMapId;
+        Guid RoughnessMapId;
+        Guid AmbientOcclusionMapId;
+        Guid NormalMapId;
+        Guid DepthMapId;
+        Guid AlphaMapId;
+        Guid EmissionMapId;
+        Guid HeightMapId;
+
+        VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct RendererStateCS
     {

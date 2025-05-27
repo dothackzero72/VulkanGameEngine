@@ -2,6 +2,9 @@
 #include "Vertex.h"
 #include "Material.h"
 #include "Transform2DComponent.h"
+#include "VulkanBuffer.h"
+#include "Sprite.h"
+#include "SpriteBatchLayer.h"
 
 struct MeshProperitiesStruct
 {
@@ -68,10 +71,10 @@ public:
 		IndexCount = indexList.size();
 
 		mat4 tempMat4;
-		MeshVertexBuffer = VulkanBuffer<T>(vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		MeshIndexBuffer = IndexBuffer(indexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		MeshTransformBuffer = TransformBuffer(static_cast<void*>(&tempMat4), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		PropertiesBuffer = MeshPropertiesBuffer(static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+		MeshVertexBuffer = VulkanBuffer<T>(cRenderer, vertexList.data(), VertexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		MeshIndexBuffer = IndexBuffer(cRenderer, indexList.data(), IndexCount, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		MeshTransformBuffer = TransformBuffer(cRenderer, static_cast<void*>(&tempMat4), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		PropertiesBuffer = MeshPropertiesBuffer(cRenderer, static_cast<void*>(&MeshProperties), 1, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
 		//SharedPtr parentGameObject = ParentGameObject.lock();
 		//if (parentGameObject)
@@ -107,7 +110,7 @@ public:
 	
 		MeshProperties.MaterialIndex = (MeshMaterial) ? MeshMaterial->GetMaterialBufferIndex() : 0;
 		MeshProperties.MeshTransform = GameObjectMatrix * MeshMatrix;
-		PropertiesBuffer.UpdateBufferMemory(MeshProperties);
+		PropertiesBuffer.UpdateBufferMemory(cRenderer, MeshProperties);
 	}
 
 	void Destroy()

@@ -14,17 +14,6 @@ using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public struct TextureJsonLoader
-    {
-        public string TextureFilePath { get; set; }
-        public Guid TextureId { get; set; }
-        public VkFormat TextureByteFormat { get; set; }
-        public VkImageAspectFlagBits ImageType { get; set; }
-        public TextureTypeEnum TextureType { get; set; }
-        public bool UseMipMaps { get; set; }
-    }
-
     public struct TextureStruct
     {
         public Guid textureId { get; set; }

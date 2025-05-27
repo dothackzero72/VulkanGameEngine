@@ -123,7 +123,7 @@ RendererStateCS Renderer_RendererStateCPPtoCS(RendererState& renderState);
 #ifdef __cplusplus
 }
 #endif
-VkResult Renderer_SetUpSwapChainCS(RendererState& renderState);
+	VkResult Renderer_SetUpSwapChainCS(RendererState& renderState);
 	Vector<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice);
 	Vector<VkSurfaceFormatKHR> Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 	Vector<VkPresentModeKHR> Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);

@@ -159,6 +159,7 @@
     <ClInclude Include="VulkanPipeline.h" />
     <ClInclude Include="VulkanRenderPass.h" />
     <ClInclude Include="VulkanWindow.h" />
+    <ClInclude Include="VulkanBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\External\imgui\backends\imgui_impl_glfw.cpp" />

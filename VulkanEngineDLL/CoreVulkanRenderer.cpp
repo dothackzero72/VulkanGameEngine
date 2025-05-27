@@ -972,3 +972,4 @@ VkResult Renderer_SetUpSemaphores(VkDevice device, Vector<VkFence>& inFlightFenc
 
     return Renderer_CreateSemaphores(device, inFlightFences.data(), acquireImageSemaphores.data(), presentImageSemaphores.data(), MAX_FRAMES_IN_FLIGHT);
 }
+

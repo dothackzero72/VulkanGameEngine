@@ -60,7 +60,8 @@ typedef enum TextureTypeEnum
 
 struct TextureJsonLoader
 {
-    const char* TextureFilePath;
+    String TextureFilePath;
+   // const char* TextureFilePath;
     VkGuid TextureId;
     VkFormat TextureByteFormat;
     VkImageAspectFlags ImageType;
@@ -77,8 +78,8 @@ struct TextureJsonLoader
         UseMipMaps = json["UseMipMaps"];
 
         
-        String sTextureFilePath = json["TextureFilePath"];
-        TextureFilePath = sTextureFilePath.c_str();
+        TextureFilePath = json["TextureFilePath"];
+       // TextureFilePath = sTextureFilePath.c_str();
     }
 };
 
@@ -108,7 +109,7 @@ struct Texture
 #ifdef __cplusplus
 extern "C" {
 #endif
-    DLL_EXPORT Texture Texture_LoadTexture(const RendererState& rendererState, const String& jsonPath);
+    DLL_EXPORT Texture Texture_LoadTexture(const RendererState& rendererState, const TextureJsonLoader& textureLoader);
     DLL_EXPORT Texture Texture_CreateTexture(const RendererState& rendererState, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
     DLL_EXPORT void Texture_UpdateTextureSize(const RendererState& rendererState, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution);
     DLL_EXPORT void Texture_UpdateTextureBufferIndex(Texture& texture, uint32 bufferIndex);

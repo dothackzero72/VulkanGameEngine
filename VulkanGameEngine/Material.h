@@ -3,17 +3,6 @@
 #include "VulkanBuffer.h"
 #include "VkGuid.h"
 
-struct Material2DProperitiesBuffer
-{
-	alignas(16) vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
-	alignas(16) vec3 Emission = vec3(0.0f);
-	alignas(4)  float Alpha = 1.0f;
-
-	alignas(4) uint32 AlbedoMapId = 0;
-	alignas(4) uint32 NormalMapId = 0;
-	alignas(4) uint32 AlphaMapId = 0;
-};
-
 struct MaterialProperitiesBuffer
 {
 	alignas(16) vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
@@ -33,50 +22,6 @@ struct MaterialProperitiesBuffer
 	alignas(4) uint32 AlphaMapId = 0;
 	alignas(4) uint32 EmissionMapId = 0;
 	alignas(4) uint32 HeightMapId = 0;
-};
-
-class Material2D
-{
-private:
-	uint MaterialBufferIndex = 0;
-
-	void UpdateBuffer();
-
-public:
-
-	String Name;
-	VkGuid MaterialId;
-
-	vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
-	float Metallic = 0.0f;
-	float Roughness = 0.0f;
-	float AmbientOcclusion = 1.0f;
-	vec3 Emission = vec3(0.0f);
-	float Alpha = 1.0f;
-
-	uint32 AlbedoMapId = 0;
-	uint32 MetallicRoughnessMapId = 0;
-	uint32 MetallicMapId = 0;
-	uint32 RoughnessMapId = 0;
-	uint32 AmbientOcclusionMapId = 0;
-	uint32 NormalMapId = 0;
-	uint32 DepthMapId = 0;
-	uint32 AlphaMapId = 0;
-	uint32 EmissionMapId = 0;
-	uint32 HeightMapId = 0;
-
-	Material2DProperitiesBuffer MaterialInfo;
-	VulkanBuffer<Material2DProperitiesBuffer> MaterialBuffer;
-
-	Material2D();
-	Material2D(const String& materialName, uint32 materialId);
-	virtual ~Material2D();
-
-	void GetMaterialPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& materialBufferList);
-	void UpdateMaterialBufferIndex(uint32 bufferIndex);
-	void Destroy();
-
-	const uint32 GetMaterialBufferIndex() { return MaterialBufferIndex; }
 };
 
 class Material

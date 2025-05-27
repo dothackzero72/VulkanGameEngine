@@ -96,6 +96,9 @@
     <ClInclude Include="VulkanBufferFuncs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VulkanBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VulkanError.c">

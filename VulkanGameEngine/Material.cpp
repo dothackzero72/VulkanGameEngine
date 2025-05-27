@@ -11,10 +11,10 @@ Material::Material(const String& materialName, VkGuid& materialId)
 	Name = materialName;
 	MaterialId = materialId;
 	MaterialBufferIndex = 0;
-	MaterialBuffer = VulkanBuffer<MaterialProperitiesBuffer>(MaterialProperitiesBuffer(), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 
-																						  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
-																						  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
-																						  VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT, false);
+	MaterialBuffer = VulkanBuffer<MaterialProperitiesBuffer>(cRenderer, MaterialProperitiesBuffer(), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+																									  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
+																									  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
+																									  VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT, false);
 }
 
 Material::~Material()
@@ -41,12 +41,12 @@ void Material::UpdateBuffer()
 		.EmissionMapId = EmissionMapId != VkGuid() ? textureSystem.TextureList[EmissionMapId].textureBufferIndex : 0,
 		.HeightMapId = HeightMapId != VkGuid() ? textureSystem.TextureList[HeightMapId].textureBufferIndex : 0
 	};
-	MaterialBuffer.UpdateBufferMemory(materialBuffer);
+	MaterialBuffer.UpdateBufferMemory(cRenderer, materialBuffer);
 }
 
 void Material::Destroy()
 {
-	MaterialBuffer.DestroyBuffer();
+	MaterialBuffer.DestroyBuffer(cRenderer);
 }
 
 void Material::GetMaterialPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& materialBufferList)

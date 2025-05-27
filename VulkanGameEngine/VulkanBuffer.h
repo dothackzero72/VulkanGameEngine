@@ -9,9 +9,26 @@
 template <class T>
 class VulkanBuffer
 {
-private:
+	VkResult CreateBuffer(const rendererState& renderer, void* bufferData)
+	{
+		VkResult result = Buffer_CreateBuffer(renderer, &Buffer, &BufferMemory, bufferData, BufferSize, BufferProperties, BufferUsage);
+		return result;
+	}
 
-protected:
+	VkResult CreateStagingBuffer(const rendererState& renderer, void* bufferData)
+	{
+		return Buffer_CreateStagingBuffer(renderer, &StagingBuffer, &Buffer, &StagingBufferMemory, &BufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
+	}
+
+	VkResult UpdateBufferSize(const rendererState& renderer, VkBuffer buffer, VkDeviceMemory bufferMemory, VkDeviceSize newBufferSize)
+	{
+		VkResult result = Buffer_UpdateBufferSize(renderer, buffer, &bufferMemory, BufferData, &BufferSize, newBufferSize, BufferUsage, BufferProperties);
+		DestroyBuffer(renderer);
+		return result;
+	}
+
+public:
+	VkBuffer Buffer = VK_NULL_HANDLE;
 	VkBuffer StagingBuffer = VK_NULL_HANDLE;
 	VkDeviceMemory StagingBufferMemory = VK_NULL_HANDLE;
 	VkDeviceMemory BufferMemory = VK_NULL_HANDLE;
@@ -20,37 +37,16 @@ protected:
 	VkMemoryPropertyFlags BufferProperties;
 	uint64 BufferDeviceAddress = 0;
 	VkAccelerationStructureKHR BufferHandle = VK_NULL_HANDLE;
-	void* BufferData;
+	void* BufferData = nullptr;
 	bool IsMapped = false;
 	bool UsingStagingBuffer = false;
-
-	VkResult CreateBuffer(void* bufferData)
-	{
-		VkResult result = Buffer_CreateBuffer(cRenderer.Device, cRenderer.PhysicalDevice, &Buffer, &BufferMemory, bufferData, BufferSize, BufferProperties, BufferUsage);
-		return result;
-	}
-
-	VkResult CreateStagingBuffer(void* bufferData)
-	{
-		return Buffer_CreateStagingBuffer(cRenderer.Device, cRenderer.PhysicalDevice, cRenderer.CommandPool, cRenderer.GraphicsQueue, &StagingBuffer, &Buffer, &StagingBufferMemory, &BufferMemory, bufferData, BufferSize, BufferUsage, BufferProperties);
-	}
-
-	VkResult UpdateBufferSize(VkBuffer buffer, VkDeviceMemory bufferMemory, VkDeviceSize newBufferSize)
-	{
-		VkResult result = Buffer_UpdateBufferSize(cRenderer.Device, cRenderer.PhysicalDevice, buffer, &bufferMemory, BufferData, &BufferSize, newBufferSize, BufferUsage, BufferProperties);
-		DestroyBuffer();
-		return result;
-	}
-
-public:
-	VkBuffer Buffer = VK_NULL_HANDLE;
 
 	VulkanBuffer()
 	{
 
 	}
 
-	VulkanBuffer(VkBuffer& stagingBuffer, VkDeviceMemory& stagingBufferMemory, VkDeviceMemory& bufferMemory, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags bufferProperties)
+	VulkanBuffer(const rendererState& renderer, VkBuffer& stagingBuffer, VkDeviceMemory& stagingBufferMemory, VkDeviceMemory& bufferMemory, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags bufferProperties)
 	{
 		StagingBuffer = stagingBuffer;
 		StagingBufferMemory = stagingBufferMemory;
@@ -60,7 +56,7 @@ public:
 		BufferProperties = bufferProperties;
 	}
 
-	VulkanBuffer(void* bufferData, uint32 bufferElementCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+	VulkanBuffer(const rendererState& renderer, void* bufferData, uint32 bufferElementCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 	{
 		BufferSize = sizeof(T) * bufferElementCount;
 		BufferProperties = properties;
@@ -69,15 +65,15 @@ public:
 
 		if (UsingStagingBuffer)
 		{
-			CreateStagingBuffer(bufferData);
+			CreateStagingBuffer(renderer, bufferData);
 		}
 		else
 		{
-			CreateBuffer(bufferData);
+			CreateBuffer(renderer, bufferData);
 		}
 	}
 
-	VulkanBuffer(T bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+	VulkanBuffer(const rendererState& renderer, T bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 	{
 		BufferSize = sizeof(T);
 		BufferProperties = properties;
@@ -88,15 +84,15 @@ public:
 
 		if (UsingStagingBuffer)
 		{
-			CreateStagingBuffer(bufferDataPtr);
+			CreateStagingBuffer(renderer, bufferDataPtr);
 		}
 		else
 		{
-			CreateBuffer(bufferDataPtr);
+			CreateBuffer(renderer, bufferDataPtr);
 		}
 	}
 
-	VulkanBuffer(Vector<T> bufferDataList, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+	VulkanBuffer(const rendererState& renderer, Vector<T> bufferDataList, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 	{
 		BufferSize = sizeof(T) * bufferDataList.size();
 		BufferProperties = properties;
@@ -107,15 +103,15 @@ public:
 
 		if (UsingStagingBuffer)
 		{
-			CreateStagingBuffer(bufferDataPtr);
+			CreateStagingBuffer(renderer, bufferDataPtr);
 		}
 		else
 		{
-			CreateBuffer(bufferDataPtr);
+			CreateBuffer(renderer, bufferDataPtr);
 		}
 	}
 
-	VulkanBuffer(Vector<T> bufferDataList, uint reserveCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+	VulkanBuffer(const rendererState& renderer, Vector<T> bufferDataList, uint reserveCount, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 	{
 		BufferSize = sizeof(T) * (reserveCount + bufferDataList.size());
 		BufferProperties = properties;
@@ -126,11 +122,11 @@ public:
 
 		if (UsingStagingBuffer)
 		{
-			CreateStagingBuffer(bufferDataPtr);
+			CreateStagingBuffer(renderer, bufferDataPtr);
 		}
 		else
 		{
-			CreateBuffer(bufferDataPtr);
+			CreateBuffer(renderer, bufferDataPtr);
 		}
 	}
 
@@ -138,52 +134,52 @@ public:
 	{
 	}
 
-	static VkResult CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
+	static VkResult CopyBuffer(const rendererState& renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 	{
-		return Buffer_CopyBuffer(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, srcBuffer, dstBuffer, size);
+		return Buffer_CopyBuffer(renderer, srcBuffer, dstBuffer, size);
 	}
 
-	void UpdateBufferMemory(T& bufferData)
+	void UpdateBufferMemory(const rendererState& renderer, T& bufferData)
 	{
 		void* rawBufferData = static_cast<void*>(&bufferData);
 		if (UsingStagingBuffer)
 		{
-			Buffer_UpdateStagingBufferData(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, rawBufferData, BufferSize);
+			Buffer_UpdateStagingBufferData(renderer, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, rawBufferData, BufferSize);
 		}
 		else
 		{
-			Buffer_UpdateBufferData(cRenderer.Device, &BufferMemory, rawBufferData, BufferSize);
+			Buffer_UpdateBufferData(renderer, &BufferMemory, rawBufferData, BufferSize);
 		}
 	}
 
-	void UpdateBufferMemory(Vector<T>& bufferData)
+	void UpdateBufferMemory(const rendererState& renderer, Vector<T>& bufferData)
 	{
 		const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
 		if (UsingStagingBuffer)
 		{
 			if (BufferSize != newBufferSize)
 			{
-				if (UpdateBufferSize(StagingBuffer, StagingBufferMemory, newBufferSize) != VK_SUCCESS)
+				if (UpdateBufferSize(cRenderer, StagingBuffer, StagingBufferMemory, newBufferSize) != VK_SUCCESS)
 				{
 					RENDERER_ERROR("Failed to update staging buffer size.");
 					return;
 				}
 			}
 
-			Buffer_UpdateStagingBufferData(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData.data(), BufferSize);
+			Buffer_UpdateStagingBufferData(renderer, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData.data(), BufferSize);
 		}
 		else
 		{
 			if (BufferSize != newBufferSize)
 			{
-				if (UpdateBufferSize(Buffer, BufferMemory, newBufferSize) != VK_SUCCESS)
+				if (UpdateBufferSize(cRenderer, Buffer, BufferMemory, newBufferSize) != VK_SUCCESS)
 				{
 					RENDERER_ERROR("Failed to update buffer size.");
 					return;
 				}
 			}
 
-			VkResult result = Buffer_UpdateBufferMemory(cRenderer.Device, BufferMemory, (void*)bufferData.data(), newBufferSize);
+			VkResult result = Buffer_UpdateBufferMemory(renderer, BufferMemory, (void*)bufferData.data(), newBufferSize);
 			if (result != VK_SUCCESS)
 			{
 				RENDERER_ERROR("Failed to update buffer memory.");
@@ -192,7 +188,7 @@ public:
 		}
 	}
 
-	void UpdateBufferMemory(void* bufferData, VkDeviceSize totalBufferSize)
+	void UpdateBufferMemory(const rendererState& renderer, void* bufferData, VkDeviceSize totalBufferSize)
 	{
 		const VkDeviceSize newBufferSize = totalBufferSize;
 		if (UsingStagingBuffer)
@@ -206,7 +202,7 @@ public:
 				}
 			}
 
-			Buffer_UpdateStagingBufferData(cRenderer.Device, cRenderer.CommandPool, cRenderer.GraphicsQueue, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData, BufferSize);
+			Buffer_UpdateStagingBufferData(renderer, StagingBuffer, Buffer, &StagingBufferMemory, &BufferMemory, (void*)bufferData, BufferSize);
 		}
 		else
 		{
@@ -219,7 +215,7 @@ public:
 				}
 			}
 
-			VkResult result = Buffer_UpdateBufferMemory(cRenderer.Device, BufferMemory, (void*)bufferData, newBufferSize);
+			VkResult result = Buffer_UpdateBufferMemory(renderer, BufferMemory, (void*)bufferData, newBufferSize);
 			if (result != VK_SUCCESS)
 			{
 				RENDERER_ERROR("Failed to update buffer memory.");
@@ -228,12 +224,12 @@ public:
 		}
 	}
 
-	std::vector<T> CheckBufferContents()
+	std::vector<T> CheckBufferContents(const rendererState& renderer)
 	{
 		std::vector<T> DataList;
 		size_t dataListSize = BufferSize / sizeof(T);
 
-		void* data = Buffer_MapBufferMemory(cRenderer.Device, BufferMemory, BufferSize, &IsMapped);
+		void* data = Buffer_MapBufferMemory(renderer, BufferMemory, BufferSize, &IsMapped);
 		if (data == nullptr) {
 			std::cerr << "Failed to map buffer memory\n";
 			return DataList;
@@ -245,22 +241,13 @@ public:
 			DataList.emplace_back(*reinterpret_cast<T*>(newPtr));
 			newPtr += sizeof(T);
 		}
-		Buffer_UnmapBufferMemory(cRenderer.Device, BufferMemory, &IsMapped);
+		Buffer_UnmapBufferMemory(renderer, BufferMemory, &IsMapped);
 
 		return DataList;
 	}
 
-	void DestroyBuffer()
+	void DestroyBuffer(const rendererState& renderer)
 	{
-		Buffer_DestroyBuffer(cRenderer.Device, &Buffer, &StagingBuffer, &BufferMemory, &StagingBufferMemory, &BufferData, &BufferSize, &BufferUsage, &BufferProperties);
+		Buffer_DestroyBuffer(renderer, &Buffer, &StagingBuffer, &BufferMemory, &StagingBufferMemory, &BufferData, &BufferSize, &BufferUsage, &BufferProperties);
 	}
-
-	VkBuffer GetBuffer() { return Buffer; }
-	VkBuffer* GetBufferPtr() { return &Buffer; }
-	VkDeviceMemory GetBufferMemory() { return BufferMemory; }
-	VkDeviceMemory* GetBufferMemoryPtr() { return &BufferMemory; }
-	VkDeviceSize GetBufferSize() { return BufferSize; }
-	uint64 GetBufferDeviceAddress() { return BufferDeviceAddress; }
-	VkAccelerationStructureKHR GetBufferHandle() { return BufferHandle; }
-	VkAccelerationStructureKHR* GetBufferHandlePtr() { return &BufferHandle; }
 };
