@@ -14,7 +14,7 @@ private:
 
 public:
 	SceneDataBuffer						SceneProperties;
-	Level2D								Level;
+//	Level2D								Level;
 	SharedPtr<OrthographicCamera2D>		OrthographicCamera;
 
 	VkGuid								TileSetId;

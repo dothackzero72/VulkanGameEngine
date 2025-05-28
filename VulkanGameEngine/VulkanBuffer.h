@@ -1,10 +1,8 @@
 #pragma once
-#include <iostream>
-#include <memory>
-#include <vector>
 #include "Typedef.h"
 #include "VulkanRenderer.h"
 #include <VulkanBufferFuncs.h>
+#include "RenderSystem.h"
 
 template <class T>
 class VulkanBuffer

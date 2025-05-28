@@ -1,7 +1,8 @@
 #include "renderSystem.h"
-#include "LevelLayout.h"
 #include "json.h"
 #include "TextureSystem.h"
+#include "ShaderSystem.h"
+#include "AssetManager.h"
 
 RenderSystem renderSystem = RenderSystem();
 
@@ -59,9 +60,9 @@ void RenderSystem::Update(const float& deltaTime)
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
     for (auto& renderPass : RenderPassList)
     {
-        if (SpriteBatchLayerList.find(renderPass.second.RenderPassId) != SpriteBatchLayerList.end())
+        if (assetManager.SpriteBatchLayerList.find(renderPass.second.RenderPassId) != assetManager.SpriteBatchLayerList.end())
         {
-            for (auto& spriteLayer : SpriteBatchLayerList[renderPass.second.RenderPassId])
+            for (auto& spriteLayer : assetManager.SpriteBatchLayerList[renderPass.second.RenderPassId])
             {
                 spriteLayer.Update(commandBuffer, deltaTime);
             }
@@ -72,20 +73,20 @@ void RenderSystem::Update(const float& deltaTime)
 
 void RenderSystem::RecreateSwapchain()
 {
-    //int width = 0;
-    //int height = 0;
+  /*  int width = 0;
+    int height = 0;
 
-    //vkDeviceWaitIdle(*Device.get());
+    vkDeviceWaitIdle(*Device.get());
 
-    //vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
-    //renderer.DestroySwapChainImageView();
-    //renderer.DestroySwapChain();
-    //renderer.SetUpSwapChain();
+    vulkanWindow->GetFrameBufferSize(vulkanWindow, &width, &height);
+    renderer.DestroySwapChainImageView();
+    renderer.DestroySwapChain();
+    renderer.SetUpSwapChain();
 
-    //RenderPassID id;
-    //id.id = 2;
+    RenderPassID id;
+    id.id = 2;
 
-    //RenderPassList[id].RecreateSwapchain(width, height);
+    RenderPassList[id].RecreateSwapchain(width, height);*/
 }
 
 VkCommandBuffer RenderSystem::RenderFrameBuffer(VkGuid& renderPassId)
@@ -120,8 +121,8 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
     const VulkanRenderPass& renderPass = RenderPassList[renderPassId];
     const VulkanPipeline& spritePipeline = RenderPipelineList[renderPassId][0];
     const VulkanPipeline& levelPipeline = RenderPipelineList[renderPassId][1];
-    const Vector<SpriteBatchLayer>& spriteLayerList = SpriteBatchLayerList[renderPassId];
-    const Vector<LevelLayerMesh>& levelLayerList = LevelLayerMeshList[levelId];
+    const Vector<SpriteBatchLayer>& spriteLayerList = assetManager.SpriteBatchLayerList[renderPassId];
+    const Vector<LevelLayerMesh>& levelLayerList = assetManager.LevelLayerMeshList[levelId];
     const VkCommandBuffer& commandBuffer = renderPass.CommandBuffer;
 
     VkRenderPassBeginInfo renderPassBeginInfo = VkRenderPassBeginInfo
@@ -150,9 +151,9 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
     }
     for (auto spriteLayer : spriteLayerList)
     {
-        const Vector<SpriteInstanceStruct>& spriteInstanceList = SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
-        const SpriteInstanceBuffer& spriteInstanceBuffer = SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID];
-        const SpriteMesh& spriteMesh = SpriteMeshList[spriteLayer.SpriteLayerMeshId];
+        const Vector<SpriteInstanceStruct>& spriteInstanceList = assetManager.SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
+        const SpriteInstanceBuffer& spriteInstanceBuffer = assetManager.SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID];
+        const SpriteMesh& spriteMesh = assetManager.SpriteMeshList[spriteLayer.SpriteLayerMeshId];
 
         VkDeviceSize offsets[] = { 0 };
         vkCmdPushConstants(commandBuffer, spritePipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
@@ -161,7 +162,7 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &spriteMesh.MeshVertexBuffer.Buffer, offsets);
         vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer.Buffer, offsets);
         vkCmdBindIndexBuffer(commandBuffer, spriteMesh.MeshIndexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdDrawIndexed(commandBuffer, SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
+        vkCmdDrawIndexed(commandBuffer, assetManager.SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
     }
     vkCmdEndRenderPass(commandBuffer);
     vkEndCommandBuffer(commandBuffer);
@@ -195,7 +196,7 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec
     }
 
     RenderPassList[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), textureSystem.RenderedTextureList[model.RenderPassId], textureSystem.DepthTextureList[model.RenderPassId]);
-    SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
+    assetManager.SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
 
     for (int x = 0; x < model.RenderPipelineList.size(); x++)
     {
@@ -251,7 +252,7 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Text
     }
 
     RenderPassList[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), textureSystem.RenderedTextureList[model.RenderPassId], textureSystem.DepthTextureList[model.RenderPassId]);
-    SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
+    assetManager.SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
 
     for (int x = 0; x < model.RenderPipelineList.size(); x++)
     {
@@ -284,8 +285,8 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Text
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetVertexPropertiesBuffer()
 {
     Vector<SpriteMesh> meshList;
-    meshList.reserve(renderSystem.SpriteMeshList.size());
-    std::transform(renderSystem.SpriteMeshList.begin(), renderSystem.SpriteMeshList.end(),
+    meshList.reserve(assetManager.SpriteMeshList.size());
+    std::transform(assetManager.SpriteMeshList.begin(), assetManager.SpriteMeshList.end(),
         std::back_inserter(meshList),
         [](const auto& pair) { return pair.second; });
 
@@ -314,8 +315,8 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetVertexPropertiesBuffer()
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetIndexPropertiesBuffer()
 {
     Vector<SpriteMesh> meshList;
-    meshList.reserve(renderSystem.SpriteMeshList.size());
-    std::transform(renderSystem.SpriteMeshList.begin(), renderSystem.SpriteMeshList.end(),
+    meshList.reserve(assetManager.SpriteMeshList.size());
+    std::transform(assetManager.SpriteMeshList.begin(), assetManager.SpriteMeshList.end(),
         std::back_inserter(meshList),
         [](const auto& pair) { return pair.second; });
 
@@ -342,8 +343,8 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetIndexPropertiesBuffer()
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetGameObjectTransformBuffer()
 {
     Vector<SpriteMesh> meshList;
-    meshList.reserve(renderSystem.SpriteMeshList.size());
-    std::transform(renderSystem.SpriteMeshList.begin(), renderSystem.SpriteMeshList.end(),
+    meshList.reserve(assetManager.SpriteMeshList.size());
+    std::transform(assetManager.SpriteMeshList.begin(), assetManager.SpriteMeshList.end(),
         std::back_inserter(meshList),
         [](const auto& pair) { return pair.second; });
 
@@ -378,7 +379,7 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGui
                std::back_inserter(meshList),
                [](const auto& pair) { return pair.second; });*/
 
-        for (auto& sprite : SpriteMeshList)
+        for (auto& sprite : assetManager.SpriteMeshList)
         {
             meshList.emplace_back(sprite.second);
 
@@ -391,7 +392,7 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGui
                   std::back_inserter(meshList),
                   [](const auto& pair) { return pair.second; });*/
 
-        for (auto& layer : LevelLayerMeshList[levelLayerId])
+        for (auto& layer : assetManager.LevelLayerMeshList[levelLayerId])
         {
             meshList.emplace_back(layer);
         }
@@ -488,7 +489,7 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkG
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer()
 {
     Vector<Material> materialList;
-    for (auto& material : MaterialList)
+    for (auto& material : assetManager.MaterialList)
     {
         materialList.emplace_back(material.second);
     }
@@ -513,14 +514,6 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer()
     return materialPropertiesBuffer;
 }
 
-void RenderSystem::DestroyGraphicsPipeline(VkGuid& guid)
-{
-    for (auto& pipeline : RenderPipelineList[guid])
-    {
-        Pipeline_Destroy(*Device.get(), pipeline);
-    }
-}
-
 void RenderSystem::UpdateBufferIndex()
 {
     int xy = 0;
@@ -529,169 +522,10 @@ void RenderSystem::UpdateBufferIndex()
         ++xy;
     }
     int xz = 0;
-    for (auto& [id, material] : renderSystem.MaterialList) {
+    for (auto& [id, material] : assetManager.MaterialList) {
         material.UpdateMaterialBufferIndex(xz);
         material.UpdateBuffer();
         ++xz;
-    }
-}
-
-VkGuid RenderSystem::AddSpriteVRAM(const String& spritePath)
-{
-    nlohmann::json json = Json::ReadJson(spritePath);
-    VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
-    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
-
-    auto it = VramSpriteList.find(vramId);
-    if (it != VramSpriteList.end())
-    {
-        return vramId;
-    }
-
-    const Material& material = MaterialList.at(materialId);
-    const Texture& texture = textureSystem.TextureList.at(material.AlbedoMapId);
-
-    SpriteVram sprite = SpriteVram
-    {
-        .VramSpriteID = vramId,
-        .SpriteMaterialID = materialId,
-        .SpriteLayer = json["SpriteLayer"],
-        .SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] },
-        .SpritePixelSize = ivec2{ json["SpritePixelSize"][0], json["SpritePixelSize"][1] },
-        .SpriteScale = ivec2{ json["SpriteScale"][0], json["SpriteScale"][1] },
-        .SpriteCells = ivec2(texture.width / sprite.SpritePixelSize.x, texture.height / sprite.SpritePixelSize.y),
-        .SpriteUVSize = vec2(1.0f / (float)sprite.SpriteCells.x, 1.0f / (float)sprite.SpriteCells.y),
-        .SpriteSize = vec2(sprite.SpritePixelSize.x * sprite.SpriteScale.x, sprite.SpritePixelSize.y * sprite.SpriteScale.y),
-    };
-
-    for (int x = 0; x < json["AnimationList"].size(); x++)
-    {
-        Animation2D animation = Animation2D
-        {
-            .AnimationId = json["AnimationList"][x]["AnimationId"],
-            .FrameHoldTime = json["AnimationList"][x]["FrameHoldTime"]
-        };
-
-        Vector<ivec2> FrameList;
-        for (int y = 0; y < json["AnimationList"][x]["FrameList"].size(); y++)
-        {
-            FrameList.emplace_back(ivec2{ json["AnimationList"][x]["FrameList"][y][0], json["AnimationList"][x]["FrameList"][y][1] });
-        }
-
-        assetManager.AnimationList[animation.AnimationId] = animation;
-        assetManager.AnimationFrameList[vramId].emplace_back(FrameList);
-    }
-
-    VramSpriteList[vramId] = sprite;
-    return vramId;
-}
-
-VkGuid RenderSystem::AddTileSetVRAM(const String& tileSetPath)
-{
-    if (tileSetPath.empty() ||
-        tileSetPath == "")
-    {
-        return VkGuid();
-    }
-
-    nlohmann::json json = Json::ReadJson(tileSetPath);
-    VkGuid tileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
-    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
- 
-    auto it = LevelTileSetList.find(tileSetId);
-    if (it != LevelTileSetList.end())
-    {
-        return tileSetId;
-    }
-
-    const Material& material = MaterialList[materialId];
-    const Texture& tileSetTexture = textureSystem.TextureList[material.AlbedoMapId];
-
-    LevelTileSet tileSet = LevelTileSet();
-    tileSet.TileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
-    tileSet.MaterialId = materialId;
-    tileSet.TilePixelSize = ivec2{ json["TilePixelSize"][0], json["TilePixelSize"][1] };
-    tileSet.TileSetBounds = ivec2{ tileSetTexture.width / tileSet.TilePixelSize.x,  tileSetTexture.height / tileSet.TilePixelSize.y };
-    tileSet.TileUVSize = vec2(1.0f / (float)tileSet.TileSetBounds.x, 1.0f / (float)tileSet.TileSetBounds.y);
-    for (int x = 0; x < json["TileList"].size(); x++)
-    {
-        Tile tile;
-        tile.TileId = json["TileList"][x]["TileId"];
-        tile.TileUVCellOffset = ivec2(json["TileList"][x]["TileUVCellOffset"][0], json["TileList"][x]["TileUVCellOffset"][1]);
-        tile.TileLayer = json["TileList"][x]["TileLayer"];
-        tile.IsAnimatedTile = json["TileList"][x]["IsAnimatedTile"];
-        tile.TileUVOffset = vec2(tile.TileUVCellOffset.x * tileSet.TileUVSize.x, tile.TileUVCellOffset.y * tileSet.TileUVSize.y);
-        tileSet.LevelTileList.emplace_back(tile);
-    }
-    LevelTileSetList[tileSetId] = tileSet;
-    return tileSetId;
-}
-
-VkGuid RenderSystem::LoadMaterial(const String& materialPath)
-{
-    if (materialPath.empty() ||
-        materialPath == "")
-    {
-        return VkGuid();
-    }
-
-    nlohmann::json json = Json::ReadJson(materialPath);
-    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
-
-    auto it = MaterialList.find(materialId);
-    if (it != MaterialList.end())
-    {
-        return materialId;
-    }
-
-    String name = json["Name"];
-    MaterialList[materialId] = Material(name, materialId);
-    MaterialList[materialId].Albedo = vec3(json["Albedo"][0], json["Albedo"][1], json["Albedo"][2]);
-    MaterialList[materialId].Metallic = json["Metallic"];
-    MaterialList[materialId].Roughness = json["Roughness"];
-    MaterialList[materialId].AmbientOcclusion = json["AmbientOcclusion"];
-    MaterialList[materialId].Emission = vec3(json["Emission"][0], json["Emission"][1], json["Emission"][2]);
-    MaterialList[materialId].Alpha = json["Alpha"];
-
-    MaterialList[materialId].AlbedoMapId = textureSystem.LoadTexture(json["AlbedoMapPath"]);
-    MaterialList[materialId].MetallicRoughnessMapId = textureSystem.LoadTexture(json["MetallicRoughnessMapPath"]);
-    MaterialList[materialId].MetallicMapId = textureSystem.LoadTexture(json["MetallicMapPath"]);
-    MaterialList[materialId].RoughnessMapId = textureSystem.LoadTexture(json["RoughnessMapPath"]);
-    MaterialList[materialId].AmbientOcclusionMapId = textureSystem.LoadTexture(json["AmbientOcclusionMapPath"]);
-    MaterialList[materialId].NormalMapId = textureSystem.LoadTexture(json["NormalMapPath"]);
-    MaterialList[materialId].DepthMapId = textureSystem.LoadTexture(json["DepthMapPath"]);
-    MaterialList[materialId].AlphaMapId = textureSystem.LoadTexture(json["AlphaMapPath"]);
-    MaterialList[materialId].EmissionMapId = textureSystem.LoadTexture(json["EmissionMapPath"]);
-    MaterialList[materialId].HeightMapId = textureSystem.LoadTexture(json["HeightMapPath"]);
-
-    return materialId;
-}
-
-VkGuid RenderSystem::LoadLevelLayout(const String& levelLayoutPath)
-{
-    if (levelLayoutPath.empty() ||
-        levelLayoutPath == "")
-    {
-        return VkGuid();
-    }
-
-    nlohmann::json json = Json::ReadJson(levelLayoutPath);
-    VkGuid levelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
-  
-    levelLayout.LevelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
-    levelLayout.LevelBounds = ivec2(json["LevelBounds"][0], json["LevelBounds"][1]);
-    levelLayout.TileSizeinPixels = ivec2(json["TileSizeInPixels"][0], json["TileSizeInPixels"][1]);
-    for (int x = 0; x < json["LevelLayouts"].size(); x++)
-    {
-        Vector<uint> levelLayer;
-        for (int y = 0; y < json["LevelLayouts"][x].size(); y++)
-        {
-            for (int z = 0; z < json["LevelLayouts"][x][y].size(); z++)
-            {
-                levelLayer.emplace_back(json["LevelLayouts"][x][y][z]);
-            }
-        }
-        levelLayout.LevelMapList.emplace_back(levelLayer);
     }
 }
 

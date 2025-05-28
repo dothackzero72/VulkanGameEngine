@@ -1,8 +1,8 @@
 #pragma once
+#include "Vertex.h"
 #include "TypeDef.h"
-#include "VkGuid.h"
+#include <VkGuid.h>
 #include "ECSid.h"
-#include "vertex.h"
 
 class Sprite
 {

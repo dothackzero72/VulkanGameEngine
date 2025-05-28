@@ -23,10 +23,10 @@ Sprite::~Sprite()
 SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
     const Transform2DComponent& transform2D = assetManager.TransformComponentList.at(GameObjectId);
-    const SpriteVram& vram = renderSystem.VramSpriteList.at(SpriteVramId);
+    const SpriteVram& vram = assetManager.VramSpriteList.at(SpriteVramId);
     const Animation2D& animation = assetManager.AnimationList.at(CurrentAnimationID);
     const Vector<ivec2>& frameList = assetManager.AnimationFrameList[vram.VramSpriteID][CurrentAnimationID];
-    const Material& material = renderSystem.MaterialList.at(vram.SpriteMaterialID);
+    const Material& material = assetManager.MaterialList.at(vram.SpriteMaterialID);
     const ivec2& currentFrame = frameList[CurrentFrame];
 
     mat4 spriteMatrix = mat4(1.0f);

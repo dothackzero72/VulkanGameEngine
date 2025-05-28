@@ -37,7 +37,7 @@ void AssetManager::CreateGameObject(const String& name, const Vector<ComponentTy
 		{
 			case kTransform2DComponent: assetManager.TransformComponentList[id] = Transform2DComponent(objectPosition); break;
 			case kInputComponent: assetManager.InputComponentList[id] = InputComponent(); break;
-			case kSpriteComponent: assetManager.SpriteList[id] = Sprite(id, vramId); break;
+			//case kSpriteComponent: assetManager.SpriteList[id] = Sprite(id, vramId); break;
 		}
 	}
 }
@@ -78,7 +78,7 @@ void AssetManager::AddInputComponent(const nlohmann::json& json, GameObjectID id
 void AssetManager::AddSpriteComponent(const nlohmann::json& json, GameObjectID id)
 {
 	VkGuid vramId = VkGuid(json["VramId"].get<String>().c_str());
-	assetManager.SpriteList[id] = Sprite(id, vramId);
+	///assetManager.SpriteList[id] = Sprite(id, vramId);
 }
 
 void AssetManager::DestroyEntity(RenderPassID id)

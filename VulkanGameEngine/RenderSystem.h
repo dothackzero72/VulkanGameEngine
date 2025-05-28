@@ -1,30 +1,17 @@
 #pragma once
-#include "VulkanRenderer.h"
-#include "SpriteBatchLayer.h"
-#include "TypeDef.h"
-#include <VulkanPipeline.h>
-#include "AssetManager.h"
-#include "ECSid.h"
-#include "Mesh.h"
-#include "LevelLayer.h"
-#include "LevelTileSet.h"
-#include "ShaderSystem.h"
-#include "LevelLayout.h"
-#include "Tile.h"
-#include "ImGuiFunc.h"
+#include <CoreVulkanRenderer.h>
 #include <VulkanRenderPass.h>
+#include <ImGuiFunc.h>
+#include "SceneDataBuffer.h"
+
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;
 typedef uint UM_RenderPassID;
 typedef uint UM_RenderPipelineID;
 typedef uint UM_LevelID;
-typedef VkGuid LevelGuid;
 typedef VkGuid RenderPassGuid;
 
-class Sprite;
-class JsonRenderPass;
-class TextureSystem;
 class RenderSystem
 {
     friend class JsonRenderPass;
@@ -63,25 +50,9 @@ private:
     const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<Texture>>& renderedTextureList);
     const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer();
 
-    void DestroyGraphicsPipeline(VkGuid& guid);
-
 public:
-    Vector<Vertex2D> SpriteVertexList =
-    {
-        Vertex2D(vec2(0.0f, 1.0f), vec2(0.0f, 0.0f)),
-        Vertex2D(vec2(1.0f, 1.0f), vec2(1.0f, 0.0f)),
-        Vertex2D(vec2(1.0f, 0.0f), vec2(1.0f, 1.0f)),
-        Vertex2D(vec2(0.0f, 0.0f), vec2(0.0f, 1.0f)), 
-    };
-
-    Vector<uint32> SpriteIndexList =
-    {
-        0, 3, 1,
-        1, 3, 2
-    };
 
     ImGuiRenderer                                                 imGuiRenderer;
-    LevelLayout                                                   levelLayout;
 
     Vector<VkImage>                                               SwapChainImages;
     Vector<VkImageView>                                           SwapChainImageViews;
@@ -89,22 +60,12 @@ public:
     VkSwapchainKHR                                                Swapchain;
     VkPhysicalDeviceFeatures                                      PhysicalDeviceFeatures;
 
-    UnorderedMap<RenderPassGuid, Material>                        MaterialList;
-    UnorderedMap<RenderPassGuid, SpriteVram>                      VramSpriteList;
-    UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetList;
-    UnorderedMap<LevelGuid, Vector<LevelLayerMesh>>               LevelLayerMeshList;
-
     UnorderedMap<RenderPassGuid, VulkanRenderPass>                RenderPassList;
-    UnorderedMap<RenderPassGuid, VkRenderPassBeginInfo>           RenderPassInfoList;
-    UnorderedMap<RenderPassGuid, ivec2>                           RenderPassResolutionList;
     UnorderedMap<RenderPassGuid, Vector<VulkanPipeline>>          RenderPipelineList;
-    UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerList;
+    UnorderedMap<RenderPassGuid, VkRenderPassBeginInfo>           RenderPassInfoList;
     UnorderedMap<RenderPassGuid, RenderPassBuildInfoModel>        renderPassBuildInfoList;
+    UnorderedMap<RenderPassGuid, ivec2>                           RenderPassResolutionList;
 
-    UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer>          SpriteInstanceBufferList;
-    UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>>          SpriteBatchLayerObjectList;
-    UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>>  SpriteInstanceList;
-    UnorderedMap<UM_SpriteBatchID, SpriteMesh>                    SpriteMeshList;
 
     VkCommandBufferBeginInfo                                      CommandBufferBeginInfo;
 
@@ -120,10 +81,6 @@ public:
  
     VkGuid AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec2 renderPassResolution);
     VkGuid AddRenderPass(VkGuid& levelId, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution);
-    VkGuid AddSpriteVRAM(const String& spritePath);
-    VkGuid AddTileSetVRAM(const String& tileSetPath);
-    VkGuid LoadMaterial(const String& materialPath);
-    VkGuid LoadLevelLayout(const String& levelLayoutPath);
 
     void Destroy();
 };

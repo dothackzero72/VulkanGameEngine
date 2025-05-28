@@ -1,10 +1,7 @@
 #pragma once
 #include "Vertex.h"
 #include "Material.h"
-#include "Transform2DComponent.h"
-#include "VulkanBuffer.h"
-#include "Sprite.h"
-#include "SpriteBatchLayer.h"
+#include "RenderSystem.h"
 
 struct MeshProperitiesStruct
 {
