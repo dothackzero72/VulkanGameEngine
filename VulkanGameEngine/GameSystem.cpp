@@ -3,6 +3,7 @@
 #include "json.h"
 #include "TextureSystem.h"
 #include "ImGuiFunc.h"
+#include "AssetManager.h"
 
 GameSystem gameSystem = GameSystem();
 
@@ -51,42 +52,42 @@ GameSystem::~GameSystem()
 
 void GameSystem::LoadLevel(const String& levelPath)
 {
-    //OrthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)cRenderer.SwapChainResolution.width, (float)cRenderer.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
+    OrthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)cRenderer.SwapChainResolution.width, (float)cRenderer.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
 
-    //VkGuid vramId;
-    //VkGuid tileSetId;
+    VkGuid vramId;
+    VkGuid tileSetId;
 
-    //nlohmann::json json = Json::ReadJson(levelPath);
-    //VkGuid LevelId = VkGuid(json["LevelID"].get<String>().c_str());
-    //for (int x = 0; x < json["LoadTextures"].size(); x++)
-    //{
-    //    textureSystem.LoadTexture(json["LoadTextures"][x]);
-    //}
-    //for (int x = 0; x < json["LoadMaterials"].size(); x++)
-    //{
-    //    renderSystem.LoadMaterial(json["LoadMaterials"][x]);
-    //}
-    //for (int x = 0; x < json["LoadSpriteVRAM"].size(); x++)
-    //{
-    //    vramId = renderSystem.AddSpriteVRAM(json["LoadSpriteVRAM"][x]);
-    //}
-    //for (int x = 0; x < json["LoadTileSetVRAM"].size(); x++)
-    //{
-    //    tileSetId = renderSystem.AddTileSetVRAM(json["LoadTileSetVRAM"][x]);
-    //}
-    //for (int x = 0; x < json["GameObjectList"].size(); x++)
-    //{
-    //    String objectJson = json["GameObjectList"][x]["GameObjectPath"];
-    //    vec2   positionOverride = vec2(json["GameObjectList"][x]["GameObjectPositionOverride"][0], json["GameObjectList"][x]["GameObjectPositionOverride"][1]);
-    //    assetManager.CreateGameObject(objectJson, positionOverride);
-    //}
-    //renderSystem.LoadLevelLayout(json["LoadLevelLayout"]);
+    nlohmann::json json = Json::ReadJson(levelPath);
+    VkGuid LevelId = VkGuid(json["LevelID"].get<String>().c_str());
+    for (int x = 0; x < json["LoadTextures"].size(); x++)
+    {
+        textureSystem.LoadTexture(json["LoadTextures"][x]);
+    }
+    for (int x = 0; x < json["LoadMaterials"].size(); x++)
+    {
+        assetManager.LoadMaterial(json["LoadMaterials"][x]);
+    }
+    for (int x = 0; x < json["LoadSpriteVRAM"].size(); x++)
+    {
+        vramId = assetManager.AddSpriteVRAM(json["LoadSpriteVRAM"][x]);
+    }
+    for (int x = 0; x < json["LoadTileSetVRAM"].size(); x++)
+    {
+        tileSetId = assetManager.AddTileSetVRAM(json["LoadTileSetVRAM"][x]);
+    }
+    for (int x = 0; x < json["GameObjectList"].size(); x++)
+    {
+        String objectJson = json["GameObjectList"][x]["GameObjectPath"];
+        vec2   positionOverride = vec2(json["GameObjectList"][x]["GameObjectPositionOverride"][0], json["GameObjectList"][x]["GameObjectPositionOverride"][1]);
+        assetManager.CreateGameObject(objectJson, positionOverride);
+    }
+    assetManager.LoadLevelLayout(json["LoadLevelLayout"]);
 
-    //Level = Level2D(LevelId, tileSetId, renderSystem.levelLayout.LevelBounds, renderSystem.levelLayout.LevelMapList);
+    Level = Level2D(LevelId, tileSetId, assetManager.levelLayout.LevelBounds, assetManager.levelLayout.LevelMapList);
 
-    //VkGuid dummyGuid = VkGuid();
-    //spriteRenderPass2DId = renderSystem.AddRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
-    //frameBufferId = renderSystem.AddRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.RenderedTextureList[spriteRenderPass2DId][0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
+    VkGuid dummyGuid = VkGuid();
+    spriteRenderPass2DId = renderSystem.AddRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
+    frameBufferId = renderSystem.AddRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.RenderedTextureList[spriteRenderPass2DId][0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
 }
 
 void GameSystem::StartUp()
@@ -96,7 +97,7 @@ void GameSystem::StartUp()
 }
 
 void GameSystem::Input(const float& deltaTime)
-{/*
+{
     for (auto& input : assetManager.InputComponentList)
     {
         Sprite& sprite = assetManager.SpriteList[input.first];
@@ -119,23 +120,23 @@ void GameSystem::Input(const float& deltaTime)
         {
             sprite.SetSpriteAnimation(Sprite::SpriteAnimationEnum::kStanding);
         }
-    }*/
+    }
 }
 
 void GameSystem::Update(const float& deltaTime)
 {
-    ////DestroyDeadGameObjects();
-    //gameSystem.OrthographicCamera->Update(SceneProperties);
-    //renderSystem.Update(deltaTime);
-    //
-    //VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-    //for (auto& levelLayer : renderSystem.LevelLayerMeshList[Level.LevelId])
-    //{
-    //    levelLayer.Update(commandBuffer, deltaTime);
-    //}
-    //renderer.EndSingleTimeCommands(commandBuffer);
+    //DestroyDeadGameObjects();
+    gameSystem.OrthographicCamera->Update(SceneProperties);
+    renderSystem.Update(deltaTime);
+    
+    VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
+    for (auto& levelLayer : assetManager.LevelLayerMeshList[Level.LevelId])
+    {
+        levelLayer.Update(commandBuffer, deltaTime);
+    }
+    renderer.EndSingleTimeCommands(commandBuffer);
 
-    //Level.Update(deltaTime);
+    Level.Update(deltaTime);
 
 }
 
@@ -151,7 +152,7 @@ void GameSystem::DebugUpdate(const float& deltaTime)
 void GameSystem::Draw(const float& deltaTime)
 {
     VULKAN_RESULT(renderer.StartFrame());
-   // CommandBufferSubmitList.emplace_back(renderSystem.RenderLevel(spriteRenderPass2DId, Level.LevelId, deltaTime, SceneProperties));
+    CommandBufferSubmitList.emplace_back(renderSystem.RenderLevel(spriteRenderPass2DId, Level.LevelId, deltaTime, SceneProperties));
     CommandBufferSubmitList.emplace_back(renderSystem.RenderFrameBuffer(frameBufferId));
     CommandBufferSubmitList.emplace_back(ImGui_Draw(cRenderer, renderSystem.imGuiRenderer));
     VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));

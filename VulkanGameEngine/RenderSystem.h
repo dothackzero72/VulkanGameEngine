@@ -11,6 +11,7 @@ typedef uint UM_RenderPassID;
 typedef uint UM_RenderPipelineID;
 typedef uint UM_LevelID;
 typedef VkGuid RenderPassGuid;
+typedef VkGuid LevelGuid;
 
 class RenderSystem
 {
@@ -65,8 +66,6 @@ public:
     UnorderedMap<RenderPassGuid, VkRenderPassBeginInfo>           RenderPassInfoList;
     UnorderedMap<RenderPassGuid, RenderPassBuildInfoModel>        renderPassBuildInfoList;
     UnorderedMap<RenderPassGuid, ivec2>                           RenderPassResolutionList;
-
-
     VkCommandBufferBeginInfo                                      CommandBufferBeginInfo;
 
     RenderSystem();

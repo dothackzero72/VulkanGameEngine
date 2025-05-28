@@ -86,6 +86,11 @@ public:
 	void AddSpriteComponent(const nlohmann::json& json, GameObjectID id);
 	void DestroyEntity(RenderPassID id);
 
+	VkGuid AddSpriteVRAM(const String& spritePath);
+	VkGuid AddTileSetVRAM(const String& tileSetPath);
+	VkGuid LoadMaterial(const String& materialPath);
+	VkGuid LoadLevelLayout(const String& levelLayoutPath);
+
 	void DestroyGameObject(GameObjectID id);
 	void DestroyGameObjects();
 	void DestoryTextures();

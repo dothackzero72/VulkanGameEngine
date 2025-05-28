@@ -374,11 +374,6 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGui
     Vector<SpriteMesh> meshList;
     if (levelLayerId == VkGuid())
     {
-        /*   meshList.reserve(renderSystem.SpriteMeshList.size());
-           std::transform(renderSystem.SpriteMeshList.begin(), renderSystem.SpriteMeshList.end(),
-               std::back_inserter(meshList),
-               [](const auto& pair) { return pair.second; });*/
-
         for (auto& sprite : assetManager.SpriteMeshList)
         {
             meshList.emplace_back(sprite.second);
@@ -387,11 +382,6 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGui
     }
     else
     {
-        /*      meshList.reserve(renderSystem.LevelLayerMeshList.size());
-              std::transform(renderSystem.LevelLayerMeshList.begin(), renderSystem.LevelLayerMeshList.end(),
-                  std::back_inserter(meshList),
-                  [](const auto& pair) { return pair.second; });*/
-
         for (auto& layer : assetManager.LevelLayerMeshList[levelLayerId])
         {
             meshList.emplace_back(layer);
