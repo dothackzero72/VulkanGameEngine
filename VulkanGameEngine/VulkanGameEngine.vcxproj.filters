@@ -93,6 +93,12 @@
     <ClCompile Include="InputComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="VulkanBufferSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation2D.h">
@@ -111,9 +117,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MemoryPool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OrthographicCamera2D.h">
@@ -191,8 +194,11 @@
     <ClInclude Include="InputComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanBuffer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="VulkanBufferSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshSystem.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

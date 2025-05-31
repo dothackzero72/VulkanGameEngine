@@ -93,10 +93,10 @@
     <ClInclude Include="json.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanBufferFuncs.h">
+    <ClInclude Include="VulkanBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanBuffer.h">
+    <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -149,9 +149,6 @@
     <ClCompile Include="VulkanRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanBufferFuncs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\External\imgui\backends\imgui_impl_glfw.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
@@ -181,6 +178,12 @@
     </ClCompile>
     <ClCompile Include="..\External\ImPlot\implot_items.cpp">
       <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

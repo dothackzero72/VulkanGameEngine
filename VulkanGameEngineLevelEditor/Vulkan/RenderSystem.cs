@@ -1,13 +1,17 @@
 ﻿using GlmSharp;
+using Newtonsoft.Json;
 using Silk.NET.SDL;
 using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
@@ -80,6 +84,33 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public bool RebuildRendererFlag;
     }
 
+    public struct VulkanRenderPassStruct
+    {
+        public Guid RenderPassId { get; set; }
+        public VkSampleCountFlagBits SampleCount { get; set; }
+        public VkRect2D RenderArea { get; set; }
+        public VkRenderPass RenderPass { get; set; }
+        public List<VkFramebuffer> FrameBufferList { get; set; }
+        public List<VkClearValue> ClearValueList { get; set; }
+        public VkCommandBuffer CommandBuffer { get; set; }
+        public bool UseFrameBufferResolution { get; set; }
+    };
+
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
+    public struct VulkanRenderPassCS
+    {
+        public Guid RenderPassId { get; set; }
+        public VkSampleCountFlagBits SampleCount { get; set; }
+        public VkRect2D RenderArea { get; set; }
+        public VkRenderPass RenderPass { get; set; }
+        public VkFramebuffer FrameBufferList { get; set; }
+        public VkClearValue ClearValueList { get; set; }
+        public int FrameBufferCount { get; set; }
+        public int ClearValueCount { get; set; }
+        public VkCommandBuffer CommandBuffer { get; set; }
+        public bool UseFrameBufferResolution { get; set; }
+    };
+
     public unsafe static class RenderSystem
     {
         public static uint SwapChainImageCount  { get; set; } 
@@ -103,6 +134,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static ListPtr<VkSemaphore> PresentImageSemaphores { get; set; } = new ListPtr<VkSemaphore>();
         public static ListPtr<VkImage> SwapChainImages { get; set; } = new ListPtr<VkImage>();
         public static ListPtr<VkImageView> SwapChainImageViews { get; set; } = new ListPtr<VkImageView>();
+
+        public static Dictionary<Guid, VulkanRenderPassStruct> RenderPassList { get; set; }
         public static bool RebuildRendererFlag { get; set; }
 
         public static void CreateVulkanRenderer(IntPtr window, IntPtr renderAreaHandle)
@@ -178,6 +211,15 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             SwapChainImages = new ListPtr<VkImage>(renderStateCS.SwapChainImages, renderStateCS.SwapChainImagesCount);
             SwapChainImageViews = new ListPtr<VkImageView>(renderStateCS.SwapChainImageViews, renderStateCS.SwapChainImageViewsCount);
             SwapChainResolution = renderStateCS.SwapChainResolution;
+        }
+
+        public static Guid AddRenderPass(Guid levelId, string jsonPath, ivec2 renderPassResolution)
+        {
+            string jsonContent = File.ReadAllText(jsonPath);
+            RenderPassBuildInfoModel model = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
+            //  RenderPassList[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), textureSystem.RenderedTextureList[model.RenderPassId], textureSystem.DepthTextureList[model.RenderPassId]);
+
+            return new Guid();
         }
 
         public static VkResult StartFrame()

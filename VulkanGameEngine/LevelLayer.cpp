@@ -1,5 +1,6 @@
 #include "LevelLayer.h"
 #include "AssetManager.h"
+#include "VulkanBufferSystem.h"
 #include "LevelTileSet.h"
 
 LevelLayer::LevelLayer()

@@ -35,7 +35,7 @@ private:
     //Vector<SharedPtr<VkFence>>          InFlightFences;
     //Vector<SharedPtr<VkSemaphore>>      AcquireImageSemaphores;
     //Vector<SharedPtr<VkSemaphore>>      PresentImageSemaphores;
-
+    
     //VkFormat                 Format;
     //VkColorSpaceKHR          ColorSpace;
     //VkPresentModeKHR         PresentMode;
@@ -51,6 +51,7 @@ private:
     const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<Texture>>& renderedTextureList);
     const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer();
 
+    
 public:
 
     ImGuiRenderer                                                 imGuiRenderer;

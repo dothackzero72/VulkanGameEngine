@@ -35,3 +35,10 @@ public:
 	void Destroy();
 };
 extern GameSystem gameSystem;
+
+How I've been using AI to help improve my programming skills:
+
+1. I've mostly been using AI to help design structure.
+2. Throwing around ideas on structure the project I'm working on.
+3. Debugging, especially helpful with memory issues.
+4. Busy copy paste work with minor changes.

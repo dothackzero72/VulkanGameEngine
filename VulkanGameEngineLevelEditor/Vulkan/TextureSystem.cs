@@ -43,7 +43,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
     public static class TextureSystem
     {
-        public static Dictionary<Guid, TextureStruct> TextureList { get; set; }
+        public static Dictionary<Guid, TextureStruct> TextureList { get; set; } = new Dictionary<Guid, TextureStruct>();
         public static Dictionary<Guid, TextureStruct> DepthTextureList { get; set; }
         public static Dictionary<Guid, Vector<TextureStruct>> RenderedTextureList { get; set; }
         public static Dictionary<uint, Vector<TextureStruct>> InputTextureList { get; set; }

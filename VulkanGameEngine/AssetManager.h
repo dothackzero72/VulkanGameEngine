@@ -14,6 +14,7 @@
 #include "SpriteBatchLayer.h"
 #include "LevelTileSet.h"
 #include "LevelLayout.h"
+#include "Material.h"
 
 typedef uint32 UM_TextureID;
 typedef uint32 UM_MaterialID;
@@ -24,6 +25,7 @@ typedef uint32 UM_SpriteVRAMID;
 typedef uint32 UM_AnimationFrameId;
 typedef uint32 UM_AnimationListID;
 typedef VkGuid LevelGuid;
+typedef VkGuid RenderPassGuid;
 
 class AssetManager
 {
@@ -51,7 +53,7 @@ public:
 	UnorderedMap<GameObjectID, Transform2DComponent> TransformComponentList;
 	UnorderedMap<GameObjectID, InputComponent> InputComponentList;
 	UnorderedMap<GameObjectID, Sprite> SpriteList;
-	UnorderedMap<GameObjectID, SpriteMesh> MeshList;
+
 
 
 	LevelLayout                                                   levelLayout;
@@ -60,14 +62,12 @@ public:
 	UnorderedMap<RenderPassGuid, Material>                        MaterialList;
 	UnorderedMap<RenderPassGuid, SpriteVram>                      VramSpriteList;
 	UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetList;
-	UnorderedMap<LevelGuid, Vector<LevelLayerMesh>>               LevelLayerMeshList;
 
 	UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerList;
 
-	UnorderedMap<UM_SpriteBatchID, SpriteInstanceBuffer>          SpriteInstanceBufferList;
+	UnorderedMap<UM_SpriteBatchID, int>          SpriteInstanceBufferList;
 	UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>>          SpriteBatchLayerObjectList;
 	UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>>  SpriteInstanceList;
-	UnorderedMap<UM_SpriteBatchID, SpriteMesh>                    SpriteMeshList;
 
 	UnorderedMap<UM_AnimationListID, Animation2D> AnimationList;
 	UnorderedMap<VkGuid, Vector<Vector<ivec2>>> AnimationFrameList;
@@ -89,7 +89,6 @@ public:
 	VkGuid AddSpriteVRAM(const String& spritePath);
 	VkGuid AddTileSetVRAM(const String& tileSetPath);
 	VkGuid LoadMaterial(const String& materialPath);
-	VkGuid LoadLevelLayout(const String& levelLayoutPath);
 
 	void DestroyGameObject(GameObjectID id);
 	void DestroyGameObjects();

@@ -1,5 +1,5 @@
 #include "Texture.h"
-#include "VulkanBufferFuncs.h"
+#include "VulkanBuffer.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION

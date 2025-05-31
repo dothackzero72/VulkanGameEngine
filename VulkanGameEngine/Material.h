@@ -1,6 +1,6 @@
 #pragma once
 #include <Texture.h>
-#include "VulkanBuffer.h"
+#include <VulkanBuffer.h>
 #include "VkGuid.h"
 
 struct MaterialProperitiesBuffer
@@ -53,7 +53,7 @@ public:
 	VkGuid EmissionMapId;
 	VkGuid HeightMapId;
 
-	VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;
+	int MaterialBufferId;
 
 	Material();
 	Material(const String& materialName, VkGuid& materialId);

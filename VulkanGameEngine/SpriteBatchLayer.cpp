@@ -1,6 +1,8 @@
 #include "SpriteBatchLayer.h"
 #include "AssetManager.h"
+#include "VulkanBufferSystem.h"
 #include "Typedef.h"
+#include "MeshSystem.h"
 
 uint32 SpriteBatchLayer::NextSpriteBatchLayerID = 0;
 
@@ -14,16 +16,14 @@ SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 	RenderPassId = renderPassId;                                   
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 
-	SpriteLayerMeshId = SpriteMesh::GetNextIdNumber();
-
 	for (int x = 0; x < assetManager.SpriteList.size(); x++)
 	{
 		assetManager.SpriteBatchLayerObjectList[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
 	}
 
-	assetManager.SpriteMeshList[SpriteLayerMeshId] = SpriteMesh(assetManager.SpriteVertexList, assetManager.SpriteIndexList, VkGuid());
+	assetManager.SpriteMeshList[SpriteLayerMeshId] = meshSystem. (assetManager.SpriteVertexList, assetManager.SpriteIndexList, VkGuid());
 	assetManager.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(assetManager.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
-	assetManager.SpriteInstanceBufferList[SpriteBatchLayerID] = SpriteInstanceBuffer(cRenderer, assetManager.SpriteInstanceList[SpriteBatchLayerID], assetManager.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferUsageSettings(), assetManager.SpriteMeshList[SpriteLayerMeshId].GetMeshBufferPropertySettings(), false);
+	assetManager.SpriteInstanceBufferList[SpriteBatchLayerID] = bufferSystem.CreateVulkanBuffer<SpriteInstanceStruct>(cRenderer, assetManager.SpriteInstanceList[SpriteBatchLayerID], assetManager.SpriteMeshList[SpriteLayerMeshId].MeshBufferUsageSettings, assetManager.SpriteMeshList[SpriteLayerMeshId].MeshBufferPropertySettings, false);
 }
 
 SpriteBatchLayer::~SpriteBatchLayer()
@@ -41,6 +41,6 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 
 	if (assetManager.SpriteBatchLayerObjectList[SpriteBatchLayerID].size())
 	{
-		assetManager.SpriteInstanceBufferList[SpriteBatchLayerID].UpdateBufferMemory(cRenderer, assetManager.SpriteInstanceList[SpriteBatchLayerID]);
+		bufferSystem.UpdateBufferMemory(cRenderer, assetManager.SpriteInstanceBufferList[SpriteBatchLayerID], assetManager.SpriteInstanceList[SpriteBatchLayerID]);
 	}
 }

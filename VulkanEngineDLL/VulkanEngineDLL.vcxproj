@@ -148,18 +148,18 @@
     <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="SDLWindow.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Typedef.h" />
     <ClInclude Include="VkGuid.h" />
-    <ClInclude Include="VulkanBufferFuncs.h" />
+    <ClInclude Include="VulkanBuffer.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanPipeline.h" />
     <ClInclude Include="VulkanRenderPass.h" />
     <ClInclude Include="VulkanWindow.h" />
-    <ClInclude Include="VulkanBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\External\imgui\backends\imgui_impl_glfw.cpp" />
@@ -181,10 +181,11 @@
     <ClCompile Include="ImGuiFunc.cpp" />
     <ClCompile Include="JsonFunc.cpp" />
     <ClCompile Include="Keyboard.c" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="SDLWindow.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VulkanBufferFuncs.cpp" />
+    <ClCompile Include="VulkanBuffer.cpp" />
     <ClCompile Include="VulkanError.c" />
     <ClCompile Include="VulkanPipeline.cpp" />
     <ClCompile Include="VulkanRenderPass.cpp" />

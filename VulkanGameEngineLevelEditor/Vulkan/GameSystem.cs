@@ -36,13 +36,25 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             var pos = new vec2(0.0f, 0.0f);
             OrthographicCamera = new OrthographicCamera2D(res, pos);
 
-            //string jsonContent = File.ReadAllText(levelPath);
-            //LevelLoader levelLoader = JsonConvert.DeserializeObject<LevelLoader>(levelPath);
+            string jsonContent = File.ReadAllText(levelPath);
+            LevelLoader levelLoader = JsonConvert.DeserializeObject<LevelLoader>(levelPath);
 
-            //foreach(var texture in levelLoader.TextureList)
-            //{
-                TextureSystem.LoadTexture("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Textures/TestTexture.json");
-            //}
+            foreach (var texturePath in levelLoader.TextureList)
+            {
+                TextureSystem.LoadTexture(texturePath);
+            }
+            foreach (var texturePath in levelLoader.TextureList)
+            {
+                TextureSystem.LoadTexture(texturePath);
+            }
+            foreach (var texturePath in levelLoader.TextureList)
+            {
+                TextureSystem.LoadTexture(texturePath);
+            }
+            foreach (var texturePath in levelLoader.TextureList)
+            {
+                TextureSystem.LoadTexture(texturePath);
+            }
         }
     }
 }

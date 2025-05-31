@@ -213,34 +213,6 @@ VkGuid AssetManager::LoadMaterial(const String& materialPath)
     return materialId;
 }
 
-VkGuid AssetManager::LoadLevelLayout(const String& levelLayoutPath)
-{
-    if (levelLayoutPath.empty() ||
-        levelLayoutPath == "")
-    {
-        return VkGuid();
-    }
-
-    nlohmann::json json = Json::ReadJson(levelLayoutPath);
-    VkGuid levelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
-
-    levelLayout.LevelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
-    levelLayout.LevelBounds = ivec2(json["LevelBounds"][0], json["LevelBounds"][1]);
-    levelLayout.TileSizeinPixels = ivec2(json["TileSizeInPixels"][0], json["TileSizeInPixels"][1]);
-    for (int x = 0; x < json["LevelLayouts"].size(); x++)
-    {
-        Vector<uint> levelLayer;
-        for (int y = 0; y < json["LevelLayouts"][x].size(); y++)
-        {
-            for (int z = 0; z < json["LevelLayouts"][x][y].size(); z++)
-            {
-                levelLayer.emplace_back(json["LevelLayouts"][x][y][z]);
-            }
-        }
-        levelLayout.LevelMapList.emplace_back(levelLayer);
-    }
-}
-
 void AssetManager::DestroyEntity(RenderPassID id)
 {
 	//FreeIds.push(id);

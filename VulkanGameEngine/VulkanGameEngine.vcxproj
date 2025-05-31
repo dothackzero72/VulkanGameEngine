@@ -150,6 +150,7 @@
     <ClCompile Include="LevelLayer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MeshSystem.cpp" />
     <ClCompile Include="OrthographicCamera2D.cpp" />
     <ClCompile Include="OrthographicCamera3D.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="SystemClock.cpp" />
     <ClCompile Include="TextureSystem.cpp" />
     <ClCompile Include="Tile.cpp" />
+    <ClCompile Include="VulkanBufferSystem.cpp" />
     <ClCompile Include="VulkanRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -178,7 +180,7 @@
     <ClInclude Include="LevelTileSet.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MemoryPool.h" />
-    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshSystem.h" />
     <ClInclude Include="OrthographicCamera2D.h" />
     <ClInclude Include="OrthographicCamera3D.h" />
     <ClInclude Include="RenderSystem.h" />
@@ -193,7 +195,7 @@
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Transform2DComponent.h" />
     <ClInclude Include="Vertex.h" />
-    <ClInclude Include="VulkanBuffer.h" />
+    <ClInclude Include="VulkanBufferSystem.h" />
     <ClInclude Include="VulkanRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

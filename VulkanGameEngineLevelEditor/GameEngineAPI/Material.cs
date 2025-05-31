@@ -17,16 +17,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public vec3 Emission { get; set; } = new vec3(0.0f);
         public float Alpha { get; set; } = 1.0f;
 
-        public uint AlbedoMap { get; set; } = uint.MaxValue;
-        public uint MetallicRoughnessMap { get; set; } = uint.MaxValue;
-        public uint MetallicMap { get; set; } = uint.MaxValue;
-        public uint RoughnessMap { get; set; } = uint.MaxValue;
-        public uint AmbientOcclusionMap { get; set; } = uint.MaxValue;
-        public uint NormalMap { get; set; } = uint.MaxValue;
-        public uint DepthMap { get; set; } = uint.MaxValue;
-        public uint AlphaMap { get; set; } = uint.MaxValue;
-        public uint EmissionMap { get; set; } = uint.MaxValue;
-        public uint HeightMap { get; set; } = uint.MaxValue;
+        public uint AlbedoMapId { get; set; } = 0;
+        public uint MetallicRoughnessMapId { get; set; } = 0;
+        public uint MetallicMapId { get; set; } = 0;
+        public uint RoughnessMapId { get; set; } = 0;
+        public uint AmbientOcclusionMapId { get; set; } = 0;
+        public uint NormalMapId { get; set; } = 0;
+        public uint DepthMapId { get; set; } = 0;
+        public uint AlphaMapId { get; set; } = 0;
+        public uint EmissionMapId { get; set; } = 0;
+        public uint HeightMapId { get; set; } = 0;
 
         public MaterialProperitiesBuffer()
         {
@@ -180,16 +180,16 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 AmbientOcclusion = MaterialInfo.AmbientOcclusion,
                 Emission = MaterialInfo.Emission,
                 Alpha = MaterialInfo.Alpha,
-                AlbedoMap = MaterialInfo.AlbedoMap,
-                MetallicRoughnessMap = MaterialInfo.MetallicRoughnessMap,
-                MetallicMap = MaterialInfo.MetallicMap,
-                RoughnessMap = MaterialInfo.RoughnessMap,
-                AmbientOcclusionMap = MaterialInfo.AmbientOcclusionMap,
-                NormalMap = MaterialInfo.NormalMap,
-                DepthMap = MaterialInfo.DepthMap,
-                AlphaMap = MaterialInfo.AlphaMap,
-                EmissionMap = MaterialInfo.EmissionMap,
-                HeightMap = MaterialInfo.HeightMap
+                //AlbedoMap = MaterialInfo.AlbedoMap,
+                //MetallicRoughnessMap = MaterialInfo.MetallicRoughnessMap,
+                //MetallicMap = MaterialInfo.MetallicMap,
+                //RoughnessMap = MaterialInfo.RoughnessMap,
+                //AmbientOcclusionMap = MaterialInfo.AmbientOcclusionMap,
+                //NormalMap = MaterialInfo.NormalMap,
+                //DepthMap = MaterialInfo.DepthMap,
+                //AlphaMap = MaterialInfo.AlphaMap,
+                //EmissionMap = MaterialInfo.EmissionMap,
+                //HeightMap = MaterialInfo.HeightMap
             };
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
@@ -296,7 +296,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             AlbedoMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_SRGB, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DiffuseTextureMap, false);
 
             var updatedInfo = MaterialInfo;
-            updatedInfo.AlbedoMap = AlbedoMap.TextureBufferIndex;
+         //   updatedInfo.AlbedoMap = AlbedoMap.TextureBufferIndex;
             MaterialInfo = updatedInfo;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
@@ -310,7 +310,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MetallicRoughnessMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_MetallicTextureMap, false);
 
             var updatedInfo = MaterialInfo;
-            updatedInfo.MetallicRoughnessMap = MetallicRoughnessMap.TextureBufferIndex;
+           // updatedInfo.MetallicRoughnessMap = MetallicRoughnessMap.TextureBufferIndex;
             MaterialInfo = updatedInfo;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
@@ -324,7 +324,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             MetallicMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_MetallicTextureMap, false);
 
             var updatedInfo = MaterialInfo;
-            updatedInfo.MetallicMap = MetallicMap.TextureBufferIndex;
+           // updatedInfo.MetallicMap = MetallicMap.TextureBufferIndex;
             MaterialInfo = updatedInfo;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
@@ -338,7 +338,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             RoughnessMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_MetallicTextureMap, false);
 
             var updatedInfo = MaterialInfo;
-            updatedInfo.RoughnessMap = RoughnessMap.TextureBufferIndex;
+         //   updatedInfo.RoughnessMap = RoughnessMap.TextureBufferIndex;
             MaterialInfo = updatedInfo;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
@@ -352,7 +352,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             AmbientOcclusionMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_AmbientOcclusionTextureMap, false);
 
             var updatedInfo = MaterialInfo;
-            updatedInfo.AmbientOcclusionMap = AmbientOcclusionMap.TextureBufferIndex;
+        //    updatedInfo.AmbientOcclusionMap = AmbientOcclusionMap.TextureBufferIndex;
             MaterialInfo = updatedInfo;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
@@ -366,7 +366,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             NormalMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_NormalTextureMap, false);
 
             var updatedInfo = MaterialInfo;
-            updatedInfo.NormalMap = NormalMap.TextureBufferIndex;
+          //  updatedInfo.NormalMap = NormalMap.TextureBufferIndex;
             MaterialInfo = updatedInfo;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
@@ -380,7 +380,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             DepthMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_DepthTextureMap, false);
 
             var updatedInfo = MaterialInfo;
-            updatedInfo.DepthMap = DepthMap.TextureBufferIndex;
+          //  updatedInfo.DepthMap = DepthMap.TextureBufferIndex;
             MaterialInfo = updatedInfo;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
@@ -394,7 +394,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             AlphaMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_AlphaTextureMap, false);
 
             var updatedInfo = MaterialInfo;
-            updatedInfo.AlphaMap = AlphaMap.TextureBufferIndex;
+          //  updatedInfo.AlphaMap = AlphaMap.TextureBufferIndex;
             MaterialInfo = updatedInfo;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
@@ -408,7 +408,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             EmissionMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_EmissionTextureMap, false);
 
             var updatedInfo = MaterialInfo;
-            updatedInfo.EmissionMap = EmissionMap.TextureBufferIndex;
+         //   updatedInfo.EmissionMap = EmissionMap.TextureBufferIndex;
             MaterialInfo = updatedInfo;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
@@ -422,7 +422,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             HeightMap = new Texture(texturePath, VkFormat.VK_FORMAT_R8G8B8A8_UNORM, VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, TextureTypeEnum.kType_HeightMap, false);
 
             var updatedInfo = MaterialInfo;
-            updatedInfo.HeightMap = HeightMap.TextureBufferIndex;
+         //   updatedInfo.HeightMap = HeightMap.TextureBufferIndex;
             MaterialInfo = updatedInfo;
 
             GCHandle handle = GCHandle.Alloc(MaterialInfo, GCHandleType.Pinned);
