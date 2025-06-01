@@ -3,6 +3,7 @@
 #include "json.h"
 #include "RenderSystem.h"
 #include "TextureSystem.h"
+#include "LevelSystem.h"
 
 AssetManager assetManager = AssetManager();
 
@@ -38,7 +39,7 @@ void AssetManager::CreateGameObject(const String& name, const Vector<ComponentTy
 		{
 			case kTransform2DComponent: assetManager.TransformComponentList[id] = Transform2DComponent(objectPosition); break;
 			case kInputComponent: assetManager.InputComponentList[id] = InputComponent(); break;
-			case kSpriteComponent: assetManager.SpriteList[id] = Sprite(id, vramId); break;
+			case kSpriteComponent: levelSystem.SpriteList[id] = Sprite(id, vramId); break;
 		}
 	}
 }
@@ -79,138 +80,7 @@ void AssetManager::AddInputComponent(const nlohmann::json& json, GameObjectID id
 void AssetManager::AddSpriteComponent(const nlohmann::json& json, GameObjectID id)
 {
 	VkGuid vramId = VkGuid(json["VramId"].get<String>().c_str());
-	assetManager.SpriteList[id] = Sprite(id, vramId);
-}
-
-VkGuid AssetManager::AddSpriteVRAM(const String& spritePath)
-{
-    nlohmann::json json = Json::ReadJson(spritePath);
-    VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
-    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
-
-    auto it = VramSpriteList.find(vramId);
-    if (it != VramSpriteList.end())
-    {
-        return vramId;
-    }
-
-    const Material& material = MaterialList.at(materialId);
-    const Texture& texture = textureSystem.TextureList.at(material.AlbedoMapId);
-
-    SpriteVram sprite = SpriteVram
-    {
-        .VramSpriteID = vramId,
-        .SpriteMaterialID = materialId,
-        .SpriteLayer = json["SpriteLayer"],
-        .SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] },
-        .SpritePixelSize = ivec2{ json["SpritePixelSize"][0], json["SpritePixelSize"][1] },
-        .SpriteScale = ivec2{ json["SpriteScale"][0], json["SpriteScale"][1] },
-        .SpriteCells = ivec2(texture.width / sprite.SpritePixelSize.x, texture.height / sprite.SpritePixelSize.y),
-        .SpriteUVSize = vec2(1.0f / (float)sprite.SpriteCells.x, 1.0f / (float)sprite.SpriteCells.y),
-        .SpriteSize = vec2(sprite.SpritePixelSize.x * sprite.SpriteScale.x, sprite.SpritePixelSize.y * sprite.SpriteScale.y),
-    };
-
-    for (int x = 0; x < json["AnimationList"].size(); x++)
-    {
-        Animation2D animation = Animation2D
-        {
-            .AnimationId = json["AnimationList"][x]["AnimationId"],
-            .FrameHoldTime = json["AnimationList"][x]["FrameHoldTime"]
-        };
-
-        Vector<ivec2> FrameList;
-        for (int y = 0; y < json["AnimationList"][x]["FrameList"].size(); y++)
-        {
-            FrameList.emplace_back(ivec2{ json["AnimationList"][x]["FrameList"][y][0], json["AnimationList"][x]["FrameList"][y][1] });
-        }
-
-        assetManager.AnimationList[animation.AnimationId] = animation;
-        assetManager.AnimationFrameList[vramId].emplace_back(FrameList);
-    }
-
-    VramSpriteList[vramId] = sprite;
-    return vramId;
-}
-
-VkGuid AssetManager::AddTileSetVRAM(const String& tileSetPath)
-{
-    if (tileSetPath.empty() ||
-        tileSetPath == "")
-    {
-        return VkGuid();
-    }
-
-    nlohmann::json json = Json::ReadJson(tileSetPath);
-    VkGuid tileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
-    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
-
-    auto it = LevelTileSetList.find(tileSetId);
-    if (it != LevelTileSetList.end())
-    {
-        return tileSetId;
-    }
-
-    const Material& material = MaterialList[materialId];
-    const Texture& tileSetTexture = textureSystem.TextureList[material.AlbedoMapId];
-
-    LevelTileSet tileSet = LevelTileSet();
-    tileSet.TileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
-    tileSet.MaterialId = materialId;
-    tileSet.TilePixelSize = ivec2{ json["TilePixelSize"][0], json["TilePixelSize"][1] };
-    tileSet.TileSetBounds = ivec2{ tileSetTexture.width / tileSet.TilePixelSize.x,  tileSetTexture.height / tileSet.TilePixelSize.y };
-    tileSet.TileUVSize = vec2(1.0f / (float)tileSet.TileSetBounds.x, 1.0f / (float)tileSet.TileSetBounds.y);
-    for (int x = 0; x < json["TileList"].size(); x++)
-    {
-        Tile tile;
-        tile.TileId = json["TileList"][x]["TileId"];
-        tile.TileUVCellOffset = ivec2(json["TileList"][x]["TileUVCellOffset"][0], json["TileList"][x]["TileUVCellOffset"][1]);
-        tile.TileLayer = json["TileList"][x]["TileLayer"];
-        tile.IsAnimatedTile = json["TileList"][x]["IsAnimatedTile"];
-        tile.TileUVOffset = vec2(tile.TileUVCellOffset.x * tileSet.TileUVSize.x, tile.TileUVCellOffset.y * tileSet.TileUVSize.y);
-        tileSet.LevelTileList.emplace_back(tile);
-    }
-    LevelTileSetList[tileSetId] = tileSet;
-    return tileSetId;
-}
-
-VkGuid AssetManager::LoadMaterial(const String& materialPath)
-{
-    if (materialPath.empty() ||
-        materialPath == "")
-    {
-        return VkGuid();
-    }
-
-    nlohmann::json json = Json::ReadJson(materialPath);
-    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
-
-    auto it = MaterialList.find(materialId);
-    if (it != MaterialList.end())
-    {
-        return materialId;
-    }
-
-    String name = json["Name"];
-    MaterialList[materialId] = Material(name, materialId);
-    MaterialList[materialId].Albedo = vec3(json["Albedo"][0], json["Albedo"][1], json["Albedo"][2]);
-    MaterialList[materialId].Metallic = json["Metallic"];
-    MaterialList[materialId].Roughness = json["Roughness"];
-    MaterialList[materialId].AmbientOcclusion = json["AmbientOcclusion"];
-    MaterialList[materialId].Emission = vec3(json["Emission"][0], json["Emission"][1], json["Emission"][2]);
-    MaterialList[materialId].Alpha = json["Alpha"];
-
-    MaterialList[materialId].AlbedoMapId = textureSystem.LoadTexture(json["AlbedoMapPath"]);
-    MaterialList[materialId].MetallicRoughnessMapId = textureSystem.LoadTexture(json["MetallicRoughnessMapPath"]);
-    MaterialList[materialId].MetallicMapId = textureSystem.LoadTexture(json["MetallicMapPath"]);
-    MaterialList[materialId].RoughnessMapId = textureSystem.LoadTexture(json["RoughnessMapPath"]);
-    MaterialList[materialId].AmbientOcclusionMapId = textureSystem.LoadTexture(json["AmbientOcclusionMapPath"]);
-    MaterialList[materialId].NormalMapId = textureSystem.LoadTexture(json["NormalMapPath"]);
-    MaterialList[materialId].DepthMapId = textureSystem.LoadTexture(json["DepthMapPath"]);
-    MaterialList[materialId].AlphaMapId = textureSystem.LoadTexture(json["AlphaMapPath"]);
-    MaterialList[materialId].EmissionMapId = textureSystem.LoadTexture(json["EmissionMapPath"]);
-    MaterialList[materialId].HeightMapId = textureSystem.LoadTexture(json["HeightMapPath"]);
-
-    return materialId;
+	levelSystem.SpriteList[id] = Sprite(id, vramId);
 }
 
 void AssetManager::DestroyEntity(RenderPassID id)

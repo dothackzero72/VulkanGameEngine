@@ -25,8 +25,8 @@ typedef uint32 UM_SpriteVRAMID;
 typedef uint32 UM_AnimationFrameId;
 typedef uint32 UM_AnimationListID;
 typedef VkGuid LevelGuid;
-typedef VkGuid RenderPassGuid;
 
+class MeshSystem;
 class AssetManager
 {
 private:
@@ -52,25 +52,10 @@ public:
 	UnorderedMap<GameObjectID, GameObject> GameObjectList;
 	UnorderedMap<GameObjectID, Transform2DComponent> TransformComponentList;
 	UnorderedMap<GameObjectID, InputComponent> InputComponentList;
-	UnorderedMap<GameObjectID, Sprite> SpriteList;
 
 
 
-	LevelLayout                                                   levelLayout;
 
-
-	UnorderedMap<RenderPassGuid, Material>                        MaterialList;
-	UnorderedMap<RenderPassGuid, SpriteVram>                      VramSpriteList;
-	UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetList;
-
-	UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerList;
-
-	UnorderedMap<UM_SpriteBatchID, int>          SpriteInstanceBufferList;
-	UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>>          SpriteBatchLayerObjectList;
-	UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>>  SpriteInstanceList;
-
-	UnorderedMap<UM_AnimationListID, Animation2D> AnimationList;
-	UnorderedMap<VkGuid, Vector<Vector<ivec2>>> AnimationFrameList;
 
 	AssetManager();
 	~AssetManager();
@@ -85,10 +70,6 @@ public:
 	void AddInputComponent(const nlohmann::json& json, GameObjectID id);
 	void AddSpriteComponent(const nlohmann::json& json, GameObjectID id);
 	void DestroyEntity(RenderPassID id);
-
-	VkGuid AddSpriteVRAM(const String& spritePath);
-	VkGuid AddTileSetVRAM(const String& tileSetPath);
-	VkGuid LoadMaterial(const String& materialPath);
 
 	void DestroyGameObject(GameObjectID id);
 	void DestroyGameObjects();

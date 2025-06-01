@@ -1,15 +1,16 @@
 #pragma once
+#include "Vertex.h"
 #include <Mesh.h>
 #include "VulkanBufferSystem.h"
 #include "AssetManager.h"
-
-typedef Mesh<Vertex2D> SpriteLayerMesh;
-typedef Mesh<Vertex2D> LevelLayerMesh;
+#include "MaterialSystem.h"
+#include "LevelSystem.h"
+#include "GameSystem.h"
 
 class MeshSystem
 {
 private:
-	static int NextMeshId;
+	static uint NextMeshId;
 
 public:
 	const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
@@ -22,8 +23,11 @@ public:
 		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 	UnorderedMap<uint, MeshStruct>								  MeshList;
-	UnorderedMap<UM_SpriteBatchID, SpriteLayerMesh>               SpriteMeshList;
-	UnorderedMap<LevelGuid, Vector<LevelLayerMesh>>               LevelLayerMeshList;
+	UnorderedMap<UM_SpriteBatchID, MeshStruct>               SpriteMeshList;
+	UnorderedMap<LevelGuid, Vector<MeshStruct>>               LevelLayerMeshList;
+	
+	UnorderedMap<uint, Vector<Vertex2D>>								Vertex2DList;
+	UnorderedMap<uint, Vector<uint>>									IndexList;
 
 	MeshSystem();
 	~MeshSystem();
@@ -31,7 +35,7 @@ public:
 	template<class T>
 	int CreateMesh(Vector<T>& vertexList, Vector<uint32>& indexList, VkGuid materialId)
 	{
-		int meshId = NextMeshId++;
+		uint meshId = NextMeshId++;
 		mat4 meshMatrix = mat4(1.0f);
 		MeshList[meshId] = MeshStruct
 		{
@@ -51,20 +55,47 @@ public:
 	template<class T>
 	int CreateSpriteLayerMesh(Vector<T>& vertexList, Vector<uint32>& indexList)
 	{
-		int meshId = NextMeshId++;
+		uint meshId = NextMeshId++;
 		mat4 meshMatrix = mat4(1.0f);
-		SpriteMeshList[meshId] = MeshStruct
-		{
-			.MaterialId = VkGuid(),
-			.MeshVertexList = vertexList,
-			.MeshIndexList = indexList,
-			.VertexCount = vertexList.size(),
-			.IndexCount = indexList.size(),
-			.MeshVertexBufferId = bufferSystem.CreateVulkanBuffer<T>(cRenderer, vertexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true),
-			.MeshIndexBufferId = bufferSystem.CreateVulkanBuffer<uint32>(cRenderer, indexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true),
-			.MeshTransformBufferId = bufferSystem.CreateVulkanBuffer<mat4>(cRenderer, meshMatrix, MeshBufferUsageSettings, MeshBufferPropertySettings, false),
-			.PropertiesBufferId = bufferSystem.CreateVulkanBuffer<MeshPropertiesStruct>(cRenderer, SpriteMeshList[meshId].MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings, false)
-		};
+
+		Vertex2DList[meshId] = vertexList;
+		IndexList[meshId] = indexList;
+
+		SpriteMeshList[meshId] = MeshStruct();
+
+		SpriteMeshList[meshId].MaterialId = VkGuid();
+		SpriteMeshList[meshId].VertexCount = vertexList.size();
+		SpriteMeshList[meshId].IndexCount = indexList.size();
+		SpriteMeshList[meshId].MeshVertexBufferId = bufferSystem.CreateVulkanBuffer<T>(cRenderer, vertexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		SpriteMeshList[meshId].MeshIndexBufferId = bufferSystem.CreateVulkanBuffer<uint32>(cRenderer, indexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		SpriteMeshList[meshId].MeshTransformBufferId = bufferSystem.CreateVulkanBuffer<mat4>(cRenderer, meshMatrix, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+		SpriteMeshList[meshId].PropertiesBufferId = bufferSystem.CreateVulkanBuffer<MeshPropertiesStruct>(cRenderer, SpriteMeshList[meshId].MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+
+		return meshId;
+	}
+
+	template<class T>
+	int CreateLevelLayerMesh(Vector<T>& vertexList, Vector<uint32>& indexList)
+	{
+		uint meshId = NextMeshId++;
+		mat4 meshMatrix = mat4(1.0f);
+
+		Vertex2DList[meshId] = vertexList;
+		IndexList[meshId] = indexList;
+
+		Vector<MeshStruct> meshStructList = Vector<MeshStruct>();
+
+		MeshStruct meshStruct = MeshStruct();
+		meshStruct.MaterialId = VkGuid(),
+		meshStruct.VertexCount = vertexList.size();
+		meshStruct.IndexCount = indexList.size();
+		meshStruct.MeshVertexBufferId = bufferSystem.CreateVulkanBuffer<T>(cRenderer, vertexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		meshStruct.MeshIndexBufferId = bufferSystem.CreateVulkanBuffer<uint32>(cRenderer, indexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		meshStruct.MeshTransformBufferId = bufferSystem.CreateVulkanBuffer<mat4>(cRenderer, meshMatrix, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+		meshStruct.PropertiesBufferId = bufferSystem.CreateVulkanBuffer<MeshPropertiesStruct>(cRenderer, SpriteMeshList[meshId].MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+
+		meshStructList.emplace_back(meshStruct);
+		LevelLayerMeshList[levelSystem.Level.LevelId] = meshStructList;
 		return meshId;
 	}
 
@@ -72,7 +103,7 @@ public:
 	{
 		for (auto& mesh : MeshList)
 		{
-			Material& material = assetManager.MaterialList[mesh.second.MaterialId];
+			Material& material = materialSystem.MaterialList[mesh.second.MaterialId];
 			mat4 GameObjectMatrix = mat4(1.0);
 			//SharedPtr<Transform2DComponent> transform = GameObjectTransform.lock();
 			//if (transform)
@@ -102,34 +133,6 @@ public:
 			mesh.second.MeshProperties.MaterialIndex = (mesh.second.MaterialId == VkGuid()) ? material.GetMaterialBufferIndex() : 0;
 			mesh.second.MeshProperties.MeshTransform = GameObjectMatrix * MeshMatrix;
 			bufferSystem.UpdateBufferMemory<MeshPropertiesStruct>(cRenderer, mesh.second.PropertiesBufferId, mesh.second.MeshProperties);
-		}
-	}
-
-	VkGuid LoadLevelLayout(const String& levelLayoutPath)
-	{
-		if (levelLayoutPath.empty() ||
-			levelLayoutPath == "")
-		{
-			return VkGuid();
-		}
-
-		nlohmann::json json = Json::ReadJson(levelLayoutPath);
-		VkGuid levelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
-
-		levelLayout.LevelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
-		levelLayout.LevelBounds = ivec2(json["LevelBounds"][0], json["LevelBounds"][1]);
-		levelLayout.TileSizeinPixels = ivec2(json["TileSizeInPixels"][0], json["TileSizeInPixels"][1]);
-		for (int x = 0; x < json["LevelLayouts"].size(); x++)
-		{
-			Vector<uint> levelLayer;
-			for (int y = 0; y < json["LevelLayouts"][x].size(); y++)
-			{
-				for (int z = 0; z < json["LevelLayouts"][x][y].size(); z++)
-				{
-					levelLayer.emplace_back(json["LevelLayouts"][x][y][z]);
-				}
-			}
-			levelLayout.LevelMapList.emplace_back(levelLayer);
 		}
 	}
 

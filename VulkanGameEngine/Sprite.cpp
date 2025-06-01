@@ -1,6 +1,8 @@
 #include "Sprite.h"
 #include "AssetManager.h"
 #include "RenderSystem.h"
+#include "LevelSystem.h"
+#include "MaterialSystem.h"
 
 uint32 Sprite::NextSpriteID = 0;
 
@@ -23,10 +25,10 @@ Sprite::~Sprite()
 SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
     const Transform2DComponent& transform2D = assetManager.TransformComponentList.at(GameObjectId);
-    const SpriteVram& vram = assetManager.VramSpriteList.at(SpriteVramId);
-    const Animation2D& animation = assetManager.AnimationList.at(CurrentAnimationID);
-    const Vector<ivec2>& frameList = assetManager.AnimationFrameList[vram.VramSpriteID][CurrentAnimationID];
-    const Material& material = assetManager.MaterialList.at(vram.SpriteMaterialID);
+    const SpriteVram& vram = levelSystem.VramSpriteList.at(SpriteVramId);
+    const Animation2D& animation = levelSystem.AnimationList.at(CurrentAnimationID);
+    const Vector<ivec2>& frameList = levelSystem.AnimationFrameList[vram.VramSpriteID][CurrentAnimationID];
+    const Material& material = materialSystem.MaterialList.at(vram.SpriteMaterialID);
     const ivec2& currentFrame = frameList[CurrentFrame];
 
     mat4 spriteMatrix = mat4(1.0f);

@@ -3,6 +3,7 @@
 #include "VulkanBufferSystem.h"
 #include "Typedef.h"
 #include "MeshSystem.h"
+#include "LevelSystem.h"
 
 uint32 SpriteBatchLayer::NextSpriteBatchLayerID = 0;
 
@@ -16,14 +17,14 @@ SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 	RenderPassId = renderPassId;                                   
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 
-	for (int x = 0; x < assetManager.SpriteList.size(); x++)
+	for (int x = 0; x < levelSystem.SpriteList.size(); x++)
 	{
-		assetManager.SpriteBatchLayerObjectList[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
+		levelSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
 	}
 
-	assetManager.SpriteMeshList[SpriteLayerMeshId] = meshSystem. (assetManager.SpriteVertexList, assetManager.SpriteIndexList, VkGuid());
-	assetManager.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(assetManager.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
-	assetManager.SpriteInstanceBufferList[SpriteBatchLayerID] = bufferSystem.CreateVulkanBuffer<SpriteInstanceStruct>(cRenderer, assetManager.SpriteInstanceList[SpriteBatchLayerID], assetManager.SpriteMeshList[SpriteLayerMeshId].MeshBufferUsageSettings, assetManager.SpriteMeshList[SpriteLayerMeshId].MeshBufferPropertySettings, false);
+	meshSystem.CreateSpriteLayerMesh<Vertex2D>(assetManager.SpriteVertexList, assetManager.SpriteIndexList);
+	levelSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(levelSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
+	levelSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = bufferSystem.CreateVulkanBuffer<SpriteInstanceStruct>(cRenderer, levelSystem.SpriteInstanceList[SpriteBatchLayerID], meshSystem.MeshBufferUsageSettings, meshSystem.MeshBufferPropertySettings, false);
 }
 
 SpriteBatchLayer::~SpriteBatchLayer()
@@ -32,15 +33,15 @@ SpriteBatchLayer::~SpriteBatchLayer()
 
 void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
-	assetManager.SpriteInstanceList[SpriteBatchLayerID].clear();
-	assetManager.SpriteInstanceList[SpriteBatchLayerID].reserve(assetManager.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
-	for (auto& gameObjectID : assetManager.SpriteBatchLayerObjectList[SpriteBatchLayerID])
+	levelSystem.SpriteInstanceList[SpriteBatchLayerID].clear();
+	levelSystem.SpriteInstanceList[SpriteBatchLayerID].reserve(levelSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
+	for (auto& gameObjectID : levelSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID])
 	{
-		assetManager.SpriteInstanceList[SpriteBatchLayerID].emplace_back(assetManager.SpriteList[gameObjectID].Update(commandBuffer, deltaTime));
+		levelSystem.SpriteInstanceList[SpriteBatchLayerID].emplace_back(levelSystem.SpriteList[gameObjectID].Update(commandBuffer, deltaTime));
 	}
 
-	if (assetManager.SpriteBatchLayerObjectList[SpriteBatchLayerID].size())
+	if (levelSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size())
 	{
-		bufferSystem.UpdateBufferMemory(cRenderer, assetManager.SpriteInstanceBufferList[SpriteBatchLayerID], assetManager.SpriteInstanceList[SpriteBatchLayerID]);
+		bufferSystem.UpdateBufferMemory(cRenderer, levelSystem.SpriteInstanceBufferList[SpriteBatchLayerID], levelSystem.SpriteInstanceList[SpriteBatchLayerID]);
 	}
 }

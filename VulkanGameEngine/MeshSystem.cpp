@@ -1,6 +1,6 @@
 #include "MeshSystem.h"
 
-int MeshSystem::NextMeshId = 0;
+uint MeshSystem::NextMeshId = 0;
 MeshSystem meshSystem = MeshSystem();
 
 

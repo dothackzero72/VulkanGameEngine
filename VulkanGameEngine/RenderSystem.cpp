@@ -2,6 +2,8 @@
 #include "json.h"
 #include "TextureSystem.h"
 #include "ShaderSystem.h"
+#include "VulkanBufferSystem.h"
+#include "MeshSystem.h"
 #include "AssetManager.h"
 
 RenderSystem renderSystem = RenderSystem();
@@ -60,9 +62,9 @@ void RenderSystem::Update(const float& deltaTime)
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
     for (auto& renderPass : RenderPassList)
     {
-        if (assetManager.SpriteBatchLayerList.find(renderPass.second.RenderPassId) != assetManager.SpriteBatchLayerList.end())
+        if (levelSystem.SpriteBatchLayerList.find(renderPass.second.RenderPassId) != levelSystem.SpriteBatchLayerList.end())
         {
-            for (auto& spriteLayer : assetManager.SpriteBatchLayerList[renderPass.second.RenderPassId])
+            for (auto& spriteLayer : levelSystem.SpriteBatchLayerList[renderPass.second.RenderPassId])
             {
                 spriteLayer.Update(commandBuffer, deltaTime);
             }
@@ -121,8 +123,8 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
     const VulkanRenderPass& renderPass = RenderPassList[renderPassId];
     const VulkanPipeline& spritePipeline = RenderPipelineList[renderPassId][0];
     const VulkanPipeline& levelPipeline = RenderPipelineList[renderPassId][1];
-    const Vector<SpriteBatchLayer>& spriteLayerList = assetManager.SpriteBatchLayerList[renderPassId];
-    const Vector<LevelLayerMesh>& levelLayerList = assetManager.LevelLayerMeshList[levelId];
+    const Vector<SpriteBatchLayer>& spriteLayerList = levelSystem.SpriteBatchLayerList[renderPassId];
+    const Vector<MeshStruct>& levelLayerList = meshSystem.LevelLayerMeshList[levelId];
     const VkCommandBuffer& commandBuffer = renderPass.CommandBuffer;
 
     VkRenderPassBeginInfo renderPassBeginInfo = VkRenderPassBeginInfo
@@ -154,11 +156,11 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
     }
     for (auto spriteLayer : spriteLayerList)
     {
-        const Vector<SpriteInstanceStruct>& spriteInstanceList = assetManager.SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
-        const SpriteMesh& spriteMesh = assetManager.SpriteMeshList[spriteLayer.SpriteLayerMeshId];
+        const Vector<SpriteInstanceStruct>& spriteInstanceList = levelSystem.SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
+        const MeshStruct& spriteMesh = meshSystem.SpriteMeshList[spriteLayer.SpriteLayerMeshId];
         const VkBuffer& meshVertexBuffer = bufferSystem.VulkanBuffer[spriteMesh.MeshVertexBufferId].Buffer;
         const VkBuffer& meshIndexBuffer = bufferSystem.VulkanBuffer[spriteMesh.MeshIndexBufferId].Buffer;
-        const VkBuffer& spriteInstanceBuffer = bufferSystem.VulkanBuffer[assetManager.SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID]].Buffer;
+        const VkBuffer& spriteInstanceBuffer = bufferSystem.VulkanBuffer[levelSystem.SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID]].Buffer;
 
         VkDeviceSize offsets[] = { 0 };
         vkCmdPushConstants(commandBuffer, spritePipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
@@ -201,7 +203,7 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec
     }
 
     RenderPassList[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), textureSystem.RenderedTextureList[model.RenderPassId], textureSystem.DepthTextureList[model.RenderPassId]);
-    assetManager.SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
+    levelSystem.SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
 
     for (int x = 0; x < model.RenderPipelineList.size(); x++)
     {
@@ -257,7 +259,7 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Text
     }
 
     RenderPassList[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), textureSystem.RenderedTextureList[model.RenderPassId], textureSystem.DepthTextureList[model.RenderPassId]);
-    assetManager.SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
+    levelSystem.SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
 
     for (int x = 0; x < model.RenderPipelineList.size(); x++)
     {
@@ -289,9 +291,9 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Text
 
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetVertexPropertiesBuffer()
 {
-    Vector<SpriteMesh> meshList;
-    meshList.reserve(assetManager.SpriteMeshList.size());
-    std::transform(assetManager.SpriteMeshList.begin(), assetManager.SpriteMeshList.end(),
+    Vector<MeshStruct> meshList;
+    meshList.reserve(meshSystem.SpriteMeshList.size());
+    std::transform(meshSystem.SpriteMeshList.begin(), meshSystem.SpriteMeshList.end(),
         std::back_inserter(meshList),
         [](const auto& pair) { return pair.second; });
 
@@ -310,7 +312,13 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetVertexPropertiesBuffer()
     {
         for (auto& mesh : meshList)
         {
-            // mesh->GetVertexBuffer(vertexPropertiesBuffer);
+            const VulkanBufferStruct& vertexProperties = bufferSystem.VulkanBuffer[mesh.MeshVertexBufferId];
+            vertexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+                {
+                    .buffer = vertexProperties.Buffer,
+                    .offset = 0,
+                    .range = VK_WHOLE_SIZE
+                });
         }
     }
 
@@ -319,9 +327,9 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetVertexPropertiesBuffer()
 
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetIndexPropertiesBuffer()
 {
-    Vector<SpriteMesh> meshList;
-    meshList.reserve(assetManager.SpriteMeshList.size());
-    std::transform(assetManager.SpriteMeshList.begin(), assetManager.SpriteMeshList.end(),
+    Vector<MeshStruct> meshList;
+    meshList.reserve(meshSystem.SpriteMeshList.size());
+    std::transform(meshSystem.SpriteMeshList.begin(), meshSystem.SpriteMeshList.end(),
         std::back_inserter(meshList),
         [](const auto& pair) { return pair.second; });
 
@@ -339,7 +347,13 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetIndexPropertiesBuffer()
     {
         for (auto& mesh : meshList)
         {
-            //   mesh->GetIndexBuffer(indexPropertiesBuffer);
+            const VulkanBufferStruct& indexProperties = bufferSystem.VulkanBuffer[mesh.MeshIndexBufferId];
+            indexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+                {
+                    .buffer = indexProperties.Buffer,
+                    .offset = 0,
+                    .range = VK_WHOLE_SIZE
+                });
         }
     }
     return indexPropertiesBuffer;
@@ -347,9 +361,9 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetIndexPropertiesBuffer()
 
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetGameObjectTransformBuffer()
 {
-    Vector<SpriteMesh> meshList;
-    meshList.reserve(assetManager.SpriteMeshList.size());
-    std::transform(assetManager.SpriteMeshList.begin(), assetManager.SpriteMeshList.end(),
+    Vector<MeshStruct> meshList;
+    meshList.reserve(meshSystem.SpriteMeshList.size());
+    std::transform(meshSystem.SpriteMeshList.begin(), meshSystem.SpriteMeshList.end(),
         std::back_inserter(meshList),
         [](const auto& pair) { return pair.second; });
 
@@ -367,7 +381,13 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetGameObjectTransformBuffer(
     {
         for (auto& mesh : meshList)
         {
-            mesh.GetTransformBuffer();
+            const VulkanBufferStruct& transformBuffer = bufferSystem.VulkanBuffer[mesh.MeshTransformBufferId];
+            transformPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+                {
+                    .buffer = transformBuffer.Buffer,
+                    .offset = 0,
+                    .range = VK_WHOLE_SIZE
+                });
         }
     }
 
@@ -376,10 +396,10 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetGameObjectTransformBuffer(
 
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGuid& levelLayerId)
 {
-    Vector<SpriteMesh> meshList;
+    Vector<MeshStruct> meshList;
     if (levelLayerId == VkGuid())
     {
-        for (auto& sprite : assetManager.SpriteMeshList)
+        for (auto& sprite : meshSystem.SpriteMeshList)
         {
             meshList.emplace_back(sprite.second);
 
@@ -387,7 +407,7 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGui
     }
     else
     {
-        for (auto& layer : assetManager.LevelLayerMeshList[levelLayerId])
+        for (auto& layer : meshSystem.LevelLayerMeshList[levelLayerId])
         {
             meshList.emplace_back(layer);
         }
@@ -407,7 +427,13 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGui
     {
         for (auto& mesh : meshList)
         {
-            meshPropertiesBuffer.emplace_back(mesh.GetMeshPropertiesBuffer());
+            const VulkanBufferStruct& meshProperties = bufferSystem.VulkanBuffer[mesh.PropertiesBufferId];
+            meshPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+                {
+                    .buffer = meshProperties.Buffer,
+                    .offset = 0,
+                    .range = VK_WHOLE_SIZE
+                });
         }
     }
 
@@ -484,7 +510,7 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkG
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer()
 {
     Vector<Material> materialList;
-    for (auto& material : assetManager.MaterialList)
+    for (auto& material : materialSystem.MaterialList)
     {
         materialList.emplace_back(material.second);
     }
@@ -517,7 +543,7 @@ void RenderSystem::UpdateBufferIndex()
         ++xy;
     }
     int xz = 0;
-    for (auto& [id, material] : assetManager.MaterialList) {
+    for (auto& [id, material] : materialSystem.MaterialList) {
         material.UpdateMaterialBufferIndex(xz);
         material.UpdateBuffer();
         ++xz;

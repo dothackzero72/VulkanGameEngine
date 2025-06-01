@@ -1,7 +1,10 @@
 #include "LevelLayer.h"
 #include "AssetManager.h"
 #include "VulkanBufferSystem.h"
+#include "MeshSystem.h"
 #include "LevelTileSet.h"
+#include "LevelSystem.h"
+#include "MeshSystem.h"
 
 LevelLayer::LevelLayer()
 {
@@ -9,7 +12,7 @@ LevelLayer::LevelLayer()
 
 LevelLayer::LevelLayer(VkGuid& levelId, VkGuid& tileSetId, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex)
 {
-	const LevelTileSet& tileSet = assetManager.LevelTileSetList[TileSetId];
+	const LevelTileSet& tileSet = levelSystem.LevelTileSetList[TileSetId];
 
 	LevelId = levelId;
 	TileSetId = tileSetId;
@@ -42,7 +45,7 @@ void LevelLayer::Update(const float& deltaTime)
 
 void LevelLayer::LoadLevelMesh()
 {
-    const LevelTileSet& tileSet = assetManager.LevelTileSetList[TileSetId];
+    const LevelTileSet& tileSet = levelSystem.LevelTileSetList[TileSetId];
     for (uint x = 0; x < LevelBounds.x; x++)
     {
         for (uint y = 0; y < LevelBounds.y; y++)
@@ -77,5 +80,5 @@ void LevelLayer::LoadLevelMesh()
             TileMap.emplace_back(tile);
         }
     }
-    assetManager.LevelLayerMeshList[LevelId].emplace_back(LevelLayerMesh(VertexList, IndexList, MaterialId));
+    meshSystem.LevelLayerMeshList[LevelId].emplace_back(meshSystem.CreateLevelLayerMesh(VertexList, IndexList));
 }

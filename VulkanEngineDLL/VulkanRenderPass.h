@@ -1,4 +1,5 @@
 #pragma once
+#include "VkGuid.h"
 #include "CoreVulkanRenderer.h"
 #include "VulkanPipeline.h"
 #include "Texture.h"
