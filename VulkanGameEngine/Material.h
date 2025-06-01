@@ -33,7 +33,8 @@ public:
 
 	String Name;
 	VkGuid MaterialId;
-	uint MaterialBufferIndex = 0;
+	
+	uint ShaderMaterialBufferIndex = 0;
 
 	vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
 	float Metallic = 0.0f;
@@ -61,10 +62,9 @@ public:
 
 	void UpdateBuffer();
 	void GetMaterialPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& materialBufferList);
-	void UpdateMaterialBufferIndex(uint32 bufferIndex);
+	void UpdateMaterialBufferIndex(uint32 shaderBufferIndex);
 	void Destroy();
 
-	const uint32 GetMaterialBufferIndex() { return MaterialBufferIndex; }
 	static const uint32 GetNextMaterialId() { return NextMaterialId; }
 };
 

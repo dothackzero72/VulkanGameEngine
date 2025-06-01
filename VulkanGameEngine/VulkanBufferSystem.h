@@ -1,6 +1,8 @@
 #pragma once
-#include <Typedef.h>
+#include "GameTypeDef.h"
 #include <VulkanBuffer.h>
+#include <Mesh.h>
+#include "Material.h"
 #include "RenderSystem.h"
 #include "Vertex.h"
 #include "Sprite.h"
@@ -9,15 +11,13 @@ enum BufferTypeEnum
 {
 	BufferType_UInt,
 	BufferType_Mat4,
+	BufferType_MaterialProperitiesBuffer,
 	BufferType_SpriteInstanceStruct,
 	BufferType_MeshPropertiesStruct,
 	BufferType_SpriteMesh,
 	BufferType_LevelLayerMesh,
 	BufferType_Material
 };
-
-template<class T>
-class Mesh;
 
 class VulkanBufferSystem
 {
@@ -29,10 +29,11 @@ private:
 	{
 		if constexpr (std::is_same_v<T, uint32>) { return BufferType_UInt; }
 		else if constexpr (std::is_same_v<T, mat4>) { return BufferType_Mat4; }
-		//else if constexpr (std::is_same_v<T, SpriteInstanceStruct>) { return BufferType_SpriteInstanceStruct; }
-		//else if constexpr (std::is_same_v<T, MeshPropertiesStruct>) { return BufferType_MeshPropertiesStruct; }
-		//else if constexpr (std::is_same_v<T, SpriteMesh>) { return BufferType_SpriteMesh; }
-		//else if constexpr (std::is_same_v<T, LevelLayerMesh>) { return BufferType_LevelLayerMesh; }
+		else if constexpr (std::is_same_v<T, MaterialProperitiesBuffer>) { return BufferType_MaterialProperitiesBuffer; }
+		else if constexpr (std::is_same_v<T, SpriteInstanceStruct>) { return BufferType_SpriteInstanceStruct; }
+		else if constexpr (std::is_same_v<T, MeshPropertiesStruct>) { return BufferType_MeshPropertiesStruct; }
+		else if constexpr (std::is_same_v<T, MeshStruct>) { return BufferType_SpriteMesh; }
+		else if constexpr (std::is_same_v<T, MeshStruct>) { return BufferType_LevelLayerMesh; }
 		else 
 		{
 			//static_assert(false, "Unsupported type for VulkanBufferSystem");
@@ -51,7 +52,7 @@ public:
 		VkDeviceSize bufferElementSize = sizeof(T);
 		uint bufferElementCount = 1;
 
-		VulkanBuffer[NextBufferId++] = VulkanBuffer_CreateVulkanBuffer(renderer, static_cast<void*>(&bufferData), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
+		VulkanBuffer[++NextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, static_cast<void*>(&bufferData), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
 		return NextBufferId;
 	}
 
@@ -62,7 +63,7 @@ public:
 		VkDeviceSize bufferElementSize = sizeof(T);
 		uint bufferElementCount = bufferData.size();
 
-		VulkanBuffer[NextBufferId++] = VulkanBuffer_CreateVulkanBuffer(renderer, bufferData.data(), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
+		VulkanBuffer[++NextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, bufferData.data(), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
 		return NextBufferId;
 	}
 
@@ -72,7 +73,7 @@ public:
 		BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
 		if (VulkanBuffer[bufferId].BufferType != bufferTypeEnum)
 		{
-			RENDERER_ERROR("Buffer type doesn't match");
+			throw std::runtime_error("Buffer type doesn't match");
 		}
 
 		VkDeviceSize bufferElementSize = sizeof(T);
@@ -87,7 +88,7 @@ public:
 		BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
 		if (VulkanBuffer[bufferId].BufferType != bufferTypeEnum)
 		{
-			RENDERER_ERROR("Buffer type doesn't match");
+			throw std::runtime_error("Buffer type doesn't match");
 		}
 
 		VkDeviceSize bufferElementSize = sizeof(T);

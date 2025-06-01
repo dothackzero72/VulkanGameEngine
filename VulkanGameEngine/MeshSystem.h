@@ -130,7 +130,7 @@ public:
 				mesh.second.LastMeshScale == mesh.second.MeshScale;
 			}
 
-			mesh.second.MeshProperties.MaterialIndex = (mesh.second.MaterialId == VkGuid()) ? material.GetMaterialBufferIndex() : 0;
+			mesh.second.MeshProperties.ShaderMaterialBufferIndex = (mesh.second.MaterialId == VkGuid()) ? material.ShaderMaterialBufferIndex : 0;
 			mesh.second.MeshProperties.MeshTransform = GameObjectMatrix * MeshMatrix;
 			bufferSystem.UpdateBufferMemory<MeshPropertiesStruct>(cRenderer, mesh.second.PropertiesBufferId, mesh.second.MeshProperties);
 		}

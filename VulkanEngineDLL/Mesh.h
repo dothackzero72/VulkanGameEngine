@@ -5,7 +5,7 @@
 
 struct MeshPropertiesStruct
 {
-	alignas(4)  uint32 MaterialIndex = 0;
+	alignas(4)  uint32 ShaderMaterialBufferIndex = 0;
 	alignas(16) mat4   MeshTransform = mat4(1.0f);
 };
 

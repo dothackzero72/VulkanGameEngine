@@ -214,7 +214,7 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec
         {
             .vertexProperties = renderSystem.GetVertexPropertiesBuffer(),
             .indexProperties = renderSystem.GetIndexPropertiesBuffer(),
-            //        .transformProperties = renderSystem.GetTransformPropertiesBuffer(gpuImport.MeshList),
+            .transformProperties = renderSystem.GetGameObjectTransformBuffer(),
             .meshProperties = renderSystem.GetMeshPropertiesBuffer(levelId),
             .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(model.RenderPassId, textureSystem.InputTextureList[pipeLineId]),
             .materialProperties = renderSystem.GetMaterialPropertiesBuffer()
@@ -272,7 +272,7 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Text
         {
             .vertexProperties = renderSystem.GetVertexPropertiesBuffer(),
             .indexProperties = renderSystem.GetIndexPropertiesBuffer(),
-            //        .transformProperties = renderSystem.GetTransformPropertiesBuffer(gpuImport.MeshList),
+            .transformProperties = renderSystem.GetGameObjectTransformBuffer(),
             .meshProperties = renderSystem.GetMeshPropertiesBuffer(levelId),
             .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(model.RenderPassId, textureSystem.InputTextureList[pipeLineId]),
             .materialProperties = renderSystem.GetMaterialPropertiesBuffer()

@@ -11,7 +11,7 @@ Material::Material(const String& materialName, VkGuid& materialId)
 {
 	Name = materialName;
 	MaterialId = materialId;
-	MaterialBufferIndex = 0;
+	ShaderMaterialBufferIndex = 0;
 
 	MaterialProperitiesBuffer buffer = MaterialProperitiesBuffer();
 	MaterialBufferId = bufferSystem.CreateVulkanBuffer<MaterialProperitiesBuffer>(cRenderer, buffer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
@@ -24,9 +24,9 @@ Material::~Material()
 {
 }
 
-void Material::UpdateMaterialBufferIndex(uint32 bufferIndex)
+void Material::UpdateMaterialBufferIndex(uint32 shaderBufferIndex)
 {
-	MaterialBufferIndex = bufferIndex;
+	ShaderMaterialBufferIndex = shaderBufferIndex;
 }
 
 void Material::UpdateBuffer()

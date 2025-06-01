@@ -63,7 +63,7 @@ SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float&
     SpriteInstanceStruct spriteInstance;
     spriteInstance.SpritePosition = transform2D.GameObjectPosition;
     spriteInstance.SpriteSize = vram.SpriteSize;
-    spriteInstance.MaterialID = material.MaterialBufferIndex;
+    spriteInstance.MaterialID = material.ShaderMaterialBufferIndex;
     spriteInstance.InstanceTransform = spriteMatrix;
     spriteInstance.FlipSprite = FlipSprite;
     spriteInstance.UVOffset = vec4(vram.SpriteUVSize.x * currentFrame.x, vram.SpriteUVSize.y * currentFrame.y, vram.SpriteUVSize.x, vram.SpriteUVSize.y);
