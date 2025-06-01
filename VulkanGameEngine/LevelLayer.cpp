@@ -80,5 +80,5 @@ void LevelLayer::LoadLevelMesh()
             TileMap.emplace_back(tile);
         }
     }
-    meshSystem.LevelLayerMeshList[LevelId].emplace_back(meshSystem.CreateLevelLayerMesh(VertexList, IndexList));
+    meshSystem.LevelLayerMeshList[LevelId].emplace_back(meshSystem.CreateLevelLayerMesh(LevelId, VertexList, IndexList));
 }

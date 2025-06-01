@@ -17,31 +17,6 @@ class RenderSystem
 {
     friend class JsonRenderPass;
 private:
-
-    //SharedPtr<uint32>                   ImageIndex;
-    //SharedPtr<uint32>                   CommandIndex;
-    //SharedPtr<uint32>			        SwapChainImageCount;
-    //SharedPtr<uint32>		            GraphicsFamily;
-    //SharedPtr<uint32>		            PresentFamily;
-
-    //SharedPtr<VkInstance>               Instance;
-    SharedPtr<VkDevice>                 Device;
-    //SharedPtr<VkPhysicalDevice>         PhysicalDevice;
-    //SharedPtr<VkSurfaceKHR>             Surface;
-    //SharedPtr<VkCommandPool>            CommandPool;
-    //SharedPtr<VkDebugUtilsMessengerEXT> DebugMessenger;
-    //SharedPtr<VkQueue>	                GraphicsQueue;
-    //SharedPtr<VkQueue>	                PresentQueue;
-    //Vector<SharedPtr<VkFence>>          InFlightFences;
-    //Vector<SharedPtr<VkSemaphore>>      AcquireImageSemaphores;
-    //Vector<SharedPtr<VkSemaphore>>      PresentImageSemaphores;
-    
-    //VkFormat                 Format;
-    //VkColorSpaceKHR          ColorSpace;
-    //VkPresentModeKHR         PresentMode;
-
-    VkResult CreateCommandBuffer();
-
     void RecreateSwapchain();
 
     const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer();

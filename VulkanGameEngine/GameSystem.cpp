@@ -52,9 +52,9 @@ void GameSystem::Input(const float& deltaTime)
 
 void GameSystem::Update(const float& deltaTime)
 {
-    //DestroyDeadGameObjects();
+    levelSystem.Update(deltaTime);
     renderSystem.Update(deltaTime);
-    
+
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
     meshSystem.Update(commandBuffer, deltaTime);
     renderer.EndSingleTimeCommands(commandBuffer);

@@ -23,29 +23,6 @@ void RenderSystem::StartUp()
     renderer.RendererSetUp(vulkanWindow->WindowHandle);
     imGuiRenderer = ImGui_StartUp(cRenderer);
     shaderSystem.StartUp();
-
-   // InterfaceRenderPass::StartUp();
-
-    //ImageIndex = std::make_shared<uint>(cRenderer.ImageIndex);
-    //CommandIndex = std::make_shared<uint>(cRenderer.CommandIndex);
-    //SwapChainImageCount = std::make_shared<uint>(cRenderer.SwapChain.SwapChainImageCount);
-    //GraphicsFamily = std::make_shared<uint>(cRenderer.SwapChain.GraphicsFamily);
-    //PresentFamily = std::make_shared<uint>(cRenderer.SwapChain.PresentFamily);
-
-    //Instance = std::make_shared<VkInstance>(cRenderer.Instance);
-    Device = std::make_shared<VkDevice>(cRenderer.Device);
-    //PhysicalDevice = std::make_shared<VkPhysicalDevice>(cRenderer.PhysicalDevice);
-    //Surface = std::make_shared<VkSurfaceKHR>(cRenderer.Surface);
-    //CommandPool = std::make_shared<VkCommandPool>(cRenderer.CommandPool);
-    //DebugMessenger = std::make_shared<VkDebugUtilsMessengerEXT>(cRenderer.DebugMessenger);
-    //GraphicsQueue = std::make_shared<VkQueue>(cRenderer.SwapChain.GraphicsQueue);
-    //PresentQueue = std::make_shared<VkQueue>(cRenderer.SwapChain.PresentQueue);
-    /*for (int x = 0; x < *SwapChainImageCount.get(); x++)
-    {
-        InFlightFences.emplace_back(std::make_shared<VkFence>(cRenderer.InFlightFences));
-        AcquireImageSemaphores.emplace_back(std::make_shared<uint>(cRenderer.AcquireImageSemaphores));
-        PresentImageSemaphores.emplace_back(std::make_shared<VkSemaphore>(cRenderer.PresentImageSemaphores));
-    }*/
 }
 
 void RenderSystem::Update(const float& deltaTime)

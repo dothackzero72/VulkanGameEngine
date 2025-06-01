@@ -11,11 +11,7 @@ class GameSystem
 private:
 	Vector<VkCommandBuffer>				CommandBufferSubmitList;
 
-	void DestroyDeadGameObjects();
-
 public:
-	VkGuid								TileSetId;
-
 	GameSystem();
 	~GameSystem();
 

@@ -55,7 +55,7 @@ public:
 	template<class T>
 	int CreateSpriteLayerMesh(Vector<T>& vertexList, Vector<uint32>& indexList)
 	{
-		uint meshId = NextMeshId++;
+		uint meshId = ++NextMeshId;
 		mat4 meshMatrix = mat4(1.0f);
 
 		Vertex2DList[meshId] = vertexList;
@@ -75,9 +75,9 @@ public:
 	}
 
 	template<class T>
-	int CreateLevelLayerMesh(Vector<T>& vertexList, Vector<uint32>& indexList)
+	int CreateLevelLayerMesh(const VkGuid& levelId, Vector<T>& vertexList, Vector<uint32>& indexList)
 	{
-		uint meshId = NextMeshId++;
+		uint meshId = ++NextMeshId;
 		mat4 meshMatrix = mat4(1.0f);
 
 		Vertex2DList[meshId] = vertexList;
@@ -85,17 +85,17 @@ public:
 
 		Vector<MeshStruct> meshStructList = Vector<MeshStruct>();
 
-		MeshStruct meshStruct = MeshStruct();
-		meshStruct.MaterialId = VkGuid(),
-		meshStruct.VertexCount = vertexList.size();
-		meshStruct.IndexCount = indexList.size();
-		meshStruct.MeshVertexBufferId = bufferSystem.CreateVulkanBuffer<T>(cRenderer, vertexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		meshStruct.MeshIndexBufferId = bufferSystem.CreateVulkanBuffer<uint32>(cRenderer, indexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		meshStruct.MeshTransformBufferId = bufferSystem.CreateVulkanBuffer<mat4>(cRenderer, meshMatrix, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
-		meshStruct.PropertiesBufferId = bufferSystem.CreateVulkanBuffer<MeshPropertiesStruct>(cRenderer, SpriteMeshList[meshId].MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+		MeshStruct meshStruct2 = MeshStruct();
+		meshStruct2.MaterialId = VkGuid();
+			meshStruct2.VertexCount = vertexList.size();
+		meshStruct2.IndexCount = indexList.size();
+		meshStruct2.MeshVertexBufferId = bufferSystem.CreateVulkanBuffer<T>(cRenderer, vertexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		meshStruct2.MeshIndexBufferId = bufferSystem.CreateVulkanBuffer<uint32>(cRenderer, indexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+		meshStruct2.MeshTransformBufferId = bufferSystem.CreateVulkanBuffer<mat4>(cRenderer, meshMatrix, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+		meshStruct2.PropertiesBufferId = bufferSystem.CreateVulkanBuffer<MeshPropertiesStruct>(cRenderer, SpriteMeshList[meshId].MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 
-		meshStructList.emplace_back(meshStruct);
-		LevelLayerMeshList[levelSystem.Level.LevelId] = meshStructList;
+		meshStructList.emplace_back(meshStruct2);
+		LevelLayerMeshList[levelId] = meshStructList;
 		return meshId;
 	}
 
