@@ -53,6 +53,8 @@ void GameSystem::Input(const float& deltaTime)
 void GameSystem::Update(const float& deltaTime)
 {
     levelSystem.Update(deltaTime);
+    textureSystem.Update(deltaTime);
+    materialSystem.Update(deltaTime);
     renderSystem.Update(deltaTime);
 
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();

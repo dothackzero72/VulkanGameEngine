@@ -35,9 +35,8 @@ void RenderSystem::Update(const float& deltaTime)
         cRenderer.RebuildRendererFlag = false;
     }
 
-    UpdateBufferIndex();
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-    for (auto& renderPass : RenderPassList)
+    for (auto& renderPass : RenderPassMap)
     {
         if (levelSystem.SpriteBatchLayerList.find(renderPass.second.RenderPassId) != levelSystem.SpriteBatchLayerList.end())
         {
@@ -70,8 +69,8 @@ void RenderSystem::RecreateSwapchain()
 
 VkCommandBuffer RenderSystem::RenderFrameBuffer(VkGuid& renderPassId)
 {
-    VulkanRenderPass renderPass = RenderPassList[renderPassId];
-    const VulkanPipeline& pipeline = RenderPipelineList[renderPassId][0];
+    const VulkanRenderPass renderPass = FindRenderPass(renderPassId);
+    const VulkanPipeline& pipeline = FindRenderPipelineList(renderPassId)[0];
     const VkCommandBuffer& commandBuffer = renderPass.CommandBuffer;
 
     VkRenderPassBeginInfo renderPassBeginInfo = VkRenderPassBeginInfo
@@ -97,11 +96,11 @@ VkCommandBuffer RenderSystem::RenderFrameBuffer(VkGuid& renderPassId)
 
 VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId, const float deltaTime, SceneDataBuffer& sceneDataBuffer)
 {
-    const VulkanRenderPass& renderPass = RenderPassList[renderPassId];
-    const VulkanPipeline& spritePipeline = RenderPipelineList[renderPassId][0];
-    const VulkanPipeline& levelPipeline = RenderPipelineList[renderPassId][1];
+    const VulkanRenderPass& renderPass = FindRenderPass(renderPassId);
+    const VulkanPipeline& spritePipeline = FindRenderPipelineList(renderPassId)[0];
+    const VulkanPipeline& levelPipeline = FindRenderPipelineList(renderPassId)[1];
     const Vector<SpriteBatchLayer>& spriteLayerList = levelSystem.SpriteBatchLayerList[renderPassId];
-    const Vector<MeshStruct>& levelLayerList = meshSystem.LevelLayerMeshList[levelId];
+    const Vector<MeshStruct>& levelLayerList = meshSystem.FindLevelLayerMeshList(levelId);
     const VkCommandBuffer& commandBuffer = renderPass.CommandBuffer;
 
     VkRenderPassBeginInfo renderPassBeginInfo = VkRenderPassBeginInfo
@@ -134,7 +133,7 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
     for (auto spriteLayer : spriteLayerList)
     {
         const Vector<SpriteInstanceStruct>& spriteInstanceList = levelSystem.SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
-        const MeshStruct& spriteMesh = meshSystem.SpriteMeshList[spriteLayer.SpriteLayerMeshId];
+        const MeshStruct& spriteMesh = meshSystem.FindSpriteMesh(spriteLayer.SpriteLayerMeshId);
         const VkBuffer& meshVertexBuffer = bufferSystem.VulkanBuffer[spriteMesh.MeshVertexBufferId].Buffer;
         const VkBuffer& meshIndexBuffer = bufferSystem.VulkanBuffer[spriteMesh.MeshIndexBufferId].Buffer;
         const VkBuffer& spriteInstanceBuffer = bufferSystem.VulkanBuffer[levelSystem.SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID]].Buffer;
@@ -153,7 +152,7 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
     return commandBuffer;
 }
 
-VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec2 renderPassResolution)
+VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, ivec2 renderPassResolution)
 {
     nlohmann::json json = Json::ReadJson(jsonPath);
 
@@ -179,12 +178,11 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec
         model.ClearValueList.emplace_back(Json::LoadClearValue(json["ClearValueList"][x]));
     }
 
-    RenderPassList[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), textureSystem.RenderedTextureList[model.RenderPassId], textureSystem.DepthTextureList[model.RenderPassId]);
-    levelSystem.SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
+    RenderPassMap[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), textureSystem.RenderedTextureList[model.RenderPassId], textureSystem.DepthTextureList[model.RenderPassId]);
 
     for (int x = 0; x < model.RenderPipelineList.size(); x++)
     {
-        uint pipeLineId = renderSystem.RenderPipelineList.size();
+        uint pipeLineId = renderSystem.RenderPassMap.size();
         nlohmann::json json = Json::ReadJson(model.RenderPipelineList[x]);
         RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
         GPUIncludes include =
@@ -194,7 +192,7 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec
             .transformProperties = renderSystem.GetGameObjectTransformBuffer(),
             .meshProperties = renderSystem.GetMeshPropertiesBuffer(levelId),
             .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(model.RenderPassId, textureSystem.InputTextureList[pipeLineId]),
-            .materialProperties = renderSystem.GetMaterialPropertiesBuffer()
+            .materialProperties = materialSystem.GetMaterialPropertiesBuffer()
         };
 
         Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
@@ -203,13 +201,13 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec
             shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
         };
 
-        renderSystem.RenderPipelineList[model.RenderPassId].emplace_back(Pipeline_CreateRenderPipeline(cRenderer.Device, model.RenderPassId, pipeLineId, renderPipelineModel, RenderPassList[model.RenderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, pipelineShaderStageCreateInfoList));
+        RenderPipelineMap[model.RenderPassId].emplace_back(Pipeline_CreateRenderPipeline(cRenderer.Device, model.RenderPassId, pipeLineId, renderPipelineModel, RenderPassMap[model.RenderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, pipelineShaderStageCreateInfoList));
     }
 
     return model.RenderPassId;
 }
 
-VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
+VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, Texture& inputTexture, ivec2 renderPassResolution)
 {
     nlohmann::json json = Json::ReadJson(jsonPath);
 
@@ -235,12 +233,11 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Text
         model.ClearValueList.emplace_back(Json::LoadClearValue(json["ClearValueList"][x]));
     }
 
-    RenderPassList[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), textureSystem.RenderedTextureList[model.RenderPassId], textureSystem.DepthTextureList[model.RenderPassId]);
-    levelSystem.SpriteBatchLayerList[model.RenderPassId].emplace_back(SpriteBatchLayer(model.RenderPassId));
+    RenderPassMap[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), textureSystem.RenderedTextureList[model.RenderPassId], textureSystem.DepthTextureList[model.RenderPassId]);
 
     for (int x = 0; x < model.RenderPipelineList.size(); x++)
     {
-        uint pipeLineId = renderSystem.RenderPipelineList.size();
+        uint pipeLineId = renderSystem.RenderPipelineMap.size();
         nlohmann::json json = Json::ReadJson(model.RenderPipelineList[x]);
         RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
 
@@ -252,7 +249,7 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Text
             .transformProperties = renderSystem.GetGameObjectTransformBuffer(),
             .meshProperties = renderSystem.GetMeshPropertiesBuffer(levelId),
             .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(model.RenderPassId, textureSystem.InputTextureList[pipeLineId]),
-            .materialProperties = renderSystem.GetMaterialPropertiesBuffer()
+            .materialProperties = materialSystem.GetMaterialPropertiesBuffer()
         };
 
         Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
@@ -260,7 +257,7 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Text
             shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
             shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
         };
-        renderSystem.RenderPipelineList[model.RenderPassId].emplace_back(Pipeline_CreateRenderPipeline(cRenderer.Device, model.RenderPassId, pipeLineId, renderPipelineModel, RenderPassList[model.RenderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, pipelineShaderStageCreateInfoList));
+        RenderPipelineMap[model.RenderPassId].emplace_back(Pipeline_CreateRenderPipeline(cRenderer.Device, model.RenderPassId, pipeLineId, renderPipelineModel, RenderPassMap[model.RenderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, pipelineShaderStageCreateInfoList));
     }
 
     return model.RenderPassId;
@@ -268,105 +265,105 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Text
 
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetVertexPropertiesBuffer()
 {
-    Vector<MeshStruct> meshList;
-    meshList.reserve(meshSystem.SpriteMeshList.size());
-    std::transform(meshSystem.SpriteMeshList.begin(), meshSystem.SpriteMeshList.end(),
-        std::back_inserter(meshList),
-        [](const auto& pair) { return pair.second; });
+    //Vector<MeshStruct> meshList;
+    //meshList.reserve(meshSystem.SpriteMeshList.size());
+    //std::transform(meshSystem.SpriteMeshList.begin(), meshSystem.SpriteMeshList.end(),
+    //    std::back_inserter(meshList),
+    //    [](const auto& pair) { return pair.second; });
 
 
     Vector<VkDescriptorBufferInfo> vertexPropertiesBuffer;
-    if (meshList.empty())
-    {
-        vertexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
-            {
-                .buffer = VK_NULL_HANDLE,
-                .offset = 0,
-                .range = VK_WHOLE_SIZE
-            });
-    }
-    else
-    {
-        for (auto& mesh : meshList)
-        {
-            const VulkanBufferStruct& vertexProperties = bufferSystem.VulkanBuffer[mesh.MeshVertexBufferId];
-            vertexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
-                {
-                    .buffer = vertexProperties.Buffer,
-                    .offset = 0,
-                    .range = VK_WHOLE_SIZE
-                });
-        }
-    }
+    //if (meshList.empty())
+    //{
+    //    vertexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+    //        {
+    //            .buffer = VK_NULL_HANDLE,
+    //            .offset = 0,
+    //            .range = VK_WHOLE_SIZE
+    //        });
+    //}
+    //else
+    //{
+    //    for (auto& mesh : meshList)
+    //    {
+    //        const VulkanBufferStruct& vertexProperties = bufferSystem.VulkanBuffer[mesh.MeshVertexBufferId];
+    //        vertexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+    //            {
+    //                .buffer = vertexProperties.Buffer,
+    //                .offset = 0,
+    //                .range = VK_WHOLE_SIZE
+    //            });
+    //    }
+    //}
 
     return vertexPropertiesBuffer;
 }
 
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetIndexPropertiesBuffer()
 {
-    Vector<MeshStruct> meshList;
-    meshList.reserve(meshSystem.SpriteMeshList.size());
-    std::transform(meshSystem.SpriteMeshList.begin(), meshSystem.SpriteMeshList.end(),
-        std::back_inserter(meshList),
-        [](const auto& pair) { return pair.second; });
+    //Vector<MeshStruct> meshList;
+    //meshList.reserve(meshSystem.SpriteMeshList.size());
+    //std::transform(meshSystem.SpriteMeshList.begin(), meshSystem.SpriteMeshList.end(),
+    //    std::back_inserter(meshList),
+    //    [](const auto& pair) { return pair.second; });
 
     std::vector<VkDescriptorBufferInfo>	indexPropertiesBuffer;
-    if (meshList.empty())
-    {
-        indexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
-            {
-                .buffer = VK_NULL_HANDLE,
-                .offset = 0,
-                .range = VK_WHOLE_SIZE
-            });
-    }
-    else
-    {
-        for (auto& mesh : meshList)
-        {
-            const VulkanBufferStruct& indexProperties = bufferSystem.VulkanBuffer[mesh.MeshIndexBufferId];
-            indexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
-                {
-                    .buffer = indexProperties.Buffer,
-                    .offset = 0,
-                    .range = VK_WHOLE_SIZE
-                });
-        }
-    }
+    //if (meshList.empty())
+    //{
+    //    indexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+    //        {
+    //            .buffer = VK_NULL_HANDLE,
+    //            .offset = 0,
+    //            .range = VK_WHOLE_SIZE
+    //        });
+    //}
+    //else
+    //{
+    //    for (auto& mesh : meshList)
+    //    {
+    //        const VulkanBufferStruct& indexProperties = bufferSystem.VulkanBuffer[mesh.MeshIndexBufferId];
+    //        indexPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+    //            {
+    //                .buffer = indexProperties.Buffer,
+    //                .offset = 0,
+    //                .range = VK_WHOLE_SIZE
+    //            });
+    //    }
+    //}
     return indexPropertiesBuffer;
 }
 
 const Vector<VkDescriptorBufferInfo> RenderSystem::GetGameObjectTransformBuffer()
 {
-    Vector<MeshStruct> meshList;
-    meshList.reserve(meshSystem.SpriteMeshList.size());
-    std::transform(meshSystem.SpriteMeshList.begin(), meshSystem.SpriteMeshList.end(),
-        std::back_inserter(meshList),
-        [](const auto& pair) { return pair.second; });
+    //Vector<MeshStruct> meshList;
+    //meshList.reserve(meshSystem.SpriteMeshList.size());
+    //std::transform(meshSystem.SpriteMeshList.begin(), meshSystem.SpriteMeshList.end(),
+    //    std::back_inserter(meshList),
+    //    [](const auto& pair) { return pair.second; });
 
     std::vector<VkDescriptorBufferInfo>	transformPropertiesBuffer;
-    if (meshList.empty())
-    {
-        transformPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
-            {
-                .buffer = VK_NULL_HANDLE,
-                .offset = 0,
-                .range = VK_WHOLE_SIZE
-            });
-    }
-    else
-    {
-        for (auto& mesh : meshList)
-        {
-            const VulkanBufferStruct& transformBuffer = bufferSystem.VulkanBuffer[mesh.MeshTransformBufferId];
-            transformPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
-                {
-                    .buffer = transformBuffer.Buffer,
-                    .offset = 0,
-                    .range = VK_WHOLE_SIZE
-                });
-        }
-    }
+    //if (meshList.empty())
+    //{
+    //    transformPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+    //        {
+    //            .buffer = VK_NULL_HANDLE,
+    //            .offset = 0,
+    //            .range = VK_WHOLE_SIZE
+    //        });
+    //}
+    //else
+    //{
+    //    for (auto& mesh : meshList)
+    //    {
+    //        const VulkanBufferStruct& transformBuffer = bufferSystem.VulkanBuffer[mesh.MeshTransformBufferId];
+    //        transformPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
+    //            {
+    //                .buffer = transformBuffer.Buffer,
+    //                .offset = 0,
+    //                .range = VK_WHOLE_SIZE
+    //            });
+    //    }
+    //}
 
     return transformPropertiesBuffer;
 }
@@ -376,15 +373,15 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGui
     Vector<MeshStruct> meshList;
     if (levelLayerId == VkGuid())
     {
-        for (auto& sprite : meshSystem.SpriteMeshList)
+        for (auto& sprite : meshSystem.SpriteMeshList())
         {
-            meshList.emplace_back(sprite.second);
+            meshList.emplace_back(sprite);
 
         }
     }
     else
     {
-        for (auto& layer : meshSystem.LevelLayerMeshList[levelLayerId])
+        for (auto& layer : meshSystem.FindLevelLayerMeshList(levelLayerId))
         {
             meshList.emplace_back(layer);
         }
@@ -484,47 +481,24 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkG
     return texturePropertiesBuffer;
 }
 
-const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer()
+const VulkanRenderPass& RenderSystem::FindRenderPass(const RenderPassGuid& guid)
 {
-    Vector<Material> materialList;
-    for (auto& material : materialSystem.MaterialList)
+    auto it = RenderPassMap.find(guid);
+    if (it != RenderPassMap.end()) 
     {
-        materialList.emplace_back(material.second);
+        return it->second;
     }
-
-    std::vector<VkDescriptorBufferInfo>	materialPropertiesBuffer;
-    if (materialList.empty())
-    {
-        materialPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
-            {
-                .buffer = VK_NULL_HANDLE,
-                .offset = 0,
-                .range = VK_WHOLE_SIZE
-            });
-    }
-    else
-    {
-        for (auto& material : materialList)
-        {
-            material.GetMaterialPropertiesBuffer(materialPropertiesBuffer);
-        }
-    }
-    return materialPropertiesBuffer;
+    throw std::out_of_range("Render pass not found for given GUID");
 }
 
-void RenderSystem::UpdateBufferIndex()
+const Vector<VulkanPipeline>& RenderSystem::FindRenderPipelineList(const RenderPassGuid& guid)
 {
-    int xy = 0;
-    for (auto& [id, texture] : textureSystem.TextureList) {
-        textureSystem.UpdateTextureBufferIndex(texture, xy);
-        ++xy;
+    auto it = RenderPipelineMap.find(guid);
+    if (it != RenderPipelineMap.end())
+    {
+        return it->second;
     }
-    int xz = 0;
-    for (auto& [id, material] : materialSystem.MaterialList) {
-        material.UpdateMaterialBufferIndex(xz);
-        material.UpdateBuffer();
-        ++xz;
-    }
+    throw std::out_of_range("Render Pipeline List not found for given GUID");
 }
 
 void RenderSystem::Destroy()

@@ -2,6 +2,7 @@
 #include "MaterialSystem.h"
 #include "TextureSystem.h"
 #include "AssetManager.h"
+#include "MeshSystem.h"
 
 LevelSystem levelSystem = LevelSystem();
 
@@ -49,8 +50,10 @@ void LevelSystem::LoadLevel(const String& levelPath)
     Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, levelLayout.LevelMapList);
 
     VkGuid dummyGuid = VkGuid();
-    spriteRenderPass2DId = renderSystem.AddRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
-    frameBufferId = renderSystem.AddRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.RenderedTextureList[spriteRenderPass2DId][0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
+    spriteRenderPass2DId = renderSystem.LoadRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
+    frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.RenderedTextureList[spriteRenderPass2DId][0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
+
+    SpriteBatchLayerList[spriteRenderPass2DId].emplace_back(SpriteBatchLayer(spriteRenderPass2DId));
 }
 
 void LevelSystem::Update(const float& deltaTime)
@@ -112,7 +115,7 @@ VkGuid LevelSystem::LoadSpriteVRAM(const String& spritePath)
         return vramId;
     }
 
-    const Material& material = materialSystem.MaterialList.at(materialId);
+    const Material& material = materialSystem.FindMaterial(materialId);
     const Texture& texture = textureSystem.TextureList.at(material.AlbedoMapId);
 
     SpriteVram sprite = SpriteVram
@@ -168,7 +171,7 @@ VkGuid LevelSystem::LoadTileSetVRAM(const String& tileSetPath)
         return tileSetId;
     }
 
-    const Material& material = materialSystem.MaterialList[materialId];
+    const Material& material = materialSystem.FindMaterial(materialId);
     const Texture& tileSetTexture = textureSystem.TextureList[material.AlbedoMapId];
 
     LevelTileSet tileSet = LevelTileSet();

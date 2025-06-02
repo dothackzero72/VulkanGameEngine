@@ -12,6 +12,7 @@ extern "C"
 #include <iostream>
 #include "FrameTimer.h"
 #include "GameSystem.h"
+#include "MaterialSystem.h"
 
 int main(int argc, char** argv)
 {
@@ -27,6 +28,7 @@ int main(int argc, char** argv)
 
         vulkanWindow->PollEventHandler(vulkanWindow);
         vulkanWindow->SwapBuffer(vulkanWindow);
+
         gameSystem.Input(frameTime);
         gameSystem.Update(frameTime);
         gameSystem.DebugUpdate(frameTime);

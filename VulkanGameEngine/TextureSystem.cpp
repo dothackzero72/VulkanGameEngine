@@ -24,6 +24,16 @@ VkGuid TextureSystem::LoadTexture(const String& texturePath)
     return textureId;
 }
 
+void TextureSystem::Update(const float& deltaTime)
+{
+    int x = 0;
+    for (auto& [id, texture] : TextureList)
+    {
+        UpdateTextureBufferIndex(texture, x);
+        x++;
+    }
+}
+
 Texture TextureSystem::CreateTexture(VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
 {
 	return Texture_CreateTexture(cRenderer, imageType, createImageInfo, samplerCreateInfo);

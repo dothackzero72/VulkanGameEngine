@@ -30,10 +30,8 @@ private:
 		if constexpr (std::is_same_v<T, uint32>) { return BufferType_UInt; }
 		else if constexpr (std::is_same_v<T, mat4>) { return BufferType_Mat4; }
 		else if constexpr (std::is_same_v<T, MaterialProperitiesBuffer>) { return BufferType_MaterialProperitiesBuffer; }
-		else if constexpr (std::is_same_v<T, SpriteInstanceStruct>) { return BufferType_SpriteInstanceStruct; }
 		else if constexpr (std::is_same_v<T, MeshPropertiesStruct>) { return BufferType_MeshPropertiesStruct; }
-		else if constexpr (std::is_same_v<T, MeshStruct>) { return BufferType_SpriteMesh; }
-		else if constexpr (std::is_same_v<T, MeshStruct>) { return BufferType_LevelLayerMesh; }
+		else if constexpr (std::is_same_v<T, SpriteInstanceStruct>) { return BufferType_SpriteInstanceStruct; }
 		else 
 		{
 			//static_assert(false, "Unsupported type for VulkanBufferSystem");

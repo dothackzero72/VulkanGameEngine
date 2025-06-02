@@ -28,7 +28,7 @@ SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float&
     const SpriteVram& vram = levelSystem.VramSpriteList.at(SpriteVramId);
     const Animation2D& animation = levelSystem.AnimationList.at(CurrentAnimationID);
     const Vector<ivec2>& frameList = levelSystem.AnimationFrameList[vram.VramSpriteID][CurrentAnimationID];
-    const Material& material = materialSystem.MaterialList.at(vram.SpriteMaterialID);
+    const Material& material = materialSystem.FindMaterial(vram.SpriteMaterialID);
     const ivec2& currentFrame = frameList[CurrentFrame];
 
     mat4 spriteMatrix = mat4(1.0f);

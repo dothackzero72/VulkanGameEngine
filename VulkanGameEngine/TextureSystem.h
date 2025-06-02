@@ -18,6 +18,7 @@ public:
 	Texture CreateTexture(const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
     Texture CreateTexture(Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
 
+	void Update(const float& deltaTime);
 	void UpdateTextureBufferIndex(Texture& texture, uint32 bufferIndex);
 	void UpdateTextureSize(Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution);
 	void GetTexturePropertiesBuffer(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList);
