@@ -2,7 +2,7 @@
 #include "Vertex.h"
 #include <Mesh.h>
 #include "VulkanBufferSystem.h"
-#include "AssetManager.h"
+#include "GameObjectSystem.h"
 #include "MaterialSystem.h"
 #include "LevelSystem.h"
 #include "GameSystem.h"

@@ -1,5 +1,5 @@
 #pragma once
-#include "AssetManager.h"
+#include "GameObjectSystem.h"
 #include "RenderSystem.h"
 #include "InputSystem.h"
 #include "OrthographicCamera2D.h"

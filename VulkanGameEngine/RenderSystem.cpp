@@ -4,7 +4,7 @@
 #include "ShaderSystem.h"
 #include "VulkanBufferSystem.h"
 #include "MeshSystem.h"
-#include "AssetManager.h"
+#include "GameObjectSystem.h"
 
 RenderSystem renderSystem = RenderSystem();
 
@@ -145,7 +145,7 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &meshVertexBuffer, offsets);
         vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer, offsets);
         vkCmdBindIndexBuffer(commandBuffer, meshIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdDrawIndexed(commandBuffer, assetManager.SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
+        vkCmdDrawIndexed(commandBuffer, gameObjectSystem.SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
     }
     vkCmdEndRenderPass(commandBuffer);
     vkEndCommandBuffer(commandBuffer);

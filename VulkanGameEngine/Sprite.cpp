@@ -1,5 +1,5 @@
 #include "Sprite.h"
-#include "AssetManager.h"
+#include "GameObjectSystem.h"
 #include "RenderSystem.h"
 #include "LevelSystem.h"
 #include "MaterialSystem.h"
@@ -24,7 +24,7 @@ Sprite::~Sprite()
 
 SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
-    const Transform2DComponent& transform2D = assetManager.TransformComponentList.at(GameObjectId);
+    const Transform2DComponent& transform2D = gameObjectSystem.FindTransform2DComponent(GameObjectId);
     const SpriteVram& vram = levelSystem.VramSpriteList.at(SpriteVramId);
     const Animation2D& animation = levelSystem.AnimationList.at(CurrentAnimationID);
     const Vector<ivec2>& frameList = levelSystem.AnimationFrameList[vram.VramSpriteID][CurrentAnimationID];

@@ -3,7 +3,7 @@
 #include "json.h"
 #include "TextureSystem.h"
 #include "ImGuiFunc.h"
-#include "AssetManager.h"
+#include "GameObjectSystem.h"
 #include "LevelSystem.h"
 #include "MeshSystem.h"
 
@@ -25,10 +25,10 @@ void GameSystem::StartUp()
 
 void GameSystem::Input(const float& deltaTime)
 {
-    for (auto& input : assetManager.InputComponentList)
+    for (auto& input : gameObjectSystem.InputComponentList())
     {
-        Sprite& sprite = levelSystem.SpriteList[input.first];
-        Transform2DComponent& transform = assetManager.TransformComponentList[input.first];
+        Sprite& sprite = levelSystem.SpriteList[input.GameObjectId];
+        Transform2DComponent& transform = gameObjectSystem.FindTransform2DComponent(input.GameObjectId);
         if (vulkanWindow->keyboard.KeyPressed[KEY_A] == KS_PRESSED ||
             vulkanWindow->keyboard.KeyPressed[KEY_A] == KS_HELD)
         {
@@ -85,6 +85,6 @@ void GameSystem::Draw(const float& deltaTime)
 
 void GameSystem::Destroy()
 {
-    assetManager.Destroy();
+   // assetManager.Destroy();
     renderSystem.Destroy();
 }

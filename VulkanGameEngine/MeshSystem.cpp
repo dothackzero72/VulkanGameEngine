@@ -22,7 +22,7 @@ const MeshStruct& MeshSystem::FindMesh(const uint& id)
     {
         return it->second;
     }
-    throw std::out_of_range("Render pass not found for given GUID");
+    throw std::out_of_range("Mesh not found for given GUID");
 }
 
 const MeshStruct& MeshSystem::FindSpriteMesh(const uint& id)
@@ -32,7 +32,7 @@ const MeshStruct& MeshSystem::FindSpriteMesh(const uint& id)
     {
         return it->second;
     }
-    throw std::out_of_range("Render pass not found for given GUID");
+    throw std::out_of_range("Sprite Mesh not found for given GUID");
 }
 
 const Vector<MeshStruct>& MeshSystem::FindLevelLayerMeshList(const LevelGuid& guid)
@@ -42,7 +42,7 @@ const Vector<MeshStruct>& MeshSystem::FindLevelLayerMeshList(const LevelGuid& gu
     {
         return it->second;
     }
-    throw std::out_of_range("Render pass not found for given GUID");
+    throw std::out_of_range("Level Layer Mesh not found for given GUID");
 }
 
 const Vector<Vertex2D>& MeshSystem::FindVertex2DList(const uint& id)
@@ -52,7 +52,7 @@ const Vector<Vertex2D>& MeshSystem::FindVertex2DList(const uint& id)
     {
         return it->second;
     }
-    throw std::out_of_range("Render pass not found for given GUID");
+    throw std::out_of_range("Vertex2D not found for given GUID");
 }
 
 const Vector<uint>& MeshSystem::FindIndexList(const uint& id)
@@ -62,7 +62,7 @@ const Vector<uint>& MeshSystem::FindIndexList(const uint& id)
     {
         return it->second;
     }
-    throw std::out_of_range("Render pass not found for given GUID");
+    throw std::out_of_range("IndexList not found for given GUID");
 }
 
 const Vector<MeshStruct>& MeshSystem::MeshList()

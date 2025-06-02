@@ -1,7 +1,7 @@
 #include "LevelSystem.h"
 #include "MaterialSystem.h"
 #include "TextureSystem.h"
-#include "AssetManager.h"
+#include "GameObjectSystem.h"
 #include "MeshSystem.h"
 
 LevelSystem levelSystem = LevelSystem();
@@ -43,7 +43,7 @@ void LevelSystem::LoadLevel(const String& levelPath)
     {
         String objectJson = json["GameObjectList"][x]["GameObjectPath"];
         vec2   positionOverride = vec2(json["GameObjectList"][x]["GameObjectPositionOverride"][0], json["GameObjectList"][x]["GameObjectPositionOverride"][1]);
-        assetManager.CreateGameObject(objectJson, positionOverride);
+        gameObjectSystem.CreateGameObject(objectJson, positionOverride);
     }
     LoadLevelLayout(json["LoadLevelLayout"]);
 
@@ -70,10 +70,10 @@ void LevelSystem::Draw(Vector<VkCommandBuffer>& commandBufferList, const float& 
 
 void LevelSystem::DestroyDeadGameObjects()
 {
-    if (assetManager.GameObjectList.empty())
-    {
-        return;
-    }
+    //if (gameObjectSystem.GameObjectList.empty())
+    //{
+    //    return;
+    //}
 
     //Vector<SharedPtr<GameObject>> deadGameObjectList;
     //for (auto it = GameObjectList.begin(); it != GameObjectList.end(); ++it) {

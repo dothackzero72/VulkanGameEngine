@@ -1,5 +1,5 @@
 #include "SpriteBatchLayer.h"
-#include "AssetManager.h"
+#include "GameObjectSystem.h"
 #include "VulkanBufferSystem.h"
 #include "Typedef.h"
 #include "MeshSystem.h"
@@ -22,7 +22,7 @@ SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 		levelSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
 	}
 
-	SpriteLayerMeshId = meshSystem.CreateSpriteLayerMesh<Vertex2D>(assetManager.SpriteVertexList, assetManager.SpriteIndexList);
+	SpriteLayerMeshId = meshSystem.CreateSpriteLayerMesh<Vertex2D>(gameObjectSystem.SpriteVertexList, gameObjectSystem.SpriteIndexList);
 	levelSystem.SpriteInstanceList[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(levelSystem.SpriteBatchLayerObjectList[SpriteBatchLayerID].size());
 	levelSystem.SpriteInstanceBufferList[SpriteBatchLayerID] = bufferSystem.CreateVulkanBuffer<SpriteInstanceStruct>(cRenderer, levelSystem.SpriteInstanceList[SpriteBatchLayerID], meshSystem.MeshBufferUsageSettings, meshSystem.MeshBufferPropertySettings, false);
 }
