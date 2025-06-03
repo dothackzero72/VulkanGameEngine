@@ -10,6 +10,7 @@ extern "C"
 #include <glm/gtc/type_ptr.hpp> 
 #include <nlohmann/json.hpp>
 #include <vector>
+#include "VkGuid.h"
 
 typedef glm::vec1 vec1;
 typedef glm::vec2 vec2;
@@ -31,3 +32,6 @@ template <typename T> using Vector = std::vector<T>;
 template <typename T> using SharedPtr = std::shared_ptr<T>;
 template <typename T> using UniquePtr = std::unique_ptr<T>;
 template <typename T> using WeakPtr = std::weak_ptr<T>;
+
+typedef VkGuid RenderPassGuid;
+typedef VkGuid TextureGuid;

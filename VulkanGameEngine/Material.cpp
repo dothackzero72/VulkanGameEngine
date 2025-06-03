@@ -33,16 +33,16 @@ void Material::UpdateBuffer()
 {
 	MaterialProperitiesBuffer materialBuffer = MaterialProperitiesBuffer
 	{
-		.AlbedoMapId = AlbedoMapId != VkGuid() ? textureSystem.TextureList[AlbedoMapId].textureBufferIndex : 0,
-		.MetallicRoughnessMapId = MetallicRoughnessMapId != VkGuid() ? textureSystem.TextureList[MetallicRoughnessMapId].textureBufferIndex : 0,
-		.MetallicMapId = MetallicMapId != VkGuid() ? textureSystem.TextureList[MetallicMapId].textureBufferIndex : 0,
-		.RoughnessMapId = RoughnessMapId != VkGuid() ? textureSystem.TextureList[RoughnessMapId].textureBufferIndex : 0,
-		.AmbientOcclusionMapId = AmbientOcclusionMapId != VkGuid() ? textureSystem.TextureList[AmbientOcclusionMapId].textureBufferIndex : 0,
-		.NormalMapId = NormalMapId != VkGuid() ? textureSystem.TextureList[NormalMapId].textureBufferIndex : 0,
-		.DepthMapId = DepthMapId != VkGuid() ? textureSystem.TextureList[DepthMapId].textureBufferIndex : 0,
-		.AlphaMapId = AlphaMapId != VkGuid() ? textureSystem.TextureList[AlphaMapId].textureBufferIndex : 0,
-		.EmissionMapId = EmissionMapId != VkGuid() ? textureSystem.TextureList[EmissionMapId].textureBufferIndex : 0,
-		.HeightMapId = HeightMapId != VkGuid() ? textureSystem.TextureList[HeightMapId].textureBufferIndex : 0
+		.AlbedoMapId = AlbedoMapId != VkGuid() ? textureSystem.FindTexture(AlbedoMapId).textureBufferIndex : 0,
+		.MetallicRoughnessMapId = MetallicRoughnessMapId != VkGuid() ? textureSystem.FindTexture(MetallicRoughnessMapId).textureBufferIndex : 0,
+		.MetallicMapId = MetallicMapId != VkGuid() ? textureSystem.FindTexture(MetallicMapId).textureBufferIndex : 0,
+		.RoughnessMapId = RoughnessMapId != VkGuid() ? textureSystem.FindTexture(RoughnessMapId).textureBufferIndex : 0,
+		.AmbientOcclusionMapId = AmbientOcclusionMapId != VkGuid() ? textureSystem.FindTexture(AmbientOcclusionMapId).textureBufferIndex : 0,
+		.NormalMapId = NormalMapId != VkGuid() ? textureSystem.FindTexture(NormalMapId).textureBufferIndex : 0,
+		.DepthMapId = DepthMapId != VkGuid() ? textureSystem.FindTexture(DepthMapId).textureBufferIndex : 0,
+		.AlphaMapId = AlphaMapId != VkGuid() ? textureSystem.FindTexture(AlphaMapId).textureBufferIndex : 0,
+		.EmissionMapId = EmissionMapId != VkGuid() ? textureSystem.FindTexture(EmissionMapId).textureBufferIndex : 0,
+		.HeightMapId = HeightMapId != VkGuid() ? textureSystem.FindTexture(HeightMapId).textureBufferIndex : 0
 	};
 	bufferSystem.UpdateBufferMemory<MaterialProperitiesBuffer>(cRenderer, MaterialBufferId, materialBuffer);
 }

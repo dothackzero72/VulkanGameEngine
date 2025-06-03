@@ -6,7 +6,6 @@ uint MeshSystem::NextLevelLayerMeshId;
 
 MeshSystem meshSystem = MeshSystem();
 
-
 MeshSystem::MeshSystem()
 {
 }
@@ -15,7 +14,7 @@ MeshSystem::~MeshSystem()
 {
 }
 
-const MeshStruct& MeshSystem::FindMesh(const uint& id)
+const Mesh& MeshSystem::FindMesh(const uint& id)
 {
     auto it = MeshMap.find(id);
     if (it != MeshMap.end())
@@ -25,7 +24,7 @@ const MeshStruct& MeshSystem::FindMesh(const uint& id)
     throw std::out_of_range("Mesh not found for given GUID");
 }
 
-const MeshStruct& MeshSystem::FindSpriteMesh(const uint& id)
+const Mesh& MeshSystem::FindSpriteMesh(const uint& id)
 {
     auto it = SpriteMeshMap.find(id);
     if (it != SpriteMeshMap.end())
@@ -35,7 +34,7 @@ const MeshStruct& MeshSystem::FindSpriteMesh(const uint& id)
     throw std::out_of_range("Sprite Mesh not found for given GUID");
 }
 
-const Vector<MeshStruct>& MeshSystem::FindLevelLayerMeshList(const LevelGuid& guid)
+const Vector<Mesh>& MeshSystem::FindLevelLayerMeshList(const LevelGuid& guid)
 {
     auto it = LevelLayerMeshListMap.find(guid);
     if (it != LevelLayerMeshListMap.end())
@@ -65,9 +64,9 @@ const Vector<uint>& MeshSystem::FindIndexList(const uint& id)
     throw std::out_of_range("IndexList not found for given GUID");
 }
 
-const Vector<MeshStruct>& MeshSystem::MeshList()
+const Vector<Mesh>& MeshSystem::MeshList()
 {
-    Vector<MeshStruct> meshList;
+    Vector<Mesh> meshList;
     for (const auto& meshMap : MeshMap)
     {
         meshList.emplace_back(meshMap.second);
@@ -75,9 +74,9 @@ const Vector<MeshStruct>& MeshSystem::MeshList()
     return meshList;
 }
 
-const Vector<MeshStruct>& MeshSystem::SpriteMeshList()
+const Vector<Mesh>& MeshSystem::SpriteMeshList()
 {
-    Vector<MeshStruct> spriteMeshList;
+    Vector<Mesh> spriteMeshList;
     for (const auto& spriteMesh : SpriteMeshMap)
     {
         spriteMeshList.emplace_back(spriteMesh.second);

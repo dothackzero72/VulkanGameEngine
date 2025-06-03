@@ -1,6 +1,6 @@
 #pragma once
+#include <Typedef.h>
 #include "Material.h"
-#include "GameTypeDef.h"
 
 class MeshSystem;
 class MaterialSystem

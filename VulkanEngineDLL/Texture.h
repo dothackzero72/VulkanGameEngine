@@ -85,7 +85,7 @@ struct TextureJsonLoader
 
 struct Texture
 {
-    VkGuid textureId;
+    TextureGuid textureId;
     int width = 1;
     int height = 1;
     int depth = 1;

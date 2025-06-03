@@ -9,7 +9,7 @@ struct MeshPropertiesStruct
 	alignas(16) mat4   MeshTransform = mat4(1.0f);
 };
 
-struct MeshStruct
+struct Mesh
 {
 	uint32 MeshId = 0;
 	uint32 ParentGameObjectID = 0;

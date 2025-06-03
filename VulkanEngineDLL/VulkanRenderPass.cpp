@@ -60,7 +60,6 @@ VkRenderPass RenderPass_BuildRenderPass(const RendererState& renderState, Vulkan
             case InputAttachmentTexture: renderedTextureList.emplace_back(Texture_CreateTexture(renderState, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
             case ResolveAttachmentTexture: renderedTextureList.emplace_back(Texture_CreateTexture(renderState, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
             case DepthRenderedTexture: depthTexture = Texture_CreateTexture(renderState, VK_IMAGE_ASPECT_DEPTH_BIT, imageCreateInfo, samplerCreateInfo); break;
-            default: throw std::runtime_error("Case doesn't exist: RenderedTextureType");
         };
     }
 
@@ -178,7 +177,7 @@ Vector<VkFramebuffer> RenderPass_BuildFrameBuffer(const RendererState& renderSta
                 TextureAttachmentList.emplace_back(renderedTextureList[y].textureView);
             }
         }
-        if (depthTexture.textureMemory != VK_NULL_HANDLE)
+        if (depthTexture.textureView != VK_NULL_HANDLE)
         {
             TextureAttachmentList.emplace_back(depthTexture.textureView);
         }

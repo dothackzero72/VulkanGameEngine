@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <array>
 #include <iostream>
-#include "TypeDef.h"
+
 
 class VkGuid
 {
@@ -23,7 +23,7 @@ public:
     VkGuid(const char* guidchar)
     {
         GUID guid = {};
-        String guidString = String(guidchar);
+        std::string guidString = std::string(guidchar);
         if (guidString.front() != '{')
         {
             guidString = "{" + guidString + "}";

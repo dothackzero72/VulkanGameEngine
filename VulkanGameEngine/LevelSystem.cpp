@@ -51,7 +51,7 @@ void LevelSystem::LoadLevel(const String& levelPath)
 
     VkGuid dummyGuid = VkGuid();
     spriteRenderPass2DId = renderSystem.LoadRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
-    frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.RenderedTextureList[spriteRenderPass2DId][0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
+    frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
 
     SpriteBatchLayerList[spriteRenderPass2DId].emplace_back(SpriteBatchLayer(spriteRenderPass2DId));
 }
@@ -116,7 +116,7 @@ VkGuid LevelSystem::LoadSpriteVRAM(const String& spritePath)
     }
 
     const Material& material = materialSystem.FindMaterial(materialId);
-    const Texture& texture = textureSystem.TextureList.at(material.AlbedoMapId);
+    const Texture& texture = textureSystem.FindTexture(material.AlbedoMapId);
 
     SpriteVram sprite = SpriteVram
     {
@@ -172,7 +172,7 @@ VkGuid LevelSystem::LoadTileSetVRAM(const String& tileSetPath)
     }
 
     const Material& material = materialSystem.FindMaterial(materialId);
-    const Texture& tileSetTexture = textureSystem.TextureList[material.AlbedoMapId];
+    const Texture& tileSetTexture = textureSystem.FindTexture(material.AlbedoMapId);
 
     LevelTileSet tileSet = LevelTileSet();
     tileSet.TileSetId = VkGuid(json["TileSetId"].get<String>().c_str());

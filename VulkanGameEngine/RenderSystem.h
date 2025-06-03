@@ -28,13 +28,15 @@ private:
     VkPhysicalDeviceFeatures                                      PhysicalDeviceFeatures;
     VkCommandBufferBeginInfo                                      CommandBufferBeginInfo;
 
+    void CreateVulkanRenderPass(RenderPassBuildInfoModel& model, ivec2& renderPassResolution);
+    void CreateVulkanRenderPass(RenderPassBuildInfoModel& model, Texture& inputTexture, ivec2& renderPassResolution);
     void RecreateSwapchain();
 
     const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer();
     const Vector<VkDescriptorBufferInfo> GetIndexPropertiesBuffer();
     const Vector<VkDescriptorBufferInfo> GetGameObjectTransformBuffer();
     const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer(VkGuid& levelLayerId);
-    const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(VkGuid& renderPassId, Vector<SharedPtr<Texture>>& renderedTextureList);
+    const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(VkGuid& renderPassId, const Texture* renderedTexture);
 
 public:
 

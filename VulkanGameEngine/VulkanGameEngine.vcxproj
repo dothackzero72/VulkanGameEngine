@@ -174,7 +174,6 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectSystem.h" />
     <ClInclude Include="GameSystem.h" />
-    <ClInclude Include="GameTypeDef.h" />
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="Level2D.h" />

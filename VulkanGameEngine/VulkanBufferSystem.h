@@ -1,5 +1,5 @@
 #pragma once
-#include "GameTypeDef.h"
+#include <Typedef.h>
 #include <VulkanBuffer.h>
 #include <Mesh.h>
 #include "Material.h"
@@ -16,7 +16,8 @@ enum BufferTypeEnum
 	BufferType_MeshPropertiesStruct,
 	BufferType_SpriteMesh,
 	BufferType_LevelLayerMesh,
-	BufferType_Material
+	BufferType_Material,
+	BufferType_Vector2D
 };
 
 class VulkanBufferSystem
@@ -32,10 +33,10 @@ private:
 		else if constexpr (std::is_same_v<T, MaterialProperitiesBuffer>) { return BufferType_MaterialProperitiesBuffer; }
 		else if constexpr (std::is_same_v<T, MeshPropertiesStruct>) { return BufferType_MeshPropertiesStruct; }
 		else if constexpr (std::is_same_v<T, SpriteInstanceStruct>) { return BufferType_SpriteInstanceStruct; }
+		else if constexpr (std::is_same_v<T, Vertex2D>) { return BufferType_Vector2D; }
 		else 
 		{
-			//static_assert(false, "Unsupported type for VulkanBufferSystem");
-			return BufferType_UInt;
+			throw std::runtime_error("Buffer type doesn't match");
 		}
 	}
 

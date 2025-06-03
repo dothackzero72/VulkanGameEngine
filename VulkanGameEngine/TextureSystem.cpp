@@ -13,21 +13,21 @@ VkGuid TextureSystem::LoadTexture(const String& texturePath)
     nlohmann::json json = Json::ReadJson(texturePath);
     VkGuid textureId = VkGuid(json["TextureId"].get<String>().c_str());
 
-    auto it = textureSystem.TextureList.find(textureId);
-    if (it != textureSystem.TextureList.end())
+    auto it = textureSystem.TextureMap.find(textureId);
+    if (it != textureSystem.TextureMap.end())
     {
         return textureId;
     }
 
     TextureJsonLoader textureJsonLoader = TextureJsonLoader(texturePath);
-	TextureList[textureId] = Texture_LoadTexture(cRenderer, textureJsonLoader);
+    TextureMap[textureId] = Texture_LoadTexture(cRenderer, textureJsonLoader);
     return textureId;
 }
 
 void TextureSystem::Update(const float& deltaTime)
 {
     int x = 0;
-    for (auto& [id, texture] : TextureList)
+    for (auto& [id, texture] : TextureMap)
     {
         UpdateTextureBufferIndex(texture, x);
         x++;
@@ -72,4 +72,119 @@ void TextureSystem::UpdateTextureLayout(Texture& texture, VkCommandBuffer& comma
 void TextureSystem::DestroyTexture(Texture& texture)
 {
 	Texture_DestroyTexture(cRenderer, texture);
+}
+
+void TextureSystem::AddRenderedTexture(RenderPassGuid& vkGuid, Vector<Texture>& renderedTextureList)
+{
+    RenderedTextureListMap[vkGuid] = renderedTextureList;
+}
+
+void TextureSystem::AddDepthTexture(RenderPassGuid& vkGuid, Texture& depthTexture)
+{
+    DepthTextureMap[vkGuid] = depthTexture;
+}
+
+void TextureSystem::AddInputTexture(UM_RenderPipelineID& pipelineId, TextureGuid& inputTexture)
+{
+    InputTextureListMap[pipelineId].emplace_back(inputTexture);
+}
+
+Texture& TextureSystem::FindTexture(const RenderPassGuid& guid)
+{
+    auto it = TextureMap.find(guid);
+    if (it != TextureMap.end())
+    {
+        return it->second;
+    }
+    throw std::out_of_range("TextureMap not found for given GUID");
+}
+
+Texture& TextureSystem::FindDepthTexture(const RenderPassGuid& guid)
+{
+    auto it = DepthTextureMap.find(guid);
+    if (it != DepthTextureMap.end())
+    {
+        return it->second;
+    }
+    throw std::out_of_range("DepthTextureMap not found for given GUID");
+}
+
+Texture& TextureSystem::FindRenderedTexture(const RenderPassGuid& guid, const TextureGuid& textureGuid)
+{
+    auto it = RenderedTextureListMap.find(guid);
+    if (it != RenderedTextureListMap.end())
+    {
+        for (auto& texture : it->second)
+        {
+            return texture;
+        }
+    }
+    throw std::out_of_range("RenderedTexture not found for given GUID");
+}
+
+Vector<Texture>& TextureSystem::FindRenderedTextureList(const RenderPassGuid& guid)
+{
+    auto it = RenderedTextureListMap.find(guid);
+    if (it != RenderedTextureListMap.end())
+    {
+        return it->second;
+    }
+    throw std::out_of_range("RenderedTextureList not found for given GUID");
+}
+
+ Vector<Texture>& TextureSystem::FindInputTextureList(const RenderPassGuid& guid, const UM_RenderPipelineID& pipelineId)
+{
+    auto it = InputTextureListMap.find(pipelineId);
+    if (it != InputTextureListMap.end())
+    {
+        Vector<TextureGuid> textureGuidList = it->second;
+        Vector<Texture> textureList;
+        for (auto& textureGuid : textureGuidList)
+        {
+            textureList.emplace_back(FindRenderedTexture(guid, textureGuid));
+        }
+        return textureList;
+    }
+    throw std::out_of_range("InputTextureList not found for given GUID");
+}
+
+const Vector<Texture>& TextureSystem::TextureList()
+{
+    Vector<Texture> textureList;
+    for (const auto& texture : TextureMap)
+    {
+        textureList.emplace_back(texture.second);
+    }
+    return textureList;
+}
+
+const Vector<Texture>& TextureSystem::DepthTextureList()
+{
+    Vector<Texture> depthTextureList;
+    for (const auto& depthTextureMesh : DepthTextureMap)
+    {
+        depthTextureList.emplace_back(depthTextureMesh.second);
+    }
+    return depthTextureList;
+}
+
+const Vector<Texture>& TextureSystem::InputTextureList(const RenderPassGuid& guid, const UM_RenderPipelineID& renderPipelineId)
+{
+    Vector<Texture> textureList;
+    const Vector<TextureGuid> inputTextures = InputTextureListMap[renderPipelineId];
+    if (!InputTextureListMap[renderPipelineId].empty())
+    {
+        return textureList;
+    }
+
+    auto it = RenderedTextureListMap.find(guid);
+    if (it != RenderedTextureListMap.end())
+    {
+        for (auto& texture : it->second)
+        {
+            textureList.emplace_back(texture);
+        }
+    }
+
+    return textureList;
 }

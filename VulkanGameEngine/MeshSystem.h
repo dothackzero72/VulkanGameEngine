@@ -14,11 +14,11 @@ private:
 	static uint NextSpriteMeshId;
 	static uint NextLevelLayerMeshId;
 
-	UnorderedMap<uint, MeshStruct>							  MeshMap;
-	UnorderedMap<UM_SpriteBatchID, MeshStruct>				  SpriteMeshMap;
-	UnorderedMap<LevelGuid, Vector<MeshStruct>>               LevelLayerMeshListMap;
-	UnorderedMap<uint, Vector<Vertex2D>>					  Vertex2DListMap;
-	UnorderedMap<uint, Vector<uint>>						  IndexListMap;
+	UnorderedMap<uint, Mesh>							  MeshMap;
+	UnorderedMap<UM_SpriteBatchID, Mesh>				  SpriteMeshMap;
+	UnorderedMap<LevelGuid, Vector<Mesh>>				  LevelLayerMeshListMap;
+	UnorderedMap<uint, Vector<Vertex2D>>				  Vertex2DListMap;
+	UnorderedMap<uint, Vector<uint>>					  IndexListMap;
 
 public:
 	const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
@@ -40,7 +40,7 @@ public:
 		mat4 meshMatrix = mat4(1.0f);
 		Vertex2DListMap[meshId] = vertexList;
 		IndexListMap[meshId] = indexList;
-		MeshMap[meshId] = MeshStruct
+		MeshMap[meshId] = Mesh
 		{
 			.MaterialId = materialId,
 			.MeshVertexList = vertexList,
@@ -64,7 +64,7 @@ public:
 		Vertex2DListMap[meshId] = vertexList;
 		IndexListMap[meshId] = indexList;
 
-		SpriteMeshMap[meshId] = MeshStruct();
+		SpriteMeshMap[meshId] = Mesh();
 		SpriteMeshMap[meshId].MaterialId = VkGuid();
 		SpriteMeshMap[meshId].VertexCount = vertexList.size();
 		SpriteMeshMap[meshId].IndexCount = indexList.size();
@@ -84,8 +84,8 @@ public:
 		Vertex2DListMap[meshId] = vertexList;
 		IndexListMap[meshId] = indexList;
 
-		Vector<MeshStruct> meshStructList = Vector<MeshStruct>();
-		MeshStruct meshStruct = MeshStruct();
+		Vector<Mesh> meshStructList = Vector<Mesh>();
+		Mesh meshStruct = Mesh();
 		meshStruct.MaterialId = VkGuid();
 		meshStruct.VertexCount = vertexList.size();
 		meshStruct.IndexCount = indexList.size();
@@ -155,14 +155,14 @@ public:
 	//	}*/
 	//}
 
-	const MeshStruct& FindMesh(const uint& id);
-	const MeshStruct& FindSpriteMesh(const uint& id);
-	const Vector<MeshStruct>& FindLevelLayerMeshList(const LevelGuid& guid);
+	const Mesh& FindMesh(const uint& id);
+	const Mesh& FindSpriteMesh(const uint& id);
+	const Vector<Mesh>& FindLevelLayerMeshList(const LevelGuid& guid);
 	const Vector<Vertex2D>& FindVertex2DList(const uint& id);
 	const Vector<uint>& FindIndexList(const uint& id);
 
-	const Vector<MeshStruct>& MeshList();
-	const Vector<MeshStruct>& SpriteMeshList();
+	const Vector<Mesh>& MeshList();
+	const Vector<Mesh>& SpriteMeshList();
 };
 extern MeshSystem meshSystem;
 
