@@ -50,10 +50,12 @@ void LevelSystem::LoadLevel(const String& levelPath)
     Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, levelLayout.LevelMapList);
 
     VkGuid dummyGuid = VkGuid();
-    spriteRenderPass2DId = renderSystem.LoadRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
-    frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
+    nlohmann::json json2 = Json::ReadJson("../RenderPass/LevelShader2DRenderPass.json");
+    spriteRenderPass2DId = VkGuid(json2["RenderPassId"].get<String>().c_str());
 
     SpriteBatchLayerList[spriteRenderPass2DId].emplace_back(SpriteBatchLayer(spriteRenderPass2DId));
+    spriteRenderPass2DId = renderSystem.LoadRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
+    frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
 }
 
 void LevelSystem::Update(const float& deltaTime)

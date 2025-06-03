@@ -37,8 +37,8 @@ public:
 	Vector<Texture>& FindRenderedTextureList(const RenderPassGuid& guid);
 	Vector<Texture>& FindInputTextureList(const RenderPassGuid& guid, const UM_RenderPipelineID& pipelineId);
 
-	const Vector<Texture>& TextureList();
-	const Vector<Texture>& DepthTextureList();
-	const Vector<Texture>& InputTextureList(const RenderPassGuid& guid, const UM_RenderPipelineID& renderPipelineId);
+	const Vector<Texture> TextureList();
+	const Vector<Texture> DepthTextureList();
+	const Vector<Texture> InputTextureList(const RenderPassGuid& guid, const UM_RenderPipelineID& renderPipelineId);
 };
 extern TextureSystem textureSystem;

@@ -148,7 +148,7 @@ Vector<Texture>& TextureSystem::FindRenderedTextureList(const RenderPassGuid& gu
     throw std::out_of_range("InputTextureList not found for given GUID");
 }
 
-const Vector<Texture>& TextureSystem::TextureList()
+const Vector<Texture> TextureSystem::TextureList()
 {
     Vector<Texture> textureList;
     for (const auto& texture : TextureMap)
@@ -158,7 +158,7 @@ const Vector<Texture>& TextureSystem::TextureList()
     return textureList;
 }
 
-const Vector<Texture>& TextureSystem::DepthTextureList()
+const Vector<Texture> TextureSystem::DepthTextureList()
 {
     Vector<Texture> depthTextureList;
     for (const auto& depthTextureMesh : DepthTextureMap)
@@ -168,7 +168,7 @@ const Vector<Texture>& TextureSystem::DepthTextureList()
     return depthTextureList;
 }
 
-const Vector<Texture>& TextureSystem::InputTextureList(const RenderPassGuid& guid, const UM_RenderPipelineID& renderPipelineId)
+const Vector<Texture> TextureSystem::InputTextureList(const RenderPassGuid& guid, const UM_RenderPipelineID& renderPipelineId)
 {
     Vector<Texture> textureList;
     const Vector<TextureGuid> inputTextures = InputTextureListMap[renderPipelineId];

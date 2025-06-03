@@ -64,7 +64,7 @@ const Vector<uint>& MeshSystem::FindIndexList(const uint& id)
     throw std::out_of_range("IndexList not found for given GUID");
 }
 
-const Vector<Mesh>& MeshSystem::MeshList()
+const Vector<Mesh> MeshSystem::MeshList()
 {
     Vector<Mesh> meshList;
     for (const auto& meshMap : MeshMap)
@@ -74,7 +74,7 @@ const Vector<Mesh>& MeshSystem::MeshList()
     return meshList;
 }
 
-const Vector<Mesh>& MeshSystem::SpriteMeshList()
+const Vector<Mesh> MeshSystem::SpriteMeshList()
 {
     Vector<Mesh> spriteMeshList;
     for (const auto& spriteMesh : SpriteMeshMap)

@@ -13,8 +13,7 @@ SpriteBatchLayer::SpriteBatchLayer()
 }
 
 SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
-{
-	RenderPassId = renderPassId;                                   
+{                            
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 
 	for (int x = 0; x < levelSystem.SpriteList.size(); x++)

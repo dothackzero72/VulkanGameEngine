@@ -161,8 +161,8 @@ public:
 	const Vector<Vertex2D>& FindVertex2DList(const uint& id);
 	const Vector<uint>& FindIndexList(const uint& id);
 
-	const Vector<Mesh>& MeshList();
-	const Vector<Mesh>& SpriteMeshList();
+	const Vector<Mesh> MeshList();
+	const Vector<Mesh> SpriteMeshList();
 };
 extern MeshSystem meshSystem;
 

@@ -97,7 +97,7 @@ const InputComponent& GameObjectSystem::FindInputComponent(const GameObjectID& i
 	throw std::out_of_range("InputComponent not found for given GUID");
 }
 
-const Vector<GameObject>& GameObjectSystem::GameObjectList()
+const Vector<GameObject> GameObjectSystem::GameObjectList()
 {
 	Vector<GameObject> GameObjectList;
 	for (const auto& gameObjectMap : GameObjectMap)
@@ -107,7 +107,7 @@ const Vector<GameObject>& GameObjectSystem::GameObjectList()
 	return GameObjectList;
 }
 
-const Vector<Transform2DComponent>& GameObjectSystem::Transform2DComponentList()
+const Vector<Transform2DComponent> GameObjectSystem::Transform2DComponentList()
 {
 	Vector<Transform2DComponent> transform2DComponentList;
 	for (const auto& transform2DComponent : Transform2DComponentMap)
@@ -117,7 +117,7 @@ const Vector<Transform2DComponent>& GameObjectSystem::Transform2DComponentList()
 	return transform2DComponentList;
 }
 
-const Vector<InputComponent>& GameObjectSystem::InputComponentList()
+const Vector<InputComponent> GameObjectSystem::InputComponentList()
 {
 	Vector<InputComponent> inputComponentList;
 	for (const auto& inputComponentMap : InputComponentMap)

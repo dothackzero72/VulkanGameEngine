@@ -454,10 +454,7 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkG
     }
     else
     {
-        for (auto& texture : textureSystem.TextureList())
-        {
-            textureList.emplace_back(texture);
-        }
+        textureList = textureSystem.TextureList();
     }
 
     Vector<VkDescriptorImageInfo>	texturePropertiesBuffer;

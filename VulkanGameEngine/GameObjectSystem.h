@@ -42,8 +42,8 @@ public:
     Transform2DComponent& FindTransform2DComponent(const GameObjectID& id);
     const InputComponent& FindInputComponent(const GameObjectID& id);
 
-    const Vector<GameObject>& GameObjectList();
-    const Vector<Transform2DComponent>& Transform2DComponentList();
-    const Vector<InputComponent>& InputComponentList();
+    const Vector<GameObject> GameObjectList();
+    const Vector<Transform2DComponent> Transform2DComponentList();
+    const Vector<InputComponent> InputComponentList();
 };
 extern GameObjectSystem gameObjectSystem;
