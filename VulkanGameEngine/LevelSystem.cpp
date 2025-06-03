@@ -58,6 +58,10 @@ void LevelSystem::LoadLevel(const String& levelPath)
     frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
 }
 
+void LevelSystem::DestoryLevel()
+{
+}
+
 void LevelSystem::Update(const float& deltaTime)
 {
     OrthographicCamera->Update(SceneProperties);

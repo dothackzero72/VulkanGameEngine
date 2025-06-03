@@ -83,3 +83,7 @@ const Vector<Mesh> MeshSystem::SpriteMeshList()
     }
     return spriteMeshList;
 }
+
+void MeshSystem::DestroyAllGameObjects()
+{
+}

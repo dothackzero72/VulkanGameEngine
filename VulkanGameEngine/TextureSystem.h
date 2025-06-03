@@ -40,5 +40,7 @@ public:
 	const Vector<Texture> TextureList();
 	const Vector<Texture> DepthTextureList();
 	const Vector<Texture> InputTextureList(const RenderPassGuid& guid, const UM_RenderPipelineID& renderPipelineId);
+
+	void DestroyAllTextures();
 };
 extern TextureSystem textureSystem;

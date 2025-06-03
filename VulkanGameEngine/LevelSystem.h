@@ -28,12 +28,12 @@ public:
 
 	Level2D														  Level;
 	LevelLayout                                                   levelLayout;
-	UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetList;
 
 	UnorderedMap<GameObjectID, Sprite>							  SpriteList;
+	UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetList;
 	UnorderedMap<RenderPassGuid, SpriteVram>                      VramSpriteList;
-	UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>>  SpriteInstanceList;
 	UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerList;
+	UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>>  SpriteInstanceList;
 	UnorderedMap<UM_SpriteBatchID, int>							  SpriteInstanceBufferList;
 	UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>>          SpriteBatchLayerObjectList;
 
@@ -45,7 +45,8 @@ public:
 	void Update(const float& deltaTime);
 	void Draw(Vector<VkCommandBuffer>& commandBufferList, const float& deltaTime);
 
-	void   LoadLevel(const String& levelPath);
+	void LoadLevel(const String& levelPath);
+	void DestoryLevel();
 };
 extern LevelSystem levelSystem;
 

@@ -221,6 +221,8 @@ void Texture_CreateTextureImage(const RendererState& rendererState, Texture& tex
 	VULKAN_RESULT(Texture_CopyBufferToTexture(rendererState, texture, buffer));
 	VULKAN_RESULT(Texture_GenerateMipmaps(rendererState, texture));
 
+	Renderer_DestroyBuffer(rendererState.Device, &buffer);
+	Renderer_FreeDeviceMemory(rendererState.Device, &bufferMemory);
 	Renderer_DestroyBuffer(rendererState.Device, &stagingBuffer);
 	Renderer_FreeDeviceMemory(rendererState.Device, &stagingBufferMemory);
 	stbi_image_free(data);

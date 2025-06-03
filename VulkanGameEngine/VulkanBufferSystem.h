@@ -97,6 +97,8 @@ public:
 	}
 
 	void DestroyBuffer(const RendererState& renderer, int vulkanBufferId);
+	void DestroyAllBuffers();
+	
 	static VkResult CopyBuffer(const rendererState& renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 	{
 		return Buffer_CopyBuffer(renderer, srcBuffer, dstBuffer, size);

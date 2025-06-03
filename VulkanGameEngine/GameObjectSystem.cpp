@@ -126,3 +126,18 @@ const Vector<InputComponent> GameObjectSystem::InputComponentList()
 	}
 	return inputComponentList;
 }
+
+void GameObjectSystem::DestroyGameObject(const GameObjectID& gameObjectId)
+{
+//	GameObjectMap.erase(gameObjectId);
+	Transform2DComponentMap.erase(gameObjectId);
+	InputComponentMap.erase(gameObjectId);
+}
+
+void GameObjectSystem::DestroyGameObjects()
+{
+	for (auto& gameObject : GameObjectMap)
+	{
+		DestroyGameObject(gameObject.second.GameObjectId);
+	}
+}

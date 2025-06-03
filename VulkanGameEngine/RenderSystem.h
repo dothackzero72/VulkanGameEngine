@@ -20,12 +20,6 @@ private:
 
     UnorderedMap<RenderPassGuid, VulkanRenderPass>                RenderPassMap;
     UnorderedMap<RenderPassGuid, Vector<VulkanPipeline>>          RenderPipelineMap;
-
-    Vector<VkImage>                                               SwapChainImages;
-    Vector<VkImageView>                                           SwapChainImageViews;
-    VkExtent2D                                                    SwapChainResolution;
-    VkSwapchainKHR                                                Swapchain;
-    VkPhysicalDeviceFeatures                                      PhysicalDeviceFeatures;
     VkCommandBufferBeginInfo                                      CommandBufferBeginInfo;
 
     void CreateVulkanRenderPass(RenderPassBuildInfoModel& model, ivec2& renderPassResolution);
@@ -38,6 +32,8 @@ private:
     const Vector<VkDescriptorBufferInfo> GetMeshPropertiesBuffer(VkGuid& levelLayerId);
     const Vector<VkDescriptorImageInfo>  GetTexturePropertiesBuffer(VkGuid& renderPassId, const Texture* renderedTexture);
 
+    void DestroyRenderPass();
+    void DestroyRenderPipeline();
 public:
 
     ImGuiRenderer                                                 imGuiRenderer;

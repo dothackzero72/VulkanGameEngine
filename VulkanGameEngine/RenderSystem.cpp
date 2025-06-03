@@ -202,16 +202,7 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, ive
         model.ClearValueList.emplace_back(Json::LoadClearValue(json["ClearValueList"][x]));
     }
 
-    Vector<Texture> renderedTextureList;
-    Texture depthTexture = Texture();
-    RenderPassMap[model.RenderPassId] = RenderPass_CreateVulkanRenderPass(cRenderer, model, renderPassResolution, sizeof(SceneDataBuffer), renderedTextureList, depthTexture);
-    textureSystem.AddRenderedTexture(model.RenderPassId, renderedTextureList);
-    if (depthTexture.textureView != VK_NULL_HANDLE)
-    {
-        textureSystem.AddDepthTexture(model.RenderPassId, depthTexture);
-    }
     CreateVulkanRenderPass(model, renderPassResolution);
-
     for (int x = 0; x < model.RenderPipelineList.size(); x++)
     {
         uint pipeLineId = renderSystem.RenderPassMap.size();
@@ -505,6 +496,27 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkG
     return texturePropertiesBuffer;
 }
 
+void RenderSystem::DestroyRenderPass()
+{
+    for (auto& renderPass : RenderPassMap)
+    {
+        RenderPass_DestroyRenderPass(cRenderer, renderPass.second);
+    }
+    RenderPassMap.clear();
+}
+
+void RenderSystem::DestroyRenderPipeline()
+{
+    for (auto& renderPipelineList : RenderPipelineMap)
+    {
+        for (auto& renderPipeline : renderPipelineList.second)
+        {
+            Pipeline_Destroy(cRenderer.Device, renderPipeline);
+        }
+    }
+    RenderPipelineMap.clear();
+}
+
 const VulkanRenderPass& RenderSystem::FindRenderPass(const RenderPassGuid& guid)
 {
     auto it = RenderPassMap.find(guid);
@@ -528,5 +540,7 @@ const Vector<VulkanPipeline>& RenderSystem::FindRenderPipelineList(const RenderP
 void RenderSystem::Destroy()
 {
     ImGui_Destroy(cRenderer, imGuiRenderer);
+    DestroyRenderPass();
+    DestroyRenderPipeline();
     renderer.DestroyRenderer();
 }

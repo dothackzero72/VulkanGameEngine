@@ -45,5 +45,8 @@ public:
     const Vector<GameObject> GameObjectList();
     const Vector<Transform2DComponent> Transform2DComponentList();
     const Vector<InputComponent> InputComponentList();
+
+    void DestroyGameObject(const GameObjectID& gameObjectId);
+    void DestroyGameObjects();
 };
 extern GameObjectSystem gameObjectSystem;

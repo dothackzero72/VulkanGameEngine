@@ -49,7 +49,7 @@ void Material::UpdateBuffer()
 
 void Material::Destroy()
 {
-	//bufferSystem.DestroyBuffer(cRenderer, MaterialBufferId);
+	bufferSystem.DestroyBuffer(cRenderer, MaterialBufferId);
 }
 
 void Material::GetMaterialPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& materialBufferList)

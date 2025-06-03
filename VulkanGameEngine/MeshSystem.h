@@ -163,6 +163,8 @@ public:
 
 	const Vector<Mesh> MeshList();
 	const Vector<Mesh> SpriteMeshList();
+
+	void DestroyAllGameObjects();
 };
 extern MeshSystem meshSystem;
 

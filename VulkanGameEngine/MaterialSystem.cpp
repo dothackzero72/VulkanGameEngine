@@ -103,3 +103,11 @@ const Vector<VkDescriptorBufferInfo> MaterialSystem::GetMaterialPropertiesBuffer
     }
     return materialPropertiesBuffer;
 }
+
+void MaterialSystem::DestroyAllMaterials()
+{
+    for (auto& material : MaterialMap)
+    {
+        material.second.Destroy();
+    }
+}

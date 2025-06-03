@@ -188,3 +188,26 @@ const Vector<Texture> TextureSystem::InputTextureList(const RenderPassGuid& guid
 
     return textureList;
 }
+
+void TextureSystem::DestroyAllTextures()
+{
+    for (auto& texture : TextureMap)
+    {
+        Texture_DestroyTexture(cRenderer, texture.second);
+    }
+    for (auto& texture : DepthTextureMap)
+    {
+        Texture_DestroyTexture(cRenderer, texture.second);
+    }
+    for (auto& textureList : RenderedTextureListMap)
+    {
+        for (auto& texture : textureList.second)
+        {
+            Texture_DestroyTexture(cRenderer, texture);
+        }
+    }
+
+    TextureMap.clear();
+    DepthTextureMap.clear();
+    RenderedTextureListMap.clear();
+}

@@ -19,5 +19,7 @@ public:
 	const Material& FindMaterial(const RenderPassGuid& guid);
 	const Vector<Material>& MaterialList();
 	const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer();
+
+	void DestroyAllMaterials();
 };
 extern MaterialSystem materialSystem;

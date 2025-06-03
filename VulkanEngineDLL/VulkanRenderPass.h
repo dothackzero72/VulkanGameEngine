@@ -31,7 +31,7 @@ struct VulkanRenderPassCS
 };
 
 DLL_EXPORT VulkanRenderPass RenderPass_CreateVulkanRenderPass(const RendererState& renderState, RenderPassBuildInfoModel& model, ivec2& renderPassResolution, int ConstBuffer, Vector<Texture>& renderedTextureList, Texture& depthTexture);
-DLL_EXPORT void RenderPass_DestroyRenderPass(RendererState& renderState, VulkanRenderPass& renderPass, Vector<Texture>& renderedTextureList);
+DLL_EXPORT void RenderPass_DestroyRenderPass(RendererState& renderState, VulkanRenderPass& renderPass);
 
 DLL_EXPORT VulkanRenderPassCS RenderPass_ConvertToCS(void* renderState);
 
@@ -39,3 +39,4 @@ VkResult RenderPass_CreateCommandBuffers(const RendererState& renderState, VkCom
 VkResult RenderPass_CreateFrameBuffer(const RendererState& renderState, VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);
 VkRenderPass RenderPass_BuildRenderPass(const RendererState& renderState, VulkanRenderPass& vulkanRenderPass, const RenderPassBuildInfoModel& renderPassBuildInfo, Vector<Texture>& renderedTextureList, Texture& depthTexture);
 Vector<VkFramebuffer> RenderPass_BuildFrameBuffer(const RendererState& renderState, const VulkanRenderPass& vulkanRenderPass, const RenderPassBuildInfoModel& renderPassBuildInfo, Vector<Texture>& renderedTextureList, Texture& depthTexture, ivec2& renderPassResolution);
+
