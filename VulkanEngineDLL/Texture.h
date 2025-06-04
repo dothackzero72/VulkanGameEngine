@@ -89,7 +89,7 @@ struct Texture
     int width = 1;
     int height = 1;
     int depth = 1;
-    uint32 mipMapLevels = 1;
+    uint32 mipMapLevels = 0;
     uint32 textureBufferIndex = 0;
 
     VkImage textureImage = VK_NULL_HANDLE;
@@ -140,7 +140,7 @@ extern "C" {
 #endif
     
         DLL_EXPORT void Texture_UpdateCmdTextureLayout(const RendererState& rendererState, VkCommandBuffer& commandBuffer, Texture& texture, VkImageLayout& newImageLayout);
-        DLL_EXPORT void Texture_UpdateTextureLayout(const RendererState& rendererState, Texture& texture, VkImageLayout& newImageLayout);
+        DLL_EXPORT void Texture_UpdateTextureLayout(const RendererState& rendererState, Texture& texture, VkImageLayout newImageLayout);
 
         VkResult Texture_UpdateImage(const RendererState& rendererState, Texture & texture);
         VkResult Texture_CreateImage(const RendererState& rendererState, Texture & texture, VkImageCreateInfo& imageCreateInfo);
@@ -150,7 +150,7 @@ extern "C" {
         VkResult Texture_CreateDepthTextureSampler(const RendererState& rendererState, VkSampler& smapler);
 
         VkResult Texture_TransitionImageLayout(const RendererState& rendererState, VkCommandBuffer& commandBuffer, Texture& texture, VkImageLayout newLayout);
-        VkResult Texture_QuickTransitionImageLayout(const RendererState& rendererState, Texture& texture, VkImageLayout& newLayout);
+        VkResult Texture_QuickTransitionImageLayout(const RendererState& rendererState, Texture& texture, VkImageLayout newLayout);
         VkResult Texture_CommandBufferTransitionImageLayout(const RendererState& rendererState, VkCommandBuffer commandBuffer, Texture& texture, VkImageLayout newLayout);
 
         VkResult Texture_CopyBufferToTexture(const RendererState& rendererState, Texture & texture, VkBuffer buffer);

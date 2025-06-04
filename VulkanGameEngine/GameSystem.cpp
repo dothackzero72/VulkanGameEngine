@@ -64,18 +64,18 @@ void GameSystem::Update(const float& deltaTime)
 
 void GameSystem::DebugUpdate(const float& deltaTime)
 {
-   // ImGui_StartFrame();
+    ImGui_StartFrame();
     //ImGui::Begin("Button Window");
    // ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ////texture2.get()->ImGuiShowTexture(ImVec2(256, 128));
-  //  ImGui_EndFrame();
+    ImGui_EndFrame();
 }
 
 void GameSystem::Draw(const float& deltaTime)
 {
     VULKAN_RESULT(renderer.StartFrame());
     levelSystem.Draw(CommandBufferSubmitList, deltaTime);
-   // CommandBufferSubmitList.emplace_back(ImGui_Draw(cRenderer, renderSystem.imGuiRenderer));
+    CommandBufferSubmitList.emplace_back(ImGui_Draw(cRenderer, renderSystem.imGuiRenderer));
     VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
     CommandBufferSubmitList.clear();
 }

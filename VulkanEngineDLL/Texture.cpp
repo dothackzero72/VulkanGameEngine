@@ -215,10 +215,10 @@ void Texture_CreateTextureImage(const RendererState& rendererState, Texture& tex
 		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 	};
 
-	VkImageLayout newTextureLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	VULKAN_RESULT(Texture_CreateImage(rendererState, texture, imageCreateInfo));
-	VULKAN_RESULT(Texture_QuickTransitionImageLayout(rendererState, texture, newTextureLayout));
+	VULKAN_RESULT(Texture_QuickTransitionImageLayout(rendererState, texture, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));
 	VULKAN_RESULT(Texture_CopyBufferToTexture(rendererState, texture, buffer));
+	VULKAN_RESULT(Texture_QuickTransitionImageLayout(cRenderer, texture, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL));
 	VULKAN_RESULT(Texture_GenerateMipmaps(rendererState, texture));
 
 	Renderer_DestroyBuffer(rendererState.Device, &buffer);
@@ -461,7 +461,7 @@ void Texture_UpdateCmdTextureLayout(const RendererState& rendererState, VkComman
 	texture.textureImageLayout = newImageLayout;
 }
 
-void Texture_UpdateTextureLayout(const RendererState& rendererState, Texture& texture, VkImageLayout& newImageLayout)
+void Texture_UpdateTextureLayout(const RendererState& rendererState, Texture& texture, VkImageLayout newImageLayout)
 {
 	VkImageMemoryBarrier imageMemoryBarrier =
 	{
@@ -489,7 +489,7 @@ void Texture_UpdateTextureLayout(const RendererState& rendererState, Texture& te
 	}
 }
 
-VkResult Texture_QuickTransitionImageLayout(const RendererState& rendererState, Texture& texture, VkImageLayout& newLayout)
+VkResult Texture_QuickTransitionImageLayout(const RendererState& rendererState, Texture& texture, VkImageLayout newLayout)
 {
 	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer(rendererState.Device, rendererState.CommandPool);
 	Texture_TransitionImageLayout(rendererState, commandBuffer, texture, newLayout);
