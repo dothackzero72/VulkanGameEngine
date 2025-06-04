@@ -90,7 +90,7 @@
     <ClCompile Include="InputComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanBufferSystem.cpp">
+    <ClCompile Include="BufferSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="MeshSystem.cpp">
@@ -197,7 +197,7 @@
     <ClInclude Include="InputComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanBufferSystem.h">
+    <ClInclude Include="BufferSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="MeshSystem.h">

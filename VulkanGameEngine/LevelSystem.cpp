@@ -53,7 +53,7 @@ void LevelSystem::LoadLevel(const String& levelPath)
     nlohmann::json json2 = Json::ReadJson("../RenderPass/LevelShader2DRenderPass.json");
     spriteRenderPass2DId = VkGuid(json2["RenderPassId"].get<String>().c_str());
 
-    SpriteBatchLayerList[spriteRenderPass2DId].emplace_back(SpriteBatchLayer(spriteRenderPass2DId));
+    SpriteBatchLayerListMap[spriteRenderPass2DId].emplace_back(SpriteBatchLayer(spriteRenderPass2DId));
     spriteRenderPass2DId = renderSystem.LoadRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
     frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
 }
@@ -115,8 +115,8 @@ VkGuid LevelSystem::LoadSpriteVRAM(const String& spritePath)
     VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
     VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
 
-    auto it = VramSpriteList.find(vramId);
-    if (it != VramSpriteList.end())
+    auto it = VramSpriteMap.find(vramId);
+    if (it != VramSpriteMap.end())
     {
         return vramId;
     }
@@ -145,17 +145,17 @@ VkGuid LevelSystem::LoadSpriteVRAM(const String& spritePath)
             .FrameHoldTime = json["AnimationList"][x]["FrameHoldTime"]
         };
 
-        Vector<ivec2> FrameList;
+        AnimationFrames FrameList;
         for (int y = 0; y < json["AnimationList"][x]["FrameList"].size(); y++)
         {
             FrameList.emplace_back(ivec2{ json["AnimationList"][x]["FrameList"][y][0], json["AnimationList"][x]["FrameList"][y][1] });
         }
 
-        AnimationList[animation.AnimationId] = animation;
-        AnimationFrameList[vramId].emplace_back(FrameList);
+        AnimationMap[animation.AnimationId] = animation;
+        AnimationFrameListMap[vramId].emplace_back(FrameList);
     }
 
-    VramSpriteList[vramId] = sprite;
+    VramSpriteMap[vramId] = sprite;
     return vramId;
 }
 
@@ -171,8 +171,8 @@ VkGuid LevelSystem::LoadTileSetVRAM(const String& tileSetPath)
     VkGuid tileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
     VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
 
-    auto it = LevelTileSetList.find(tileSetId);
-    if (it != LevelTileSetList.end())
+    auto it = LevelTileSetMap.find(tileSetId);
+    if (it != LevelTileSetMap.end())
     {
         return tileSetId;
     }
@@ -196,7 +196,7 @@ VkGuid LevelSystem::LoadTileSetVRAM(const String& tileSetPath)
         tile.TileUVOffset = vec2(tile.TileUVCellOffset.x * tileSet.TileUVSize.x, tile.TileUVCellOffset.y * tileSet.TileUVSize.y);
         tileSet.LevelTileList.emplace_back(tile);
     }
-    LevelTileSetList[tileSetId] = tileSet;
+    LevelTileSetMap[tileSetId] = tileSet;
     return tileSetId;
 }
 

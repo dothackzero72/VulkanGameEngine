@@ -25,6 +25,8 @@ class VulkanBufferSystem
 private:
 	static int NextBufferId;
 
+	UnorderedMap<int, VulkanBuffer> VulkanBufferMap;
+
 	template <typename T>
 	BufferTypeEnum GetBufferType() 
 	{
@@ -42,8 +44,6 @@ private:
 
 public:
 
-	UnorderedMap<int, VulkanBufferStruct> VulkanBuffer;
-
 	template<class T>
 	int CreateVulkanBuffer(const rendererState& renderer, T& bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 	{
@@ -51,7 +51,7 @@ public:
 		VkDeviceSize bufferElementSize = sizeof(T);
 		uint bufferElementCount = 1;
 
-		VulkanBuffer[++NextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, static_cast<void*>(&bufferData), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
+		VulkanBufferMap[++NextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, static_cast<void*>(&bufferData), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
 		return NextBufferId;
 	}
 
@@ -62,7 +62,7 @@ public:
 		VkDeviceSize bufferElementSize = sizeof(T);
 		uint bufferElementCount = bufferData.size();
 
-		VulkanBuffer[++NextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, bufferData.data(), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
+		VulkanBufferMap[++NextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, bufferData.data(), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
 		return NextBufferId;
 	}
 
@@ -70,7 +70,7 @@ public:
 	void UpdateBufferMemory(const rendererState& renderer, int bufferId, T& bufferData)
 	{
 		BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
-		if (VulkanBuffer[bufferId].BufferType != bufferTypeEnum)
+		if (VulkanBufferMap[bufferId].BufferType != bufferTypeEnum)
 		{
 			throw std::runtime_error("Buffer type doesn't match");
 		}
@@ -78,14 +78,14 @@ public:
 		VkDeviceSize bufferElementSize = sizeof(T);
 		uint bufferElementCount = 1;
 
-		VulkanBuffer_UpdateBufferMemory(renderer, VulkanBuffer[bufferId], static_cast<void*>(&bufferData), bufferElementSize, bufferElementCount);
+		VulkanBuffer_UpdateBufferMemory(renderer, VulkanBufferMap[bufferId], static_cast<void*>(&bufferData), bufferElementSize, bufferElementCount);
 	}
 
 	template<class T>
 	void UpdateBufferMemory(const rendererState& renderer, int bufferId, Vector<T>& bufferData)
 	{
 		BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
-		if (VulkanBuffer[bufferId].BufferType != bufferTypeEnum)
+		if (VulkanBufferMap[bufferId].BufferType != bufferTypeEnum)
 		{
 			throw std::runtime_error("Buffer type doesn't match");
 		}
@@ -93,8 +93,11 @@ public:
 		VkDeviceSize bufferElementSize = sizeof(T);
 		uint bufferElementCount = bufferData.size();
 
-		VulkanBuffer_UpdateBufferMemory(renderer, VulkanBuffer[bufferId], bufferData.data(), bufferElementSize, bufferElementCount);
+		VulkanBuffer_UpdateBufferMemory(renderer, VulkanBufferMap[bufferId], bufferData.data(), bufferElementSize, bufferElementCount);
 	}
+
+	const VulkanBuffer& FindVulkanBuffer(int id);
+	const Vector<VulkanBuffer>& VulkanBufferList();
 
 	void DestroyBuffer(const RendererState& renderer, int vulkanBufferId);
 	void DestroyAllBuffers();

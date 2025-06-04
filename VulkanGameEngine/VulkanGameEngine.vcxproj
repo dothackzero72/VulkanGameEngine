@@ -162,7 +162,7 @@
     <ClCompile Include="SystemClock.cpp" />
     <ClCompile Include="TextureSystem.cpp" />
     <ClCompile Include="Tile.cpp" />
-    <ClCompile Include="VulkanBufferSystem.cpp" />
+    <ClCompile Include="BufferSystem.cpp" />
     <ClCompile Include="VulkanRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -199,7 +199,7 @@
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Transform2DComponent.h" />
     <ClInclude Include="Vertex.h" />
-    <ClInclude Include="VulkanBufferSystem.h" />
+    <ClInclude Include="BufferSystem.h" />
     <ClInclude Include="VulkanRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -25,9 +25,9 @@ Sprite::~Sprite()
 SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
     const Transform2DComponent& transform2D = gameObjectSystem.FindTransform2DComponent(GameObjectId);
-    const SpriteVram& vram = levelSystem.VramSpriteList.at(SpriteVramId);
-    const Animation2D& animation = levelSystem.AnimationList.at(CurrentAnimationID);
-    const Vector<ivec2>& frameList = levelSystem.AnimationFrameList[vram.VramSpriteID][CurrentAnimationID];
+    const SpriteVram& vram = levelSystem.VramSpriteMap.at(SpriteVramId);
+    const Animation2D& animation = levelSystem.AnimationMap.at(CurrentAnimationID);
+    const AnimationFrames& frameList = levelSystem.AnimationFrameListMap[vram.VramSpriteID][CurrentAnimationID];
     const Material& material = materialSystem.FindMaterial(vram.SpriteMaterialID);
     const ivec2& currentFrame = frameList[CurrentFrame];
 

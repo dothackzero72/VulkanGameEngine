@@ -1,7 +1,7 @@
 #include "Material.h"
 #include "RenderSystem.h"
 #include "TextureSystem.h"
-#include "VulkanBufferSystem.h"
+#include "BufferSystem.h"
 
 Material::Material()
 {
@@ -56,7 +56,7 @@ void Material::GetMaterialPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& 
 {
 	VkDescriptorBufferInfo meshBufferInfo =
 	{
-		.buffer = bufferSystem.VulkanBuffer[MaterialBufferId].Buffer,
+		.buffer = bufferSystem.FindVulkanBuffer(MaterialBufferId).Buffer,
 		.offset = 0,
 		.range = VK_WHOLE_SIZE
 	};

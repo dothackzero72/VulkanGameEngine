@@ -2,7 +2,7 @@
 #include "json.h"
 #include "TextureSystem.h"
 #include "ShaderSystem.h"
-#include "VulkanBufferSystem.h"
+#include "BufferSystem.h"
 #include "MeshSystem.h"
 #include "GameObjectSystem.h"
 
@@ -38,9 +38,9 @@ void RenderSystem::Update(const float& deltaTime)
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
     for (auto& renderPass : RenderPassMap)
     {
-        if (levelSystem.SpriteBatchLayerList.find(renderPass.second.RenderPassId) != levelSystem.SpriteBatchLayerList.end())
+        if (levelSystem.SpriteBatchLayerListMap.find(renderPass.second.RenderPassId) != levelSystem.SpriteBatchLayerListMap.end())
         {
-            for (auto& spriteLayer : levelSystem.SpriteBatchLayerList[renderPass.second.RenderPassId])
+            for (auto& spriteLayer : levelSystem.SpriteBatchLayerListMap[renderPass.second.RenderPassId])
             {
                 spriteLayer.Update(commandBuffer, deltaTime);
             }
@@ -123,7 +123,7 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
     const VulkanRenderPass& renderPass = FindRenderPass(renderPassId);
     const VulkanPipeline& spritePipeline = FindRenderPipelineList(renderPassId)[0];
     const VulkanPipeline& levelPipeline = FindRenderPipelineList(renderPassId)[1];
-    const Vector<SpriteBatchLayer>& spriteLayerList = levelSystem.SpriteBatchLayerList[renderPassId];
+    const Vector<SpriteBatchLayer>& spriteLayerList = levelSystem.SpriteBatchLayerListMap[renderPassId];
     const Vector<Mesh>& levelLayerList = meshSystem.FindLevelLayerMeshList(levelId);
     const VkCommandBuffer& commandBuffer = renderPass.CommandBuffer;
 
@@ -143,8 +143,8 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
 
     for (auto levelLayer : levelLayerList)
     {
-        const VkBuffer& meshVertexBuffer = bufferSystem.VulkanBuffer[levelLayer.MeshVertexBufferId].Buffer;
-        const VkBuffer& meshIndexBuffer = bufferSystem.VulkanBuffer[levelLayer.MeshIndexBufferId].Buffer;
+        const VkBuffer& meshVertexBuffer = bufferSystem.FindVulkanBuffer(levelLayer.MeshVertexBufferId).Buffer;
+        const VkBuffer& meshIndexBuffer = bufferSystem.FindVulkanBuffer(levelLayer.MeshIndexBufferId).Buffer;
 
         VkDeviceSize offsets[] = { 0 };
         vkCmdPushConstants(commandBuffer, levelPipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
@@ -156,11 +156,11 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
     }
     for (auto spriteLayer : spriteLayerList)
     {
-        const Vector<SpriteInstanceStruct>& spriteInstanceList = levelSystem.SpriteInstanceList[spriteLayer.SpriteBatchLayerID];
+        const Vector<SpriteInstanceStruct>& spriteInstanceList = levelSystem.SpriteInstanceListMap[spriteLayer.SpriteBatchLayerID];
         const Mesh& spriteMesh = meshSystem.FindSpriteMesh(spriteLayer.SpriteLayerMeshId);
-        const VkBuffer& meshVertexBuffer = bufferSystem.VulkanBuffer[spriteMesh.MeshVertexBufferId].Buffer;
-        const VkBuffer& meshIndexBuffer = bufferSystem.VulkanBuffer[spriteMesh.MeshIndexBufferId].Buffer;
-        const VkBuffer& spriteInstanceBuffer = bufferSystem.VulkanBuffer[levelSystem.SpriteInstanceBufferList[spriteLayer.SpriteBatchLayerID]].Buffer;
+        const VkBuffer& meshVertexBuffer = bufferSystem.FindVulkanBuffer(spriteMesh.MeshVertexBufferId).Buffer;
+        const VkBuffer& meshIndexBuffer = bufferSystem.FindVulkanBuffer(spriteMesh.MeshIndexBufferId).Buffer;
+        const VkBuffer& spriteInstanceBuffer = bufferSystem.FindVulkanBuffer(levelSystem.SpriteInstanceBufferMap[spriteLayer.SpriteBatchLayerID]).Buffer;
 
         VkDeviceSize offsets[] = { 0 };
         vkCmdPushConstants(commandBuffer, spritePipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
@@ -422,7 +422,7 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMeshPropertiesBuffer(VkGui
     {
         for (auto& mesh : meshList)
         {
-            const VulkanBufferStruct& meshProperties = bufferSystem.VulkanBuffer[mesh.PropertiesBufferId];
+            const VulkanBuffer& meshProperties = bufferSystem.FindVulkanBuffer(mesh.PropertiesBufferId);
             meshPropertiesBuffer.emplace_back(VkDescriptorBufferInfo
                 {
                     .buffer = meshProperties.Buffer,

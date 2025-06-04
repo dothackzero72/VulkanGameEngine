@@ -6,9 +6,9 @@ class MeshSystem;
 class MaterialSystem
 {
 private:
-public:
-	
 	UnorderedMap<RenderPassGuid, Material>                        MaterialMap;
+
+public:
 
 	MaterialSystem();
 	~MaterialSystem();

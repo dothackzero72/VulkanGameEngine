@@ -23,7 +23,7 @@ void GameObjectSystem::CreateGameObject(const String& name, const Vector<Compone
 		{
 			case kTransform2DComponent: Transform2DComponentMap[id] = Transform2DComponent(objectPosition); break;
 			case kInputComponent: InputComponentMap[id] = InputComponent(id); break;
-			case kSpriteComponent: levelSystem.SpriteList[id] = Sprite(id, vramId); break;
+			case kSpriteComponent: levelSystem.SpriteMap[id] = Sprite(id, vramId); break;
 		}
 	}
 }
@@ -64,7 +64,7 @@ void GameObjectSystem::LoadInputComponent(const nlohmann::json& json, GameObject
 void GameObjectSystem::LoadSpriteComponent(const nlohmann::json& json, GameObjectID id)
 {
 	VkGuid vramId = VkGuid(json["VramId"].get<String>().c_str());
-	levelSystem.SpriteList[id] = Sprite(id, vramId);
+	levelSystem.SpriteMap[id] = Sprite(id, vramId);
 }
 
 const GameObject& GameObjectSystem::FindGameObject(const GameObjectID& id)

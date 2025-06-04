@@ -8,6 +8,8 @@
 #include "SpriteVRAM.h"
 #include "OrthographicCamera2D.h"
 
+typedef Vector<vec2> AnimationFrames;
+
 class MeshSystem;
 class LevelSystem
 {
@@ -29,16 +31,16 @@ public:
 	Level2D														  Level;
 	LevelLayout                                                   levelLayout;
 
-	UnorderedMap<GameObjectID, Sprite>							  SpriteList;
-	UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetList;
-	UnorderedMap<RenderPassGuid, SpriteVram>                      VramSpriteList;
-	UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerList;
-	UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>>  SpriteInstanceList;
-	UnorderedMap<UM_SpriteBatchID, int>							  SpriteInstanceBufferList;
-	UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>>          SpriteBatchLayerObjectList;
+	UnorderedMap<GameObjectID, Sprite>							  SpriteMap;
+	UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetMap;
+	UnorderedMap<RenderPassGuid, SpriteVram>                      VramSpriteMap;
+	UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerListMap;
+	UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>>  SpriteInstanceListMap;
+	UnorderedMap<UM_SpriteBatchID, int>							  SpriteInstanceBufferMap;
+	UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>>          SpriteBatchLayerObjectListMap;
 
-	UnorderedMap<UM_AnimationListID, Animation2D>				  AnimationList;
-	UnorderedMap<VkGuid, Vector<Vector<ivec2>>>					  AnimationFrameList;
+	UnorderedMap<UM_AnimationListID, Animation2D>				  AnimationMap;
+	UnorderedMap<VkGuid, Vector<AnimationFrames>>			      AnimationFrameListMap;
 
 	LevelSystem();
 	~LevelSystem();

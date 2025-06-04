@@ -1,9 +1,9 @@
 #include "VulkanBuffer.h"
 
-VulkanBufferStruct VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount, int bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount, int bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 {
     VkDeviceSize bufferSize = bufferElementSize * bufferElementCount;
-    VulkanBufferStruct vulkanBuffer = 
+    VulkanBuffer vulkanBuffer =
     {
         .BufferSize = bufferSize,
         .BufferUsage = usage,
@@ -30,7 +30,7 @@ VulkanBufferStruct VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer
     return vulkanBuffer;
 }
 
-void VulkanBuffer_UpdateBufferSize(const RendererState& renderer, VulkanBufferStruct& vulkanBuffer, VkDeviceSize newBufferElementSize, uint32_t newBufferElementCount) 
+void VulkanBuffer_UpdateBufferSize(const RendererState& renderer, VulkanBuffer& vulkanBuffer, VkDeviceSize newBufferElementSize, uint32_t newBufferElementCount)
 {
     VkDeviceSize newBufferSize = newBufferElementSize * newBufferElementCount;
     if (vulkanBuffer.UsingStagingBuffer)
@@ -44,7 +44,7 @@ void VulkanBuffer_UpdateBufferSize(const RendererState& renderer, VulkanBufferSt
     }
 }
 
-void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBufferStruct& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount) 
+void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount)
 {
     VkDeviceSize newBufferSize = bufferElementSize * bufferElementCount;
     if (vulkanBuffer.UsingStagingBuffer) 
@@ -73,7 +73,7 @@ VkResult VulkanBuffer_CopyBuffer(const RendererState& renderer, VkBuffer* srcBuf
 }
 
 
-void VulkanBuffer_DestroyBuffer(const RendererState& renderer, VulkanBufferStruct& vulkanBuffer) {
+void VulkanBuffer_DestroyBuffer(const RendererState& renderer, VulkanBuffer& vulkanBuffer) {
     VkResult result = Buffer_DestroyBuffer(renderer, &vulkanBuffer.Buffer, &vulkanBuffer.StagingBuffer, &vulkanBuffer.BufferMemory, &vulkanBuffer.StagingBufferMemory, &vulkanBuffer.BufferData, &vulkanBuffer.BufferSize, &vulkanBuffer.BufferUsage, &vulkanBuffer.BufferProperties);
     if (result != VK_SUCCESS) 
     {

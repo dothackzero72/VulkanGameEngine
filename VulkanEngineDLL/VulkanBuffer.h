@@ -9,7 +9,7 @@
 #include "Typedef.h"
 #include "CoreVulkanRenderer.h"
 
-struct VulkanBufferStruct 
+struct VulkanBuffer
 {
 	VkBuffer Buffer = VK_NULL_HANDLE;             
 	VkBuffer StagingBuffer = VK_NULL_HANDLE;     
@@ -26,12 +26,12 @@ struct VulkanBufferStruct
 	bool UsingStagingBuffer = false;       
 };
 
-DLL_EXPORT VulkanBufferStruct VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount, int bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
-DLL_EXPORT void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBufferStruct& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount);
+DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount, int bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
+DLL_EXPORT void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount);
 DLL_EXPORT VkResult VulkanBuffer_CopyBuffer(const RendererState& renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
-DLL_EXPORT void VulkanBuffer_DestroyBuffer(const RendererState& renderer, VulkanBufferStruct& vulkanBuffer);
+DLL_EXPORT void VulkanBuffer_DestroyBuffer(const RendererState& renderer, VulkanBuffer& vulkanBuffer);
 
-void VulkanBuffer_UpdateBufferSize(const RendererState& renderer, VulkanBufferStruct& vulkanBuffer, VkDeviceSize newBufferElementSize, uint32_t newBufferElementCount);
+void VulkanBuffer_UpdateBufferSize(const RendererState& renderer, VulkanBuffer& vulkanBuffer, VkDeviceSize newBufferElementSize, uint32_t newBufferElementCount);
 
 #ifdef __cplusplus
 extern "C" {
