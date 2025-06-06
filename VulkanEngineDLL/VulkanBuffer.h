@@ -9,8 +9,22 @@
 #include "Typedef.h"
 #include "CoreVulkanRenderer.h"
 
+enum BufferTypeEnum
+{
+	BufferType_UInt,
+	BufferType_Mat4,
+	BufferType_MaterialProperitiesBuffer,
+	BufferType_SpriteInstanceStruct,
+	BufferType_MeshPropertiesStruct,
+	BufferType_SpriteMesh,
+	BufferType_LevelLayerMesh,
+	BufferType_Material,
+	BufferType_Vector2D
+};
+
 struct VulkanBuffer
 {
+	uint BufferId = 0;
 	VkBuffer Buffer = VK_NULL_HANDLE;             
 	VkBuffer StagingBuffer = VK_NULL_HANDLE;     
 	VkDeviceMemory StagingBufferMemory = VK_NULL_HANDLE;
@@ -20,14 +34,15 @@ struct VulkanBuffer
 	VkMemoryPropertyFlags BufferProperties = 0;    
 	uint64_t BufferDeviceAddress = 0;              
 	VkAccelerationStructureKHR BufferHandle = VK_NULL_HANDLE; 
-	int  BufferType; //Define as enum in project linking to DLL;                
+	BufferTypeEnum  BufferType;              
 	void* BufferData = nullptr;                    
 	bool IsMapped = false;                         
 	bool UsingStagingBuffer = false;       
 };
 
-DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount, int bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
-DLL_EXPORT void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount);
+DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
+DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, VulkanBuffer& vulkanBuffer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
+DLL_EXPORT void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount);
 DLL_EXPORT VkResult VulkanBuffer_CopyBuffer(const RendererState& renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
 DLL_EXPORT void VulkanBuffer_DestroyBuffer(const RendererState& renderer, VulkanBuffer& vulkanBuffer);
 

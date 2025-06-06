@@ -7,24 +7,11 @@
 #include "Vertex.h"
 #include "Sprite.h"
 
-enum BufferTypeEnum
-{
-	BufferType_UInt,
-	BufferType_Mat4,
-	BufferType_MaterialProperitiesBuffer,
-	BufferType_SpriteInstanceStruct,
-	BufferType_MeshPropertiesStruct,
-	BufferType_SpriteMesh,
-	BufferType_LevelLayerMesh,
-	BufferType_Material,
-	BufferType_Vector2D
-};
+static int NextBufferId;
 
 class VulkanBufferSystem
 {
 private:
-	static int NextBufferId;
-
 	UnorderedMap<int, VulkanBuffer> VulkanBufferMap;
 
 	template <typename T>
@@ -51,7 +38,8 @@ public:
 		VkDeviceSize bufferElementSize = sizeof(T);
 		uint bufferElementCount = 1;
 
-		VulkanBufferMap[++NextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, static_cast<void*>(&bufferData), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
+		int nextBufferId = ++NextBufferId;
+		VulkanBufferMap[nextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, nextBufferId, static_cast<void*>(&bufferData), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
 		return NextBufferId;
 	}
 
@@ -62,7 +50,8 @@ public:
 		VkDeviceSize bufferElementSize = sizeof(T);
 		uint bufferElementCount = bufferData.size();
 
-		VulkanBufferMap[++NextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, bufferData.data(), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
+		int nextBufferId = ++NextBufferId;
+		VulkanBufferMap[nextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, nextBufferId, bufferData.data(), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
 		return NextBufferId;
 	}
 

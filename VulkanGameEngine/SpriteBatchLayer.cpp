@@ -23,7 +23,33 @@ SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 
 	SpriteLayerMeshId = meshSystem.CreateSpriteLayerMesh<Vertex2D>(gameObjectSystem.SpriteVertexList, gameObjectSystem.SpriteIndexList);
 	levelSystem.SpriteInstanceListMap[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID].size());
-	levelSystem.SpriteInstanceBufferMap[SpriteBatchLayerID] = bufferSystem.CreateVulkanBuffer<SpriteInstanceStruct>(cRenderer, levelSystem.SpriteInstanceListMap[SpriteBatchLayerID], meshSystem.MeshBufferUsageSettings, meshSystem.MeshBufferPropertySettings, false);
+
+	MeshLoader meshLoader =
+	{
+			.VertexType = BufferTypeEnum::BufferType_Vector2D,
+	.MeshId = SpriteLayerMeshId,
+	.MaterialId = 0,
+	.ParentGameObjectID = 0,
+
+	.MeshVertexBufferId = ++NextBufferId,
+	.sizeofVertex = sizeof(Vertex2D),
+	.vertexCount;
+	.vertexData;
+
+	.MeshIndexBufferId = ++NextBufferId,
+	.sizeofIndex = sizeof()
+	.indexCount;
+	.indexData;
+
+	.MeshTransformBufferId = ++NextBufferId,
+	.sizeofTransform;
+	.transformData;
+
+	.PropertiesBufferId = ++NextBufferId,
+	.sizeofMeshProperties;
+	.meshPropertiesData;
+	}
+	levelSystem.SpriteInstanceBufferMap[SpriteBatchLayerID] = bufferSystem.CreateVulkanBuffer<SpriteInstanceStruct>(cRenderer, levelSystem.SpriteInstanceListMap[SpriteBatchLayerID], MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 }
 
 SpriteBatchLayer::~SpriteBatchLayer()

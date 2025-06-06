@@ -1,7 +1,7 @@
 #pragma once
 #include "TypeDef.h"
 #include "Sprite.h"
-#include "Mesh.h"
+#include <Mesh.h>
 #include <VulkanPipeline.h>
 #include "ECSid.h"
 

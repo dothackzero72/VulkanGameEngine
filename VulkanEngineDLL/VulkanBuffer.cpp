@@ -1,10 +1,11 @@
 #include "VulkanBuffer.h"
 
-VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount, int bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 {
     VkDeviceSize bufferSize = bufferElementSize * bufferElementCount;
     VulkanBuffer vulkanBuffer =
     {
+        .BufferId = bufferId,
         .BufferSize = bufferSize,
         .BufferUsage = usage,
         .BufferProperties = properties,
@@ -30,7 +31,38 @@ VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, void
     return vulkanBuffer;
 }
 
-void VulkanBuffer_UpdateBufferSize(const RendererState& renderer, VulkanBuffer& vulkanBuffer, VkDeviceSize newBufferElementSize, uint32_t newBufferElementCount)
+VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, VulkanBuffer& vulkanBuffer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+{
+    VkDeviceSize bufferSize = bufferElementSize * bufferElementCount;
+    vulkanBuffer =
+    {
+        .BufferId = bufferId,
+        .BufferSize = bufferSize,
+        .BufferUsage = usage,
+        .BufferProperties = properties,
+        .BufferType = bufferTypeEnum,
+        .UsingStagingBuffer = usingStagingBuffer,
+    };
+
+    VkResult result;
+    if (vulkanBuffer.UsingStagingBuffer)
+    {
+        result = Buffer_CreateStagingBuffer(renderer, &vulkanBuffer.StagingBuffer, &vulkanBuffer.Buffer, &vulkanBuffer.StagingBufferMemory, &vulkanBuffer.BufferMemory, bufferData, bufferSize, vulkanBuffer.BufferUsage, vulkanBuffer.BufferProperties);
+    }
+    else
+    {
+        result = Buffer_CreateBuffer(renderer, &vulkanBuffer.Buffer, &vulkanBuffer.BufferMemory, bufferData, bufferSize, vulkanBuffer.BufferProperties, vulkanBuffer.BufferUsage);
+    }
+
+    if (result != VK_SUCCESS)
+    {
+        RENDERER_ERROR("Failed to create Vulkan buffer");
+    }
+
+    return vulkanBuffer;
+}
+
+void VulkanBuffer_UpdateBufferSize(const RendererState& renderer, VulkanBuffer& vulkanBuffer, VkDeviceSize newBufferElementSize, uint newBufferElementCount)
 {
     VkDeviceSize newBufferSize = newBufferElementSize * newBufferElementCount;
     if (vulkanBuffer.UsingStagingBuffer)
@@ -44,7 +76,7 @@ void VulkanBuffer_UpdateBufferSize(const RendererState& renderer, VulkanBuffer& 
     }
 }
 
-void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint32_t bufferElementCount)
+void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount)
 {
     VkDeviceSize newBufferSize = bufferElementSize * bufferElementCount;
     if (vulkanBuffer.UsingStagingBuffer) 

@@ -1,6 +1,6 @@
 #include "BufferSystem.h"
 
-int VulkanBufferSystem::NextBufferId = 0;
+int NextBufferId = 0;
 VulkanBufferSystem bufferSystem = VulkanBufferSystem();
 
 const VulkanBuffer& VulkanBufferSystem::FindVulkanBuffer(int id)
