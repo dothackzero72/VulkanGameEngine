@@ -148,11 +148,13 @@
     <ClInclude Include="JsonStructs.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="SDLWindow.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureCS.h" />
     <ClInclude Include="Typedef.h" />
     <ClInclude Include="VkGuid.h" />
     <ClInclude Include="VulkanBuffer.h" />
@@ -181,10 +183,12 @@
     <ClCompile Include="ImGuiFunc.cpp" />
     <ClCompile Include="JsonFunc.cpp" />
     <ClCompile Include="Keyboard.c" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="SDLWindow.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureCS.cpp" />
     <ClCompile Include="VulkanBuffer.cpp" />
     <ClCompile Include="VulkanError.c" />
     <ClCompile Include="VulkanPipeline.cpp" />

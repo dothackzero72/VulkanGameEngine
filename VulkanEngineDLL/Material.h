@@ -1,7 +1,9 @@
 #pragma once
-#include <Texture.h>
-#include <VulkanBuffer.h>
-#include "VkGuid.h"
+#include "DLL.h"
+#include "Typedef.h"
+#include "json.h"
+#include "CoreVulkanRenderer.h"
+#include "VulkanBuffer.h"
 
 struct MaterialProperitiesBuffer
 {
@@ -24,24 +26,11 @@ struct MaterialProperitiesBuffer
 	alignas(4) uint32 HeightMapId = 0;
 };
 
-class Material
+struct Material
 {
-private:
-
-public:
-	static uint32 NextMaterialId;
-
-	String Name;
 	VkGuid MaterialId;
-	
-	uint ShaderMaterialBufferIndex = 0;
-
-	vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
-	float Metallic = 0.0f;
-	float Roughness = 0.0f;
-	float AmbientOcclusion = 1.0f;
-	vec3 Emission = vec3(0.0f);
-	float Alpha = 1.0f;
+	uint ShaderMaterialBufferIndex;
+	int MaterialBufferId;
 
 	VkGuid AlbedoMapId;
 	VkGuid MetallicRoughnessMapId;
@@ -54,17 +43,10 @@ public:
 	VkGuid EmissionMapId;
 	VkGuid HeightMapId;
 
-	int MaterialBufferId;
-
-	Material();
-	Material(const String& materialName, VkGuid& materialId);
-	virtual ~Material();
-
-	void UpdateBuffer();
-	void GetMaterialPropertiesBuffer(std::vector<VkDescriptorBufferInfo>& materialBufferList);
-	void UpdateMaterialBufferIndex(uint32 shaderBufferIndex);
-	void Destroy();
-
-	static const uint32 GetNextMaterialId() { return NextMaterialId; }
+	vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
+	vec3 Emission = vec3(0.0f);
+	float Metallic = 0.0f;
+	float Roughness = 0.0f;
+	float AmbientOcclusion = 1.0f;
+	float Alpha = 1.0f;
 };
-

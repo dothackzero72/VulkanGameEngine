@@ -17,7 +17,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static extern RendererStateCS Renderer_RendererSetUp_CS(void* windowHandle);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern TextureStruct Texture_LoadTexture_CS(RendererStateCS rendererStateCS, TextureJsonLoader jsonPath);
+        public static extern TextureStruct Texture_LoadTexture(RendererStateCS rendererStateCS, string jsonPath);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern TextureStruct Texture_CreateTexture_CS( RendererStateCS rendererStateCS, VkImageAspectFlagBits imageType, VkImageCreateInfo createImageInfo, VkSamplerCreateInfo samplerCreateInfo);

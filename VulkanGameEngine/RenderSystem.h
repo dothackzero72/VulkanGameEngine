@@ -34,6 +34,7 @@ private:
 
     void DestroyRenderPass();
     void DestroyRenderPipeline();
+
 public:
 
     ImGuiRenderer                                                 imGuiRenderer;

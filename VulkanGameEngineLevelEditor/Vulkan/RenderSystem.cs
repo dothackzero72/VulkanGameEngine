@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -211,6 +212,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             SwapChainImages = new ListPtr<VkImage>(renderStateCS.SwapChainImages, renderStateCS.SwapChainImagesCount);
             SwapChainImageViews = new ListPtr<VkImageView>(renderStateCS.SwapChainImageViews, renderStateCS.SwapChainImageViewsCount);
             SwapChainResolution = renderStateCS.SwapChainResolution;
+
+
+            GameEngineImport.Texture_LoadTexture(RenderSystem.ToStruct(), "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\SparkManTexture.json");
         }
 
         public static Guid AddRenderPass(Guid levelId, string jsonPath, ivec2 renderPassResolution)

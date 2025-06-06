@@ -62,7 +62,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             //    return textureJson.textureId;
             //}
 
-            TextureList[textureJson.TextureId] = GameEngineImport.Texture_LoadTexture_CS(RenderSystem.ToStruct(), textureJson);
+           // TextureList[textureJson.TextureId] = GameEngineImport.Texture_LoadTexture(RenderSystem.ToStruct(), jsonContent);
             return textureJson.TextureId;
         }
     }

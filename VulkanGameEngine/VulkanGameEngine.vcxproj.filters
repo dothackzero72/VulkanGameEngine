@@ -42,9 +42,6 @@
     <ClCompile Include="FrameTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OrthographicCamera2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -117,9 +114,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MemoryPool.h">
