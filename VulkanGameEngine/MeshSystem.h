@@ -32,18 +32,45 @@ public:
 		mat4 meshMatrix = mat4(1.0f);
 		Vertex2DListMap[meshId] = vertexList;
 		IndexListMap[meshId] = indexList;
-		MeshMap[meshId] = Mesh
+
+		MeshLoader meshLoader =
 		{
+			.ParentGameObjectID = 0,
+			.VertexType = BufferTypeEnum::BufferType_Vector2D,
+			.MeshId = meshId,
 			.MaterialId = materialId,
-			.MeshVertexList = vertexList,
-			.MeshIndexList = indexList,
-			.VertexCount = vertexList.size(),
-			.IndexCount = indexList.size(),
-			.MeshVertexBufferId = bufferSystem.CreateVulkanBuffer<T>(cRenderer, vertexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true),
-			.MeshIndexBufferId = bufferSystem.CreateVulkanBuffer<uint32>(cRenderer, indexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true),
-			.MeshTransformBufferId = bufferSystem.CreateVulkanBuffer<mat4>(cRenderer, meshMatrix, MeshBufferUsageSettings, MeshBufferPropertySettings, false),
-			.PropertiesBufferId = bufferSystem.CreateVulkanBuffer<MeshPropertiesStruct>(cRenderer, MeshMap[meshId].MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings, false)
+			.VertexLoader = VertexLoaderStruct
+			{
+				.MeshVertexBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofVertex = sizeof(T),
+				.VertexCount = static_cast<uint32>(vertexList.size()),
+				.VertexData = static_cast<void*>(vertexList.data()),
+			},
+			.IndexLoader = IndexLoaderStruct
+			{
+				.MeshIndexBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofIndex = sizeof(uint),
+				.IndexCount = static_cast<uint32>(indexList.size()),
+				.IndexData = static_cast<void*>(indexList.data()),
+			},
+			.TransformLoader = TransformLoaderStruct
+			{
+				.MeshTransformBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofTransform = sizeof(mat4),
+				.TransformData = static_cast<void*>(&meshMatrix),
+			},
+			.MeshPropertiesLoader = MeshPropertiesLoaderStruct
+			{
+				.PropertiesBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofMeshProperties = sizeof(MeshPropertiesStruct),
+				.MeshPropertiesData = static_cast<void*>(&MeshMap[meshId].MeshProperties)
+			}
 		};
+
+		Mesh mesh = Mesh_CreateMesh(cRenderer, meshLoader, bufferSystem.VulkanBufferMap[meshLoader.VertexLoader.MeshVertexBufferId],
+														   bufferSystem.VulkanBufferMap[meshLoader.IndexLoader.MeshIndexBufferId],
+														   bufferSystem.VulkanBufferMap[meshLoader.TransformLoader.MeshTransformBufferId],
+														   bufferSystem.VulkanBufferMap[meshLoader.MeshPropertiesLoader.PropertiesBufferId]);
 		return meshId;
 	}
 
@@ -56,14 +83,45 @@ public:
 		Vertex2DListMap[meshId] = vertexList;
 		IndexListMap[meshId] = indexList;
 
-		SpriteMeshMap[meshId] = Mesh();
-		SpriteMeshMap[meshId].MaterialId = VkGuid();
-		SpriteMeshMap[meshId].VertexCount = vertexList.size();
-		SpriteMeshMap[meshId].IndexCount = indexList.size();
-		SpriteMeshMap[meshId].MeshVertexBufferId = bufferSystem.CreateVulkanBuffer<T>(cRenderer, vertexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		SpriteMeshMap[meshId].MeshIndexBufferId = bufferSystem.CreateVulkanBuffer<uint32>(cRenderer, indexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		SpriteMeshMap[meshId].MeshTransformBufferId = bufferSystem.CreateVulkanBuffer<mat4>(cRenderer, meshMatrix, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
-		SpriteMeshMap[meshId].PropertiesBufferId = bufferSystem.CreateVulkanBuffer<MeshPropertiesStruct>(cRenderer, SpriteMeshMap[meshId].MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+		MeshLoader meshLoader =
+		{
+			.ParentGameObjectID = 0,
+			.MeshId = meshId,
+			.MaterialId = VkGuid(),
+			.VertexLoader = VertexLoaderStruct
+			{
+				.VertexType = BufferTypeEnum::BufferType_Vector2D,
+				.MeshVertexBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofVertex = sizeof(T),
+				.VertexCount = static_cast<uint32>(vertexList.size()),
+				.VertexData = static_cast<void*>(vertexList.data()),
+			},
+			.IndexLoader = IndexLoaderStruct
+			{
+				.MeshIndexBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofIndex = sizeof(uint),
+				.IndexCount = static_cast<uint32>(indexList.size()),
+				.IndexData = static_cast<void*>(indexList.data()),
+			},
+			.TransformLoader = TransformLoaderStruct
+			{
+				.MeshTransformBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofTransform = sizeof(mat4),
+				.TransformData = static_cast<void*>(&meshMatrix),
+			},
+			.MeshPropertiesLoader = MeshPropertiesLoaderStruct
+			{
+				.PropertiesBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofMeshProperties = sizeof(MeshPropertiesStruct),
+				.MeshPropertiesData = static_cast<void*>(&MeshMap[meshId].MeshProperties)
+			}
+		};
+
+		Mesh mesh = Mesh_CreateMesh(cRenderer, meshLoader, bufferSystem.VulkanBufferMap[meshLoader.VertexLoader.MeshVertexBufferId],
+														   bufferSystem.VulkanBufferMap[meshLoader.IndexLoader.MeshIndexBufferId],
+														   bufferSystem.VulkanBufferMap[meshLoader.TransformLoader.MeshTransformBufferId],
+														   bufferSystem.VulkanBufferMap[meshLoader.MeshPropertiesLoader.PropertiesBufferId]);
+		SpriteMeshMap[meshId] = mesh;
 		return meshId;
 	}
 
@@ -76,18 +134,48 @@ public:
 		Vertex2DListMap[meshId] = vertexList;
 		IndexListMap[meshId] = indexList;
 
-		Vector<Mesh> meshStructList = Vector<Mesh>();
-		Mesh meshStruct = Mesh();
-		meshStruct.MaterialId = VkGuid();
-		meshStruct.VertexCount = vertexList.size();
-		meshStruct.IndexCount = indexList.size();
-		meshStruct.MeshVertexBufferId = bufferSystem.CreateVulkanBuffer<T>(cRenderer, vertexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		meshStruct.MeshIndexBufferId = bufferSystem.CreateVulkanBuffer<uint32>(cRenderer, indexList, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
-		meshStruct.MeshTransformBufferId = bufferSystem.CreateVulkanBuffer<mat4>(cRenderer, meshMatrix, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
-		meshStruct.PropertiesBufferId = bufferSystem.CreateVulkanBuffer<MeshPropertiesStruct>(cRenderer, meshStruct.MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+		MeshLoader meshLoader =
+		{
+			.ParentGameObjectID = 0,
+			.MeshId = meshId,
+			.MaterialId = VkGuid(),
+			.VertexLoader = VertexLoaderStruct
+			{
+				.VertexType = BufferTypeEnum::BufferType_Vector2D,
+				.MeshVertexBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofVertex = sizeof(T),
+				.VertexCount = static_cast<uint32>(vertexList.size()),
+				.VertexData = static_cast<void*>(vertexList.data()),
+			},
+			.IndexLoader = IndexLoaderStruct
+			{
+				.MeshIndexBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofIndex = sizeof(uint),
+				.IndexCount = static_cast<uint32>(indexList.size()),
+				.IndexData = static_cast<void*>(indexList.data()),
+			},
+			.TransformLoader = TransformLoaderStruct
+			{
+				.MeshTransformBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofTransform = sizeof(mat4),
+				.TransformData = static_cast<void*>(&meshMatrix),
+			},
+			.MeshPropertiesLoader = MeshPropertiesLoaderStruct
+			{
+				.PropertiesBufferId = static_cast<uint32>(++bufferSystem.NextBufferId),
+				.SizeofMeshProperties = sizeof(MeshPropertiesStruct),
+				.MeshPropertiesData = static_cast<void*>(&MeshMap[meshId].MeshProperties)
+			}
+		};
 
-		meshStructList.emplace_back(meshStruct);
-		LevelLayerMeshListMap[levelId] = meshStructList;
+		Vector<Mesh> meshList = Vector<Mesh>
+		{
+			Mesh_CreateMesh(cRenderer, meshLoader, bufferSystem.VulkanBufferMap[meshLoader.VertexLoader.MeshVertexBufferId],
+												   bufferSystem.VulkanBufferMap[meshLoader.IndexLoader.MeshIndexBufferId],
+												   bufferSystem.VulkanBufferMap[meshLoader.TransformLoader.MeshTransformBufferId],
+												   bufferSystem.VulkanBufferMap[meshLoader.MeshPropertiesLoader.PropertiesBufferId])
+		};
+		LevelLayerMeshListMap[levelId] = meshList;
 		return meshId;
 	}
 

@@ -7,12 +7,10 @@
 #include "Vertex.h"
 #include "Sprite.h"
 
-static int NextBufferId;
-
 class VulkanBufferSystem
 {
 private:
-	UnorderedMap<int, VulkanBuffer> VulkanBufferMap;
+	
 
 	template <typename T>
 	BufferTypeEnum GetBufferType() 
@@ -30,6 +28,8 @@ private:
 	}
 
 public:
+	static int NextBufferId;
+	UnorderedMap<int, VulkanBuffer> VulkanBufferMap;
 
 	template<class T>
 	int CreateVulkanBuffer(const rendererState& renderer, T& bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)

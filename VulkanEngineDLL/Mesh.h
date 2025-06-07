@@ -20,30 +20,47 @@ VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-struct MeshLoader
+struct VertexLoaderStruct
 {
 	BufferTypeEnum VertexType;
+	uint32 MeshVertexBufferId;
+	uint32 SizeofVertex;
+	uint32 VertexCount;
+	void*  VertexData;
+};
+
+struct IndexLoaderStruct
+{
+	uint32 MeshIndexBufferId;
+	uint32 SizeofIndex;
+	uint32 IndexCount;
+	void*  IndexData;
+};
+
+struct TransformLoaderStruct
+{
+	uint32 MeshTransformBufferId;
+	uint32 SizeofTransform;
+	void*  TransformData;
+};
+
+struct MeshPropertiesLoaderStruct
+{
+	uint32 PropertiesBufferId;
+	uint32 SizeofMeshProperties;
+	void*  MeshPropertiesData;
+};
+
+struct MeshLoader
+{
+	uint ParentGameObjectID;
 	uint MeshId;
 	VkGuid MaterialId;
-	uint ParentGameObjectID = 0;
 
-	uint32	MeshVertexBufferId;
-	uint32 sizeofVertex;
-	uint32 vertexCount;
-	void* vertexData;
-	
-	uint32	MeshIndexBufferId;
-	uint32 sizeofIndex;
-	uint32 indexCount;
-	void* indexData;
-	
-	uint32 MeshTransformBufferId;
-	uint32 sizeofTransform;
-	void* transformData;
-
-	uint32	PropertiesBufferId;
-	uint32 sizeofMeshProperties;
-	void* meshPropertiesData;
+	VertexLoaderStruct VertexLoader;
+	IndexLoaderStruct IndexLoader;
+	TransformLoaderStruct TransformLoader;
+	MeshPropertiesLoaderStruct MeshPropertiesLoader;
 };
 
 struct Mesh
@@ -67,11 +84,13 @@ struct Mesh
 	int	MeshIndexBufferId;
 	int MeshTransformBufferId;
 	int	PropertiesBufferId;
+
+	MeshPropertiesStruct MeshProperties;
 };
 
-DLL_EXPORT Mesh Mesh_CreateMesh(const RendererState& renderer, MeshLoader& meshLoader, VulkanBuffer& vertexBuffer, VulkanBuffer& indexBuffer, VulkanBuffer& transformBuffer, VulkanBuffer& propertiesBufferId);
+DLL_EXPORT Mesh Mesh_CreateMesh(const RendererState& renderer, const MeshLoader& meshLoader, VulkanBuffer& outVertexBuffer, VulkanBuffer& outIndexBuffer, VulkanBuffer& outTransformBuffer, VulkanBuffer& outPropertiesBufferId);
 
-int Mesh_CreateVertexBuffer(const RendererState& renderer, uint bufferId, VulkanBuffer& insertVertexBuffer, BufferTypeEnum bufferType, uint32 sizeofVertex, uint32 vertexCount, void* vertexData);
-int Mesh_CreateIndexBuffer(const RendererState& renderer, uint bufferId, VulkanBuffer& insertIndexBuffer, uint32 sizeofIndex, uint32 indexCount, void* indexData);
-int Mesh_CreateTransformBuffer(const RendererState& renderer, uint bufferId, VulkanBuffer& insertTransformBuffer, uint32 sizeofTransform, void* transformData);
-int Mesh_CreateMeshPropertiesBuffer(const RendererState& renderer, uint bufferId, VulkanBuffer& insertMeshBuffer, uint32 sizeofMeshProperties, void* meshPropertiesData);
+int Mesh_CreateVertexBuffer(const RendererState& renderer, const VertexLoaderStruct& vertexLoader, VulkanBuffer& outVertexBuffer);
+int Mesh_CreateIndexBuffer(const RendererState& renderer, const IndexLoaderStruct& indexLoader, VulkanBuffer& outIndexBuffer);
+int Mesh_CreateTransformBuffer(const RendererState& renderer, const TransformLoaderStruct& transformLoader, VulkanBuffer& outTransformBuffer);
+int Mesh_CreateMeshPropertiesBuffer(const RendererState& renderer, const MeshPropertiesLoaderStruct& meshPropertiesLoader, VulkanBuffer& outPropertiesBufferId);
