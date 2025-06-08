@@ -40,6 +40,7 @@ struct VulkanBuffer
 	bool UsingStagingBuffer = false;       
 };
 
+DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, uint bufferId, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
 DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
 DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, VulkanBuffer& vulkanBuffer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
 DLL_EXPORT void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount);

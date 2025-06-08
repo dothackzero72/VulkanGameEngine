@@ -50,3 +50,7 @@ struct Material
 	float AmbientOcclusion = 1.0f;
 	float Alpha = 1.0f;
 };
+
+DLL_EXPORT VulkanBuffer Material_CreateMaterialBuffer(const RendererState& renderer, uint bufferId);
+DLL_EXPORT void Material_UpdateBuffer(const RendererState& renderer, VulkanBuffer& materialBuffer, MaterialProperitiesBuffer& materialProperties);
+DLL_EXPORT void Material_DestroyBuffer(const RendererState& renderer, VulkanBuffer& materialBuffer);

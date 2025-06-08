@@ -1,5 +1,40 @@
 #include "VulkanBuffer.h"
 
+VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, uint bufferId, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+{
+    VkDeviceSize bufferSize = bufferElementSize * bufferElementCount;
+    VulkanBuffer vulkanBuffer =
+    {
+        .BufferId = bufferId,
+        .BufferSize = bufferSize,
+        .BufferUsage = usage,
+        .BufferProperties = properties,
+        .BufferType = bufferTypeEnum,
+        .UsingStagingBuffer = usingStagingBuffer,
+    };
+
+    void* bufferData = new void*[bufferSize];
+    memset(bufferData, 0, bufferSize);
+
+    VkResult result;
+    if (vulkanBuffer.UsingStagingBuffer)
+    {
+        result = Buffer_CreateStagingBuffer(renderer, &vulkanBuffer.StagingBuffer, &vulkanBuffer.Buffer, &vulkanBuffer.StagingBufferMemory, &vulkanBuffer.BufferMemory, bufferData, bufferSize, vulkanBuffer.BufferUsage, vulkanBuffer.BufferProperties);
+    }
+    else
+    {
+        result = Buffer_CreateBuffer(renderer, &vulkanBuffer.Buffer, &vulkanBuffer.BufferMemory, bufferData, bufferSize, vulkanBuffer.BufferProperties, vulkanBuffer.BufferUsage);
+    }
+
+    if (result != VK_SUCCESS)
+    {
+        RENDERER_ERROR("Failed to create Vulkan buffer");
+    }
+
+    delete bufferData;
+    return vulkanBuffer;
+}
+
 VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 {
     VkDeviceSize bufferSize = bufferElementSize * bufferElementCount;

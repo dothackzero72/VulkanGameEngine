@@ -22,6 +22,8 @@ public:
 	const Vector<Material>& MaterialList();
 	const Vector<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer();
 
+	void Destroy(const VkGuid& guid);
 	void DestroyAllMaterials();
 };
 extern MaterialSystem materialSystem;
+
