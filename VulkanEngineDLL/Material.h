@@ -28,7 +28,7 @@ struct MaterialProperitiesBuffer
 
 struct Material
 {
-	VkGuid MaterialId;
+	VkGuid guid;
 	uint ShaderMaterialBufferIndex;
 	int MaterialBufferId;
 

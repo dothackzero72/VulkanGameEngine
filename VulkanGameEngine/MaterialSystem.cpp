@@ -52,6 +52,16 @@ VkGuid MaterialSystem::LoadMaterial(const String& materialPath)
     MaterialMap[materialId].HeightMapId = textureSystem.LoadTexture(json["HeightMapPath"]);
     MaterialMap[materialId].MaterialBufferId = materialBufferId;
 
+
+    MaterialList2.EmplaceBack(MaterialMap[materialId]);
+    Material materialsz = MaterialList2[0];
+    if (MaterialList2.size() > 1)
+    {
+        Material materialsz2 = MaterialList2[1];
+        auto mat = MaterialList2.Find(MaterialList2[1].guid);
+        int sdf = 234;
+    }
+
     return materialId;
 }
 
@@ -153,6 +163,6 @@ void MaterialSystem::DestroyAllMaterials()
 {
     for (auto& materialPair : MaterialMap)
     {
-        Destroy(materialPair.second.MaterialId);
+        Destroy(materialPair.second.guid);
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <Typedef.h>
 #include <Material.h>
+#include <Vector.h>
 
 class MeshSystem;
 class MaterialSystem
@@ -9,6 +10,8 @@ private:
 	UnorderedMap<RenderPassGuid, Material>                        MaterialMap;
 
 public:
+
+	Vector2<Material>                        MaterialList2;
 
 	MaterialSystem();
 	~MaterialSystem();
