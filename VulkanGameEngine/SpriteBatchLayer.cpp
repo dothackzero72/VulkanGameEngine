@@ -21,7 +21,7 @@ SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 		levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
 	}
 
-	SpriteLayerMeshId = meshSystem.CreateSpriteLayerMesh<Vertex2D>(gameObjectSystem.SpriteVertexList, gameObjectSystem.SpriteIndexList);
+	SpriteLayerMeshId = meshSystem.CreateSpriteLayerMesh(gameObjectSystem.SpriteVertexList, gameObjectSystem.SpriteIndexList);
 	levelSystem.SpriteInstanceListMap[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID].size());
 	levelSystem.SpriteInstanceBufferMap[SpriteBatchLayerID] = bufferSystem.CreateVulkanBuffer<SpriteInstanceStruct>(cRenderer, levelSystem.SpriteInstanceListMap[SpriteBatchLayerID], MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 }

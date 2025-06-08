@@ -58,7 +58,7 @@ void GameSystem::Update(const float& deltaTime)
     renderSystem.Update(deltaTime);
 
     VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
-    meshSystem.Update(commandBuffer, deltaTime);
+    meshSystem.Update(deltaTime);
     renderer.EndSingleTimeCommands(commandBuffer);
 }
 
@@ -86,6 +86,7 @@ void GameSystem::Destroy()
     //meshSystem.DestroyAllGameObjects();
     textureSystem.DestroyAllTextures();
     materialSystem.DestroyAllMaterials();
+    meshSystem.DestroyAllGameObjects();
     bufferSystem.DestroyAllBuffers();
     renderSystem.Destroy();
 }

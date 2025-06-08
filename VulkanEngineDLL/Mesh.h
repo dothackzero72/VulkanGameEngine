@@ -76,9 +76,6 @@ struct Mesh
 	vec3 MeshPosition = vec3(0.0f);
 	vec3 MeshRotation = vec3(0.0f);
 	vec3 MeshScale = vec3(1.0f);
-	vec3 LastMeshPosition = vec3(0.0f);
-	vec3 LastMeshRotation = vec3(0.0f);
-	vec3 LastMeshScale = vec3(1.0f);
 
 	int	MeshVertexBufferId;
 	int	MeshIndexBufferId;
@@ -88,9 +85,11 @@ struct Mesh
 	MeshPropertiesStruct MeshProperties;
 };
 
-DLL_EXPORT Mesh Mesh_CreateMesh(const RendererState& renderer, const MeshLoader& meshLoader, VulkanBuffer& outVertexBuffer, VulkanBuffer& outIndexBuffer, VulkanBuffer& outTransformBuffer, VulkanBuffer& outPropertiesBufferId);
+DLL_EXPORT Mesh Mesh_CreateMesh(const RendererState& renderer, const MeshLoader& meshLoader, VulkanBuffer& outVertexBuffer, VulkanBuffer& outIndexBuffer, VulkanBuffer& outTransformBuffer, VulkanBuffer& outPropertiesBuffer);
+DLL_EXPORT void Mesh_UpdateMesh(const RendererState& renderer, Mesh& mesh, VulkanBuffer& meshPropertiesBuffer, uint32 shaderMaterialBufferIndex, const float& deltaTime);
+DLL_EXPORT void Mesh_DestroyMesh(const RendererState& renderer, Mesh& mesh, VulkanBuffer& vertexBuffer, VulkanBuffer& indexBuffer, VulkanBuffer& transformBuffer, VulkanBuffer& propertiesBuffer);
 
 int Mesh_CreateVertexBuffer(const RendererState& renderer, const VertexLoaderStruct& vertexLoader, VulkanBuffer& outVertexBuffer);
 int Mesh_CreateIndexBuffer(const RendererState& renderer, const IndexLoaderStruct& indexLoader, VulkanBuffer& outIndexBuffer);
 int Mesh_CreateTransformBuffer(const RendererState& renderer, const TransformLoaderStruct& transformLoader, VulkanBuffer& outTransformBuffer);
-int Mesh_CreateMeshPropertiesBuffer(const RendererState& renderer, const MeshPropertiesLoaderStruct& meshPropertiesLoader, VulkanBuffer& outPropertiesBufferId);
+int Mesh_CreateMeshPropertiesBuffer(const RendererState& renderer, const MeshPropertiesLoaderStruct& meshProperties, VulkanBuffer& outPropertiesBufferId);
