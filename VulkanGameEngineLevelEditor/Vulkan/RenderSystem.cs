@@ -57,32 +57,36 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct RendererStateCS
     {
-        public VkInstance Instance;
-        public VkDevice Device;
-        public VkPhysicalDevice PhysicalDevice;
-        public VkSurfaceKHR Surface;
-        public VkCommandPool CommandPool;
-        public VkDebugUtilsMessengerEXT DebugMessenger;
-        public VkFence* InFlightFences;
-        public VkSemaphore* AcquireImageSemaphores;
-        public VkSemaphore* PresentImageSemaphores;
-        public VkImage* SwapChainImages;
-        public VkImageView* SwapChainImageViews;
-        public VkExtent2D SwapChainResolution;
-        public VkSwapchainKHR Swapchain;
-        public VkQueue GraphicsQueue;
-        public VkQueue PresentQueue;
-        public uint InFlightFencesCount;
-        public uint AcquireImageSemaphoresCount;
-        public uint PresentImageSemaphoresCount;
-        public uint SwapChainImagesCount;
-        public uint SwapChainImageViewsCount;
-        public uint SwapChainImageCount;
-        public uint GraphicsFamily;
-        public uint PresentFamily;
-        public uint ImageIndex;
-        public uint CommandIndex;
-        public bool RebuildRendererFlag;
+        public VkInstance Instance { get; set; }
+        public VkDevice Device { get; set; }
+        public VkPhysicalDevice PhysicalDevice { get; set; }
+        public VkSurfaceKHR Surface { get; set; }
+        public VkCommandPool CommandPool { get; set; }
+        public VkDebugUtilsMessengerEXT DebugMessenger { get; set; }
+
+        public VkFence* InFlightFences { get; set; }
+        public VkSemaphore* AcquireImageSemaphores { get; set; }
+        public VkSemaphore* PresentImageSemaphores { get; set; }
+        public VkImage* SwapChainImages { get; set; }
+        public VkImageView* SwapChainImageViews { get; set; }
+        public VkExtent2D SwapChainResolution { get; set; }
+        public VkSwapchainKHR Swapchain { get; set; }
+        public uint SwapChainImageCount { get; set; }
+        public uint GraphicsFamily { get; set; }
+        public uint PresentFamily { get; set; }
+        public uint InFlightFencesCount { get; set; }
+        public uint AcquireImageSemaphoresCount { get; set; }
+        public uint PresentImageSemaphoresCount { get; set; }
+        public uint SwapChainImagesCount { get; set; }
+        public uint SwapChainImageViewsCount { get; set; }
+        public uint ImageIndex { get; set; }
+        public uint CommandIndex { get; set; }
+        public VkQueue GraphicsQueue { get; set; }
+        public VkQueue PresentQueue { get; set; }
+        public VkFormat Format { get; set; }
+        public VkColorSpaceKHR ColorSpace { get; set; }
+        public VkPresentModeKHR PresentMode { get; set; }
+        public bool RebuildRendererFlag { get; set; }
     }
 
     public struct VulkanRenderPassStruct
@@ -191,7 +195,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 Console.WriteLine($"  SwapChainImageViews (count={renderStateCS.SwapChainImageViewsCount}): {(renderStateCS.SwapChainImageViews != null && renderStateCS.SwapChainImageViewsCount > 0 ? $"0x{renderStateCS.SwapChainImageViews[0]:X16}" : "null")}");
             }
 
-            // Original assignments
             AcquireImageSemaphores = new ListPtr<VkSemaphore>(renderStateCS.AcquireImageSemaphores, renderStateCS.AcquireImageSemaphoresCount);
             CommandIndex = renderStateCS.CommandIndex;
             CommandPool = renderStateCS.CommandPool;

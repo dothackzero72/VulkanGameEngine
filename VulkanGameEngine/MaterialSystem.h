@@ -10,9 +10,6 @@ private:
 	UnorderedMap<RenderPassGuid, Material>                        MaterialMap;
 
 public:
-
-	Vector2<Material>                        MaterialList2;
-
 	MaterialSystem();
 	~MaterialSystem();
 

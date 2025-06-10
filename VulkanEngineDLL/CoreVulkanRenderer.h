@@ -80,32 +80,38 @@ DLL_EXPORT extern RendererState cRenderer;
 
 struct RendererStateCS
 {
-	VkInstance Instance;
-	VkDevice Device;
-	VkPhysicalDevice PhysicalDevice;
-	VkSurfaceKHR Surface;
-	VkCommandPool CommandPool;
+	VkInstance         Instance;
+	VkDevice           Device;
+	VkPhysicalDevice   PhysicalDevice;
+	VkSurfaceKHR       Surface;
+	VkCommandPool      CommandPool;
 	VkDebugUtilsMessengerEXT DebugMessenger;
+
 	VkFence* InFlightFences;
 	VkSemaphore* AcquireImageSemaphores;
 	VkSemaphore* PresentImageSemaphores;
 	VkImage* SwapChainImages;
 	VkImageView* SwapChainImageViews;
-	VkExtent2D SwapChainResolution;
-	VkSwapchainKHR Swapchain;
-	VkQueue			   GraphicsQueue;
-	VkQueue			   PresentQueue;
-	uint32 InFlightFencesCount;
-	uint32 AcquireImageSemaphoresCount;
-	uint32 PresentImageSemaphoresCount;
-	uint32 SwapChainImagesCount;
-	uint32 SwapChainImageViewsCount;
+	VkExtent2D         SwapChainResolution;
+	VkSwapchainKHR     Swapchain;
+
 	uint32			   SwapChainImageCount;
 	uint32			   GraphicsFamily;
 	uint32			   PresentFamily;
-	uint32 ImageIndex;
-	uint32 CommandIndex;
-	bool RebuildRendererFlag;
+	uint32			   InFlightFencesCount;
+	uint32			   AcquireImageSemaphoresCount;
+	uint32			   PresentImageSemaphoresCount;
+	uint32			   SwapChainImagesCount;
+	uint32			   SwapChainImageViewsCount;
+	uint32			   ImageIndex;
+	uint32			   CommandIndex;
+	VkQueue			   GraphicsQueue;
+	VkQueue			   PresentQueue;
+	VkFormat           Format;
+	VkColorSpaceKHR    ColorSpace;
+	VkPresentModeKHR   PresentMode;
+
+	bool               RebuildRendererFlag;
 };
 
 #ifdef __cplusplus

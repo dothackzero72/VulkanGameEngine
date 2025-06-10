@@ -32,7 +32,8 @@ VkGuid MaterialSystem::LoadMaterial(const String& materialPath)
     uint materialBufferId = ++bufferSystem.NextBufferId;
     bufferSystem.VulkanBufferMap[materialBufferId] = Material_CreateMaterialBuffer(cRenderer, ++bufferSystem.NextBufferId);
 
-    MaterialMap[materialId] = Material(materialId);
+    MaterialMap[materialId] = Material();
+    MaterialMap[materialId].materialGuid = materialId,
     MaterialMap[materialId].Albedo = vec3(json["Albedo"][0], json["Albedo"][1], json["Albedo"][2]);
     MaterialMap[materialId].Metallic = json["Metallic"];
     MaterialMap[materialId].Roughness = json["Roughness"];
@@ -51,16 +52,6 @@ VkGuid MaterialSystem::LoadMaterial(const String& materialPath)
     MaterialMap[materialId].EmissionMapId = textureSystem.LoadTexture(json["EmissionMapPath"]);
     MaterialMap[materialId].HeightMapId = textureSystem.LoadTexture(json["HeightMapPath"]);
     MaterialMap[materialId].MaterialBufferId = materialBufferId;
-
-
-    MaterialList2.EmplaceBack(MaterialMap[materialId]);
-    Material materialsz = MaterialList2[0];
-    if (MaterialList2.size() > 1)
-    {
-        Material materialsz2 = MaterialList2[1];
-        auto mat = MaterialList2.Find(MaterialList2[1].guid);
-        int sdf = 234;
-    }
 
     return materialId;
 }
@@ -163,6 +154,6 @@ void MaterialSystem::DestroyAllMaterials()
 {
     for (auto& materialPair : MaterialMap)
     {
-        Destroy(materialPair.second.guid);
+        Destroy(materialPair.second.materialGuid);
     }
 }

@@ -1724,7 +1724,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         VK_RENDER_PASS_CREATE_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
     }
 
-    public enum VkFormat
+    public enum VkFormat : int
     {
         VK_FORMAT_UNDEFINED = 0,
         VK_FORMAT_R4G4_UNORM_PACK8 = 1,

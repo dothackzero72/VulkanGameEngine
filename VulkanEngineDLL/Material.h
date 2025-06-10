@@ -4,6 +4,33 @@
 #include "json.h"
 #include "CoreVulkanRenderer.h"
 #include "VulkanBuffer.h"
+#include "Vector.h"
+
+struct Material
+{
+	int VectorMapKey;
+	VkGuid materialGuid;
+	uint ShaderMaterialBufferIndex;
+	int MaterialBufferId;
+
+	VkGuid AlbedoMapId;
+	VkGuid MetallicRoughnessMapId;
+	VkGuid MetallicMapId;
+	VkGuid RoughnessMapId;
+	VkGuid AmbientOcclusionMapId;
+	VkGuid NormalMapId;
+	VkGuid DepthMapId;
+	VkGuid AlphaMapId;
+	VkGuid EmissionMapId;
+	VkGuid HeightMapId;
+
+	vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
+	vec3 Emission = vec3(0.0f);
+	float Metallic = 0.0f;
+	float Roughness = 0.0f;
+	float AmbientOcclusion = 1.0f;
+	float Alpha = 1.0f;
+};
 
 struct MaterialProperitiesBuffer
 {
@@ -26,29 +53,12 @@ struct MaterialProperitiesBuffer
 	alignas(4) uint32 HeightMapId = 0;
 };
 
-struct Material
+template<>
+struct Vector2Traits<Material>
 {
-	VkGuid guid;
-	uint ShaderMaterialBufferIndex;
-	int MaterialBufferId;
-
-	VkGuid AlbedoMapId;
-	VkGuid MetallicRoughnessMapId;
-	VkGuid MetallicMapId;
-	VkGuid RoughnessMapId;
-	VkGuid AmbientOcclusionMapId;
-	VkGuid NormalMapId;
-	VkGuid DepthMapId;
-	VkGuid AlphaMapId;
-	VkGuid EmissionMapId;
-	VkGuid HeightMapId;
-
-	vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
-	vec3 Emission = vec3(0.0f);
-	float Metallic = 0.0f;
-	float Roughness = 0.0f;
-	float AmbientOcclusion = 1.0f;
-	float Alpha = 1.0f;
+	static const VkGuid& GetGuid(const Material& obj) { return obj.materialGuid; }
+	static int GetId(const Material& obj) { return obj.MaterialBufferId; }
+	static int GetVectorMapKey(const Material& obj) { return obj.VectorMapKey; }
 };
 
 DLL_EXPORT VulkanBuffer Material_CreateMaterialBuffer(const RendererState& renderer, uint bufferId);
