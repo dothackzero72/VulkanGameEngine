@@ -1,9 +1,13 @@
 ﻿using GlmSharp;
+using Silk.NET.SDL;
 using Silk.NET.Vulkan;
 using StbImageSharp;
+using System.Numerics;
+using System;
 using System.Runtime.InteropServices;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
+using System.Collections.Generic;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
@@ -12,24 +16,31 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         private const string DLLPath = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanEngineDLL.dll";
 
         ///Renderer
-
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern RendererStateCS Renderer_RendererSetUp_CS(void* windowHandle);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern TextureStruct Texture_LoadTexture(RendererStateCS rendererStateCS, string jsonPath);
+        public static extern TextureStruct Texture_LoadTexture_DLL(RendererStateCS rendererStateCS, string jsonString);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern TextureStruct Texture_CreateTexture_CS( RendererStateCS rendererStateCS, VkImageAspectFlagBits imageType, VkImageCreateInfo createImageInfo, VkSamplerCreateInfo samplerCreateInfo);
+        public static extern TextureStruct Texture_CreateTexture_DLL(RendererStateCS rendererStateCS, VkImageAspectFlagBits imageType, VkImageCreateInfo createImageInfo, VkSamplerCreateInfo samplerCreateInfo);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern TextureStruct Texture_CreateTexture_CS( RendererStateCS rendererStateCS,  string texturePath, VkImageAspectFlagBits imageType, VkImageCreateInfo createImageInfo, VkSamplerCreateInfo samplerCreateInfo, bool useMipMaps);
+        public static extern TextureStruct Texture_CreateTexture_DLL(RendererStateCS rendererStateCS, string texturePath, VkImageAspectFlagBits imageType, VkImageCreateInfo createImageInfo, VkSamplerCreateInfo samplerCreateInfo, bool useMipMaps);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern TextureStruct Texture_CreateTexture_CS( RendererStateCS rendererStateCS, Pixel clearColor, VkImageAspectFlagBits imageType, VkImageCreateInfo createImageInfo, VkSamplerCreateInfo samplerCreateInfo, bool useMipMaps);
+        public static extern TextureStruct Texture_CreateTexture_DLL(RendererStateCS rendererStateCS, Pixel clearColor, VkImageAspectFlagBits imageType, VkImageCreateInfo createImageInfo, VkSamplerCreateInfo samplerCreateInfo, bool useMipMaps);
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern void Texture_UpdateTextureSize_CS( RendererStateCS rendererStateCS, TextureStruct texture, VkImageAspectFlagBits imageType, vec2 TextureResolution);
+        public static extern void Texture_UpdateTextureSize_DLL(RendererStateCS rendererStateCS, TextureStruct texture, VkImageAspectFlagBits imageType, vec2 TextureResolution);
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern void Texture_UpdateTextureBufferIndex_DLL(TextureStruct texture, uint bufferIndex);
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern void Texture_GetTexturePropertiesBuffer_DLL(TextureStruct texture, List<VkDescriptorImageInfo> textureDescriptorList);
+
+
 
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]

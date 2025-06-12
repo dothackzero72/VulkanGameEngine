@@ -154,7 +154,7 @@
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="SDLWindow.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="TextureCS.h" />
+    <ClInclude Include="TextureDLL.h" />
     <ClInclude Include="Typedef.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="VkGuid.h" />
@@ -189,7 +189,7 @@
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="SDLWindow.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="TextureCS.cpp" />
+    <ClCompile Include="TextureDLL.cpp" />
     <ClCompile Include="Vector.cpp" />
     <ClCompile Include="VulkanBuffer.cpp" />
     <ClCompile Include="VulkanError.c" />

@@ -71,21 +71,25 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkImageView* SwapChainImageViews { get; set; }
         public VkExtent2D SwapChainResolution { get; set; }
         public VkSwapchainKHR Swapchain { get; set; }
+
         public uint SwapChainImageCount { get; set; }
-        public uint GraphicsFamily { get; set; }
-        public uint PresentFamily { get; set; }
         public uint InFlightFencesCount { get; set; }
         public uint AcquireImageSemaphoresCount { get; set; }
         public uint PresentImageSemaphoresCount { get; set; }
         public uint SwapChainImagesCount { get; set; }
         public uint SwapChainImageViewsCount { get; set; }
+
         public uint ImageIndex { get; set; }
         public uint CommandIndex { get; set; }
+        public uint GraphicsFamily { get; set; }
+        public uint PresentFamily { get; set; }
+
         public VkQueue GraphicsQueue { get; set; }
         public VkQueue PresentQueue { get; set; }
         public VkFormat Format { get; set; }
         public VkColorSpaceKHR ColorSpace { get; set; }
         public VkPresentModeKHR PresentMode { get; set; }
+
         public bool RebuildRendererFlag { get; set; }
     }
 
@@ -167,57 +171,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             SwapChainImages = new ListPtr<VkImage>(renderStateCS.SwapChainImages, renderStateCS.SwapChainImagesCount);
             SwapChainImageViews = new ListPtr<VkImageView>(renderStateCS.SwapChainImageViews, renderStateCS.SwapChainImageViewsCount);
             SwapChainResolution = renderStateCS.SwapChainResolution;
-
-            Console.WriteLine("RendererStateCS (C#):");
-            Console.WriteLine($"  Instance: 0x{renderStateCS.Instance:X16}");
-            Console.WriteLine($"  Device: 0x{renderStateCS.Device:X16}");
-            Console.WriteLine($"  PhysicalDevice: 0x{renderStateCS.PhysicalDevice:X16}");
-            Console.WriteLine($"  Surface: 0x{renderStateCS.Surface:X16}");
-            Console.WriteLine($"  CommandPool: 0x{renderStateCS.CommandPool:X16}");
-            Console.WriteLine($"  DebugMessenger: 0x{renderStateCS.DebugMessenger:X16}");
-            Console.WriteLine($"  Swapchain: 0x{renderStateCS.Swapchain:X16}");
-            Console.WriteLine($"  GraphicsQueue: 0x{renderStateCS.GraphicsQueue:X16}");
-            Console.WriteLine($"  PresentQueue: 0x{renderStateCS.PresentQueue:X16}");
-            Console.WriteLine($"  SwapChainImageCount: {renderStateCS.SwapChainImageCount}");
-            Console.WriteLine($"  GraphicsFamily: {renderStateCS.GraphicsFamily}");
-            Console.WriteLine($"  PresentFamily: {renderStateCS.PresentFamily}");
-            Console.WriteLine($"  ImageIndex: {renderStateCS.ImageIndex}");
-            Console.WriteLine($"  CommandIndex: {renderStateCS.CommandIndex}");
-            Console.WriteLine($"  RebuildRendererFlag: {renderStateCS.RebuildRendererFlag}");
-            Console.WriteLine($"  SwapChainResolution: ({renderStateCS.SwapChainResolution.width}, {renderStateCS.SwapChainResolution.height})");
-
-            unsafe
-            {
-                Console.WriteLine($"  InFlightFences (count={renderStateCS.InFlightFencesCount}): {(renderStateCS.InFlightFences != null && renderStateCS.InFlightFencesCount > 0 ? $"0x{renderStateCS.InFlightFences[0]:X16}" : "null")}");
-                Console.WriteLine($"  AcquireImageSemaphores (count={renderStateCS.AcquireImageSemaphoresCount}): {(renderStateCS.AcquireImageSemaphores != null && renderStateCS.AcquireImageSemaphoresCount > 0 ? $"0x{renderStateCS.AcquireImageSemaphores[0]:X16}" : "null")}");
-                Console.WriteLine($"  PresentImageSemaphores (count={renderStateCS.PresentImageSemaphoresCount}): {(renderStateCS.PresentImageSemaphores != null && renderStateCS.PresentImageSemaphoresCount > 0 ? $"0x{renderStateCS.PresentImageSemaphores[0]:X16}" : "null")}");
-                Console.WriteLine($"  SwapChainImages (count={renderStateCS.SwapChainImagesCount}): {(renderStateCS.SwapChainImages != null && renderStateCS.SwapChainImagesCount > 0 ? $"0x{renderStateCS.SwapChainImages[0]:X16}" : "null")}");
-                Console.WriteLine($"  SwapChainImageViews (count={renderStateCS.SwapChainImageViewsCount}): {(renderStateCS.SwapChainImageViews != null && renderStateCS.SwapChainImageViewsCount > 0 ? $"0x{renderStateCS.SwapChainImageViews[0]:X16}" : "null")}");
-            }
-
-            AcquireImageSemaphores = new ListPtr<VkSemaphore>(renderStateCS.AcquireImageSemaphores, renderStateCS.AcquireImageSemaphoresCount);
-            CommandIndex = renderStateCS.CommandIndex;
-            CommandPool = renderStateCS.CommandPool;
-            DebugMessenger = renderStateCS.DebugMessenger;
-            Device = renderStateCS.Device;
-            GraphicsFamily = renderStateCS.GraphicsFamily;
-            GraphicsQueue = renderStateCS.GraphicsQueue;
-            ImageIndex = renderStateCS.ImageIndex;
-            InFlightFences = new ListPtr<VkFence>(renderStateCS.InFlightFences, renderStateCS.InFlightFencesCount);
-            Instance = renderStateCS.Instance;
-            PhysicalDevice = renderStateCS.PhysicalDevice;
-            PresentFamily = renderStateCS.PresentFamily;
-            PresentImageSemaphores = new ListPtr<VkSemaphore>(renderStateCS.PresentImageSemaphores, renderStateCS.PresentImageSemaphoresCount);
-            PresentQueue = renderStateCS.PresentQueue;
-            Surface = renderStateCS.Surface;
-            Swapchain = renderStateCS.Swapchain;
-            SwapChainImageCount = renderStateCS.SwapChainImageCount;
-            SwapChainImages = new ListPtr<VkImage>(renderStateCS.SwapChainImages, renderStateCS.SwapChainImagesCount);
-            SwapChainImageViews = new ListPtr<VkImageView>(renderStateCS.SwapChainImageViews, renderStateCS.SwapChainImageViewsCount);
-            SwapChainResolution = renderStateCS.SwapChainResolution;
-
-
-            GameEngineImport.Texture_LoadTexture(RenderSystem.ToStruct(), "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\SparkManTexture.json");
         }
 
         public static Guid AddRenderPass(Guid levelId, string jsonPath, ivec2 renderPassResolution)

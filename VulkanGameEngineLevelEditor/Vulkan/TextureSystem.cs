@@ -29,12 +29,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkSampler textureSampler { get; set; } = VulkanConst.VK_NULL_HANDLE;
         public VkDescriptorSet ImGuiDescriptorSet { get; set; } = VulkanConst.VK_NULL_HANDLE;
 
-        public TextureUsageEnum textureUsage = TextureUsageEnum.kUse_Undefined;
-        public TextureTypeEnum textureType = TextureTypeEnum.kType_UndefinedTexture;
-        public VkFormat textureByteFormat = VkFormat.VK_FORMAT_UNDEFINED;
-        public VkImageLayout textureImageLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED;
-        public VkSampleCountFlagBits sampleCount = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT;
-        public ColorChannelUsed colorChannels = ColorChannelUsed.ChannelRGBA;
+        public TextureUsageEnum textureUsage { get; set; } = TextureUsageEnum.kUse_Undefined;
+        public TextureTypeEnum textureType { get; set; } = TextureTypeEnum.kType_UndefinedTexture;
+        public VkFormat textureByteFormat { get; set; } = VkFormat.VK_FORMAT_UNDEFINED;
+        public VkImageLayout textureImageLayout { get; set; } = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED;
+        public VkSampleCountFlagBits sampleCount { get; set; } = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT;
+        public ColorChannelUsed colorChannels { get; set; } = ColorChannelUsed.ChannelRGBA;
 
         public TextureStruct()
         {

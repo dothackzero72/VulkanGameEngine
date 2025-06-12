@@ -96,15 +96,17 @@ struct RendererStateCS
 	VkSwapchainKHR     Swapchain;
 
 	uint32			   SwapChainImageCount;
-	uint32			   GraphicsFamily;
-	uint32			   PresentFamily;
 	uint32			   InFlightFencesCount;
 	uint32			   AcquireImageSemaphoresCount;
 	uint32			   PresentImageSemaphoresCount;
 	uint32			   SwapChainImagesCount;
 	uint32			   SwapChainImageViewsCount;
+
 	uint32			   ImageIndex;
 	uint32			   CommandIndex;
+	uint32			   GraphicsFamily;
+	uint32			   PresentFamily;
+
 	VkQueue			   GraphicsQueue;
 	VkQueue			   PresentQueue;
 	VkFormat           Format;

@@ -58,61 +58,6 @@ typedef enum TextureTypeEnum
     kType_BakedTexture
 };
 
-struct TextureJsonLoaderCS
-{
-    const char* TextureFilePathCStr;
-    VkGuid TextureId;
-    VkFormat TextureByteFormat;
-    VkImageAspectFlags ImageType;
-    TextureTypeEnum TextureType;
-    bool UseMipMaps;
-
-    TextureJsonLoaderCS(const nlohmann::json& jsonPath)
-    {
-        nlohmann::json json = Json::ReadJson(jsonPath);
-        TextureId = VkGuid(json["TextureId"].get<String>().c_str());
-        TextureByteFormat = json["TextureByteFormat"];
-        ImageType = json["ImageType"];
-        TextureType = json["TextureType"];
-        UseMipMaps = json["UseMipMaps"];
-
-
-        String TextureFilePath = json["TextureFilePath"];
-        TextureFilePathCStr = TextureFilePath.c_str();
-    }
-};
-
-struct TextureJsonLoader
-{
-    String TextureFilePath;
-    VkGuid TextureId;
-    VkFormat TextureByteFormat;
-    VkImageAspectFlags ImageType;
-    TextureTypeEnum TextureType;
-    bool UseMipMaps;
-
-    TextureJsonLoader(const nlohmann::json& jsonPath)
-    {
-        nlohmann::json json = Json::ReadJson(jsonPath);
-        TextureFilePath = json["TextureFilePath"];
-        TextureId = VkGuid(json["TextureId"].get<String>().c_str());
-        TextureByteFormat = json["TextureByteFormat"];
-        ImageType = json["ImageType"];
-        TextureType = json["TextureType"];
-        UseMipMaps = json["UseMipMaps"];
-    }
-
-    TextureJsonLoader(const TextureJsonLoaderCS& jsonLoader)
-    {
-        TextureFilePath = String(jsonLoader.TextureFilePathCStr);
-        TextureId = jsonLoader.TextureId;
-        TextureByteFormat = jsonLoader.TextureByteFormat;
-        ImageType = jsonLoader.ImageType;
-        TextureType = jsonLoader.TextureType;
-        UseMipMaps = jsonLoader.UseMipMaps;
-    }
-};
-
 struct Texture
 {
     TextureGuid textureId;
@@ -136,39 +81,30 @@ struct Texture
     ColorChannelUsed colorChannels = ColorChannelUsed::ChannelRGBA;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-    DLL_EXPORT Texture Texture_LoadTexture(const RendererState& rendererState, const char* jsonText);
-    DLL_EXPORT Texture Texture_CreateTexture(const RendererState& rendererState, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
-    DLL_EXPORT void Texture_UpdateTextureSize(const RendererState& rendererState, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution);
-    DLL_EXPORT void Texture_UpdateTextureBufferIndex(Texture& texture, uint32 bufferIndex);
-    DLL_EXPORT void Texture_GetTexturePropertiesBuffer(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList);
-    DLL_EXPORT void Texture_DestroyTexture(const RendererState& rendererState, Texture& texture);
-
-   // DLL_EXPORT Texture Texture_LoadTexture_CS(const RendererStateCS& rendererStateCS, const TextureJsonLoaderCS& textureJsonLoaderCS);
-    DLL_EXPORT Texture Texture_CreateTexture_CS(const RendererStateCS& rendererStateCS, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
-    DLL_EXPORT void Texture_UpdateTextureSize_CS(const RendererStateCS& rendererStateCS, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution);
-#ifdef __cplusplus
-}
-#endif
-
 DLL_EXPORT Texture Texture_CreateTexture(const RendererState& rendererState, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
 DLL_EXPORT Texture Texture_CreateTexture(const RendererState& rendererState, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
-DLL_EXPORT Texture Texture_CreateTexture_CS(const RendererStateCS& rendererStateCS, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
-DLL_EXPORT Texture Texture_CreateTexture_CS(const RendererStateCS& rendererStateCS, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
-    //DLL_EXPORT void Texture_UpdateTextureBufferIndex_CS(Texture& texture, uint32 bufferIndex);
-    //DLL_EXPORT void Texture_GetTexturePropertiesBuffer_CS(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList);
-    //DLL_EXPORT void Texture_DestroyTexture_CS(const RendererState& rendererState, Texture& texture);
+//DLL_EXPORT Texture Texture_CreateTexture_DLL(const RendererStateCS& rendererStateCS, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
+//DLL_EXPORT Texture Texture_CreateTexture_DLL(const RendererStateCS& rendererStateCS, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
+//DLL_EXPORT Texture Texture_CreateTexture_DLL(const RendererStateCS& rendererStateCS, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
 
-    void Texture_CreateTextureImage(const RendererState& rendererState, Texture & texture, const Pixel & clearColor);
-    void Texture_CreateTextureImage(const RendererState& rendererState, Texture & texture, const String & filePath);
-    void Texture_CreateTextureImage(const RendererState& rendererState, Texture & texture, VkImageCreateInfo & createImageInfo);
+void Texture_CreateTextureImage(const RendererState& rendererState, Texture & texture, const Pixel & clearColor);
+void Texture_CreateTextureImage(const RendererState& rendererState, Texture & texture, const String & filePath);
+void Texture_CreateTextureImage(const RendererState& rendererState, Texture & texture, VkImageCreateInfo & createImageInfo);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+    //DLL_EXPORT Texture Texture_LoadTexture_DLL(const RendererStateCS& rendererState, const char* jsonString);
+    //DLL_EXPORT void Texture_UpdateTextureSize_DLL(const RendererStateCS& rendererState, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution);
+    //DLL_EXPORT void Texture_UpdateTextureBufferIndex_DLL(Texture& texture, uint32 bufferIndex);
+    //DLL_EXPORT void Texture_GetTexturePropertiesBuffer_DLL(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList);
+
+        DLL_EXPORT Texture Texture_LoadTexture(const RendererState& rendererState, const char* jsonText);
+        DLL_EXPORT Texture Texture_CreateTexture(const RendererState& rendererState, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
+        DLL_EXPORT void Texture_UpdateTextureSize(const RendererState& rendererState, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution);
+        DLL_EXPORT void Texture_UpdateTextureBufferIndex(Texture& texture, uint32 bufferIndex);
+        DLL_EXPORT void Texture_GetTexturePropertiesBuffer(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList);
+        DLL_EXPORT void Texture_DestroyTexture(const RendererState& rendererState, Texture& texture);
         DLL_EXPORT void Texture_UpdateCmdTextureLayout(const RendererState& rendererState, VkCommandBuffer& commandBuffer, Texture& texture, VkImageLayout& newImageLayout);
         DLL_EXPORT void Texture_UpdateTextureLayout(const RendererState& rendererState, Texture& texture, VkImageLayout newImageLayout);
 
@@ -185,7 +121,6 @@ extern "C" {
 
         VkResult Texture_CopyBufferToTexture(const RendererState& rendererState, Texture & texture, VkBuffer buffer);
         VkResult Texture_GenerateMipmaps(const RendererState& rendererState, Texture & texture);
-    
 #ifdef __cplusplus
 }
 #endif

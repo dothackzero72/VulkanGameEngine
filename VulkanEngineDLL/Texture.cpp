@@ -5,6 +5,45 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
+//Texture Texture_LoadTexture_DLL(const RendererStateCS& rendererStateCS, const char* jsonString)
+//{
+//	RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
+//	return Texture_LoadTexture(renderState, jsonString);
+//}
+//
+//Texture Texture_CreateTexture_DLL(const RendererStateCS& rendererStateCS, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
+//{
+//	RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
+//	return Texture_CreateTexture(renderState, imageType, createImageInfo, samplerCreateInfo);
+//}
+//
+//Texture Texture_CreateTexture_DLL(const RendererStateCS& rendererStateCS, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
+//{
+//	RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
+//	return Texture_CreateTexture(renderState, texturePath, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
+//}
+//
+//Texture Texture_CreateTexture_DLL(const RendererStateCS& rendererStateCS, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
+//{
+//	RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
+//	return Texture_CreateTexture(renderState, clearColor, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
+//}
+//
+//void Texture_UpdateTextureSize_DLL(const RendererStateCS& rendererStateCS, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution)
+//{
+//	RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
+//}
+//
+//void Texture_UpdateTextureBufferIndex_DLL(Texture& texture, uint32 bufferIndex)
+//{
+//	Texture_UpdateTextureBufferIndex_DLL(texture, bufferIndex);
+//}
+//
+//void Texture_GetTexturePropertiesBuffer_DLL(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList)
+//{
+//	Texture_GetTexturePropertiesBuffer(texture, textureDescriptorList);
+//}
+
 Texture Texture_LoadTexture(const RendererState& rendererState, const char* jsonString)
 {
 	nlohmann::json json = Json::ReadJson(jsonString);
@@ -112,37 +151,6 @@ void Texture_DestroyTexture(const RendererState& rendererState, Texture& texture
 	Renderer_FreeDeviceMemory(rendererState.Device, &texture.textureMemory);
 }
 
- //Texture Texture_LoadTexture_CS(const RendererStateCS& rendererStateCS, const TextureJsonLoaderCS& textureJsonLoaderCS)
- //{
-	// RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
-	// TextureJsonLoader jsonTextureLoader = TextureJsonLoader(textureJsonLoaderCS);
-	// return Texture_LoadTexture(renderState, jsonTextureLoader);
- //}
-
- Texture Texture_CreateTexture_CS(const RendererStateCS& rendererStateCS, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
- {
-	 RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
-	 return Texture_CreateTexture(renderState, imageType, createImageInfo, samplerCreateInfo);
- }
-
- Texture Texture_CreateTexture_CS(const RendererStateCS& rendererStateCS, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
- {
-	 RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
-	 return Texture_CreateTexture(renderState, texturePath, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
- }
-
- Texture Texture_CreateTexture_CS(const RendererStateCS& rendererStateCS, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
- {
-	 RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
-	 return Texture_CreateTexture(renderState, clearColor, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
- }
-
- void Texture_UpdateTextureSize_CS(const RendererStateCS& rendererStateCS, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution)
- {
-	 RendererState renderState = Renderer_RendererStateCStoCPP(rendererStateCS);
-	 return Texture_UpdateTextureSize(renderState, texture, imageType, TextureResolution);
- }
-
 void Texture_CreateTextureImage(const RendererState& rendererState, Texture& texture, const Pixel& clearColor)
 {
 	VkBuffer buffer = VK_NULL_HANDLE;
@@ -224,7 +232,7 @@ void Texture_CreateTextureImage(const RendererState& rendererState, Texture& tex
 	VULKAN_RESULT(Texture_CreateImage(rendererState, texture, imageCreateInfo));
 	VULKAN_RESULT(Texture_QuickTransitionImageLayout(rendererState, texture, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));
 	VULKAN_RESULT(Texture_CopyBufferToTexture(rendererState, texture, buffer));
-	VULKAN_RESULT(Texture_QuickTransitionImageLayout(cRenderer, texture, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL));
+	VULKAN_RESULT(Texture_QuickTransitionImageLayout(rendererState, texture, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL));
 	VULKAN_RESULT(Texture_GenerateMipmaps(rendererState, texture));
 
 	Renderer_DestroyBuffer(rendererState.Device, &buffer);

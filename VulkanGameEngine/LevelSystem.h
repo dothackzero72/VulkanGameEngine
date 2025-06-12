@@ -10,6 +10,23 @@
 
 typedef Vector<vec2> AnimationFrames;
 
+struct GameObjectLoader
+{
+	String GameObjectPath;
+	Vector<vec2> GameObjectPositionOverride;
+};
+
+struct LevelLoader
+{
+	VkGuid LevelID;
+	Vector<String> LoadTextures;
+	Vector<String> LoadMaterials;
+	Vector<String> LoadSpriteVRAM;
+	Vector<String> LoadTileSetVRAM;
+	Vector<GameObjectLoader> GameObjectList;
+	String LoadLevelLayout;
+};
+
 class MeshSystem;
 class LevelSystem
 {

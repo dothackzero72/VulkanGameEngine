@@ -5,9 +5,12 @@
 #include "CoreVulkanRenderer.h"
 #include "VulkanBuffer.h"
 #include "Vector.h"
+#include "Texture.h"
 
 struct Material
 {
+	constexpr static int TextureCount = 10;
+
 	int VectorMapKey;
 	VkGuid materialGuid;
 	uint ShaderMaterialBufferIndex;
@@ -61,6 +64,8 @@ struct Vector2Traits<Material>
 	static int GetVectorMapKey(const Material& obj) { return obj.VectorMapKey; }
 };
 
-DLL_EXPORT VulkanBuffer Material_CreateMaterialBuffer(const RendererState& renderer, uint bufferId);
+static int NextMaterialBufferId = 0;
+
+DLL_EXPORT Material Material_CreateMaterial(const RendererState& renderer, int bufferIndex, VulkanBuffer& materialBuffer, const char* jsonString);
 DLL_EXPORT void Material_UpdateBuffer(const RendererState& renderer, VulkanBuffer& materialBuffer, MaterialProperitiesBuffer& materialProperties);
 DLL_EXPORT void Material_DestroyBuffer(const RendererState& renderer, VulkanBuffer& materialBuffer);

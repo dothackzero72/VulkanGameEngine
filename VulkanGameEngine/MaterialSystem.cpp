@@ -29,30 +29,8 @@ VkGuid MaterialSystem::LoadMaterial(const String& materialPath)
         return materialId;
     }
 
-    uint materialBufferId = ++bufferSystem.NextBufferId;
-    bufferSystem.VulkanBufferMap[materialBufferId] = Material_CreateMaterialBuffer(cRenderer, ++bufferSystem.NextBufferId);
-
-    MaterialMap[materialId] = Material();
-    MaterialMap[materialId].materialGuid = materialId,
-    MaterialMap[materialId].Albedo = vec3(json["Albedo"][0], json["Albedo"][1], json["Albedo"][2]);
-    MaterialMap[materialId].Metallic = json["Metallic"];
-    MaterialMap[materialId].Roughness = json["Roughness"];
-    MaterialMap[materialId].AmbientOcclusion = json["AmbientOcclusion"];
-    MaterialMap[materialId].Emission = vec3(json["Emission"][0], json["Emission"][1], json["Emission"][2]);
-    MaterialMap[materialId].Alpha = json["Alpha"];
-
-    MaterialMap[materialId].AlbedoMapId = textureSystem.LoadTexture(json["AlbedoMapPath"]);
-    MaterialMap[materialId].MetallicRoughnessMapId = textureSystem.LoadTexture(json["MetallicRoughnessMapPath"]);
-    MaterialMap[materialId].MetallicMapId = textureSystem.LoadTexture(json["MetallicMapPath"]);
-    MaterialMap[materialId].RoughnessMapId = textureSystem.LoadTexture(json["RoughnessMapPath"]);
-    MaterialMap[materialId].AmbientOcclusionMapId = textureSystem.LoadTexture(json["AmbientOcclusionMapPath"]);
-    MaterialMap[materialId].NormalMapId = textureSystem.LoadTexture(json["NormalMapPath"]);
-    MaterialMap[materialId].DepthMapId = textureSystem.LoadTexture(json["DepthMapPath"]);
-    MaterialMap[materialId].AlphaMapId = textureSystem.LoadTexture(json["AlphaMapPath"]);
-    MaterialMap[materialId].EmissionMapId = textureSystem.LoadTexture(json["EmissionMapPath"]);
-    MaterialMap[materialId].HeightMapId = textureSystem.LoadTexture(json["HeightMapPath"]);
-    MaterialMap[materialId].MaterialBufferId = materialBufferId;
-
+    int bufferIndex = ++bufferSystem.NextBufferId;
+    MaterialMap[materialId] = Material_CreateMaterial(cRenderer, ++bufferSystem.NextBufferId, bufferSystem.VulkanBufferMap[bufferIndex], materialPath.c_str());
     return materialId;
 }
 

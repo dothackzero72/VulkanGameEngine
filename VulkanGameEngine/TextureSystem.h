@@ -8,12 +8,14 @@
 class TextureSystem
 {
 private:
-	UnorderedMap<RenderPassGuid, Texture>						  TextureMap;
+
 	UnorderedMap<RenderPassGuid, Texture>						  DepthTextureMap;
 	UnorderedMap<RenderPassGuid, Vector<Texture>>				  RenderedTextureListMap;
 	UnorderedMap<UM_RenderPipelineID, Vector<TextureGuid>>		  InputTextureListMap;
 
 public:
+
+	UnorderedMap<RenderPassGuid, Texture>						  TextureMap;
 
 	VkGuid  LoadTexture(const String& texturePath);
 	Texture CreateTexture(VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
