@@ -3,7 +3,7 @@
 #include <VulkanRenderPass.h>
 #include <ImGuiFunc.h>
 #include "SceneDataBuffer.h"
-
+#include <nlohmann/json.hpp>
 
 typedef uint UM_SpriteID;
 typedef uint UM_SpriteBatchID;
@@ -22,8 +22,8 @@ private:
     UnorderedMap<RenderPassGuid, Vector<VulkanPipeline>>          RenderPipelineMap;
     VkCommandBufferBeginInfo                                      CommandBufferBeginInfo;
 
-    void CreateVulkanRenderPass(RenderPassBuildInfoModel& model, ivec2& renderPassResolution);
-    void CreateVulkanRenderPass(RenderPassBuildInfoModel& model, Texture& inputTexture, ivec2& renderPassResolution);
+    VkGuid CreateVulkanRenderPass(const String& jsonPath, ivec2& renderPassResolution);
+    VkGuid CreateVulkanRenderPass(const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution);
     void RecreateSwapchain();
 
     const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer();

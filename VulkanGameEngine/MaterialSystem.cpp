@@ -30,7 +30,7 @@ VkGuid MaterialSystem::LoadMaterial(const String& materialPath)
     }
 
     int bufferIndex = ++bufferSystem.NextBufferId;
-    MaterialMap[materialId] = Material_CreateMaterial(cRenderer, ++bufferSystem.NextBufferId, bufferSystem.VulkanBufferMap[bufferIndex], materialPath.c_str());
+    MaterialMap[materialId] = Material_CreateMaterial(cRenderer, bufferIndex, bufferSystem.VulkanBufferMap[bufferIndex], materialPath.c_str());
     return materialId;
 }
 

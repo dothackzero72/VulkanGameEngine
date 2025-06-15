@@ -50,7 +50,7 @@ enum VertexTypeEnum
 
 struct RenderPassEditorBaseModel
 {
-    String _name;
+    //String _name;
     RenderPassEditorBaseModel()
     {
     }
@@ -145,7 +145,7 @@ public:
     static RenderPassBuildInfoModel from_json(const nlohmann::json& json, ivec2 textureResolution)
     {
         RenderPassBuildInfoModel model;
-        model._name = json["_name"];
+     //   model._name = json["_name"];
         model.IsRenderedToSwapchain = json["IsRenderedToSwapchain"].get<bool>();
         model.RenderArea = RenderAreaModel::from_json(json["RenderArea"], textureResolution);
         /*  for (int x = 0; x < json["RenderPipelineList"].size(); x++)
@@ -196,7 +196,7 @@ struct RenderPipelineModel : RenderPassEditorBaseModel
     static RenderPipelineModel from_json(const nlohmann::json& json)
     {
         RenderPipelineModel model;
-        model._name = json["_name"];
+        //model._name = json["_name"];
         model.VertexShaderPath = json["VertexShader"];
         model.FragmentShaderPath = json["FragmentShader"];
         model.VertexType = json["VertexType"];

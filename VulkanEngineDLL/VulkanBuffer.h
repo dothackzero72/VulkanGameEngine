@@ -46,7 +46,6 @@ DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& ren
 DLL_EXPORT void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount);
 DLL_EXPORT VkResult VulkanBuffer_CopyBuffer(const RendererState& renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
 DLL_EXPORT void VulkanBuffer_DestroyBuffer(const RendererState& renderer, VulkanBuffer& vulkanBuffer);
-
 void VulkanBuffer_UpdateBufferSize(const RendererState& renderer, VulkanBuffer& vulkanBuffer, VkDeviceSize newBufferElementSize, uint32_t newBufferElementCount);
 
 #ifdef __cplusplus

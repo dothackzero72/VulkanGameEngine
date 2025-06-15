@@ -16,6 +16,12 @@
     <Filter Include="Source Files\ImGui">
       <UniqueIdentifier>{8f937b0d-0f84-487b-9e74-2f34412f56f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Json">
+      <UniqueIdentifier>{6c682fe2-9902-4555-9688-8ebb36d34dfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Json">
+      <UniqueIdentifier>{bcd37c45-5d22-402c-a107-80944fac346e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DLL.h">
@@ -107,6 +113,15 @@
     </ClInclude>
     <ClInclude Include="Vector.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonLoader.h">
+      <Filter>Header Files\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonStruct.h">
+      <Filter>Header Files\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="from_json.h">
+      <Filter>Header Files\Json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +217,12 @@
     </ClCompile>
     <ClCompile Include="Vector.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonLoader.cpp">
+      <Filter>Source Files\Json</Filter>
+    </ClCompile>
+    <ClCompile Include="from_json.cpp">
+      <Filter>Source Files\Json</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
