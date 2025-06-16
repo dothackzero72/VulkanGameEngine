@@ -69,15 +69,16 @@
      return vulkanRenderPass;
  }
 
- VulkanRenderPassDLL* VulkanRenderPass_CreateVulkanRenderPassCS(const RendererStateCS& renderStateCS, const char* renderPassLoader, ivec2& renderPassResolution, int ConstBuffer, Texture& renderedTextureListPtr, size_t& renderedTextureCount, Texture& depthTexture)
- {
-     RendererState renderState = Renderer_RendererStateCStoCPP(renderStateCS);
-     return VulkanRenderPass_CreateVulkanRenderPass(renderState, renderPassLoader, renderPassResolution,  ConstBuffer, renderedTextureListPtr, renderedTextureCount, depthTexture);
- }
+ //VulkanRenderPassDLL* VulkanRenderPass_CreateVulkanRenderPassCS(const renderStateDLL& renderStateCS, const char* renderPassLoader, ivec2& renderPassResolution, int ConstBuffer, Texture& renderedTextureListPtr, size_t& renderedTextureCount, Texture& depthTexture)
+ //{
+ //    RendererState renderState = Renderer_RendererStateCStoCPP(renderStateCS);
+ //    return VulkanRenderPass_CreateVulkanRenderPass(renderState, renderPassLoader, renderPassResolution,  ConstBuffer, renderedTextureListPtr, renderedTextureCount, depthTexture);
+ //}
 
- VulkanRenderPassDLL* VulkanRenderPass_CreateVulkanRenderPass(const RendererState& renderState, const char* renderPassLoaderJson, ivec2& renderPassResolution, int ConstBuffer, Texture& renderedTextureListPtr,  size_t& renderedTextureCount, Texture& depthTexture)
+ VulkanRenderPassDLL* VulkanRenderPass_CreateVulkanRenderPass(const RendererStateDLL& renderStateDLL, const char* renderPassLoaderJson, ivec2& renderPassResolution, int ConstBuffer, Texture& renderedTextureListPtr,  size_t& renderedTextureCount, Texture& depthTexture)
 {
     Vector<Texture> renderedTextureList;
+    RendererState renderState = VulkanRenderer_ConvertToVulkanRenderer(renderStateDLL);
     RenderPassLoader renderPassLoader = JsonLoader_LoadRenderPassLoaderInfo(renderPassLoaderJson, renderPassResolution);
 
     VulkanRenderPass vulkanRenderPass;

@@ -55,7 +55,8 @@ VkGuid RenderSystem::CreateVulkanRenderPass(const String& jsonPath, ivec2& rende
     size_t renderedTextureCount = 1;
     Vector<Texture> renderedTextureList = Vector<Texture>(renderedTextureCount);
 
-    VulkanRenderPassDLL* vulkanRenderPassDLLPtr = VulkanRenderPass_CreateVulkanRenderPass(cRenderer, jsonPath.c_str(), renderPassResolution, sizeof(SceneDataBuffer), renderedTextureList[0], renderedTextureCount, depthTexture);
+    RendererStateDLL renderer = VulkanRenderer_ConvertToVulkanRendererDLL(cRenderer);
+    VulkanRenderPassDLL* vulkanRenderPassDLLPtr = VulkanRenderPass_CreateVulkanRenderPass(renderer, jsonPath.c_str(), renderPassResolution, sizeof(SceneDataBuffer), renderedTextureList[0], renderedTextureCount, depthTexture);
     VkGuid renderPassId = vulkanRenderPassDLLPtr->RenderPassId;
 
     RenderPassMap[renderPassId] = VulkanRenderPass_ConvertToVulkanRenderPass(vulkanRenderPassDLLPtr);

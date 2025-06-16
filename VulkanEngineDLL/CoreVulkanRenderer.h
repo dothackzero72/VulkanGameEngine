@@ -78,7 +78,7 @@ typedef struct rendererState
 }RendererState;
 DLL_EXPORT extern RendererState cRenderer;
 
-struct RendererStateCS
+struct RendererStateDLL
 {
 	VkInstance         Instance;
 	VkDevice           Device;
@@ -119,19 +119,15 @@ struct RendererStateCS
 #ifdef __cplusplus
 extern "C" {
 #endif
-DLL_EXPORT RendererState Renderer_RendererSetUp(void* windowHandle);
-DLL_EXPORT void Renderer_DestroyRenderer(RendererState& renderer);
+	DLL_EXPORT RendererStateDLL VulkanRenderer_ConvertToVulkanRendererDLL(const RendererState& renderState);
+	DLL_EXPORT RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& renderStateDLL);
 
-DLL_EXPORT RendererStateCS Renderer_RendererSetUp_CS(void* windowHandle);
-//DLL_EXPORT void Renderer_DestroyRendererCS(RendererStateCS& renderer);
-
-RendererState Renderer_RendererStateCStoCPP(const RendererStateCS& renderStateCS);
-RendererStateCS Renderer_RendererStateCPPtoCS(RendererState& renderState);
-
+	DLL_EXPORT RendererState Renderer_RendererSetUp(void* windowHandle);
+	DLL_EXPORT RendererStateDLL Renderer_RendererSetUp_CS(void* windowHandle);
+	DLL_EXPORT void Renderer_DestroyRenderer(RendererState& renderer);
 #ifdef __cplusplus
 }
 #endif
-	VkResult Renderer_SetUpSwapChainCS(RendererState& renderState);
 	Vector<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice);
 	Vector<VkSurfaceFormatKHR> Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 	Vector<VkPresentModeKHR> Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
@@ -158,4 +154,6 @@ RendererStateCS Renderer_RendererStateCPPtoCS(RendererState& renderState);
 	VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(Vector<VkSurfaceFormatKHR>&availableFormats);
 	VkPresentModeKHR SwapChain_FindSwapPresentMode(Vector<VkPresentModeKHR>&availablePresentModes);
 
+	VkResult Renderer_SetUpSwapChainCS(RendererState& renderState);
 	VkResult Renderer_SetUpSwapChain(void* windowHandle, RendererState & renderState);
+
