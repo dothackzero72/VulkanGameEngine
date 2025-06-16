@@ -23,7 +23,6 @@ private:
     VkCommandBufferBeginInfo                                      CommandBufferBeginInfo;
 
     VkGuid CreateVulkanRenderPass(const String& jsonPath, ivec2& renderPassResolution);
-    VkGuid CreateVulkanRenderPass(const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution);
     void RecreateSwapchain();
 
     const Vector<VkDescriptorBufferInfo> GetVertexPropertiesBuffer();

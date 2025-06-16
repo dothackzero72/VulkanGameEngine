@@ -54,33 +54,19 @@ VkGuid RenderSystem::CreateVulkanRenderPass(const String& jsonPath, ivec2& rende
     Texture depthTexture = Texture();
     size_t renderedTextureCount = 1;
     Vector<Texture> renderedTextureList = Vector<Texture>(renderedTextureCount);
-    auto asdf = VulkanRenderPass_CreateVulkanRenderPass(cRenderer, jsonPath.c_str(), renderPassResolution, sizeof(SceneDataBuffer), renderedTextureList[0], renderedTextureCount, depthTexture);
-    RenderPassMap[asdf->RenderPassId] = VulkanRenderPass_ConvertToVulkanRenderPass(asdf);
 
-    textureSystem.AddRenderedTexture(asdf->RenderPassId, renderedTextureList);
+    VulkanRenderPassDLL* vulkanRenderPassDLLPtr = VulkanRenderPass_CreateVulkanRenderPass(cRenderer, jsonPath.c_str(), renderPassResolution, sizeof(SceneDataBuffer), renderedTextureList[0], renderedTextureCount, depthTexture);
+    VkGuid renderPassId = vulkanRenderPassDLLPtr->RenderPassId;
+
+    RenderPassMap[renderPassId] = VulkanRenderPass_ConvertToVulkanRenderPass(vulkanRenderPassDLLPtr);
+
+    textureSystem.AddRenderedTexture(renderPassId, renderedTextureList);
     if (depthTexture.textureView != VK_NULL_HANDLE)
     {
-        textureSystem.AddDepthTexture(asdf->RenderPassId, depthTexture);
+        textureSystem.AddDepthTexture(renderPassId, depthTexture);
     }
 
-    return asdf->RenderPassId;
-}
-
-VkGuid RenderSystem::CreateVulkanRenderPass(const String& jsonPath, Texture& inputTexture, ivec2& renderPassResolution)
-{
-    Texture depthTexture = Texture();
-    size_t renderedTextureCount = 1;
-    Vector<Texture> renderedTextureList = Vector<Texture>(renderedTextureCount);
-    auto asdf = VulkanRenderPass_CreateVulkanRenderPass(cRenderer, jsonPath.c_str(), renderPassResolution, sizeof(SceneDataBuffer), renderedTextureList[0], renderedTextureCount, depthTexture);
-    RenderPassMap[asdf->RenderPassId] = VulkanRenderPass_ConvertToVulkanRenderPass(asdf);
-
-    textureSystem.AddRenderedTexture(asdf->RenderPassId, renderedTextureList);
-    if (depthTexture.textureView != VK_NULL_HANDLE)
-    {
-        textureSystem.AddDepthTexture(asdf->RenderPassId, depthTexture);
-    }
-
-    return asdf->RenderPassId;
+    return renderPassId;
 }
 
 void RenderSystem::RecreateSwapchain()
@@ -193,7 +179,8 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, ive
     for (int x = 0; x < json["RenderPipelineList"].size(); x++)
     {
         uint pipeLineId = renderSystem.RenderPassMap.size();
-        nlohmann::json json = Json::ReadJson(json["RenderPipelineList"][x]);
+        String asdf = json["RenderPipelineList"][x];
+        nlohmann::json json = Json::ReadJson(asdf);
         RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
         GPUIncludes include =
         {
@@ -224,7 +211,8 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, Tex
     for (int x = 0; x < json["RenderPipelineList"].size(); x++)
     {
         uint pipeLineId = renderSystem.RenderPipelineMap.size();
-        nlohmann::json json = Json::ReadJson(json["RenderPipelineList"][x]);
+        String asdf = json["RenderPipelineList"][x];
+        nlohmann::json json = Json::ReadJson(asdf);
         RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
 
         GPUIncludes include =
