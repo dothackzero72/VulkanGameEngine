@@ -152,6 +152,7 @@
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="MemoryLeakDetector.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Pixel.h" />
@@ -190,6 +191,7 @@
     <ClCompile Include="JsonLoader.cpp" />
     <ClCompile Include="Keyboard.c" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MemoryLeakDetector.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="SDLWindow.cpp" />
@@ -201,6 +203,9 @@
     <ClCompile Include="VulkanPipeline.cpp" />
     <ClCompile Include="VulkanRenderPass.cpp" />
     <ClCompile Include="VulkanWindow.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

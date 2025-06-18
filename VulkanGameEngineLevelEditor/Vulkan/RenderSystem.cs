@@ -325,9 +325,10 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
         }
 
-        public static RendererStateCS ToStruct()
+        public static RendererStateCS* ToUnmanagedPointer()
         {
-            return new RendererStateCS()
+            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf<RendererStateCS>());
+            RendererStateCS renderState = new RendererStateCS
             {
                 AcquireImageSemaphores = AcquireImageSemaphores.Ptr,
                 AcquireImageSemaphoresCount = AcquireImageSemaphores.UCount,
@@ -356,6 +357,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 SwapChainImageViewsCount = SwapChainImageViews.UCount,
                 SwapChainResolution = SwapChainResolution
             };
+
+            Marshal.StructureToPtr(renderState, ptr, false);
+            return (RendererStateCS*)ptr; 
         }
     }
 }

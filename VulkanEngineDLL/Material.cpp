@@ -1,8 +1,9 @@
 #include "Material.h"
 #include "json.h"
 
-Material Material_CreateMaterial(const RendererState& renderer, int bufferIndex, VulkanBuffer& materialBuffer, const char* jsonString)
+Material Material_CreateMaterial(const RendererStateDLL& rendererStateDLL, int bufferIndex, VulkanBuffer& materialBuffer, const char* jsonString)
 {
+    const RendererState renderer = VulkanRenderer_ConvertToVulkanRenderer(rendererStateDLL);
     materialBuffer = VulkanBuffer_CreateVulkanBuffer(renderer, bufferIndex, sizeof(MaterialProperitiesBuffer), 1, BufferTypeEnum::BufferType_MaterialProperitiesBuffer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
                                                                                                                                                                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                                                                                                                                                                        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
@@ -32,12 +33,14 @@ Material Material_CreateMaterial(const RendererState& renderer, int bufferIndex,
     };
 }
 
-void Material_UpdateBuffer(const RendererState& renderer, VulkanBuffer& materialBuffer, MaterialProperitiesBuffer& materialProperties)
+void Material_UpdateBuffer(const RendererStateDLL& rendererStateDLL, VulkanBuffer& materialBuffer, MaterialProperitiesBuffer& materialProperties)
 {
+    const RendererState renderer = VulkanRenderer_ConvertToVulkanRenderer(rendererStateDLL);
     VulkanBuffer_UpdateBufferMemory(renderer, materialBuffer, static_cast<void*>(&materialProperties), sizeof(MaterialProperitiesBuffer), 1);
 }
 
-void Material_DestroyBuffer(const RendererState& renderer, VulkanBuffer& materialBuffer)
+void Material_DestroyBuffer(const RendererStateDLL& rendererStateDLL, VulkanBuffer& materialBuffer)
 {
+    const RendererState renderer = VulkanRenderer_ConvertToVulkanRenderer(rendererStateDLL);
     VulkanBuffer_DestroyBuffer(renderer, materialBuffer);
 }

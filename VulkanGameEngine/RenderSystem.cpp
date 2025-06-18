@@ -199,7 +199,9 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, ive
             shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
         };
 
-        RenderPipelineMap[renderPassId].emplace_back(Pipeline_CreateRenderPipeline(cRenderer.Device, renderPassId, pipeLineId, renderPipelineModel, RenderPassMap[renderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, pipelineShaderStageCreateInfoList));
+        VkPipelineShaderStageCreateInfo* createInfo  = pipelineShaderStageCreateInfoList.data();
+        VulkanPipelineDLL vulkanPipelineDLL = *VulkanPipeline_CreateRenderPipeline(cRenderer.Device, renderPassId, pipeLineId, renderPipelineModel, RenderPassMap[renderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, *createInfo, pipelineShaderStageCreateInfoList.size());
+        RenderPipelineMap[renderPassId].emplace_back(VulkanPipeline_ConvertToVulkanPipelinePass(&vulkanPipelineDLL));
     }
 
     return renderPassId;
@@ -231,7 +233,10 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, Tex
             shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
             shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
         };
-        RenderPipelineMap[renderPassId].emplace_back(Pipeline_CreateRenderPipeline(cRenderer.Device, renderPassId, pipeLineId, renderPipelineModel, RenderPassMap[renderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, pipelineShaderStageCreateInfoList));
+
+        VkPipelineShaderStageCreateInfo* createInfo = pipelineShaderStageCreateInfoList.data();
+        VulkanPipelineDLL vulkanPipelineDLL = *VulkanPipeline_CreateRenderPipeline(cRenderer.Device, renderPassId, pipeLineId, renderPipelineModel, RenderPassMap[renderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, *createInfo, pipelineShaderStageCreateInfoList.size());
+        RenderPipelineMap[renderPassId].emplace_back(VulkanPipeline_ConvertToVulkanPipelinePass(&vulkanPipelineDLL));
     }
 
     return renderPassId;
@@ -464,7 +469,8 @@ void RenderSystem::DestroyRenderPipeline()
     {
         for (auto& renderPipeline : renderPipelineList.second)
         {
-            Pipeline_Destroy(cRenderer.Device, renderPipeline);
+            VulkanPipelineDLL vulkanPipelineDLL = *VulkanPipeline_ConvertToVulkanRenderPipelineDLL(renderPipeline);
+            VulkanPipeline_Destroy(cRenderer.Device, vulkanPipelineDLL);
         }
     }
     RenderPipelineMap.clear();

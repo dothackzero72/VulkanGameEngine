@@ -125,6 +125,7 @@ extern "C" {
 	DLL_EXPORT RendererState Renderer_RendererSetUp(void* windowHandle);
 	DLL_EXPORT RendererStateDLL Renderer_RendererSetUp_CS(void* windowHandle);
 	DLL_EXPORT void Renderer_DestroyRenderer(RendererState& renderer);
+	DLL_EXPORT void VulkanRenderer_DeleteVulkanRenderStatePtrs(RendererStateDLL* vulkanRenderStateDLL);
 #ifdef __cplusplus
 }
 #endif

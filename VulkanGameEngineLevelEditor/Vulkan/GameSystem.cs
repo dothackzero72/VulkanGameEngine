@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
@@ -28,6 +29,19 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public size_t ClearValueCount;
         public VkCommandBuffer CommandBuffer;
         public bool UseFrameBufferResolution;
+    };
+
+    public unsafe struct VulkanPipelineDLL
+    {
+        public uint RenderPipelineId;
+        public size_t DescriptorSetLayoutCount;
+        public size_t DescriptorSetCount;
+        public VkDescriptorPool DescriptorPool;
+        public VkDescriptorSetLayout* DescriptorSetLayoutList;
+        public VkDescriptorSet* DescriptorSetList;
+        public VkPipeline Pipeline;
+        public VkPipelineLayout PipelineLayout;
+        public VkPipelineCache PipelineCache;
     };
 
     public static class GameSystem
@@ -57,11 +71,36 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             ListPtr<TextureStruct> textureList = new ListPtr<TextureStruct>(32);
             TextureStruct depthTexture = new TextureStruct();
             var count = (ulong)textureList.Count;
-            var renderSystemStruct = RenderSystem.ToStruct();
+            var renderSystemStruct = RenderSystem.ToUnmanagedPointer();
             var jsonText = "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/RenderPass/LevelShader2DRenderPass.json";
             var asdf = RenderSystem.SwapChainResolution;
             var sf = textureList[0];
-            VulkanRenderPassDLL* a = GameEngineImport.VulkanRenderPass_CreateVulkanRenderPassCS(ref renderSystemStruct, jsonText, ref asdf, sizeof(SceneDataBuffer), ref sf, ref count, ref depthTexture);
+            VulkanRenderPassDLL* a = GameEngineImport.VulkanRenderPass_CreateVulkanRenderPass(renderSystemStruct, jsonText, ref asdf, sizeof(SceneDataBuffer), ref sf, ref count, ref depthTexture);
+
+
+            //var meshProperties = GetMeshPropertiesBuffer<T>(gpuImport.MeshList);
+            //var textureProperties = GetTexturePropertiesBuffer(gpuImport.TextureList);
+            //var materialProperties = GetMaterialPropertiesBuffer(gpuImport.MaterialList);
+            //var vertexProperties = new ListPtr<VkDescriptorBufferInfo>();
+            //var indexProperties = new ListPtr<VkDescriptorBufferInfo>();
+            //var transformProperties = new ListPtr<VkDescriptorBufferInfo>();
+
+            //GPUIncludes includes = new GPUIncludes
+            //{
+            //    vertexProperties = vertexProperties.Ptr,
+            //    indexProperties = indexProperties.Ptr,
+            //    transformProperties = transformProperties.Ptr,
+            //    meshProperties = meshProperties.Ptr,
+            //    texturePropertiesList = textureProperties.Ptr,
+            //    materialProperties = materialProperties.Ptr,
+            //    vertexPropertiesCount = vertexProperties.UCount,
+            //    indexPropertiesCount = indexProperties.UCount,
+            //    transformPropertiesCount = transformProperties.UCount,
+            //    meshPropertiesCount = meshProperties.UCount,
+            //    texturePropertiesListCount = textureProperties.UCount,
+            //    materialPropertiesCount = materialProperties.UCount
+            //};
+
             LoadLevel("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Levels/TestLevel.json");                                                                                                  
         }
         public static void LoadLevel(String levelPath)

@@ -123,6 +123,9 @@
     <ClInclude Include="from_json.h">
       <Filter>Header Files\Json</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryLeakDetector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VulkanError.c">
@@ -224,5 +227,11 @@
     <ClCompile Include="from_json.cpp">
       <Filter>Source Files\Json</Filter>
     </ClCompile>
+    <ClCompile Include="MemoryLeakDetector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -27,7 +27,7 @@ struct Material
 	VkGuid EmissionMapId;
 	VkGuid HeightMapId;
 
-	vec3 Albedo = vec3(0.0f, 0.35f, 0.45);
+	vec3 Albedo = vec3(0.0f, 0.35f, 0.45f);
 	vec3 Emission = vec3(0.0f);
 	float Metallic = 0.0f;
 	float Roughness = 0.0f;
@@ -66,6 +66,6 @@ struct Vector2Traits<Material>
 
 static int NextMaterialBufferId = 0;
 
-DLL_EXPORT Material Material_CreateMaterial(const RendererState& renderer, int bufferIndex, VulkanBuffer& materialBuffer, const char* jsonString);
-DLL_EXPORT void Material_UpdateBuffer(const RendererState& renderer, VulkanBuffer& materialBuffer, MaterialProperitiesBuffer& materialProperties);
-DLL_EXPORT void Material_DestroyBuffer(const RendererState& renderer, VulkanBuffer& materialBuffer);
+DLL_EXPORT Material Material_CreateMaterial(const RendererStateDLL& renderer, int bufferIndex, VulkanBuffer& materialBuffer, const char* jsonString);
+DLL_EXPORT void Material_UpdateBuffer(const RendererStateDLL& rendererStateDLL, VulkanBuffer& materialBuffer, MaterialProperitiesBuffer& materialProperties);
+DLL_EXPORT void Material_DestroyBuffer(const RendererStateDLL& rendererStateDLL, VulkanBuffer& materialBuffer);

@@ -1,7 +1,77 @@
 #include "VulkanPipeline.h"
+#include "MemoryLeakDetector.h"
 
-VulkanPipeline Pipeline_CreateRenderPipeline(VkDevice device, VkGuid& renderPassId, uint renderPipelineId, RenderPipelineModel& model, VkRenderPass renderPass, uint constBufferSize, ivec2& renderPassResolution, const GPUIncludes& includes, Vector<VkPipelineShaderStageCreateInfo>& pipelineShaders)
+ VulkanPipelineDLL* VulkanPipeline_ConvertToVulkanRenderPipelineDLL(VulkanPipeline& renderPipeline)
 {
+     VulkanPipelineDLL* vulkanRenderPipelineDLL = new VulkanPipelineDLL();
+     vulkanRenderPipelineDLL->RenderPipelineId = renderPipeline.RenderPipelineId;
+     vulkanRenderPipelineDLL->DescriptorSetLayoutCount = renderPipeline.DescriptorSetLayoutList.size();
+     vulkanRenderPipelineDLL->DescriptorSetCount = renderPipeline.DescriptorSetList.size();
+     vulkanRenderPipelineDLL->DescriptorPool = renderPipeline.DescriptorPool;
+     vulkanRenderPipelineDLL->DescriptorSetLayoutList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSetLayout>(renderPipeline.DescriptorSetLayoutList.size());
+     vulkanRenderPipelineDLL->DescriptorSetList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSet>(renderPipeline.DescriptorSetList.size());
+     vulkanRenderPipelineDLL->Pipeline = renderPipeline.Pipeline;
+     vulkanRenderPipelineDLL->PipelineLayout = renderPipeline.PipelineLayout;
+     vulkanRenderPipelineDLL->PipelineCache = renderPipeline.PipelineCache;
+
+     if (vulkanRenderPipelineDLL->DescriptorSetLayoutCount > 0)
+     {
+         vulkanRenderPipelineDLL->DescriptorSetLayoutList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSetLayout>(renderPipeline.DescriptorSetLayoutList.size());
+         std::memcpy(vulkanRenderPipelineDLL->DescriptorSetLayoutList, renderPipeline.DescriptorSetLayoutList.data(), vulkanRenderPipelineDLL->DescriptorSetLayoutCount * sizeof(VkFramebuffer));
+     }
+     else
+     {
+         vulkanRenderPipelineDLL->DescriptorSetLayoutList = nullptr;
+     }
+
+     if (vulkanRenderPipelineDLL->DescriptorSetCount > 0)
+     {
+         vulkanRenderPipelineDLL->DescriptorSetList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSet>(renderPipeline.DescriptorSetList.size());
+         std::memcpy(vulkanRenderPipelineDLL->DescriptorSetList, renderPipeline.DescriptorSetList.data(), vulkanRenderPipelineDLL->DescriptorSetCount * sizeof(VkClearValue));
+     }
+     else
+     {
+         vulkanRenderPipelineDLL->DescriptorSetList = nullptr;
+     }
+
+     return vulkanRenderPipelineDLL;
+ }
+
+ VulkanPipeline VulkanPipeline_ConvertToVulkanPipelinePass(VulkanPipelineDLL* renderPipelineDLL)
+ {
+     if (!renderPipelineDLL)
+     {
+         throw std::invalid_argument("Null RenderPipelineDLL pointer");
+     }
+
+     VulkanPipeline vulkanPipeline = VulkanPipeline
+     {
+        .RenderPipelineId = renderPipelineDLL->RenderPipelineId,
+        .DescriptorPool = renderPipelineDLL->DescriptorPool,
+        .DescriptorSetLayoutList = Vector<VkDescriptorSetLayout>(renderPipelineDLL->DescriptorSetLayoutList, renderPipelineDLL->DescriptorSetLayoutList + renderPipelineDLL->DescriptorSetLayoutCount),
+        .DescriptorSetList = Vector<VkDescriptorSet>(renderPipelineDLL->DescriptorSetList, renderPipelineDLL->DescriptorSetList + renderPipelineDLL->DescriptorSetCount),
+        .Pipeline = renderPipelineDLL->Pipeline,
+        .PipelineLayout = renderPipelineDLL->PipelineLayout,
+    .   PipelineCache = renderPipelineDLL->PipelineCache
+     };
+     VulkanPipeline_DeleteVulkanRenderPassDLLPtrs(renderPipelineDLL);
+     return vulkanPipeline;
+ }
+
+ void VulkanPipeline_DeleteVulkanRenderPassDLLPtrs(VulkanPipelineDLL* renderPipelineDLL)
+ {
+     if (renderPipelineDLL)
+     {
+         memoryLeakSystem.RemovePtrBuffer(renderPipelineDLL->DescriptorSetLayoutList);
+         memoryLeakSystem.RemovePtrBuffer(renderPipelineDLL->DescriptorSetList);
+         memoryLeakSystem.RemovePtrBuffer(renderPipelineDLL);
+     }
+ }
+
+ VulkanPipelineDLL* VulkanPipeline_CreateRenderPipeline(VkDevice device, VkGuid& renderPassId, uint renderPipelineId, RenderPipelineModel& model, VkRenderPass renderPass, size_t constBufferSize, ivec2& renderPassResolution, const GPUIncludes& includes, VkPipelineShaderStageCreateInfo& pipelineShaderList, size_t pipelineShaderCount)
+{
+    Vector<VkPipelineShaderStageCreateInfo> pipelineShaders = Vector<VkPipelineShaderStageCreateInfo>(&pipelineShaderList, &pipelineShaderList + pipelineShaderCount);
+
     VulkanPipeline vulkanPipeline = {};
     vulkanPipeline.RenderPipelineId = renderPipelineId;
     vulkanPipeline.DescriptorPool = Pipeline_CreatePipelineDescriptorPool(device, model, includes);
@@ -10,10 +80,10 @@ VulkanPipeline Pipeline_CreateRenderPipeline(VkDevice device, VkGuid& renderPass
     Pipeline_UpdatePipelineDescriptorSets(device, vulkanPipeline.DescriptorSetList, model, includes);
     vulkanPipeline.PipelineLayout = Pipeline_CreatePipelineLayout(device, vulkanPipeline.DescriptorSetLayoutList, constBufferSize);
     vulkanPipeline.Pipeline = Pipeline_CreatePipeline(device, renderPass, vulkanPipeline.PipelineLayout, vulkanPipeline.PipelineCache, model, renderPassResolution, pipelineShaders);
-    return vulkanPipeline;
+    return VulkanPipeline_ConvertToVulkanRenderPipelineDLL(vulkanPipeline);
 }
 
-void Pipeline_RecreateSwapchain(VkRenderPass renderPass, uint constBufferSize, int newWidth, int newHeight)
+void VulkanPipeline_RecreateSwapchain(VkRenderPass renderPass, uint constBufferSize, int newWidth, int newHeight)
 {
     //GPUIncludes include =
     //{
@@ -36,8 +106,10 @@ void Pipeline_RecreateSwapchain(VkRenderPass renderPass, uint constBufferSize, i
     //Pipeline = Pipeline_CreatePipeline(*renderSystem.Device.get(), renderPass, PipelineLayout, PipelineCache, renderSystem.renderPipelineModelList[RenderPipelineId], renderPassResolution);
 }
 
-void Pipeline_Destroy(VkDevice device, VulkanPipeline& vulkanPipeline)
+void VulkanPipeline_Destroy(VkDevice device, VulkanPipelineDLL& vulkanPipelineDLL)
 {
+    VulkanPipeline vulkanPipeline = VulkanPipeline_ConvertToVulkanPipelinePass(&vulkanPipelineDLL);
+
     vulkanPipeline.RenderPipelineId = 0;
     Renderer_DestroyPipeline(device, &vulkanPipeline.Pipeline);
     Renderer_DestroyPipelineLayout(device, &vulkanPipeline.PipelineLayout);

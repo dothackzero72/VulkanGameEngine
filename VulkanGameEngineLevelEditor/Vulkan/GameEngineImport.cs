@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
@@ -40,9 +41,11 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern void Texture_GetTexturePropertiesBuffer_DLL(TextureStruct texture, List<VkDescriptorImageInfo> textureDescriptorList);
 
+
+
         [DllImport(DLLPath, CallingConvention = CallingConvention.Cdecl)]
-        public static extern VulkanRenderPassDLL* VulkanRenderPass_CreateVulkanRenderPassCS(
-            ref RendererStateCS renderStateCS,
+        public static extern VulkanRenderPassDLL* VulkanRenderPass_CreateVulkanRenderPass(
+            RendererStateCS* renderStateCS,
             [MarshalAs(UnmanagedType.LPStr)] string renderPassLoader,
             ref VkExtent2D renderPassResolution,
              int ConstBuffer,
@@ -53,6 +56,28 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern void VulkanRenderPass_DestroyRenderPass(RendererStateCS renderState, VulkanRenderPassDLL renderPass);
 
+
+
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern VulkanPipelineDLL* VulkanPipeline_CreateRenderPipeline(VkDevice device, Guid renderPassId, uint renderPipelineId, RenderPipelineModel model, VkRenderPass renderPass, uint constBufferSize, ivec2 renderPassResolution, GPUIncludes includes, VkPipelineShaderStageCreateInfo* pipelineShaders, size_t pipelineShaderCount);
+        
+            [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern void VulkanPipeline_Destroy(VkDevice device, VulkanPipelineDLL vulkanPipelineDLL);
+
+        /// <summary>
+        /// Material
+        /// </summary>
+        /// <returns></returns>
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern MaterialStruct Material_CreateMaterial(RendererStateCS renderer, int bufferIndex, VulkanBuffer materialBuffer, string jsonString);
+        [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern void Material_UpdateBuffer(RendererStateCS renderer, VulkanBuffer materialBuffer, MaterialProperitiesBuffer materialProperties);
+             [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern void Material_DestroyBuffer(RendererStateCS rendererStateDLL, VulkanBuffer materialBuffer);
+
+        ///////////////
+        //////////
+        ////////////
 
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern VkInstance DLL_Renderer_CreateVulkanInstance();

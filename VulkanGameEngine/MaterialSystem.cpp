@@ -30,7 +30,8 @@ VkGuid MaterialSystem::LoadMaterial(const String& materialPath)
     }
 
     int bufferIndex = ++bufferSystem.NextBufferId;
-    MaterialMap[materialId] = Material_CreateMaterial(cRenderer, bufferIndex, bufferSystem.VulkanBufferMap[bufferIndex], materialPath.c_str());
+    const RendererStateDLL renderer = VulkanRenderer_ConvertToVulkanRendererDLL(cRenderer);
+    MaterialMap[materialId] = Material_CreateMaterial(renderer, bufferIndex, bufferSystem.VulkanBufferMap[bufferIndex], materialPath.c_str());
     return materialId;
 }
 
@@ -114,7 +115,8 @@ void MaterialSystem::Update(const float& deltaTime)
             .HeightMapId = material.HeightMapId != VkGuid() ? textureSystem.FindTexture(material.HeightMapId).textureBufferIndex : 0
         };
 
-        Material_UpdateBuffer(cRenderer, bufferSystem.VulkanBufferMap[materialValue.second.MaterialBufferId], materialBufferProperties);
+        const RendererStateDLL renderer = VulkanRenderer_ConvertToVulkanRendererDLL(cRenderer);
+        Material_UpdateBuffer(renderer, bufferSystem.VulkanBufferMap[materialValue.second.MaterialBufferId], materialBufferProperties);
         x++;
     }
 }
@@ -124,7 +126,8 @@ void MaterialSystem::Destroy(const VkGuid& guid)
     Material& material = MaterialMap[guid];
 
     VulkanBuffer& materialBuffer = bufferSystem.VulkanBufferMap[material.MaterialBufferId];
-    Material_DestroyBuffer(cRenderer, materialBuffer);
+    const RendererStateDLL renderer = VulkanRenderer_ConvertToVulkanRendererDLL(cRenderer);
+    Material_DestroyBuffer(renderer, materialBuffer);
     bufferSystem.VulkanBufferMap.erase(material.MaterialBufferId);
 }
 

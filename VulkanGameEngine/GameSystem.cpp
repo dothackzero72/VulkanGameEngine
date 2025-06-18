@@ -89,4 +89,5 @@ void GameSystem::Destroy()
     meshSystem.DestroyAllGameObjects();
     bufferSystem.DestroyAllBuffers();
     renderSystem.Destroy();
+    memoryLeakSystem.ReportLeaks();
 }

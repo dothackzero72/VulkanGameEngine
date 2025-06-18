@@ -4,6 +4,7 @@
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include "../../../../../../VulkanSDK/1.4.304.0/Include/vulkan/vulkan_win32.h"
+#include "MemoryLeakDetector.h"
 
 RendererState cRenderer = { 0 };
 
@@ -17,11 +18,11 @@ RendererStateDLL VulkanRenderer_ConvertToVulkanRendererDLL(const RendererState& 
        .Surface = renderState.Surface,
        .CommandPool = renderState.CommandPool,
        .DebugMessenger = renderState.DebugMessenger,
-       .InFlightFences = new VkFence[renderState.InFlightFences.size()],
-       .AcquireImageSemaphores = new VkSemaphore[renderState.AcquireImageSemaphores.size()],
-       .PresentImageSemaphores = new VkSemaphore[renderState.PresentImageSemaphores.size()],
-       .SwapChainImages = new VkImage[renderState.SwapChainImages.size()],
-       .SwapChainImageViews = new VkImageView[renderState.SwapChainImageViews.size()],
+       .InFlightFences = memoryLeakSystem.AddPtrBuffer<VkFence>(renderState.InFlightFences.size()),
+       .AcquireImageSemaphores = memoryLeakSystem.AddPtrBuffer<VkSemaphore>(renderState.AcquireImageSemaphores.size()),
+       .PresentImageSemaphores = memoryLeakSystem.AddPtrBuffer<VkSemaphore>(renderState.PresentImageSemaphores.size()),
+       .SwapChainImages = memoryLeakSystem.AddPtrBuffer<VkImage>(renderState.SwapChainImages.size()),
+       .SwapChainImageViews = memoryLeakSystem.AddPtrBuffer<VkImageView>(renderState.SwapChainImageViews.size()),
        .SwapChainResolution = renderState.SwapChainResolution,
        .Swapchain = renderState.Swapchain,
        .SwapChainImageCount = renderState.SwapChainImageCount,
@@ -50,7 +51,7 @@ RendererStateDLL VulkanRenderer_ConvertToVulkanRendererDLL(const RendererState& 
 
 RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& renderStateDLL)
 {
-    return RendererState
+    RendererState renderer =  RendererState
     {
         .SwapChainImageCount = renderStateDLL.SwapChainImageCount,
         .GraphicsFamily = renderStateDLL.GraphicsFamily,
@@ -74,6 +75,7 @@ RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& ren
         .Swapchain = renderStateDLL.Swapchain,
         .RebuildRendererFlag = renderStateDLL.RebuildRendererFlag,
     };
+    return renderer;
 }
 
  RendererState Renderer_RendererSetUp(void* windowHandle)
@@ -178,6 +180,18 @@ RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& ren
       renderState.SwapChainResolution.width = width;
       renderState.SwapChainResolution.height = height;
       return VK_SUCCESS;
+  }
+
+  void VulkanRenderer_DeleteVulkanRenderStatePtrs(RendererStateDLL* vulkanRenderStateDLL)
+  {
+      if (vulkanRenderStateDLL)
+      {
+          memoryLeakSystem.RemovePtrBuffer(&vulkanRenderStateDLL->InFlightFences);
+          memoryLeakSystem.RemovePtrBuffer(&vulkanRenderStateDLL->AcquireImageSemaphores);
+          memoryLeakSystem.RemovePtrBuffer(&vulkanRenderStateDLL->PresentImageSemaphores);
+          memoryLeakSystem.RemovePtrBuffer(&vulkanRenderStateDLL->SwapChainImages);
+          memoryLeakSystem.RemovePtrBuffer(&vulkanRenderStateDLL->SwapChainImageViews);
+      }
   }
 
 Vector<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice)
