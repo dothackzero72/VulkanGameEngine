@@ -68,3 +68,11 @@ public:
 	static const uint32 GetNextMaterialId() { return NextMaterialId; }
 };
 
+<<<<<<< Updated upstream:VulkanGameEngine/Material.h
+=======
+static int NextMaterialBufferId = 0;
+
+DLL_EXPORT Material Material_CreateMaterial(const RendererStateDLL& renderer, int bufferIndex, VulkanBuffer& materialBuffer, const char* jsonString);
+DLL_EXPORT void Material_UpdateBuffer(RendererStateDLL& rendererStateDLL, VulkanBuffer& materialBuffer, MaterialProperitiesBuffer& materialProperties);
+DLL_EXPORT void Material_DestroyBuffer(const RendererStateDLL& rendererStateDLL, VulkanBuffer& materialBuffer);
+>>>>>>> Stashed changes:VulkanEngineDLL/Material.h

@@ -71,6 +71,28 @@ void RenderSystem::Update(const float& deltaTime)
     renderer.EndSingleTimeCommands(commandBuffer);
 }
 
+<<<<<<< Updated upstream
+=======
+VkGuid RenderSystem::CreateVulkanRenderPass(const String& jsonPath, ivec2& renderPassResolution)
+{
+    Texture depthTexture = Texture();
+    size_t renderedTextureCount = 1;
+    Vector<Texture> renderedTextureList = Vector<Texture>(renderedTextureCount);
+
+    RendererStateDLL renderer = VulkanRenderer_ConvertToVulkanRendererDLL(cRenderer);
+    VulkanRenderPass vulkanRenderPass = VulkanRenderPass_CreateVulkanRenderPass(renderer, jsonPath.c_str(), renderPassResolution, sizeof(SceneDataBuffer), renderedTextureList[0], renderedTextureCount, depthTexture);
+    RenderPassMap[vulkanRenderPass.RenderPassId] = vulkanRenderPass;
+
+    textureSystem.AddRenderedTexture(vulkanRenderPass.RenderPassId, renderedTextureList);
+    if (depthTexture.textureView != VK_NULL_HANDLE)
+    {
+        textureSystem.AddDepthTexture(vulkanRenderPass.RenderPassId, depthTexture);
+    }
+
+    return vulkanRenderPass.RenderPassId;
+}
+
+>>>>>>> Stashed changes
 void RenderSystem::RecreateSwapchain()
 {
   /*  int width = 0;
@@ -91,18 +113,23 @@ void RenderSystem::RecreateSwapchain()
 
 VkCommandBuffer RenderSystem::RenderFrameBuffer(VkGuid& renderPassId)
 {
+<<<<<<< Updated upstream
     VulkanRenderPass renderPass = RenderPassList[renderPassId];
     const VulkanPipeline& pipeline = RenderPipelineList[renderPassId][0];
+=======
+    const VulkanRenderPass& renderPass = FindRenderPass(renderPassId);
+    const VulkanPipeline& pipeline = FindRenderPipelineList(renderPassId)[0];
+>>>>>>> Stashed changes
     const VkCommandBuffer& commandBuffer = renderPass.CommandBuffer;
-
+        
     VkRenderPassBeginInfo renderPassBeginInfo = VkRenderPassBeginInfo
     {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = renderPass.RenderPass,
         .framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex],
         .renderArea = renderPass.RenderArea,
-        .clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size()),
-        .pClearValues = renderPass.ClearValueList.data()
+        .clearValueCount = static_cast<uint32>(renderPass.ClearValueCount),
+        .pClearValues = renderPass.ClearValueList
     };
 
     VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
@@ -131,8 +158,8 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
         .renderPass = renderPass.RenderPass,
         .framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex],
         .renderArea = renderPass.RenderArea,
-        .clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size()),
-        .pClearValues = renderPass.ClearValueList.data()
+        .clearValueCount = static_cast<uint32>(renderPass.ClearValueCount),
+        .pClearValues = renderPass.ClearValueList
     };
 
     VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
@@ -219,7 +246,14 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, ivec
             shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
         };
 
+<<<<<<< Updated upstream
         renderSystem.RenderPipelineList[model.RenderPassId].emplace_back(Pipeline_CreateRenderPipeline(cRenderer.Device, model.RenderPassId, pipeLineId, renderPipelineModel, RenderPassList[model.RenderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, pipelineShaderStageCreateInfoList));
+=======
+        VulkanPipeline vulkanPipeline = VulkanPipeline();
+        VkPipelineShaderStageCreateInfo* createInfo  = pipelineShaderStageCreateInfoList.data();
+        vulkanPipeline = VulkanPipeline_CreateRenderPipeline(cRenderer.Device, renderPassId, pipeLineId, renderPipelineModel, RenderPassMap[renderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, *createInfo, pipelineShaderStageCreateInfoList.size());
+        RenderPipelineMap[renderPassId].emplace_back(vulkanPipeline);
+>>>>>>> Stashed changes
     }
 
     return model.RenderPassId;
@@ -276,7 +310,15 @@ VkGuid RenderSystem::AddRenderPass(VkGuid& levelId, const String& jsonPath, Text
             shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
             shaderSystem.CreateShader(cRenderer.Device, renderPipelineModel.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
         };
+<<<<<<< Updated upstream
         renderSystem.RenderPipelineList[model.RenderPassId].emplace_back(Pipeline_CreateRenderPipeline(cRenderer.Device, model.RenderPassId, pipeLineId, renderPipelineModel, RenderPassList[model.RenderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, pipelineShaderStageCreateInfoList));
+=======
+
+        VulkanPipeline vulkanPipeline = VulkanPipeline();
+        VkPipelineShaderStageCreateInfo* createInfo = pipelineShaderStageCreateInfoList.data();
+        vulkanPipeline = VulkanPipeline_CreateRenderPipeline(cRenderer.Device, renderPassId, pipeLineId, renderPipelineModel, RenderPassMap[renderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, *createInfo, pipelineShaderStageCreateInfoList.size());
+        RenderPipelineMap[renderPassId].emplace_back(vulkanPipeline);
+>>>>>>> Stashed changes
     }
 
     return model.RenderPassId;
@@ -498,7 +540,11 @@ const Vector<VkDescriptorBufferInfo> RenderSystem::GetMaterialPropertiesBuffer()
     {
         for (auto& material : materialList)
         {
+<<<<<<< Updated upstream
             material.GetMaterialPropertiesBuffer(materialPropertiesBuffer);
+=======
+            VulkanPipeline_Destroy(cRenderer.Device, renderPipeline);
+>>>>>>> Stashed changes
         }
     }
     return materialPropertiesBuffer;
