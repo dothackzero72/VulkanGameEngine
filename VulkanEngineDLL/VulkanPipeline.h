@@ -14,13 +14,9 @@ struct VulkanPipeline
     VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 };
 
-//DLL_EXPORT VulkanPipelineDLL* VulkanPipeline_ConvertToVulkanRenderPipelineDLL(VulkanPipeline& renderPipeline);
-//DLL_EXPORT VulkanPipeline VulkanPipeline_ConvertToVulkanPipelinePass(VulkanPipelineDLL* renderPipelineDLL);
 DLL_EXPORT VulkanPipeline VulkanPipeline_CreateRenderPipeline(VkDevice device, VkGuid& renderPassId, uint renderPipelineId, RenderPipelineModel& model, VkRenderPass renderPass, size_t constBufferSize, ivec2& renderPassResolution, const GPUIncludes& includes, VkPipelineShaderStageCreateInfo& pipelineShaderList, size_t pipelineShaderCount);
 DLL_EXPORT void VulkanPipeline_RecreateSwapchain(VkRenderPass renderPass, uint constBufferSize, int newWidth, int newHeight);
 DLL_EXPORT void VulkanPipeline_Destroy(VkDevice device, VulkanPipeline& vulkanPipelineDLL);
-//DLL_EXPORT void VulkanPipeline_DeleteVulkanRenderPassDLLPtrs(VulkanPipelineDLL* renderPipelineDLL);
-
 
 VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes);
 Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes);

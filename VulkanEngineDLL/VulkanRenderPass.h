@@ -7,7 +7,7 @@
 #include "VulkanPipeline.h"
 #include "Texture.h"
 
-struct VulkanRenderPassDLL
+struct VulkanRenderPass
 {
 	RenderPassGuid RenderPassId;
 	VkSampleCountFlagBits SampleCount;
@@ -21,30 +21,16 @@ struct VulkanRenderPassDLL
 	bool UseFrameBufferResolution = true;
 };
 
-struct VulkanRenderPass
-{
-	RenderPassGuid RenderPassId;
-	VkSampleCountFlagBits SampleCount;
-	VkRect2D RenderArea;
-	VkRenderPass RenderPass = VK_NULL_HANDLE;
-	Vector<VkFramebuffer> FrameBufferList;
-	Vector<VkClearValue> ClearValueList;
-	VkCommandBuffer CommandBuffer = VK_NULL_HANDLE;
-	bool UseFrameBufferResolution = true;
-};
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-DLL_EXPORT VulkanRenderPassDLL* VulkanRenderPass_ConvertToVulkanRenderPassDLL(VulkanRenderPass& renderPass);
-DLL_EXPORT VulkanRenderPass VulkanRenderPass_ConvertToVulkanRenderPass(VulkanRenderPassDLL* renderPassDLL);
-DLL_EXPORT VulkanRenderPassDLL* VulkanRenderPass_CreateVulkanRenderPass(RendererStateDLL& renderState, const char* renderPassLoader, ivec2& renderPassResolution, int ConstBuffer, Texture& renderedTextureListPtr, size_t& renderedTextureCount, Texture& depthTexture);
-DLL_EXPORT void VulkanRenderPass_DestroyRenderPass(RendererStateDLL& renderStateDLL, VulkanRenderPassDLL& renderPass);
-DLL_EXPORT void VulkanRenderPass_DeleteVulkanRenderPassDLLPtrs(VulkanRenderPassDLL* vulkanRenderPassDLL);
+	DLL_EXPORT VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(RendererStateDLL& renderState, const char* renderPassLoader, ivec2& renderPassResolution, int ConstBuffer, Texture& renderedTextureListPtr, size_t& renderedTextureCount, Texture& depthTexture);
+	DLL_EXPORT void VulkanRenderPass_DestroyRenderPass(RendererStateDLL& renderStateDLL, VulkanRenderPass& renderPass);
 
-VkResult RenderPass_CreateCommandBuffers(const RendererState& renderState, VkCommandBuffer* commandBufferList, uint32 commandBufferCount);
-VkRenderPass RenderPass_BuildRenderPass(const RendererState& renderState, VulkanRenderPass& vulkanRenderPass, const RenderPassLoader& renderPassBuildInfo, Vector<Texture>& renderedTextureList, Texture& depthTexture);
-Vector<VkFramebuffer> RenderPass_BuildFrameBuffer(const RendererState& renderState, const VulkanRenderPass& vulkanRenderPass, const RenderPassLoader& renderPassBuildInfo, Vector<Texture>& renderedTextureList, Texture& depthTexture, ivec2& renderPassResolution);
+
+	VkResult RenderPass_CreateCommandBuffers(const RendererState& renderState, VkCommandBuffer* commandBufferList, uint32 commandBufferCount);
+	VkRenderPass RenderPass_BuildRenderPass(const RendererState& renderState, VulkanRenderPass& vulkanRenderPass, const RenderPassLoader& renderPassBuildInfo, Vector<Texture>& renderedTextureList, Texture& depthTexture);
+	Vector<VkFramebuffer> RenderPass_BuildFrameBuffer(const RendererState& renderState, const VulkanRenderPass& vulkanRenderPass, const RenderPassLoader& renderPassBuildInfo, Vector<Texture>& renderedTextureList, Texture& depthTexture, ivec2& renderPassResolution);
 #ifdef __cplusplus
 }
 #endif
