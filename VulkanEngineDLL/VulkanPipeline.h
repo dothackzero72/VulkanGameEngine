@@ -4,17 +4,6 @@
 struct VulkanPipeline
 {
     uint RenderPipelineId;
-    VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
-    Vector<VkDescriptorSetLayout> DescriptorSetLayoutList;
-    Vector<VkDescriptorSet> DescriptorSetList;
-    VkPipeline Pipeline = VK_NULL_HANDLE;
-    VkPipelineLayout PipelineLayout = VK_NULL_HANDLE;
-    VkPipelineCache PipelineCache = VK_NULL_HANDLE;
-};
-
-struct VulkanPipelineDLL
-{
-    uint RenderPipelineId;
     size_t DescriptorSetLayoutCount;
     size_t DescriptorSetCount;
     VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
@@ -25,12 +14,12 @@ struct VulkanPipelineDLL
     VkPipelineCache PipelineCache = VK_NULL_HANDLE;
 };
 
-DLL_EXPORT VulkanPipelineDLL* VulkanPipeline_ConvertToVulkanRenderPipelineDLL(VulkanPipeline& renderPipeline);
-DLL_EXPORT VulkanPipeline VulkanPipeline_ConvertToVulkanPipelinePass(VulkanPipelineDLL* renderPipelineDLL);
-DLL_EXPORT VulkanPipelineDLL* VulkanPipeline_CreateRenderPipeline(VkDevice device, VkGuid& renderPassId, uint renderPipelineId, RenderPipelineModel& model, VkRenderPass renderPass, size_t constBufferSize, ivec2& renderPassResolution, const GPUIncludes& includes, VkPipelineShaderStageCreateInfo& pipelineShaderList, size_t pipelineShaderCount);
+//DLL_EXPORT VulkanPipelineDLL* VulkanPipeline_ConvertToVulkanRenderPipelineDLL(VulkanPipeline& renderPipeline);
+//DLL_EXPORT VulkanPipeline VulkanPipeline_ConvertToVulkanPipelinePass(VulkanPipelineDLL* renderPipelineDLL);
+DLL_EXPORT VulkanPipeline VulkanPipeline_CreateRenderPipeline(VkDevice device, VkGuid& renderPassId, uint renderPipelineId, RenderPipelineModel& model, VkRenderPass renderPass, size_t constBufferSize, ivec2& renderPassResolution, const GPUIncludes& includes, VkPipelineShaderStageCreateInfo& pipelineShaderList, size_t pipelineShaderCount);
 DLL_EXPORT void VulkanPipeline_RecreateSwapchain(VkRenderPass renderPass, uint constBufferSize, int newWidth, int newHeight);
-DLL_EXPORT void VulkanPipeline_Destroy(VkDevice device, VulkanPipelineDLL& vulkanPipelineDLL);
-DLL_EXPORT void VulkanPipeline_DeleteVulkanRenderPassDLLPtrs(VulkanPipelineDLL* renderPipelineDLL);
+DLL_EXPORT void VulkanPipeline_Destroy(VkDevice device, VulkanPipeline& vulkanPipelineDLL);
+//DLL_EXPORT void VulkanPipeline_DeleteVulkanRenderPassDLLPtrs(VulkanPipelineDLL* renderPipelineDLL);
 
 
 VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes);
