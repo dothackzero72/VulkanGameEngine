@@ -64,8 +64,8 @@ ImGuiRenderer ImGui_StartUp(const RendererState& rendererState)
         .Queue = rendererState.GraphicsQueue,
         .DescriptorPool = imGui.ImGuiDescriptorPool,
         .RenderPass = imGui.RenderPass,
-        .MinImageCount = rendererState.SwapChainImageCount,
-        .ImageCount = rendererState.SwapChainImageCount,
+        .MinImageCount = static_cast<uint32>(rendererState.SwapChainImageCount),
+        .ImageCount = static_cast<uint32>(rendererState.SwapChainImageCount),
         .PipelineCache = VK_NULL_HANDLE,
         .Allocator = nullptr,
         .CheckVkResultFn = ImGui_VkResult

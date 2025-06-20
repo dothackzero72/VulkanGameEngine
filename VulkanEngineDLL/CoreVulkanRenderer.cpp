@@ -26,11 +26,6 @@ RendererStateDLL VulkanRenderer_ConvertToVulkanRendererDLL(const RendererState& 
        .SwapChainResolution = renderState.SwapChainResolution,
        .Swapchain = renderState.Swapchain,
        .SwapChainImageCount = renderState.SwapChainImageCount,
-       .InFlightFencesCount = static_cast<uint32>(renderState.InFlightFences.size()),
-       .AcquireImageSemaphoresCount = static_cast<uint32>(renderState.AcquireImageSemaphores.size()),
-       .PresentImageSemaphoresCount = static_cast<uint32>(renderState.PresentImageSemaphores.size()),
-       .SwapChainImagesCount = static_cast<uint32>(renderState.SwapChainImages.size()),
-       .SwapChainImageViewsCount = static_cast<uint32>(renderState.SwapChainImageViews.size()),
        .ImageIndex = renderState.ImageIndex,
        .CommandIndex = renderState.CommandIndex,
        .GraphicsFamily = renderState.GraphicsFamily,
@@ -66,11 +61,11 @@ RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& ren
         .ImageIndex = renderStateDLL.ImageIndex,
         .CommandIndex = renderStateDLL.CommandIndex,
         .DebugMessenger = renderStateDLL.DebugMessenger,
-        .InFlightFences = Vector<VkFence>(renderStateDLL.InFlightFences, renderStateDLL.InFlightFences + renderStateDLL.InFlightFencesCount),
-        .AcquireImageSemaphores = Vector<VkSemaphore>(renderStateDLL.AcquireImageSemaphores, renderStateDLL.AcquireImageSemaphores + renderStateDLL.AcquireImageSemaphoresCount),
-        .PresentImageSemaphores = Vector<VkSemaphore>(renderStateDLL.PresentImageSemaphores, renderStateDLL.PresentImageSemaphores + renderStateDLL.PresentImageSemaphoresCount),
-        .SwapChainImages = Vector<VkImage>(renderStateDLL.SwapChainImages, renderStateDLL.SwapChainImages + renderStateDLL.SwapChainImagesCount),
-        .SwapChainImageViews = Vector<VkImageView>(renderStateDLL.SwapChainImageViews, renderStateDLL.SwapChainImageViews + renderStateDLL.SwapChainImageViewsCount),
+        .InFlightFences = Vector<VkFence>(renderStateDLL.InFlightFences, renderStateDLL.InFlightFences + renderStateDLL.SwapChainImageCount),
+        .AcquireImageSemaphores = Vector<VkSemaphore>(renderStateDLL.AcquireImageSemaphores, renderStateDLL.AcquireImageSemaphores + renderStateDLL.SwapChainImageCount),
+        .PresentImageSemaphores = Vector<VkSemaphore>(renderStateDLL.PresentImageSemaphores, renderStateDLL.PresentImageSemaphores + renderStateDLL.SwapChainImageCount),
+        .SwapChainImages = Vector<VkImage>(renderStateDLL.SwapChainImages, renderStateDLL.SwapChainImages + renderStateDLL.SwapChainImageCount),
+        .SwapChainImageViews = Vector<VkImageView>(renderStateDLL.SwapChainImageViews, renderStateDLL.SwapChainImageViews + renderStateDLL.SwapChainImageCount),
         .SwapChainResolution = renderStateDLL.SwapChainResolution,
         .Swapchain = renderStateDLL.Swapchain,
         .RebuildRendererFlag = renderStateDLL.RebuildRendererFlag,
@@ -78,9 +73,13 @@ RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& ren
     return renderer;
 }
 
- RendererState Renderer_RendererSetUp(void* windowHandle)
+RendererState Renderer_RendererSetUp(void* windowHandle)
 {
-    RendererState renderState;
+    RendererStateDLL renderState;
+    renderState.InFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
+    renderState.AcquireImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+    renderState.PresentImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+
     renderState.RebuildRendererFlag = false;
     VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
     renderState.Instance = Renderer_CreateVulkanInstance();
@@ -90,10 +89,10 @@ RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& ren
     renderState.Device = Renderer_SetUpDevice(renderState.PhysicalDevice, renderState.GraphicsFamily, renderState.PresentFamily);
     VULKAN_RESULT(Renderer_SetUpSwapChain(windowHandle, renderState));
     renderState.CommandPool = Renderer_SetUpCommandPool(renderState.Device, renderState.GraphicsFamily);
-    VULKAN_RESULT(Renderer_SetUpSemaphores(renderState.Device, renderState.InFlightFences, renderState.AcquireImageSemaphores, renderState.PresentImageSemaphores));
+    VULKAN_RESULT(Renderer_SetUpSemaphores(renderState.Device, renderState.InFlightFences, renderState.AcquireImageSemaphores, renderState.PresentImageSemaphores, renderState.SwapChainImageCount));
     VULKAN_RESULT(Renderer_GetDeviceQueue(renderState.Device, renderState.GraphicsFamily, renderState.PresentFamily, renderState.GraphicsQueue, renderState.PresentQueue));
 
-    return renderState;
+    return VulkanRenderer_ConvertToVulkanRenderer(renderState);
 }
 
  void Renderer_DestroyRenderer(RendererState& renderer)
@@ -106,11 +105,17 @@ RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& ren
      Renderer_DestroyDebugger(&renderer.Instance, renderer.DebugMessenger);
      Renderer_DestroySurface(renderer.Instance, &renderer.Surface);
      Renderer_DestroyInstance(&renderer.Instance);
+
+    // delete[] renderer.SwapChainImageViews;
  }
 
  RendererStateDLL Renderer_RendererSetUp_CS(void* windowHandle)
  {
-     RendererState renderState;
+     RendererStateDLL renderState;
+     renderState.InFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
+     renderState.AcquireImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+     renderState.PresentImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+
      renderState.RebuildRendererFlag = false;
      VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
      renderState.Instance = Renderer_CreateVulkanInstance();
@@ -129,14 +134,14 @@ RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& ren
      renderState.Device = Renderer_SetUpDevice(renderState.PhysicalDevice, renderState.GraphicsFamily, renderState.PresentFamily);
      VULKAN_RESULT(Renderer_SetUpSwapChainCS(renderState));
      renderState.CommandPool = Renderer_SetUpCommandPool(renderState.Device, renderState.GraphicsFamily);
-     VULKAN_RESULT(Renderer_SetUpSemaphores(renderState.Device, renderState.InFlightFences, renderState.AcquireImageSemaphores, renderState.PresentImageSemaphores));
+     VULKAN_RESULT(Renderer_SetUpSemaphores(renderState.Device, renderState.InFlightFences, renderState.AcquireImageSemaphores, renderState.PresentImageSemaphores, renderState.SwapChainImageCount));
      VULKAN_RESULT(Renderer_GetDeviceQueue(renderState.Device, renderState.GraphicsFamily, renderState.PresentFamily, renderState.GraphicsQueue, renderState.PresentQueue));
 
-     RendererStateDLL renderStateCS = VulkanRenderer_ConvertToVulkanRendererDLL(renderState);
+     RendererStateDLL renderStateCS = renderState;
      return renderStateCS;
  }
 
-  VkResult Renderer_SetUpSwapChainCS(RendererState& renderState)
+  VkResult Renderer_SetUpSwapChainCS(RendererStateDLL& renderState)
  {
       int width = 0;
       int height = 0;
@@ -150,8 +155,8 @@ RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& ren
       VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
       VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
       renderState.Swapchain = SwapChain_SetUpSwapChain(renderState.Device, renderState.PhysicalDevice, renderState.Surface, renderState.GraphicsFamily, renderState.PresentFamily, surfaceCapabilities.currentExtent.width, surfaceCapabilities.currentExtent.height, renderState.SwapChainImageCount);
-      renderState.SwapChainImages = SwapChain_SetUpSwapChainImages(renderState.Device, renderState.Swapchain, MAX_FRAMES_IN_FLIGHT);
-      renderState.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderState.Device, renderState.SwapChainImages, swapChainImageFormat);
+      renderState.SwapChainImages = SwapChain_SetUpSwapChainImages(renderState.Device, renderState.Swapchain, static_cast<uint32>(MAX_FRAMES_IN_FLIGHT));
+      renderState.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderState.Device, renderState.SwapChainImages, renderState.SwapChainImageCount, swapChainImageFormat);
 
       renderState.SwapChainResolution.width = surfaceCapabilities.currentExtent.width;
       renderState.SwapChainResolution.height = surfaceCapabilities.currentExtent.height;
@@ -159,7 +164,7 @@ RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& ren
       return VK_SUCCESS;
  }
 
-  VkResult Renderer_SetUpSwapChain(void* windowHandle, RendererState& renderState)
+  VkResult Renderer_SetUpSwapChain(void* windowHandle, RendererStateDLL& renderState)
   {
       int width = 0;
       int height = 0;
@@ -174,8 +179,8 @@ RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& ren
       VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
       vulkanWindow->GetFrameBufferSize(windowHandle, &width, &height);
       renderState.Swapchain = SwapChain_SetUpSwapChain(renderState.Device, renderState.PhysicalDevice, renderState.Surface, renderState.GraphicsFamily, renderState.PresentFamily, width, height, renderState.SwapChainImageCount);
-      renderState.SwapChainImages = SwapChain_SetUpSwapChainImages(renderState.Device, renderState.Swapchain, MAX_FRAMES_IN_FLIGHT);
-      renderState.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderState.Device, renderState.SwapChainImages, swapChainImageFormat);
+      renderState.SwapChainImages = SwapChain_SetUpSwapChainImages(renderState.Device, renderState.Swapchain, static_cast<uint32>(MAX_FRAMES_IN_FLIGHT));
+      renderState.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderState.Device, renderState.SwapChainImages, renderState.SwapChainImageCount, swapChainImageFormat);
 
       renderState.SwapChainResolution.width = width;
       renderState.SwapChainResolution.height = height;
@@ -818,7 +823,7 @@ Vector<VkPresentModeKHR> SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevic
     return compatiblePresentModesList;
 }
 
-VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, uint32 width, uint32 height, uint32& swapChainImageCount)
+VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, uint32 width, uint32 height, size_t& swapChainImageCount)
 {
     VkSwapchainKHR swapChain = VK_NULL_HANDLE;
 
@@ -846,7 +851,7 @@ VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physic
     {
         .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
         .surface = surface,
-        .minImageCount = swapChainImageCount,
+        .minImageCount = static_cast<uint32>(swapChainImageCount),
         .imageFormat = swapChainImageFormat.format,
         .imageColorSpace = swapChainImageFormat.colorSpace,
         .imageExtent = extent,
@@ -874,21 +879,20 @@ VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physic
     return swapChain;
 }
 
-Vector<VkImage> SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32 swapChainImageCount)
+VkImage* SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32 swapChainImageCount)
 {
-    Vector<VkImage> swapChainImageList;
     VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, &swapChainImageCount, nullptr));
 
-    swapChainImageList = Vector<VkImage>(swapChainImageCount);
-    VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, &swapChainImageCount, swapChainImageList.data()));
+    VkImage* swapChainImageList = new VkImage[swapChainImageCount];
+    VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, &swapChainImageCount, swapChainImageList));
 
     return swapChainImageList;
 }
 
-Vector<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<VkImage> swapChainImageList, VkSurfaceFormatKHR swapChainImageFormat)
+VkImageView* SwapChain_SetUpSwapChainImageViews(VkDevice device, VkImage* swapChainImageList, size_t swapChainImageCount, VkSurfaceFormatKHR swapChainImageFormat)
 {
-    std::vector<VkImageView> swapChainImageViewList(swapChainImageList.size());
-    for (uint32_t x = 0; x < swapChainImageList.size(); x++)
+    VkImageView* imageViews = new VkImageView[swapChainImageCount];
+    for (uint32_t x = 0; x < swapChainImageCount; x++)
     {
         VkImageViewCreateInfo swapChainViewInfo =
         {
@@ -905,18 +909,14 @@ Vector<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<V
                 .layerCount = 1
             }
         };
-        VULKAN_RESULT(vkCreateImageView(device, &swapChainViewInfo, nullptr, &swapChainImageViewList[x]));
+        VULKAN_RESULT(vkCreateImageView(device, &swapChainViewInfo, nullptr, &imageViews[x]));
     }
 
-    return swapChainImageViewList;
+    return imageViews;
 }
 
-VkResult Renderer_SetUpSemaphores(VkDevice device, Vector<VkFence>& inFlightFences, Vector<VkSemaphore>& acquireImageSemaphores, Vector<VkSemaphore>& presentImageSemaphores)
+VkResult Renderer_SetUpSemaphores(VkDevice device, VkFence* inFlightFences, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, size_t swapChainImageCount)
 {
-    inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-    acquireImageSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-    presentImageSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-
-    return Renderer_CreateSemaphores(device, inFlightFences.data(), acquireImageSemaphores.data(), presentImageSemaphores.data(), MAX_FRAMES_IN_FLIGHT);
+    return Renderer_CreateSemaphores(device, inFlightFences, acquireImageSemaphores, presentImageSemaphores, swapChainImageCount);
 }
 

@@ -48,7 +48,7 @@ struct GPUIncludes
 
 typedef struct rendererState
 {
-	uint32			   SwapChainImageCount;
+	size_t			   SwapChainImageCount;
 	uint32			   GraphicsFamily;
 	uint32			   PresentFamily;
 	VkQueue			   GraphicsQueue;
@@ -95,13 +95,7 @@ struct RendererStateDLL
 	VkExtent2D         SwapChainResolution;
 	VkSwapchainKHR     Swapchain;
 
-	uint32			   SwapChainImageCount;
-	uint32			   InFlightFencesCount;
-	uint32			   AcquireImageSemaphoresCount;
-	uint32			   PresentImageSemaphoresCount;
-	uint32			   SwapChainImagesCount;
-	uint32			   SwapChainImageViewsCount;
-
+	size_t			   SwapChainImageCount;
 	uint32			   ImageIndex;
 	uint32			   CommandIndex;
 	uint32			   GraphicsFamily;
@@ -139,7 +133,7 @@ extern "C" {
 	VkPhysicalDeviceFeatures Renderer_GetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice);
 	Vector<VkPhysicalDevice> Renderer_GetPhysicalDeviceList(VkInstance & instance);
 	VkPhysicalDevice Renderer_SetUpPhysicalDevice(VkInstance instance, VkSurfaceKHR surface, uint32 & graphicsFamily, uint32 & presentFamily);
-	VkResult Renderer_SetUpSemaphores(VkDevice device, Vector<VkFence>&inFlightFences, Vector<VkSemaphore>&acquireImageSemaphores, Vector<VkSemaphore>&presentImageSemaphores);
+	VkResult Renderer_SetUpSemaphores(VkDevice device, VkFence* inFlightFences, VkSemaphore* acquireImageSemaphores, VkSemaphore* presentImageSemaphores, size_t swapChainImageCount);
 	VkDevice Renderer_SetUpDevice(VkPhysicalDevice physicalDevice, uint32 graphicsFamily, uint32 presentFamily);
 	VkCommandPool Renderer_SetUpCommandPool(VkDevice device, uint32 graphicsFamily);
 	VkResult Renderer_GetDeviceQueue(VkDevice device, uint32 graphicsFamily, uint32 presentFamily, VkQueue & graphicsQueue, VkQueue & presentQueue);
@@ -148,13 +142,13 @@ extern "C" {
 	VkSurfaceCapabilitiesKHR SwapChain_GetSurfaceCapabilities(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 	Vector<VkSurfaceFormatKHR> SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 	Vector<VkPresentModeKHR> SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
-	VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, uint32 width, uint32 height, uint32 & swapChainImageCount);
-	Vector<VkImage> SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32 swapChainImageCount);
+	VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, uint32 width, uint32 height, size_t& swapChainImageCount);
+	VkImage* SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32 swapChainImageCount);
 
-	Vector<VkImageView> SwapChain_SetUpSwapChainImageViews(VkDevice device, Vector<VkImage> swapChainImageList, VkSurfaceFormatKHR swapChainImageFormat);
+	VkImageView* SwapChain_SetUpSwapChainImageViews(VkDevice device, VkImage* swapChainImageList, size_t swapChainImageCount, VkSurfaceFormatKHR swapChainImageFormat);
 	VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(Vector<VkSurfaceFormatKHR>&availableFormats);
 	VkPresentModeKHR SwapChain_FindSwapPresentMode(Vector<VkPresentModeKHR>&availablePresentModes);
 
-	VkResult Renderer_SetUpSwapChainCS(RendererState& renderState);
-	VkResult Renderer_SetUpSwapChain(void* windowHandle, RendererState & renderState);
+	VkResult Renderer_SetUpSwapChainCS(RendererStateDLL& renderState);
+	VkResult Renderer_SetUpSwapChain(void* windowHandle, RendererStateDLL& renderState);
 
