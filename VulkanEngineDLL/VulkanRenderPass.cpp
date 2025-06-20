@@ -26,25 +26,22 @@ VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(RendererStateDLL& rende
         .UseFrameBufferResolution = renderPassLoader.IsRenderedToSwapchain
     };
 
+    vulkanRenderPassPtr->FrameBufferList = nullptr;
     if (vulkanRenderPassPtr->FrameBufferCount > 0)
     {
         vulkanRenderPassPtr->FrameBufferList = memoryLeakSystem.AddPtrBuffer<VkFramebuffer>(frameBufferList.size());
         std::memcpy(vulkanRenderPassPtr->FrameBufferList, frameBufferList.data(), vulkanRenderPassPtr->FrameBufferCount * sizeof(VkFramebuffer));
     }
-    else
-    {
-        vulkanRenderPassPtr->FrameBufferList = nullptr;
-    }
 
+    vulkanRenderPassPtr->ClearValueList = nullptr;
     if (vulkanRenderPassPtr->ClearValueCount > 0)
     {
         vulkanRenderPassPtr->ClearValueList = memoryLeakSystem.AddPtrBuffer<VkClearValue>(clearValueList.size());
         std::memcpy(vulkanRenderPassPtr->ClearValueList, clearValueList.data(), vulkanRenderPassPtr->ClearValueCount * sizeof(VkClearValue));
     }
-    else
-    {
-        vulkanRenderPassPtr->ClearValueList = nullptr;
-    }
+
+    renderedTextureCount = renderedTextureList.size();
+    renderedTextureListPtr = *renderedTextureList.data();
 
     VulkanRenderPass vulkanRenderPass = *vulkanRenderPassPtr;
     delete vulkanRenderPassPtr;
