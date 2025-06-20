@@ -33,15 +33,19 @@ private:
 
     void DestroyRenderPass();
     void DestroyRenderPipeline();
+    void DestroyFrameBuffers(Vector<VkFramebuffer>& frameBufferList);
+    void DestroyCommandBuffers(VkCommandBuffer& commandBuffer);
+    void DestroyBuffer(VkBuffer& buffer);
 
 public:
 
     ImGuiRenderer                                                 imGuiRenderer;
+    GraphicsRenderer                                              renderer;
 
     RenderSystem();
     ~RenderSystem();
 
-    void StartUp();
+    void StartUp(void* windowHandle);
     void Update(const float& deltaTime);
 
     VkCommandBuffer RenderFrameBuffer(VkGuid& renderPassId);
@@ -53,6 +57,13 @@ public:
     const VulkanRenderPass& FindRenderPass(const RenderPassGuid& guid);
     const Vector<VulkanPipeline>& FindRenderPipelineList(const RenderPassGuid& guid);
 
+    VkResult StartFrame();
+    VkResult EndFrame(Vector<VkCommandBuffer> commandBufferSubmitList);
     void Destroy();
+
+    static VkCommandBuffer  BeginSingleTimeCommands();
+    static VkCommandBuffer  BeginSingleTimeCommands(VkCommandPool& commandPool);
+    static VkResult  EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+    static VkResult  EndSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool& commandPool);
 };
 extern RenderSystem renderSystem;

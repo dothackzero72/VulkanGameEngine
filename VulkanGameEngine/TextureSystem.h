@@ -1,6 +1,5 @@
 #pragma once
 #include <Typedef.h>
-#include "VulkanRenderer.h"
 #include "VkGuid.h"
 #include <Texture.h>
 #include "RenderSystem.h"

@@ -163,7 +163,6 @@
     <ClCompile Include="TextureSystem.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="BufferSystem.cpp" />
-    <ClCompile Include="VulkanRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation2D.h" />
@@ -200,7 +199,6 @@
     <ClInclude Include="Transform2DComponent.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="BufferSystem.h" />
-    <ClInclude Include="VulkanRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

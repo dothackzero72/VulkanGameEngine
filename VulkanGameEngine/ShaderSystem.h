@@ -12,7 +12,6 @@ extern "C"
 #include <fstream>
 #include <vulkan/vulkan.h>
 #include <fstream>
-#include "VulkanRenderer.h"
 #include "TypeDef.h"
 #include "File.h"
 

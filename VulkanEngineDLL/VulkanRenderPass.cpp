@@ -1,16 +1,15 @@
 #include "VulkanRenderPass.h"
 
-VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(RendererStateDLL& renderStateDLL, const char* renderPassLoaderJson, ivec2& renderPassResolution, int ConstBuffer, Texture& renderedTextureListPtr, size_t& renderedTextureCount, Texture& depthTexture)
+VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(GraphicsRenderer& renderer, const char* renderPassLoaderJson, ivec2& renderPassResolution, int ConstBuffer, Texture& renderedTextureListPtr, size_t& renderedTextureCount, Texture& depthTexture)
 {
-    const RendererState renderState = VulkanRenderer_ConvertToVulkanRenderer(renderStateDLL);
     const RenderPassLoader renderPassLoader = JsonLoader_LoadRenderPassLoaderInfo(renderPassLoaderJson, renderPassResolution);
 
     Vector<Texture> renderedTextureList;
     VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
-    VkRenderPass renderPass = RenderPass_BuildRenderPass(renderState, renderPassLoader, renderedTextureList, depthTexture);
-    Vector<VkFramebuffer> frameBufferList = RenderPass_BuildFrameBuffer(renderState, renderPass, renderPassLoader, renderedTextureList, depthTexture, renderPassResolution);
+    VkRenderPass renderPass = RenderPass_BuildRenderPass(renderer, renderPassLoader, renderedTextureList, depthTexture);
+    Vector<VkFramebuffer> frameBufferList = RenderPass_BuildFrameBuffer(renderer, renderPass, renderPassLoader, renderedTextureList, depthTexture, renderPassResolution);
     Vector<VkClearValue> clearValueList = renderPassLoader.ClearValueList;
-    RenderPass_CreateCommandBuffers(renderState, &commandBuffer, 1);
+    RenderPass_CreateCommandBuffers(renderer, &commandBuffer, 1);
 
     VulkanRenderPass* vulkanRenderPassPtr = new VulkanRenderPass
     {
@@ -48,13 +47,11 @@ VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(RendererStateDLL& rende
     return vulkanRenderPass;
 }
 
-void VulkanRenderPass_DestroyRenderPass(RendererStateDLL& renderStateDLL, VulkanRenderPass& renderPass)
+void VulkanRenderPass_DestroyRenderPass(GraphicsRenderer& renderer, VulkanRenderPass& renderPass)
 {
-    RendererState renderState = VulkanRenderer_ConvertToVulkanRenderer(renderStateDLL);
-    
-    Renderer_DestroyRenderPass(renderState.Device, &renderPass.RenderPass);
-    Renderer_DestroyCommandBuffers(renderState.Device, &renderState.CommandPool, &renderPass.CommandBuffer, 1);
-    Renderer_DestroyFrameBuffers(renderState.Device, &renderPass.FrameBufferList[0], renderState.SwapChainImageCount);
+    Renderer_DestroyRenderPass(renderer.Device, &renderPass.RenderPass);
+    Renderer_DestroyCommandBuffers(renderer.Device, &renderer.CommandPool, &renderPass.CommandBuffer, 1);
+    Renderer_DestroyFrameBuffers(renderer.Device, &renderPass.FrameBufferList[0], renderer.SwapChainImageCount);
 
     delete[] renderPass.FrameBufferList;
     delete[] renderPass.ClearValueList;
@@ -71,24 +68,24 @@ void VulkanRenderPass_DestroyRenderPass(RendererStateDLL& renderStateDLL, Vulkan
     renderPass.UseFrameBufferResolution = false;
 }
 
-VkResult RenderPass_CreateCommandBuffers(const RendererState& renderState, VkCommandBuffer* commandBufferList, size_t commandBufferCount)
+VkResult RenderPass_CreateCommandBuffers(const GraphicsRenderer& renderer, VkCommandBuffer* commandBufferList, size_t commandBufferCount)
 {
     for (size_t x = 0; x < commandBufferCount; x++)
     {
         VkCommandBufferAllocateInfo commandBufferAllocateInfo =
         {
             .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-            .commandPool = renderState.CommandPool,
+            .commandPool = renderer.CommandPool,
             .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
             .commandBufferCount = static_cast<uint32>(commandBufferCount)
         };
 
-        VULKAN_RESULT(vkAllocateCommandBuffers(renderState.Device, &commandBufferAllocateInfo, &commandBufferList[x]));
+        VULKAN_RESULT(vkAllocateCommandBuffers(renderer.Device, &commandBufferAllocateInfo, &commandBufferList[x]));
     }
     return VK_SUCCESS;
 }
 
-VkRenderPass RenderPass_BuildRenderPass(const RendererState& renderState, const RenderPassLoader& renderPassJsonLoader, Vector<Texture>& renderedTextureList, Texture& depthTexture)
+VkRenderPass RenderPass_BuildRenderPass(const GraphicsRenderer& renderer, const RenderPassLoader& renderPassJsonLoader, Vector<Texture>& renderedTextureList, Texture& depthTexture)
 {
     for (auto& texture : renderPassJsonLoader.RenderedTextureInfoModelList)
     {
@@ -96,10 +93,10 @@ VkRenderPass RenderPass_BuildRenderPass(const RendererState& renderState, const 
         VkSamplerCreateInfo samplerCreateInfo = texture.SamplerCreateInfo;
         switch (texture.TextureType)
         {
-            case ColorRenderedTexture: renderedTextureList.emplace_back(Texture_CreateTexture(renderState, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-            case InputAttachmentTexture: renderedTextureList.emplace_back(Texture_CreateTexture(renderState, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-            case ResolveAttachmentTexture: renderedTextureList.emplace_back(Texture_CreateTexture(renderState, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
-            case DepthRenderedTexture: depthTexture = Texture_CreateTexture(renderState, VK_IMAGE_ASPECT_DEPTH_BIT, imageCreateInfo, samplerCreateInfo); break;
+            case ColorRenderedTexture: renderedTextureList.emplace_back(Texture_CreateTexture(renderer, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
+            case InputAttachmentTexture: renderedTextureList.emplace_back(Texture_CreateTexture(renderer, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
+            case ResolveAttachmentTexture: renderedTextureList.emplace_back(Texture_CreateTexture(renderer, VK_IMAGE_ASPECT_COLOR_BIT, imageCreateInfo, samplerCreateInfo)); break;
+            case DepthRenderedTexture: depthTexture = Texture_CreateTexture(renderer, VK_IMAGE_ASPECT_DEPTH_BIT, imageCreateInfo, samplerCreateInfo); break;
         };
     }
 
@@ -196,21 +193,21 @@ VkRenderPass RenderPass_BuildRenderPass(const RendererState& renderState, const 
     };
 
     VkRenderPass renderPass = VK_NULL_HANDLE;
-    VULKAN_RESULT(vkCreateRenderPass(renderState.Device, &renderPassInfo, nullptr, &renderPass));
+    VULKAN_RESULT(vkCreateRenderPass(renderer.Device, &renderPassInfo, nullptr, &renderPass));
     return renderPass;
 }
 
-Vector<VkFramebuffer> RenderPass_BuildFrameBuffer(const RendererState& renderState, const VkRenderPass& renderPass, const RenderPassLoader& renderPassBuildInfo, Vector<Texture>& renderedTextureList, Texture& depthTexture, ivec2& renderPassResolution)
+Vector<VkFramebuffer> RenderPass_BuildFrameBuffer(const GraphicsRenderer& renderer, const VkRenderPass& renderPass, const RenderPassLoader& renderPassBuildInfo, Vector<Texture>& renderedTextureList, Texture& depthTexture, ivec2& renderPassResolution)
 {
-    Vector<VkFramebuffer> frameBufferList = Vector<VkFramebuffer>(renderState.SwapChainImageViews.size());
-    for (size_t x = 0; x < renderState.SwapChainImageViews.size(); x++)
+    Vector<VkFramebuffer> frameBufferList = Vector<VkFramebuffer>(renderer.SwapChainImageCount);
+    for (size_t x = 0; x < renderer.SwapChainImageCount; x++)
     {
         std::vector<VkImageView> TextureAttachmentList;
         for (int y = 0; y < renderedTextureList.size(); y++)
         {
             if (renderPassBuildInfo.IsRenderedToSwapchain)
             {
-                TextureAttachmentList.emplace_back(renderState.SwapChainImageViews[x]);
+                TextureAttachmentList.emplace_back(renderer.SwapChainImageViews[x]);
             }
             else
             {
@@ -232,7 +229,7 @@ Vector<VkFramebuffer> RenderPass_BuildFrameBuffer(const RendererState& renderSta
             .height = static_cast<uint32_t>(renderPassResolution.y),
             .layers = 1,
         };
-        VULKAN_RESULT(vkCreateFramebuffer(renderState.Device, &framebufferInfo, nullptr, &frameBufferList[x]));
+        VULKAN_RESULT(vkCreateFramebuffer(renderer.Device, &framebufferInfo, nullptr, &frameBufferList[x]));
     }
     return frameBufferList;
 }

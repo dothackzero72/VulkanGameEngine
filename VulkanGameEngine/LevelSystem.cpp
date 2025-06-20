@@ -16,7 +16,7 @@ LevelSystem::~LevelSystem()
 
 void LevelSystem::LoadLevel(const String& levelPath)
 {
-    OrthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)cRenderer.SwapChainResolution.width, (float)cRenderer.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
+    OrthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)renderSystem.renderer.SwapChainResolution.width, (float)renderSystem.renderer.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
 
     VkGuid vramId;
     VkGuid tileSetId;
@@ -54,8 +54,8 @@ void LevelSystem::LoadLevel(const String& levelPath)
     spriteRenderPass2DId = VkGuid(json2["RenderPassId"].get<String>().c_str());
 
     SpriteBatchLayerListMap[spriteRenderPass2DId].emplace_back(SpriteBatchLayer(spriteRenderPass2DId));
-    spriteRenderPass2DId = renderSystem.LoadRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
-    frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(cRenderer.SwapChainResolution.width, cRenderer.SwapChainResolution.height));
+    spriteRenderPass2DId = renderSystem.LoadRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
+    frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
 }
 
 void LevelSystem::DestoryLevel()

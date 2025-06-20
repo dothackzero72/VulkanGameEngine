@@ -17,15 +17,15 @@ struct ImGuiRenderer
 	Vector<VkFramebuffer> SwapChainFramebuffers;
 };
 
-DLL_EXPORT ImGuiRenderer ImGui_StartUp(const RendererState& rendererState);
+DLL_EXPORT ImGuiRenderer ImGui_StartUp(const GraphicsRenderer& renderer);
 DLL_EXPORT void ImGui_StartFrame();
 DLL_EXPORT void ImGui_EndFrame();
-DLL_EXPORT VkCommandBuffer ImGui_Draw(const RendererState& rendererState, ImGuiRenderer& imGuiRenderer);
-DLL_EXPORT void RebuildSwapChain(const RendererState& rendererState, ImGuiRenderer& imGuiRenderer);
-DLL_EXPORT void ImGui_Destroy(RendererState& rendererState, ImGuiRenderer& imGuiRenderer);
+DLL_EXPORT VkCommandBuffer ImGui_Draw(const GraphicsRenderer& renderer, ImGuiRenderer& imGuiRenderer);
+DLL_EXPORT void RebuildSwapChain(const GraphicsRenderer& renderer, ImGuiRenderer& imGuiRenderer);
+DLL_EXPORT void ImGui_Destroy(GraphicsRenderer& renderer, ImGuiRenderer& imGuiRenderer);
 
-VkRenderPass ImGui_CreateRenderPass(const RendererState& rendererState);
-Vector<VkFramebuffer> ImGui_CreateRendererFramebuffers(const RendererState& rendererState, const VkRenderPass& renderPass);
+VkRenderPass ImGui_CreateRenderPass(const GraphicsRenderer& renderer);
+Vector<VkFramebuffer> ImGui_CreateRendererFramebuffers(const GraphicsRenderer& renderer, const VkRenderPass& renderPass);
 void ImGui_VkResult(VkResult err);
 
 

@@ -32,7 +32,7 @@ public:
 	UnorderedMap<int, VulkanBuffer> VulkanBufferMap;
 
 	template<class T>
-	int CreateVulkanBuffer(const rendererState& renderer, T& bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+	int CreateVulkanBuffer(const GraphicsRenderer& renderer, T& bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 	{
 		BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
 		VkDeviceSize bufferElementSize = sizeof(T);
@@ -44,7 +44,7 @@ public:
 	}
 
 	template<class T>
-	int CreateVulkanBuffer(const rendererState& renderer, Vector<T>& bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+	int CreateVulkanBuffer(const GraphicsRenderer& renderer, Vector<T>& bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 	{
 		BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
 		VkDeviceSize bufferElementSize = sizeof(T);
@@ -56,7 +56,7 @@ public:
 	}
 
 	template<class T>
-	void UpdateBufferMemory(const rendererState& renderer, int bufferId, T& bufferData)
+	void UpdateBufferMemory(const GraphicsRenderer& renderer, int bufferId, T& bufferData)
 	{
 		BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
 		if (VulkanBufferMap[bufferId].BufferType != bufferTypeEnum)
@@ -71,7 +71,7 @@ public:
 	}
 
 	template<class T>
-	void UpdateBufferMemory(const rendererState& renderer, int bufferId, Vector<T>& bufferData)
+	void UpdateBufferMemory(const GraphicsRenderer& renderer, int bufferId, Vector<T>& bufferData)
 	{
 		BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
 		if (VulkanBufferMap[bufferId].BufferType != bufferTypeEnum)
@@ -88,10 +88,10 @@ public:
 	const VulkanBuffer& FindVulkanBuffer(int id);
 	const Vector<VulkanBuffer>& VulkanBufferList();
 
-	void DestroyBuffer(const RendererState& renderer, int vulkanBufferId);
+	void DestroyBuffer(const GraphicsRenderer& renderer, int vulkanBufferId);
 	void DestroyAllBuffers();
 	
-	static VkResult CopyBuffer(const rendererState& renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
+	static VkResult CopyBuffer(const GraphicsRenderer& renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 	{
 		return Buffer_CopyBuffer(renderer, srcBuffer, dstBuffer, size);
 	}

@@ -24,7 +24,7 @@ const Vector<VulkanBuffer>& VulkanBufferSystem::VulkanBufferList()
     return vulkanBufferList;
 }
 
-void VulkanBufferSystem::DestroyBuffer(const RendererState& renderer, int vulkanBufferId)
+void VulkanBufferSystem::DestroyBuffer(const GraphicsRenderer& renderer, int vulkanBufferId)
 {
 	VulkanBuffer_DestroyBuffer(renderer, VulkanBufferMap[vulkanBufferId]);
 }
@@ -33,6 +33,6 @@ void VulkanBufferSystem::DestroyAllBuffers()
 {
 	for (auto& buffer : VulkanBufferMap)
 	{
-		VulkanBuffer_DestroyBuffer(cRenderer, buffer.second);
+		VulkanBuffer_DestroyBuffer(renderSystem.renderer, buffer.second);
 	}
 }

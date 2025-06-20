@@ -19,7 +19,7 @@ VkGuid TextureSystem::LoadTexture(const String& texturePath)
         return textureId;
     }
 
-    TextureMap[textureId] = Texture_LoadTexture(cRenderer, texturePath.c_str());
+    TextureMap[textureId] = Texture_LoadTexture(renderSystem.renderer, texturePath.c_str());
     return textureId;
 }
 
@@ -35,17 +35,17 @@ void TextureSystem::Update(const float& deltaTime)
 
 Texture TextureSystem::CreateTexture(VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
 {
-	return Texture_CreateTexture(cRenderer, imageType, createImageInfo, samplerCreateInfo);
+	return Texture_CreateTexture(renderSystem.renderer, imageType, createImageInfo, samplerCreateInfo);
 }
 
 Texture TextureSystem::CreateTexture(const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
 {
-	return Texture_CreateTexture(cRenderer, texturePath, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
+	return Texture_CreateTexture(renderSystem.renderer, texturePath, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
 }
 
 Texture TextureSystem::CreateTexture(Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
 {
-	return Texture_CreateTexture(cRenderer, clearColor, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
+	return Texture_CreateTexture(renderSystem.renderer, clearColor, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
 }
 
 void TextureSystem::UpdateTextureBufferIndex(Texture& texture, uint32 bufferIndex)
@@ -55,7 +55,7 @@ void TextureSystem::UpdateTextureBufferIndex(Texture& texture, uint32 bufferInde
 
 void TextureSystem::UpdateTextureSize(Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution)
 {
-	Texture_UpdateTextureSize(cRenderer, texture, imageType, TextureResolution);
+	Texture_UpdateTextureSize(renderSystem.renderer, texture, imageType, TextureResolution);
 }
 
 void TextureSystem::GetTexturePropertiesBuffer(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList)
@@ -65,12 +65,12 @@ void TextureSystem::GetTexturePropertiesBuffer(Texture& texture, Vector<VkDescri
 
 void TextureSystem::UpdateTextureLayout(Texture& texture, VkCommandBuffer& commandBuffer, VkImageLayout newImageLayout)
 {
-	Texture_UpdateCmdTextureLayout(cRenderer, commandBuffer, texture, newImageLayout);
+	Texture_UpdateCmdTextureLayout(renderSystem.renderer, commandBuffer, texture, newImageLayout);
 }
 
 void TextureSystem::DestroyTexture(Texture& texture)
 {
-	Texture_DestroyTexture(cRenderer, texture);
+	Texture_DestroyTexture(renderSystem.renderer, texture);
 }
 
 void TextureSystem::AddRenderedTexture(RenderPassGuid& vkGuid, Vector<Texture>& renderedTextureList)
@@ -192,17 +192,17 @@ void TextureSystem::DestroyAllTextures()
 {
     for (auto& texture : TextureMap)
     {
-        Texture_DestroyTexture(cRenderer, texture.second);
+        Texture_DestroyTexture(renderSystem.renderer, texture.second);
     }
     for (auto& texture : DepthTextureMap)
     {
-        Texture_DestroyTexture(cRenderer, texture.second);
+        Texture_DestroyTexture(renderSystem.renderer, texture.second);
     }
     for (auto& textureList : RenderedTextureListMap)
     {
         for (auto& texture : textureList.second)
         {
-            Texture_DestroyTexture(cRenderer, texture);
+            Texture_DestroyTexture(renderSystem.renderer, texture);
         }
     }
 

@@ -1,6 +1,6 @@
 #include "VulkanBuffer.h"
 
-VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, uint bufferId, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const GraphicsRenderer& renderer, uint bufferId, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 {
     VkDeviceSize bufferSize = bufferElementSize * bufferElementCount;
     VulkanBuffer vulkanBuffer =
@@ -35,7 +35,7 @@ VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, uint
     return vulkanBuffer;
 }
 
-VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const GraphicsRenderer& renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 {
     VkDeviceSize bufferSize = bufferElementSize * bufferElementCount;
     VulkanBuffer vulkanBuffer =
@@ -66,7 +66,7 @@ VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, uint
     return vulkanBuffer;
 }
 
-VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, VulkanBuffer& vulkanBuffer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 {
     VkDeviceSize bufferSize = bufferElementSize * bufferElementCount;
     vulkanBuffer =
@@ -97,7 +97,7 @@ VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const RendererState& renderer, Vulk
     return vulkanBuffer;
 }
 
-void VulkanBuffer_UpdateBufferSize(const RendererState& renderer, VulkanBuffer& vulkanBuffer, VkDeviceSize newBufferElementSize, uint newBufferElementCount)
+void VulkanBuffer_UpdateBufferSize(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer, VkDeviceSize newBufferElementSize, uint newBufferElementCount)
 {
     VkDeviceSize newBufferSize = newBufferElementSize * newBufferElementCount;
     if (vulkanBuffer.UsingStagingBuffer)
@@ -111,7 +111,7 @@ void VulkanBuffer_UpdateBufferSize(const RendererState& renderer, VulkanBuffer& 
     }
 }
 
-void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount)
+void VulkanBuffer_UpdateBufferMemory(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount)
 {
     VkDeviceSize newBufferSize = bufferElementSize * bufferElementCount;
     if (vulkanBuffer.UsingStagingBuffer) 
@@ -134,13 +134,13 @@ void VulkanBuffer_UpdateBufferMemory(const RendererState& renderer, VulkanBuffer
     }
 }
 
-VkResult VulkanBuffer_CopyBuffer(const RendererState& renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size) 
+VkResult VulkanBuffer_CopyBuffer(const GraphicsRenderer& renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size) 
 {
     return Buffer_CopyBuffer(renderer, srcBuffer, dstBuffer, size);
 }
 
 
-void VulkanBuffer_DestroyBuffer(const RendererState& renderer, VulkanBuffer& vulkanBuffer) {
+void VulkanBuffer_DestroyBuffer(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer) {
     VkResult result = Buffer_DestroyBuffer(renderer, &vulkanBuffer.Buffer, &vulkanBuffer.StagingBuffer, &vulkanBuffer.BufferMemory, &vulkanBuffer.StagingBufferMemory, &vulkanBuffer.BufferData, &vulkanBuffer.BufferSize, &vulkanBuffer.BufferUsage, &vulkanBuffer.BufferProperties);
     if (result != VK_SUCCESS) 
     {
@@ -148,7 +148,7 @@ void VulkanBuffer_DestroyBuffer(const RendererState& renderer, VulkanBuffer& vul
     }
 }
 
-VkResult Buffer_UpdateBufferMemory(const RendererState& renderState, VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize) 
+VkResult Buffer_UpdateBufferMemory(const GraphicsRenderer& renderState, VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize) 
 {
     if (dataToCopy == nullptr || bufferSize == 0) 
     {
@@ -169,7 +169,7 @@ VkResult Buffer_UpdateBufferMemory(const RendererState& renderState, VkDeviceMem
     return VK_SUCCESS;
 }
 
-void Buffer_CopyBufferMemory(const RendererState& renderState, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize bufferSize) 
+void Buffer_CopyBufferMemory(const GraphicsRenderer& renderState, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize bufferSize) 
 {
     VkBufferCopy copyRegion = 
     {
@@ -183,7 +183,7 @@ void Buffer_CopyBufferMemory(const RendererState& renderState, VkBuffer srcBuffe
     Renderer_EndSingleUseCommandBuffer(renderState.Device, renderState.CommandPool, renderState.GraphicsQueue, commandBuffer);
 }
 
-VkResult Buffer_AllocateMemory(const RendererState& renderState, VkBuffer* bufferData, VkDeviceMemory* bufferMemory, VkMemoryPropertyFlags properties) 
+VkResult Buffer_AllocateMemory(const GraphicsRenderer& renderState, VkBuffer* bufferData, VkDeviceMemory* bufferMemory, VkMemoryPropertyFlags properties) 
 {
     if (bufferData == nullptr || bufferMemory == nullptr) 
     {
@@ -210,7 +210,7 @@ VkResult Buffer_AllocateMemory(const RendererState& renderState, VkBuffer* buffe
     return vkAllocateMemory(renderState.Device, &allocInfo, nullptr, bufferMemory);
 }
 
-void* Buffer_MapBufferMemory(const RendererState& renderState, VkDeviceMemory bufferMemory, VkDeviceSize bufferSize, bool* isMapped) 
+void* Buffer_MapBufferMemory(const GraphicsRenderer& renderState, VkDeviceMemory bufferMemory, VkDeviceSize bufferSize, bool* isMapped) 
 {
     if (*isMapped) 
     {
@@ -229,7 +229,7 @@ void* Buffer_MapBufferMemory(const RendererState& renderState, VkDeviceMemory bu
     return mappedData;
 }
 
-VkResult Buffer_UnmapBufferMemory(const RendererState& renderState, VkDeviceMemory bufferMemory, bool* isMapped) 
+VkResult Buffer_UnmapBufferMemory(const GraphicsRenderer& renderState, VkDeviceMemory bufferMemory, bool* isMapped) 
 {
     if (*isMapped)
     {
@@ -239,7 +239,7 @@ VkResult Buffer_UnmapBufferMemory(const RendererState& renderState, VkDeviceMemo
     return VK_SUCCESS;
 }
 
-VkResult Buffer_CreateBuffer(const RendererState& renderState, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkMemoryPropertyFlags properties, VkBufferUsageFlags usage) 
+VkResult Buffer_CreateBuffer(const GraphicsRenderer& renderState, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkMemoryPropertyFlags properties, VkBufferUsageFlags usage) 
 {
     VkBufferCreateInfo bufferCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
@@ -254,7 +254,7 @@ VkResult Buffer_CreateBuffer(const RendererState& renderState, VkBuffer* buffer,
     return Buffer_UpdateBufferMemory(renderState, *bufferMemory, bufferData, bufferSize);
 }
 
-VkResult Buffer_CreateStagingBuffer(const RendererState& renderState, VkBuffer* stagingBuffer, VkBuffer* buffer, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties) 
+VkResult Buffer_CreateStagingBuffer(const GraphicsRenderer& renderState, VkBuffer* stagingBuffer, VkBuffer* buffer, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties) 
 {
     if (!stagingBuffer || !buffer || !stagingBufferMemory || !bufferMemory) 
     {
@@ -276,7 +276,7 @@ VkResult Buffer_CreateStagingBuffer(const RendererState& renderState, VkBuffer* 
     return Buffer_CopyBuffer(renderState, stagingBuffer, buffer, bufferSize);
 }
 
-VkResult Buffer_CopyBuffer(const RendererState& renderState, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size) 
+VkResult Buffer_CopyBuffer(const GraphicsRenderer& renderState, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size) 
 {
     if (!srcBuffer || !dstBuffer) {
         RENDERER_ERROR("Source or Destination Buffer is nullptr");
@@ -294,7 +294,7 @@ VkResult Buffer_CopyBuffer(const RendererState& renderState, VkBuffer* srcBuffer
     return Renderer_EndSingleUseCommandBuffer(renderState.Device, renderState.CommandPool, renderState.GraphicsQueue, commandBuffer);
 }
 
-VkResult Buffer_UpdateBufferSize(const RendererState& renderState, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize oldBufferSize, VkDeviceSize newBufferSize, VkBufferUsageFlags bufferUsageFlags, VkMemoryPropertyFlags propertyFlags) 
+VkResult Buffer_UpdateBufferSize(const GraphicsRenderer& renderState, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize oldBufferSize, VkDeviceSize newBufferSize, VkBufferUsageFlags bufferUsageFlags, VkMemoryPropertyFlags propertyFlags) 
 {
     if (newBufferSize < oldBufferSize) 
     {
@@ -371,12 +371,12 @@ VkResult Buffer_UpdateBufferSize(const RendererState& renderState, VkBuffer* buf
     return VK_SUCCESS;
 }
 
-void Buffer_UpdateBufferData(const RendererState& renderState, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize) 
+void Buffer_UpdateBufferData(const GraphicsRenderer& renderState, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize) 
 {
     Buffer_UpdateBufferMemory(renderState, *bufferMemory, dataToCopy, bufferSize);
 }
 
-void Buffer_UpdateStagingBufferData(const RendererState& renderState, VkBuffer stagingBuffer, VkBuffer buffer, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize) 
+void Buffer_UpdateStagingBufferData(const GraphicsRenderer& renderState, VkBuffer stagingBuffer, VkBuffer buffer, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize) 
 {
     if (Buffer_UpdateBufferMemory(renderState, *stagingBufferMemory, dataToCopy, bufferSize) != VK_SUCCESS) 
     {
@@ -386,7 +386,7 @@ void Buffer_UpdateStagingBufferData(const RendererState& renderState, VkBuffer s
     Buffer_CopyBufferMemory(renderState, stagingBuffer, buffer, bufferSize);
 }
 
-VkResult Buffer_DestroyBuffer(const RendererState& renderState, VkBuffer* buffer, VkBuffer* stagingBuffer, VkDeviceMemory* bufferMemory, VkDeviceMemory* stagingBufferMemory, void** bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsage, VkMemoryPropertyFlags* propertyFlags) 
+VkResult Buffer_DestroyBuffer(const GraphicsRenderer& renderState, VkBuffer* buffer, VkBuffer* stagingBuffer, VkDeviceMemory* bufferMemory, VkDeviceMemory* stagingBufferMemory, void** bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsage, VkMemoryPropertyFlags* propertyFlags) 
 {
     if (!buffer && !stagingBuffer) 
     {

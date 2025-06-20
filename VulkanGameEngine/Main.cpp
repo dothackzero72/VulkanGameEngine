@@ -3,9 +3,7 @@ extern "C"
 #include "VulkanWindow.h"
 #include "GLFWWindow.h"
 }
-#include "VulkanRenderer.h"
 #include <stdio.h>
-
 #include <nlohmann/json.hpp>
 #include <ImPlot/implot.h>
 #include "SystemClock.h"
@@ -21,7 +19,7 @@ int main(int argc, char** argv)
     vulkanWindow = Window_CreateWindow(Window_Type::GLFW, "Game", 1920, 1080);
     //ImPlot::CreateContext();
 
-    gameSystem.StartUp();
+    gameSystem.StartUp(vulkanWindow->WindowHandle);
     while (!vulkanWindow->WindowShouldClose(vulkanWindow))
     {
         const float frameTime = deltaTime.GetFrameTime();
@@ -36,7 +34,7 @@ int main(int argc, char** argv)
         deltaTime.EndFrameTime();
     }
 
-    vkDeviceWaitIdle(cRenderer.Device);
+    vkDeviceWaitIdle(renderSystem.renderer.Device);
     //ImPlot::DestroyContext();
     gameSystem.Destroy();
     vulkanWindow->DestroyWindow(vulkanWindow);

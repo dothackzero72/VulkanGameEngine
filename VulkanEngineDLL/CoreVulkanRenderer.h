@@ -46,39 +46,7 @@ struct GPUIncludes
 	Vector<VkDescriptorBufferInfo> materialProperties;
 };
 
-typedef struct rendererState
-{
-	size_t			   SwapChainImageCount;
-	uint32			   GraphicsFamily;
-	uint32			   PresentFamily;
-	VkQueue			   GraphicsQueue;
-	VkQueue			   PresentQueue;
-	VkFormat           Format;
-	VkColorSpaceKHR    ColorSpace;
-	VkPresentModeKHR   PresentMode;
-
-	VkInstance Instance;
-	VkDevice Device;
-	VkPhysicalDevice PhysicalDevice;
-	VkSurfaceKHR Surface;
-	VkCommandPool CommandPool;
-	uint32 ImageIndex;
-	uint32 CommandIndex;
-	VkDebugUtilsMessengerEXT DebugMessenger;
-	VkPhysicalDeviceFeatures PhysicalDeviceFeatures;
-
-	Vector<VkFence> InFlightFences;
-	Vector<VkSemaphore> AcquireImageSemaphores;
-	Vector<VkSemaphore> PresentImageSemaphores;
-	Vector<VkImage> SwapChainImages;
-	Vector<VkImageView> SwapChainImageViews;
-	VkExtent2D SwapChainResolution;
-	VkSwapchainKHR Swapchain;
-	bool RebuildRendererFlag;
-}RendererState;
-DLL_EXPORT extern RendererState cRenderer;
-
-struct RendererStateDLL
+struct GraphicsRenderer
 {
 	VkInstance         Instance;
 	VkDevice           Device;
@@ -113,13 +81,9 @@ struct RendererStateDLL
 #ifdef __cplusplus
 extern "C" {
 #endif
-	DLL_EXPORT RendererStateDLL VulkanRenderer_ConvertToVulkanRendererDLL(const RendererState& renderState);
-	DLL_EXPORT RendererState VulkanRenderer_ConvertToVulkanRenderer(const RendererStateDLL& renderStateDLL);
-
-	DLL_EXPORT RendererState Renderer_RendererSetUp(void* windowHandle);
-	DLL_EXPORT RendererStateDLL Renderer_RendererSetUp_CS(void* windowHandle);
-	DLL_EXPORT void Renderer_DestroyRenderer(RendererState& renderer);
-	DLL_EXPORT void VulkanRenderer_DeleteVulkanRenderStatePtrs(RendererStateDLL* vulkanRenderStateDLL);
+	DLL_EXPORT GraphicsRenderer Renderer_RendererSetUp(void* windowHandle);
+	DLL_EXPORT GraphicsRenderer Renderer_RendererSetUp_CS(void* windowHandle);
+	DLL_EXPORT void Renderer_DestroyRenderer(GraphicsRenderer& renderer);
 #ifdef __cplusplus
 }
 #endif
@@ -149,6 +113,6 @@ extern "C" {
 	VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(Vector<VkSurfaceFormatKHR>&availableFormats);
 	VkPresentModeKHR SwapChain_FindSwapPresentMode(Vector<VkPresentModeKHR>&availablePresentModes);
 
-	VkResult Renderer_SetUpSwapChainCS(RendererStateDLL& renderState);
-	VkResult Renderer_SetUpSwapChain(void* windowHandle, RendererStateDLL& renderState);
+	VkResult Renderer_SetUpSwapChainCS(GraphicsRenderer& renderState);
+	VkResult Renderer_SetUpSwapChain(void* windowHandle, GraphicsRenderer& renderState);
 

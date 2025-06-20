@@ -1,4 +1,5 @@
 #include "ShaderSystem.h"
+#include "RenderSystem.h"
 
 ShaderSystem shaderSystem = ShaderSystem();
 
@@ -72,7 +73,7 @@ VkShaderModule ShaderSystem::BuildHLSLShader(const String& filePath, VkShaderSta
                 .codeSize = spriv_buffer->GetBufferSize(),
                 .pCode = (uint32*)spriv_buffer->GetBufferPointer(),
             };
-            VULKAN_RESULT(vkCreateShaderModule(cRenderer.Device, &ShaderModuleCreateInfo, nullptr, &shaderModule));
+            VULKAN_RESULT(vkCreateShaderModule(renderSystem.renderer.Device, &ShaderModuleCreateInfo, nullptr, &shaderModule));
 
             return shaderModule;
         }
@@ -100,7 +101,7 @@ VkShaderModule ShaderSystem::BuildHLSLShader(const String& filePath, VkShaderSta
             };
 
             VkShaderModule shaderModule = VK_NULL_HANDLE;
-            VULKAN_RESULT(vkCreateShaderModule(cRenderer.Device, &createInfo, nullptr, &shaderModule));
+            VULKAN_RESULT(vkCreateShaderModule(renderSystem.renderer.Device, &createInfo, nullptr, &shaderModule));
 
             return shaderModule;
         }
@@ -116,7 +117,7 @@ VkShaderModule ShaderSystem::BuildHLSLShader(const String& filePath, VkShaderSta
             .codeSize = spriv_buffer->GetBufferSize(),
             .pCode = (uint32*)spriv_buffer->GetBufferPointer(),
         };
-        VULKAN_RESULT(vkCreateShaderModule(cRenderer.Device, &ShaderModuleCreateInfo, nullptr, &shaderModule));
+        VULKAN_RESULT(vkCreateShaderModule(renderSystem.renderer.Device, &ShaderModuleCreateInfo, nullptr, &shaderModule));
 
         return shaderModule;
     }

@@ -1,7 +1,7 @@
 #include "ImGuiFunc.h"
 #include "VulkanError.h"
 
-ImGuiRenderer ImGui_StartUp(const RendererState& rendererState)
+ImGuiRenderer ImGui_StartUp(const GraphicsRenderer& renderer)
 {
     ImGuiRenderer imGui;
 
@@ -16,8 +16,8 @@ ImGuiRenderer ImGui_StartUp(const RendererState& rendererState)
     case GLFW: ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)vulkanWindow->WindowHandle, true); break;
     }
 
-    imGui.RenderPass = ImGui_CreateRenderPass(rendererState);
-    imGui.SwapChainFramebuffers = ImGui_CreateRendererFramebuffers(rendererState, imGui.RenderPass);
+    imGui.RenderPass = ImGui_CreateRenderPass(renderer);
+    imGui.SwapChainFramebuffers = ImGui_CreateRendererFramebuffers(renderer, imGui.RenderPass);
 
     VkDescriptorPoolSize poolSizes[] =
     {
@@ -41,31 +41,31 @@ ImGuiRenderer ImGui_StartUp(const RendererState& rendererState)
         .poolSizeCount = (uint32)IM_ARRAYSIZE(poolSizes),
         .pPoolSizes = poolSizes
     };
-    VULKAN_RESULT(Renderer_CreateDescriptorPool(rendererState.Device, &imGui.ImGuiDescriptorPool, &pool_info));
+    VULKAN_RESULT(Renderer_CreateDescriptorPool(renderer.Device, &imGui.ImGuiDescriptorPool, &pool_info));
 
-    for (size_t x = 0; x < rendererState.SwapChainImageCount; x++)
+    for (size_t x = 0; x < renderer.SwapChainImageCount; x++)
     {
         VkCommandBufferAllocateInfo commandBufferAllocateInfo
         {
             .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-            .commandPool = rendererState.CommandPool,
+            .commandPool = renderer.CommandPool,
             .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
             .commandBufferCount = 1
         };
-        VULKAN_RESULT(vkAllocateCommandBuffers(rendererState.Device, &commandBufferAllocateInfo, &imGui.ImGuiCommandBuffer));
+        VULKAN_RESULT(vkAllocateCommandBuffers(renderer.Device, &commandBufferAllocateInfo, &imGui.ImGuiCommandBuffer));
     }
 
     ImGui_ImplVulkan_InitInfo init_info =
     {
-        .Instance = rendererState.Instance,
-        .PhysicalDevice = rendererState.PhysicalDevice,
-        .Device = rendererState.Device,
-        .QueueFamily = rendererState.GraphicsFamily,
-        .Queue = rendererState.GraphicsQueue,
+        .Instance = renderer.Instance,
+        .PhysicalDevice = renderer.PhysicalDevice,
+        .Device = renderer.Device,
+        .QueueFamily = renderer.GraphicsFamily,
+        .Queue = renderer.GraphicsQueue,
         .DescriptorPool = imGui.ImGuiDescriptorPool,
         .RenderPass = imGui.RenderPass,
-        .MinImageCount = static_cast<uint32>(rendererState.SwapChainImageCount),
-        .ImageCount = static_cast<uint32>(rendererState.SwapChainImageCount),
+        .MinImageCount = static_cast<uint32>(renderer.SwapChainImageCount),
+        .ImageCount = static_cast<uint32>(renderer.SwapChainImageCount),
         .PipelineCache = VK_NULL_HANDLE,
         .Allocator = nullptr,
         .CheckVkResultFn = ImGui_VkResult
@@ -91,7 +91,7 @@ void ImGui_EndFrame()
     ImGui::Render();
 }
 
-VkCommandBuffer ImGui_Draw(const RendererState& rendererState, ImGuiRenderer& imGui)
+VkCommandBuffer ImGui_Draw(const GraphicsRenderer& renderer, ImGuiRenderer& imGui)
 {
     std::vector<VkClearValue> clearValues
     {
@@ -103,11 +103,11 @@ VkCommandBuffer ImGui_Draw(const RendererState& rendererState, ImGuiRenderer& im
     {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
         .renderPass = imGui.RenderPass,
-        .framebuffer = imGui.SwapChainFramebuffers[rendererState.ImageIndex],
+        .framebuffer = imGui.SwapChainFramebuffers[renderer.ImageIndex],
         .renderArea
         {
             .offset = { 0, 0 },
-            .extent = rendererState.SwapChainResolution,
+            .extent = renderer.SwapChainResolution,
         },
         .clearValueCount = static_cast<uint32>(clearValues.size()),
         .pClearValues = clearValues.data()
@@ -129,21 +129,21 @@ VkCommandBuffer ImGui_Draw(const RendererState& rendererState, ImGuiRenderer& im
     return imGui.ImGuiCommandBuffer;
 }
 
-void RebuildSwapChain(RendererState& rendererState, ImGuiRenderer& imGuiRenderer)
+void RebuildSwapChain(GraphicsRenderer& renderer, ImGuiRenderer& imGuiRenderer)
 {
-    Renderer_DestroyRenderPass(rendererState.Device, &imGuiRenderer.RenderPass);
-    Renderer_DestroyFrameBuffers(rendererState.Device, &imGuiRenderer.SwapChainFramebuffers[0], rendererState.SwapChainImageCount);
-    imGuiRenderer.RenderPass = ImGui_CreateRenderPass(rendererState);
-    imGuiRenderer.SwapChainFramebuffers = ImGui_CreateRendererFramebuffers(rendererState, imGuiRenderer.RenderPass);
+    Renderer_DestroyRenderPass(renderer.Device, &imGuiRenderer.RenderPass);
+    Renderer_DestroyFrameBuffers(renderer.Device, &imGuiRenderer.SwapChainFramebuffers[0], renderer.SwapChainImageCount);
+    imGuiRenderer.RenderPass = ImGui_CreateRenderPass(renderer);
+    imGuiRenderer.SwapChainFramebuffers = ImGui_CreateRendererFramebuffers(renderer, imGuiRenderer.RenderPass);
 }
 
-void ImGui_Destroy(RendererState& rendererState, ImGuiRenderer& imGuiRenderer)
+void ImGui_Destroy(GraphicsRenderer& renderer, ImGuiRenderer& imGuiRenderer)
 {
     ImGui_ImplVulkan_Shutdown();
-    Renderer_DestroyCommandBuffers(rendererState.Device, &rendererState.CommandPool, &imGuiRenderer.ImGuiCommandBuffer, 1);
-    Renderer_DestroyDescriptorPool(rendererState.Device, &imGuiRenderer.ImGuiDescriptorPool);
-    Renderer_DestroyRenderPass(rendererState.Device, &imGuiRenderer.RenderPass);
-    Renderer_DestroyFrameBuffers(rendererState.Device, &imGuiRenderer.SwapChainFramebuffers[0], rendererState.SwapChainImageCount);
+    Renderer_DestroyCommandBuffers(renderer.Device, &renderer.CommandPool, &imGuiRenderer.ImGuiCommandBuffer, 1);
+    Renderer_DestroyDescriptorPool(renderer.Device, &imGuiRenderer.ImGuiDescriptorPool);
+    Renderer_DestroyRenderPass(renderer.Device, &imGuiRenderer.RenderPass);
+    Renderer_DestroyFrameBuffers(renderer.Device, &imGuiRenderer.SwapChainFramebuffers[0], renderer.SwapChainImageCount);
     switch (vulkanWindow->WindowType)
     {
         //case SDL: ImGui_ImplSDL3_Shutdown(); break;
@@ -152,7 +152,7 @@ void ImGui_Destroy(RendererState& rendererState, ImGuiRenderer& imGuiRenderer)
     ImGui::DestroyContext();
 }
 
-VkRenderPass ImGui_CreateRenderPass(const RendererState& rendererState)
+VkRenderPass ImGui_CreateRenderPass(const GraphicsRenderer& renderer)
 {
     VkRenderPass renderPass = VK_NULL_HANDLE;
     VkAttachmentDescription colorAttachment
@@ -201,18 +201,18 @@ VkRenderPass ImGui_CreateRenderPass(const RendererState& rendererState)
         .dependencyCount = 1,
         .pDependencies = &dependency
     };
-    VULKAN_RESULT(vkCreateRenderPass(rendererState.Device, &renderPassInfo, nullptr, &renderPass));
+    VULKAN_RESULT(vkCreateRenderPass(renderer.Device, &renderPassInfo, nullptr, &renderPass));
     return renderPass;
 }
 
-Vector<VkFramebuffer> ImGui_CreateRendererFramebuffers(const RendererState& rendererState, const VkRenderPass& renderPass)
+Vector<VkFramebuffer> ImGui_CreateRendererFramebuffers(const GraphicsRenderer& GraphicsRenderer, const VkRenderPass& renderPass)
 {
-    Vector<VkFramebuffer> frameBuffers = Vector<VkFramebuffer>(rendererState.SwapChainImageCount);
-    for (size_t x = 0; x < rendererState.SwapChainImageCount; x++)
+    Vector<VkFramebuffer> frameBuffers = Vector<VkFramebuffer>(GraphicsRenderer.SwapChainImageCount);
+    for (size_t x = 0; x < GraphicsRenderer.SwapChainImageCount; x++)
     {
         std::vector<VkImageView> attachments =
         {
-            rendererState.SwapChainImageViews[x]
+            GraphicsRenderer.SwapChainImageViews[x]
         };
 
         VkFramebufferCreateInfo frameBufferInfo =
@@ -221,11 +221,11 @@ Vector<VkFramebuffer> ImGui_CreateRendererFramebuffers(const RendererState& rend
             .renderPass = renderPass,
             .attachmentCount = static_cast<uint32>(attachments.size()),
             .pAttachments = attachments.data(),
-            .width = rendererState.SwapChainResolution.width,
-            .height = rendererState.SwapChainResolution.height,
+            .width = GraphicsRenderer.SwapChainResolution.width,
+            .height = GraphicsRenderer.SwapChainResolution.height,
             .layers = 1
         };
-        VULKAN_RESULT(vkCreateFramebuffer(rendererState.Device, &frameBufferInfo, nullptr, &frameBuffers[x]));
+        VULKAN_RESULT(vkCreateFramebuffer(GraphicsRenderer.Device, &frameBufferInfo, nullptr, &frameBuffers[x]));
     }
     return frameBuffers;
 }

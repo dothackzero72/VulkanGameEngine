@@ -15,7 +15,7 @@ public:
 	GameSystem();
 	~GameSystem();
 
-	void StartUp();
+	void StartUp(void* windowHandle);
 	void Input(const float& deltaTime);
 	void Update(const float& deltaTime);
 	void DebugUpdate(const float& deltaTime);

@@ -64,8 +64,6 @@ struct Vector2Traits<Material>
 	static int GetVectorMapKey(const Material& obj) { return obj.VectorMapKey; }
 };
 
-static int NextMaterialBufferId = 0;
-
-DLL_EXPORT Material Material_CreateMaterial(const RendererStateDLL& renderer, int bufferIndex, VulkanBuffer& materialBuffer, const char* jsonString);
-DLL_EXPORT void Material_UpdateBuffer(const RendererStateDLL& rendererStateDLL, VulkanBuffer& materialBuffer, MaterialProperitiesBuffer& materialProperties);
-DLL_EXPORT void Material_DestroyBuffer(const RendererStateDLL& rendererStateDLL, VulkanBuffer& materialBuffer);
+DLL_EXPORT Material Material_CreateMaterial(const GraphicsRenderer& renderer, int bufferIndex, VulkanBuffer& materialBuffer, const char* jsonString);
+DLL_EXPORT void Material_UpdateBuffer(const GraphicsRenderer& renderer, VulkanBuffer& materialBuffer, MaterialProperitiesBuffer& materialProperties);
+DLL_EXPORT void Material_DestroyBuffer(const GraphicsRenderer& renderer, VulkanBuffer& materialBuffer);

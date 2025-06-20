@@ -17,9 +17,9 @@ GameSystem::~GameSystem()
 {
 }
 
-void GameSystem::StartUp()
+void GameSystem::StartUp(void* windowHandle)
 {
-    renderSystem.StartUp();
+    renderSystem.StartUp(windowHandle);
     levelSystem.LoadLevel("../Levels/TestLevel.json");
 }
 
@@ -57,9 +57,9 @@ void GameSystem::Update(const float& deltaTime)
     materialSystem.Update(deltaTime);
     renderSystem.Update(deltaTime);
 
-    VkCommandBuffer commandBuffer = renderer.BeginSingleTimeCommands();
+    VkCommandBuffer commandBuffer = renderSystem.BeginSingleTimeCommands();
     meshSystem.Update(deltaTime);
-    renderer.EndSingleTimeCommands(commandBuffer);
+    renderSystem.EndSingleTimeCommands(commandBuffer);
 }
 
 void GameSystem::DebugUpdate(const float& deltaTime)
@@ -73,10 +73,10 @@ void GameSystem::DebugUpdate(const float& deltaTime)
 
 void GameSystem::Draw(const float& deltaTime)
 {
-    VULKAN_RESULT(renderer.StartFrame());
+    VULKAN_RESULT(renderSystem.StartFrame());
     levelSystem.Draw(CommandBufferSubmitList, deltaTime);
-    CommandBufferSubmitList.emplace_back(ImGui_Draw(cRenderer, renderSystem.imGuiRenderer));
-    VULKAN_RESULT(renderer.EndFrame(CommandBufferSubmitList));
+    CommandBufferSubmitList.emplace_back(ImGui_Draw(renderSystem.renderer, renderSystem.imGuiRenderer));
+    VULKAN_RESULT(renderSystem.EndFrame(CommandBufferSubmitList));
     CommandBufferSubmitList.clear();
 }
 
