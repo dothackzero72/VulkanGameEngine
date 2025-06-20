@@ -1,73 +1,6 @@
 #include "VulkanPipeline.h"
 #include "MemoryLeakDetector.h"
 
-// VulkanPipelineDLL* VulkanPipeline_ConvertToVulkanRenderPipelineDLL(VulkanPipeline& renderPipeline)
-//{
-//     VulkanPipelineDLL* vulkanRenderPipelineDLL = new VulkanPipelineDLL();
-//     vulkanRenderPipelineDLL->RenderPipelineId = renderPipeline.RenderPipelineId;
-//     vulkanRenderPipelineDLL->DescriptorSetLayoutCount = renderPipeline.DescriptorSetLayoutList.size();
-//     vulkanRenderPipelineDLL->DescriptorSetCount = renderPipeline.DescriptorSetList.size();
-//     vulkanRenderPipelineDLL->DescriptorPool = renderPipeline.DescriptorPool;
-//     vulkanRenderPipelineDLL->DescriptorSetLayoutList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSetLayout>(renderPipeline.DescriptorSetLayoutList.size());
-//     vulkanRenderPipelineDLL->DescriptorSetList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSet>(renderPipeline.DescriptorSetList.size());
-//     vulkanRenderPipelineDLL->Pipeline = renderPipeline.Pipeline;
-//     vulkanRenderPipelineDLL->PipelineLayout = renderPipeline.PipelineLayout;
-//     vulkanRenderPipelineDLL->PipelineCache = renderPipeline.PipelineCache;
-//
-//     if (vulkanRenderPipelineDLL->DescriptorSetLayoutCount > 0)
-//     {
-//         vulkanRenderPipelineDLL->DescriptorSetLayoutList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSetLayout>(renderPipeline.DescriptorSetLayoutList.size());
-//         std::memcpy(vulkanRenderPipelineDLL->DescriptorSetLayoutList, renderPipeline.DescriptorSetLayoutList.data(), vulkanRenderPipelineDLL->DescriptorSetLayoutCount * sizeof(VkFramebuffer));
-//     }
-//     else
-//     {
-//         vulkanRenderPipelineDLL->DescriptorSetLayoutList = nullptr;
-//     }
-//
-//     if (vulkanRenderPipelineDLL->DescriptorSetCount > 0)
-//     {
-//         vulkanRenderPipelineDLL->DescriptorSetList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSet>(renderPipeline.DescriptorSetList.size());
-//         std::memcpy(vulkanRenderPipelineDLL->DescriptorSetList, renderPipeline.DescriptorSetList.data(), vulkanRenderPipelineDLL->DescriptorSetCount * sizeof(VkClearValue));
-//     }
-//     else
-//     {
-//         vulkanRenderPipelineDLL->DescriptorSetList = nullptr;
-//     }
-//
-//     return vulkanRenderPipelineDLL;
-// }
-//
-// VulkanPipeline VulkanPipeline_ConvertToVulkanPipelinePass(VulkanPipelineDLL* renderPipelineDLL)
-// {
-//     if (!renderPipelineDLL)
-//     {
-//         throw std::invalid_argument("Null RenderPipelineDLL pointer");
-//     }
-//
-//     VulkanPipeline vulkanPipeline = VulkanPipeline
-//     {
-//        .RenderPipelineId = renderPipelineDLL->RenderPipelineId,
-//        .DescriptorPool = renderPipelineDLL->DescriptorPool,
-//        .DescriptorSetLayoutList = Vector<VkDescriptorSetLayout>(renderPipelineDLL->DescriptorSetLayoutList, renderPipelineDLL->DescriptorSetLayoutList + renderPipelineDLL->DescriptorSetLayoutCount),
-//        .DescriptorSetList = Vector<VkDescriptorSet>(renderPipelineDLL->DescriptorSetList, renderPipelineDLL->DescriptorSetList + renderPipelineDLL->DescriptorSetCount),
-//        .Pipeline = renderPipelineDLL->Pipeline,
-//        .PipelineLayout = renderPipelineDLL->PipelineLayout,
-//    .   PipelineCache = renderPipelineDLL->PipelineCache
-//     };
-//     VulkanPipeline_DeleteVulkanRenderPassDLLPtrs(renderPipelineDLL);
-//     return vulkanPipeline;
-// }
-//
-// void VulkanPipeline_DeleteVulkanRenderPassDLLPtrs(VulkanPipelineDLL* renderPipelineDLL)
-// {
-//     if (renderPipelineDLL)
-//     {
-//         memoryLeakSystem.RemovePtrBuffer(renderPipelineDLL->DescriptorSetLayoutList);
-//         memoryLeakSystem.RemovePtrBuffer(renderPipelineDLL->DescriptorSetList);
-//         memoryLeakSystem.RemovePtrBuffer(renderPipelineDLL);
-//     }
-// }
-
  VulkanPipeline VulkanPipeline_CreateRenderPipeline(VkDevice device, VkGuid& renderPassId, uint renderPipelineId, RenderPipelineModel& model, VkRenderPass renderPass, size_t constBufferSize, ivec2& renderPassResolution, const GPUIncludes& includes, VkPipelineShaderStageCreateInfo& pipelineShaderList, size_t pipelineShaderCount)
  {
      Vector<VkPipelineShaderStageCreateInfo> pipelineShaders = Vector<VkPipelineShaderStageCreateInfo>(&pipelineShaderList, &pipelineShaderList + pipelineShaderCount);
@@ -93,24 +26,18 @@
          .PipelineCache = pipelineCache
      };
 
+     vulkanRenderPipelinePtr->DescriptorSetLayoutList = nullptr;
      if (vulkanRenderPipelinePtr->DescriptorSetLayoutCount > 0)
      {
          vulkanRenderPipelinePtr->DescriptorSetLayoutList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSetLayout>(descriptorSetLayoutList.size());
          std::memcpy(vulkanRenderPipelinePtr->DescriptorSetLayoutList, descriptorSetLayoutList.data(), vulkanRenderPipelinePtr->DescriptorSetLayoutCount * sizeof(VkFramebuffer));
      }
-     else
-     {
-         vulkanRenderPipelinePtr->DescriptorSetLayoutList = nullptr;
-     }
 
+     vulkanRenderPipelinePtr->DescriptorSetList = nullptr;
      if (vulkanRenderPipelinePtr->DescriptorSetCount > 0)
      {
          vulkanRenderPipelinePtr->DescriptorSetList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSet>(descriptorSetList.size());
          std::memcpy(vulkanRenderPipelinePtr->DescriptorSetList, descriptorSetList.data(), vulkanRenderPipelinePtr->DescriptorSetCount * sizeof(VkClearValue));
-     }
-     else
-     {
-         vulkanRenderPipelinePtr->DescriptorSetList = nullptr;
      }
 
      VulkanPipeline vulkanPipeline = *vulkanRenderPipelinePtr;

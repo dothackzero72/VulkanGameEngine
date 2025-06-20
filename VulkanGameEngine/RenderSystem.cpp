@@ -56,18 +56,16 @@ VkGuid RenderSystem::CreateVulkanRenderPass(const String& jsonPath, ivec2& rende
     Vector<Texture> renderedTextureList = Vector<Texture>(renderedTextureCount);
 
     RendererStateDLL renderer = VulkanRenderer_ConvertToVulkanRendererDLL(cRenderer);
-    VulkanRenderPassDLL* vulkanRenderPassDLLPtr = VulkanRenderPass_CreateVulkanRenderPass(renderer, jsonPath.c_str(), renderPassResolution, sizeof(SceneDataBuffer), renderedTextureList[0], renderedTextureCount, depthTexture);
-    VkGuid renderPassId = vulkanRenderPassDLLPtr->RenderPassId;
+    VulkanRenderPass vulkanRenderPass = VulkanRenderPass_CreateVulkanRenderPass(renderer, jsonPath.c_str(), renderPassResolution, sizeof(SceneDataBuffer), renderedTextureList[0], renderedTextureCount, depthTexture);
+    RenderPassMap[vulkanRenderPass.RenderPassId] = vulkanRenderPass;
 
-    RenderPassMap[renderPassId] = VulkanRenderPass_ConvertToVulkanRenderPass(vulkanRenderPassDLLPtr);
-
-    textureSystem.AddRenderedTexture(renderPassId, renderedTextureList);
+    textureSystem.AddRenderedTexture(vulkanRenderPass.RenderPassId, renderedTextureList);
     if (depthTexture.textureView != VK_NULL_HANDLE)
     {
-        textureSystem.AddDepthTexture(renderPassId, depthTexture);
+        textureSystem.AddDepthTexture(vulkanRenderPass.RenderPassId, depthTexture);
     }
 
-    return renderPassId;
+    return vulkanRenderPass.RenderPassId;
 }
 
 void RenderSystem::RecreateSwapchain()
@@ -100,8 +98,8 @@ VkCommandBuffer RenderSystem::RenderFrameBuffer(VkGuid& renderPassId)
         .renderPass = renderPass.RenderPass,
         .framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex],
         .renderArea = renderPass.RenderArea,
-        .clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size()),
-        .pClearValues = renderPass.ClearValueList.data()
+     .clearValueCount = static_cast<uint32>(renderPass.ClearValueCount),
+        .pClearValues = renderPass.ClearValueList
     };
 
     VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
@@ -130,8 +128,8 @@ VkCommandBuffer RenderSystem::RenderLevel(VkGuid& renderPassId, VkGuid& levelId,
         .renderPass = renderPass.RenderPass,
         .framebuffer = renderPass.FrameBufferList[cRenderer.ImageIndex],
         .renderArea = renderPass.RenderArea,
-        .clearValueCount = static_cast<uint32>(renderPass.ClearValueList.size()),
-        .pClearValues = renderPass.ClearValueList.data()
+        .clearValueCount = static_cast<uint32>(renderPass.ClearValueCount),
+        .pClearValues = renderPass.ClearValueList
     };
 
     VULKAN_RESULT(vkResetCommandBuffer(commandBuffer, 0));
