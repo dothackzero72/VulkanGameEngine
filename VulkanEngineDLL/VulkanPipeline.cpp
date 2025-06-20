@@ -19,8 +19,8 @@
          .DescriptorSetLayoutCount = descriptorSetLayoutList.size(),
          .DescriptorSetCount = descriptorSetList.size(),
          .DescriptorPool = descriptorPool,
-         .DescriptorSetLayoutList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSetLayout>(descriptorSetLayoutList.size()),
-         .DescriptorSetList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSet>(descriptorSetList.size()),
+         .DescriptorSetLayoutList = memorySystem.AddPtrBuffer<VkDescriptorSetLayout>(descriptorSetLayoutList.size(), _NORMAL_BLOCK, __FILE__, __LINE__),
+         .DescriptorSetList = memorySystem.AddPtrBuffer<VkDescriptorSet>(descriptorSetList.size(), _NORMAL_BLOCK, __FILE__, __LINE__),
          .Pipeline = pipeline,
          .PipelineLayout = pipelineLayout,
          .PipelineCache = pipelineCache
@@ -29,14 +29,14 @@
      vulkanRenderPipelinePtr->DescriptorSetLayoutList = nullptr;
      if (vulkanRenderPipelinePtr->DescriptorSetLayoutCount > 0)
      {
-         vulkanRenderPipelinePtr->DescriptorSetLayoutList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSetLayout>(descriptorSetLayoutList.size());
+         vulkanRenderPipelinePtr->DescriptorSetLayoutList = memorySystem.AddPtrBuffer<VkDescriptorSetLayout>(descriptorSetLayoutList.size(), _NORMAL_BLOCK, __FILE__, __LINE__);
          std::memcpy(vulkanRenderPipelinePtr->DescriptorSetLayoutList, descriptorSetLayoutList.data(), vulkanRenderPipelinePtr->DescriptorSetLayoutCount * sizeof(VkFramebuffer));
      }
 
      vulkanRenderPipelinePtr->DescriptorSetList = nullptr;
      if (vulkanRenderPipelinePtr->DescriptorSetCount > 0)
      {
-         vulkanRenderPipelinePtr->DescriptorSetList = memoryLeakSystem.AddPtrBuffer<VkDescriptorSet>(descriptorSetList.size());
+         vulkanRenderPipelinePtr->DescriptorSetList = memorySystem.AddPtrBuffer<VkDescriptorSet>(descriptorSetList.size(), _NORMAL_BLOCK, __FILE__, __LINE__);
          std::memcpy(vulkanRenderPipelinePtr->DescriptorSetList, descriptorSetList.data(), vulkanRenderPipelinePtr->DescriptorSetCount * sizeof(VkClearValue));
      }
 

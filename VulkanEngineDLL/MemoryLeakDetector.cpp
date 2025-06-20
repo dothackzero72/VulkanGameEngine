@@ -1,13 +1,14 @@
 #include "MemoryLeakDetector.h"
 #include <iostream>
 
-MemoryLeakSystem memoryLeakSystem = MemoryLeakSystem();
+MemorySystem memorySystem = MemorySystem();
 
 extern "C" 
 {
-    MemoryLeakPtr MemoryLeakPtr_NewPtr(size_t memorySize, size_t elementCount, const char* danglingPtrMessage) {
-        byte* memory = nullptr;
-        try 
+    MemoryLeakPtr MemoryLeakPtr_NewPtr(size_t memorySize, size_t elementCount, int block, const char* file, int line, const char* danglingPtrMessage)
+    {
+        void* memory = nullptr;
+        try
         {
 #ifdef _DEBUG
             memory = new(_NORMAL_BLOCK, __FILE__, __LINE__) byte[memorySize];
@@ -15,28 +16,41 @@ extern "C"
             memory = new byte[memorySize];
 #endif
         }
-        catch (const std::bad_alloc&) {
+        catch (const std::bad_alloc&)
+        {
             fprintf(stderr, "Allocation failed: %s\n", danglingPtrMessage ? danglingPtrMessage : "Unknown");
-            return { nullptr, 0, "" };
+            return MemoryLeakPtr
+            {
+                .PtrAddress = nullptr,
+                .PtrElements = 0,
+                .isArray = false,
+                .DanglingPtrMessage = ""
+            };
         }
-        MemoryLeakPtr ptr = { memory, elementCount, danglingPtrMessage ? danglingPtrMessage : "" };
-        return ptr;
+
+        return MemoryLeakPtr
+        {
+            .PtrAddress = memory,
+            .PtrElements = elementCount,
+            .isArray = elementCount > 1,
+            .DanglingPtrMessage = danglingPtrMessage ? danglingPtrMessage : ""
+        };
     }
 
-    void MemoryLeakPtr_DeletePtr(MemoryLeakPtr* ptr)
+    void MemoryLeakPtr_DeletePtr(MemoryLeakPtr* memoryLeakPtr)
     {
-        if (ptr) 
+        if (memoryLeakPtr && memoryLeakPtr->PtrAddress)
         {
-            if (ptr->PtrElements > 1)
+            if (memoryLeakPtr->isArray && 
+                memoryLeakPtr->PtrElements > 1)
             {
-                delete[] static_cast<byte*>(ptr->PtrAddress);
-                ptr = nullptr;
+                delete[] static_cast<void*>(memoryLeakPtr->PtrAddress);
             }
             else
             {
-                delete static_cast<byte*>(ptr->PtrAddress);
-                ptr = nullptr;
+                delete static_cast<void*>(memoryLeakPtr->PtrAddress);
             }
+            memoryLeakPtr->PtrAddress = nullptr;
         }
     }
 
@@ -61,7 +75,7 @@ extern "C"
 
     void MemoryLeakPtr_ReportLeaks() 
     {
-        memoryLeakSystem.ReportLeaks();
+        memorySystem.ReportLeaks();
         #ifdef _DEBUG
         _CrtDumpMemoryLeaks();
         #endif

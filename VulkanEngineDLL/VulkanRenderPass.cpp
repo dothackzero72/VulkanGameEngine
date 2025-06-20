@@ -17,8 +17,8 @@ VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(GraphicsRenderer& rende
         .SampleCount = VK_SAMPLE_COUNT_1_BIT,
         .RenderArea = renderPassLoader.RenderArea.RenderArea,
         .RenderPass = renderPass,
-        .FrameBufferList = new VkFramebuffer[frameBufferList.size()],
-        .ClearValueList = new VkClearValue[clearValueList.size()],
+        .FrameBufferList = memorySystem.AddPtrBuffer<VkFramebuffer>(frameBufferList.size(), _NORMAL_BLOCK, __FILE__, __LINE__),
+        .ClearValueList = memorySystem.AddPtrBuffer<VkClearValue>(clearValueList.size(), _NORMAL_BLOCK, __FILE__, __LINE__),
         .FrameBufferCount = frameBufferList.size(),
         .ClearValueCount = clearValueList.size(),
         .CommandBuffer = commandBuffer,
@@ -28,14 +28,14 @@ VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(GraphicsRenderer& rende
     vulkanRenderPassPtr->FrameBufferList = nullptr;
     if (vulkanRenderPassPtr->FrameBufferCount > 0)
     {
-        vulkanRenderPassPtr->FrameBufferList = memoryLeakSystem.AddPtrBuffer<VkFramebuffer>(frameBufferList.size());
+        vulkanRenderPassPtr->FrameBufferList = memorySystem.AddPtrBuffer<VkFramebuffer>(frameBufferList.size(), _NORMAL_BLOCK, __FILE__, __LINE__);
         std::memcpy(vulkanRenderPassPtr->FrameBufferList, frameBufferList.data(), vulkanRenderPassPtr->FrameBufferCount * sizeof(VkFramebuffer));
     }
 
     vulkanRenderPassPtr->ClearValueList = nullptr;
     if (vulkanRenderPassPtr->ClearValueCount > 0)
     {
-        vulkanRenderPassPtr->ClearValueList = memoryLeakSystem.AddPtrBuffer<VkClearValue>(clearValueList.size());
+        vulkanRenderPassPtr->ClearValueList = memorySystem.AddPtrBuffer<VkClearValue>(clearValueList.size(), _NORMAL_BLOCK, __FILE__, __LINE__);
         std::memcpy(vulkanRenderPassPtr->ClearValueList, clearValueList.data(), vulkanRenderPassPtr->ClearValueCount * sizeof(VkClearValue));
     }
 
@@ -53,8 +53,8 @@ void VulkanRenderPass_DestroyRenderPass(GraphicsRenderer& renderer, VulkanRender
     Renderer_DestroyCommandBuffers(renderer.Device, &renderer.CommandPool, &renderPass.CommandBuffer, 1);
     Renderer_DestroyFrameBuffers(renderer.Device, &renderPass.FrameBufferList[0], renderer.SwapChainImageCount);
 
-    delete[] renderPass.FrameBufferList;
-    delete[] renderPass.ClearValueList;
+    memorySystem.RemovePtrBuffer<VkFramebuffer>(renderPass.FrameBufferList);
+    memorySystem.RemovePtrBuffer<VkClearValue>(renderPass.ClearValueList);
 
     renderPass.RenderPassId = VkGuid();
     renderPass.SampleCount = VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM;

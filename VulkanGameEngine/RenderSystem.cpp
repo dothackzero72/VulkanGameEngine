@@ -497,6 +497,7 @@ void RenderSystem::Destroy()
     ImGui_Destroy(renderer, imGuiRenderer);
     DestroyRenderPass();
     DestroyRenderPipeline();
+    Renderer_DestroyRenderer(renderer);
 }
 
 void RenderSystem::DestroyFrameBuffers(Vector<VkFramebuffer>& frameBufferList)

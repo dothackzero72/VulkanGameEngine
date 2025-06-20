@@ -9,9 +9,9 @@
 GraphicsRenderer Renderer_RendererSetUp(void* windowHandle)
 {
     GraphicsRenderer renderer;
-    renderer.InFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
-    renderer.AcquireImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
-    renderer.PresentImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
+    renderer.InFlightFences = memorySystem.AddPtrBuffer<VkFence>(MAX_FRAMES_IN_FLIGHT, _NORMAL_BLOCK, __FILE__, __LINE__);
+    renderer.AcquireImageSemaphores = memorySystem.AddPtrBuffer<VkSemaphore>(MAX_FRAMES_IN_FLIGHT, _NORMAL_BLOCK, __FILE__, __LINE__);
+    renderer.PresentImageSemaphores = memorySystem.AddPtrBuffer<VkSemaphore>(MAX_FRAMES_IN_FLIGHT, _NORMAL_BLOCK, __FILE__, __LINE__);
 
     renderer.RebuildRendererFlag = false;
     VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
@@ -39,11 +39,11 @@ GraphicsRenderer Renderer_RendererSetUp(void* windowHandle)
      Renderer_DestroySurface(renderer.Instance, &renderer.Surface);
      Renderer_DestroyInstance(&renderer.Instance);
 
-     //memoryLeakSystem.RemovePtrBuffer(&vulkanGraphicsRendererDLL->InFlightFences);
-     //memoryLeakSystem.RemovePtrBuffer(&vulkanGraphicsRendererDLL->AcquireImageSemaphores);
-     //memoryLeakSystem.RemovePtrBuffer(&vulkanGraphicsRendererDLL->PresentImageSemaphores);
-     //memoryLeakSystem.RemovePtrBuffer(&vulkanGraphicsRendererDLL->SwapChainImages);
-     //memoryLeakSystem.RemovePtrBuffer(&vulkanGraphicsRendererDLL->SwapChainImageViews);
+     memorySystem.RemovePtrBuffer(renderer.InFlightFences);
+     memorySystem.RemovePtrBuffer(renderer.AcquireImageSemaphores);
+     memorySystem.RemovePtrBuffer(renderer.PresentImageSemaphores);
+     memorySystem.RemovePtrBuffer(renderer.SwapChainImages);
+     memorySystem.RemovePtrBuffer(renderer.SwapChainImageViews);
  }
 
  GraphicsRenderer Renderer_RendererSetUp_CS(void* windowHandle)
@@ -808,7 +808,7 @@ VkImage* SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChai
 {
     VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, &swapChainImageCount, nullptr));
 
-    VkImage* swapChainImageList = new VkImage[swapChainImageCount];
+    VkImage* swapChainImageList = memorySystem.AddPtrBuffer<VkImage>(swapChainImageCount, _NORMAL_BLOCK, __FILE__, __LINE__);
     VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, &swapChainImageCount, swapChainImageList));
 
     return swapChainImageList;
@@ -816,7 +816,7 @@ VkImage* SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChai
 
 VkImageView* SwapChain_SetUpSwapChainImageViews(VkDevice device, VkImage* swapChainImageList, size_t swapChainImageCount, VkSurfaceFormatKHR swapChainImageFormat)
 {
-    VkImageView* imageViews = new VkImageView[swapChainImageCount];
+    VkImageView* imageViews = memorySystem.AddPtrBuffer<VkImageView>(swapChainImageCount, _NORMAL_BLOCK, __FILE__, __LINE__);
     for (uint32_t x = 0; x < swapChainImageCount; x++)
     {
         VkImageViewCreateInfo swapChainViewInfo =
