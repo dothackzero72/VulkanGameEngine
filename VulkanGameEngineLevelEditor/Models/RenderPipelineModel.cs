@@ -10,8 +10,8 @@ namespace VulkanGameEngineLevelEditor.Models
     {
         public String VertexShader { get; set; }
         public String FragmentShader { get; set; }
-        public uint DescriptorSetCount { get; set; }
-        public uint DescriptorSetLayoutCount { get; set; }
+        public size_t DescriptorSetCount { get; set; }
+        public size_t DescriptorSetLayoutCount { get; set; }
         public VertexTypeEnum VertexType { get; set; }
         public List<VkViewport> ViewportList { get; set; } = new List<VkViewport>();
         public List<VkRect2D> ScissorList { get; set; } = new List<VkRect2D>();
@@ -71,13 +71,13 @@ namespace VulkanGameEngineLevelEditor.Models
                     VertexInputBindingDescription = vertexInputBindingDescriptionPtr,
                     LayoutBindingList = layoutBindingPtr,
                     PipelineDescriptorList = descriptorPtr,
-                    ViewportListCount = (uint)ViewportList.Count,
-                    ScissorListCount = (uint)ScissorList.Count,
-                    PipelineColorBlendAttachmentStateListCount = (uint)PipelineColorBlendAttachmentStateList.Count,
-                    LayoutBindingListCount = (uint)LayoutBindingListDLL.Count,
-                    PipelineDescriptorListCount = (uint)PipelineDescriptorModelsList.Count,
-                    VertexInputAttributeDescriptionCount = VertexInputAttributeDescriptionList.UCount(),
-                    VertexInputBindingDescriptionCount = VertexInputBindingDescriptionList.UCount(),
+                    ViewportListCount = ViewportList.Count,
+                    ScissorListCount = ScissorList.Count,
+                    PipelineColorBlendAttachmentStateListCount = PipelineColorBlendAttachmentStateList.Count,
+                    LayoutBindingListCount = LayoutBindingListDLL.Count,
+                    PipelineDescriptorListCount = PipelineDescriptorModelsList.Count,
+                    VertexInputAttributeDescriptionCount = VertexInputAttributeDescriptionList.Count(),
+                    VertexInputBindingDescriptionCount = VertexInputBindingDescriptionList.Count(),
                 };
             }
         }

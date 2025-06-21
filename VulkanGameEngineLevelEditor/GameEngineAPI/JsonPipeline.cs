@@ -87,12 +87,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 meshProperties = meshProperties.Ptr,
                 texturePropertiesList = textureProperties.Ptr,
                 materialProperties = materialProperties.Ptr,
-                vertexPropertiesCount = vertexProperties.UCount,
-                indexPropertiesCount = indexProperties.UCount,
-                transformPropertiesCount = transformProperties.UCount,
-                meshPropertiesCount = meshProperties.UCount,
-                texturePropertiesListCount = textureProperties.UCount,
-                materialPropertiesCount = materialProperties.UCount
+                vertexPropertiesCount = vertexProperties.Count,
+                indexPropertiesCount = indexProperties.Count,
+                transformPropertiesCount = transformProperties.Count,
+                meshPropertiesCount = meshProperties.Count,
+                texturePropertiesListCount = textureProperties.Count,
+                materialPropertiesCount = materialProperties.Count
             };
 
             descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(RenderSystem.Device, model, &includes);
@@ -128,7 +128,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 {
                     renderPass = renderPass,
                     framebuffer = frameBufferList[imageIndex],
-                    clearValueCount = clearValueList.UCount(),
+                    clearValueCount = clearValueList.Count(),
                     pClearValues = clearValuePtr,
                     renderArea = new VkRect2D
                     {
@@ -289,7 +289,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 foreach (var texture in textureList)
                 {
-                    texturePropertiesBuffer.Add(texture.GetTexturePropertiesBuffer());
+                  //  texturePropertiesBuffer.Add(texture.GetTexturePropertiesBuffer());
                 }
             }
 
@@ -312,7 +312,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 foreach (var material in materialList)
                 {
-                    materialPropertiesBuffer.Add(material.GetMaterialPropertiesBuffer());
+                  //  materialPropertiesBuffer.Add(material.GetMaterialPropertiesBuffer());
                 }
             }
             return materialPropertiesBuffer;

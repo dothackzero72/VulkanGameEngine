@@ -16,13 +16,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public uint SpriteLayer { get; set; }
         public ivec2 SpritePixelSize { get; set; }
         public vec2 SpriteScale { get; set; }
-        public Guid SpriteMaterialID
-        {
-            get
-            {
-                return SpriteMaterial.MaterialID;
-            }
-        }
+        //public Guid SpriteMaterialID
+        //{
+        //    //get
+        //   // {
+        //   //     return SpriteMaterial.MaterialID;
+        // //   }
+        //}
 
         public SpriteSheet()
         {
@@ -33,7 +33,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             SpriteMaterial = spriteMaterial;
             SpritePixelSize = spritePixelSize;
-            SpriteCells = new ivec2(spriteMaterial.AlbedoMap.Width / spritePixelSize.x, spriteMaterial.AlbedoMap.Height / spritePixelSize.y);
+           // SpriteCells = new ivec2(spriteMaterial.AlbedoMap.Width / spritePixelSize.x, spriteMaterial.AlbedoMap.Height / spritePixelSize.y);
             SpriteUVSize = new vec2(1.0f / (float)SpriteCells.x, 1.0f / (float)SpriteCells.y);
             SpriteLayer = spriteLayer;
             SpriteScale = new vec2(5.0f);
@@ -43,7 +43,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             SpriteMaterial = spriteMaterial;
             SpritePixelSize = spritePixelSize;
-            SpriteCells = new ivec2(spriteMaterial.AlbedoMap.Width / spritePixelSize.x, spriteMaterial.AlbedoMap.Height / spritePixelSize.y);
+          //  SpriteCells = new ivec2(spriteMaterial.AlbedoMap.Width / spritePixelSize.x, spriteMaterial.AlbedoMap.Height / spritePixelSize.y);
             SpriteUVSize = new vec2(1.0f / (float)SpriteCells.x, 1.0f / (float)SpriteCells.y);
             SpriteLayer = spriteLayer;
             SpriteScale = spriteScale;

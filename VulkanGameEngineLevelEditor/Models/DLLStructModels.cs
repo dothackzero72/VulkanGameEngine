@@ -13,12 +13,12 @@ namespace VulkanGameEngineLevelEditor.Models
         public VkDescriptorBufferInfo* meshProperties;
         public VkDescriptorImageInfo* texturePropertiesList;
         public VkDescriptorBufferInfo* materialProperties;
-        public uint vertexPropertiesCount;
-        public uint indexPropertiesCount;
-        public uint transformPropertiesCount;
-        public uint meshPropertiesCount;
-        public uint texturePropertiesListCount;
-        public uint materialPropertiesCount;
+        public size_t vertexPropertiesCount;
+        public size_t indexPropertiesCount;
+        public size_t transformPropertiesCount;
+        public size_t meshPropertiesCount;
+        public size_t texturePropertiesListCount;
+        public size_t materialPropertiesCount;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
@@ -29,7 +29,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public VkPipelineColorBlendStateCreateFlagBits flags { get; set; }
         public VkBool32 logicOpEnable { get; set; }
         public VkLogicOp logicOp { get; set; }
-        public uint attachmentCount { get; set; }
+        public size_t attachmentCount { get; set; }
         public VkPipelineColorBlendAttachmentState* pAttachments { get; set; }
         public fixed float blendConstants[4];
     }
@@ -81,15 +81,15 @@ namespace VulkanGameEngineLevelEditor.Models
         public IntPtr FragmentShader;
         public VertexTypeEnum VertexType;
 
-        public uint DescriptorSetCount;
-        public uint DescriptorSetLayoutCount;
-        public uint ViewportListCount;
-        public uint ScissorListCount;
-        public uint PipelineColorBlendAttachmentStateListCount;
-        public uint LayoutBindingListCount;
-        public uint PipelineDescriptorListCount;
-        public uint VertexInputBindingDescriptionCount;
-        public uint VertexInputAttributeDescriptionCount;
+        public size_t DescriptorSetCount;
+        public size_t DescriptorSetLayoutCount;
+        public size_t ViewportListCount;
+        public size_t ScissorListCount;
+        public size_t PipelineColorBlendAttachmentStateListCount;
+        public size_t LayoutBindingListCount;
+        public size_t PipelineDescriptorListCount;
+        public size_t VertexInputBindingDescriptionCount;
+        public size_t VertexInputAttributeDescriptionCount;
 
         public VkViewport* ViewportList;
         public VkRect2D* ScissorList;

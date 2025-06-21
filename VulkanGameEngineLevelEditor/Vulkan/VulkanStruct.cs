@@ -342,7 +342,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkRenderPass renderPass { get; set; }
         public VkFramebuffer framebuffer { get; set; }
         public VkRect2D renderArea { get; set; }
-        public uint clearValueCount { get; set; }
+        public size_t clearValueCount { get; set; }
         public VkClearValue* pClearValues { get; set; }
     }
 

@@ -15,7 +15,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         public ivec2 SwapChainResuloution { get; set; } = new ivec2();
         public MessengerModel RenderPassMessager { get; set; }
         public RenderPassBuildInfoModel RenderPassModels { get; set; } = new RenderPassBuildInfoModel();
-        public JsonRenderPass<Vertex2D> buildRenderPass { get; set; }
+  //      public JsonRenderPass<Vertex2D> buildRenderPass { get; set; }
         public RenderPassBuilder()
         {
             InitializeComponent();
@@ -126,7 +126,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 
         private void BuildButton_Click(object sender, EventArgs e)
         {
-            buildRenderPass = new JsonRenderPass<Vertex2D>();
+           // buildRenderPass = new JsonRenderPass<Vertex2D>();
             // buildRenderPass.CreateRenderPass();
         }
 

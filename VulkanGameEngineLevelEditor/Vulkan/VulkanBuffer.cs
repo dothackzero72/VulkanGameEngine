@@ -7,20 +7,6 @@ using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
-
-    public enum BufferTypeEnum
-    {
-        BufferType_UInt,
-        BufferType_Mat4,
-        BufferType_MaterialProperitiesBuffer,
-        BufferType_SpriteInstanceStruct,
-        BufferType_MeshPropertiesStruct,
-        BufferType_SpriteMesh,
-        BufferType_LevelLayerMesh,
-        BufferType_Material,
-        BufferType_Vector2D
-    };
-
     public unsafe class VulkanBuffer<T> where T : unmanaged
     {
         protected VkDevice _device => RenderSystem.Device;

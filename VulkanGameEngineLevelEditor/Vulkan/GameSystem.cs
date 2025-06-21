@@ -11,13 +11,8 @@ using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
-    public struct LevelLoader
-    {
-        public Guid LevelId;
-        public List<string> TextureList;
-    }
 
-    public unsafe struct VulkanRenderPassDLL
+    public unsafe struct VulkanRenderPass
     {
         public Guid RenderPassId;
         public VkSampleCountFlagBits SampleCount;
@@ -31,7 +26,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public bool UseFrameBufferResolution;
     };
 
-    public unsafe struct VulkanPipelineDLL
+    public unsafe struct VulkanPipeline
     {
         public uint RenderPipelineId;
         public size_t DescriptorSetLayoutCount;
@@ -66,43 +61,9 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static unsafe void StartUp(IntPtr window, IntPtr renderAreaHandle)
         {
             RenderSystem.CreateVulkanRenderer(window, renderAreaHandle);
-
-            ivec2 renderResolution = new ivec2((int)RenderSystem.SwapChainResolution.width, (int)RenderSystem.SwapChainResolution.height);
-            ListPtr<TextureStruct> textureList = new ListPtr<TextureStruct>(32);
-            TextureStruct depthTexture = new TextureStruct();
-            var count = (ulong)textureList.Count;
-            var renderSystemStruct = RenderSystem.ToUnmanagedPointer();
-            var jsonText = "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/RenderPass/LevelShader2DRenderPass.json";
-            var asdf = RenderSystem.SwapChainResolution;
-            var sf = textureList[0];
-            VulkanRenderPassDLL* a = GameEngineImport.VulkanRenderPass_CreateVulkanRenderPass(renderSystemStruct, jsonText, ref asdf, sizeof(SceneDataBuffer), ref sf, ref count, ref depthTexture);
-
-
-            //var meshProperties = GetMeshPropertiesBuffer<T>(gpuImport.MeshList);
-            //var textureProperties = GetTexturePropertiesBuffer(gpuImport.TextureList);
-            //var materialProperties = GetMaterialPropertiesBuffer(gpuImport.MaterialList);
-            //var vertexProperties = new ListPtr<VkDescriptorBufferInfo>();
-            //var indexProperties = new ListPtr<VkDescriptorBufferInfo>();
-            //var transformProperties = new ListPtr<VkDescriptorBufferInfo>();
-
-            //GPUIncludes includes = new GPUIncludes
-            //{
-            //    vertexProperties = vertexProperties.Ptr,
-            //    indexProperties = indexProperties.Ptr,
-            //    transformProperties = transformProperties.Ptr,
-            //    meshProperties = meshProperties.Ptr,
-            //    texturePropertiesList = textureProperties.Ptr,
-            //    materialProperties = materialProperties.Ptr,
-            //    vertexPropertiesCount = vertexProperties.UCount,
-            //    indexPropertiesCount = indexProperties.UCount,
-            //    transformPropertiesCount = transformProperties.UCount,
-            //    meshPropertiesCount = meshProperties.UCount,
-            //    texturePropertiesListCount = textureProperties.UCount,
-            //    materialPropertiesCount = materialProperties.UCount
-            //};
-
-            LoadLevel("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Levels/TestLevel.json");                                                                                                  
+            LevelSystem.LoadLevel("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Levels/TestLevel.json");
         }
+
         public static void LoadLevel(String levelPath)
         {
             var res = new vec2((float)RenderSystem.SwapChainResolution.width, (float)RenderSystem.SwapChainResolution.height);
@@ -112,22 +73,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             string jsonContent = File.ReadAllText(levelPath);
             LevelLoader levelLoader = JsonConvert.DeserializeObject<LevelLoader>(levelPath);
 
-            foreach (var texturePath in levelLoader.TextureList)
-            {
-                TextureSystem.LoadTexture(texturePath);
-            }
-            foreach (var texturePath in levelLoader.TextureList)
-            {
-                TextureSystem.LoadTexture(texturePath);
-            }
-            foreach (var texturePath in levelLoader.TextureList)
-            {
-                TextureSystem.LoadTexture(texturePath);
-            }
-            foreach (var texturePath in levelLoader.TextureList)
-            {
-                TextureSystem.LoadTexture(texturePath);
-            }
         }
     }
 }

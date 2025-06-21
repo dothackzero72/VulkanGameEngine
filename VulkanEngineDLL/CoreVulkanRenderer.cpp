@@ -4,7 +4,7 @@
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include "../../../../../../VulkanSDK/1.4.304.0/Include/vulkan/vulkan_win32.h"
-#include "MemoryLeakDetector.h"
+#include "MemorySystem.h"
 
 GraphicsRenderer Renderer_RendererSetUp(void* windowHandle)
 {

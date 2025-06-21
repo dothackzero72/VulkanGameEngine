@@ -83,9 +83,6 @@ struct Texture
 
 DLL_EXPORT Texture Texture_CreateTexture(const GraphicsRenderer& renderer, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
 DLL_EXPORT Texture Texture_CreateTexture(const GraphicsRenderer& renderer, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
-//DLL_EXPORT Texture Texture_CreateTexture_DLL(const GraphicsRendererCS& GraphicsRendererCS, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
-//DLL_EXPORT Texture Texture_CreateTexture_DLL(const GraphicsRendererCS& GraphicsRendererCS, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
-//DLL_EXPORT Texture Texture_CreateTexture_DLL(const GraphicsRendererCS& GraphicsRendererCS, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps);
 
 void Texture_CreateTextureImage(const GraphicsRenderer& renderer, Texture & texture, const Pixel & clearColor);
 void Texture_CreateTextureImage(const GraphicsRenderer& renderer, Texture & texture, const String & filePath);
@@ -94,11 +91,6 @@ void Texture_CreateTextureImage(const GraphicsRenderer& renderer, Texture & text
 #ifdef __cplusplus
 extern "C" {
 #endif
-    //DLL_EXPORT Texture Texture_LoadTexture_DLL(const GraphicsRendererCS& GraphicsRenderer, const char* jsonString);
-    //DLL_EXPORT void Texture_UpdateTextureSize_DLL(const GraphicsRendererCS& GraphicsRenderer, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution);
-    //DLL_EXPORT void Texture_UpdateTextureBufferIndex_DLL(Texture& texture, uint32 bufferIndex);
-    //DLL_EXPORT void Texture_GetTexturePropertiesBuffer_DLL(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList);
-
         DLL_EXPORT Texture Texture_LoadTexture(const GraphicsRenderer& renderer, const char* jsonText);
         DLL_EXPORT Texture Texture_CreateTexture(const GraphicsRenderer& renderer, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo);
         DLL_EXPORT void Texture_UpdateTextureSize(const GraphicsRenderer& renderer, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution);

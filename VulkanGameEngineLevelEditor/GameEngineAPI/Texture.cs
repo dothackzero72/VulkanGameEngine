@@ -1,250 +1,30 @@
-﻿using Newtonsoft.Json;
-using Silk.NET.SDL;
-using StbImageSharp;
-using System;
+﻿using System;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Vulkan;
 
-namespace VulkanGameEngineLevelEditor.GameEngineAPI
+public struct Texture
 {
+    public Guid textureId { get; set; }
+    public int width { get; set; } = 1;
+    public int height { get; set; } = 1;
+    public int depth { get; set; } = 1;
+    public uint mipMapLevels { get; set; } = 1;
+    public uint textureBufferIndex { get; set; } = 0;
 
-    public unsafe class Texture
+    public VkImage textureImage { get; set; } = VulkanConst.VK_NULL_HANDLE;
+    public VkDeviceMemory textureMemory { get; set; } = VulkanConst.VK_NULL_HANDLE;
+    public VkImageView textureView { get; set; } = VulkanConst.VK_NULL_HANDLE;
+    public VkSampler textureSampler { get; set; } = VulkanConst.VK_NULL_HANDLE;
+    public VkDescriptorSet ImGuiDescriptorSet { get; set; } = VulkanConst.VK_NULL_HANDLE;
+
+    public TextureUsageEnum textureUsage { get; set; } = TextureUsageEnum.kUse_Undefined;
+    public TextureTypeEnum textureType { get; set; } = TextureTypeEnum.kType_UndefinedTexture;
+    public VkFormat textureByteFormat { get; set; } = VkFormat.VK_FORMAT_UNDEFINED;
+    public VkImageLayout textureImageLayout { get; set; } = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED;
+    public VkSampleCountFlagBits sampleCount { get; set; } = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT;
+    public ColorChannelUsed colorChannels { get; set; } = ColorChannelUsed.ChannelRGBA;
+
+    public Texture()
     {
-        [JsonIgnore]
-        static private uint NextTextureId;
-        [JsonIgnore]
-        public uint TextureId { get; private set; } = 0;
-        [JsonIgnore]
-        public uint TextureBufferIndex { get; private set; } = 0;
-        [JsonIgnore]
-        public string Name { get; private set; } = "Texture";
-        [JsonIgnore]
-        public int Width { get; protected set; } = 1;
-        [JsonIgnore]
-        public int Height { get; protected set; } = 1;
-        [JsonIgnore]
-        public int Depth { get; protected set; } = 1;
-        [JsonIgnore]
-        public ColorComponents ColorChannels { get; protected set; } = ColorComponents.RedGreenBlueAlpha;
-        public uint MipMapLevels { get; protected set; } = 1;
-        [JsonIgnore]
-        public TextureUsageEnum TextureUsage { get; protected set; } = TextureUsageEnum.kUse_Undefined;
-        [JsonIgnore]
-        public TextureTypeEnum TextureType { get; protected set; } = TextureTypeEnum.kType_UndefinedTexture;
-        [JsonIgnore]
-        public VkFormat TextureByteFormat { get; protected set; } = VkFormat.VK_FORMAT_UNDEFINED;
-        [JsonIgnore]
-        public VkImageLayout TextureImageLayout { get; protected set; } = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED;
-        [JsonIgnore]
-        public VkSampleCountFlagBits SampleCount { get; protected set; } = VkSampleCountFlagBits.VK_SAMPLE_COUNT_1_BIT;
-        [JsonIgnore]
-        public VkImage Image { get; protected set; } = VulkanConst.VK_NULL_HANDLE;
-        [JsonIgnore]
-        public VkDeviceMemory Memory { get; protected set; } = VulkanConst.VK_NULL_HANDLE;
-        [JsonIgnore]
-        public VkImageView View { get; protected set; } = VulkanConst.VK_NULL_HANDLE;
-        [JsonIgnore]
-        public VkSampler Sampler { get; protected set; } = VulkanConst.VK_NULL_HANDLE;
-        public string TexturePath { get; private set; }
-
-        public Texture()
-        {
-
-        }
-
-        public Texture(Pixel clearColor, int width, int height, VkFormat textureByteFormat, VkImageAspectFlagBits imageType, TextureTypeEnum textureType, bool useMipMaps)
-        {
-            Width = width;
-            Height = height;
-            TextureType = textureType;
-            TextureByteFormat = textureByteFormat;
-
-            if (useMipMaps)
-            {
-                MipMapLevels = (uint)(Math.Floor(Math.Log2(Math.Max(Width, Height)))) + 1;
-            }
-
-            CreateImageTexture(clearColor, useMipMaps);
-            CreateTextureView(imageType);
-            CreateTextureSampler();
-
-        }
-
-        public Texture(string filePath, VkFormat textureByteFormat, VkImageAspectFlagBits imageType, TextureTypeEnum textureType, bool useMipMaps)
-        {
-            TexturePath = filePath;
-            TextureType = textureType;
-            TextureByteFormat = textureByteFormat;
-
-            if (useMipMaps)
-            {
-                MipMapLevels = (uint)(Math.Floor(Math.Log2(Math.Max(Width, Height)))) + 1;
-            }
-
-            CreateImageTexture(filePath, useMipMaps);
-            CreateTextureView(imageType);
-            CreateTextureSampler();
-        }
-
-
-        protected virtual void CreateImageTexture(Pixel clearColor, bool useMipMaps)
-        {
-            int width = Width;
-            int height = Height;
-            int depth = Depth;
-            int colorChannels = 0;
-            MipMapLevels = 1;
-
-            VkDeviceMemory textureMemory = Memory;
-            VkFormat textureByteFormat = TextureByteFormat;
-            VkImage textureImage = Image;
-            VkImageLayout textureImageLayout = TextureImageLayout;
-            ColorComponents colorChannelUsed = ColorChannels;
-
-            GameEngineImport.DLL_Texture_CreateImageTextureFromClearColor(
-                RenderSystem.Device,
-                RenderSystem.PhysicalDevice,
-                RenderSystem.CommandPool,
-                RenderSystem.GraphicsQueue,
-                ref width,
-                ref height,
-                ref depth,
-                textureByteFormat,
-                MipMapLevels,
-                ref textureImage,
-                ref textureMemory,
-                ref textureImageLayout,
-                ref colorChannelUsed,
-                TextureUsageEnum.kUse_2DImageTexture,
-                clearColor,
-                useMipMaps);
-
-            Width = width;
-            Height = height;
-            Depth = depth;
-            ColorChannels = 0;
-            MipMapLevels = 1;
-
-            Memory = textureMemory;
-            Image = textureImage;
-            TextureImageLayout = textureImageLayout;
-            ColorChannels = colorChannelUsed;
-        }
-
-        virtual protected void CreateImageTexture(string filePath, bool useMipMaps)
-        {
-            int width = Width;
-            int height = Height;
-            int depth = Depth;
-            int colorChannels = 0;
-            MipMapLevels = 1;
-
-            VkDeviceMemory textureMemory = Memory;
-            VkFormat textureByteFormat = TextureByteFormat;
-            VkImage textureImage = Image;
-            VkImageLayout textureImageLayout = TextureImageLayout;
-            ColorComponents colorChannelUsed = ColorChannels;
-
-            GameEngineImport.DLL_Texture_CreateImageTextureFromFile(
-                RenderSystem.Device,
-                RenderSystem.PhysicalDevice,
-                RenderSystem.CommandPool,
-                RenderSystem.GraphicsQueue,
-                ref width,
-                ref height,
-                ref depth,
-                textureByteFormat,
-                MipMapLevels,
-                ref textureImage,
-                ref textureMemory,
-                ref textureImageLayout,
-                ref colorChannelUsed,
-                TextureUsageEnum.kUse_2DImageTexture,
-                filePath,
-                useMipMaps);
-
-            Width = width;
-            Height = height;
-            Depth = depth;
-            ColorChannels = 0;
-            MipMapLevels = 1;
-
-            Memory = textureMemory;
-            Image = textureImage;
-            TextureImageLayout = textureImageLayout;
-            ColorChannels = colorChannelUsed;
-        }
-
-        public virtual VkResult CreateTextureView(VkImageAspectFlagBits imageType)
-        {
-            var result = GameEngineImport.DLL_Texture_CreateTextureView(RenderSystem.Device, out VkImageView view, Image, TextureByteFormat, imageType, MipMapLevels);
-            View = view;
-
-            return result;
-        }
-
-        virtual protected void CreateTextureSampler()
-        {
-            VkSamplerCreateInfo textureImageSamplerInfo = new VkSamplerCreateInfo
-            {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-                magFilter = VkFilter.VK_FILTER_NEAREST,
-                minFilter = VkFilter.VK_FILTER_NEAREST,
-                mipmapMode = VkSamplerMipmapMode.VK_SAMPLER_MIPMAP_MODE_NEAREST,
-                addressModeU = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-                addressModeV = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-                addressModeW = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-                mipLodBias = 0,
-                anisotropyEnable = true,
-                maxAnisotropy = 1.0f,
-                compareEnable = false,
-                compareOp = VkCompareOp.VK_COMPARE_OP_ALWAYS,
-                minLod = 0,
-                maxLod = MipMapLevels,
-                borderColor = VkBorderColor.VK_BORDER_COLOR_INT_OPAQUE_BLACK,
-                unnormalizedCoordinates = false,
-            };
-
-            CreateTextureSampler(textureImageSamplerInfo);
-        }
-
-        virtual protected void CreateTextureSampler(VkSamplerCreateInfo samplerCreateInfo)
-        {
-            GameEngineImport.DLL_Texture_CreateTextureSampler(RenderSystem.Device, samplerCreateInfo, out VkSampler sampler);
-            Sampler = sampler;
-        }
-
-        protected VkResult CreateImage(VkImageCreateInfo imageCreateInfo)
-        {
-            var result = GameEngineImport.DLL_Texture_CreateImage(RenderSystem.Device, RenderSystem.PhysicalDevice, out VkImage image, out VkDeviceMemory memory, imageCreateInfo);
-            Image = image;
-            Memory = memory;
-
-            return result;
-        }
-
-        public VkDescriptorImageInfo GetTexturePropertiesBuffer()
-        {
-            return new VkDescriptorImageInfo
-            {
-                sampler = Sampler,
-                imageView = View,
-                imageLayout = VkImageLayout.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-            };
-        }
-
-        public void SaveTexture(string filename, ExportTextureFormat textureFormat)
-        {
-            //Texture_SaveTexture(cRenderer.Device, cRenderer.CommandPool, cRenderer.SwapChain.GraphicsQueue, filename, SharedPtr<Texture>(this), textureFormat, ColorChannels);
-        }
-
-        public void UpdateTextureBufferIndex(uint bufferIndex)
-        {
-            TextureBufferIndex = bufferIndex;
-        }
-
-        public void Destroy()
-        {
-
-        }
     }
-}
+};

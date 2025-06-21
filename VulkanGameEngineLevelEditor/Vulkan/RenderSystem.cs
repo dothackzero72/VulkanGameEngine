@@ -28,34 +28,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public struct MaterialJsonLoader
-    {
-        Guid MaterialId;
-        uint MaterialBufferIndex;
-
-        vec3 Albedo;
-        float Metallic;
-        float Roughness;
-        float AmbientOcclusion;
-        vec3 Emission;
-        float Alpha;
-
-        Guid AlbedoMapId;
-        Guid MetallicRoughnessMapId;
-        Guid MetallicMapId;
-        Guid RoughnessMapId;
-        Guid AmbientOcclusionMapId;
-        Guid NormalMapId;
-        Guid DepthMapId;
-        Guid AlphaMapId;
-        Guid EmissionMapId;
-        Guid HeightMapId;
-
-        VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct RendererStateCS
+    public unsafe struct GraphicsRenderer
     {
         public VkInstance Instance { get; set; }
         public VkDevice Device { get; set; }
@@ -72,13 +45,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkExtent2D SwapChainResolution { get; set; }
         public VkSwapchainKHR Swapchain { get; set; }
 
-        public uint SwapChainImageCount { get; set; }
-        public uint InFlightFencesCount { get; set; }
-        public uint AcquireImageSemaphoresCount { get; set; }
-        public uint PresentImageSemaphoresCount { get; set; }
-        public uint SwapChainImagesCount { get; set; }
-        public uint SwapChainImageViewsCount { get; set; }
-
+        public size_t SwapChainImageCount { get; set; }
         public uint ImageIndex { get; set; }
         public uint CommandIndex { get; set; }
         public uint GraphicsFamily { get; set; }
@@ -122,7 +89,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
     public unsafe static class RenderSystem
     {
-        public static uint SwapChainImageCount  { get; set; } 
+        public static GraphicsRenderer renderer { get; set; }
+        public static size_t SwapChainImageCount  { get; set; } 
         public static uint GraphicsFamily { get; set; }
         public static uint PresentFamily { get; set; }
         public static uint ImageIndex { get; set; }
@@ -149,28 +117,28 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static void CreateVulkanRenderer(IntPtr window, IntPtr renderAreaHandle)
         {
-            RendererStateCS renderStateCS = GameEngineImport.Renderer_RendererSetUp_CS(window.ToPointer());
+             renderer  = GameEngineImport.Renderer_RendererSetUp_CS(window.ToPointer());
 
-            AcquireImageSemaphores = new ListPtr<VkSemaphore>(renderStateCS.AcquireImageSemaphores, renderStateCS.AcquireImageSemaphoresCount);
-            CommandIndex = renderStateCS.CommandIndex;
-            CommandPool = renderStateCS.CommandPool;
-            DebugMessenger = renderStateCS.DebugMessenger;
-            Device = renderStateCS.Device;
-            GraphicsFamily = renderStateCS.GraphicsFamily;
-            GraphicsQueue = renderStateCS.GraphicsQueue;
-            ImageIndex = renderStateCS.ImageIndex;
-            InFlightFences = new ListPtr<VkFence>(renderStateCS.InFlightFences, renderStateCS.InFlightFencesCount);
-            Instance = renderStateCS.Instance;
-            PhysicalDevice = renderStateCS.PhysicalDevice;
-            PresentFamily = renderStateCS.PresentFamily;
-            PresentImageSemaphores = new ListPtr<VkSemaphore>(renderStateCS.PresentImageSemaphores, renderStateCS.PresentImageSemaphoresCount);
-            PresentQueue = renderStateCS.PresentQueue;
-            Surface = renderStateCS.Surface;
-            Swapchain = renderStateCS.Swapchain;
-            SwapChainImageCount = renderStateCS.SwapChainImageCount;
-            SwapChainImages = new ListPtr<VkImage>(renderStateCS.SwapChainImages, renderStateCS.SwapChainImagesCount);
-            SwapChainImageViews = new ListPtr<VkImageView>(renderStateCS.SwapChainImageViews, renderStateCS.SwapChainImageViewsCount);
-            SwapChainResolution = renderStateCS.SwapChainResolution;
+            AcquireImageSemaphores = new ListPtr<VkSemaphore>(renderer.AcquireImageSemaphores, renderer.SwapChainImageCount);
+            CommandIndex = renderer.CommandIndex;
+            CommandPool = renderer.CommandPool;
+            DebugMessenger = renderer.DebugMessenger;
+            Device = renderer.Device;
+            GraphicsFamily = renderer.GraphicsFamily;
+            GraphicsQueue = renderer.GraphicsQueue;
+            ImageIndex = renderer.ImageIndex;
+            InFlightFences = new ListPtr<VkFence>(renderer.InFlightFences, renderer.SwapChainImageCount);
+            Instance = renderer.Instance;
+            PhysicalDevice = renderer.PhysicalDevice;
+            PresentFamily = renderer.PresentFamily;
+            PresentImageSemaphores = new ListPtr<VkSemaphore>(renderer.PresentImageSemaphores, renderer.SwapChainImageCount);
+            PresentQueue = renderer.PresentQueue;
+            Surface = renderer.Surface;
+            Swapchain = renderer.Swapchain;
+            SwapChainImageCount = renderer.SwapChainImageCount;
+            SwapChainImages = new ListPtr<VkImage>(renderer.SwapChainImages, renderer.SwapChainImageCount);
+            SwapChainImageViews = new ListPtr<VkImageView>(renderer.SwapChainImageViews, renderer.SwapChainImageCount);
+            SwapChainResolution = renderer.SwapChainResolution;
 
        //     GameEngineImport.Texture_CreateTexture_DLL(RenderSystem.ToStruct(), "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\SparkManTexture.json", VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, VkCreate);
 
@@ -230,7 +198,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     waitSemaphoreCount = 1,
                     pWaitSemaphores = &imageSemaphore,
                     pWaitDstStageMask = pWaitStages,
-                    commandBufferCount = commandBufferSubmitList.UCount,
+                    commandBufferCount = (uint)commandBufferSubmitList.Count,
                     pCommandBuffers = commandBufferSubmitList.Ptr,
                     signalSemaphoreCount = 1,
                     pSignalSemaphores = &presentSemaphore
@@ -323,43 +291,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 VkFunc.vkAllocateCommandBuffers(Device, in commandBufferAllocateInfo, out commandBuffer);
                 commandBufferList.Add(commandBuffer);
             }
-        }
-
-        public static RendererStateCS* ToUnmanagedPointer()
-        {
-            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf<RendererStateCS>());
-            RendererStateCS renderState = new RendererStateCS
-            {
-                AcquireImageSemaphores = AcquireImageSemaphores.Ptr,
-                AcquireImageSemaphoresCount = AcquireImageSemaphores.UCount,
-                CommandIndex = CommandIndex,
-                CommandPool = CommandPool,
-                DebugMessenger = DebugMessenger,
-                Device = Device,
-                GraphicsFamily = GraphicsFamily,
-                GraphicsQueue = GraphicsQueue,
-                ImageIndex = ImageIndex,
-                InFlightFences = InFlightFences.Ptr,
-                InFlightFencesCount = InFlightFences.UCount,
-                Instance = Instance,
-                PhysicalDevice = PhysicalDevice,
-                PresentFamily = PresentFamily,
-                PresentImageSemaphores = PresentImageSemaphores.Ptr,
-                PresentImageSemaphoresCount = PresentImageSemaphores.UCount,
-                PresentQueue = PresentQueue,
-                RebuildRendererFlag = RebuildRendererFlag,
-                Surface = Surface,
-                Swapchain = Swapchain,
-                SwapChainImageCount = SwapChainImageCount,
-                SwapChainImages = SwapChainImages.Ptr,
-                SwapChainImagesCount = SwapChainImages.UCount,
-                SwapChainImageViews = SwapChainImageViews.Ptr,
-                SwapChainImageViewsCount = SwapChainImageViews.UCount,
-                SwapChainResolution = SwapChainResolution
-            };
-
-            Marshal.StructureToPtr(renderState, ptr, false);
-            return (RendererStateCS*)ptr; 
         }
     }
 }

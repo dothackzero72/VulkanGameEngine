@@ -12,6 +12,7 @@ global using VkDescriptorSet = nint;
 global using VkDescriptorSetLayout = nint;
 global using VkDevice = nint;
 global using VkDeviceMemory = nint;
+global using VkAccelerationStructureKHR = nint;
 global using VkDeviceSize = System.UInt64;
 global using VkFence = nint;
 global using VkFramebuffer = nint;

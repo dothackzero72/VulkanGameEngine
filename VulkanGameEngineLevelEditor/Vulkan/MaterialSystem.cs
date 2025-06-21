@@ -11,37 +11,37 @@ using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
-    public struct MaterialStruct
-    {
-        public const int TextureCount = 10;
+    //public struct MaterialStruct
+    //{
+    //    public const int TextureCount = 10;
 
-        public int VectorMapKey;
-        public Guid materialGuid;
-        public uint ShaderMaterialBufferIndex;
-        public int MaterialBufferId;
+    //    public int VectorMapKey;
+    //    public Guid materialGuid;
+    //    public uint ShaderMaterialBufferIndex;
+    //    public int MaterialBufferId;
 
-        public Guid AlbedoMapId;
-        public Guid MetallicRoughnessMapId;
-        public Guid MetallicMapId;
-        public Guid RoughnessMapId;
-        public Guid AmbientOcclusionMapId;
-        public Guid NormalMapId;
-        public Guid DepthMapId;
-        public Guid AlphaMapId;
-        public Guid EmissionMapId;
-        public Guid HeightMapId;
+    //    public Guid AlbedoMapId;
+    //    public Guid MetallicRoughnessMapId;
+    //    public Guid MetallicMapId;
+    //    public Guid RoughnessMapId;
+    //    public Guid AmbientOcclusionMapId;
+    //    public Guid NormalMapId;
+    //    public Guid DepthMapId;
+    //    public Guid AlphaMapId;
+    //    public Guid EmissionMapId;
+    //    public Guid HeightMapId;
 
-        public vec3 Albedo = new vec3(0.0f, 0.35f, 0.45f);
-        public vec3 Emission = new vec3(0.0f);
-        public float Metallic = 0.0f;
-        public float Roughness = 0.0f;
-        public float AmbientOcclusion = 1.0f;
-        public float Alpha = 1.0f;
+    //    public vec3 Albedo = new vec3(0.0f, 0.35f, 0.45f);
+    //    public vec3 Emission = new vec3(0.0f);
+    //    public float Metallic = 0.0f;
+    //    public float Roughness = 0.0f;
+    //    public float AmbientOcclusion = 1.0f;
+    //    public float Alpha = 1.0f;
 
-        public MaterialStruct()
-        {
-        }
-    };
+    //    public MaterialStruct()
+    //    {
+    //    }
+    //};
 
     public struct MaterialProperitiesBuffer
     {
@@ -75,23 +75,16 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static Guid LoadMaterial(String materialPath)
         {
-            if (materialPath.IsEmpty() ||
-                materialPath == "")
+            if (materialPath.IsEmpty())
             {
-                return Guid.Empty;
+                return new Guid();
             }
 
             string jsonContent = File.ReadAllText(materialPath);
-            MaterialStruct model = JsonConvert.DeserializeObject<MaterialStruct>(jsonContent);
+            MaterialStruct materialJson = JsonConvert.DeserializeObject<MaterialStruct>(jsonContent);
+        //    MaterialMap[materialJson.MaterialId] = GameEngineImport(RenderSystem.renderer, materialPath);
 
-            if(MaterialMap.ContainsKey(model.materialGuid))
-            {
-                return model.materialGuid;
-            }
-
-            int bufferIndex = ++NextBufferID;
-
-            return model.materialGuid;
+            return new Guid();
         }
     }
 }

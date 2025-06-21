@@ -5,45 +5,6 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-//Texture Texture_LoadTexture_DLL(const GraphicsRendererCS& GraphicsRendererCS, const char* jsonString)
-//{
-//	GraphicsRenderer renderState = Renderer_GraphicsRendererCStoCPP(GraphicsRendererCS);
-//	return Texture_LoadTexture(renderState, jsonString);
-//}
-//
-//Texture Texture_CreateTexture_DLL(const GraphicsRendererCS& GraphicsRendererCS, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo)
-//{
-//	GraphicsRenderer renderState = Renderer_GraphicsRendererCStoCPP(GraphicsRendererCS);
-//	return Texture_CreateTexture(renderState, imageType, createImageInfo, samplerCreateInfo);
-//}
-//
-//Texture Texture_CreateTexture_DLL(const GraphicsRendererCS& GraphicsRendererCS, const String& texturePath, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
-//{
-//	GraphicsRenderer renderState = Renderer_GraphicsRendererCStoCPP(GraphicsRendererCS);
-//	return Texture_CreateTexture(renderState, texturePath, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
-//}
-//
-//Texture Texture_CreateTexture_DLL(const GraphicsRendererCS& GraphicsRendererCS, Pixel& clearColor, VkImageAspectFlags imageType, VkImageCreateInfo& createImageInfo, VkSamplerCreateInfo& samplerCreateInfo, bool useMipMaps)
-//{
-//	GraphicsRenderer renderState = Renderer_GraphicsRendererCStoCPP(GraphicsRendererCS);
-//	return Texture_CreateTexture(renderState, clearColor, imageType, createImageInfo, samplerCreateInfo, useMipMaps);
-//}
-//
-//void Texture_UpdateTextureSize_DLL(const GraphicsRendererCS& GraphicsRendererCS, Texture& texture, VkImageAspectFlags imageType, vec2& TextureResolution)
-//{
-//	GraphicsRenderer renderState = Renderer_GraphicsRendererCStoCPP(GraphicsRendererCS);
-//}
-//
-//void Texture_UpdateTextureBufferIndex_DLL(Texture& texture, uint32 bufferIndex)
-//{
-//	Texture_UpdateTextureBufferIndex_DLL(texture, bufferIndex);
-//}
-//
-//void Texture_GetTexturePropertiesBuffer_DLL(Texture& texture, Vector<VkDescriptorImageInfo>& textureDescriptorList)
-//{
-//	Texture_GetTexturePropertiesBuffer(texture, textureDescriptorList);
-//}
-
 Texture Texture_LoadTexture(const GraphicsRenderer& renderer, const char* jsonString)
 {
 	nlohmann::json json = Json::ReadJson(jsonString);

@@ -45,13 +45,13 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public uint SpriteLayer { get; set; } = 0;
         public SpriteSheet Spritesheet { get; set; }
         public List<Animation2D> AnimationList { get; set; } = new List<Animation2D>();
-        public Guid SpriteMaterialID
-        {
-            get
-            {
-                return SpriteMaterial.MaterialID;
-            }
-        }
+        //public Guid SpriteMaterialID
+        //{
+        //    //get
+        //    //{
+        //    //    //return SpriteMaterial.MaterialID;
+        //    //}
+        //}
 
         Sprite()
         {
@@ -70,7 +70,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             SpriteRotation = model.SpriteRotation;
             SpriteScale = model.SpriteScale;
             SpriteLayer = model.SpriteLayer;
-            SpriteMaterial = renderPipeline._GPUImport.MaterialList.Where(x => x.MaterialID == SpriteMaterialID).First();
+           // SpriteMaterial = renderPipeline._GPUImport.MaterialList.Where(x => x.MaterialID == SpriteMaterialID).First();
 
             AnimationList = new List<Animation2D>();
             foreach (var animation in model.AnimationList)
@@ -132,7 +132,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 SpriteInstance.SpriteSize = SpriteSize;
                 SpriteInstance.UVOffset = new vec4(Spritesheet.SpriteUVSize.x * CurrentSpriteAnimation.FrameList[(int)CurrentFrame].x, Spritesheet.SpriteUVSize.y * CurrentSpriteAnimation.FrameList[(int)CurrentFrame].y, Spritesheet.SpriteUVSize.x, Spritesheet.SpriteUVSize.y);
                 SpriteInstance.Color = SpriteColor;
-                SpriteInstance.MaterialID = (SpriteMaterial != null) ? SpriteMaterial.MaterialBufferIndex : 0;
+          //      SpriteInstance.MaterialID = (SpriteMaterial != null) ? SpriteMaterial.MaterialBufferIndex : 0;
                 SpriteInstance.InstanceTransform = spriteMatrix;
             }
 

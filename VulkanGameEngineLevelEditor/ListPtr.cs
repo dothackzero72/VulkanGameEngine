@@ -9,13 +9,13 @@ namespace VulkanGameEngineLevelEditor
     {
         private T* _ptr;
         private T*[] _debugList; //Just here to make debugging easier.
-        private uint _count = 0;
-        private uint _capacity = 0;
+        private size_t _count = 0;
+        private size_t _capacity = 0;
         private bool _disposed;
         private bool _ptrUpdatedExternally;
 
-        public int Count => (int)_count;
-        public uint UCount => _count;
+        public size_t Count => _count;
+        public uint UCount => (uint)_count;
         public T* Ptr
         {
             get
@@ -38,7 +38,7 @@ namespace VulkanGameEngineLevelEditor
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
         }
 
-        public ListPtr(uint size)
+        public ListPtr(size_t size)
         {
             if (size <= 0) throw new ArgumentException("Size must be greater than 0.");
 
@@ -53,7 +53,7 @@ namespace VulkanGameEngineLevelEditor
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
         }
 
-        public ListPtr(T* ptr, uint size)
+        public ListPtr(T* ptr, size_t size)
         {
             if (size <= 0) throw new ArgumentException("Size must be greater than 0.");
 
@@ -62,7 +62,7 @@ namespace VulkanGameEngineLevelEditor
             _ptr = (T*)Marshal.AllocHGlobal(sizeof(T) * (int)_capacity);
             _debugList = new T*[_capacity];
 
-            for (uint x = 0; x < size; x++)
+            for (size_t x = 0; x < size; x++)
             {
                 _ptr[x] = ptr[x];
             }
@@ -75,8 +75,8 @@ namespace VulkanGameEngineLevelEditor
         {
             if (list.Count <= 0) return;
 
-            _count = (uint)list.Count;
-            _capacity = (uint)list.Capacity;
+            _count = list.Count;
+            _capacity = list.Capacity;
             _debugList = new T*[_capacity];
             _ptr = (T*)Marshal.AllocHGlobal(sizeof(T) * (int)_capacity);
 
