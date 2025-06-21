@@ -34,7 +34,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public Guid EmissionMapId { get; set; }
         public Guid HeightMapId { get; set; }
 
-        public VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer { get; private set; }
+    //    public VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer { get; private set; }
 
         public MaterialStruct()
         {
@@ -47,12 +47,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             MaterialId = materialId;
             MaterialBufferIndex = 0;
 
-            GCHandle handle = GCHandle.Alloc(MaterialBuffer, GCHandleType.Pinned);
-            void* ptr = handle.AddrOfPinnedObject().ToPointer();
-            MaterialBuffer = new VulkanBuffer<MaterialProperitiesBuffer>(new MaterialProperitiesBuffer(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
-                                                                                                          VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-                                                                                                          VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                                                                                          VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
+            //GCHandle handle = GCHandle.Alloc(MaterialBuffer, GCHandleType.Pinned);
+            //void* ptr = handle.AddrOfPinnedObject().ToPointer();
+            //MaterialBuffer = new VulkanBuffer<MaterialProperitiesBuffer>(new MaterialProperitiesBuffer(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
+            //                                                                                              VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+            //                                                                                              VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+            //                                                                                              VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
 
         }
         
@@ -78,8 +78,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             };
 
-            GCHandle handle = GCHandle.Alloc(MaterialBuffer, GCHandleType.Pinned);
-            void* ptr = handle.AddrOfPinnedObject().ToPointer();
+            //GCHandle handle = GCHandle.Alloc(MaterialBuffer, GCHandleType.Pinned);
+            //void* ptr = handle.AddrOfPinnedObject().ToPointer();
             //MaterialBuffer.UpdateBufferMemory(cRenderer, materialBuffer);
         }
     }

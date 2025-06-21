@@ -48,8 +48,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
             foreach (var materialPath in levelLoader.LoadMaterials)
             {
-                string fullTexturePath = Path.GetFullPath(Path.Combine(levelDirectory, materialPath));
-                TextureSystem.LoadTexture(fullTexturePath);
+                string fullMaterialPath = Path.GetFullPath(Path.Combine(levelDirectory, materialPath));
+                MaterialSystem.LoadMaterial(fullMaterialPath);
             }
 
             ListPtr<Texture> textureList = new ListPtr<Texture>(32);

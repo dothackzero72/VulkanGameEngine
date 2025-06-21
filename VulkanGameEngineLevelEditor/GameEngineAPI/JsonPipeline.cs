@@ -95,12 +95,12 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
                 materialPropertiesCount = materialProperties.Count
             };
 
-            descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(RenderSystem.Device, model, &includes);
-            descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(RenderSystem.Device, model, includes), model.DescriptorSetLayoutCount);
-            descriptorSetList = new ListPtr<VkDescriptorSet>(GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(RenderSystem.Device, descriptorPool, model, descriptorSetLayoutList.Ptr), model.DescriptorSetCount);
-            GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(_device, model, includes, descriptorSetList.Ptr);
-            pipelineLayout = GameEngineImport.DLL_Pipeline_CreatePipelineLayout(_device, model, ConstBufferSize, descriptorSetLayoutList.Ptr);
-            pipeline = GameEngineImport.DLL_Pipeline_CreatePipeline(_device, renderPass, pipelineLayout, pipelineCache, model, renderPassResolution);
+            //descriptorPool = GameEngineImport.DLL_Pipeline_CreateDescriptorPool(RenderSystem.Device, model, &includes);
+            //descriptorSetLayoutList = new ListPtr<VkDescriptorSetLayout>(GameEngineImport.DLL_Pipeline_CreateDescriptorSetLayout(RenderSystem.Device, model, includes), model.DescriptorSetLayoutCount);
+            //descriptorSetList = new ListPtr<VkDescriptorSet>(GameEngineImport.DLL_Pipeline_AllocateDescriptorSets(RenderSystem.Device, descriptorPool, model, descriptorSetLayoutList.Ptr), model.DescriptorSetCount);
+            //GameEngineImport.DLL_Pipeline_UpdateDescriptorSets(_device, model, includes, descriptorSetList.Ptr);
+            //pipelineLayout = GameEngineImport.DLL_Pipeline_CreatePipelineLayout(_device, model, ConstBufferSize, descriptorSetLayoutList.Ptr);
+            //pipeline = GameEngineImport.DLL_Pipeline_CreatePipeline(_device, renderPass, pipelineLayout, pipelineCache, model, renderPassResolution);
         }
 
         public VkCommandBuffer Draw(VkCommandBuffer[] commandBufferList, VkRenderPass renderPass, VkFramebuffer[] frameBufferList, ivec2 renderPassResolution, List<GameObject> gameObjectList, SceneDataBuffer sceneDataBuffer)

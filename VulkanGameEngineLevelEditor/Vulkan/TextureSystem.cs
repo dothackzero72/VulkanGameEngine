@@ -30,9 +30,17 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
             string jsonContent = File.ReadAllText(texturePath);
             TextureJsonLoader textureJson = JsonConvert.DeserializeObject<TextureJsonLoader>(jsonContent);
-            TextureList[textureJson.TextureId] = GameEngineImport.Texture_LoadTexture(RenderSystem.renderer, texturePath);
+            if (TextureList.ContainsKey(textureJson.TextureId))
+            {
+                return (textureJson.TextureId);
+            }
 
+            TextureList[textureJson.TextureId] = Texture_LoadTexture(RenderSystem.renderer, texturePath);
             return textureJson.TextureId;
         }
+
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern Texture Texture_LoadTexture(GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);
+
     }
 }

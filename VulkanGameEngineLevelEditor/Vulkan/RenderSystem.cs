@@ -90,7 +90,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     public unsafe static class RenderSystem
     {
         public static GraphicsRenderer renderer { get; set; }
-        public static size_t SwapChainImageCount  { get; set; } 
+        public static size_t SwapChainImageCount { get; set; }
         public static uint GraphicsFamily { get; set; }
         public static uint PresentFamily { get; set; }
         public static uint ImageIndex { get; set; }
@@ -117,7 +117,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
         public static void CreateVulkanRenderer(IntPtr window, IntPtr renderAreaHandle)
         {
-             renderer  = GameEngineImport.Renderer_RendererSetUp_CS(window.ToPointer());
+            renderer = Renderer_RendererSetUp_CS(window.ToPointer());
 
             AcquireImageSemaphores = new ListPtr<VkSemaphore>(renderer.AcquireImageSemaphores, renderer.SwapChainImageCount);
             CommandIndex = renderer.CommandIndex;
@@ -140,7 +140,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             SwapChainImageViews = new ListPtr<VkImageView>(renderer.SwapChainImageViews, renderer.SwapChainImageCount);
             SwapChainResolution = renderer.SwapChainResolution;
 
-       //     GameEngineImport.Texture_CreateTexture_DLL(RenderSystem.ToStruct(), "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\SparkManTexture.json", VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, VkCreate);
+            //     GameEngineImport.Texture_CreateTexture_DLL(RenderSystem.ToStruct(), "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\SparkManTexture.json", VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, VkCreate);
 
         }
 
@@ -232,11 +232,6 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
         }
 
-        public static uint GetMemoryType(uint typeFilter, VkMemoryPropertyFlagBits properties)
-        {
-            return GameEngineImport.DLL_Tools_GetMemoryType(RenderSystem.PhysicalDevice, typeFilter, properties);
-        }
-
         public static VkCommandBuffer BeginSingleUseCommandBuffer()
         {
             VkCommandBuffer commandBuffer = new VkCommandBuffer();
@@ -292,5 +287,21 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 commandBufferList.Add(commandBuffer);
             }
         }
+
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern GraphicsRenderer Renderer_RendererSetUp_CS(void* windowHandle);
+
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(ref GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string renderPassLoader, ref VkExtent2D renderPassResolution, int ConstBuffer, ref Texture renderedTextureListPtr, ref ulong renderedTextureCount, ref Texture depthTexture);
+
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern void VulkanRenderPass_DestroyRenderPass(GraphicsRenderer renderer, VulkanRenderPass renderPass);
+
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern VulkanPipeline* VulkanPipeline_CreateRenderPipeline(VkDevice device, Guid renderPassId, uint renderPipelineId, RenderPipelineModel model, VkRenderPass renderPass, uint constBufferSize, ivec2 renderPassResolution, GPUIncludes includes, VkPipelineShaderStageCreateInfo* pipelineShaders, size_t pipelineShaderCount);
+
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern void VulkanPipeline_Destroy(VkDevice device, VulkanPipeline vulkanPipelineDLL);
+
     }
 }

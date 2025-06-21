@@ -1,47 +1,50 @@
 ﻿using CSScripting;
 using GlmSharp;
 using Newtonsoft.Json;
+using Silk.NET.SDL;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Vulkan
 {
-    //public struct MaterialStruct
-    //{
-    //    public const int TextureCount = 10;
+    public struct Material
+    {
+        public const int TextureCount = 10;
 
-    //    public int VectorMapKey;
-    //    public Guid materialGuid;
-    //    public uint ShaderMaterialBufferIndex;
-    //    public int MaterialBufferId;
+        public int VectorMapKey { get; set; } = 0;
+        public Guid materialGuid { get; set; } = new Guid();
+        public uint ShaderMaterialBufferIndex { get; set; } = 0;
+        public int MaterialBufferId { get; set; } = 0;
 
-    //    public Guid AlbedoMapId;
-    //    public Guid MetallicRoughnessMapId;
-    //    public Guid MetallicMapId;
-    //    public Guid RoughnessMapId;
-    //    public Guid AmbientOcclusionMapId;
-    //    public Guid NormalMapId;
-    //    public Guid DepthMapId;
-    //    public Guid AlphaMapId;
-    //    public Guid EmissionMapId;
-    //    public Guid HeightMapId;
+        public Guid AlbedoMapId { get; set; } = new Guid();
+        public Guid MetallicRoughnessMapId { get; set; } = new Guid();
+        public Guid MetallicMapId { get; set; } = new Guid();
+        public Guid RoughnessMapId { get; set; } = new Guid();
+        public Guid AmbientOcclusionMapId { get; set; } = new Guid();
+        public Guid NormalMapId { get; set; } = new Guid();
+        public Guid DepthMapId { get; set; } = new Guid();
+        public Guid AlphaMapId { get; set; } = new Guid();
+        public Guid EmissionMapId { get; set; } = new Guid();
+        public Guid HeightMapId { get; set; } = new Guid();
 
-    //    public vec3 Albedo = new vec3(0.0f, 0.35f, 0.45f);
-    //    public vec3 Emission = new vec3(0.0f);
-    //    public float Metallic = 0.0f;
-    //    public float Roughness = 0.0f;
-    //    public float AmbientOcclusion = 1.0f;
-    //    public float Alpha = 1.0f;
+        public vec3 Albedo { get; set; } = new vec3(0.0f, 0.35f, 0.45f);
+        public vec3 Emission { get; set; } = new vec3(0.0f);
+        public float Metallic { get; set; } = 0.0f;
+        public float Roughness { get; set; } = 0.0f;
+        public float AmbientOcclusion { get; set; } = 1.0f;
+        public float Alpha { get; set; } = 1.0f;
 
-    //    public MaterialStruct()
-    //    {
-    //    }
-    //};
+        public Material()
+        {
+        }
+    };
 
     public struct MaterialProperitiesBuffer
     {
@@ -70,8 +73,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
     public static class MaterialSystem
     {
-        private static int NextBufferID = 0;
-        public static Dictionary<Guid, MaterialStruct> MaterialMap { get; private set; } = new Dictionary<Guid, MaterialStruct>();
+        private static uint NextBufferID = 0;
+        public static Dictionary<Guid, Material> MaterialMap { get; private set; } = new Dictionary<Guid, Material>();
 
         public static Guid LoadMaterial(String materialPath)
         {
@@ -81,10 +84,24 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             }
 
             string jsonContent = File.ReadAllText(materialPath);
-            MaterialStruct materialJson = JsonConvert.DeserializeObject<MaterialStruct>(jsonContent);
-        //    MaterialMap[materialJson.MaterialId] = GameEngineImport(RenderSystem.renderer, materialPath);
+            Material materialJson = JsonConvert.DeserializeObject<Material>(jsonContent);
 
-            return new Guid();
+            if(MaterialMap.ContainsKey(materialJson.materialGuid))
+            {
+                return (materialJson.materialGuid);
+            }
+
+            uint NextBufferIndex = ++BufferSystem.NextBufferId;
+            BufferSystem.VulkanBufferMap.Add(NextBufferIndex, new VulkanBuffer());
+            MaterialMap[materialJson.materialGuid] = Material_CreateMaterial(RenderSystem.renderer, NextBufferIndex, BufferSystem.VulkanBufferMap[NextBufferIndex], materialPath);
+            return materialJson.materialGuid;
         }
+
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern Material Material_CreateMaterial(GraphicsRenderer renderer, uint bufferIndex, VulkanBuffer materialBuffer, string jsonString);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern void Material_UpdateBuffer(GraphicsRenderer renderer, VulkanBuffer materialBuffer, MaterialProperitiesBuffer materialProperties);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
+        public static extern void Material_DestroyBuffer(GraphicsRenderer renderer, VulkanBuffer materialBuffer);
     }
 }

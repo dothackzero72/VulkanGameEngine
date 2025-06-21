@@ -33,6 +33,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         Guid EmissionMapId;
         Guid HeightMapId;
 
-        VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;
+     //   VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;
     }
 }

@@ -50,8 +50,8 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
     public static unsafe class BufferSystem
     {
-        private static int NextBufferId = 0;
-        static Dictionary<int, VulkanBuffer> VulkanBufferMap;
+        public static uint NextBufferId = 0;
+        public static Dictionary<uint, VulkanBuffer> VulkanBufferMap;
 
         private static BufferTypeEnum GetBufferType<T>()
         {
@@ -66,30 +66,39 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                 throw new Exception("Buffer Type doesn't exist");
             }
         }
-        public static int CreateVulkanBuffer<T>(GraphicsRenderer renderer, T bufferData, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer)
+
+        public static uint CreateVulkanBuffer<T>(GraphicsRenderer renderer, T bufferData, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer)
         {
 
             BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
             VkDeviceSize bufferElementSize = (ulong)sizeof(T);
             uint bufferElementCount = 1;
 
-            int nextBufferId = ++NextBufferId;
-            VulkanBufferMap[nextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, nextBufferId, static_cast<void*>(&bufferData), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
+            uint nextBufferId = ++NextBufferId;
+            VulkanBufferMap[nextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, nextBufferId, (void*)&bufferData, bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
             return NextBufferId;
         }
 
-        public static int CreateVulkanBuffer<T>(GraphicsRenderer renderer, ListPtr<T> bufferData, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer)
+        public static uint CreateVulkanBuffer<T>(GraphicsRenderer renderer, List<T> bufferData, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer)
         {
-            BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
-            VkDeviceSize bufferElementSize = (ulong)sizeof(T);
-            uint bufferElementCount = bufferData.size();
+            GCHandle handle = GCHandle.Alloc(bufferData.ToArray(), GCHandleType.Pinned);
+            try
+            {
+                BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
+                VkDeviceSize bufferElementSize = (ulong)sizeof(T);
+                uint bufferElementCount = bufferData.UCount();
 
-            int nextBufferId = ++NextBufferId;
-            VulkanBufferMap[nextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, nextBufferId, bufferData.data(), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
-            return NextBufferId;
-        }
+                uint nextBufferId = ++NextBufferId;
+                VulkanBufferMap[nextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, nextBufferId, (void*)handle.AddrOfPinnedObject(), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
+                return NextBufferId;
+            }
+            finally
+            {
+                handle.Free();
+            }
+        }   
 
-        public static void UpdateBufferMemory<T>(GraphicsRenderer renderer, int bufferId, T bufferData)
+        public static void UpdateBufferMemory<T>(GraphicsRenderer renderer, uint bufferId, T bufferData)
         {
             BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
             if (VulkanBufferMap[bufferId].BufferType != bufferTypeEnum)
@@ -103,30 +112,38 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VulkanBuffer_UpdateBufferMemory(renderer, VulkanBufferMap[bufferId], (void*)&bufferData, bufferElementSize, bufferElementCount);
         }
 
-        public static void UpdateBufferMemory<T>(GraphicsRenderer renderer, int bufferId, ListPtr<T> bufferData)
+        public static void UpdateBufferMemory<T>(GraphicsRenderer renderer, uint bufferId, List<T> bufferData)
         {
-            BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
-            if (VulkanBufferMap[bufferId].BufferType != bufferTypeEnum)
+            GCHandle handle = GCHandle.Alloc(bufferData.ToArray(), GCHandleType.Pinned);
+            try
             {
-                // throw std::runtime_error("Buffer type doesn't match");
+                BufferTypeEnum bufferTypeEnum = GetBufferType<T>();
+                if (VulkanBufferMap[bufferId].BufferType != bufferTypeEnum)
+                {
+                    // throw std::runtime_error("Buffer type doesn't match");
+                }
+
+                VkDeviceSize bufferElementSize = (UInt64)sizeof(T);
+                uint bufferElementCount = bufferData.UCount();
+
+                VulkanBuffer_UpdateBufferMemory(renderer, VulkanBufferMap[bufferId], (void*)handle.AddrOfPinnedObject(), bufferElementSize, bufferElementCount);
             }
-
-            VkDeviceSize bufferElementSize = sizeof(T);
-            uint bufferElementCount = bufferData.size();
-
-            VulkanBuffer_UpdateBufferMemory(renderer, VulkanBufferMap[bufferId], bufferData.data(), bufferElementSize, bufferElementCount);
+            finally
+            {
+                handle.Free();
+            }
         }
 
-        public static void VulkanBufferSystem::DestroyBuffer(const GraphicsRenderer& renderer, int vulkanBufferId)
+        public static void DestroyBuffer(GraphicsRenderer renderer, uint vulkanBufferId)
         {
             VulkanBuffer_DestroyBuffer(renderer, VulkanBufferMap[vulkanBufferId]);
         }
 
-        public static void VulkanBufferSystem::DestroyAllBuffers()
+        public static void DestroyAllBuffers()
         {
-            for (auto & buffer : VulkanBufferMap)
+            foreach (var buffer in VulkanBufferMap)
             {
-                VulkanBuffer_DestroyBuffer(renderSystem.renderer, buffer.second);
+                VulkanBuffer_DestroyBuffer(RenderSystem.renderer, buffer.Value);
             }
         }
 

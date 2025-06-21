@@ -25,7 +25,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public List<Sprite> SpriteList = new List<Sprite>();
         public List<SpriteInstanceStruct> SpriteInstanceList = new List<SpriteInstanceStruct>();
-        public VulkanBuffer<SpriteInstanceStruct> SpriteBuffer;
+      //  public VulkanBuffer<SpriteInstanceStruct> SpriteBuffer;
         public Mesh2D SpriteLayerMesh { get; private set; }
         public JsonPipeline<Vertex2D> SpriteRenderPipeline { get; set; }
 
@@ -50,7 +50,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
             var spriteInstanceArray = SpriteInstanceList.ToArray();
             GCHandle spriteInstanceListHandle = GCHandle.Alloc(spriteInstanceArray, GCHandleType.Pinned);
-            SpriteBuffer = new VulkanBuffer<SpriteInstanceStruct>((void*)spriteInstanceListHandle.AddrOfPinnedObject(), SpriteInstanceList.UCount(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
+      //      SpriteBuffer = new VulkanBuffer<SpriteInstanceStruct>((void*)spriteInstanceListHandle.AddrOfPinnedObject(), SpriteInstanceList.UCount(), VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
             spriteInstanceListHandle.Free();
             SortSpritesByLayer(SpriteList);
         }
@@ -68,31 +68,31 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             {
                 var spriteInstanceArray = SpriteInstanceList.ToArray();
                 GCHandle spriteInstanceListHandle = GCHandle.Alloc(spriteInstanceArray, GCHandleType.Pinned);
-                SpriteBuffer.UpdateBufferMemory(spriteInstanceListHandle.AddrOfPinnedObject());
+               // SpriteBuffer.UpdateBufferMemory(spriteInstanceListHandle.AddrOfPinnedObject());
                 spriteInstanceListHandle.Free();
             }
         }
 
         public void Draw(VkCommandBuffer commandBuffer, SceneDataBuffer sceneDataBuffer)
         {
-            GCHandle vertexHandle = GCHandle.Alloc(SpriteLayerMesh.MeshVertexBuffer.Buffer, GCHandleType.Pinned);
-            GCHandle indexHandle = GCHandle.Alloc(SpriteLayerMesh.MeshIndexBuffer.Buffer, GCHandleType.Pinned);
-            GCHandle instanceHandle = GCHandle.Alloc(SpriteBuffer.Buffer, GCHandleType.Pinned);
+          //  GCHandle vertexHandle = GCHandle.Alloc(SpriteLayerMesh.MeshVertexBuffer.Buffer, GCHandleType.Pinned);
+          //  GCHandle indexHandle = GCHandle.Alloc(SpriteLayerMesh.MeshIndexBuffer.Buffer, GCHandleType.Pinned);
+          //  GCHandle instanceHandle = GCHandle.Alloc(SpriteBuffer.Buffer, GCHandleType.Pinned);
 
-            ulong[] offsets = new ulong[] { 0, 0 };
-            GCHandle offsetsHandle = GCHandle.Alloc(offsets, GCHandleType.Pinned);
-            VkFunc.vkCmdPushConstants(commandBuffer, SpriteRenderPipeline.pipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
-            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.pipeline);
-            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.pipelineLayout, 0, (uint)SpriteRenderPipeline.descriptorSetList.UCount, SpriteRenderPipeline.descriptorSetList.Ptr, 0, null);
-            VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, (nint*)vertexHandle.AddrOfPinnedObject(), (ulong*)offsetsHandle.AddrOfPinnedObject());
-            VkFunc.vkCmdBindVertexBuffers(commandBuffer, 1, 1, (nint*)instanceHandle.AddrOfPinnedObject(), (ulong*)offsetsHandle.AddrOfPinnedObject() + 1);
-            VkFunc.vkCmdBindIndexBuffer(commandBuffer, *(nint*)indexHandle.AddrOfPinnedObject(), 0, VkIndexType.VK_INDEX_TYPE_UINT32);
-            VkFunc.vkCmdDrawIndexed(commandBuffer, SpriteIndexList.UCount(), SpriteInstanceList.UCount(), 0, 0, 0);
+            //ulong[] offsets = new ulong[] { 0, 0 };
+            //GCHandle offsetsHandle = GCHandle.Alloc(offsets, GCHandleType.Pinned);
+            //VkFunc.vkCmdPushConstants(commandBuffer, SpriteRenderPipeline.pipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
+            //VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.pipeline);
+            //VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, SpriteRenderPipeline.pipelineLayout, 0, (uint)SpriteRenderPipeline.descriptorSetList.UCount, SpriteRenderPipeline.descriptorSetList.Ptr, 0, null);
+            //VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, (nint*)vertexHandle.AddrOfPinnedObject(), (ulong*)offsetsHandle.AddrOfPinnedObject());
+            //VkFunc.vkCmdBindVertexBuffers(commandBuffer, 1, 1, (nint*)instanceHandle.AddrOfPinnedObject(), (ulong*)offsetsHandle.AddrOfPinnedObject() + 1);
+            //VkFunc.vkCmdBindIndexBuffer(commandBuffer, *(nint*)indexHandle.AddrOfPinnedObject(), 0, VkIndexType.VK_INDEX_TYPE_UINT32);
+            //VkFunc.vkCmdDrawIndexed(commandBuffer, SpriteIndexList.UCount(), SpriteInstanceList.UCount(), 0, 0, 0);
 
-            vertexHandle.Free();
-            indexHandle.Free();
-            instanceHandle.Free();
-            offsetsHandle.Free();
+            //vertexHandle.Free();
+            //indexHandle.Free();
+            //instanceHandle.Free();
+            //offsetsHandle.Free();
         }
 
         public void Destroy()
