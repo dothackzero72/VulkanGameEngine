@@ -453,11 +453,11 @@ const Vector<VkDescriptorImageInfo> RenderSystem::GetTexturePropertiesBuffer(VkG
 
 void RenderSystem::DestroyRenderPass()
 {
-    //for (auto& renderPass : RenderPassMap)
-    //{
-    //    RenderPass_DestroyRenderPass(cRenderer, VulkanRenderPassDLL(renderPass.second));
-    //}
-    //RenderPassMap.clear();
+    for (auto& renderPass : RenderPassMap)
+    {
+        VulkanRenderPass_DestroyRenderPass(renderer, renderPass.second);
+    }
+    RenderPassMap.clear();
 }
 
 void RenderSystem::DestroyRenderPipeline()

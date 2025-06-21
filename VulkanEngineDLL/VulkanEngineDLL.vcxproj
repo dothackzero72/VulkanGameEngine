@@ -152,7 +152,7 @@
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="MemoryLeakDetector.h" />
+    <ClInclude Include="MemorySystem.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Pixel.h" />
@@ -191,7 +191,7 @@
     <ClCompile Include="JsonLoader.cpp" />
     <ClCompile Include="Keyboard.c" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="MemoryLeakDetector.cpp" />
+    <ClCompile Include="MemorySystem.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="SDLWindow.cpp" />

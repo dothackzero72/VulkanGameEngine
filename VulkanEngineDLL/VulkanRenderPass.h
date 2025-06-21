@@ -2,7 +2,7 @@
 #include "Typedef.h"
 #include "JsonStruct.h"
 #include "JsonLoader.h"
-#include "MemoryLeakDetector.h"
+#include "MemorySystem.h"
 #include "CoreVulkanRenderer.h"
 #include "VulkanPipeline.h"
 #include "Texture.h"

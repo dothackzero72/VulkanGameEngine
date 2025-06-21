@@ -17,8 +17,6 @@ VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(GraphicsRenderer& rende
         .SampleCount = VK_SAMPLE_COUNT_1_BIT,
         .RenderArea = renderPassLoader.RenderArea.RenderArea,
         .RenderPass = renderPass,
-        .FrameBufferList = memorySystem.AddPtrBuffer<VkFramebuffer>(frameBufferList.size(), _NORMAL_BLOCK, __FILE__, __LINE__),
-        .ClearValueList = memorySystem.AddPtrBuffer<VkClearValue>(clearValueList.size(), _NORMAL_BLOCK, __FILE__, __LINE__),
         .FrameBufferCount = frameBufferList.size(),
         .ClearValueCount = clearValueList.size(),
         .CommandBuffer = commandBuffer,
@@ -28,14 +26,14 @@ VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(GraphicsRenderer& rende
     vulkanRenderPassPtr->FrameBufferList = nullptr;
     if (vulkanRenderPassPtr->FrameBufferCount > 0)
     {
-        vulkanRenderPassPtr->FrameBufferList = memorySystem.AddPtrBuffer<VkFramebuffer>(frameBufferList.size(), _NORMAL_BLOCK, __FILE__, __LINE__);
+        vulkanRenderPassPtr->FrameBufferList = memorySystem.AddPtrBuffer<VkFramebuffer>(frameBufferList.size(), __FILE__, __LINE__, __func__);
         std::memcpy(vulkanRenderPassPtr->FrameBufferList, frameBufferList.data(), vulkanRenderPassPtr->FrameBufferCount * sizeof(VkFramebuffer));
     }
 
     vulkanRenderPassPtr->ClearValueList = nullptr;
     if (vulkanRenderPassPtr->ClearValueCount > 0)
     {
-        vulkanRenderPassPtr->ClearValueList = memorySystem.AddPtrBuffer<VkClearValue>(clearValueList.size(), _NORMAL_BLOCK, __FILE__, __LINE__);
+        vulkanRenderPassPtr->ClearValueList = memorySystem.AddPtrBuffer<VkClearValue>(clearValueList.size(), __FILE__, __LINE__, __func__);
         std::memcpy(vulkanRenderPassPtr->ClearValueList, clearValueList.data(), vulkanRenderPassPtr->ClearValueCount * sizeof(VkClearValue));
     }
 

@@ -123,7 +123,7 @@
     <ClInclude Include="from_json.h">
       <Filter>Header Files\Json</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryLeakDetector.h">
+    <ClInclude Include="MemorySystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -227,7 +227,7 @@
     <ClCompile Include="from_json.cpp">
       <Filter>Source Files\Json</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryLeakDetector.cpp">
+    <ClCompile Include="MemorySystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

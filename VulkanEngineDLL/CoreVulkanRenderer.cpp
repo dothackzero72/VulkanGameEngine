@@ -9,9 +9,9 @@
 GraphicsRenderer Renderer_RendererSetUp(void* windowHandle)
 {
     GraphicsRenderer renderer;
-    renderer.InFlightFences = memorySystem.AddPtrBuffer<VkFence>(MAX_FRAMES_IN_FLIGHT, _NORMAL_BLOCK, __FILE__, __LINE__);
-    renderer.AcquireImageSemaphores = memorySystem.AddPtrBuffer<VkSemaphore>(MAX_FRAMES_IN_FLIGHT, _NORMAL_BLOCK, __FILE__, __LINE__);
-    renderer.PresentImageSemaphores = memorySystem.AddPtrBuffer<VkSemaphore>(MAX_FRAMES_IN_FLIGHT, _NORMAL_BLOCK, __FILE__, __LINE__);
+    renderer.InFlightFences = memorySystem.AddPtrBuffer<VkFence>(MAX_FRAMES_IN_FLIGHT, __FILE__, __LINE__, __func__);
+    renderer.AcquireImageSemaphores = memorySystem.AddPtrBuffer<VkSemaphore>(MAX_FRAMES_IN_FLIGHT, __FILE__, __LINE__, __func__);
+    renderer.PresentImageSemaphores = memorySystem.AddPtrBuffer<VkSemaphore>(MAX_FRAMES_IN_FLIGHT, __FILE__, __LINE__, __func__);
 
     renderer.RebuildRendererFlag = false;
     VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
@@ -808,7 +808,7 @@ VkImage* SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChai
 {
     VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, &swapChainImageCount, nullptr));
 
-    VkImage* swapChainImageList = memorySystem.AddPtrBuffer<VkImage>(swapChainImageCount, _NORMAL_BLOCK, __FILE__, __LINE__);
+    VkImage* swapChainImageList = memorySystem.AddPtrBuffer<VkImage>(swapChainImageCount, __FILE__, __LINE__, __func__);
     VULKAN_RESULT(vkGetSwapchainImagesKHR(device, swapChain, &swapChainImageCount, swapChainImageList));
 
     return swapChainImageList;
@@ -816,7 +816,7 @@ VkImage* SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChai
 
 VkImageView* SwapChain_SetUpSwapChainImageViews(VkDevice device, VkImage* swapChainImageList, size_t swapChainImageCount, VkSurfaceFormatKHR swapChainImageFormat)
 {
-    VkImageView* imageViews = memorySystem.AddPtrBuffer<VkImageView>(swapChainImageCount, _NORMAL_BLOCK, __FILE__, __LINE__);
+    VkImageView* imageViews = memorySystem.AddPtrBuffer<VkImageView>(swapChainImageCount, __FILE__, __LINE__, __func__);
     for (uint32_t x = 0; x < swapChainImageCount; x++)
     {
         VkImageViewCreateInfo swapChainViewInfo =

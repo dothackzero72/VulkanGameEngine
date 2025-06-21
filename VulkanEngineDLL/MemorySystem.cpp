@@ -1,24 +1,20 @@
-#include "MemoryLeakDetector.h"
+#include "MemorySystem.h"
 #include <iostream>
 
 MemorySystem memorySystem = MemorySystem();
 
 extern "C" 
 {
-    MemoryLeakPtr MemoryLeakPtr_NewPtr(size_t memorySize, size_t elementCount, int block, const char* file, int line, const char* danglingPtrMessage)
+    MemoryLeakPtr MemoryLeakPtr_NewPtr(size_t memorySize, size_t elementCount, const char* file, int line, const char* func, const char* notes)
     {
         void* memory = nullptr;
         try
         {
-#ifdef _DEBUG
-            memory = new(_NORMAL_BLOCK, __FILE__, __LINE__) byte[memorySize];
-#else
-            memory = new byte[memorySize];
-#endif
+            memory = new byte[memorySize * elementCount];
         }
         catch (const std::bad_alloc&)
         {
-            fprintf(stderr, "Allocation failed: %s\n", danglingPtrMessage ? danglingPtrMessage : "Unknown");
+            fprintf(stderr, "Allocation failed: %s\n", notes ? notes : "Unknown");
             return MemoryLeakPtr
             {
                 .PtrAddress = nullptr,
@@ -33,25 +29,13 @@ extern "C"
             .PtrAddress = memory,
             .PtrElements = elementCount,
             .isArray = elementCount > 1,
-            .DanglingPtrMessage = danglingPtrMessage ? danglingPtrMessage : ""
+            .DanglingPtrMessage = "Ptr failed to delete at File: " + String(file) + " Line: " + std::to_string(line) + " Function: " + String(func) + " Notes: " + notes
         };
     }
 
-    void MemoryLeakPtr_DeletePtr(MemoryLeakPtr* memoryLeakPtr)
+    void MemoryLeakPtr_DeletePtr(void* memoryLeakPtr)
     {
-        if (memoryLeakPtr && memoryLeakPtr->PtrAddress)
-        {
-            if (memoryLeakPtr->isArray && 
-                memoryLeakPtr->PtrElements > 1)
-            {
-                delete[] static_cast<void*>(memoryLeakPtr->PtrAddress);
-            }
-            else
-            {
-                delete static_cast<void*>(memoryLeakPtr->PtrAddress);
-            }
-            memoryLeakPtr->PtrAddress = nullptr;
-        }
+        delete[] static_cast<byte*>(memoryLeakPtr);
     }
 
     void MemoryLeakPtr_DanglingPtrMessage(MemoryLeakPtr* ptr) 
@@ -66,9 +50,9 @@ extern "C"
                 WORD originalAttributes = consoleInfo.wAttributes;
 
                 SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-                fprintf(stdout, "ERROR: ");
+                std::cout << "Error: ";
                 SetConsoleTextAttribute(hConsole, originalAttributes);
-                fprintf(stdout, "%s\n", ptr->DanglingPtrMessage);
+                std::cout << ptr->DanglingPtrMessage << std::endl;
             }
         }
     }
