@@ -3,6 +3,7 @@
 #include "TextureSystem.h"
 #include "GameObjectSystem.h"
 #include "MeshSystem.h"
+#include "VRAM.h"
 
 LevelSystem levelSystem = LevelSystem();
 
@@ -45,9 +46,12 @@ void LevelSystem::LoadLevel(const String& levelPath)
         vec2   positionOverride = vec2(json["GameObjectList"][x]["GameObjectPositionOverride"][0], json["GameObjectList"][x]["GameObjectPositionOverride"][1]);
         gameObjectSystem.CreateGameObject(objectJson, positionOverride);
     }
-    LoadLevelLayout(json["LoadLevelLayout"]);
-
-    Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, levelLayout.LevelMapList);
+    {
+        LoadLevelLayout(json["LoadLevelLayout"]);
+    }
+    {
+        Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, levelLayout.LevelMapList);
+    }
 
     VkGuid dummyGuid = VkGuid();
     nlohmann::json json2 = Json::ReadJson("../RenderPass/LevelShader2DRenderPass.json");
@@ -124,38 +128,24 @@ VkGuid LevelSystem::LoadSpriteVRAM(const String& spritePath)
     const Material& material = materialSystem.FindMaterial(materialId);
     const Texture& texture = textureSystem.FindTexture(material.AlbedoMapId);
 
-    SpriteVram sprite = SpriteVram
+    Animation2D* animationListPtr = nullptr;
+    vec2* animationFrameListPtr = nullptr;
+    size_t animationListCount;
+    size_t animationFrameCount;
+
+    VramSpriteMap[vramId] = VRAM_LoadSpriteVRAM(spritePath.c_str(), material, texture);
+    VRAM_LoadSpriteAnimation(spritePath.c_str(), animationListPtr, animationFrameListPtr, animationListCount, animationFrameCount);
+
+    Vector<Animation2D> animation2DList = Vector<Animation2D>(animationListPtr, animationListPtr + animationListCount);
+    Vector<vec2> animationFrameList = Vector<vec2>(animationFrameListPtr, animationFrameListPtr + animationFrameCount);
+
+    for (size_t x = 0; x < animation2DList.size(); x++)
     {
-        .VramSpriteID = vramId,
-        .SpriteMaterialID = materialId,
-        .SpriteLayer = json["SpriteLayer"],
-        .SpriteColor = vec4{ json["SpriteColor"][0], json["SpriteColor"][1], json["SpriteColor"][2], json["SpriteColor"][3] },
-        .SpritePixelSize = ivec2{ json["SpritePixelSize"][0], json["SpritePixelSize"][1] },
-        .SpriteScale = ivec2{ json["SpriteScale"][0], json["SpriteScale"][1] },
-        .SpriteCells = ivec2(texture.width / sprite.SpritePixelSize.x, texture.height / sprite.SpritePixelSize.y),
-        .SpriteUVSize = vec2(1.0f / (float)sprite.SpriteCells.x, 1.0f / (float)sprite.SpriteCells.y),
-        .SpriteSize = vec2(sprite.SpritePixelSize.x * sprite.SpriteScale.x, sprite.SpritePixelSize.y * sprite.SpriteScale.y),
-    };
-
-    for (int x = 0; x < json["AnimationList"].size(); x++)
-    {
-        Animation2D animation = Animation2D
-        {
-            .AnimationId = json["AnimationList"][x]["AnimationId"],
-            .FrameHoldTime = json["AnimationList"][x]["FrameHoldTime"]
-        };
-
-        AnimationFrames FrameList;
-        for (int y = 0; y < json["AnimationList"][x]["FrameList"].size(); y++)
-        {
-            FrameList.emplace_back(ivec2{ json["AnimationList"][x]["FrameList"][y][0], json["AnimationList"][x]["FrameList"][y][1] });
-        }
-
-        AnimationMap[animation.AnimationId] = animation;
-        AnimationFrameListMap[vramId].emplace_back(FrameList);
+        AnimationMap[animation2DList[x].AnimationId] = animation2DList[x];
     }
+    AnimationFrameListMap[vramId].emplace_back(animationFrameList);
 
-    VramSpriteMap[vramId] = sprite;
+    VRAM_DeleteSpriteAnimation(animationListPtr, animationFrameListPtr);
     return vramId;
 }
 

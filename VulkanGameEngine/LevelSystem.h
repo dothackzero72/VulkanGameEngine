@@ -7,6 +7,7 @@
 #include "RenderSystem.h"
 #include "SpriteVRAM.h"
 #include "OrthographicCamera2D.h"
+#include <VRAM.h>
 
 typedef Vector<vec2> AnimationFrames;
 

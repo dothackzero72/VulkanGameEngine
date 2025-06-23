@@ -11,6 +11,7 @@
 
 enum BufferTypeEnum
 {
+	BufferType_Undefined,
 	BufferType_UInt,
 	BufferType_Mat4,
 	BufferType_MaterialProperitiesBuffer,

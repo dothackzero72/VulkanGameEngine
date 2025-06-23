@@ -4,7 +4,7 @@ using VulkanGameEngineLevelEditor.Vulkan;
 
 public struct Texture
 {
-    public Guid textureId { get; set; }
+    public Guid textureId { get; set; } = Guid.Empty;
     public int width { get; set; } = 1;
     public int height { get; set; } = 1;
     public int depth { get; set; } = 1;

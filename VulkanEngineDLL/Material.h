@@ -9,8 +9,6 @@
 
 struct Material
 {
-	constexpr static int TextureCount = 10;
-
 	int VectorMapKey;
 	VkGuid materialGuid;
 	uint ShaderMaterialBufferIndex;
@@ -64,6 +62,12 @@ struct Vector2Traits<Material>
 	static int GetVectorMapKey(const Material& obj) { return obj.VectorMapKey; }
 };
 
-DLL_EXPORT Material Material_CreateMaterial(const GraphicsRenderer& renderer, int bufferIndex, VulkanBuffer& materialBuffer, const char* jsonString);
-DLL_EXPORT void Material_UpdateBuffer(const GraphicsRenderer& renderer, VulkanBuffer& materialBuffer, MaterialProperitiesBuffer& materialProperties);
-DLL_EXPORT void Material_DestroyBuffer(const GraphicsRenderer& renderer, VulkanBuffer& materialBuffer);
+#ifdef __cplusplus
+extern "C" {
+#endif
+	DLL_EXPORT Material Material_CreateMaterial(const GraphicsRenderer& renderer, int bufferIndex, VulkanBuffer& materialBuffer, const char* jsonString);
+	DLL_EXPORT void Material_UpdateBuffer(const GraphicsRenderer& renderer, VulkanBuffer& materialBuffer, MaterialProperitiesBuffer& materialProperties);
+	DLL_EXPORT void Material_DestroyBuffer(const GraphicsRenderer& renderer, VulkanBuffer& materialBuffer);
+#ifdef __cplusplus
+}
+#endif

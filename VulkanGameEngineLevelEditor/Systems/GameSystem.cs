@@ -8,8 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.Vulkan;
 
-namespace VulkanGameEngineLevelEditor.Vulkan
+namespace VulkanGameEngineLevelEditor.Systems
 {
 
     public unsafe struct VulkanRenderPass
@@ -41,7 +42,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 
     public static class GameSystem
     {
-        public static OrthographicCamera2D OrthographicCamera { get; set; }
+     //   public static OrthographicCamera2D OrthographicCamera { get; set; }
         public static Guid TileSetId { get; set; }
         public static Guid LevelRendererId { get; set; }
         public static Guid SpriteRenderPass2DId { get; set; }
@@ -58,17 +59,17 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             TextureStruct* depthTexture
         );*/
 
-        public static unsafe void StartUp(IntPtr window, IntPtr renderAreaHandle)
+        public static unsafe void StartUp(VkQueue window, VkQueue renderAreaHandle)
         {
             RenderSystem.CreateVulkanRenderer(window, renderAreaHandle);
             LevelSystem.LoadLevel("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Levels/TestLevel.json");
         }
 
-        public static void LoadLevel(String levelPath)
+        public static void LoadLevel(string levelPath)
         {
-            var res = new vec2((float)RenderSystem.SwapChainResolution.width, (float)RenderSystem.SwapChainResolution.height);
+            var res = new vec2(RenderSystem.SwapChainResolution.width, RenderSystem.SwapChainResolution.height);
             var pos = new vec2(0.0f, 0.0f);
-            OrthographicCamera = new OrthographicCamera2D(res, pos);
+         //   OrthographicCamera = new OrthographicCamera2D(res, pos);
 
             string jsonContent = File.ReadAllText(levelPath);
             LevelLoader levelLoader = JsonConvert.DeserializeObject<LevelLoader>(levelPath);

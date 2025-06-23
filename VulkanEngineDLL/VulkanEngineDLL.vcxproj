@@ -161,6 +161,7 @@
     <ClInclude Include="Typedef.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="VkGuid.h" />
+    <ClInclude Include="VRAM.h" />
     <ClInclude Include="VulkanBuffer.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanPipeline.h" />
@@ -196,6 +197,7 @@
     <ClCompile Include="SDLWindow.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Vector.cpp" />
+    <ClCompile Include="VRAM.cpp" />
     <ClCompile Include="VulkanBuffer.cpp" />
     <ClCompile Include="VulkanError.c" />
     <ClCompile Include="VulkanPipeline.cpp" />

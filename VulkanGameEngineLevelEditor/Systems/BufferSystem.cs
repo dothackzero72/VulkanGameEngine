@@ -10,8 +10,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.Vulkan;
 
-namespace VulkanGameEngineLevelEditor.Vulkan
+namespace VulkanGameEngineLevelEditor.Systems
 {
     public enum BufferTypeEnum
     {
@@ -37,7 +38,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public VkDeviceSize BufferSize { get; set; } = 0;
         public VkBufferUsageFlagBits BufferUsage { get; set; } = 0;
         public VkMemoryPropertyFlagBits BufferProperties { get; set; } = 0;
-        public UInt64 BufferDeviceAddress { get; set; } = 0;
+        public VkDeviceSize BufferDeviceAddress { get; set; } = 0;
         public VkAccelerationStructureKHR BufferHandle { get; set; } = VulkanConst.VK_NULL_HANDLE;
         public BufferTypeEnum BufferType { get; set; } = BufferTypeEnum.BufferType_Undefined;
         public void* BufferData { get; set; } = null;
@@ -51,7 +52,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
     public static unsafe class BufferSystem
     {
         public static uint NextBufferId = 0;
-        public static Dictionary<uint, VulkanBuffer> VulkanBufferMap;
+        public static Dictionary<uint, VulkanBuffer> VulkanBufferMap = new Dictionary<uint, VulkanBuffer>();
 
         private static BufferTypeEnum GetBufferType<T>()
         {
@@ -75,7 +76,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             uint bufferElementCount = 1;
 
             uint nextBufferId = ++NextBufferId;
-            VulkanBufferMap[nextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, nextBufferId, (void*)&bufferData, bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
+            VulkanBufferMap[nextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, nextBufferId, &bufferData, bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
             return NextBufferId;
         }
 
@@ -96,7 +97,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             {
                 handle.Free();
             }
-        }   
+        }
 
         public static void UpdateBufferMemory<T>(GraphicsRenderer renderer, uint bufferId, T bufferData)
         {
@@ -109,7 +110,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             VkDeviceSize bufferElementSize = (ulong)sizeof(T);
             uint bufferElementCount = 1;
 
-            VulkanBuffer_UpdateBufferMemory(renderer, VulkanBufferMap[bufferId], (void*)&bufferData, bufferElementSize, bufferElementCount);
+            VulkanBuffer_UpdateBufferMemory(renderer, VulkanBufferMap[bufferId], &bufferData, bufferElementSize, bufferElementCount);
         }
 
         public static void UpdateBufferMemory<T>(GraphicsRenderer renderer, uint bufferId, List<T> bufferData)
@@ -123,7 +124,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
                     // throw std::runtime_error("Buffer type doesn't match");
                 }
 
-                VkDeviceSize bufferElementSize = (UInt64)sizeof(T);
+                VkDeviceSize bufferElementSize = (VkDeviceSize)sizeof(T);
                 uint bufferElementCount = bufferData.UCount();
 
                 VulkanBuffer_UpdateBufferMemory(renderer, VulkanBufferMap[bufferId], (void*)handle.AddrOfPinnedObject(), bufferElementSize, bufferElementCount);

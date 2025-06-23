@@ -8,11 +8,6 @@ namespace VulkanGameEngineLevelEditor
         public static IServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection();
-            services.AddAutoMapper(cfg =>
-            {
-                cfg.AddProfile<MappingProfile>();
-            });
-
             return services.BuildServiceProvider();
         }
     }

@@ -328,34 +328,34 @@ namespace VulkanGameEngineLevelEditor.Models
             };
         }
 
-        public VkSamplerCreateInfoDLL ToDLL()
-        {
-            fixed (byte* namePtr = System.Text.Encoding.UTF8.GetBytes(_name + "\0"))
-            {
-                return new VkSamplerCreateInfoDLL
-                {
-                    Name = (IntPtr)namePtr,
-                    _addressModeU = addressModeU,
-                    _addressModeV = addressModeV,
-                    _addressModeW = addressModeW,
-                    _pNext = null,
-                    _anisotropyEnable = anisotropyEnable,
-                    _maxAnisotropy = maxAnisotropy,
-                    _compareEnable = _compareEnable,
-                    _minFilter = _minFilter,
-                    _magFilter = _magFilter,
-                    _borderColor = _borderColor,
-                    _unnormalizedCoordinates = _unnormalizedCoordinates,
-                    _compareOp = _compareOp,
-                    _flags = _flags,
-                    _maxLod = _maxLod,
-                    _minLod = _minLod,
-                    _mipLodBias = _mipLodBias,
-                    _mipmapMode = _mipmapMode,
-                    _sType = _sType,
-                };
-            }
-        }
+        //public VkSamplerCreateInfoDLL ToDLL()
+        //{
+        //    fixed (byte* namePtr = System.Text.Encoding.UTF8.GetBytes(_name + "\0"))
+        //    {
+        //        return new VkSamplerCreateInfoDLL
+        //        {
+        //            Name = (IntPtr)namePtr,
+        //            _addressModeU = addressModeU,
+        //            _addressModeV = addressModeV,
+        //            _addressModeW = addressModeW,
+        //            _pNext = null,
+        //            _anisotropyEnable = anisotropyEnable,
+        //            _maxAnisotropy = maxAnisotropy,
+        //            _compareEnable = _compareEnable,
+        //            _minFilter = _minFilter,
+        //            _magFilter = _magFilter,
+        //            _borderColor = _borderColor,
+        //            _unnormalizedCoordinates = _unnormalizedCoordinates,
+        //            _compareOp = _compareOp,
+        //            _flags = _flags,
+        //            _maxLod = _maxLod,
+        //            _minLod = _minLod,
+        //            _mipLodBias = _mipLodBias,
+        //            _mipmapMode = _mipmapMode,
+        //            _sType = _sType,
+        //        };
+        //    }
+        //}
 
         public void LoadJsonComponent(string jsonPath)
         {

@@ -123,6 +123,9 @@
     <ClInclude Include="MemorySystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VRAM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VulkanError.c">
@@ -222,6 +225,9 @@
       <Filter>Source Files\Json</Filter>
     </ClCompile>
     <ClCompile Include="MemorySystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VRAM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

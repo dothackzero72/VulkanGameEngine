@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 
-namespace VulkanGameEngineLevelEditor.Vulkan
+namespace VulkanGameEngineLevelEditor.Systems
 {
     public static class TextureSystem
     {
@@ -21,7 +21,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static Dictionary<Guid, Vector<Texture>> RenderedTextureList { get; }
         public static Dictionary<uint, Vector<Texture>> InputTextureList { get; }
 
-        public static Guid LoadTexture(String texturePath)
+        public static Guid LoadTexture(string texturePath)
         {
             if (texturePath.IsEmpty())
             {
@@ -32,7 +32,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             TextureJsonLoader textureJson = JsonConvert.DeserializeObject<TextureJsonLoader>(jsonContent);
             if (TextureList.ContainsKey(textureJson.TextureId))
             {
-                return (textureJson.TextureId);
+                return textureJson.TextureId;
             }
 
             TextureList[textureJson.TextureId] = Texture_LoadTexture(RenderSystem.renderer, texturePath);

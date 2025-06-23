@@ -12,14 +12,12 @@ using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 
-namespace VulkanGameEngineLevelEditor.Vulkan
+namespace VulkanGameEngineLevelEditor.Systems
 {
     public struct Material
     {
         public const int TextureCount = 10;
-
-        public int VectorMapKey { get; set; } = 0;
-        public Guid materialGuid { get; set; } = new Guid();
+        public Guid MaterialId { get; set; } = new Guid();
         public uint ShaderMaterialBufferIndex { get; set; } = 0;
         public int MaterialBufferId { get; set; } = 0;
 
@@ -71,12 +69,12 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         }
     };
 
-    public static class MaterialSystem
+    public static unsafe class MaterialSystem
     {
         private static uint NextBufferID = 0;
         public static Dictionary<Guid, Material> MaterialMap { get; private set; } = new Dictionary<Guid, Material>();
 
-        public static Guid LoadMaterial(String materialPath)
+        public static Guid LoadMaterial(string materialPath)
         {
             if (materialPath.IsEmpty())
             {
@@ -86,19 +84,21 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             string jsonContent = File.ReadAllText(materialPath);
             Material materialJson = JsonConvert.DeserializeObject<Material>(jsonContent);
 
-            if(MaterialMap.ContainsKey(materialJson.materialGuid))
+            if (MaterialMap.ContainsKey(materialJson.MaterialId))
             {
-                return (materialJson.materialGuid);
+                return materialJson.MaterialId;
             }
 
+            GraphicsRenderer renderer = RenderSystem.renderer;
             uint NextBufferIndex = ++BufferSystem.NextBufferId;
-            BufferSystem.VulkanBufferMap.Add(NextBufferIndex, new VulkanBuffer());
-            MaterialMap[materialJson.materialGuid] = Material_CreateMaterial(RenderSystem.renderer, NextBufferIndex, BufferSystem.VulkanBufferMap[NextBufferIndex], materialPath);
-            return materialJson.materialGuid;
+            MaterialMap[materialJson.MaterialId] = Material_CreateMaterial(ref renderer, NextBufferIndex, out VulkanBuffer buffer, materialPath);
+            BufferSystem.VulkanBufferMap[NextBufferIndex] = buffer;
+
+            return materialJson.MaterialId;
         }
 
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Material Material_CreateMaterial(GraphicsRenderer renderer, uint bufferIndex, VulkanBuffer materialBuffer, string jsonString);
+        public static extern Material Material_CreateMaterial(ref GraphicsRenderer renderer, uint bufferIndex, out VulkanBuffer materialBuffer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
         public static extern void Material_UpdateBuffer(GraphicsRenderer renderer, VulkanBuffer materialBuffer, MaterialProperitiesBuffer materialProperties);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]

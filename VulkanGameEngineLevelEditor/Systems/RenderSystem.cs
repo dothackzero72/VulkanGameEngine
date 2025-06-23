@@ -13,8 +13,9 @@ using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.Vulkan;
 
-namespace VulkanGameEngineLevelEditor.Vulkan
+namespace VulkanGameEngineLevelEditor.Systems
 {
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public struct TextureJsonLoader
@@ -115,7 +116,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static Dictionary<Guid, VulkanRenderPassStruct> RenderPassList { get; set; }
         public static bool RebuildRendererFlag { get; set; }
 
-        public static void CreateVulkanRenderer(IntPtr window, IntPtr renderAreaHandle)
+        public static void CreateVulkanRenderer(VkQueue window, VkQueue renderAreaHandle)
         {
             renderer = Renderer_RendererSetUp_CS(window.ToPointer());
 

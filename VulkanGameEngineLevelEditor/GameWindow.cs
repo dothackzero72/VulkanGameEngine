@@ -8,15 +8,12 @@ using System.Threading;
 using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
-using VulkanGameEngineLevelEditor.Vulkan;
+using VulkanGameEngineLevelEditor.Systems;
 
 namespace VulkanGameEngineLevelEditor
 {
     public partial class GameWindow : Form
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IMapper _mapper;
-
         private Vk vk = Vk.GetApi();
         private static Scene scene;
         private volatile bool running;
@@ -32,9 +29,6 @@ namespace VulkanGameEngineLevelEditor
 
         public GameWindow()
         {
-            _serviceProvider = ServiceConfig.ConfigureServices();
-            _mapper = _serviceProvider.GetRequiredService<IMapper>();
-
             InitializeComponent();
             AllocConsole();
 

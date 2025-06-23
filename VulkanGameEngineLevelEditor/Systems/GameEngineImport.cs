@@ -10,7 +10,7 @@ using VulkanGameEngineLevelEditor.Models;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace VulkanGameEngineLevelEditor.Vulkan
+namespace VulkanGameEngineLevelEditor.Systems
 {
     public unsafe class GameEngineImport
     {

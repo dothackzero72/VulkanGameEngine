@@ -108,4 +108,7 @@
       <HintPath>..\x64\Debug\Coral.Managed.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\" />
+  </ItemGroup>
 </Project>

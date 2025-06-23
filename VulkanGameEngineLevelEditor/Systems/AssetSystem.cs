@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 
-namespace VulkanGameEngineLevelEditor.Vulkan
+namespace VulkanGameEngineLevelEditor.Systems
 {
     public unsafe class MaterialStruct
     {
@@ -34,7 +34,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public Guid EmissionMapId { get; set; }
         public Guid HeightMapId { get; set; }
 
-    //    public VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer { get; private set; }
+        //    public VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer { get; private set; }
 
         public MaterialStruct()
         {
@@ -55,7 +55,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
             //                                                                                              VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, false);
 
         }
-        
+
         public void UpdateMaterialBufferIndex(uint bufferIndex)
         {
             MaterialBufferIndex = bufferIndex;
@@ -65,16 +65,16 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         {
             MaterialProperitiesBuffer materialBuffer = new MaterialProperitiesBuffer
             {
-		        AlbedoMapId = AlbedoMapId != new Guid() ? TextureSystem.TextureList[AlbedoMapId].textureBufferIndex : 0,
-		        MetallicRoughnessMapId = MetallicRoughnessMapId != new Guid() ? TextureSystem.TextureList[MetallicRoughnessMapId].textureBufferIndex : 0,
-		        MetallicMapId = MetallicMapId != new Guid() ? TextureSystem.TextureList[MetallicMapId].textureBufferIndex : 0,
-		        RoughnessMapId = RoughnessMapId != new Guid() ? TextureSystem.TextureList[RoughnessMapId].textureBufferIndex : 0,
-		        AmbientOcclusionMapId = AmbientOcclusionMapId != new Guid() ? TextureSystem.TextureList[AmbientOcclusionMapId].textureBufferIndex : 0,
-		        NormalMapId = NormalMapId != new Guid() ? TextureSystem.TextureList[NormalMapId].textureBufferIndex : 0,
-		        DepthMapId = DepthMapId != new Guid() ? TextureSystem.TextureList[DepthMapId].textureBufferIndex : 0,
-		        AlphaMapId = AlphaMapId != new Guid() ? TextureSystem.TextureList[AlphaMapId].textureBufferIndex : 0,
-		        EmissionMapId = EmissionMapId != new Guid() ? TextureSystem.TextureList[EmissionMapId].textureBufferIndex : 0,
-		        HeightMapId = HeightMapId != new Guid() ? TextureSystem.TextureList[HeightMapId].textureBufferIndex : 0
+                AlbedoMapId = AlbedoMapId != new Guid() ? TextureSystem.TextureList[AlbedoMapId].textureBufferIndex : 0,
+                MetallicRoughnessMapId = MetallicRoughnessMapId != new Guid() ? TextureSystem.TextureList[MetallicRoughnessMapId].textureBufferIndex : 0,
+                MetallicMapId = MetallicMapId != new Guid() ? TextureSystem.TextureList[MetallicMapId].textureBufferIndex : 0,
+                RoughnessMapId = RoughnessMapId != new Guid() ? TextureSystem.TextureList[RoughnessMapId].textureBufferIndex : 0,
+                AmbientOcclusionMapId = AmbientOcclusionMapId != new Guid() ? TextureSystem.TextureList[AmbientOcclusionMapId].textureBufferIndex : 0,
+                NormalMapId = NormalMapId != new Guid() ? TextureSystem.TextureList[NormalMapId].textureBufferIndex : 0,
+                DepthMapId = DepthMapId != new Guid() ? TextureSystem.TextureList[DepthMapId].textureBufferIndex : 0,
+                AlphaMapId = AlphaMapId != new Guid() ? TextureSystem.TextureList[AlphaMapId].textureBufferIndex : 0,
+                EmissionMapId = EmissionMapId != new Guid() ? TextureSystem.TextureList[EmissionMapId].textureBufferIndex : 0,
+                HeightMapId = HeightMapId != new Guid() ? TextureSystem.TextureList[HeightMapId].textureBufferIndex : 0
 
             };
 
