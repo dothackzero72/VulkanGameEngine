@@ -25,6 +25,12 @@ struct Animation2D
 };
 typedef Vector<vec2> AnimationFrames;
 
-DLL_EXPORT SpriteVram VRAM_LoadSpriteVRAM(const char* spritePath, const Material& material, const Texture& texture);
-DLL_EXPORT void VRAM_LoadSpriteAnimation(const char* spritePath, Animation2D*& animationListPtr, vec2*& animationFrameListPtr, size_t& animationListCount, size_t& animationFrameCount);
-DLL_EXPORT void VRAM_DeleteSpriteAnimation(Animation2D* animationListPtr, vec2* animationFrameListPtr);
+#ifdef __cplusplus
+extern "C" {
+#endif
+    DLL_EXPORT SpriteVram VRAM_LoadSpriteVRAM(const char* spritePath, const Material& material, const Texture& texture);
+    DLL_EXPORT void VRAM_LoadSpriteAnimation(const char* spritePath, Animation2D* animationListPtr, vec2* animationFrameListPtr, size_t& animationListCount, size_t& animationFrameCount);
+    DLL_EXPORT void VRAM_DeleteSpriteAnimation(Animation2D* animationListPtr, vec2* animationFrameListPtr);
+#ifdef __cplusplus
+}
+#endif

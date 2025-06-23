@@ -16,7 +16,7 @@ namespace VulkanGameEngineLevelEditor.Systems
 {
     public struct Material
     {
-        public const int TextureCount = 10;
+        public int VectorMapKey;
         public Guid MaterialId { get; set; } = new Guid();
         public uint ShaderMaterialBufferIndex { get; set; } = 0;
         public int MaterialBufferId { get; set; } = 0;

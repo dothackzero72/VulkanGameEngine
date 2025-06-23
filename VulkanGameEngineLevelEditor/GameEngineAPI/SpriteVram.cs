@@ -2,15 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public class SpriteVram
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public struct SpriteVram
     {
-        public Guid VramSpriteID { get; set; } = Guid.Empty;
-        public Guid SpriteMaterialID { get; set; } = Guid.Empty;
+        public Guid VramSpriteId { get; set; } = Guid.Empty;
+        public Guid MaterialId { get; set; } = Guid.Empty;
         public uint SpriteLayer { get; set; } = 0;
         public vec4 SpriteColor { get; set; } = new vec4(0.0f, 0.0f, 0.0f, 1.0f);
         public ivec2 SpritePixelSize { get; set; } = new ivec2();
@@ -19,5 +21,8 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public vec2 SpriteUVSize { get; set; } = new vec2();
         public vec2 SpriteSize { get; set; } = new vec2(50.0f);
         public uint AnimationListID { get; set; } = 0;
+        public SpriteVram()
+        {
+        }
     }
 }

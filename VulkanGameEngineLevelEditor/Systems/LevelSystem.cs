@@ -116,24 +116,27 @@ namespace VulkanGameEngineLevelEditor.Systems
             string jsonContent = File.ReadAllText(spriteVramPath);
             SpriteVram spriteVramJson = JsonConvert.DeserializeObject<SpriteVram>(jsonContent);
 
-            if (VramSpriteMap.ContainsKey(spriteVramJson.VramSpriteID))
+            if (VramSpriteMap.ContainsKey(spriteVramJson.VramSpriteId))
             {
-                return spriteVramJson.VramSpriteID;
+                return spriteVramJson.VramSpriteId;
             }
 
-            var spriteMaterial = MaterialSystem.MaterialMap[spriteVramJson.SpriteMaterialID];
+            var spriteMaterial = MaterialSystem.MaterialMap[spriteVramJson.MaterialId];
             var spriteTexture = TextureSystem.TextureList[spriteMaterial.AlbedoMapId];
 
-            VramSpriteMap[spriteVramJson.VramSpriteID] = VRAM_LoadSpriteVRAM(spriteVramPath, ref spriteMaterial, ref spriteTexture);
-            VRAM_LoadSpriteAnimation(spriteVramPath, out Animation2D animationListPtr, out vec2* animationFrameListPtr, out size_t animationListCount, out size_t animationFrameCount);
-          //  ListPtr<Animation2D> animationList = new ListPtr<Animation2D>(animationListPtr, animationListCount);
+            Animation2D* animationListPtr = null;
+            vec2* animationFrameListPtr = null;
 
-            return spriteVramJson.VramSpriteID;
+            VramSpriteMap[spriteVramJson.VramSpriteId] = VRAM_LoadSpriteVRAM(spriteVramPath, ref spriteMaterial, ref spriteTexture);
+            VRAM_LoadSpriteAnimation(spriteVramPath, animationListPtr, animationFrameListPtr, out size_t animationListCount, out size_t animationFrameCount);
+            ListPtr<Animation2D> animationList = new ListPtr<Animation2D>(animationListPtr, animationListCount);
+
+            return spriteVramJson.VramSpriteId;
         }
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
         private static extern SpriteVram VRAM_LoadSpriteVRAM([MarshalAs(UnmanagedType.LPStr)] string spritePath, ref Material material, ref Texture texture);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        private static extern void VRAM_LoadSpriteAnimation([MarshalAs(UnmanagedType.LPStr)] string spritePath, out Animation2D animationListPtr, out vec2* animationFrameListPtr, out size_t animationListCount, out size_t animationFrameCount);
+        private static extern void VRAM_LoadSpriteAnimation([MarshalAs(UnmanagedType.LPStr)] string spritePath, Animation2D* animationListPtr, vec2* animationFrameListPtr, out size_t animationListCount, out size_t animationFrameCount);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
         private static extern void VRAM_DeleteSpriteAnimation(Animation2D* animationListPtr, vec2* animationFrameListPtr);
     }

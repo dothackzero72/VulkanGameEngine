@@ -7,6 +7,10 @@
 #include "Vector.h"
 #include "Texture.h"
 
+
+
+
+
 struct Material
 {
 	int VectorMapKey;

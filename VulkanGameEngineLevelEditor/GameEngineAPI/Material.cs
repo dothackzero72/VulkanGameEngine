@@ -5,34 +5,39 @@ using Silk.NET.SDL;
 using System;
 using System.Runtime.InteropServices;
 using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.Systems;
 using VulkanGameEngineLevelEditor.Vulkan;
-a
+
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Material
     {
-        Guid MaterialId;
-        uint MaterialBufferIndex;
+        int VectorMapKey;             
+        Guid materialGuid;                
+        uint ShaderMaterialBufferIndex;    
+        int MaterialBufferId;               
 
-        vec3 Albedo;
-        float Metallic;
-        float Roughness;
-        float AmbientOcclusion;
-        vec3 Emission;
-        float Alpha;
+        Guid AlbedoMapId;                  
+        Guid MetallicRoughnessMapId;       
+        Guid MetallicMapId;               
+        Guid RoughnessMapId;               
+        Guid AmbientOcclusionMapId;       
+        Guid NormalMapId;                  
+        Guid DepthMapId;                  
+        Guid AlphaMapId;                  
+        Guid EmissionMapId;               
+        Guid HeightMapId;                 
 
-        Guid AlbedoMapId;
-        Guid MetallicRoughnessMapId;
-        Guid MetallicMapId;
-        Guid RoughnessMapId;
-        Guid AmbientOcclusionMapId;
-        Guid NormalMapId;
-        Guid DepthMapId;
-        Guid AlphaMapId;
-        Guid EmissionMapId;
-        Guid HeightMapId;
+        vec3 Albedo = new vec3(0.0f, 0.35f, 0.45f);  
+        vec3 Emission = new vec3(0.0f);         
+        float Metallic = 0.0f;             
+        float Roughness = 0.0f;            
+        float AmbientOcclusion = 1.0f;       
+        float Alpha = 1.0f;                 
 
-     //   VulkanBuffer<MaterialProperitiesBuffer> MaterialBuffer;
+        public Material()
+        {
+        }
     }
 }

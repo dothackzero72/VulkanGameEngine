@@ -5,7 +5,7 @@ using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
-    public class Animation2D
+    public struct Animation2D
     {
         uint AnimationId;
         float FrameHoldTime;

@@ -8,7 +8,6 @@
 #include <array>
 #include <iostream>
 
-
 class VkGuid
 {
 private:

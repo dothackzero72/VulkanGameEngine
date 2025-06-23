@@ -22,7 +22,7 @@ SpriteVram VRAM_LoadSpriteVRAM(const char* spritePath, const Material& material,
     };
 }
 
-void VRAM_LoadSpriteAnimation(const char* spritePath, Animation2D*& animationListPtr, vec2*& animationFrameListPtr, size_t& animationListCount, size_t& animationFrameCount)
+void VRAM_LoadSpriteAnimation(const char* spritePath, Animation2D* animationListPtr, vec2* animationFrameListPtr, size_t& animationListCount, size_t& animationFrameCount)
 {
     Vector<Animation2D> animationList;
     Vector<vec2> animationFrameList;
