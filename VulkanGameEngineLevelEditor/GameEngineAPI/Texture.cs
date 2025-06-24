@@ -1,6 +1,5 @@
 ﻿using System;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
-using VulkanGameEngineLevelEditor.Vulkan;
 
 public struct Texture
 {
@@ -11,11 +10,11 @@ public struct Texture
     public uint mipMapLevels { get; set; } = 1;
     public uint textureBufferIndex { get; set; } = 0;
 
-    public VkImage textureImage { get; set; } = VulkanConst.VK_NULL_HANDLE;
-    public VkDeviceMemory textureMemory { get; set; } = VulkanConst.VK_NULL_HANDLE;
-    public VkImageView textureView { get; set; } = VulkanConst.VK_NULL_HANDLE;
-    public VkSampler textureSampler { get; set; } = VulkanConst.VK_NULL_HANDLE;
-    public VkDescriptorSet ImGuiDescriptorSet { get; set; } = VulkanConst.VK_NULL_HANDLE;
+    public VkImage textureImage { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+    public VkDeviceMemory textureMemory { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+    public VkImageView textureView { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+    public VkSampler textureSampler { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+    public VkDescriptorSet ImGuiDescriptorSet { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
 
     public TextureUsageEnum textureUsage { get; set; } = TextureUsageEnum.kUse_Undefined;
     public TextureTypeEnum textureType { get; set; } = TextureTypeEnum.kType_UndefinedTexture;

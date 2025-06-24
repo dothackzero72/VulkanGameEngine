@@ -22,3 +22,6 @@
 [submodule "External/ImPlot"]
 	path = External/ImPlot
 	url = https://github.com/epezent/implot.git
+[submodule "external/VulkanCS"]
+	path = external/VulkanCS
+	url = https://github.com/ThomasDHZ/VulkanCS.git

@@ -104,11 +104,11 @@
     <ProjectReference Include="..\VulkanEngineDLL\VulkanEngineDLL.vcxproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Coral.Managed">
-      <HintPath>..\x64\Debug\Coral.Managed.dll</HintPath>
-    </Reference>
+    <Folder Include="Components\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Components\" />
+    <Reference Include="VulkanCS">
+      <HintPath>..\..\VulkanCS\VulkanCS\bin\Release\net8.0\VulkanCS.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Reflection;
 using VulkanGameEngineLevelEditor.EditorEnhancements;
 using VulkanGameEngineLevelEditor.RenderPassEditor;
-using VulkanGameEngineLevelEditor.Vulkan;
+
 
 namespace VulkanGameEngineLevelEditor.Models
 {

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
-using VulkanGameEngineLevelEditor.Vulkan;
+
 
 namespace VulkanGameEngineLevelEditor.Systems
 {
@@ -31,15 +31,15 @@ namespace VulkanGameEngineLevelEditor.Systems
     public unsafe struct VulkanBuffer
     {
         public uint BufferId { get; set; } = 0;
-        public VkBuffer Buffer { get; set; } = VulkanConst.VK_NULL_HANDLE;
-        public VkBuffer StagingBuffer { get; set; } = VulkanConst.VK_NULL_HANDLE;
-        public VkDeviceMemory StagingBufferMemory { get; set; } = VulkanConst.VK_NULL_HANDLE;
-        public VkDeviceMemory BufferMemory { get; set; } = VulkanConst.VK_NULL_HANDLE;
+        public VkBuffer Buffer { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+        public VkBuffer StagingBuffer { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+        public VkDeviceMemory StagingBufferMemory { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+        public VkDeviceMemory BufferMemory { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
         public VkDeviceSize BufferSize { get; set; } = 0;
         public VkBufferUsageFlagBits BufferUsage { get; set; } = 0;
         public VkMemoryPropertyFlagBits BufferProperties { get; set; } = 0;
         public VkDeviceSize BufferDeviceAddress { get; set; } = 0;
-        public VkAccelerationStructureKHR BufferHandle { get; set; } = VulkanConst.VK_NULL_HANDLE;
+        public nint VkAccelerationStructureKHR { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
         public BufferTypeEnum BufferType { get; set; } = BufferTypeEnum.BufferType_Undefined;
         public void* BufferData { get; set; } = null;
         public bool IsMapped { get; set; } = false;

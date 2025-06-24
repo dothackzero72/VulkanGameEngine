@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
-using VulkanGameEngineLevelEditor.Vulkan;
+
 
 namespace VulkanGameEngineLevelEditor.Systems
 {
@@ -97,16 +97,16 @@ namespace VulkanGameEngineLevelEditor.Systems
         public static uint ImageIndex { get; set; }
         public static uint CommandIndex { get; set; }
 
-        public static VkInstance Instance { get; set; } = VulkanConst.VK_NULL_HANDLE;
-        public static VkDevice Device { get; set; } = VulkanConst.VK_NULL_HANDLE;
-        public static VkPhysicalDevice PhysicalDevice { get; set; } = VulkanConst.VK_NULL_HANDLE;
-        public static VkSurfaceKHR Surface { get; set; } = VulkanConst.VK_NULL_HANDLE;
-        public static VkCommandPool CommandPool { get; set; } = VulkanConst.VK_NULL_HANDLE;
-        public static VkDebugUtilsMessengerEXT DebugMessenger { get; set; } = VulkanConst.VK_NULL_HANDLE;
+        public static VkInstance Instance { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+        public static VkDevice Device { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+        public static VkPhysicalDevice PhysicalDevice { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+        public static VkSurfaceKHR Surface { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+        public static VkCommandPool CommandPool { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+        public static VkDebugUtilsMessengerEXT DebugMessenger { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
         public static VkExtent2D SwapChainResolution { get; set; }
-        public static VkSwapchainKHR Swapchain { get; set; } = VulkanConst.VK_NULL_HANDLE;
-        public static VkQueue GraphicsQueue { get; set; } = VulkanConst.VK_NULL_HANDLE;
-        public static VkQueue PresentQueue { get; set; } = VulkanConst.VK_NULL_HANDLE;
+        public static VkSwapchainKHR Swapchain { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+        public static VkQueue GraphicsQueue { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
+        public static VkQueue PresentQueue { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
         public static ListPtr<VkFence> InFlightFences { get; set; } = new ListPtr<VkFence>();
         public static ListPtr<VkSemaphore> AcquireImageSemaphores { get; set; } = new ListPtr<VkSemaphore>();
         public static ListPtr<VkSemaphore> PresentImageSemaphores { get; set; } = new ListPtr<VkSemaphore>();
@@ -156,7 +156,7 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static VkResult StartFrame()
         {
-            CommandIndex = (CommandIndex + 1) % VulkanConst.MAX_FRAMES_IN_FLIGHT;
+            CommandIndex = (CommandIndex + 1) % VulkanCSConst.MAX_FRAMES_IN_FLIGHT;
 
             var fence = InFlightFences[(int)CommandIndex];
             var imageSemaphore = AcquireImageSemaphores[(int)CommandIndex];
