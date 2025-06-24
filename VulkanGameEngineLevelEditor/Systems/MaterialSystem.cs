@@ -97,11 +97,8 @@ namespace VulkanGameEngineLevelEditor.Systems
             return materialJson.MaterialId;
         }
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Material Material_CreateMaterial(ref GraphicsRenderer renderer, uint bufferIndex, out VulkanBuffer materialBuffer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern void Material_UpdateBuffer(GraphicsRenderer renderer, VulkanBuffer materialBuffer, MaterialProperitiesBuffer materialProperties);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern void Material_DestroyBuffer(GraphicsRenderer renderer, VulkanBuffer materialBuffer);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern Material Material_CreateMaterial(ref GraphicsRenderer renderer, uint bufferIndex, out VulkanBuffer materialBuffer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Material_UpdateBuffer(GraphicsRenderer renderer, VulkanBuffer materialBuffer, MaterialProperitiesBuffer materialProperties);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Material_DestroyBuffer(GraphicsRenderer renderer, VulkanBuffer materialBuffer);
     }
 }

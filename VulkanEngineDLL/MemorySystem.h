@@ -11,7 +11,6 @@ struct MemoryLeakPtr
     String DanglingPtrMessage;
 };
 
-
 extern "C" 
 {
     DLL_EXPORT MemoryLeakPtr MemoryLeakPtr_NewPtr(size_t memorySize, size_t elementCount, const char* file, int line, const char* func, const char* notes);
@@ -76,6 +75,7 @@ public:
             MemoryLeakPtr& memoryLeakPtr = it->second;
             MemoryLeakPtr_DeletePtr(memoryLeakPtr.PtrAddress);
             PtrAddressMap.erase(it);
+            ptr = nullptr;
         }
     }
 

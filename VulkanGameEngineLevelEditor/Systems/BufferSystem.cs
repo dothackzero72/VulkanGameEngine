@@ -153,17 +153,11 @@ namespace VulkanGameEngineLevelEditor.Systems
             return VulkanBuffer_CopyBuffer(renderer, srcBuffer, dstBuffer, size);
         }
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VulkanBuffer VulkanBuffer_CreateVulkanBuffer(GraphicsRenderer renderer, uint bufferId, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VulkanBuffer VulkanBuffer_CreateVulkanBuffer(GraphicsRenderer renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VulkanBuffer VulkanBuffer_CreateVulkanBuffer(GraphicsRenderer renderer, VulkanBuffer vulkanBuffer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern void VulkanBuffer_UpdateBufferMemory(GraphicsRenderer renderer, VulkanBuffer vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VkResult VulkanBuffer_CopyBuffer(GraphicsRenderer renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern void VulkanBuffer_DestroyBuffer(GraphicsRenderer renderer, VulkanBuffer vulkanBuffer);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VulkanBuffer VulkanBuffer_CreateVulkanBuffer(GraphicsRenderer renderer, uint bufferId, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VulkanBuffer VulkanBuffer_CreateVulkanBuffer(GraphicsRenderer renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VulkanBuffer VulkanBuffer_CreateVulkanBuffer(GraphicsRenderer renderer, VulkanBuffer vulkanBuffer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlagBits usage, VkMemoryPropertyFlagBits properties, bool usingStagingBuffer);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void VulkanBuffer_UpdateBufferMemory(GraphicsRenderer renderer, VulkanBuffer vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult VulkanBuffer_CopyBuffer(GraphicsRenderer renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void VulkanBuffer_DestroyBuffer(GraphicsRenderer renderer, VulkanBuffer vulkanBuffer);
     }
 }

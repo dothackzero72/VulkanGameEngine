@@ -2,9 +2,6 @@
 #include "GameObjectSystem.h"
 #include "BufferSystem.h"
 #include "MeshSystem.h"
-#include "LevelTileSet.h"
-#include "LevelSystem.h"
-#include "MeshSystem.h"
 
 LevelLayer::LevelLayer()
 {
@@ -46,12 +43,13 @@ void LevelLayer::Update(const float& deltaTime)
 void LevelLayer::LoadLevelMesh()
 {
     const LevelTileSet& tileSet = levelSystem.LevelTileSetMap[TileSetId];
+    Vector<Tile> tileSetList = Vector<Tile>(tileSet.LevelTileListPtr, tileSet.LevelTileListPtr + tileSet.LevelTileCount);
     for (uint x = 0; x < LevelBounds.x; x++)
     {
         for (uint y = 0; y < LevelBounds.y; y++)
         {
             const uint& tileId = TileIdMap[(y * LevelBounds.x) + x];
-            const Tile& tile = tileSet.LevelTileList[tileId];
+            const Tile& tile = tileSetList[tileId];
 
             const float LefttSideUV =  tile.TileUVOffset.x;
             const float RightSideUV =  tile.TileUVOffset.x + tileSet.TileUVSize.x;

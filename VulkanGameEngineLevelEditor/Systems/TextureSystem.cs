@@ -39,8 +39,7 @@ namespace VulkanGameEngineLevelEditor.Systems
             return textureJson.TextureId;
         }
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern Texture Texture_LoadTexture(GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern Texture Texture_LoadTexture(GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);
 
     }
 }

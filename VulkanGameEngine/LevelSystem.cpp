@@ -47,10 +47,10 @@ void LevelSystem::LoadLevel(const String& levelPath)
         gameObjectSystem.CreateGameObject(objectJson, positionOverride);
     }
     {
-        LoadLevelLayout(json["LoadLevelLayout"]);
-    }
-    {
-        Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, levelLayout.LevelMapList);
+   
+        VkGuid levelLayoutId = LoadLevelLayout(json["LoadLevelLayout"]);
+
+        Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, levelMapList);
     }
 
     VkGuid dummyGuid = VkGuid();
@@ -64,6 +64,10 @@ void LevelSystem::LoadLevel(const String& levelPath)
 
 void LevelSystem::DestoryLevel()
 {
+    for (auto tileMap : LevelTileSetMap)
+    {
+        VRAM_DeleteLevelVRAM(tileMap.second.LevelTileListPtr);
+    }
 }
 
 void LevelSystem::Update(const float& deltaTime)
@@ -113,9 +117,12 @@ void LevelSystem::DestroyDeadGameObjects()
     //}
 }
 
-VkGuid LevelSystem::LoadSpriteVRAM(const String& spritePath)
+VkGuid LevelSystem::LoadSpriteVRAM(const String& spriteVramPath)
 {
-    nlohmann::json json = Json::ReadJson(spritePath);
+    size_t animationListCount = 0;
+    size_t animationFrameCount = 0;
+
+    nlohmann::json json = Json::ReadJson(spriteVramPath);
     VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
     VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
 
@@ -128,13 +135,9 @@ VkGuid LevelSystem::LoadSpriteVRAM(const String& spritePath)
     const Material& material = materialSystem.FindMaterial(materialId);
     const Texture& texture = textureSystem.FindTexture(material.AlbedoMapId);
 
-    Animation2D* animationListPtr = nullptr;
-    vec2* animationFrameListPtr = nullptr;
-    size_t animationListCount;
-    size_t animationFrameCount;
-
-    VramSpriteMap[vramId] = VRAM_LoadSpriteVRAM(spritePath.c_str(), material, texture);
-    VRAM_LoadSpriteAnimation(spritePath.c_str(), animationListPtr, animationFrameListPtr, animationListCount, animationFrameCount);
+    VramSpriteMap[vramId] = VRAM_LoadSpriteVRAM(spriteVramPath.c_str(), material, texture);
+    Animation2D* animationListPtr = VRAM_LoadSpriteAnimations(spriteVramPath.c_str(), animationListCount);
+    vec2* animationFrameListPtr = VRAM_LoadSpriteAnimationFrames(spriteVramPath.c_str(), animationFrameCount);
 
     Vector<Animation2D> animation2DList = Vector<Animation2D>(animationListPtr, animationListPtr + animationListCount);
     Vector<vec2> animationFrameList = Vector<vec2>(animationFrameListPtr, animationFrameListPtr + animationFrameCount);
@@ -145,7 +148,7 @@ VkGuid LevelSystem::LoadSpriteVRAM(const String& spritePath)
     }
     AnimationFrameListMap[vramId].emplace_back(animationFrameList);
 
-    VRAM_DeleteSpriteAnimation(animationListPtr, animationFrameListPtr);
+    VRAM_DeleteSpriteVRAM(animationListPtr, animationFrameListPtr);
     return vramId;
 }
 
@@ -170,23 +173,9 @@ VkGuid LevelSystem::LoadTileSetVRAM(const String& tileSetPath)
     const Material& material = materialSystem.FindMaterial(materialId);
     const Texture& tileSetTexture = textureSystem.FindTexture(material.AlbedoMapId);
 
-    LevelTileSet tileSet = LevelTileSet();
-    tileSet.TileSetId = VkGuid(json["TileSetId"].get<String>().c_str());
-    tileSet.MaterialId = materialId;
-    tileSet.TilePixelSize = ivec2{ json["TilePixelSize"][0], json["TilePixelSize"][1] };
-    tileSet.TileSetBounds = ivec2{ tileSetTexture.width / tileSet.TilePixelSize.x,  tileSetTexture.height / tileSet.TilePixelSize.y };
-    tileSet.TileUVSize = vec2(1.0f / (float)tileSet.TileSetBounds.x, 1.0f / (float)tileSet.TileSetBounds.y);
-    for (int x = 0; x < json["TileList"].size(); x++)
-    {
-        Tile tile;
-        tile.TileId = json["TileList"][x]["TileId"];
-        tile.TileUVCellOffset = ivec2(json["TileList"][x]["TileUVCellOffset"][0], json["TileList"][x]["TileUVCellOffset"][1]);
-        tile.TileLayer = json["TileList"][x]["TileLayer"];
-        tile.IsAnimatedTile = json["TileList"][x]["IsAnimatedTile"];
-        tile.TileUVOffset = vec2(tile.TileUVCellOffset.x * tileSet.TileUVSize.x, tile.TileUVCellOffset.y * tileSet.TileUVSize.y);
-        tileSet.LevelTileList.emplace_back(tile);
-    }
-    LevelTileSetMap[tileSetId] = tileSet;
+    LevelTileSetMap[tileSetId] = VRAM_LoadTileSetVRAM(tileSetPath.c_str(), material, tileSetTexture);
+    VRAM_LoadTileSets(tileSetPath.c_str(), LevelTileSetMap[tileSetId]);
+
     return tileSetId;
 }
 
@@ -198,22 +187,15 @@ VkGuid LevelSystem::LoadLevelLayout(const String& levelLayoutPath)
         return VkGuid();
     }
 
-    nlohmann::json json = Json::ReadJson(levelLayoutPath);
-    VkGuid levelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
-
-    levelLayout.LevelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
-    levelLayout.LevelBounds = ivec2(json["LevelBounds"][0], json["LevelBounds"][1]);
-    levelLayout.TileSizeinPixels = ivec2(json["TileSizeInPixels"][0], json["TileSizeInPixels"][1]);
-    for (int x = 0; x < json["LevelLayouts"].size(); x++)
+    Vector<Vector<uint>> levelMapList;
+    levelLayout = VRAM_LoadLevelLayout(levelLayoutPath.c_str());
+    Vector<uint*> levelMapPtrList = Vector<uint*>(levelLayout.LevelLayerList, levelLayout.LevelLayerList + levelLayout.LevelLayerCount);
+    for (size_t x = 0; x < levelLayout.LevelLayerCount; x++)
     {
-        Vector<uint> levelLayer;
-        for (int y = 0; y < json["LevelLayouts"][x].size(); y++)
-        {
-            for (int z = 0; z < json["LevelLayouts"][x][y].size(); z++)
-            {
-                levelLayer.emplace_back(json["LevelLayouts"][x][y][z]);
-            }
-        }
-        levelLayout.LevelMapList.emplace_back(levelLayer);
+        Vector<uint> mapLayer = Vector<uint>(levelMapPtrList[x], levelMapPtrList[x] + levelLayout.LevelLayerMapCount);
+        levelMapList.emplace_back(mapLayer);
+        VRAM_DeleteLevelLayerMapPtr(levelMapPtrList[x]);
     }
+    VRAM_DeleteLevelLayerPtr(levelLayout.LevelLayerList);
+    return levelLayout.LevelLayoutId;
 }

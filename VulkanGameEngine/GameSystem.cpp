@@ -86,6 +86,7 @@ void GameSystem::Destroy()
     //meshSystem.DestroyAllGameObjects();
     textureSystem.DestroyAllTextures();
     materialSystem.DestroyAllMaterials();
+    levelSystem.DestoryLevel();
     meshSystem.DestroyAllGameObjects();
     bufferSystem.DestroyAllBuffers();
     renderSystem.Destroy();

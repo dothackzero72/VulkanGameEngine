@@ -161,7 +161,6 @@
     <ClCompile Include="SpriteBatchLayer.cpp" />
     <ClCompile Include="SystemClock.cpp" />
     <ClCompile Include="TextureSystem.cpp" />
-    <ClCompile Include="Tile.cpp" />
     <ClCompile Include="BufferSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -179,7 +178,6 @@
     <ClInclude Include="LevelLayer.h" />
     <ClInclude Include="LevelLayout.h" />
     <ClInclude Include="LevelSystem.h" />
-    <ClInclude Include="LevelTileSet.h" />
     <ClInclude Include="MaterialSystem.h" />
     <ClInclude Include="MemoryLeakSystem.h" />
     <ClInclude Include="MemoryPool.h" />
@@ -195,7 +193,6 @@
     <ClInclude Include="SpriteVRAM.h" />
     <ClInclude Include="SystemClock.h" />
     <ClInclude Include="TextureSystem.h" />
-    <ClInclude Include="Tile.h" />
     <ClInclude Include="Transform2DComponent.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="BufferSystem.h" />

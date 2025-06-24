@@ -1,10 +1,9 @@
 #pragma once
 #include "Typedef.h"
 #include "Vertex.h"
-#include "Tile.h"
-#include "LevelTileSet.h"
 #include "Mesh.h"
 #include "VkGuid.h"
+#include <VRAM.h>
 
 class LevelLayer
 {

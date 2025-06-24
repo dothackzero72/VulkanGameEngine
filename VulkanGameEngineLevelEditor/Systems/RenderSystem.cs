@@ -289,20 +289,15 @@ namespace VulkanGameEngineLevelEditor.Systems
             }
         }
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern GraphicsRenderer Renderer_RendererSetUp_CS(void* windowHandle);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern GraphicsRenderer Renderer_RendererSetUp_CS(void* windowHandle);
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(ref GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string renderPassLoader, ref VkExtent2D renderPassResolution, int ConstBuffer, ref Texture renderedTextureListPtr, ref ulong renderedTextureCount, ref Texture depthTexture);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(ref GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string renderPassLoader, ref VkExtent2D renderPassResolution, int ConstBuffer, ref Texture renderedTextureListPtr, ref ulong renderedTextureCount, ref Texture depthTexture);
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern void VulkanRenderPass_DestroyRenderPass(GraphicsRenderer renderer, VulkanRenderPass renderPass);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void VulkanRenderPass_DestroyRenderPass(GraphicsRenderer renderer, VulkanRenderPass renderPass);
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VulkanPipeline* VulkanPipeline_CreateRenderPipeline(VkDevice device, Guid renderPassId, uint renderPipelineId, RenderPipelineModel model, VkRenderPass renderPass, uint constBufferSize, ivec2 renderPassResolution, GPUIncludes includes, VkPipelineShaderStageCreateInfo* pipelineShaders, size_t pipelineShaderCount);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VulkanPipeline* VulkanPipeline_CreateRenderPipeline(VkDevice device, Guid renderPassId, uint renderPipelineId, RenderPipelineModel model, VkRenderPass renderPass, uint constBufferSize, ivec2 renderPassResolution, GPUIncludes includes, VkPipelineShaderStageCreateInfo* pipelineShaders, size_t pipelineShaderCount);
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern void VulkanPipeline_Destroy(VkDevice device, VulkanPipeline vulkanPipelineDLL);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void VulkanPipeline_Destroy(VkDevice device, VulkanPipeline vulkanPipelineDLL);
 
     }
 }
