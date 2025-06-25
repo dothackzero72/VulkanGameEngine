@@ -50,7 +50,7 @@ void LevelSystem::LoadLevel(const String& levelPath)
    
         VkGuid levelLayoutId = LoadLevelLayout(json["LoadLevelLayout"]);
 
-        Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, levelMapList);
+        Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, LevelMapList);
     }
 
     VkGuid dummyGuid = VkGuid();
@@ -187,15 +187,17 @@ VkGuid LevelSystem::LoadLevelLayout(const String& levelLayoutPath)
         return VkGuid();
     }
 
-    Vector<Vector<uint>> levelMapList;
-    levelLayout = VRAM_LoadLevelLayout(levelLayoutPath.c_str());
-    Vector<uint*> levelMapPtrList = Vector<uint*>(levelLayout.LevelLayerList, levelLayout.LevelLayerList + levelLayout.LevelLayerCount);
-    for (size_t x = 0; x < levelLayout.LevelLayerCount; x++)
+    size_t levelLayerCount = 0;
+    size_t levelLayerMapCount = 0;
+    levelLayout = VRAM_LoadLevelInfo(levelLayoutPath.c_str());
+    uint** levelLayerList = VRAM_LoadLevelLayout(levelLayoutPath.c_str(), levelLayerCount, levelLayerMapCount);
+    Vector<uint*> levelMapPtrList = Vector<uint*>(levelLayerList, levelLayerList + levelLayerCount);
+    for (size_t x = 0; x < levelLayerCount; x++)
     {
-        Vector<uint> mapLayer = Vector<uint>(levelMapPtrList[x], levelMapPtrList[x] + levelLayout.LevelLayerMapCount);
-        levelMapList.emplace_back(mapLayer);
+        Vector<uint> mapLayer = Vector<uint>(levelMapPtrList[x], levelMapPtrList[x] + levelLayerMapCount);
+        LevelMapList.emplace_back(mapLayer);
         VRAM_DeleteLevelLayerMapPtr(levelMapPtrList[x]);
     }
-    VRAM_DeleteLevelLayerPtr(levelLayout.LevelLayerList);
+    VRAM_DeleteLevelLayerPtr(levelLayerList);
     return levelLayout.LevelLayoutId;
 }

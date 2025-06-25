@@ -48,6 +48,7 @@ public:
 
 	Level2D														  Level;
 	LevelLayout                                                   levelLayout;
+	Vector<Vector<uint>>										  LevelMapList;
 
 	UnorderedMap<GameObjectID, Sprite>							  SpriteMap;
 	UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetMap;

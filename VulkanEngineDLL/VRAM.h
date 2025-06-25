@@ -44,9 +44,6 @@ struct LevelLayout
     VkGuid					  LevelLayoutId;
     ivec2					  LevelBounds;
     ivec2					  TileSizeinPixels;
-    uint**                    LevelLayerList;
-    size_t                    LevelLayerCount;
-    size_t              	  LevelLayerMapCount;
 };
 
 struct Animation2D
@@ -64,7 +61,8 @@ extern "C" {
     DLL_EXPORT vec2* VRAM_LoadSpriteAnimationFrames(const char* spritePath, size_t& animationFrameCount);
     DLL_EXPORT LevelTileSet VRAM_LoadTileSetVRAM(const char* tileSetPath, const Material& material, const Texture& tileVramTexture);
     DLL_EXPORT void VRAM_LoadTileSets(const char* tileSetPath, LevelTileSet& levelTileSet);
-    DLL_EXPORT LevelLayout VRAM_LoadLevelLayout(const char* levelLayoutPath);
+    DLL_EXPORT LevelLayout VRAM_LoadLevelInfo(const char* levelLayoutPath);
+    DLL_EXPORT uint** VRAM_LoadLevelLayout(const char* levelLayoutPath, size_t& levelLayerCount, size_t& levelLayerMapCount);
     DLL_EXPORT void VRAM_DeleteSpriteVRAM(Animation2D* animationListPtr, vec2* animationFrameListPtr);
     DLL_EXPORT void VRAM_DeleteLevelVRAM(Tile* levelTileList);
     DLL_EXPORT void VRAM_DeleteLevelLayerPtr(uint** levelLayerPtr);

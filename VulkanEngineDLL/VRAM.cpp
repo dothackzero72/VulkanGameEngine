@@ -101,7 +101,7 @@ void VRAM_LoadTileSets(const char* tileSetPath, LevelTileSet& tileSet)
     std::memcpy(tileSet.LevelTileListPtr, tileList.data(), tileList.size() * sizeof(Tile));
 }
 
-LevelLayout VRAM_LoadLevelLayout(const char* levelLayoutPath)
+LevelLayout VRAM_LoadLevelInfo(const char* levelLayoutPath)
 {
     nlohmann::json json = Json::ReadJson(levelLayoutPath);
 
@@ -109,7 +109,12 @@ LevelLayout VRAM_LoadLevelLayout(const char* levelLayoutPath)
     levelLayout.LevelLayoutId = VkGuid(json["LevelLayoutId"].get<String>().c_str());
     levelLayout.LevelBounds = ivec2(json["LevelBounds"][0], json["LevelBounds"][1]);
     levelLayout.TileSizeinPixels = ivec2(json["TileSizeInPixels"][0], json["TileSizeInPixels"][1]);
+    return levelLayout;
+}
 
+uint** VRAM_LoadLevelLayout(const char* levelLayoutPath, size_t& levelLayerCount, size_t& levelLayerMapCount)
+{
+    nlohmann::json json = Json::ReadJson(levelLayoutPath);
     Vector<uint*> levelLayerList;
     for (int x = 0; x < json["LevelLayouts"].size(); x++)
     {
@@ -121,17 +126,15 @@ LevelLayout VRAM_LoadLevelLayout(const char* levelLayoutPath)
                 levelLayerMap.push_back(json["LevelLayouts"][x][y][z]);
             }
         }
-        levelLayout.LevelLayerMapCount = levelLayerMap.size();
+        levelLayerMapCount = levelLayerMap.size();
         uint* levelLayerMapPtr = memorySystem.AddPtrBuffer<uint>(levelLayerMap.size(), __FILE__, __LINE__, __func__);
         std::memcpy(levelLayerMapPtr, levelLayerMap.data(), levelLayerMap.size() * sizeof(uint));
         levelLayerList.push_back(levelLayerMapPtr);
     }
-    levelLayout.LevelLayerCount = levelLayerList.size();
+    levelLayerCount = levelLayerList.size();
     uint** levelLayerListPtr = memorySystem.AddPtrBuffer<uint*>(levelLayerList.size(), __FILE__, __LINE__, __func__);
     std::memcpy(levelLayerListPtr, levelLayerList.data(), levelLayerList.size() * sizeof(uint*));
-    levelLayout.LevelLayerList = levelLayerListPtr;
-
-    return levelLayout;
+    return levelLayerListPtr;
 }
 
 void VRAM_DeleteSpriteVRAM(Animation2D* animationListPtr, vec2* animationFrameListPtr)

@@ -41,6 +41,7 @@ namespace VulkanGameEngineLevelEditor.Systems
         //  public static OrthographicCamera2D camera { get; set; }
         //   public static Dictionary<uint, Sprite> SpriteMap { get; private set; } = new Dictionary<uint, Sprite>();
         public static LevelLayout levelLayout { get; private set; }
+        public static List<List<uint>> LevelLayerMaps { get; private set; } = new List<List<uint>>();
         public static Dictionary<Guid, LevelTileSet> LevelTileSetMap { get; private set; } = new Dictionary<Guid, LevelTileSet>();
         public static Dictionary<Guid, SpriteVram> VramSpriteMap { get; private set; } = new Dictionary<Guid, SpriteVram>();
         // public static Dictionary<Guid, List<SpriteBatchLayer>> SpriteBatchLayerListMap { get; private set; } = new Dictionary<Guid, List<SpriteBatchLayer>>();
@@ -78,7 +79,8 @@ namespace VulkanGameEngineLevelEditor.Systems
                 LoadTileSetVRAM(fullLevelLayoutPath);
             }
             {
-                Guid levelLayoutId = LoadLevelLayout(levelLoader.LoadLevelLayout);
+                string fullLevelLayoutPath = Path.GetFullPath(Path.Combine(levelDirectory, levelLoader.LoadLevelLayout));
+                Guid levelLayoutId = LoadLevelLayout(fullLevelLayoutPath);
 
                // Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, levelMapList);
             }
@@ -159,38 +161,48 @@ namespace VulkanGameEngineLevelEditor.Systems
             LevelTileSetMap[tileSetId] = VRAM_LoadTileSetVRAM(levelTileSetPath, material, tileSetTexture);
             var levelTileSet = LevelTileSetMap[tileSetId];
 
-            //VRAM_LoadTileSets(levelTileSetPath, &levelTileSet);
+            VRAM_LoadTileSets(levelTileSetPath, &levelTileSet);
 
             return tileSetId;
         }
 
-        private static Guid LoadLevelLayout(string levelLayoutPath)
+        public static Guid LoadLevelLayout(string levelLayoutPath)
         {
-            if (levelLayoutPath.IsEmpty())
+            LevelLayout layout = VRAM_LoadLevelInfo(levelLayoutPath);
+            IntPtr levelLayerList = VRAM_LoadLevelLayout(levelLayoutPath, out size_t levelLayerCount, out size_t levelLayerMapCount);
+            if (levelLayerList != IntPtr.Zero &&
+                levelLayerCount > 0)
             {
-                return new Guid();
+                using (var layerPointers = new ListPtr<IntPtr>((IntPtr*)levelLayerList, levelLayerCount))
+                {
+                    for (uint x = 0; x < layerPointers.UCount; x++)
+                    {
+                        IntPtr layerPtr = layerPointers[(int)x];
+                        if (layerPtr != IntPtr.Zero)
+                        {
+                            using (var layerData = new ListPtr<uint>((uint*)layerPtr, levelLayerMapCount))
+                            {
+                                List<uint> managedLayer = layerData.ToList();
+                                LevelLayerMaps.Add(managedLayer);
+                            }
+
+                            VRAM_DeleteLevelLayerMapPtr((uint*)layerPtr);
+                        }
+                    }
+                }
+                VRAM_DeleteLevelLayerPtr((uint**)levelLayerList);
             }
 
-            //List<List<uint>> levelMapList;
-            //levelLayout = VRAM_LoadLevelLayout(levelLayoutPath);
-            //ListPtr<IntPtr> levelMapPtrList = new ListPtr<IntPtr>(levelLayout.LevelLayerList, levelLayout.LevelLayerCount);
-            //for (size_t x = 0; x < levelLayout.LevelLayerCount; x++)
-            //{
-            //    ListPtr<uint> mapLayer = ListPtr<uint>((uint)levelMapPtrList[x], levelLayout.LevelLayerMapCount);
-            //    levelMapList.emplace_back(mapLayer);
-            //    VRAM_DeleteLevelLayerMapPtr(levelMapPtrList[x]);
-            //}
-            //VRAM_DeleteLevelLayerPtr(levelLayout.LevelLayerList);
-
-            return levelLayout.LevelLayoutId;
+            return layout.LevelLayoutId;
         }
 
-[DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern SpriteVram VRAM_LoadSpriteVRAM([MarshalAs(UnmanagedType.LPStr)] string spritePath, ref Material material, ref Texture texture);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern SpriteVram VRAM_LoadSpriteVRAM([MarshalAs(UnmanagedType.LPStr)] string spritePath, ref Material material, ref Texture texture);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern Animation2D* VRAM_LoadSpriteAnimations([MarshalAs(UnmanagedType.LPStr)] string spritePath, out size_t animationListCount);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern vec2* VRAM_LoadSpriteAnimationFrames([MarshalAs(UnmanagedType.LPStr)] string spritePath, out size_t animationFrameCount);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern LevelTileSet VRAM_LoadTileSetVRAM([MarshalAs(UnmanagedType.LPStr)] string tileSetPath, Material material, Texture tileVramTexture);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern void VRAM_LoadTileSets([MarshalAs(UnmanagedType.LPStr)] string tileSetPath, LevelTileSet[] levelTileSet);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern LevelLayout VRAM_LoadLevelLayout([MarshalAs(UnmanagedType.LPStr)] string levelLayoutPath);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern void VRAM_LoadTileSets([MarshalAs(UnmanagedType.LPStr)] string tileSetPath, LevelTileSet* levelTileSet);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern LevelLayout VRAM_LoadLevelInfo([MarshalAs(UnmanagedType.LPStr)] string levelLayoutPath);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern IntPtr VRAM_LoadLevelLayout([MarshalAs(UnmanagedType.LPStr)] string levelLayoutPath, out size_t levelLayerCount, out size_t levelLayerMapCount);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern void VRAM_DeleteSpriteVRAM(Animation2D* animationListPtr, vec2* animationFrameListPtr);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern void VRAM_DeleteLevelVRAM(Tile* levelTileList);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern void VRAM_DeleteLevelLayerPtr(uint** levelLayerPtr);

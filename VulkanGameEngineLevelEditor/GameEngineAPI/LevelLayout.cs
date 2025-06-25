@@ -14,9 +14,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public Guid LevelLayoutId { get; set; } = new Guid();
         public ivec2 LevelBounds { get; set; } = new ivec2();
         public ivec2 TileSizeinPixels { get; set; } = new ivec2();
-        public IntPtr LevelLayerList { get; set; } = IntPtr.Zero;
-        public size_t LevelLayerCount { get; set; } = 0;
-        public size_t LevelLayerMapCount { get; set; } = 0;
 
         public LevelLayout()
         {
