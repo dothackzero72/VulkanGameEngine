@@ -126,6 +126,12 @@
     <ClInclude Include="VRAM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Level2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VulkanError.c">
@@ -228,6 +234,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VRAM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameLevel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Level2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

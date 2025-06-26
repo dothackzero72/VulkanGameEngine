@@ -41,7 +41,8 @@ namespace VulkanGameEngineLevelEditor.Systems
         //  public static OrthographicCamera2D camera { get; set; }
         //   public static Dictionary<uint, Sprite> SpriteMap { get; private set; } = new Dictionary<uint, Sprite>();
         public static LevelLayout levelLayout { get; private set; }
-        public static List<List<uint>> LevelLayerMaps { get; private set; } = new List<List<uint>>();
+       // public static List<LevelLayer> LevelLayerList { get; private set; }
+        public static List<List<uint>> LevelTileMapList { get; private set; } = new List<List<uint>>();
         public static Dictionary<Guid, LevelTileSet> LevelTileSetMap { get; private set; } = new Dictionary<Guid, LevelTileSet>();
         public static Dictionary<Guid, SpriteVram> VramSpriteMap { get; private set; } = new Dictionary<Guid, SpriteVram>();
         // public static Dictionary<Guid, List<SpriteBatchLayer>> SpriteBatchLayerListMap { get; private set; } = new Dictionary<Guid, List<SpriteBatchLayer>>();
@@ -81,8 +82,7 @@ namespace VulkanGameEngineLevelEditor.Systems
             {
                 string fullLevelLayoutPath = Path.GetFullPath(Path.Combine(levelDirectory, levelLoader.LoadLevelLayout));
                 Guid levelLayoutId = LoadLevelLayout(fullLevelLayoutPath);
-
-               // Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, levelMapList);
+             //   Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, levelMapList);
             }
 
             ListPtr<Texture> textureList = new ListPtr<Texture>(32);
@@ -183,7 +183,7 @@ namespace VulkanGameEngineLevelEditor.Systems
                             using (var layerData = new ListPtr<uint>((uint*)layerPtr, levelLayerMapCount))
                             {
                                 List<uint> managedLayer = layerData.ToList();
-                                LevelLayerMaps.Add(managedLayer);
+                                LevelTileMapList.Add(managedLayer);
                             }
 
                             VRAM_DeleteLevelLayerMapPtr((uint*)layerPtr);
@@ -194,6 +194,14 @@ namespace VulkanGameEngineLevelEditor.Systems
             }
 
             return layout.LevelLayoutId;
+        }
+
+        public static void LoadLevelMesh(Guid tileSetId)
+        {
+            //for (int x = 0; x < LevelTileMapList.size(); x++)
+            //{
+            //    LevelLayerList.emplace_back(LevelLayer(LevelLayout.LevelLayoutId, tileSetId, LevelTileMapList[x], LevelLayout.LevelBounds, x));
+            //}
         }
 
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern SpriteVram VRAM_LoadSpriteVRAM([MarshalAs(UnmanagedType.LPStr)] string spritePath, ref Material material, ref Texture texture);

@@ -5,6 +5,7 @@
 #include "Transform2DComponent.h"
 #include "GameObject.h"
 #include "SceneDataBuffer.h"
+#include <Level2D.h>
 
 class GameObjectSystem
 {

@@ -57,13 +57,7 @@
     <ClCompile Include="SystemClock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Level2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LevelLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameSystem.cpp">
@@ -140,28 +134,16 @@
     <ClInclude Include="SpriteVRAM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ECSid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Level2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LevelLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LevelTileSet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LevelLayout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TextureSystem.h">

@@ -142,6 +142,7 @@
     <ClInclude Include="DLLStructs.h" />
     <ClInclude Include="from_json.h" />
     <ClInclude Include="GameController.h" />
+    <ClInclude Include="Level2D.h" />
     <ClInclude Include="GLFWWindow.h" />
     <ClInclude Include="ImGuiFunc.h" />
     <ClInclude Include="json.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Typedef.h" />
     <ClInclude Include="Vector.h" />
+    <ClInclude Include="vertex.h" />
     <ClInclude Include="VkGuid.h" />
     <ClInclude Include="VRAM.h" />
     <ClInclude Include="VulkanBuffer.h" />
@@ -185,11 +187,13 @@
     <ClCompile Include="CVulkanRenderer.c" />
     <ClCompile Include="from_json.cpp" />
     <ClCompile Include="GameController.cpp" />
+    <ClCompile Include="GameLevel.cpp" />
     <ClCompile Include="GLFWWindow.c" />
     <ClCompile Include="ImGuiFunc.cpp" />
     <ClCompile Include="JsonFunc.cpp" />
     <ClCompile Include="JsonLoader.cpp" />
     <ClCompile Include="Keyboard.c" />
+    <ClCompile Include="Level2D.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MemorySystem.cpp" />
     <ClCompile Include="Mesh.cpp" />

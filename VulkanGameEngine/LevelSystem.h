@@ -8,6 +8,7 @@
 #include "SpriteVRAM.h"
 #include "OrthographicCamera2D.h"
 #include <VRAM.h>
+#include <Level2D.h>
 
 typedef Vector<vec2> AnimationFrames;
 
@@ -38,17 +39,17 @@ private:
 
 	VkGuid LoadSpriteVRAM(const String& spritePath);
 	VkGuid LoadTileSetVRAM(const String& tileSetPath);
-	VkGuid LoadLevelLayout(const String& levelLayoutPath);
-
-	void DestroyDeadGameObjects();
+	void   LoadLevelLayout(const String& levelLayoutPath);
+	void   LoadLevelMesh(VkGuid& tileSetId);
+	void   DestroyDeadGameObjects();
 
 public:
 	SceneDataBuffer												  SceneProperties;
 	SharedPtr<OrthographicCamera2D>								  OrthographicCamera;
 
-	Level2D														  Level;
-	LevelLayout                                                   levelLayout;
-	Vector<Vector<uint>>										  LevelMapList;
+	LevelLayout                                                   LevelLayout;
+	Vector<LevelLayer>											  LevelLayerList;
+	Vector<Vector<uint>>										  LevelTileMapList;
 
 	UnorderedMap<GameObjectID, Sprite>							  SpriteMap;
 	UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetMap;

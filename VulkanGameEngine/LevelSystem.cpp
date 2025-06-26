@@ -19,8 +19,8 @@ void LevelSystem::LoadLevel(const String& levelPath)
 {
     OrthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)renderSystem.renderer.SwapChainResolution.width, (float)renderSystem.renderer.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
 
-    VkGuid vramId;
-    VkGuid tileSetId;
+    VkGuid vramId = VkGuid();
+    VkGuid tileSetId = VkGuid();
 
     nlohmann::json json = Json::ReadJson(levelPath);
     VkGuid LevelId = VkGuid(json["LevelID"].get<String>().c_str());
@@ -47,10 +47,8 @@ void LevelSystem::LoadLevel(const String& levelPath)
         gameObjectSystem.CreateGameObject(objectJson, positionOverride);
     }
     {
-   
-        VkGuid levelLayoutId = LoadLevelLayout(json["LoadLevelLayout"]);
-
-        Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, LevelMapList);
+        LoadLevelLayout(json["LoadLevelLayout"]);
+        LoadLevelMesh(tileSetId);
     }
 
     VkGuid dummyGuid = VkGuid();
@@ -58,7 +56,7 @@ void LevelSystem::LoadLevel(const String& levelPath)
     spriteRenderPass2DId = VkGuid(json2["RenderPassId"].get<String>().c_str());
 
     SpriteBatchLayerListMap[spriteRenderPass2DId].emplace_back(SpriteBatchLayer(spriteRenderPass2DId));
-    spriteRenderPass2DId = renderSystem.LoadRenderPass(Level.LevelId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
+    spriteRenderPass2DId = renderSystem.LoadRenderPass(LevelLayout.LevelLayoutId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
     frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
 }
 
@@ -73,12 +71,15 @@ void LevelSystem::DestoryLevel()
 void LevelSystem::Update(const float& deltaTime)
 {
     OrthographicCamera->Update(SceneProperties);
-    Level.Update(deltaTime);
+    for (auto& levelLayer : LevelLayerList)
+    {
+       // levelLayer.Update(deltaTime);
+    }
 }
 
 void LevelSystem::Draw(Vector<VkCommandBuffer>& commandBufferList, const float& deltaTime)
 {
-    commandBufferList.emplace_back(renderSystem.RenderLevel(spriteRenderPass2DId, Level.LevelId, deltaTime, SceneProperties));
+    commandBufferList.emplace_back(renderSystem.RenderLevel(spriteRenderPass2DId, LevelLayout.LevelLayoutId, deltaTime, SceneProperties));
     commandBufferList.emplace_back(renderSystem.RenderFrameBuffer(frameBufferId));
 }
 
@@ -179,25 +180,37 @@ VkGuid LevelSystem::LoadTileSetVRAM(const String& tileSetPath)
     return tileSetId;
 }
 
-VkGuid LevelSystem::LoadLevelLayout(const String& levelLayoutPath)
+void LevelSystem::LoadLevelLayout(const String& levelLayoutPath)
 {
     if (levelLayoutPath.empty() ||
         levelLayoutPath == "")
     {
-        return VkGuid();
+        return;
     }
 
     size_t levelLayerCount = 0;
     size_t levelLayerMapCount = 0;
-    levelLayout = VRAM_LoadLevelInfo(levelLayoutPath.c_str());
+    LevelLayout = VRAM_LoadLevelInfo(levelLayoutPath.c_str());
     uint** levelLayerList = VRAM_LoadLevelLayout(levelLayoutPath.c_str(), levelLayerCount, levelLayerMapCount);
     Vector<uint*> levelMapPtrList = Vector<uint*>(levelLayerList, levelLayerList + levelLayerCount);
     for (size_t x = 0; x < levelLayerCount; x++)
     {
         Vector<uint> mapLayer = Vector<uint>(levelMapPtrList[x], levelMapPtrList[x] + levelLayerMapCount);
-        LevelMapList.emplace_back(mapLayer);
+        LevelTileMapList.emplace_back(mapLayer);
         VRAM_DeleteLevelLayerMapPtr(levelMapPtrList[x]);
     }
     VRAM_DeleteLevelLayerPtr(levelLayerList);
-    return levelLayout.LevelLayoutId;
+}
+
+void LevelSystem::LoadLevelMesh(VkGuid& tileSetId)
+{
+    for (int x = 0; x < LevelTileMapList.size(); x++)
+    {
+        const LevelTileSet& levelTileSet = LevelTileSetMap[tileSetId];
+        LevelLayerList.emplace_back(Level2D_LoadLevelInfo(LevelLayout.LevelLayoutId, levelTileSet, LevelTileMapList[x], LevelLayout.LevelBounds, x));
+       
+        Vector<Vertex2D> vertexList = Vector<Vertex2D>(LevelLayerList[x].VertexList, LevelLayerList[x].VertexList + LevelLayerList[x].VertexListCount);
+        Vector<uint> indexList = Vector<uint>(LevelLayerList[x].IndexList, LevelLayerList[x].IndexList + LevelLayerList[x].IndexListCount);
+        meshSystem.CreateLevelLayerMesh(LevelLayout.LevelLayoutId, vertexList, indexList);
+    }
 }
