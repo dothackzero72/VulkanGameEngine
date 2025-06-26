@@ -59,7 +59,7 @@ namespace VulkanGameEngineLevelEditor.Systems
             if (typeof(T) == typeof(uint)) { return BufferTypeEnum.BufferType_UInt; }
             else if (typeof(T) == typeof(mat4)) { return BufferTypeEnum.BufferType_Mat4; }
             else if (typeof(T) == typeof(MaterialProperitiesBuffer)) { return BufferTypeEnum.BufferType_MaterialProperitiesBuffer; }
-            //else if (typeof(T) == typeof(MeshPropertiesStruct)) { return BufferTypeEnum.BufferType_MeshPropertiesStruct; }
+            else if (typeof(T) == typeof(MeshPropertiesStruct)) { return BufferTypeEnum.BufferType_MeshPropertiesStruct; }
             else if (typeof(T) == typeof(SpriteInstanceStruct)) { return BufferTypeEnum.BufferType_SpriteInstanceStruct; }
             else if (typeof(T) == typeof(Vertex2D)) { return BufferTypeEnum.BufferType_Vector2D; }
             else

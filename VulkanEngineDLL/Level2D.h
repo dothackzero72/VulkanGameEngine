@@ -25,4 +25,4 @@ struct LevelLayer
 };
 
 DLL_EXPORT LevelLayer Level2D_LoadLevelInfo(VkGuid& levelId, const LevelTileSet& tileSet, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex);
-//DLL_EXPORT void Level2D_DeleteLevel(const LevelLayer& levelLayer);
+DLL_EXPORT void Level2D_DeleteLevel(uint* TileIdMap, Tile* TileMap, Vertex2D* VertexList, uint32* IndexList);

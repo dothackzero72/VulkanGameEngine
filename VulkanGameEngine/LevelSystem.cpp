@@ -56,15 +56,19 @@ void LevelSystem::LoadLevel(const String& levelPath)
     spriteRenderPass2DId = VkGuid(json2["RenderPassId"].get<String>().c_str());
 
     SpriteBatchLayerListMap[spriteRenderPass2DId].emplace_back(SpriteBatchLayer(spriteRenderPass2DId));
-    spriteRenderPass2DId = renderSystem.LoadRenderPass(LevelLayout.LevelLayoutId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
+    spriteRenderPass2DId = renderSystem.LoadRenderPass(levelLayout.LevelLayoutId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
     frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
 }
 
 void LevelSystem::DestoryLevel()
 {
-    for (auto tileMap : LevelTileSetMap)
+    for (auto& tileMap : LevelTileSetMap)
     {
         VRAM_DeleteLevelVRAM(tileMap.second.LevelTileListPtr);
+    }
+    for (auto& levelLayer : LevelLayerList)
+    {
+        Level2D_DeleteLevel(levelLayer.TileIdMap, levelLayer.TileMap, levelLayer.VertexList, levelLayer.IndexList);
     }
 }
 
@@ -79,7 +83,7 @@ void LevelSystem::Update(const float& deltaTime)
 
 void LevelSystem::Draw(Vector<VkCommandBuffer>& commandBufferList, const float& deltaTime)
 {
-    commandBufferList.emplace_back(renderSystem.RenderLevel(spriteRenderPass2DId, LevelLayout.LevelLayoutId, deltaTime, SceneProperties));
+    commandBufferList.emplace_back(renderSystem.RenderLevel(spriteRenderPass2DId, levelLayout.LevelLayoutId, deltaTime, SceneProperties));
     commandBufferList.emplace_back(renderSystem.RenderFrameBuffer(frameBufferId));
 }
 
@@ -190,7 +194,7 @@ void LevelSystem::LoadLevelLayout(const String& levelLayoutPath)
 
     size_t levelLayerCount = 0;
     size_t levelLayerMapCount = 0;
-    LevelLayout = VRAM_LoadLevelInfo(levelLayoutPath.c_str());
+    levelLayout = VRAM_LoadLevelInfo(levelLayoutPath.c_str());
     uint** levelLayerList = VRAM_LoadLevelLayout(levelLayoutPath.c_str(), levelLayerCount, levelLayerMapCount);
     Vector<uint*> levelMapPtrList = Vector<uint*>(levelLayerList, levelLayerList + levelLayerCount);
     for (size_t x = 0; x < levelLayerCount; x++)
@@ -207,10 +211,10 @@ void LevelSystem::LoadLevelMesh(VkGuid& tileSetId)
     for (int x = 0; x < LevelTileMapList.size(); x++)
     {
         const LevelTileSet& levelTileSet = LevelTileSetMap[tileSetId];
-        LevelLayerList.emplace_back(Level2D_LoadLevelInfo(LevelLayout.LevelLayoutId, levelTileSet, LevelTileMapList[x], LevelLayout.LevelBounds, x));
+        LevelLayerList.emplace_back(Level2D_LoadLevelInfo(levelLayout.LevelLayoutId, levelTileSet, LevelTileMapList[x], levelLayout.LevelBounds, x));
        
         Vector<Vertex2D> vertexList = Vector<Vertex2D>(LevelLayerList[x].VertexList, LevelLayerList[x].VertexList + LevelLayerList[x].VertexListCount);
         Vector<uint> indexList = Vector<uint>(LevelLayerList[x].IndexList, LevelLayerList[x].IndexList + LevelLayerList[x].IndexListCount);
-        meshSystem.CreateLevelLayerMesh(LevelLayout.LevelLayoutId, vertexList, indexList);
+        meshSystem.CreateLevelLayerMesh(levelLayout.LevelLayoutId, vertexList, indexList);
     }
 }

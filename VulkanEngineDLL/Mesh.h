@@ -24,30 +24,30 @@ struct VertexLoaderStruct
 {
 	BufferTypeEnum VertexType;
 	uint32 MeshVertexBufferId;
-	uint32 SizeofVertex;
-	uint32 VertexCount;
+	size_t SizeofVertex;
+	size_t VertexCount;
 	void*  VertexData;
 };
 
 struct IndexLoaderStruct
 {
 	uint32 MeshIndexBufferId;
-	uint32 SizeofIndex;
-	uint32 IndexCount;
+	size_t SizeofIndex;
+	size_t IndexCount;
 	void*  IndexData;
 };
 
 struct TransformLoaderStruct
 {
 	uint32 MeshTransformBufferId;
-	uint32 SizeofTransform;
+	size_t SizeofTransform;
 	void*  TransformData;
 };
 
 struct MeshPropertiesLoaderStruct
 {
 	uint32 PropertiesBufferId;
-	uint32 SizeofMeshProperties;
+	size_t SizeofMeshProperties;
 	void*  MeshPropertiesData;
 };
 
@@ -68,8 +68,8 @@ struct Mesh
 	uint32 MeshId = 0;
 	uint32 ParentGameObjectID = 0;
 	uint32 GameObjectTransform = 0;
-	uint32 VertexCount = 0;
-	uint32 IndexCount = 0;
+	size_t VertexCount = 0;
+	size_t IndexCount = 0;
 	VkGuid MaterialId;
 
 	BufferTypeEnum VertexType;

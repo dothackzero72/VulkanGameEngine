@@ -44,7 +44,7 @@ public:
 	SceneDataBuffer												  SceneProperties;
 	SharedPtr<OrthographicCamera2D>								  OrthographicCamera;
 
-	LevelLayout                                                   LevelLayout;
+	LevelLayout                                                   levelLayout;
 	Vector<LevelLayer>											  LevelLayerList;
 	Vector<Vector<uint>>										  LevelTileMapList;
 

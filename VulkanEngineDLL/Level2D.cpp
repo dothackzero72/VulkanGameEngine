@@ -4,15 +4,6 @@
 
 LevelLayer Level2D_LoadLevelInfo(VkGuid& levelId, const LevelTileSet& tileSet, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex)
 {
-    LevelLayer levelLayout = LevelLayer
-    {
-        .LevelId = levelId,
-        .MaterialId = tileSet.MaterialId,
-        .TileSetId = tileSet.TileSetId,
-        .LevelLayerIndex = levelLayerIndex,
-        .LevelBounds = levelBounds
-    };
-
     Vector<Tile>     tileMap;
     Vector<uint32>   indexList;
     Vector<Vertex2D> vertexList;
@@ -52,19 +43,35 @@ LevelLayer Level2D_LoadLevelInfo(VkGuid& levelId, const LevelTileSet& tileSet, V
         }
     }
 
-    uint* TileIdMap = memorySystem.AddPtrBuffer<uint>(tileIdMap.size(), __FILE__, __LINE__, __func__);
-    Tile* TileMap = memorySystem.AddPtrBuffer<Tile>(tileMap.size(), __FILE__, __LINE__, __func__);
-    Vertex2D* VertexList = memorySystem.AddPtrBuffer<Vertex2D>(vertexList.size(), __FILE__, __LINE__, __func__);
-    uint32* IndexList = memorySystem.AddPtrBuffer<uint32>(indexList.size(), __FILE__, __LINE__, __func__);
-
-    levelLayout.TileIdMap = tileIdMap.data();
-    levelLayout.TileMap = tileMap.data();
-    levelLayout.VertexList = vertexList.data();
-    levelLayout.IndexList = indexList.data();
-    levelLayout.TileIdMapCount = tileIdMap.size();
-    levelLayout.TileMapCount = tileMap.size();
-    levelLayout.VertexListCount = vertexList.size();
-    levelLayout.IndexListCount = indexList.size();
+    LevelLayer levelLayout = LevelLayer
+    {
+        .LevelId = levelId,
+        .MaterialId = tileSet.MaterialId,
+        .TileSetId = tileSet.TileSetId,
+        .LevelLayerIndex = levelLayerIndex,
+        .LevelBounds = levelBounds,
+        .TileIdMap = memorySystem.AddPtrBuffer<uint>(tileIdMap.size(), __FILE__, __LINE__, __func__),
+        .TileMap = memorySystem.AddPtrBuffer<Tile>(tileMap.size(), __FILE__, __LINE__, __func__),
+        .VertexList = memorySystem.AddPtrBuffer<Vertex2D>(vertexList.size(), __FILE__, __LINE__, __func__),
+        .IndexList = memorySystem.AddPtrBuffer<uint32>(indexList.size(), __FILE__, __LINE__, __func__),
+        .TileIdMapCount = tileIdMap.size(),
+        .TileMapCount = tileMap.size(),
+        .VertexListCount = vertexList.size(),
+        .IndexListCount = indexList.size()
+    };
+    
+    std::memcpy(levelLayout.TileMap, tileMap.data(), tileMap.size() * sizeof(Tile));
+    std::memcpy(levelLayout.TileIdMap, tileIdMap.data(), tileIdMap.size() * sizeof(uint));
+    std::memcpy(levelLayout.VertexList, vertexList.data(), vertexList.size() * sizeof(Vertex2D));
+    std::memcpy(levelLayout.IndexList, indexList.data(), indexList.size() * sizeof(uint32));
 
     return levelLayout;
+}
+
+void Level2D_DeleteLevel(uint* TileIdMap, Tile* TileMap, Vertex2D* VertexList, uint32* IndexList)
+{
+    memorySystem.RemovePtrBuffer<uint>(TileIdMap);
+    memorySystem.RemovePtrBuffer<Tile>(TileMap);
+    memorySystem.RemovePtrBuffer<Vertex2D>(VertexList);
+    memorySystem.RemovePtrBuffer<uint32>(IndexList);
 }
