@@ -22,7 +22,7 @@ Sprite::~Sprite()
 {
 }
 
-SpriteInstanceStruct Sprite::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
+SpriteInstanceStruct Sprite::Update(const float& deltaTime)
 {
     const Transform2DComponent& transform2D = gameObjectSystem.FindTransform2DComponent(GameObjectId);
     const SpriteVram& vram = levelSystem.VramSpriteMap.at(SpriteVramId);

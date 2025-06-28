@@ -48,7 +48,7 @@ public:
 	Vector<LevelLayer>											  LevelLayerList;
 	Vector<Vector<uint>>										  LevelTileMapList;
 
-	UnorderedMap<GameObjectID, Sprite>							  SpriteMap;
+//	UnorderedMap<GameObjectID, Sprite>							  SpriteMap;
 	UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetMap;
 	UnorderedMap<RenderPassGuid, SpriteVram>                      VramSpriteMap;
 	UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerListMap;

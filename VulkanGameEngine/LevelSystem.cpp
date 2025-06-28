@@ -4,6 +4,7 @@
 #include "GameObjectSystem.h"
 #include "MeshSystem.h"
 #include "VRAM.h"
+#include "SpriteSystem.h"
 
 LevelSystem levelSystem = LevelSystem();
 
@@ -75,6 +76,7 @@ void LevelSystem::DestoryLevel()
 void LevelSystem::Update(const float& deltaTime)
 {
     OrthographicCamera->Update(SceneProperties);
+    spriteSystem.Update(deltaTime);
     for (auto& levelLayer : LevelLayerList)
     {
        // levelLayer.Update(deltaTime);

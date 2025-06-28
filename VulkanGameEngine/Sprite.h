@@ -104,7 +104,7 @@ public:
 	Sprite(GameObjectID gameObjectId, VkGuid& spriteVramId);
 	~Sprite();
 
-	SpriteInstanceStruct Update(VkCommandBuffer& commandBuffer, const float& deltaTime);
+	SpriteInstanceStruct Update(const float& deltaTime);
 	void SetSpriteAnimation(SpriteAnimationEnum spriteAnimation);
 };
 

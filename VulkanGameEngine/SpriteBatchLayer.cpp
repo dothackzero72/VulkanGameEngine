@@ -4,6 +4,7 @@
 #include "Typedef.h"
 #include "MeshSystem.h"
 #include "LevelSystem.h"
+#include "SpriteSystem.h"
 
 uint32 SpriteBatchLayer::NextSpriteBatchLayerID = 0;
 
@@ -16,7 +17,7 @@ SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 {                            
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 
-	for (int x = 0; x < levelSystem.SpriteMap.size(); x++)
+	for (int x = 0; x < spriteSystem.SpriteListRef().size(); x++)
 	{
 		levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
 	}
@@ -36,7 +37,7 @@ void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& delta
 	levelSystem.SpriteInstanceListMap[SpriteBatchLayerID].reserve(levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID].size());
 	for (auto& gameObjectID : levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID])
 	{
-		levelSystem.SpriteInstanceListMap[SpriteBatchLayerID].emplace_back(levelSystem.SpriteMap[gameObjectID].Update(commandBuffer, deltaTime));
+		levelSystem.SpriteInstanceListMap[SpriteBatchLayerID].emplace_back(*spriteSystem.FindSpriteInstance(gameObjectID));
 	}
 
 	if (levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID].size())

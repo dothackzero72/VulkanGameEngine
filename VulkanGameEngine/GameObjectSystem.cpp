@@ -1,5 +1,6 @@
 #include "GameObjectSystem.h"
 #include "LevelSystem.h"
+#include "SpriteSystem.h"
 
 GameObjectSystem gameObjectSystem = GameObjectSystem();
 
@@ -23,7 +24,7 @@ void GameObjectSystem::CreateGameObject(const String& name, const Vector<Compone
 		{
 			case kTransform2DComponent: Transform2DComponentMap[id] = Transform2DComponent(objectPosition); break;
 			case kInputComponent: InputComponentMap[id] = InputComponent(id); break;
-			case kSpriteComponent: levelSystem.SpriteMap[id] = Sprite(id, vramId); break;
+			case kSpriteComponent: spriteSystem.AddSprite(id, vramId); break;
 		}
 	}
 }
@@ -64,7 +65,7 @@ void GameObjectSystem::LoadInputComponent(const nlohmann::json& json, GameObject
 void GameObjectSystem::LoadSpriteComponent(const nlohmann::json& json, GameObjectID id)
 {
 	VkGuid vramId = VkGuid(json["VramId"].get<String>().c_str());
-	levelSystem.SpriteMap[id] = Sprite(id, vramId);
+	spriteSystem.AddSprite(id, vramId);
 }
 
 const GameObject& GameObjectSystem::FindGameObject(const GameObjectID& id)
