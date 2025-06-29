@@ -16,7 +16,7 @@ SpriteBatchLayer::SpriteBatchLayer()
 SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 {                            
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
-
+	RenderPassId = renderPassId;
 	for (int x = 0; x < spriteSystem.SpriteListRef().size(); x++)
 	{
 		spriteSystem.AddSpriteBatchObjectList(SpriteBatchLayerID, GameObjectID(x + 1));

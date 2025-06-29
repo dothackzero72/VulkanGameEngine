@@ -75,12 +75,6 @@ class Sprite
 private:
 	static uint NextSpriteID;
 
-	uint CurrentAnimationID = 0;
-	uint CurrentFrame = 0;
-    VkGuid SpriteVramId;
-	float CurrentFrameTime = 0.0f;
-	bool SpriteAlive = true;
-
 public:
 
 	enum SpriteAnimationEnum
@@ -91,7 +85,11 @@ public:
 
 	GameObjectID GameObjectId;
 	uint SpriteID = 0;
-
+    uint CurrentAnimationID = 0;
+    uint CurrentFrame = 0;
+    VkGuid SpriteVramId;
+    float CurrentFrameTime = 0.0f;
+    bool SpriteAlive = true;
 	ivec2 FlipSprite = vec2(0);
 	vec2 LastSpritePosition = vec2(0.0f);
 	vec2 LastSpriteRotation = vec2(0.0f);

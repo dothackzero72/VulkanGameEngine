@@ -1,10 +1,13 @@
 #include "SpriteSystem.h"
 #include "RenderSystem.h"
 #include "BufferSystem.h"
+#include "TextureSystem.h"
+#include "GameObjectSystem.h"
+#include "LevelSystem.h"
+#include "MaterialSystem.h"
 #include "MeshSystem.h"
 #include <limits>
 #include <algorithm>
-#include "TextureSystem.h"
 
 SpriteSystem spriteSystem = SpriteSystem();
 
@@ -14,11 +17,101 @@ SpriteSystem::SpriteSystem()
     SpriteInstanceList.reserve(10000);
     SpriteIdToListIndexMap.reserve(10000);
     SpriteInstanceBufferIdMap.reserve(10000);
-    SpriteBatchLayerMap.reserve(10000);
+    SpriteBatchLayerList.reserve(10000);
 }
 
 SpriteSystem::~SpriteSystem()
 {
+}
+
+void SpriteSystem::BatchSpriteUpdate(SpriteInstanceStruct* spriteInstanceList, Sprite* spriteList, const Transform2DComponent* transform2DList, const SpriteVram* vramList, const Animation2D* animationList, const AnimationFrames* frameList, const Material* materialList, size_t spriteCount, float deltaTime) 
+{
+    for (size_t x = 0; x < spriteCount; x++) 
+    {
+        glm::mat4 spriteMatrix = glm::mat4(1.0f);
+        if (spriteList[x].LastSpritePosition != spriteList[x].SpritePosition) {
+            spriteMatrix = glm::translate(spriteMatrix, glm::vec3(transform2DList[x].GameObjectPosition.x, transform2DList[x].GameObjectPosition.y, 0.0f));
+            spriteList[x].LastSpritePosition = spriteList[x].SpritePosition;
+        }
+        if (spriteList[x].LastSpriteRotation != spriteList[x].SpriteRotation) {
+            spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transform2DList[x].GameObjectRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+            spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transform2DList[x].GameObjectRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+            spriteMatrix = glm::rotate(spriteMatrix, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+            spriteList[x].LastSpriteRotation = spriteList[x].SpriteRotation;
+        }
+        if (spriteList[x].LastSpriteScale != spriteList[x].SpriteScale) {
+            spriteMatrix = glm::scale(spriteMatrix, glm::vec3(transform2DList[x].GameObjectScale.x, transform2DList[x].GameObjectScale.y, 1.0f));
+            spriteList[x].LastSpriteScale = spriteList[x].SpriteScale;
+        }
+
+        spriteList[x].CurrentFrameTime += deltaTime;
+        if (spriteList[x].CurrentFrameTime >= animationList[x].FrameHoldTime) 
+        {
+            spriteList[x].CurrentFrame += 1;
+            spriteList[x].CurrentFrameTime = 0.0f;
+            if (spriteList[x].CurrentFrame >= spriteCount) 
+            {
+                spriteList[x].CurrentFrame = 0;
+            }
+        }
+
+        const ivec2& currentFrame = frameList[x][spriteList[x].CurrentFrame];
+        spriteInstanceList[x].SpritePosition = transform2DList[x].GameObjectPosition;
+        spriteInstanceList[x].SpriteSize = vramList[x].SpriteSize;
+        spriteInstanceList[x].MaterialID = materialList[x].ShaderMaterialBufferIndex;
+        spriteInstanceList[x].InstanceTransform = spriteMatrix;
+        spriteInstanceList[x].FlipSprite = spriteList[x].FlipSprite;
+        spriteInstanceList[x].UVOffset = glm::vec4(vramList[x].SpriteUVSize.x * currentFrame.x, vramList[x].SpriteUVSize.y * currentFrame.y, vramList[x].SpriteUVSize.x, vramList[x].SpriteUVSize.y);
+    }
+}
+
+SpriteInstanceStruct SpriteSystem::PerSpriteUpdate(Sprite& sprite, float deltaTime)
+{
+    const Transform2DComponent& transform2D = gameObjectSystem.FindTransform2DComponent(sprite.GameObjectId);
+    const SpriteVram& vram = spriteSystem.FindVramSprite(sprite.SpriteVramId);
+    const Animation2D& animation = spriteSystem.FindSpriteAnimation(sprite.CurrentAnimationID);
+    const AnimationFrames& frameList = spriteSystem.FindSpriteAnimationFrames(vram.VramSpriteID)[sprite.CurrentAnimationID];
+    const Material& material = materialSystem.FindMaterial(vram.SpriteMaterialID);
+    const ivec2& currentFrame = frameList[sprite.CurrentFrame];
+
+    mat4 spriteMatrix = mat4(1.0f);
+    if (sprite.LastSpritePosition != sprite.SpritePosition)
+    {
+        spriteMatrix = glm::translate(spriteMatrix, vec3(transform2D.GameObjectPosition.x, transform2D.GameObjectPosition.y, 0.0f));
+        sprite.LastSpritePosition == sprite.SpritePosition;
+    }
+    if (sprite.LastSpriteRotation != sprite.SpriteRotation)
+    {
+        spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transform2D.GameObjectRotation.x), vec3(1.0f, 0.0f, 0.0f));
+        spriteMatrix = glm::rotate(spriteMatrix, glm::radians(transform2D.GameObjectRotation.y), vec3(0.0f, 1.0f, 0.0f));
+        spriteMatrix = glm::rotate(spriteMatrix, glm::radians(0.0f), vec3(0.0f, 0.0f, 1.0f));
+        sprite.LastSpriteRotation == sprite.SpriteRotation;
+    }
+    if (sprite.LastSpriteScale != sprite.SpriteScale)
+    {
+        spriteMatrix = glm::scale(spriteMatrix, vec3(transform2D.GameObjectScale.x, transform2D.GameObjectScale.y, 1.0f));
+        sprite.LastSpriteScale == sprite.SpriteScale;
+    }
+
+    sprite.CurrentFrameTime += deltaTime;
+    if (sprite.CurrentFrameTime >= animation.FrameHoldTime) {
+        sprite.CurrentFrame += 1;
+        sprite.CurrentFrameTime = 0.0f;
+        if (sprite.CurrentFrame >= frameList.size())
+        {
+            sprite.CurrentFrame = 0;
+        }
+    }
+
+    SpriteInstanceStruct spriteInstance;
+    spriteInstance.SpritePosition = transform2D.GameObjectPosition;
+    spriteInstance.SpriteSize = vram.SpriteSize;
+    spriteInstance.MaterialID = material.ShaderMaterialBufferIndex;
+    spriteInstance.InstanceTransform = spriteMatrix;
+    spriteInstance.FlipSprite = sprite.FlipSprite;
+    spriteInstance.UVOffset = vec4(vram.SpriteUVSize.x * currentFrame.x, vram.SpriteUVSize.y * currentFrame.y, vram.SpriteUVSize.x, vram.SpriteUVSize.y);
+
+    return spriteInstance;
 }
 
 void SpriteSystem::AddSprite(GameObjectID gameObjectId, VkGuid& spriteVramId)
@@ -30,7 +123,7 @@ void SpriteSystem::AddSprite(GameObjectID gameObjectId, VkGuid& spriteVramId)
 
 void SpriteSystem::AddSpriteBatchLayer(RenderPassGuid& renderPassId)
 {
-    SpriteBatchLayerMap[renderPassId].emplace_back(SpriteBatchLayer(renderPassId));
+    SpriteBatchLayerList.emplace_back(SpriteBatchLayer(renderPassId));
 }
 
 void SpriteSystem::AddSpriteInstanceBufferId(UM_SpriteBatchID spriteInstanceBufferId, int BufferId)
@@ -67,19 +160,52 @@ SpriteBatchLayer SpriteSystem::AddSpriteLayer(VkGuid& renderPassId)
 
 void SpriteSystem::Update(const float& deltaTime)
 {
-    for (int x = 0; x < SpriteList.size(); x++)
+    if (SpriteList.size() > 100)
     {
-        SpriteInstanceList[x] = SpriteList[x].Update(deltaTime);
-    }
-    VkCommandBuffer commandBuffer = renderSystem.BeginSingleTimeCommands();
-    for (auto& spriteLayerPair : SpriteBatchLayerMap)
-    {
-        for (auto& spriteLayer : spriteLayerPair.second)
+        std::vector<Transform2DComponent> transform2D(SpriteInstanceList.size());
+        std::vector<SpriteVram> vram(SpriteInstanceList.size());
+        std::vector<Animation2D> animation(SpriteInstanceList.size());
+        std::vector<AnimationFrames> frameList(SpriteInstanceList.size());
+        std::vector<Material> material(SpriteInstanceList.size());
+
+        for (size_t x = 0; x < SpriteInstanceList.size(); ++x)
         {
-            spriteLayer.Update(commandBuffer, deltaTime);
+            const auto& instance = SpriteInstanceList[x];
+            const auto& sprite = SpriteList[x];
+            transform2D[x] = gameObjectSystem.FindTransform2DComponent(sprite.GameObjectId);
+            vram[x] = FindVramSprite(sprite.SpriteVramId);
+            animation[x] = FindSpriteAnimation(sprite.CurrentAnimationID);
+            frameList[x] = spriteSystem.FindSpriteAnimationFrames(vram[x].VramSpriteID)[sprite.CurrentAnimationID];
+            material[x] = materialSystem.FindMaterial(vram[x].SpriteMaterialID);
+        }
+        BatchSpriteUpdate(SpriteInstanceList.data(), SpriteList.data(), transform2D.data(), vram.data(), animation.data(), frameList.data(), material.data(), SpriteInstanceList.size(), deltaTime);
+    }
+    else
+    {
+        for (int x = 0; x < SpriteList.size(); x++)
+        {
+            SpriteInstanceList[x] = PerSpriteUpdate(SpriteList[x], deltaTime);
         }
     }
+
+    VkCommandBuffer commandBuffer = renderSystem.BeginSingleTimeCommands();
+    for (auto& spriteLayer : SpriteBatchLayerList)
+    {
+        spriteLayer.Update(commandBuffer, deltaTime);
+    }
     renderSystem.EndSingleTimeCommands(commandBuffer);
+}
+
+void SpriteSystem::SetSpriteAnimation(Sprite& sprite, Sprite::SpriteAnimationEnum spriteAnimation)
+{
+    if (sprite.CurrentAnimationID == spriteAnimation)
+    {
+        return;
+    }
+
+    sprite.CurrentAnimationID = spriteAnimation;
+    sprite.CurrentFrame = 0;
+    sprite.CurrentFrameTime = 0.0f;
 }
 
 Sprite* SpriteSystem::FindSprite(GameObjectID gameObjectId)
@@ -100,14 +226,14 @@ Sprite* SpriteSystem::FindSprite(GameObjectID gameObjectId)
     }
 }
 
-const SpriteVram& SpriteSystem::FindVramSprite(RenderPassGuid guid)
+const SpriteVram& SpriteSystem::FindVramSprite(VkGuid vramSpriteId)
 {
-    auto it = SpriteVramMap.find(guid);
-    if (it != SpriteVramMap.end())
-    {
-        return it->second;
-    }
-    throw std::out_of_range("VramSprite not found for given GUID");
+    auto it = std::find_if(SpriteVramList.begin(), SpriteVramList.end(),
+        [vramSpriteId](const SpriteVram& sprite)
+        {
+            return sprite.VramSpriteID == vramSpriteId;
+        });
+    return *it;
 }
 
 const Animation2D& SpriteSystem::FindSpriteAnimation(const UM_AnimationListID& animationId)
@@ -120,7 +246,7 @@ const Animation2D& SpriteSystem::FindSpriteAnimation(const UM_AnimationListID& a
     throw std::out_of_range("Animation for Vram not found for given GUID");
 }
 
-const Vector<AnimationFrames>& SpriteSystem::FindSpriteAnimationFrames(const VkGuid& vramSpriteId)
+ Vector<AnimationFrames>& SpriteSystem::FindSpriteAnimationFrames(const VkGuid& vramSpriteId)
 {
     auto it = SpriteAnimationFrameListMap.find(vramSpriteId);
     if (it != SpriteAnimationFrameListMap.end())
@@ -174,14 +300,15 @@ const Vector<GameObjectID>& SpriteSystem::FindSpriteBatchObjectListMap(UM_Sprite
     throw std::out_of_range("SpriteInstanceBuffer not found for given GUID");
 }
 
-Vector<SpriteBatchLayer>& SpriteSystem::FindSpriteBatchLayer(RenderPassGuid& guid)
+Vector<SpriteBatchLayer> SpriteSystem::FindSpriteBatchLayer(RenderPassGuid& guid) 
 {
-    auto it = SpriteBatchLayerMap.find(guid);
-    if (it != SpriteBatchLayerMap.end())
-    {
-        return it->second;
-    }
-    throw std::out_of_range("SpriteBatchLayerMap not found for given GUID");
+    std::vector<SpriteBatchLayer> matchingLayers;
+    std::copy_if(SpriteBatchLayerList.begin(), SpriteBatchLayerList.end(),
+        std::back_inserter(matchingLayers),
+        [guid](const SpriteBatchLayer& sprite) {
+            return sprite.RenderPassId == guid;
+        });
+    return matchingLayers;
 }
 
 size_t SpriteSystem::FindSpriteIndex(GameObjectID gameObjectId) 
@@ -204,8 +331,12 @@ VkGuid SpriteSystem::LoadSpriteVRAM(const String& spriteVramPath)
     VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
     VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
 
-    auto it = SpriteVramMap.find(vramId);
-    if (it != SpriteVramMap.end())
+    auto it = std::find_if(SpriteVramList.begin(), SpriteVramList.end(),
+        [vramId](const SpriteVram& sprite)
+        {
+            return sprite.VramSpriteID == vramId;
+        });
+    if (it != SpriteVramList.end())
     {
         return vramId;
     }
@@ -213,7 +344,7 @@ VkGuid SpriteSystem::LoadSpriteVRAM(const String& spriteVramPath)
     const Material& material = materialSystem.FindMaterial(materialId);
     const Texture& texture = textureSystem.FindTexture(material.AlbedoMapId);
 
-    SpriteVramMap[vramId] = VRAM_LoadSpriteVRAM(spriteVramPath.c_str(), material, texture);
+    SpriteVramList.emplace_back(VRAM_LoadSpriteVRAM(spriteVramPath.c_str(), material, texture));
     Animation2D* animationListPtr = VRAM_LoadSpriteAnimations(spriteVramPath.c_str(), animationListCount);
     vec2* animationFrameListPtr = VRAM_LoadSpriteAnimationFrames(spriteVramPath.c_str(), animationFrameCount);
 
