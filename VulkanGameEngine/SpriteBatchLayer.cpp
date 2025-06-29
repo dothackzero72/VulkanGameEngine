@@ -19,12 +19,13 @@ SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 
 	for (int x = 0; x < spriteSystem.SpriteListRef().size(); x++)
 	{
-		levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID].emplace_back(GameObjectID(x + 1));
+		spriteSystem.AddSpriteBatchObjectList(SpriteBatchLayerID, GameObjectID(x + 1));
 	}
 
 	SpriteLayerMeshId = meshSystem.CreateSpriteLayerMesh(gameObjectSystem.SpriteVertexList, gameObjectSystem.SpriteIndexList);
-	levelSystem.SpriteInstanceListMap[SpriteBatchLayerID] = Vector<SpriteInstanceStruct>(levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID].size());
-	levelSystem.SpriteInstanceBufferMap[SpriteBatchLayerID] = bufferSystem.CreateVulkanBuffer<SpriteInstanceStruct>(renderSystem.renderer, levelSystem.SpriteInstanceListMap[SpriteBatchLayerID], MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+	Vector<SpriteInstanceStruct> af = Vector<SpriteInstanceStruct>(spriteSystem.FindSpriteBatchObjectListMap(SpriteBatchLayerID).size());
+	spriteSystem.AddSpriteInstanceLayerList(SpriteBatchLayerID, af);
+	spriteSystem.AddSpriteInstanceBufferId(SpriteBatchLayerID, bufferSystem.CreateVulkanBuffer<SpriteInstanceStruct>(renderSystem.renderer, spriteSystem.FindSpriteInstanceList(SpriteBatchLayerID), MeshBufferUsageSettings, MeshBufferPropertySettings, false));
 }
 
 SpriteBatchLayer::~SpriteBatchLayer()
@@ -33,15 +34,15 @@ SpriteBatchLayer::~SpriteBatchLayer()
 
 void SpriteBatchLayer::Update(VkCommandBuffer& commandBuffer, const float& deltaTime)
 {
-	levelSystem.SpriteInstanceListMap[SpriteBatchLayerID].clear();
-	levelSystem.SpriteInstanceListMap[SpriteBatchLayerID].reserve(levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID].size());
-	for (auto& gameObjectID : levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID])
+	spriteSystem.FindSpriteInstanceList(SpriteBatchLayerID).clear();
+	spriteSystem.FindSpriteInstanceList(SpriteBatchLayerID).reserve(spriteSystem.FindSpriteBatchObjectListMap(SpriteBatchLayerID).size());
+	for (auto& gameObjectID : spriteSystem.FindSpriteBatchObjectListMap(SpriteBatchLayerID))
 	{
-		levelSystem.SpriteInstanceListMap[SpriteBatchLayerID].emplace_back(*spriteSystem.FindSpriteInstance(gameObjectID));
+		spriteSystem.FindSpriteInstanceList(SpriteBatchLayerID).emplace_back(*spriteSystem.FindSpriteInstance(gameObjectID));
 	}
 
-	if (levelSystem.SpriteBatchLayerObjectListMap[SpriteBatchLayerID].size())
+	if (spriteSystem.FindSpriteBatchObjectListMap(SpriteBatchLayerID).size())
 	{
-		bufferSystem.UpdateBufferMemory(renderSystem.renderer, levelSystem.SpriteInstanceBufferMap[SpriteBatchLayerID], levelSystem.SpriteInstanceListMap[SpriteBatchLayerID]);
+		bufferSystem.UpdateBufferMemory(renderSystem.renderer, spriteSystem.FindSpriteInstanceBufferId(SpriteBatchLayerID), spriteSystem.FindSpriteInstanceList(SpriteBatchLayerID));
 	}
 }

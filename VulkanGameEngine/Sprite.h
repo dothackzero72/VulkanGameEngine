@@ -77,7 +77,7 @@ private:
 
 	uint CurrentAnimationID = 0;
 	uint CurrentFrame = 0;
-	VkGuid SpriteVramId;
+    VkGuid SpriteVramId;
 	float CurrentFrameTime = 0.0f;
 	bool SpriteAlive = true;
 

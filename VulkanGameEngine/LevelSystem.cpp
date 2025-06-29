@@ -35,7 +35,7 @@ void LevelSystem::LoadLevel(const String& levelPath)
     }
     for (int x = 0; x < json["LoadSpriteVRAM"].size(); x++)
     {
-        vramId = LoadSpriteVRAM(json["LoadSpriteVRAM"][x]);
+        vramId = spriteSystem.LoadSpriteVRAM(json["LoadSpriteVRAM"][x]);
     }
     for (int x = 0; x < json["LoadTileSetVRAM"].size(); x++)
     {
@@ -56,7 +56,7 @@ void LevelSystem::LoadLevel(const String& levelPath)
     nlohmann::json json2 = Json::ReadJson("../RenderPass/LevelShader2DRenderPass.json");
     spriteRenderPass2DId = VkGuid(json2["RenderPassId"].get<String>().c_str());
 
-    SpriteBatchLayerListMap[spriteRenderPass2DId].emplace_back(SpriteBatchLayer(spriteRenderPass2DId));
+    spriteSystem.AddSpriteBatchLayer(spriteRenderPass2DId);
     spriteRenderPass2DId = renderSystem.LoadRenderPass(levelLayout.LevelLayoutId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
     frameBufferId = renderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
 }
@@ -124,40 +124,7 @@ void LevelSystem::DestroyDeadGameObjects()
     //}
 }
 
-VkGuid LevelSystem::LoadSpriteVRAM(const String& spriteVramPath)
-{
-    size_t animationListCount = 0;
-    size_t animationFrameCount = 0;
 
-    nlohmann::json json = Json::ReadJson(spriteVramPath);
-    VkGuid vramId = VkGuid(json["VramSpriteId"].get<String>().c_str());
-    VkGuid materialId = VkGuid(json["MaterialId"].get<String>().c_str());
-
-    auto it = VramSpriteMap.find(vramId);
-    if (it != VramSpriteMap.end())
-    {
-        return vramId;
-    }
-
-    const Material& material = materialSystem.FindMaterial(materialId);
-    const Texture& texture = textureSystem.FindTexture(material.AlbedoMapId);
-
-    VramSpriteMap[vramId] = VRAM_LoadSpriteVRAM(spriteVramPath.c_str(), material, texture);
-    Animation2D* animationListPtr = VRAM_LoadSpriteAnimations(spriteVramPath.c_str(), animationListCount);
-    vec2* animationFrameListPtr = VRAM_LoadSpriteAnimationFrames(spriteVramPath.c_str(), animationFrameCount);
-
-    Vector<Animation2D> animation2DList = Vector<Animation2D>(animationListPtr, animationListPtr + animationListCount);
-    Vector<vec2> animationFrameList = Vector<vec2>(animationFrameListPtr, animationFrameListPtr + animationFrameCount);
-
-    for (size_t x = 0; x < animation2DList.size(); x++)
-    {
-        AnimationMap[animation2DList[x].AnimationId] = animation2DList[x];
-    }
-    AnimationFrameListMap[vramId].emplace_back(animationFrameList);
-
-    VRAM_DeleteSpriteVRAM(animationListPtr, animationFrameListPtr);
-    return vramId;
-}
 
 VkGuid LevelSystem::LoadTileSetVRAM(const String& tileSetPath)
 {

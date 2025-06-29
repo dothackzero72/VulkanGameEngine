@@ -34,7 +34,6 @@ private:
 	RenderPassGuid						spriteRenderPass2DId;
 	RenderPassGuid   					frameBufferId;
 
-	VkGuid LoadSpriteVRAM(const String& spritePath);
 	VkGuid LoadTileSetVRAM(const String& tileSetPath);
 	void   LoadLevelLayout(const String& levelLayoutPath);
 	void   LoadLevelMesh(VkGuid& tileSetId);
@@ -47,18 +46,8 @@ public:
 	LevelLayout                                                   levelLayout;
 	Vector<LevelLayer>											  LevelLayerList;
 	Vector<Vector<uint>>										  LevelTileMapList;
-
-//	UnorderedMap<GameObjectID, Sprite>							  SpriteMap;
 	UnorderedMap<RenderPassGuid, LevelTileSet>                    LevelTileSetMap;
-	UnorderedMap<RenderPassGuid, SpriteVram>                      VramSpriteMap;
-	UnorderedMap<RenderPassGuid, Vector<SpriteBatchLayer>>        SpriteBatchLayerListMap;
-	UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>>  SpriteInstanceListMap;
-	UnorderedMap<UM_SpriteBatchID, int>							  SpriteInstanceBufferMap;
-	UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>>          SpriteBatchLayerObjectListMap;
-
-	UnorderedMap<UM_AnimationListID, Animation2D>				  AnimationMap;
-	UnorderedMap<VkGuid, Vector<AnimationFrames>>			      AnimationFrameListMap;
-
+	
 	LevelSystem();
 	~LevelSystem();
 	void Update(const float& deltaTime);

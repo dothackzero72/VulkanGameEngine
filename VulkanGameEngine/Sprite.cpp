@@ -3,6 +3,7 @@
 #include "RenderSystem.h"
 #include "LevelSystem.h"
 #include "MaterialSystem.h"
+#include "SpriteSystem.h"
 
 uint32 Sprite::NextSpriteID = 0;
 
@@ -25,9 +26,9 @@ Sprite::~Sprite()
 SpriteInstanceStruct Sprite::Update(const float& deltaTime)
 {
     const Transform2DComponent& transform2D = gameObjectSystem.FindTransform2DComponent(GameObjectId);
-    const SpriteVram& vram = levelSystem.VramSpriteMap.at(SpriteVramId);
-    const Animation2D& animation = levelSystem.AnimationMap.at(CurrentAnimationID);
-    const AnimationFrames& frameList = levelSystem.AnimationFrameListMap[vram.VramSpriteID][CurrentAnimationID];
+    const SpriteVram& vram = spriteSystem.FindVramSprite(SpriteVramId);
+    const Animation2D& animation = spriteSystem.FindSpriteAnimation(CurrentAnimationID);
+    const AnimationFrames& frameList = spriteSystem.FindSpriteAnimationFrames(vram.VramSpriteID)[CurrentAnimationID];
     const Material& material = materialSystem.FindMaterial(vram.SpriteMaterialID);
     const ivec2& currentFrame = frameList[CurrentFrame];
 
