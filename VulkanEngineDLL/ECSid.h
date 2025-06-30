@@ -104,7 +104,7 @@ struct GameObjectID
     }
 };
 
-struct SpriteMeshID 
+struct SpriteMeshID
 {
     uint id = 0;
 
@@ -122,7 +122,7 @@ struct SpriteMeshID
     }
 };
 
-namespace std 
+namespace std
 {
     template <>
     struct hash<RenderPassID> {

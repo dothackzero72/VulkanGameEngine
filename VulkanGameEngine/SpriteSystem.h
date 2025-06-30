@@ -4,6 +4,7 @@
 #include <VRAM.h>
 #include "SpriteBatchLayer.h"
 #include "Transform2DComponent.h"
+#include <Sprite.h>
 
 class SpriteSystem
 {
@@ -20,17 +21,8 @@ private:
 	UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>>  SpriteInstanceListMap;
 	UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>>          SpriteBatchObjectListMap;
 
-	void BatchSpriteUpdate(SpriteInstanceStruct* spriteInstanceList,
-							Sprite* spriteList,
-							const Transform2DComponent* transform2DList,
-							const SpriteVram* vramList,
-							const Animation2D* animationList,
-							const AnimationFrames* frameList,
-							const Material* materialList,
-							size_t spriteCount,
-							float deltaTime);
-
-	SpriteInstanceStruct PerSpriteUpdate(Sprite& sprite, float deltaTime);
+	void BatchSpriteUpdate(const float& deltaTime);
+	void PerSpriteUpdate(const float& deltaTime);
 
 public:
 

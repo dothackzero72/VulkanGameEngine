@@ -5,7 +5,7 @@
 #include <Material.h>
 #include "RenderSystem.h"
 #include "Vertex.h"
-#include "Sprite.h"
+#include <Sprite.h>
 
 class VulkanBufferSystem
 {
