@@ -22,7 +22,7 @@ struct Sprite
     VkGuid SpriteVramId;
     float CurrentFrameTime = 0.0f;
     bool SpriteAlive = true;
-    ivec2 FlipSprite = vec2(0);
+    ivec2 FlipSprite = ivec2(0);
     vec2 LastSpritePosition = vec2(0.0f);
     vec2 LastSpriteRotation = vec2(0.0f);
     vec2 LastSpriteScale = vec2(1.0f);
@@ -97,6 +97,6 @@ struct SpriteInstanceVertex2D
     }
 };
 
-DLL_EXPORT void Sprite_BatchSpriteUpdate(SpriteInstanceStruct* spriteInstanceList, Sprite* spriteList, const Transform2DComponent* transform2DList, const SpriteVram* vramList, const Animation2D* animationList, const AnimationFrames* frameList, const Material* materialList, size_t spriteCount, float deltaTime);
-DLL_EXPORT SpriteInstanceStruct Sprite_PerSpriteUpdate(const Transform2DComponent& transform2D, const SpriteVram& vram, const Animation2D& animation, const AnimationFrames& frameList, const Material& material, const ivec2& currentFrame, Sprite& sprite, float deltaTime);
+DLL_EXPORT void Sprite_UpdateBatchSprites(SpriteInstanceStruct* spriteInstanceList, Sprite* spriteList, const Transform2DComponent* transform2DList, const SpriteVram* vramList, const Animation2D* animationList, const AnimationFrames* frameList, const Material* materialList, size_t spriteCount, float deltaTime);
+DLL_EXPORT SpriteInstanceStruct Sprite_UpdateSprites(const Transform2DComponent& transform2D, const SpriteVram& vram, const Animation2D& animation, const AnimationFrames& frameList, const Material& material, const ivec2& currentFrame, Sprite& sprite, float deltaTime);
 DLL_EXPORT void Sprite_SetSpriteAnimation(Sprite& sprite, Sprite::SpriteAnimationEnum spriteAnimation);

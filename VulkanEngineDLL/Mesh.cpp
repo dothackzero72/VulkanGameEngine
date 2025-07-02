@@ -2,19 +2,21 @@
 
 Mesh Mesh_CreateMesh(const GraphicsRenderer& renderer, const MeshLoader& meshLoader, VulkanBuffer& outVertexBuffer, VulkanBuffer& outIndexBuffer, VulkanBuffer& outTransformBuffer, VulkanBuffer& outMeshPropertiesBuffer)
 {
-	return  Mesh
-	{
-		.MeshId = meshLoader.MeshId,
-		.ParentGameObjectID = meshLoader.ParentGameObjectID,
-		.VertexCount = meshLoader.VertexLoader.VertexCount,
-		.IndexCount = meshLoader.IndexLoader.IndexCount,
-		.MaterialId = meshLoader.MaterialId,
-		.VertexType = meshLoader.VertexLoader.VertexType,
-		.MeshVertexBufferId = Mesh_CreateVertexBuffer(renderer, meshLoader.VertexLoader, outVertexBuffer),
-		.MeshIndexBufferId = Mesh_CreateIndexBuffer(renderer, meshLoader.IndexLoader, outIndexBuffer),
-		.MeshTransformBufferId = Mesh_CreateTransformBuffer(renderer, meshLoader.TransformLoader, outTransformBuffer),
-		.PropertiesBufferId = Mesh_CreateMeshPropertiesBuffer(renderer, meshLoader.MeshPropertiesLoader, outMeshPropertiesBuffer),
-	};
+	Mesh mesh;
+	mesh.MeshId = meshLoader.MeshId;
+	mesh.ParentGameObjectID = meshLoader.ParentGameObjectID;
+	mesh.VertexCount = meshLoader.VertexLoader.VertexCount;
+	mesh.IndexCount = meshLoader.IndexLoader.IndexCount;
+	mesh.MaterialId = meshLoader.MaterialId;
+	mesh.VertexType = meshLoader.VertexLoader.VertexType;
+	mesh.MeshPosition = vec3(0.0f);
+	mesh.MeshRotation = vec3(0.0f);
+	mesh.MeshScale = vec3(1.0f);
+	mesh.MeshVertexBufferId = Mesh_CreateVertexBuffer(renderer, meshLoader.VertexLoader, outVertexBuffer);
+	mesh.MeshIndexBufferId = Mesh_CreateIndexBuffer(renderer, meshLoader.IndexLoader, outIndexBuffer);
+	mesh.MeshTransformBufferId = Mesh_CreateTransformBuffer(renderer, meshLoader.TransformLoader, outTransformBuffer);
+	mesh.PropertiesBufferId = Mesh_CreateMeshPropertiesBuffer(renderer, meshLoader.MeshPropertiesLoader, outMeshPropertiesBuffer);
+	return mesh;
 }
 
 void Mesh_UpdateMesh(const GraphicsRenderer& renderer, Mesh& mesh, VulkanBuffer& meshPropertiesBuffer, uint32 shaderMaterialBufferIndex, const float& deltaTime)

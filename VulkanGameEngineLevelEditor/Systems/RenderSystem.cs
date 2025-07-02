@@ -140,9 +140,6 @@ namespace VulkanGameEngineLevelEditor.Systems
             SwapChainImages = new ListPtr<VkImage>(renderer.SwapChainImages, renderer.SwapChainImageCount);
             SwapChainImageViews = new ListPtr<VkImageView>(renderer.SwapChainImageViews, renderer.SwapChainImageCount);
             SwapChainResolution = renderer.SwapChainResolution;
-
-            //     GameEngineImport.Texture_CreateTexture_DLL(RenderSystem.ToStruct(), "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\Textures\\SparkManTexture.json", VkImageAspectFlagBits.VK_IMAGE_ASPECT_COLOR_BIT, VkCreate);
-
         }
 
         public static Guid AddRenderPass(Guid levelId, string jsonPath, ivec2 renderPassResolution)

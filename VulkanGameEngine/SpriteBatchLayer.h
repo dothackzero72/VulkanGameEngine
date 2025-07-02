@@ -5,10 +5,10 @@
 #include <VulkanPipeline.h>
 #include "ECSid.h"
 
+	static uint32 NextSpriteBatchLayerID;
 class SpriteBatchLayer
 {
 private:
-	static uint32 NextSpriteBatchLayerID;
 
 public:
 	VkGuid RenderPassId;

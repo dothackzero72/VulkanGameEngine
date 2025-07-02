@@ -144,6 +144,8 @@
     <ClInclude Include="ECSid.h" />
     <ClInclude Include="from_json.h" />
     <ClInclude Include="GameController.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="InputComponent.h" />
     <ClInclude Include="Level2D.h" />
     <ClInclude Include="GLFWWindow.h" />
     <ClInclude Include="ImGuiFunc.h" />

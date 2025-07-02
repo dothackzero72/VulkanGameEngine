@@ -1,6 +1,7 @@
 #include "Sprite.h"
+#include "VulkanBuffer.h"
 
-void Sprite_BatchSpriteUpdate(SpriteInstanceStruct* spriteInstanceList, Sprite* spriteList, const Transform2DComponent* transform2DList, const SpriteVram* vramList, const Animation2D* animationList, const AnimationFrames* frameList, const Material* materialList, size_t spriteCount, float deltaTime)
+void Sprite_UpdateBatchSprites(SpriteInstanceStruct* spriteInstanceList, Sprite* spriteList, const Transform2DComponent* transform2DList, const SpriteVram* vramList, const Animation2D* animationList, const AnimationFrames* frameList, const Material* materialList, size_t spriteCount, float deltaTime)
 {
     for (size_t x = 0; x < spriteCount; x++)
     {
@@ -41,7 +42,7 @@ void Sprite_BatchSpriteUpdate(SpriteInstanceStruct* spriteInstanceList, Sprite* 
     }
 }
 
-SpriteInstanceStruct Sprite_PerSpriteUpdate(const Transform2DComponent& transform2D, const SpriteVram& vram, const Animation2D& animation, const AnimationFrames& frameList, const Material& material, const ivec2& currentFrame, Sprite& sprite, float deltaTime)
+SpriteInstanceStruct Sprite_UpdateSprites(const Transform2DComponent& transform2D, const SpriteVram& vram, const Animation2D& animation, const AnimationFrames& frameList, const Material& material, const ivec2& currentFrame, Sprite& sprite, float deltaTime)
 {
     mat4 spriteMatrix = mat4(1.0f);
     if (sprite.LastSpritePosition != sprite.SpritePosition)

@@ -9,7 +9,6 @@
 class SpriteSystem
 {
 private:
-	Vector<Sprite>												  SpriteList;
 	Vector<SpriteInstanceStruct>								  SpriteInstanceList;
 	Vector<SpriteBatchLayer>									  SpriteBatchLayerList;
 	Vector<SpriteVram>											  SpriteVramList;
@@ -21,10 +20,12 @@ private:
 	UnorderedMap<UM_SpriteBatchID, Vector<SpriteInstanceStruct>>  SpriteInstanceListMap;
 	UnorderedMap<UM_SpriteBatchID, Vector<GameObjectID>>          SpriteBatchObjectListMap;
 
-	void BatchSpriteUpdate(const float& deltaTime);
-	void PerSpriteUpdate(const float& deltaTime);
+	void UpdateBatchSprites(const float& deltaTime);
+	void UpdateSprites(const float& deltaTime);
+	void UpdateSpriteBatchLayers(const float& deltaTime);
 
 public:
+	Vector<Sprite>												  SpriteList;
 
 	SpriteSystem();
 	~SpriteSystem();
@@ -34,7 +35,6 @@ public:
 	void AddSpriteInstanceBufferId(UM_SpriteBatchID spriteInstanceBufferId, int BufferId);
 	void AddSpriteInstanceLayerList(UM_SpriteBatchID spriteBatchId, Vector<SpriteInstanceStruct>& spriteInstanceList);
 	void AddSpriteBatchObjectList(UM_SpriteBatchID spriteBatchId, GameObjectID spriteBatchObject);
-	SpriteBatchLayer AddSpriteLayer(VkGuid& renderPassId);
 
 	void Update(const float& deltaTime);
 	void SetSpriteAnimation(Sprite& sprite, Sprite::SpriteAnimationEnum spriteAnimation);
@@ -52,7 +52,6 @@ public:
 	size_t FindSpriteIndex(GameObjectID gameObjectId);
 
 	VkGuid LoadSpriteVRAM(const String& spriteVramPath);
-
 	const Vector<Sprite>& SpriteListRef() { return SpriteList; }
 };
 extern SpriteSystem spriteSystem;

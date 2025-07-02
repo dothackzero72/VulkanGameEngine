@@ -144,7 +144,6 @@
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="GameObjectSystem.cpp" />
     <ClCompile Include="GameSystem.cpp" />
-    <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="LevelLayer.cpp" />
     <ClCompile Include="LevelSystem.cpp" />
@@ -167,10 +166,8 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FrameTimer.h" />
-    <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectSystem.h" />
     <ClInclude Include="GameSystem.h" />
-    <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="LevelLayer.h" />
     <ClInclude Include="LevelLayout.h" />

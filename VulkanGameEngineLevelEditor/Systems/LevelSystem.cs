@@ -59,10 +59,9 @@ namespace VulkanGameEngineLevelEditor.Systems
         //  public static OrthographicCamera2D camera { get; set; }
         //   public static Dictionary<uint, Sprite> SpriteMap { get; private set; } = new Dictionary<uint, Sprite>();
         public static LevelLayout levelLayout { get; private set; }
-        public static List<LevelLayer> LevelLayerList { get; private set; }
-        public static List<List<uint>> LevelTileMapList { get; private set; } = new List<List<uint>>();
+        public static List<LevelLayer> LevelLayerList { get; private set; } = new List<LevelLayer>();
+        public static List<ListPtr<uint>> LevelTileMapList { get; private set; } = new List<ListPtr<uint>>();
         public static Dictionary<Guid, LevelTileSet> LevelTileSetMap { get; private set; } = new Dictionary<Guid, LevelTileSet>();
-        public static Dictionary<Guid, SpriteVram> VramSpriteMap { get; private set; } = new Dictionary<Guid, SpriteVram>();
         // public static Dictionary<Guid, List<SpriteBatchLayer>> SpriteBatchLayerListMap { get; private set; } = new Dictionary<Guid, List<SpriteBatchLayer>>();
         public static Dictionary<uint, List<SpriteInstanceStruct>> SpriteInstanceListMap { get; private set; } = new Dictionary<uint, List<SpriteInstanceStruct>>();
         public static Dictionary<uint, int> SpriteInstanceBufferMap { get; private set; } = new Dictionary<uint, int>();
@@ -77,6 +76,7 @@ namespace VulkanGameEngineLevelEditor.Systems
             string jsonContent = File.ReadAllText(levelPath);
             LevelLoader levelLoader = JsonConvert.DeserializeObject<LevelLoader>(jsonContent);
 
+            Guid tileSetId = new Guid();
             foreach (var texturePath in levelLoader.LoadTextures)
             {
                 string fullTexturePath = Path.GetFullPath(Path.Combine(levelDirectory, texturePath));
@@ -90,72 +90,35 @@ namespace VulkanGameEngineLevelEditor.Systems
             foreach (var spriteVRAMPath in levelLoader.LoadSpriteVRAM)
             {
                 string fullSpriteVRAMPath = Path.GetFullPath(Path.Combine(levelDirectory, spriteVRAMPath));
-                LoadSpriteVRAM(fullSpriteVRAMPath);
+                SpriteSystem.LoadSpriteVRAM(fullSpriteVRAMPath);
             }
             foreach (var levelLayoutPath in levelLoader.LoadTileSetVRAM)
             {
                 string fullLevelLayoutPath = Path.GetFullPath(Path.Combine(levelDirectory, levelLayoutPath));
-                LoadTileSetVRAM(fullLevelLayoutPath);
+                tileSetId = LoadTileSetVRAM(fullLevelLayoutPath);
+            }
+            foreach (var gameObjectLoader in levelLoader.GameObjectList)
+            {
+                string gameObjectPath = Path.GetFullPath(Path.Combine(levelDirectory, gameObjectLoader.GameObjectPath));
+                GameObjectSystem.CreateGameObject(gameObjectPath);
             }
             {
                 string fullLevelLayoutPath = Path.GetFullPath(Path.Combine(levelDirectory, levelLoader.LoadLevelLayout));
-                Guid levelLayoutId = LoadLevelLayout(fullLevelLayoutPath);
-             //   Level = Level2D(LevelId, tileSetId, levelLayout.LevelBounds, levelMapList);
+                LoadLevelLayout(fullLevelLayoutPath);
+                LoadLevelMesh(tileSetId);
             }
-
-            ListPtr<Texture> textureList = new ListPtr<Texture>(32);
-            Texture depthTexture = new Texture();
-            ulong count = (ulong)textureList.Count;
-            GraphicsRenderer renderSystemStruct = RenderSystem.renderer;
-            string jsonText = "C:/Users/dotha/Documents/GitHub/VulkanGameEngine/RenderPass/LevelShader2DRenderPass.json";
-            VkExtent2D asdf = RenderSystem.SwapChainResolution;
-            Texture sf = textureList[0];
-
-            //string jsonContent = File.ReadAllText("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Pipelines/Default2DPipeline.json");
-            //RenderPipelineDLL pipelineModel = JsonConvert.DeserializeObject<RenderPipelineModel>(jsonContent).ToDLL();
-            //ivec2 renderPassRes = new ivec2((int)RenderSystem.renderer.SwapChainResolution.width, (int)RenderSystem.renderer.SwapChainResolution.height);
-
-            //VulkanRenderPass renderPass = GameEngineImport.VulkanRenderPass_CreateVulkanRenderPass(ref renderSystemStruct, jsonText, ref asdf, sizeof(SceneDataBuffer), ref sf, ref count, ref depthTexture);
-            //VulkanPipeline pipeline = GameEngineImport.VulkanPipeline_CreateRenderPipeline(RenderSystem.renderer.Device, renderPass.RenderPassId, 0, pipelineModel, renderPass.RenderPass, sizeof(SceneDataBuffer), renderPassRes, includes, )
-
-            // Use renderPass as needed
-
-            //var res = new vec2((float)RenderSystem.SwapChainResolution.width, (float)RenderSystem.SwapChainResolution.height);
-            //var pos = new vec2(0.0f, 0.0f);
-            //camera = new OrthographicCamera2D(res, pos);
-
-            //string jsonContent = File.ReadAllText(levelPath);
-            //LevelLoader levelLoader = JsonConvert.DeserializeObject<LevelLoader>(levelPath);
-
-        }
-
-        private static Guid LoadSpriteVRAM(string spriteVramPath)
-        {
-            if (spriteVramPath.IsEmpty())
             {
-                return new Guid();
+                Guid dummyGuid = new Guid();
+                string gameObjectPath = Path.GetFullPath(Path.Combine(levelDirectory, "../RenderPass/LevelShader2DRenderPass.json"));
+                LevelTileSet levelTileSetJson = JsonConvert.DeserializeObject<LevelTileSet>(jsonContent);
+
+                //nlohmann::json json2 = Json::ReadJson("../RenderPass/LevelShader2DRenderPass.json");
+                //spriteRenderPass2DId = Guid(json2["RenderPassId"].get<String>().c_str());
+
+                //SpriteSystem.AddSpriteBatchLayer(spriteRenderPass2DId);
+                //spriteRenderPass2DId = RenderSystem.LoadRenderPass(levelLayout.LevelLayoutId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
+                //frameBufferId = RenderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
             }
-
-            string jsonContent = File.ReadAllText(spriteVramPath);
-            SpriteVram spriteVramJson = JsonConvert.DeserializeObject<SpriteVram>(jsonContent);
-            if (VramSpriteMap.ContainsKey(spriteVramJson.VramSpriteId))
-            {
-                return spriteVramJson.VramSpriteId;
-            }
-
-            var spriteMaterial = MaterialSystem.MaterialMap[spriteVramJson.MaterialId];
-            var spriteTexture = TextureSystem.TextureList[spriteMaterial.AlbedoMapId];
-            VramSpriteMap[spriteVramJson.VramSpriteId] = VRAM_LoadSpriteVRAM(spriteVramPath, ref spriteMaterial, ref spriteTexture);
-            Animation2D* animationListPtr = VRAM_LoadSpriteAnimations(spriteVramPath, out size_t animationListCount);
-            vec2* animationFrameListPtr = VRAM_LoadSpriteAnimationFrames(spriteVramPath, out size_t animationFrameCount);
-
-            AnimationFrameListMap[spriteVramJson.VramSpriteId] = new ListPtr<vec2>(animationFrameListPtr, animationFrameCount);
-            for (size_t x = 0; x < animationListCount; x++)
-            {
-                AnimationMap[animationListPtr[x].AnimationId] = animationListPtr[x];
-            }
-
-            return spriteVramJson.VramSpriteId;
         }
 
         private static Guid LoadTileSetVRAM(string levelTileSetPath)
@@ -180,13 +143,13 @@ namespace VulkanGameEngineLevelEditor.Systems
             var levelTileSet = LevelTileSetMap[tileSetId];
 
             VRAM_LoadTileSets(levelTileSetPath, &levelTileSet);
-
+            LevelTileSetMap[tileSetId] = levelTileSet;
             return tileSetId;
         }
 
         public static Guid LoadLevelLayout(string levelLayoutPath)
         {
-            LevelLayout layout = VRAM_LoadLevelInfo(levelLayoutPath);
+            levelLayout = VRAM_LoadLevelInfo(levelLayoutPath);
             IntPtr levelLayerList = VRAM_LoadLevelLayout(levelLayoutPath, out size_t levelLayerCount, out size_t levelLayerMapCount);
             if (levelLayerList != IntPtr.Zero &&
                 levelLayerCount > 0)
@@ -200,7 +163,7 @@ namespace VulkanGameEngineLevelEditor.Systems
                         {
                             using (var layerData = new ListPtr<uint>((uint*)layerPtr, levelLayerMapCount))
                             {
-                                List<uint> managedLayer = layerData.ToList();
+                                ListPtr<uint> managedLayer = new ListPtr<uint>(layerData.ToList());
                                 LevelTileMapList.Add(managedLayer);
                             }
 
@@ -211,7 +174,7 @@ namespace VulkanGameEngineLevelEditor.Systems
                 VRAM_DeleteLevelLayerPtr((uint**)levelLayerList);
             }
 
-            return layout.LevelLayoutId;
+            return levelLayout.LevelLayoutId;
         }
 
         public static void LoadLevelMesh(Guid tileSetId)
@@ -219,7 +182,8 @@ namespace VulkanGameEngineLevelEditor.Systems
             for (int x = 0; x < LevelTileMapList.Count(); x++)
             {
                 LevelTileSet levelTileSet = LevelTileSetMap[tileSetId];
-                LevelLayerList.Add(Level2D_LoadLevelInfo(levelLayout.LevelLayoutId, levelTileSet, LevelTileMapList[x], levelLayout.LevelBounds, x));
+                var levelBounds = levelLayout.LevelBounds;
+                LevelLayerList.Add(Level2D_LoadLevelInfo(levelLayout.LevelLayoutId, levelTileSet, LevelTileMapList[x].Ptr, LevelTileMapList[x].Count(), ref levelBounds, x));
 
                 ListPtr<Vertex2D> vertexList = new ListPtr<Vertex2D>(LevelLayerList[x].VertexList, LevelLayerList[x].VertexListCount);
                 ListPtr<uint> indexList = new ListPtr<uint>(LevelLayerList[x].IndexList, LevelLayerList[x].IndexListCount);
@@ -239,10 +203,7 @@ namespace VulkanGameEngineLevelEditor.Systems
             }
         }
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern LevelLayer Level2D_LoadLevelInfo(Guid levelId, LevelTileSet tileSet, List<uint> tileIdMap, ivec2 levelBounds, int levelLayerIndex);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern SpriteVram VRAM_LoadSpriteVRAM([MarshalAs(UnmanagedType.LPStr)] string spritePath, ref Material material, ref Texture texture);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern Animation2D* VRAM_LoadSpriteAnimations([MarshalAs(UnmanagedType.LPStr)] string spritePath, out size_t animationListCount);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern vec2* VRAM_LoadSpriteAnimationFrames([MarshalAs(UnmanagedType.LPStr)] string spritePath, out size_t animationFrameCount);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern LevelLayer Level2D_LoadLevelInfo(Guid levelId, LevelTileSet tileSet, uint* tileIdMapList, size_t tileIdMapCount, ref ivec2 levelBounds, int levelLayerIndex);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern LevelTileSet VRAM_LoadTileSetVRAM([MarshalAs(UnmanagedType.LPStr)] string tileSetPath, Material material, Texture tileVramTexture);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern void VRAM_LoadTileSets([MarshalAs(UnmanagedType.LPStr)] string tileSetPath, LevelTileSet* levelTileSet);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern LevelLayout VRAM_LoadLevelInfo([MarshalAs(UnmanagedType.LPStr)] string levelLayoutPath);

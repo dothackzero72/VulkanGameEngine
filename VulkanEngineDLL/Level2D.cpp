@@ -2,17 +2,18 @@
 #include "MemorySystem.h"
 #include "vertex.h"
 
-LevelLayer Level2D_LoadLevelInfo(VkGuid& levelId, const LevelTileSet& tileSet, Vector<uint>& tileIdMap, ivec2& levelBounds, int levelLayerIndex)
+LevelLayer Level2D_LoadLevelInfo(VkGuid& levelId, const LevelTileSet& tileSet, uint* tileIdMap, size_t tileIdMapCount, ivec2& levelBounds, int levelLayerIndex)
 {
     Vector<Tile>     tileMap;
     Vector<uint32>   indexList;
     Vector<Vertex2D> vertexList;
     Vector<Tile>     tileSetList = Vector<Tile>(tileSet.LevelTileListPtr, tileSet.LevelTileListPtr + tileSet.LevelTileCount);
+    Vector<uint>     tileIdMapList = Vector<uint>(tileIdMap, tileIdMap + tileIdMapCount);
     for (uint x = 0; x < levelBounds.x; x++)
     {
         for (uint y = 0; y < levelBounds.y; y++)
         {
-            const uint& tileId = tileIdMap[(y * levelBounds.x) + x];
+            const uint& tileId = tileIdMapList[(y * levelBounds.x) + x];
             const Tile& tile = tileSetList[tileId];
 
             const float LeftSideUV = tile.TileUVOffset.x;
@@ -50,18 +51,18 @@ LevelLayer Level2D_LoadLevelInfo(VkGuid& levelId, const LevelTileSet& tileSet, V
         .TileSetId = tileSet.TileSetId,
         .LevelLayerIndex = levelLayerIndex,
         .LevelBounds = levelBounds,
-        .TileIdMap = memorySystem.AddPtrBuffer<uint>(tileIdMap.size(), __FILE__, __LINE__, __func__),
+        .TileIdMap = memorySystem.AddPtrBuffer<uint>(tileIdMapList.size(), __FILE__, __LINE__, __func__),
         .TileMap = memorySystem.AddPtrBuffer<Tile>(tileMap.size(), __FILE__, __LINE__, __func__),
         .VertexList = memorySystem.AddPtrBuffer<Vertex2D>(vertexList.size(), __FILE__, __LINE__, __func__),
         .IndexList = memorySystem.AddPtrBuffer<uint32>(indexList.size(), __FILE__, __LINE__, __func__),
-        .TileIdMapCount = tileIdMap.size(),
+        .TileIdMapCount = tileIdMapList.size(),
         .TileMapCount = tileMap.size(),
         .VertexListCount = vertexList.size(),
         .IndexListCount = indexList.size()
     };
     
     std::memcpy(levelLayout.TileMap, tileMap.data(), tileMap.size() * sizeof(Tile));
-    std::memcpy(levelLayout.TileIdMap, tileIdMap.data(), tileIdMap.size() * sizeof(uint));
+    std::memcpy(levelLayout.TileIdMap, tileIdMapList.data(), tileIdMapList.size() * sizeof(uint));
     std::memcpy(levelLayout.VertexList, vertexList.data(), vertexList.size() * sizeof(Vertex2D));
     std::memcpy(levelLayout.IndexList, indexList.data(), indexList.size() * sizeof(uint32));
 

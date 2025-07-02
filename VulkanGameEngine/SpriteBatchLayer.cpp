@@ -6,8 +6,6 @@
 #include "LevelSystem.h"
 #include "SpriteSystem.h"
 
-uint32 SpriteBatchLayer::NextSpriteBatchLayerID = 0;
-
 SpriteBatchLayer::SpriteBatchLayer()
 {
 
@@ -17,7 +15,7 @@ SpriteBatchLayer::SpriteBatchLayer(VkGuid& renderPassId)
 {                            
 	SpriteBatchLayerID = ++NextSpriteBatchLayerID;
 	RenderPassId = renderPassId;
-	for (int x = 0; x < spriteSystem.SpriteListRef().size(); x++)
+	for (int x = 0; x < spriteSystem.SpriteList.size(); x++)
 	{
 		spriteSystem.AddSpriteBatchObjectList(SpriteBatchLayerID, GameObjectID(x + 1));
 	}

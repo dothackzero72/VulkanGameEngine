@@ -70,30 +70,24 @@ namespace VulkanGameEngineLevelEditor.Systems
         }
     };
 
-    public unsafe struct Mesh
+    [StructLayout(LayoutKind.Sequential, Pack = 0)] // Try default alignment; revert to Pack = 16 if confirmed
+    public struct Mesh
     {
-        public uint MeshId { get; set; } = 0;
-        public uint ParentGameObjectID { get; set; } = 0;
-        public uint GameObjectTransform { get; set; } = 0;
-        public uint VertexCount { get; set; } = 0;
-        public uint IndexCount { get; set; } = 0;
-        public Guid MaterialId { get; set; } = Guid.Empty;
-
-        public BufferTypeEnum VertexType { get; set; }
-        public vec3 MeshPosition { get; set; } = new vec3(0.0f);
-        public vec3 MeshRotation { get; set; } = new vec3(0.0f);
-        public vec3 MeshScale { get; set; } = new vec3(1.0f);
-
-        public int MeshVertexBufferId { get; set; } = 0;
-        public int MeshIndexBufferId { get; set; } = 0;
-        public int MeshTransformBufferId { get; set; } = 0;
-        public int PropertiesBufferId { get; set; } = 0;
-
-        public MeshPropertiesStruct MeshProperties { get; set; } = new MeshPropertiesStruct();
-
-        public Mesh()
-        {
-        }
+        public uint MeshId;
+        public uint ParentGameObjectID;
+        public uint GameObjectTransform;
+        public nuint VertexCount; // Match size_t (8 bytes on 64-bit)
+        public nuint IndexCount;  // Match size_t
+        public Guid MaterialId;   // Assuming VkGuid is a standard GUID
+        public BufferTypeEnum VertexType;
+        public vec3 MeshPosition;
+        public vec3 MeshRotation;
+        public vec3 MeshScale;
+        public int MeshVertexBufferId;
+        public int MeshIndexBufferId;
+        public int MeshTransformBufferId;
+        public int PropertiesBufferId;
+        public MeshPropertiesStruct MeshProperties;
     };
 
     public unsafe static class MeshSystem
@@ -168,12 +162,11 @@ namespace VulkanGameEngineLevelEditor.Systems
                     }
                 };
 
-                mesh = Mesh_CreateMesh(RenderSystem.renderer, meshLoader,
-                    BufferSystem.VulkanBufferMap[meshLoader.VertexLoader.MeshVertexBufferId],
-                    BufferSystem.VulkanBufferMap[meshLoader.IndexLoader.MeshIndexBufferId],
-                    BufferSystem.VulkanBufferMap[meshLoader.TransformLoader.MeshTransformBufferId],
-                    BufferSystem.VulkanBufferMap[meshLoader.MeshPropertiesLoader.PropertiesBufferId]);
-
+                mesh = Mesh_CreateMesh(RenderSystem.renderer, meshLoader, out VulkanBuffer vertexBuffer, out VulkanBuffer indexBuffer, out VulkanBuffer meshTransformBuffer, out VulkanBuffer propertiesBuffer);
+                BufferSystem.VulkanBufferMap[meshLoader.VertexLoader.MeshVertexBufferId] = vertexBuffer;
+                BufferSystem.VulkanBufferMap[meshLoader.IndexLoader.MeshIndexBufferId] = indexBuffer;
+                BufferSystem.VulkanBufferMap[meshLoader.TransformLoader.MeshTransformBufferId] = meshTransformBuffer;
+                BufferSystem.VulkanBufferMap[meshLoader.MeshPropertiesLoader.PropertiesBufferId] = propertiesBuffer;
                 MeshMap[meshId] = mesh;
             }
             finally
@@ -238,12 +231,11 @@ namespace VulkanGameEngineLevelEditor.Systems
                     }
                 };
 
-                mesh = Mesh_CreateMesh(RenderSystem.renderer, meshLoader,
-                    BufferSystem.VulkanBufferMap[meshLoader.VertexLoader.MeshVertexBufferId],
-                    BufferSystem.VulkanBufferMap[meshLoader.IndexLoader.MeshIndexBufferId],
-                    BufferSystem.VulkanBufferMap[meshLoader.TransformLoader.MeshTransformBufferId],
-                    BufferSystem.VulkanBufferMap[meshLoader.MeshPropertiesLoader.PropertiesBufferId]);
-
+                mesh = Mesh_CreateMesh(RenderSystem.renderer, meshLoader, out VulkanBuffer vertexBuffer, out VulkanBuffer indexBuffer, out VulkanBuffer meshTransformBuffer, out VulkanBuffer propertiesBuffer);
+                BufferSystem.VulkanBufferMap[meshLoader.VertexLoader.MeshVertexBufferId] = vertexBuffer;
+                BufferSystem.VulkanBufferMap[meshLoader.IndexLoader.MeshIndexBufferId] = indexBuffer;
+                BufferSystem.VulkanBufferMap[meshLoader.TransformLoader.MeshTransformBufferId] = meshTransformBuffer;
+                BufferSystem.VulkanBufferMap[meshLoader.MeshPropertiesLoader.PropertiesBufferId] = propertiesBuffer;
                 SpriteMeshMap[(int)meshId] = mesh;
             }
             finally
@@ -258,74 +250,78 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static int CreateLevelLayerMesh(Guid levelId, ListPtr<Vertex2D> vertexList, ListPtr<uint> indexList)
         {
+            if (vertexList == null || vertexList.Count == 0 || indexList == null || indexList.Count == 0)
+            {
+                throw new ArgumentException("Vertex or index list is invalid.");
+            }
+
             uint meshId = ++NextLevelLayerMeshId;
             mat4 meshMatrix = mat4.Identity;
+            MeshPropertiesStruct meshProperties = new MeshPropertiesStruct { MeshTransform = meshMatrix };
 
+            // Store vertex and index lists
             Vertex2DListMap[meshId] = vertexList;
             IndexListMap[meshId] = indexList;
 
-            Mesh mesh = new Mesh();
-            MeshMap[meshId] = mesh;
-
             GCHandle matrixHandle = GCHandle.Alloc(meshMatrix, GCHandleType.Pinned);
-            GCHandle propertiesHandle = GCHandle.Alloc(mesh.MeshProperties, GCHandleType.Pinned);
+            GCHandle propertiesHandle = GCHandle.Alloc(meshProperties, GCHandleType.Pinned);
             try
             {
                 MeshLoader meshLoader = new MeshLoader
                 {
-                    ParentGameObjectID = 0,
                     MeshId = meshId,
+                    ParentGameObjectID = 0,
                     MaterialId = Guid.Empty,
                     VertexLoader = new VertexLoaderStruct
-
                     {
                         VertexType = BufferTypeEnum.BufferType_Vector2D,
-                        MeshVertexBufferId = ++BufferSystem.NextBufferId,
-                        SizeofVertex = sizeof(Vertex2D),
+                        MeshVertexBufferId = (uint)(++BufferSystem.NextBufferId),
+                        SizeofVertex = (size_t)sizeof(Vertex2D),
                         VertexCount = vertexList.Count,
-                        VertexData = vertexList.Ptr,
+                        VertexData = vertexList.Ptr
                     },
                     IndexLoader = new IndexLoaderStruct
-
                     {
-                        MeshIndexBufferId = ++BufferSystem.NextBufferId,
-                        SizeofIndex = sizeof(uint),
+                        MeshIndexBufferId = (uint)(++BufferSystem.NextBufferId),
+                        SizeofIndex = (size_t)sizeof(uint),
                         IndexCount = indexList.Count,
-                        IndexData = indexList.Ptr,
+                        IndexData = indexList.Ptr
                     },
                     TransformLoader = new TransformLoaderStruct
-
                     {
-                        MeshTransformBufferId = ++BufferSystem.NextBufferId,
-                        SizeofTransform = sizeof(mat4),
+                        MeshTransformBufferId = (uint)(++BufferSystem.NextBufferId),
+                        SizeofTransform = (size_t)sizeof(mat4),
                         TransformData = (void*)matrixHandle.AddrOfPinnedObject()
                     },
                     MeshPropertiesLoader = new MeshPropertiesLoaderStruct
-
                     {
-                        PropertiesBufferId = ++BufferSystem.NextBufferId,
-                        SizeofMeshProperties = sizeof(MeshPropertiesStruct),
+                        PropertiesBufferId = (uint)(++BufferSystem.NextBufferId),
+                        SizeofMeshProperties = (size_t)sizeof(MeshPropertiesStruct),
                         MeshPropertiesData = (void*)propertiesHandle.AddrOfPinnedObject()
                     }
                 };
 
-                List<Mesh> meshList = new List<Mesh>
-                {
-                    Mesh_CreateMesh(RenderSystem.renderer, meshLoader, BufferSystem.VulkanBufferMap[meshLoader.VertexLoader.MeshVertexBufferId],
-                                                                       BufferSystem.VulkanBufferMap[meshLoader.IndexLoader.MeshIndexBufferId],
-                                                                       BufferSystem.VulkanBufferMap[meshLoader.TransformLoader.MeshTransformBufferId],
-                                                                       BufferSystem.VulkanBufferMap[meshLoader.MeshPropertiesLoader.PropertiesBufferId])
+                Mesh mesh = Mesh_CreateMesh(RenderSystem.renderer, meshLoader, out VulkanBuffer vertexBuffer, out VulkanBuffer indexBuffer, out VulkanBuffer meshTransformBuffer, out VulkanBuffer propertiesBuffer);
+                MeshMap[meshId] = mesh;
 
-                };
-                LevelLayerMeshListMap[levelId] = meshList;
+                BufferSystem.VulkanBufferMap[meshLoader.VertexLoader.MeshVertexBufferId] = vertexBuffer;
+                BufferSystem.VulkanBufferMap[meshLoader.IndexLoader.MeshIndexBufferId] = indexBuffer;
+                BufferSystem.VulkanBufferMap[meshLoader.TransformLoader.MeshTransformBufferId] = meshTransformBuffer;
+                BufferSystem.VulkanBufferMap[meshLoader.MeshPropertiesLoader.PropertiesBufferId] = propertiesBuffer;
+
+                
+                //    meshList = new List<Mesh>();
+                //    LevelLayerMeshListMap[levelId] = meshList;
+              
+                //meshList.Add(mesh);
+
+                return (int)meshId;
             }
             finally
             {
                 matrixHandle.Free();
                 propertiesHandle.Free();
             }
-
-            return (int)meshId;
         }
 
         public static void Update(float deltaTime)
@@ -363,7 +359,14 @@ namespace VulkanGameEngineLevelEditor.Systems
 
             MeshMap.Remove(meshId);
         }
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern Mesh Mesh_CreateMesh(GraphicsRenderer renderer, MeshLoader meshLoader, VulkanBuffer outVertexBuffer, VulkanBuffer outIndexBuffer, VulkanBuffer outTransformBuffer, VulkanBuffer outPropertiesBuffer);
+
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]  public static extern Mesh Mesh_CreateMesh(
+    GraphicsRenderer renderer,
+    MeshLoader meshLoader,
+    out VulkanBuffer outVertexBuffer,
+    out VulkanBuffer outIndexBuffer,
+    out VulkanBuffer outTransformBuffer,
+    out VulkanBuffer outPropertiesBuffer);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Mesh_UpdateMesh(GraphicsRenderer renderer, Mesh mesh, VulkanBuffer meshPropertiesBuffer, uint shaderMaterialBufferIndex, float deltaTime);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Mesh_DestroyMesh(GraphicsRenderer renderer, Mesh mesh, VulkanBuffer vertexBuffer, VulkanBuffer indexBuffer, VulkanBuffer transformBuffer, VulkanBuffer propertiesBuffer);
 

@@ -20,9 +20,7 @@ void LevelSystem::LoadLevel(const String& levelPath)
 {
     OrthographicCamera = std::make_shared<OrthographicCamera2D>(OrthographicCamera2D(vec2((float)renderSystem.renderer.SwapChainResolution.width, (float)renderSystem.renderer.SwapChainResolution.height), vec3(0.0f, 0.0f, 0.0f)));
 
-    VkGuid vramId = VkGuid();
     VkGuid tileSetId = VkGuid();
-
     nlohmann::json json = Json::ReadJson(levelPath);
     VkGuid LevelId = VkGuid(json["LevelID"].get<String>().c_str());
     for (int x = 0; x < json["LoadTextures"].size(); x++)
@@ -35,7 +33,7 @@ void LevelSystem::LoadLevel(const String& levelPath)
     }
     for (int x = 0; x < json["LoadSpriteVRAM"].size(); x++)
     {
-        vramId = spriteSystem.LoadSpriteVRAM(json["LoadSpriteVRAM"][x]);
+        spriteSystem.LoadSpriteVRAM(json["LoadSpriteVRAM"][x]);
     }
     for (int x = 0; x < json["LoadTileSetVRAM"].size(); x++)
     {
@@ -180,7 +178,7 @@ void LevelSystem::LoadLevelMesh(VkGuid& tileSetId)
     for (int x = 0; x < LevelTileMapList.size(); x++)
     {
         const LevelTileSet& levelTileSet = LevelTileSetMap[tileSetId];
-        LevelLayerList.emplace_back(Level2D_LoadLevelInfo(levelLayout.LevelLayoutId, levelTileSet, LevelTileMapList[x], levelLayout.LevelBounds, x));
+        LevelLayerList.emplace_back(Level2D_LoadLevelInfo(levelLayout.LevelLayoutId, levelTileSet, LevelTileMapList[x].data(), LevelTileMapList[x].size(), levelLayout.LevelBounds, x));
        
         Vector<Vertex2D> vertexList = Vector<Vertex2D>(LevelLayerList[x].VertexList, LevelLayerList[x].VertexList + LevelLayerList[x].VertexListCount);
         Vector<uint> indexList = Vector<uint>(LevelLayerList[x].IndexList, LevelLayerList[x].IndexList + LevelLayerList[x].IndexListCount);
