@@ -12,34 +12,6 @@ using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Systems
 {
-
-    public unsafe struct VulkanRenderPass
-    {
-        public Guid RenderPassId;
-        public VkSampleCountFlagBits SampleCount;
-        public VkRect2D RenderArea;
-        public VkRenderPass RenderPass;
-        public VkFramebuffer* FrameBufferList;
-        public VkClearValue* ClearValueList;
-        public size_t FrameBufferCount;
-        public size_t ClearValueCount;
-        public VkCommandBuffer CommandBuffer;
-        public bool UseFrameBufferResolution;
-    };
-
-    public unsafe struct VulkanPipeline
-    {
-        public uint RenderPipelineId;
-        public size_t DescriptorSetLayoutCount;
-        public size_t DescriptorSetCount;
-        public VkDescriptorPool DescriptorPool;
-        public VkDescriptorSetLayout* DescriptorSetLayoutList;
-        public VkDescriptorSet* DescriptorSetList;
-        public VkPipeline Pipeline;
-        public VkPipelineLayout PipelineLayout;
-        public VkPipelineCache PipelineCache;
-    };
-
     public static class GameSystem
     {
      //   public static OrthographicCamera2D OrthographicCamera { get; set; }

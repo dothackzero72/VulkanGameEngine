@@ -168,14 +168,28 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, ive
         String asdf = json["RenderPipelineList"][x];
         nlohmann::json json = Json::ReadJson(asdf);
         RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
+
+         Vector<VkDescriptorBufferInfo> vertexPropertiesList = renderSystem.GetVertexPropertiesBuffer();
+         Vector<VkDescriptorBufferInfo> indexPropertiesList = renderSystem.GetIndexPropertiesBuffer();
+         Vector<VkDescriptorBufferInfo> transformPropertiesList = renderSystem.GetGameObjectTransformBuffer();
+         Vector<VkDescriptorBufferInfo> meshPropertiesList = renderSystem.GetMeshPropertiesBuffer(levelId);
+       //  Vector<VkDescriptorBufferInfo> levelLayerMeshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.LevelLayerMeshProperties, includes.LevelLayerMeshProperties + includes.LevelLayerMeshPropertiesCount);
+         Vector<VkDescriptorImageInfo>  texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderPassId, nullptr);
+         Vector<VkDescriptorBufferInfo> materialPropertiesList = materialSystem.GetMaterialPropertiesBuffer();
         GPUIncludes include =
         {
-            .vertexProperties = renderSystem.GetVertexPropertiesBuffer(),
-            .indexProperties = renderSystem.GetIndexPropertiesBuffer(),
-            .transformProperties = renderSystem.GetGameObjectTransformBuffer(),
-            .meshProperties = renderSystem.GetMeshPropertiesBuffer(levelId),
-            .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderPassId, nullptr),
-            .materialProperties = materialSystem.GetMaterialPropertiesBuffer()
+           .VertexProperties = vertexPropertiesList.data(),
+           .IndexProperties = indexPropertiesList.data(),
+           .TransformProperties = transformPropertiesList.data(),
+           .MeshProperties = meshPropertiesList.data(),
+           .TexturePropertiesList = texturePropertiesList.data(),
+           .MaterialProperties = materialPropertiesList.data(),
+           .VertexPropertiesCount = vertexPropertiesList.size(),
+           .IndexPropertiesCount = indexPropertiesList.size(),
+           .TransformPropertiesCount = transformPropertiesList.size(),
+           .MeshPropertiesCount = meshPropertiesList.size(),
+           .TexturePropertiesListCount = texturePropertiesList.size(),
+           .MaterialPropertiesCount = materialPropertiesList.size()
         };
 
         Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
@@ -203,14 +217,27 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, Tex
         nlohmann::json json = Json::ReadJson(asdf);
         RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
 
+        Vector<VkDescriptorBufferInfo> vertexPropertiesList = renderSystem.GetVertexPropertiesBuffer();
+        Vector<VkDescriptorBufferInfo> indexPropertiesList = renderSystem.GetIndexPropertiesBuffer();
+        Vector<VkDescriptorBufferInfo> transformPropertiesList = renderSystem.GetGameObjectTransformBuffer();
+        Vector<VkDescriptorBufferInfo> meshPropertiesList = renderSystem.GetMeshPropertiesBuffer(levelId);
+        //  Vector<VkDescriptorBufferInfo> levelLayerMeshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.LevelLayerMeshProperties, includes.LevelLayerMeshProperties + includes.LevelLayerMeshPropertiesCount);
+        Vector<VkDescriptorImageInfo>  texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderPassId, &inputTexture);
+        Vector<VkDescriptorBufferInfo> materialPropertiesList = materialSystem.GetMaterialPropertiesBuffer();
         GPUIncludes include =
         {
-            .vertexProperties = renderSystem.GetVertexPropertiesBuffer(),
-            .indexProperties = renderSystem.GetIndexPropertiesBuffer(),
-            .transformProperties = renderSystem.GetGameObjectTransformBuffer(),
-            .meshProperties = renderSystem.GetMeshPropertiesBuffer(levelId),
-            .texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderPassId, &inputTexture),
-            .materialProperties = materialSystem.GetMaterialPropertiesBuffer()
+           .VertexProperties = vertexPropertiesList.data(),
+           .IndexProperties = indexPropertiesList.data(),
+           .TransformProperties = transformPropertiesList.data(),
+           .MeshProperties = meshPropertiesList.data(),
+           .TexturePropertiesList = texturePropertiesList.data(),
+           .MaterialProperties = materialPropertiesList.data(),
+           .VertexPropertiesCount = vertexPropertiesList.size(),
+           .IndexPropertiesCount = indexPropertiesList.size(),
+           .TransformPropertiesCount = transformPropertiesList.size(),
+           .MeshPropertiesCount = meshPropertiesList.size(),
+           .TexturePropertiesListCount = texturePropertiesList.size(),
+           .MaterialPropertiesCount = materialPropertiesList.size()
         };
 
         Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>

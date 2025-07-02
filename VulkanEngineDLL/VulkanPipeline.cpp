@@ -84,6 +84,14 @@ void VulkanPipeline_Destroy(VkDevice device, VulkanPipeline& vulkanPipeline)
 
 VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes)
 {
+    const Vector<VkDescriptorBufferInfo> vertexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.VertexProperties, includes.VertexProperties + includes.VertexPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> indexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.IndexProperties, includes.IndexProperties + includes.IndexPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> transformPropertiesList = Vector<VkDescriptorBufferInfo>(includes.TransformProperties, includes.TransformProperties + includes.TransformPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> meshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.MeshProperties, includes.MeshProperties + includes.MeshPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> levelLayerMeshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.LevelLayerMeshProperties, includes.LevelLayerMeshProperties + includes.LevelLayerMeshPropertiesCount);
+    const Vector<VkDescriptorImageInfo>  texturePropertiesList = Vector<VkDescriptorImageInfo>(includes.TexturePropertiesList, includes.TexturePropertiesList + includes.TexturePropertiesListCount);
+    const Vector<VkDescriptorBufferInfo> materialPropertiesList = Vector<VkDescriptorBufferInfo>(includes.MaterialProperties, includes.MaterialProperties + includes.MaterialPropertiesCount);
+
     Vector<VkDescriptorPoolSize> descriptorPoolSizeList = Vector<VkDescriptorPoolSize>();
     for (auto binding : model.PipelineDescriptorModelsList)
     {
@@ -94,7 +102,7 @@ VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const Re
             descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
                 {
                     .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                    .descriptorCount = static_cast<uint32>(includes.vertexProperties.size())
+                    .descriptorCount = static_cast<uint32>(vertexPropertiesList.size())
                 });
             break;
         }
@@ -103,7 +111,7 @@ VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const Re
             descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
                 {
                     .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                    .descriptorCount = static_cast<uint32>(includes.indexProperties.size())
+                    .descriptorCount = static_cast<uint32>(indexPropertiesList.size())
                 });
             break;
         }
@@ -112,7 +120,7 @@ VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const Re
             descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
                 {
                     .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                    .descriptorCount = static_cast<uint32>(includes.transformProperties.size())
+                    .descriptorCount = static_cast<uint32>(transformPropertiesList.size())
                 });
             break;
         }
@@ -121,7 +129,7 @@ VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const Re
             descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
                 {
                     .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                    .descriptorCount = static_cast<uint32>(includes.meshProperties.size())
+                    .descriptorCount = static_cast<uint32>(meshPropertiesList.size())
                 });
             break;
         }
@@ -130,7 +138,7 @@ VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const Re
             descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
                 {
                     .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                    .descriptorCount = static_cast<uint32>(includes.texturePropertiesList.size())
+                    .descriptorCount = static_cast<uint32>(texturePropertiesList.size())
                 });
             break;
         }
@@ -139,7 +147,7 @@ VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const Re
             descriptorPoolSizeList.emplace_back(VkDescriptorPoolSize
                 {
                     .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                    .descriptorCount = static_cast<uint32>(includes.materialProperties.size())
+                    .descriptorCount = static_cast<uint32>(materialPropertiesList.size())
                 });
             break;
         }
@@ -166,6 +174,14 @@ VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const Re
 
 Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes)
 {
+    const Vector<VkDescriptorBufferInfo> vertexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.VertexProperties, includes.VertexProperties + includes.VertexPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> indexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.IndexProperties, includes.IndexProperties + includes.IndexPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> transformPropertiesList = Vector<VkDescriptorBufferInfo>(includes.TransformProperties, includes.TransformProperties + includes.TransformPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> meshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.MeshProperties, includes.MeshProperties + includes.MeshPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> levelLayerMeshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.LevelLayerMeshProperties, includes.LevelLayerMeshProperties + includes.LevelLayerMeshPropertiesCount);
+    const Vector<VkDescriptorImageInfo>  texturePropertiesList = Vector<VkDescriptorImageInfo>(includes.TexturePropertiesList, includes.TexturePropertiesList + includes.TexturePropertiesListCount);
+    const Vector<VkDescriptorBufferInfo> materialPropertiesList = Vector<VkDescriptorBufferInfo>(includes.MaterialProperties, includes.MaterialProperties + includes.MaterialPropertiesCount);
+
     Vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindingList = Vector<VkDescriptorSetLayoutBinding>();
     for (auto binding : model.PipelineDescriptorModelsList)
     {
@@ -177,7 +193,7 @@ Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevic
                 {
                     .binding = binding.BindingNumber,
                     .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                    .descriptorCount = static_cast<uint32>(includes.meshProperties.size()),
+                    .descriptorCount = static_cast<uint32>(meshPropertiesList.size()),
                     .stageFlags = VK_SHADER_STAGE_ALL,
                     .pImmutableSamplers = nullptr
                 });
@@ -189,7 +205,7 @@ Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevic
                 {
                     .binding = binding.BindingNumber,
                     .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                    .descriptorCount = static_cast<uint32>(includes.meshProperties.size()),
+                    .descriptorCount = static_cast<uint32>(meshPropertiesList.size()),
                     .stageFlags = VK_SHADER_STAGE_ALL,
                     .pImmutableSamplers = nullptr
                 });
@@ -201,7 +217,7 @@ Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevic
                 {
                     .binding = binding.BindingNumber,
                     .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                    .descriptorCount = static_cast<uint32>(includes.transformProperties.size()),
+                    .descriptorCount = static_cast<uint32>(transformPropertiesList.size()),
                     .stageFlags = VK_SHADER_STAGE_ALL,
                     .pImmutableSamplers = nullptr
                 });
@@ -213,7 +229,7 @@ Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevic
                 {
                     .binding = binding.BindingNumber,
                     .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                    .descriptorCount = static_cast<uint32>(includes.meshProperties.size()),
+                    .descriptorCount = static_cast<uint32>(meshPropertiesList.size()),
                     .stageFlags = VK_SHADER_STAGE_ALL,
                     .pImmutableSamplers = nullptr
                 });
@@ -225,7 +241,7 @@ Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevic
                 {
                     .binding = binding.BindingNumber,
                     .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                    .descriptorCount = static_cast<uint32>(includes.texturePropertiesList.size()),
+                    .descriptorCount = static_cast<uint32>(texturePropertiesList.size()),
                     .stageFlags = VK_SHADER_STAGE_ALL,
                     .pImmutableSamplers = nullptr
                 });
@@ -237,7 +253,7 @@ Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevic
                 {
                     .binding = binding.BindingNumber,
                     .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                    .descriptorCount = static_cast<uint32>(includes.materialProperties.size()),
+                    .descriptorCount = static_cast<uint32>(materialPropertiesList.size()),
                     .stageFlags = VK_SHADER_STAGE_ALL,
                     .pImmutableSamplers = nullptr
                 });
@@ -288,6 +304,14 @@ Vector<VkDescriptorSet> Pipeline_AllocatePipelineDescriptorSets(VkDevice device,
 
 void Pipeline_UpdatePipelineDescriptorSets(VkDevice device, const Vector<VkDescriptorSet>& descriptorSetList, const RenderPipelineModel& model, const GPUIncludes& includes)
 {
+    const Vector<VkDescriptorBufferInfo> vertexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.VertexProperties, includes.VertexProperties + includes.VertexPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> indexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.IndexProperties, includes.IndexProperties + includes.IndexPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> transformPropertiesList = Vector<VkDescriptorBufferInfo>(includes.TransformProperties, includes.TransformProperties + includes.TransformPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> meshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.MeshProperties, includes.MeshProperties + includes.MeshPropertiesCount);
+    const Vector<VkDescriptorBufferInfo> levelLayerMeshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.LevelLayerMeshProperties, includes.LevelLayerMeshProperties + includes.LevelLayerMeshPropertiesCount);
+    const Vector<VkDescriptorImageInfo>  texturePropertiesList = Vector<VkDescriptorImageInfo>(includes.TexturePropertiesList, includes.TexturePropertiesList + includes.TexturePropertiesListCount);
+    const Vector<VkDescriptorBufferInfo> materialPropertiesList = Vector<VkDescriptorBufferInfo>(includes.MaterialProperties, includes.MaterialProperties + includes.MaterialPropertiesCount);
+
     for (auto& descriptorSet : descriptorSetList)
     {
         Vector<VkWriteDescriptorSet> writeDescriptorSet = Vector<VkWriteDescriptorSet>();
@@ -304,10 +328,10 @@ void Pipeline_UpdatePipelineDescriptorSets(VkDevice device, const Vector<VkDescr
                         .dstSet = descriptorSet,
                         .dstBinding = binding.BindingNumber,
                         .dstArrayElement = 0,
-                        .descriptorCount = static_cast<uint32>(includes.meshProperties.size()),
+                        .descriptorCount = static_cast<uint32>(meshPropertiesList.size()),
                         .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
                         .pImageInfo = nullptr,
-                        .pBufferInfo = includes.meshProperties.data(),
+                        .pBufferInfo = meshPropertiesList.data(),
                         .pTexelBufferView = nullptr
                     });
                 break;
@@ -321,10 +345,10 @@ void Pipeline_UpdatePipelineDescriptorSets(VkDevice device, const Vector<VkDescr
                         .dstSet = descriptorSet,
                         .dstBinding = binding.BindingNumber,
                         .dstArrayElement = 0,
-                        .descriptorCount = static_cast<uint32>(includes.meshProperties.size()),
+                        .descriptorCount = static_cast<uint32>(meshPropertiesList.size()),
                         .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
                         .pImageInfo = nullptr,
-                        .pBufferInfo = includes.meshProperties.data(),
+                        .pBufferInfo = meshPropertiesList.data(),
                         .pTexelBufferView = nullptr
                     });
                 break;
@@ -338,10 +362,10 @@ void Pipeline_UpdatePipelineDescriptorSets(VkDevice device, const Vector<VkDescr
                         .dstSet = descriptorSet,
                         .dstBinding = binding.BindingNumber,
                         .dstArrayElement = 0,
-                        .descriptorCount = static_cast<uint32>(includes.transformProperties.size()),
+                        .descriptorCount = static_cast<uint32>(transformPropertiesList.size()),
                         .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
                         .pImageInfo = nullptr,
-                        .pBufferInfo = includes.transformProperties.data(),
+                        .pBufferInfo = transformPropertiesList.data(),
                         .pTexelBufferView = nullptr
                     });
                 break;
@@ -355,10 +379,10 @@ void Pipeline_UpdatePipelineDescriptorSets(VkDevice device, const Vector<VkDescr
                         .dstSet = descriptorSet,
                         .dstBinding = binding.BindingNumber,
                         .dstArrayElement = 0,
-                        .descriptorCount = static_cast<uint32>(includes.meshProperties.size()),
+                        .descriptorCount = static_cast<uint32>(meshPropertiesList.size()),
                         .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
                         .pImageInfo = nullptr,
-                        .pBufferInfo = includes.meshProperties.data(),
+                        .pBufferInfo = meshPropertiesList.data(),
                         .pTexelBufferView = nullptr
                     });
                 break;
@@ -372,9 +396,9 @@ void Pipeline_UpdatePipelineDescriptorSets(VkDevice device, const Vector<VkDescr
                         .dstSet = descriptorSet,
                         .dstBinding = binding.BindingNumber,
                         .dstArrayElement = 0,
-                        .descriptorCount = static_cast<uint32>(includes.texturePropertiesList.size()),
+                        .descriptorCount = static_cast<uint32>(texturePropertiesList.size()),
                         .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                        .pImageInfo = includes.texturePropertiesList.data(),
+                        .pImageInfo = texturePropertiesList.data(),
                         .pBufferInfo = nullptr,
                         .pTexelBufferView = nullptr
                     });
@@ -390,10 +414,10 @@ void Pipeline_UpdatePipelineDescriptorSets(VkDevice device, const Vector<VkDescr
                         .dstSet = descriptorSet,
                         .dstBinding = binding.BindingNumber,
                         .dstArrayElement = 0,
-                        .descriptorCount = static_cast<uint32>(includes.materialProperties.size()),
+                        .descriptorCount = static_cast<uint32>(materialPropertiesList.size()),
                         .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
                         .pImageInfo = nullptr,
-                        .pBufferInfo = includes.materialProperties.data(),
+                        .pBufferInfo = materialPropertiesList.data(),
                         .pTexelBufferView = nullptr
                     });
 

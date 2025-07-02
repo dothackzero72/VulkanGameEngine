@@ -24,6 +24,11 @@ namespace VulkanGameEngineLevelEditor.Systems
         public Guid RenderPassId { get; set; }
         public uint SpriteBatchLayerId { get; set; }
         public uint SpriteLayerMeshId { get; set; }
+        public SpriteBatchLayer() { }
+        public SpriteBatchLayer(Guid renderPassId)
+        {
+            RenderPassId = renderPassId;
+        }
     }
 
     public struct Sprite
@@ -164,6 +169,11 @@ namespace VulkanGameEngineLevelEditor.Systems
             SpriteList.Add(sprite);
             SpriteInstanceList.Add(new SpriteInstanceStruct());
             SpriteIdToListIndexMap[gameObjectId] = SpriteList.Count();
+        }
+
+        public static void AddSpriteBatchLayer(Guid renderPassId)
+        {
+            SpriteBatchLayerList.Add(new SpriteBatchLayer(renderPassId));
         }
 
         public static Guid LoadSpriteVRAM(string spriteVramPath)

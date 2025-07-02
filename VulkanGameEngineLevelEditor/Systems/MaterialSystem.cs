@@ -2,10 +2,12 @@
 using GlmSharp;
 using Newtonsoft.Json;
 using Silk.NET.SDL;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -95,6 +97,34 @@ namespace VulkanGameEngineLevelEditor.Systems
             BufferSystem.VulkanBufferMap[NextBufferIndex] = buffer;
 
             return materialJson.MaterialId;
+        }
+
+        public static ListPtr<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer()
+        {
+            ListPtr<VkDescriptorBufferInfo> materialPropertiesBuffer = new ListPtr<VkDescriptorBufferInfo>();
+            if (MaterialMap.Any())
+            {
+                materialPropertiesBuffer.Add(new VkDescriptorBufferInfo
+                {
+                    buffer = VulkanCSConst.VK_NULL_HANDLE,
+                    offset = 0,
+                    range = VulkanCSConst.VK_WHOLE_SIZE
+                });
+            }
+            else
+            {
+                foreach (var material in MaterialMap)
+                {
+                    VkDescriptorBufferInfo meshBufferInfo = new VkDescriptorBufferInfo
+                    {
+                        buffer = BufferSystem.VulkanBufferMap[(uint)material.Value.MaterialBufferId].Buffer,
+                        offset = 0,
+                        range = VulkanCSConst.VK_WHOLE_SIZE
+                    };
+                    materialPropertiesBuffer.Add(meshBufferInfo);
+                }
+            }
+            return materialPropertiesBuffer;
         }
 
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern Material Material_CreateMaterial(ref GraphicsRenderer renderer, uint bufferIndex, out VulkanBuffer materialBuffer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);

@@ -37,13 +37,20 @@ static Vector<VkValidationFeatureDisableEXT> disabledList = { VK_VALIDATION_FEAT
 
 struct GPUIncludes
 {
-	Vector<VkDescriptorBufferInfo> vertexProperties;
-	Vector<VkDescriptorBufferInfo> indexProperties;
-	Vector<VkDescriptorBufferInfo> transformProperties;
-	Vector<VkDescriptorBufferInfo> meshProperties;
-	Vector<VkDescriptorBufferInfo> LevelLayermeshProperties;
-	Vector<VkDescriptorImageInfo>  texturePropertiesList;
-	Vector<VkDescriptorBufferInfo> materialProperties;
+	VkDescriptorBufferInfo* VertexProperties;
+	VkDescriptorBufferInfo* IndexProperties;
+	VkDescriptorBufferInfo* TransformProperties;
+	VkDescriptorBufferInfo* MeshProperties;
+	VkDescriptorBufferInfo* LevelLayerMeshProperties;
+	VkDescriptorImageInfo*  TexturePropertiesList;
+	VkDescriptorBufferInfo* MaterialProperties;
+	size_t VertexPropertiesCount;
+	size_t IndexPropertiesCount;
+	size_t TransformPropertiesCount;
+	size_t MeshPropertiesCount;
+	size_t LevelLayerMeshPropertiesCount;
+	size_t TexturePropertiesListCount;
+	size_t MaterialPropertiesCount;
 };
 
 struct GraphicsRenderer

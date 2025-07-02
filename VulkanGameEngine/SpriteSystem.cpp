@@ -95,20 +95,6 @@ void SpriteSystem::AddSprite(GameObjectID gameObjectId, VkGuid& spriteVramId)
 
 void SpriteSystem::AddSpriteBatchLayer(RenderPassGuid& renderPassId)
 {
-    //SpriteBatchLayer spriteBatchLayer;
-    //spriteBatchLayer.SpriteBatchLayerID = ++NextSpriteBatchLayerID;
-    //spriteBatchLayer.RenderPassId = renderPassId;
-    //spriteBatchLayer.SpriteLayerMeshId = meshSystem.CreateSpriteLayerMesh(gameObjectSystem.SpriteVertexList, gameObjectSystem.SpriteIndexList);
-    //for (int x = 0; x < SpriteList.size(); x++)
-    //{
-    //    AddSpriteBatchObjectList(spriteBatchLayer.SpriteBatchLayerID, GameObjectID(x + 1));
-    //}
-
-    //int bufferId = bufferSystem.CreateVulkanBuffer<SpriteInstanceStruct>(renderSystem.renderer, FindSpriteInstanceList(spriteBatchLayer.SpriteBatchLayerID), MeshBufferUsageSettings, MeshBufferPropertySettings, false);
-    //Vector<SpriteInstanceStruct> spriteInstanceBuffer = Vector<SpriteInstanceStruct>(FindSpriteBatchObjectListMap(spriteBatchLayer.SpriteBatchLayerID).size());
-    //AddSpriteInstanceLayerList(spriteBatchLayer.SpriteBatchLayerID, spriteInstanceBuffer);
-    //AddSpriteInstanceBufferId(spriteBatchLayer.SpriteBatchLayerID, bufferId);
-
     SpriteBatchLayerList.emplace_back(SpriteBatchLayer(renderPassId));
 }
 

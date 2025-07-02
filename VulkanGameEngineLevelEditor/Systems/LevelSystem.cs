@@ -2,16 +2,19 @@
 using GlmSharp;
 using Newtonsoft.Json;
 using Silk.NET.SDL;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.Systems;
 
 
 namespace VulkanGameEngineLevelEditor.Systems
@@ -109,15 +112,19 @@ namespace VulkanGameEngineLevelEditor.Systems
             }
             {
                 Guid dummyGuid = new Guid();
-                string gameObjectPath = Path.GetFullPath(Path.Combine(levelDirectory, "../RenderPass/LevelShader2DRenderPass.json"));
-                LevelTileSet levelTileSetJson = JsonConvert.DeserializeObject<LevelTileSet>(jsonContent);
+                string fullRenderPassPath = Path.GetFullPath(Path.Combine(levelDirectory, "../RenderPass/LevelShader2DRenderPass.json"));
+                string gameObjectPath = Path.GetFullPath(Path.Combine(levelDirectory, fullRenderPassPath));
 
-                //nlohmann::json json2 = Json::ReadJson("../RenderPass/LevelShader2DRenderPass.json");
-                //spriteRenderPass2DId = Guid(json2["RenderPassId"].get<String>().c_str());
+                string jsonContent2 = File.ReadAllText(gameObjectPath);
+                VulkanRenderPass levelTileSetJson = JsonConvert.DeserializeObject<VulkanRenderPass>(jsonContent);
+                spriteRenderPass2DId = levelTileSetJson.RenderPassId;
 
-                //SpriteSystem.AddSpriteBatchLayer(spriteRenderPass2DId);
-                //spriteRenderPass2DId = RenderSystem.LoadRenderPass(levelLayout.LevelLayoutId, "../RenderPass/LevelShader2DRenderPass.json", ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
-                //frameBufferId = RenderSystem.LoadRenderPass(dummyGuid, "../RenderPass/FrameBufferRenderPass.json", textureSystem.FindRenderedTextureList(spriteRenderPass2DId)[0], ivec2(renderSystem.renderer.SwapChainResolution.width, renderSystem.renderer.SwapChainResolution.height));
+                SpriteSystem.AddSpriteBatchLayer(spriteRenderPass2DId);
+
+                string fulRenderPassPath = Path.GetFullPath(Path.Combine(levelDirectory, "../RenderPass/LevelShader2DRenderPass.json"));
+                string fulRenderPassPath2 = Path.GetFullPath(Path.Combine(levelDirectory, "../RenderPass/FrameBufferRenderPass.json"));
+                spriteRenderPass2DId = RenderSystem.LoadRenderPass(levelLayout.LevelLayoutId, fulRenderPassPath, new ivec2((int)RenderSystem.renderer.SwapChainResolution.width, (int)RenderSystem.renderer.SwapChainResolution.height));
+                frameBufferId = RenderSystem.LoadRenderPass(dummyGuid, fulRenderPassPath2, TextureSystem.RenderedTextureList[spriteRenderPass2DId][0], new ivec2((int)RenderSystem.renderer.SwapChainResolution.width, (int)RenderSystem.renderer.SwapChainResolution.height));
             }
         }
 

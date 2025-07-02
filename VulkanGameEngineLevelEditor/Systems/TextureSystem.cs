@@ -10,16 +10,17 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor.Systems
 {
-    public static class TextureSystem
+    public unsafe static class TextureSystem
     {
-        public static Dictionary<Guid, Texture> TextureList { get; } = new Dictionary<Guid, Texture>();
-        public static Dictionary<Guid, Texture> DepthTextureList { get; }
-        public static Dictionary<Guid, Vector<Texture>> RenderedTextureList { get; }
-        public static Dictionary<uint, Vector<Texture>> InputTextureList { get; }
+        public static Dictionary<Guid, Texture> TextureList { get; set; } = new Dictionary<Guid, Texture>();
+        public static Dictionary<Guid, Texture> DepthTextureList { get; set; } = new Dictionary<Guid, Texture>();
+        public static Dictionary<Guid, ListPtr<Texture>> RenderedTextureList { get; set; } = new Dictionary<Guid, ListPtr<Texture>>();
+        public static Dictionary<uint, ListPtr<Texture>> InputTextureList { get; set; } = new Dictionary<uint, ListPtr<Texture>>();
 
         public static Guid LoadTexture(string texturePath)
         {
@@ -39,7 +40,18 @@ namespace VulkanGameEngineLevelEditor.Systems
             return textureJson.TextureId;
         }
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern Texture Texture_LoadTexture(GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);
+        public static void GetTexturePropertiesBuffer(Texture texture, ref ListPtr<VkDescriptorImageInfo> textureDescriptorList)
+        {
+            VkDescriptorImageInfo textureDescriptor = new VkDescriptorImageInfo
+            {
+		        sampler = texture.textureSampler,
+		        imageView = texture.textureView,
+		        imageLayout = VkImageLayout.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+            };
+            textureDescriptorList.Add(textureDescriptor);
+        }
 
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern Texture Texture_LoadTexture(GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Texture_GetTexturePropertiesBuffer(ref Texture texture, ref VkDescriptorImageInfo* textureDescriptorList, size_t textureDesciptorListCount);
     }
 }
