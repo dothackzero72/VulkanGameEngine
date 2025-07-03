@@ -14,7 +14,7 @@ namespace VulkanGameEngineLevelEditor.Systems
 {
     public static class GameSystem
     {
-     //   public static OrthographicCamera2D OrthographicCamera { get; set; }
+        //   public static OrthographicCamera2D OrthographicCamera { get; set; }
         public static Guid TileSetId { get; set; }
         public static Guid LevelRendererId { get; set; }
         public static Guid SpriteRenderPass2DId { get; set; }
@@ -41,11 +41,45 @@ namespace VulkanGameEngineLevelEditor.Systems
         {
             var res = new vec2(RenderSystem.SwapChainResolution.width, RenderSystem.SwapChainResolution.height);
             var pos = new vec2(0.0f, 0.0f);
-         //   OrthographicCamera = new OrthographicCamera2D(res, pos);
+            //   OrthographicCamera = new OrthographicCamera2D(res, pos);
 
             string jsonContent = File.ReadAllText(levelPath);
             LevelLoader levelLoader = JsonConvert.DeserializeObject<LevelLoader>(levelPath);
 
         }
+
+        public static void Update(float deltaTime)
+        {
+            LevelSystem.Update(deltaTime);
+            TextureSystem.Update(deltaTime);
+            MaterialSystem.Update(deltaTime);
+            RenderSystem.Update(deltaTime);
+
+            VkCommandBuffer commandBuffer = RenderSystem.BeginSingleTimeCommands();
+            MeshSystem.Update(deltaTime);
+            RenderSystem.EndSingleTimeCommands(commandBuffer);
+        }
     }
-}
+
+    public static void Draw(float deltaTime)
+        {
+            RenderSystem.StartFrame();
+            LevelSystem.Draw(CommandBufferSubmitList, deltaTime);
+            CommandBufferSubmitList.emplace_back(ImGui_Draw(renderSystem.renderer, renderSystem.imGuiRenderer));
+            RenderSystem.EndFrame(CommandBufferSubmitList);
+            CommandBufferSubmitList.clear();
+        }
+
+        public static void Destroy()
+        {
+            //gameObjectSystem.DestroyGameObjects();
+            //meshSystem.DestroyAllGameObjects();
+            TextureSystem.DestroyAllTextures();
+            MaterialSystem.DestroyAllMaterials();
+            LevelSystem.DestoryLevel();
+            MeshSystem.DestroyAllGameObjects();
+            BufferSystem.DestroyAllBuffers();
+            RenderSystem.Destroy();
+            MemorySystem.ReportLeaks();
+        }
+    }

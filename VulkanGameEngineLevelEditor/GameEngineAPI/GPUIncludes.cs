@@ -3,12 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.Systems;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe class GPUIncludes
     {
         public VkDescriptorBufferInfo* vertexPropertiesList { get; set; }
@@ -27,3 +29,4 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public size_t materialPropertiesListCount { get; set; } = 0;
     };
 }
+

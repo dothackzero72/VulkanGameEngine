@@ -128,6 +128,22 @@ namespace VulkanGameEngineLevelEditor.Systems
             }
         }
 
+        public static void Update(float deltaTime)
+        {
+            OrthographicCamera->Update(SceneProperties);
+            SpriteSystem.Update(deltaTime);
+            foreach (var levelLayer in LevelLayerList)
+            {
+                // levelLayer.Update(deltaTime);
+            }
+        }
+
+        public static void Draw(List<VkCommandBuffer> commandBufferList, float deltaTime)
+        {
+            commandBufferList.Add(RenderSystem.RenderLevel(spriteRenderPass2DId, levelLayout.LevelLayoutId, deltaTime, SceneProperties));
+            commandBufferList.Add(RenderSystem.RenderFrameBuffer(frameBufferId));
+        }
+
         private static Guid LoadTileSetVRAM(string levelTileSetPath)
         {
             if (levelTileSetPath.IsEmpty())

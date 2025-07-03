@@ -127,6 +127,31 @@ namespace VulkanGameEngineLevelEditor.Systems
             return materialPropertiesBuffer;
         }
 
+        public static void Update(float deltaTime)
+        {
+            uint x = 0;
+            foreach (var materialPair in MaterialMap)
+            {
+                Material material = materialPair.Value;
+                MaterialProperitiesBuffer materialBufferProperties = new MaterialProperitiesBuffer
+                {
+                    AlbedoMapId = material.AlbedoMapId != new Guid() ? TextureSystem.TextureList[material.AlbedoMapId].textureBufferIndex : 0,
+                    MetallicRoughnessMapId = material.MetallicRoughnessMapId != new Guid() ? TextureSystem.TextureList[material.MetallicRoughnessMapId].textureBufferIndex : 0,
+                    MetallicMapId = material.MetallicMapId != new Guid() ? TextureSystem.TextureList[material.MetallicMapId].textureBufferIndex : 0,
+                    RoughnessMapId = material.RoughnessMapId != new Guid() ? TextureSystem.TextureList[material.RoughnessMapId].textureBufferIndex : 0,
+                    AmbientOcclusionMapId = material.AmbientOcclusionMapId != new Guid() ? TextureSystem.TextureList[material.AmbientOcclusionMapId]    .textureBufferIndex : 0,
+                    NormalMapId = material.NormalMapId != new Guid() ? TextureSystem.TextureList[material.NormalMapId].textureBufferIndex : 0,
+                    DepthMapId = material.DepthMapId != new Guid() ? TextureSystem.TextureList[material.DepthMapId].textureBufferIndex : 0,
+                    AlphaMapId = material.AlphaMapId != new Guid() ? TextureSystem.TextureList[material.AlphaMapId].textureBufferIndex : 0,
+                    EmissionMapId = material.EmissionMapId != new Guid() ? TextureSystem.TextureList[material.EmissionMapId].textureBufferIndex : 0,
+                    HeightMapId = material.HeightMapId != new Guid() ? TextureSystem.TextureList[material.HeightMapId].textureBufferIndex : 0
+                };
+
+                Material_UpdateBuffer(RenderSystem.renderer, BufferSystem.VulkanBufferMap[(uint)material.MaterialBufferId], materialBufferProperties);
+                x++;
+            }
+        }
+
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern Material Material_CreateMaterial(ref GraphicsRenderer renderer, uint bufferIndex, out VulkanBuffer materialBuffer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Material_UpdateBuffer(GraphicsRenderer renderer, VulkanBuffer materialBuffer, MaterialProperitiesBuffer materialProperties);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Material_DestroyBuffer(GraphicsRenderer renderer, VulkanBuffer materialBuffer);

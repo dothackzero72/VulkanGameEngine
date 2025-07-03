@@ -1,4 +1,5 @@
 ﻿using CSScripting;
+using GlmSharp;
 using Newtonsoft.Json;
 using Silk.NET.SDL;
 using Silk.NET.Vulkan;
@@ -40,7 +41,17 @@ namespace VulkanGameEngineLevelEditor.Systems
             return textureJson.TextureId;
         }
 
-        public static void GetTexturePropertiesBuffer(Texture texture, ref ListPtr<VkDescriptorImageInfo> textureDescriptorList)
+        public static void Update(float deltaTime)
+        {
+            uint x = 0;
+            foreach (var texture in TextureList)
+            {
+                Texture_UpdateTextureBufferIndex(texture.Value, x);
+                x++;
+            }
+        }
+
+public static void GetTexturePropertiesBuffer(Texture texture, ref ListPtr<VkDescriptorImageInfo> textureDescriptorList)
         {
             VkDescriptorImageInfo textureDescriptor = new VkDescriptorImageInfo
             {
@@ -51,7 +62,13 @@ namespace VulkanGameEngineLevelEditor.Systems
             textureDescriptorList.Add(textureDescriptor);
         }
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern Texture Texture_LoadTexture(GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Texture_GetTexturePropertiesBuffer(ref Texture texture, ref VkDescriptorImageInfo* textureDescriptorList, size_t textureDesciptorListCount);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern Texture Texture_LoadTexture( GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string jsonString);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern Texture Texture_CreateTexture( GraphicsRenderer renderer, VkImageAspectFlagBits imageType, VkImageCreateInfo createImageInfo, VkSamplerCreateInfo samplerCreateInfo);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Texture_UpdateTextureSize( GraphicsRenderer renderer, Texture texture, VkImageAspectFlagBits imageType, vec2 TextureResolution);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Texture_UpdateTextureBufferIndex(Texture texture, uint bufferIndex);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Texture_GetTexturePropertiesBuffer(Texture texture, List<VkDescriptorImageInfo> textureDescriptorList);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Texture_DestroyTexture( GraphicsRenderer renderer, Texture texture);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Texture_UpdateCmdTextureLayout( GraphicsRenderer renderer, VkCommandBuffer commandBuffer, Texture texture, VkImageLayout newImageLayout);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Texture_UpdateTextureLayout( GraphicsRenderer renderer, Texture texture, VkImageLayout newImageLayout);
     }
 }
