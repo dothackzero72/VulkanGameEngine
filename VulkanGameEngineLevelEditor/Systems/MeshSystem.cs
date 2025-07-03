@@ -98,7 +98,7 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static Dictionary<uint, Mesh> MeshMap { get; private set; } = new Dictionary<uint, Mesh>();
         public static Dictionary<int, Mesh> SpriteMeshMap { get; private set; } = new Dictionary<int, Mesh>();
-        public static Dictionary<Guid, List<Mesh>> LevelLayerMeshListMap { get; private set; } = new Dictionary<Guid, List<Mesh>>();
+        public static Dictionary<Guid, ListPtr<Mesh>> LevelLayerMeshListMap { get; private set; } = new Dictionary<Guid, ListPtr<Mesh>>();
         public static Dictionary<uint, ListPtr<Vertex2D>> Vertex2DListMap { get; private set; } = new Dictionary<uint, ListPtr<Vertex2D>>();
         public static Dictionary<uint, ListPtr<uint>> IndexListMap { get; private set; } = new Dictionary<uint, ListPtr<uint>>();
 
@@ -301,19 +301,14 @@ namespace VulkanGameEngineLevelEditor.Systems
                     }
                 };
 
-                Mesh mesh = Mesh_CreateMesh(RenderSystem.renderer, meshLoader, out VulkanBuffer vertexBuffer, out VulkanBuffer indexBuffer, out VulkanBuffer meshTransformBuffer, out VulkanBuffer propertiesBuffer);
-                MeshMap[meshId] = mesh;
+                ListPtr<Mesh> meshList = new ListPtr<Mesh>();
+                meshList.Add(Mesh_CreateMesh(RenderSystem.renderer, meshLoader, out VulkanBuffer vertexBuffer, out VulkanBuffer indexBuffer, out VulkanBuffer meshTransformBuffer, out VulkanBuffer propertiesBuffer));
+                LevelLayerMeshListMap[levelId] = meshList;
 
                 BufferSystem.VulkanBufferMap[meshLoader.VertexLoader.MeshVertexBufferId] = vertexBuffer;
                 BufferSystem.VulkanBufferMap[meshLoader.IndexLoader.MeshIndexBufferId] = indexBuffer;
                 BufferSystem.VulkanBufferMap[meshLoader.TransformLoader.MeshTransformBufferId] = meshTransformBuffer;
                 BufferSystem.VulkanBufferMap[meshLoader.MeshPropertiesLoader.PropertiesBufferId] = propertiesBuffer;
-
-                
-                //    meshList = new List<Mesh>();
-                //    LevelLayerMeshListMap[levelId] = meshList;
-              
-                //meshList.Add(mesh);
 
                 return (int)meshId;
             }

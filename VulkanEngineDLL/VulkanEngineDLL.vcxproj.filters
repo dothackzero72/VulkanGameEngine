@@ -150,6 +150,9 @@
     <ClInclude Include="InputComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FileSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VulkanError.c">
@@ -263,8 +266,17 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FileSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="FrameBufferPixel.hlsl" />
+    <FxCompile Include="FrameBufferVertex.hlsl" />
+    <FxCompile Include="SpritePixelShader.hlsl" />
+    <FxCompile Include="SpriteVertexShader.hlsl" />
   </ItemGroup>
 </Project>

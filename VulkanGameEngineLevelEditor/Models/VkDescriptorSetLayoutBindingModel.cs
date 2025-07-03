@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public unsafe class VkDescriptorSetLayoutBindingModel
+    public unsafe struct VkDescriptorSetLayoutBindingModel
     {
         public uint binding { get; set; }
         public VkDescriptorType descriptorType { get; set; }

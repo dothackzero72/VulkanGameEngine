@@ -140,7 +140,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="File.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="GameObjectSystem.cpp" />
     <ClCompile Include="GameSystem.cpp" />
@@ -154,7 +153,6 @@
     <ClCompile Include="OrthographicCamera2D.cpp" />
     <ClCompile Include="OrthographicCamera3D.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
-    <ClCompile Include="ShaderSystem.cpp" />
     <ClCompile Include="SpriteBatchLayer.cpp" />
     <ClCompile Include="SpriteSystem.cpp" />
     <ClCompile Include="SystemClock.cpp" />
@@ -164,7 +162,6 @@
   <ItemGroup>
     <ClInclude Include="Animation2D.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="File.h" />
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="GameObjectSystem.h" />
     <ClInclude Include="GameSystem.h" />
@@ -181,7 +178,6 @@
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SceneDataBuffer.h" />
-    <ClInclude Include="ShaderSystem.h" />
     <ClInclude Include="SpriteBatchLayer.h" />
     <ClInclude Include="SpriteSystem.h" />
     <ClInclude Include="SpriteVRAM.h" />

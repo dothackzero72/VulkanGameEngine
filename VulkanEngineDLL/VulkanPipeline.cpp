@@ -1,9 +1,17 @@
 #include "VulkanPipeline.h"
 #include "MemorySystem.h"
+#include "json.h"
+#include "ShaderSystem.h"
+#include "JsonLoader.h"
 
- VulkanPipeline VulkanPipeline_CreateRenderPipeline(VkDevice device, VkGuid& renderPassId, uint renderPipelineId, RenderPipelineModel& model, VkRenderPass renderPass, size_t constBufferSize, ivec2& renderPassResolution, const GPUIncludes& includes, VkPipelineShaderStageCreateInfo& pipelineShaderList, size_t pipelineShaderCount)
+ VulkanPipeline VulkanPipeline_CreateRenderPipeline(VkDevice device, VkGuid& renderPassId, uint renderPipelineId, const char* pipelineJson, VkRenderPass renderPass, size_t constBufferSize, ivec2& renderPassResolution, const GPUIncludes& includes)
  {
-     Vector<VkPipelineShaderStageCreateInfo> pipelineShaders = Vector<VkPipelineShaderStageCreateInfo>(&pipelineShaderList, &pipelineShaderList + pipelineShaderCount);
+     RenderPipelineLoader model = JsonLoader_LoadRenderPipelineLoaderInfo(pipelineJson, renderPassResolution);
+     Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
+     {
+         shaderSystem.CreateShader(device, model.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
+         shaderSystem.CreateShader(device, model.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
+     };
 
      VkPipelineCache pipelineCache = VK_NULL_HANDLE;
      VkDescriptorPool descriptorPool = Pipeline_CreatePipelineDescriptorPool(device, model, includes);
@@ -11,7 +19,7 @@
      Vector<VkDescriptorSet> descriptorSetList = Pipeline_AllocatePipelineDescriptorSets(device, descriptorPool, model, descriptorSetLayoutList);
      Pipeline_UpdatePipelineDescriptorSets(device, descriptorSetList, model, includes);
      VkPipelineLayout pipelineLayout = Pipeline_CreatePipelineLayout(device, descriptorSetLayoutList, constBufferSize);
-     VkPipeline pipeline = Pipeline_CreatePipeline(device, renderPass, pipelineLayout, pipelineCache, model, renderPassResolution, pipelineShaders);
+     VkPipeline pipeline = Pipeline_CreatePipeline(device, renderPass, pipelineLayout, pipelineCache, model, renderPassResolution, pipelineShaderStageCreateInfoList);
 
      VulkanPipeline* vulkanRenderPipelinePtr = new VulkanPipeline
      {
@@ -82,7 +90,7 @@ void VulkanPipeline_Destroy(VkDevice device, VulkanPipeline& vulkanPipeline)
 }
 
 
-VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes)
+VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const RenderPipelineLoader& model, const GPUIncludes& includes)
 {
     const Vector<VkDescriptorBufferInfo> vertexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.VertexProperties, includes.VertexProperties + includes.VertexPropertiesCount);
     const Vector<VkDescriptorBufferInfo> indexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.IndexProperties, includes.IndexProperties + includes.IndexPropertiesCount);
@@ -172,8 +180,9 @@ VkDescriptorPool Pipeline_CreatePipelineDescriptorPool(VkDevice device, const Re
     return descriptorPool;
 }
 
-Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevice device, const RenderPipelineModel& model, const GPUIncludes& includes)
+Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevice device, const RenderPipelineLoader& model, const GPUIncludes& includes)
 {
+    Vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindingList = Vector<VkDescriptorSetLayoutBinding>();
     const Vector<VkDescriptorBufferInfo> vertexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.VertexProperties, includes.VertexProperties + includes.VertexPropertiesCount);
     const Vector<VkDescriptorBufferInfo> indexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.IndexProperties, includes.IndexProperties + includes.IndexPropertiesCount);
     const Vector<VkDescriptorBufferInfo> transformPropertiesList = Vector<VkDescriptorBufferInfo>(includes.TransformProperties, includes.TransformProperties + includes.TransformPropertiesCount);
@@ -181,8 +190,6 @@ Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevic
     const Vector<VkDescriptorBufferInfo> levelLayerMeshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.LevelLayerMeshProperties, includes.LevelLayerMeshProperties + includes.LevelLayerMeshPropertiesCount);
     const Vector<VkDescriptorImageInfo>  texturePropertiesList = Vector<VkDescriptorImageInfo>(includes.TexturePropertiesList, includes.TexturePropertiesList + includes.TexturePropertiesListCount);
     const Vector<VkDescriptorBufferInfo> materialPropertiesList = Vector<VkDescriptorBufferInfo>(includes.MaterialProperties, includes.MaterialProperties + includes.MaterialPropertiesCount);
-
-    Vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindingList = Vector<VkDescriptorSetLayoutBinding>();
     for (auto binding : model.PipelineDescriptorModelsList)
     {
         switch (binding.BindingPropertiesList)
@@ -284,7 +291,7 @@ Vector<VkDescriptorSetLayout> Pipeline_CreatePipelineDescriptorSetLayout(VkDevic
     return descriptorSetLayoutList;
 }
 
-Vector<VkDescriptorSet> Pipeline_AllocatePipelineDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, const RenderPipelineModel& model, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList)
+Vector<VkDescriptorSet> Pipeline_AllocatePipelineDescriptorSets(VkDevice device, VkDescriptorPool descriptorPool, const RenderPipelineLoader& model, const Vector<VkDescriptorSetLayout>& descriptorSetLayoutList)
 {
     VkDescriptorSetAllocateInfo allocInfo = {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
@@ -302,7 +309,7 @@ Vector<VkDescriptorSet> Pipeline_AllocatePipelineDescriptorSets(VkDevice device,
     return descriptorSetList;
 }
 
-void Pipeline_UpdatePipelineDescriptorSets(VkDevice device, const Vector<VkDescriptorSet>& descriptorSetList, const RenderPipelineModel& model, const GPUIncludes& includes)
+void Pipeline_UpdatePipelineDescriptorSets(VkDevice device, const Vector<VkDescriptorSet>& descriptorSetList, const RenderPipelineLoader& model, const GPUIncludes& includes)
 {
     const Vector<VkDescriptorBufferInfo> vertexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.VertexProperties, includes.VertexProperties + includes.VertexPropertiesCount);
     const Vector<VkDescriptorBufferInfo> indexPropertiesList = Vector<VkDescriptorBufferInfo>(includes.IndexProperties, includes.IndexProperties + includes.IndexPropertiesCount);
@@ -311,7 +318,6 @@ void Pipeline_UpdatePipelineDescriptorSets(VkDevice device, const Vector<VkDescr
     const Vector<VkDescriptorBufferInfo> levelLayerMeshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.LevelLayerMeshProperties, includes.LevelLayerMeshProperties + includes.LevelLayerMeshPropertiesCount);
     const Vector<VkDescriptorImageInfo>  texturePropertiesList = Vector<VkDescriptorImageInfo>(includes.TexturePropertiesList, includes.TexturePropertiesList + includes.TexturePropertiesListCount);
     const Vector<VkDescriptorBufferInfo> materialPropertiesList = Vector<VkDescriptorBufferInfo>(includes.MaterialProperties, includes.MaterialProperties + includes.MaterialPropertiesCount);
-
     for (auto& descriptorSet : descriptorSetList)
     {
         Vector<VkWriteDescriptorSet> writeDescriptorSet = Vector<VkWriteDescriptorSet>();
@@ -461,7 +467,7 @@ VkPipelineLayout Pipeline_CreatePipelineLayout(VkDevice device, const Vector<VkD
     return pipelineLayout;
 }
 
-VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, const RenderPipelineModel& model, ivec2& extent, Vector<VkPipelineShaderStageCreateInfo>& pipelineShaders)
+VkPipeline Pipeline_CreatePipeline(VkDevice device, VkRenderPass renderpass, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache, const RenderPipelineLoader& model, ivec2& extent, Vector<VkPipelineShaderStageCreateInfo>& pipelineShaders)
 {
 
     VkPipeline pipeline = VK_NULL_HANDLE;

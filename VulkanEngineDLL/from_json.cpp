@@ -1,4 +1,5 @@
 #include "from_json.h"
+#include "VulkanPipeline.h"
 
 namespace nlohmann
 {
@@ -106,5 +107,89 @@ namespace nlohmann
         j.at("ImageCreateInfo").get_to(model.ImageCreateInfo);
         j.at("SamplerCreateInfo").get_to(model.SamplerCreateInfo);
         j.at("AttachmentDescription").get_to(model.AttachmentDescription);
+    }
+
+    void from_json(const nlohmann::json& j, RenderPipelineLoader& model) 
+    {
+        j.at("VertexShader").get_to(model.VertexShaderPath);
+        j.at("FragmentShader").get_to(model.FragmentShaderPath);
+        j.at("VertexType").get_to(model.DescriptorSetCount);
+        j.at("DescriptorSetCount").get_to(model.DescriptorSetCount);
+        j.at("DescriptorSetLayoutCount").get_to(model.DescriptorSetLayoutCount);
+        j.at("VertexShader").get_to(model.VertexShaderPath);
+        j.at("VertexShader").get_to(model.VertexShaderPath);
+        model.PipelineRasterizationStateCreateInfo = Json_LoadPipelineRasterizationStateCreateInfo(j.at("PipelineRasterizationStateCreateInfo"));
+        model.PipelineMultisampleStateCreateInfo = Json_LoadPipelineMultisampleStateCreateInfo(j.at("PipelineMultisampleStateCreateInfo"));
+        model.PipelineDepthStencilStateCreateInfo = Json_LoadPipelineDepthStencilStateCreateInfo(j.at("PipelineDepthStencilStateCreateInfo"));
+        model.PipelineInputAssemblyStateCreateInfo = Json_LoadPipelineInputAssemblyStateCreateInfo(j.at("PipelineInputAssemblyStateCreateInfo"));
+
+        for (int x = 0; x < j.at("PipelineColorBlendAttachmentStateList").size(); x++)
+        {
+            model.PipelineColorBlendAttachmentStateList.emplace_back(Json_LoadPipelineColorBlendAttachmentState(j.at("PipelineColorBlendAttachmentStateList")[x]));
+        }
+        model.PipelineColorBlendStateCreateInfoModel = Json_LoadPipelineColorBlendStateCreateInfo(j.at("PipelineColorBlendStateCreateInfoModel"));
+
+        for (int x = 0; x < j.at("LayoutBindingList").size(); x++)
+        {
+            model.LayoutBindingList.emplace_back(Json_LoadLayoutBinding(j.at("LayoutBindingList")[x]));
+        }
+        for (int x = 0; x < j.at("PipelineDescriptorModelsList").size(); x++)
+        {
+            model.PipelineDescriptorModelsList.emplace_back(j.at("PipelineDescriptorModelsList")[x]);
+        }
+        for (int x = 0; x < j.at("ViewportList").size(); x++)
+        {
+            model.ViewportList.emplace_back(Json_LoadViewPort(j.at("ViewportList")[x]));
+        }
+        for (int x = 0; x < j.at("ScissorList").size(); x++)
+        {
+            model.ScissorList.emplace_back(Json_LoadRect2D(j.at("ScissorList")[x]));
+        }
+        for (int x = 0; x < j.at("VertexInputBindingDescriptionList").size(); x++)
+        {
+            model.VertexInputBindingDescriptionList.emplace_back(Json_LoadVertexInputBindingDescription(j.at("VertexInputBindingDescriptionList")[x]));
+        }
+        for (int x = 0; x < j.at("VertexInputAttributeDescriptionList").size(); x++)
+        {
+            model.VertexInputAttributeDescriptionList.emplace_back(Json_LoadVertexInputAttributeDescription(j.at("VertexInputAttributeDescriptionList")[x]));
+        }
+    }
+
+    void from_json(const nlohmann::json& j, RenderedTextureInfoModel& model)
+    {
+        model.RenderedTextureInfoName = j.at("RenderedTextureInfoName");
+        model.TextureType = j.at("TextureType");
+        model.ImageCreateInfo = Json_LoadImageCreateInfo(j.at("ImageCreateInfo"));
+        model.SamplerCreateInfo = Json_LoadVulkanSamplerCreateInfo(j.at("SamplerCreateInfo"));
+        model.AttachmentDescription = Json_LoadAttachmentDescription(j.at("AttachmentDescription"));
+    }
+
+    void from_json(const nlohmann::json& j, PipelineDescriptorModel& model)
+    {
+        model.BindingNumber = j.at("BindingNumber");
+        model.BindingPropertiesList = j.at("BindingPropertiesList");
+        model.descriptorType = j.at("DescriptorType");
+    }
+
+    void from_json(const nlohmann::json& j, RenderPassBuildInfoModel& model)
+    {
+        model.IsRenderedToSwapchain = j.at("IsRenderedToSwapchain").get<bool>();
+        model.RenderArea = j.at("RenderArea");
+        for (int x = 0; x < j.at("RenderPipelineList").size(); x++)
+        {
+            model.RenderPipelineList.emplace_back(j.at("RenderPipelineList")[x]["Path"]);
+        }
+        for (int x = 0; x < j.at("RenderedTextureInfoModelList").size(); x++)
+        {
+            model.RenderedTextureInfoModelList.emplace_back(j.at("RenderedTextureInfoModelList")[x]);
+        }
+        for (int x = 0; x < j.at("SubpassDependencyList").size(); x++)
+        {
+            model.SubpassDependencyModelList.emplace_back(Json_LoadSubpassDependency(j.at("SubpassDependencyList")[x]));
+        }
+        for (int x = 0; x < j.at("ClearValueList").size(); x++)
+        {
+            model.ClearValueList.emplace_back(Json_LoadClearValue(j.at("ClearValueList")[x]));
+        }
     }
 }

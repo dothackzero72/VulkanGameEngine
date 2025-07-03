@@ -1,7 +1,7 @@
 #include "renderSystem.h"
 #include "json.h"
 #include "TextureSystem.h"
-#include "ShaderSystem.h"
+#include <ShaderSystem.h>
 #include "BufferSystem.h"
 #include "MeshSystem.h"
 #include "GameObjectSystem.h"
@@ -165,17 +165,15 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, ive
     for (int x = 0; x < json["RenderPipelineList"].size(); x++)
     {
         uint pipeLineId = renderSystem.RenderPassMap.size();
-        String asdf = json["RenderPipelineList"][x];
-        nlohmann::json json = Json::ReadJson(asdf);
-        RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
+        String pipelineJson = json["RenderPipelineList"][x];
 
-         Vector<VkDescriptorBufferInfo> vertexPropertiesList = renderSystem.GetVertexPropertiesBuffer();
-         Vector<VkDescriptorBufferInfo> indexPropertiesList = renderSystem.GetIndexPropertiesBuffer();
-         Vector<VkDescriptorBufferInfo> transformPropertiesList = renderSystem.GetGameObjectTransformBuffer();
-         Vector<VkDescriptorBufferInfo> meshPropertiesList = renderSystem.GetMeshPropertiesBuffer(levelId);
-       //  Vector<VkDescriptorBufferInfo> levelLayerMeshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.LevelLayerMeshProperties, includes.LevelLayerMeshProperties + includes.LevelLayerMeshPropertiesCount);
-         Vector<VkDescriptorImageInfo>  texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderPassId, nullptr);
-         Vector<VkDescriptorBufferInfo> materialPropertiesList = materialSystem.GetMaterialPropertiesBuffer();
+        Vector<VkDescriptorBufferInfo> vertexPropertiesList = renderSystem.GetVertexPropertiesBuffer();
+        Vector<VkDescriptorBufferInfo> indexPropertiesList = renderSystem.GetIndexPropertiesBuffer();
+        Vector<VkDescriptorBufferInfo> transformPropertiesList = renderSystem.GetGameObjectTransformBuffer();
+        Vector<VkDescriptorBufferInfo> meshPropertiesList = renderSystem.GetMeshPropertiesBuffer(levelId);
+        //  Vector<VkDescriptorBufferInfo> levelLayerMeshPropertiesList = Vector<VkDescriptorBufferInfo>(includes.LevelLayerMeshProperties, includes.LevelLayerMeshProperties + includes.LevelLayerMeshPropertiesCount);
+        Vector<VkDescriptorImageInfo>  texturePropertiesList = renderSystem.GetTexturePropertiesBuffer(renderPassId, nullptr);
+        Vector<VkDescriptorBufferInfo> materialPropertiesList = materialSystem.GetMaterialPropertiesBuffer();
         GPUIncludes include =
         {
            .VertexProperties = vertexPropertiesList.data(),
@@ -192,14 +190,7 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, ive
            .MaterialPropertiesCount = materialPropertiesList.size()
         };
 
-        Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
-        {
-            shaderSystem.CreateShader(renderer.Device, renderPipelineModel.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
-            shaderSystem.CreateShader(renderer.Device, renderPipelineModel.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
-        };
-
-        VkPipelineShaderStageCreateInfo* createInfo  = pipelineShaderStageCreateInfoList.data();
-        VulkanPipeline vulkanPipelineDLL = VulkanPipeline_CreateRenderPipeline(renderer.Device, renderPassId, pipeLineId, renderPipelineModel, RenderPassMap[renderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, *createInfo, pipelineShaderStageCreateInfoList.size());
+        VulkanPipeline vulkanPipelineDLL = VulkanPipeline_CreateRenderPipeline(renderer.Device, renderPassId, pipeLineId, pipelineJson.c_str(), RenderPassMap[renderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include);
         RenderPipelineMap[renderPassId].emplace_back(vulkanPipelineDLL);
     }
 
@@ -213,9 +204,8 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, Tex
     for (int x = 0; x < json["RenderPipelineList"].size(); x++)
     {
         uint pipeLineId = renderSystem.RenderPipelineMap.size();
-        String asdf = json["RenderPipelineList"][x];
-        nlohmann::json json = Json::ReadJson(asdf);
-        RenderPipelineModel renderPipelineModel = RenderPipelineModel::from_json(json);
+        nlohmann::json json = Json::ReadJson(json["RenderPipelineList"][x]);
+        String pipelineJson = json["RenderPipelineList"][x];
 
         Vector<VkDescriptorBufferInfo> vertexPropertiesList = renderSystem.GetVertexPropertiesBuffer();
         Vector<VkDescriptorBufferInfo> indexPropertiesList = renderSystem.GetIndexPropertiesBuffer();
@@ -240,14 +230,7 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, Tex
            .MaterialPropertiesCount = materialPropertiesList.size()
         };
 
-        Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
-        {
-            shaderSystem.CreateShader(renderer.Device, renderPipelineModel.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
-            shaderSystem.CreateShader(renderer.Device, renderPipelineModel.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
-        };
-
-        VkPipelineShaderStageCreateInfo* createInfo = pipelineShaderStageCreateInfoList.data();
-        VulkanPipeline vulkanPipelineDLL = VulkanPipeline_CreateRenderPipeline(renderer.Device, renderPassId, pipeLineId, renderPipelineModel, RenderPassMap[renderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include, *createInfo, pipelineShaderStageCreateInfoList.size());
+        VulkanPipeline vulkanPipelineDLL = VulkanPipeline_CreateRenderPipeline(renderer.Device, renderPassId, pipeLineId, pipelineJson.c_str(), RenderPassMap[renderPassId].RenderPass, sizeof(SceneDataBuffer), renderPassResolution, include);
         RenderPipelineMap[renderPassId].emplace_back(vulkanPipelineDLL);
     }
 

@@ -16,7 +16,7 @@
 	};
 }
 
- VkImageCreateInfo Json_LoadImageCreateInfo(nlohmann::json json, ivec2 textureResolution)
+ VkImageCreateInfo Json_LoadImageCreateInfo(nlohmann::json json)
 {
 	return VkImageCreateInfo
 	{
@@ -25,9 +25,10 @@
 		.flags = 0,
 		.imageType = json["imageType"],
 		.format = json["format"],
-		.extent = VkExtent3D{
-			.width = static_cast<uint32>(textureResolution.x),
-			.height = static_cast<uint32>(textureResolution.y),
+		.extent = VkExtent3D
+		{
+			.width = static_cast<uint32>(json["extent"]["width"]),
+			.height = static_cast<uint32>(json["extent"]["height"]),
 			.depth = 1
 		},
 		.mipLevels = json["mipLevels"],

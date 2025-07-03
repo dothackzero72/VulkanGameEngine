@@ -3,7 +3,7 @@
 #include <vulkan/vulkan_core.h>
 
 DLL_EXPORT VkAttachmentDescription Json_LoadAttachmentDescription(nlohmann::json json);
-DLL_EXPORT VkImageCreateInfo Json_LoadImageCreateInfo(nlohmann::json json, ivec2 textureResolution);
+DLL_EXPORT VkImageCreateInfo Json_LoadImageCreateInfo(nlohmann::json json);
 DLL_EXPORT VkSamplerCreateInfo Json_LoadVulkanSamplerCreateInfo(nlohmann::json json);
 DLL_EXPORT VkClearValue Json_LoadClearValue(nlohmann::json json);
 DLL_EXPORT VkSubpassDependency Json_LoadSubpassDependency(nlohmann::json json);

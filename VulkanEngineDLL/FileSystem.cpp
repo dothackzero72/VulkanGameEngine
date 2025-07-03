@@ -1,6 +1,14 @@
-#include "File.h"
+#include "FileSystem.h"
 
 FileSystem fileSystem = FileSystem();
+
+FileSystem::FileSystem()
+{
+}
+
+FileSystem::~FileSystem()
+{
+}
 
 const char* FileSystem::ReadFile(const String& filePath)
 {

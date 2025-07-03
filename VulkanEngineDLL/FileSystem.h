@@ -1,7 +1,8 @@
 #pragma once
+#include "DLL.h"
 extern "C"
 {
-	#include <CFile.h>
+#include "CFile.h"
 }
 #include "Typedef.h"
 #include <nlohmann/json.hpp>
@@ -10,6 +11,9 @@ class FileSystem
 {
 private:
 public:
+	FileSystem();
+	~FileSystem();
+
 	const char* ReadFile(const String& filePath);
 	nlohmann::json ReadJsonFile(const String& filePath);
 	bool   WriteFile(void* fileInfo, size_t size, const String& filePath);
@@ -18,6 +22,6 @@ public:
 	time_t LastModifiedTime(const String& filePath);
 	String RemoveFileExtention(const String& filePath);
 	bool FileExists(const String& filePath);
-}
-extern fileSystem;
+};
+DLL_EXPORT FileSystem fileSystem;
 

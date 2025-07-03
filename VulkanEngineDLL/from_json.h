@@ -4,6 +4,7 @@
 #include <vulkan/vulkan.h>
 #include "JsonStructs.h"
 #include "JsonStruct.h"
+#include "VulkanPipeline.h"
 
 namespace nlohmann
 {
@@ -20,4 +21,8 @@ namespace nlohmann
     DLL_EXPORT void from_json(const nlohmann::json& j, RenderAreaModel& area);
     DLL_EXPORT void from_json(const nlohmann::json& j, VkGuid& guid);
     DLL_EXPORT void from_json(const nlohmann::json& j, RenderedTextureLoader& model);
+    DLL_EXPORT void from_json(const nlohmann::json& j, RenderPipelineLoader& model);
+    DLL_EXPORT void from_json(const nlohmann::json& j, RenderedTextureInfoModel& model);
+    DLL_EXPORT void from_json(const nlohmann::json& j, PipelineDescriptorModel& model);
+    DLL_EXPORT void from_json(const nlohmann::json& j, RenderPassBuildInfoModel& model);
 }
