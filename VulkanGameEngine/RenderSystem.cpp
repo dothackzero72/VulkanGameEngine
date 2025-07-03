@@ -1,11 +1,12 @@
 #include "renderSystem.h"
 #include "json.h"
 #include "TextureSystem.h"
-#include <ShaderSystem.h>
+#include <ShaderCompiler.h>
 #include "BufferSystem.h"
 #include "MeshSystem.h"
 #include "GameObjectSystem.h"
 #include "SpriteSystem.h"
+#include "ShaderSystem.h"
 
 RenderSystem renderSystem = RenderSystem();
 
@@ -203,8 +204,7 @@ VkGuid RenderSystem::LoadRenderPass(VkGuid& levelId, const String& jsonPath, Tex
     VkGuid renderPassId = CreateVulkanRenderPass(jsonPath, renderPassResolution);
     for (int x = 0; x < json["RenderPipelineList"].size(); x++)
     {
-        uint pipeLineId = renderSystem.RenderPipelineMap.size();
-        nlohmann::json json = Json::ReadJson(json["RenderPipelineList"][x]);
+        uint pipeLineId = renderSystem.RenderPassMap.size();
         String pipelineJson = json["RenderPipelineList"][x];
 
         Vector<VkDescriptorBufferInfo> vertexPropertiesList = renderSystem.GetVertexPropertiesBuffer();

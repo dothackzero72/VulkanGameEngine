@@ -1,7 +1,7 @@
 #include "VulkanPipeline.h"
 #include "MemorySystem.h"
 #include "json.h"
-#include "ShaderSystem.h"
+#include "ShaderCompiler.h"
 #include "JsonLoader.h"
 
  VulkanPipeline VulkanPipeline_CreateRenderPipeline(VkDevice device, VkGuid& renderPassId, uint renderPipelineId, const char* pipelineJson, VkRenderPass renderPass, size_t constBufferSize, ivec2& renderPassResolution, const GPUIncludes& includes)
@@ -9,8 +9,8 @@
      RenderPipelineLoader model = JsonLoader_LoadRenderPipelineLoaderInfo(pipelineJson, renderPassResolution);
      Vector<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfoList = Vector<VkPipelineShaderStageCreateInfo>
      {
-         shaderSystem.CreateShader(device, model.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
-         shaderSystem.CreateShader(device, model.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
+         Shader_CreateShader(device, model.VertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT),
+         Shader_CreateShader(device, model.FragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT)
      };
 
      VkPipelineCache pipelineCache = VK_NULL_HANDLE;

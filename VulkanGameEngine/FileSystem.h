@@ -1,8 +1,7 @@
 #pragma once
-#include "DLL.h"
 extern "C"
 {
-#include "CFile.h"
+#include <CFile.h>
 }
 #include "Typedef.h"
 #include <nlohmann/json.hpp>
@@ -23,5 +22,5 @@ public:
 	String RemoveFileExtention(const String& filePath);
 	bool FileExists(const String& filePath);
 };
-DLL_EXPORT FileSystem fileSystem;
+extern FileSystem fileSystem;
 
