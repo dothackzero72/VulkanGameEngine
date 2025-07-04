@@ -101,9 +101,6 @@
     <Compile Remove="GameEngineAPI\RenderMesh2DComponent.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VulkanEngineDLL\VulkanEngineDLL.vcxproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Components\" />
     <Folder Include="VulkanCS\" />
   </ItemGroup>
