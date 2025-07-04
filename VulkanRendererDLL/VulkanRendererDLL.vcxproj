@@ -22,8 +22,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{3de52e58-212a-4350-addf-9191d4666a55}</ProjectGuid>
-    <RootNamespace>VulkanEngineDLL</RootNamespace>
+    <ProjectGuid>{9009457e-e965-4eb7-887d-a1f15b1b0b28}</ProjectGuid>
+    <RootNamespace>VulkanRendererDLL</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
