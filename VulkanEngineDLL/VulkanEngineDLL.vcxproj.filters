@@ -24,243 +24,213 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DLL.h">
+    <ClInclude Include="Header Files\DLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DLLStructs.h">
+    <ClInclude Include="Header Files\DLLStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Macro.h">
+    <ClInclude Include="Header Files\Macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanError.h">
+    <ClInclude Include="Header Files\VulkanError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanWindow.h">
+    <ClInclude Include="Header Files\VulkanWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GLFWWindow.h">
+    <ClInclude Include="Header Files\GLFWWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mouse.h">
+    <ClInclude Include="Header Files\Mouse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Keyboard.h">
+    <ClInclude Include="Header Files\Keyboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SDLWindow.h">
+    <ClInclude Include="Header Files\SDLWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CVulkanRenderer.h">
+    <ClInclude Include="Header Files\CVulkanRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CTypedef.h">
+    <ClInclude Include="Header Files\CTypedef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CoreVulkanRenderer.h">
+    <ClInclude Include="Header Files\CoreVulkanRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Typedef.h">
+    <ClInclude Include="Header Files\Typedef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CShaderCompiler.h">
+    <ClInclude Include="Header Files\CShaderCompiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CFile.h">
+    <ClInclude Include="Header Files\CFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameController.h">
+    <ClInclude Include="Source Files\GameController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
+    <ClInclude Include="Header Files\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Pixel.h">
+    <ClInclude Include="Header Files\Pixel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JsonStructs.h">
+    <ClInclude Include="Header Files\JsonStructs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JsonFunc.h">
+    <ClInclude Include="Header Files\JsonFunc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ImGuiFunc.h">
+    <ClInclude Include="Header Files\ImGuiFunc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VkGuid.h">
+    <ClInclude Include="Header Files\VkGuid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanPipeline.h">
+    <ClInclude Include="Header Files\VulkanPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanRenderPass.h">
+    <ClInclude Include="Header Files\VulkanRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="json.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanBuffer.h">
+    <ClInclude Include="Header Files\VulkanBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
+    <ClInclude Include="Header Files\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
+    <ClInclude Include="Header Files\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector.h">
+    <ClInclude Include="Header Files\Vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JsonLoader.h">
+    <ClInclude Include="Header Files\JsonLoader.h">
       <Filter>Header Files\Json</Filter>
     </ClInclude>
-    <ClInclude Include="JsonStruct.h">
+    <ClInclude Include="Header Files\JsonStruct.h">
       <Filter>Header Files\Json</Filter>
     </ClInclude>
-    <ClInclude Include="from_json.h">
+    <ClInclude Include="Header Files\from_json.h">
       <Filter>Header Files\Json</Filter>
     </ClInclude>
-    <ClInclude Include="MemorySystem.h">
+    <ClInclude Include="Header Files\MemorySystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VRAM.h">
+    <ClInclude Include="Header Files\VRAM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Level2D.h">
+    <ClInclude Include="Header Files\Level2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vertex.h">
+    <ClInclude Include="Header Files\vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
+    <ClInclude Include="Header Files\Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ECSid.h">
+    <ClInclude Include="Source Files\ECSid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Transform2DComponent.h">
+    <ClInclude Include="Header Files\Transform2DComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Animation2D.h">
+    <ClInclude Include="Header Files\Animation2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderCompiler.h">
+    <ClInclude Include="Header Files\ShaderCompiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="VulkanError.c">
+    <ClCompile Include="Source Files\VulkanError.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanWindow.c">
+    <ClCompile Include="Source Files\VulkanWindow.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLFWWindow.c">
+    <ClCompile Include="Source Files\GLFWWindow.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mouse.c">
+    <ClCompile Include="Source Files\Mouse.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SDLWindow.cpp">
+    <ClCompile Include="Source Files\SDLWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Keyboard.c">
+    <ClCompile Include="Source Files\Keyboard.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CVulkanRenderer.c">
+    <ClCompile Include="Source Files\CVulkanRenderer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CoreVulkanRenderer.cpp">
+    <ClCompile Include="Source Files\CoreVulkanRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CShaderCompiler.c">
+    <ClCompile Include="Source Files\CShaderCompiler.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CFile.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameController.cpp">
+    <ClCompile Include="Source Files\GameController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
+    <ClCompile Include="Source Files\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JsonFunc.cpp">
+    <ClCompile Include="Source Files\JsonFunc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImGuiFunc.cpp">
+    <ClCompile Include="Source Files\External\ImGuiFunc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanPipeline.cpp">
+    <ClCompile Include="Source Files\VulkanPipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanRenderPass.cpp">
+    <ClCompile Include="Source Files\VulkanRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\External\imgui\backends\imgui_impl_glfw.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\imgui\backends\imgui_impl_vulkan.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\imgui\imgui.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\imgui\imgui_demo.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\imgui\imgui_draw.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\imgui\imgui_tables.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\imgui\imgui_widgets.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImPlot\implot.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImPlot\implot_demo.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\External\ImPlot\implot_items.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="VulkanBuffer.cpp">
+    <ClCompile Include="Source Files\VulkanBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
+    <ClCompile Include="Source Files\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
+    <ClCompile Include="Source Files\Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vector.cpp">
+    <ClCompile Include="Source Files\Vector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JsonLoader.cpp">
+    <ClCompile Include="Source Files\JsonLoader.cpp">
       <Filter>Source Files\Json</Filter>
     </ClCompile>
-    <ClCompile Include="from_json.cpp">
+    <ClCompile Include="Source Files\from_json.cpp">
       <Filter>Source Files\Json</Filter>
     </ClCompile>
-    <ClCompile Include="MemorySystem.cpp">
+    <ClCompile Include="Source Files\MemorySystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VRAM.cpp">
+    <ClCompile Include="Source Files\VRAM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameLevel.cpp">
+    <ClCompile Include="Source Files\GameLevel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Level2D.cpp">
+    <ClCompile Include="Source Files\Level2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite.cpp">
+    <ClCompile Include="Source Files\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderCompiler.cpp">
+    <ClCompile Include="Source Files\ShaderCompiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

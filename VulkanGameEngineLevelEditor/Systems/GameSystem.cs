@@ -59,9 +59,9 @@ namespace VulkanGameEngineLevelEditor.Systems
             MeshSystem.Update(deltaTime);
             RenderSystem.EndSingleTimeCommands(commandBuffer);
         }
-    }
 
-    public static void Draw(float deltaTime)
+
+        public static void Draw(float deltaTime)
         {
             RenderSystem.StartFrame();
             LevelSystem.Draw(CommandBufferSubmitList, deltaTime);
@@ -83,3 +83,4 @@ namespace VulkanGameEngineLevelEditor.Systems
             MemorySystem.ReportLeaks();
         }
     }
+}
