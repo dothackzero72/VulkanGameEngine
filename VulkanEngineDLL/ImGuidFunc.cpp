@@ -16,8 +16,8 @@ ImGuiRenderer ImGui_StartUp(const GraphicsRenderer& renderer)
     case GLFW: ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)vulkanWindow->WindowHandle, true); break;
     }
 
-    imGui.RenderPass = ImGui_CreateRenderPass(rendererState);
-    imGui.SwapChainFramebuffers = ImGui_CreateRendererFramebuffers(rendererState, imGui.RenderPass);
+    imGui.RenderPass = ImGui_CreateRenderPass(renderer);
+    imGui.SwapChainFramebuffers = ImGui_CreateRendererFramebuffers(renderer, imGui.RenderPass);
 
     VkDescriptorPoolSize poolSizes[] =
     {
@@ -41,31 +41,31 @@ ImGuiRenderer ImGui_StartUp(const GraphicsRenderer& renderer)
         .poolSizeCount = (uint32)IM_ARRAYSIZE(poolSizes),
         .pPoolSizes = poolSizes
     };
-    VULKAN_RESULT(Renderer_CreateDescriptorPool(rendererState.Device, &imGui.ImGuiDescriptorPool, &pool_info));
+    VULKAN_RESULT(Renderer_CreateDescriptorPool(renderer.Device, &imGui.ImGuiDescriptorPool, &pool_info));
 
-    for (size_t x = 0; x < rendererState.SwapChainImageCount; x++)
+    for (size_t x = 0; x < renderer.SwapChainImageCount; x++)
     {
         VkCommandBufferAllocateInfo commandBufferAllocateInfo
         {
             .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-            .commandPool = rendererState.CommandPool,
+            .commandPool = renderer.CommandPool,
             .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
             .commandBufferCount = 1
         };
-        VULKAN_RESULT(vkAllocateCommandBuffers(rendererState.Device, &commandBufferAllocateInfo, &imGui.ImGuiCommandBuffer));
+        VULKAN_RESULT(vkAllocateCommandBuffers(renderer.Device, &commandBufferAllocateInfo, &imGui.ImGuiCommandBuffer));
     }
 
     ImGui_ImplVulkan_InitInfo init_info =
     {
-        .Instance = rendererState.Instance,
-        .PhysicalDevice = rendererState.PhysicalDevice,
-        .Device = rendererState.Device,
-        .QueueFamily = rendererState.GraphicsFamily,
-        .Queue = rendererState.GraphicsQueue,
+        .Instance = renderer.Instance,
+        .PhysicalDevice = renderer.PhysicalDevice,
+        .Device = renderer.Device,
+        .QueueFamily = renderer.GraphicsFamily,
+        .Queue = renderer.GraphicsQueue,
         .DescriptorPool = imGui.ImGuiDescriptorPool,
         .RenderPass = imGui.RenderPass,
-        .MinImageCount = rendererState.SwapChainImageCount,
-        .ImageCount = rendererState.SwapChainImageCount,
+        .MinImageCount = static_cast<uint32>(renderer.SwapChainImageCount),
+        .ImageCount = static_cast<uint32>(renderer.SwapChainImageCount),
         .PipelineCache = VK_NULL_HANDLE,
         .Allocator = nullptr,
         .CheckVkResultFn = ImGui_VkResult
