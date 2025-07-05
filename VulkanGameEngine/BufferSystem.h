@@ -51,7 +51,7 @@ public:
 		uint bufferElementCount = bufferData.size();
 
 		int nextBufferId = ++NextBufferId;
-		VulkanBufferMap[nextBufferId] = VulkanBuffer_CreateVulkanBuffer(renderer, nextBufferId, bufferData.data(), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
+		VulkanBufferMap[nextBufferId] = VulkanBuffer_CreateVulkanBuffer2(renderer, nextBufferId, bufferData.data(), bufferElementSize, bufferElementCount, bufferTypeEnum, usage, properties, usingStagingBuffer);
 		return NextBufferId;
 	}
 

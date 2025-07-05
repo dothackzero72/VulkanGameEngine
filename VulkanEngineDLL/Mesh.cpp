@@ -67,24 +67,24 @@ void Mesh_DestroyMesh(const GraphicsRenderer& renderer, Mesh& mesh, VulkanBuffer
 
 int Mesh_CreateVertexBuffer(const GraphicsRenderer& renderer, const VertexLoaderStruct& vertexLoader, VulkanBuffer& outVertexBuffer)
 {
-	outVertexBuffer = VulkanBuffer_CreateVulkanBuffer(renderer, vertexLoader.MeshVertexBufferId, vertexLoader.VertexData, vertexLoader.SizeofVertex, vertexLoader.VertexCount, vertexLoader.VertexType, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+	outVertexBuffer = VulkanBuffer_CreateVulkanBuffer2(renderer, vertexLoader.MeshVertexBufferId, vertexLoader.VertexData, vertexLoader.SizeofVertex, vertexLoader.VertexCount, vertexLoader.VertexType, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 	return outVertexBuffer.BufferId;
 }
 
 int Mesh_CreateIndexBuffer(const GraphicsRenderer& renderer, const IndexLoaderStruct& indexLoader, VulkanBuffer& outIndexBuffer)
 {
-	outIndexBuffer = VulkanBuffer_CreateVulkanBuffer(renderer, indexLoader.MeshIndexBufferId, indexLoader.IndexData, indexLoader.SizeofIndex, indexLoader.IndexCount, BufferType_UInt, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
+	outIndexBuffer = VulkanBuffer_CreateVulkanBuffer2(renderer, indexLoader.MeshIndexBufferId, indexLoader.IndexData, indexLoader.SizeofIndex, indexLoader.IndexCount, BufferType_UInt, MeshBufferUsageSettings, MeshBufferPropertySettings, true);
 	return outIndexBuffer.BufferId;
 }
 
 int Mesh_CreateTransformBuffer(const GraphicsRenderer& renderer, const TransformLoaderStruct& transformLoader, VulkanBuffer& outTransformBuffer)
 {
-	outTransformBuffer = VulkanBuffer_CreateVulkanBuffer(renderer, transformLoader.MeshTransformBufferId, transformLoader.TransformData, transformLoader.SizeofTransform, 1, BufferType_Mat4, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+	outTransformBuffer = VulkanBuffer_CreateVulkanBuffer2(renderer, transformLoader.MeshTransformBufferId, transformLoader.TransformData, transformLoader.SizeofTransform, 1, BufferType_Mat4, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 	return outTransformBuffer.BufferId;
 }
 
 int Mesh_CreateMeshPropertiesBuffer(const GraphicsRenderer& renderer, const MeshPropertiesLoaderStruct& meshPropertiesLoader, VulkanBuffer& outMeshPropertiesBuffer)
 {
-	outMeshPropertiesBuffer = VulkanBuffer_CreateVulkanBuffer(renderer, meshPropertiesLoader.PropertiesBufferId, meshPropertiesLoader.MeshPropertiesData, meshPropertiesLoader.SizeofMeshProperties, 1, BufferType_MeshPropertiesStruct, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
+	outMeshPropertiesBuffer = VulkanBuffer_CreateVulkanBuffer2(renderer, meshPropertiesLoader.PropertiesBufferId, meshPropertiesLoader.MeshPropertiesData, meshPropertiesLoader.SizeofMeshProperties, 1, BufferType_MeshPropertiesStruct, MeshBufferUsageSettings, MeshBufferPropertySettings, false);
 	return outMeshPropertiesBuffer.BufferId;
 }

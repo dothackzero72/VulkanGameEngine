@@ -35,7 +35,7 @@ VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const GraphicsRenderer& renderer, u
     return vulkanBuffer;
 }
 
-VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const GraphicsRenderer& renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+VulkanBuffer VulkanBuffer_CreateVulkanBuffer2(const GraphicsRenderer& renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 {
     VkDeviceSize bufferSize = bufferElementSize * bufferElementCount;
     VulkanBuffer vulkanBuffer =
@@ -66,7 +66,7 @@ VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const GraphicsRenderer& renderer, u
     return vulkanBuffer;
 }
 
-VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
+VulkanBuffer VulkanBuffer_CreateVulkanBuffer3(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer)
 {
     VkDeviceSize bufferSize = bufferElementSize * bufferElementCount;
     vulkanBuffer =

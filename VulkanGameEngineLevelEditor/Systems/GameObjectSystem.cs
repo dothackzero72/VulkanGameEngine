@@ -43,6 +43,20 @@ namespace VulkanGameEngineLevelEditor.Systems
 
     public static class GameObjectSystem
     {
+        public static ListPtr<Vertex2D> SpriteVertexList = new ListPtr<Vertex2D>()
+        {
+            new Vertex2D(new vec2(0.0f, 1.0f), new vec2(0.0f, 0.0f)),
+            new Vertex2D(new vec2(1.0f, 1.0f), new vec2(1.0f, 0.0f)),
+            new Vertex2D(new vec2(1.0f, 0.0f), new vec2(1.0f, 1.0f)),
+            new Vertex2D(new vec2(0.0f, 0.0f), new vec2(0.0f, 1.0f)),
+        };
+
+        public static ListPtr<uint> SpriteIndexList = new ListPtr<uint>()
+        {
+            0, 3, 1,
+            1, 3, 2
+        };
+
         public static Dictionary<int, GameObject> GameObjectMap { get; private set; } = new Dictionary<int, GameObject>();
         public static Dictionary<int, Transform2DComponent> Transform2DComponentMap { get; private set; } = new Dictionary<int, Transform2DComponent>();
         public static Dictionary<int, InputComponent> InputComponentMap { get; private set; } = new Dictionary<int, InputComponent>();

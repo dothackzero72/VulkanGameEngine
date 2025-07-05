@@ -41,29 +41,29 @@ struct VulkanBuffer
 	bool UsingStagingBuffer = false;       
 };
 
-DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const GraphicsRenderer& renderer, uint bufferId, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
-DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const GraphicsRenderer& renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
-DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
-DLL_EXPORT void VulkanBuffer_UpdateBufferMemory(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount);
-DLL_EXPORT VkResult VulkanBuffer_CopyBuffer(const GraphicsRenderer& renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
-DLL_EXPORT void VulkanBuffer_DestroyBuffer(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer);
-void VulkanBuffer_UpdateBufferSize(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer, VkDeviceSize newBufferElementSize, uint32_t newBufferElementCount);
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-	VkResult Buffer_UpdateBufferMemory(const GraphicsRenderer& renderState, VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize);
-	void Buffer_CopyBufferMemory(const GraphicsRenderer& renderState, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize bufferSize);
-	VkResult Buffer_AllocateMemory(const GraphicsRenderer& renderState, VkBuffer* bufferData, VkDeviceMemory* bufferMemory, VkMemoryPropertyFlags properties);
-	void* Buffer_MapBufferMemory(const GraphicsRenderer& renderState, VkDeviceMemory bufferMemory, VkDeviceSize bufferSize, bool* isMapped);
-	VkResult Buffer_UnmapBufferMemory(const GraphicsRenderer& renderState, VkDeviceMemory bufferMemory, bool* isMapped);
-	VkResult Buffer_CreateBuffer(const GraphicsRenderer& renderState, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkMemoryPropertyFlags properties, VkBufferUsageFlags usage);
-	VkResult Buffer_CreateStagingBuffer(const GraphicsRenderer& renderState, VkBuffer* stagingBuffer, VkBuffer* buffer, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
-	VkResult Buffer_CopyBuffer(const GraphicsRenderer& renderState, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
-	VkResult Buffer_UpdateBufferSize(const GraphicsRenderer& renderState, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize oldBufferSize, VkDeviceSize newBufferSize, VkBufferUsageFlags bufferUsageFlags, VkMemoryPropertyFlags propertyFlags);
-	void Buffer_UpdateBufferData(const GraphicsRenderer& renderState, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize);
-	void Buffer_UpdateStagingBufferData(const GraphicsRenderer& renderState, VkBuffer stagingBuffer, VkBuffer buffer, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize);
-	VkResult Buffer_DestroyBuffer(const GraphicsRenderer& renderState, VkBuffer* buffer, VkBuffer* stagingBuffer, VkDeviceMemory* bufferMemory, VkDeviceMemory* stagingBufferMemory, void** bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsage, VkMemoryPropertyFlags* propertyFlags);
+	DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer(const GraphicsRenderer& renderer, uint bufferId, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
+	DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer2(const GraphicsRenderer& renderer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
+	DLL_EXPORT VulkanBuffer VulkanBuffer_CreateVulkanBuffer3(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer, uint bufferId, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount, BufferTypeEnum bufferTypeEnum, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, bool usingStagingBuffer);
+	DLL_EXPORT void VulkanBuffer_UpdateBufferMemory(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer, void* bufferData, VkDeviceSize bufferElementSize, uint bufferElementCount);
+	DLL_EXPORT VkResult VulkanBuffer_CopyBuffer(const GraphicsRenderer& renderer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
+	DLL_EXPORT void VulkanBuffer_DestroyBuffer(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer);
 #ifdef __cplusplus
 }
 #endif
+
+void VulkanBuffer_UpdateBufferSize(const GraphicsRenderer& renderer, VulkanBuffer& vulkanBuffer, VkDeviceSize newBufferElementSize, uint32_t newBufferElementCount);
+VkResult Buffer_UpdateBufferMemory(const GraphicsRenderer& renderState, VkDeviceMemory bufferMemory, void* dataToCopy, VkDeviceSize bufferSize);
+void Buffer_CopyBufferMemory(const GraphicsRenderer& renderState, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize bufferSize);
+VkResult Buffer_AllocateMemory(const GraphicsRenderer& renderState, VkBuffer* bufferData, VkDeviceMemory* bufferMemory, VkMemoryPropertyFlags properties);
+void* Buffer_MapBufferMemory(const GraphicsRenderer& renderState, VkDeviceMemory bufferMemory, VkDeviceSize bufferSize, bool* isMapped);
+VkResult Buffer_UnmapBufferMemory(const GraphicsRenderer& renderState, VkDeviceMemory bufferMemory, bool* isMapped);
+VkResult Buffer_CreateBuffer(const GraphicsRenderer& renderState, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkMemoryPropertyFlags properties, VkBufferUsageFlags usage);
+VkResult Buffer_CreateStagingBuffer(const GraphicsRenderer& renderState, VkBuffer* stagingBuffer, VkBuffer* buffer, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
+VkResult Buffer_CopyBuffer(const GraphicsRenderer& renderState, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
+VkResult Buffer_UpdateBufferSize(const GraphicsRenderer& renderState, VkBuffer* buffer, VkDeviceMemory* bufferMemory, void* bufferData, VkDeviceSize oldBufferSize, VkDeviceSize newBufferSize, VkBufferUsageFlags bufferUsageFlags, VkMemoryPropertyFlags propertyFlags);
+void Buffer_UpdateBufferData(const GraphicsRenderer& renderState, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize);
+void Buffer_UpdateStagingBufferData(const GraphicsRenderer& renderState, VkBuffer stagingBuffer, VkBuffer buffer, VkDeviceMemory* stagingBufferMemory, VkDeviceMemory* bufferMemory, void* dataToCopy, VkDeviceSize bufferSize);
+VkResult Buffer_DestroyBuffer(const GraphicsRenderer& renderState, VkBuffer* buffer, VkBuffer* stagingBuffer, VkDeviceMemory* bufferMemory, VkDeviceMemory* stagingBufferMemory, void** bufferData, VkDeviceSize* bufferSize, VkBufferUsageFlags* bufferUsage, VkMemoryPropertyFlags* propertyFlags);

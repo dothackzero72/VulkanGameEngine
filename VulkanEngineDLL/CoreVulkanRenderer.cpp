@@ -9,6 +9,8 @@
 GraphicsRenderer Renderer_RendererSetUp(void* windowHandle)
 {
     GraphicsRenderer renderer;
+    renderer.ImageIndex = 0;
+    renderer.CommandIndex = 0;
     renderer.InFlightFences = memorySystem.AddPtrBuffer<VkFence>(MAX_FRAMES_IN_FLIGHT, __FILE__, __LINE__, __func__);
     renderer.AcquireImageSemaphores = memorySystem.AddPtrBuffer<VkSemaphore>(MAX_FRAMES_IN_FLIGHT, __FILE__, __LINE__, __func__);
     renderer.PresentImageSemaphores = memorySystem.AddPtrBuffer<VkSemaphore>(MAX_FRAMES_IN_FLIGHT, __FILE__, __LINE__, __func__);
@@ -86,6 +88,8 @@ VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPo
  GraphicsRenderer Renderer_RendererSetUp_CS(void* windowHandle)
  {
      GraphicsRenderer renderer;
+     renderer.ImageIndex = 0;
+     renderer.CommandIndex = 0;
      renderer.InFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
      renderer.AcquireImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
      renderer.PresentImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];

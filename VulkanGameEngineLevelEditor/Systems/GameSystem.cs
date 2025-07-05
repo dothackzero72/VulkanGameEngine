@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
@@ -18,7 +19,7 @@ namespace VulkanGameEngineLevelEditor.Systems
         public static Guid LevelRendererId { get; set; }
         public static Guid SpriteRenderPass2DId { get; set; }
         public static Guid FrameBufferId { get; set; }
-
+        public static ListPtr<VkCommandBuffer> CommandBufferSubmitList { get; set; } = new ListPtr<VkCommandBuffer>();
         public static unsafe void StartUp(VkQueue window, VkQueue renderAreaHandle)
         {
             RenderSystem.CreateVulkanRenderer(window, renderAreaHandle);
@@ -43,19 +44,19 @@ namespace VulkanGameEngineLevelEditor.Systems
             MaterialSystem.Update(deltaTime);
             RenderSystem.Update(deltaTime);
 
-            //VkCommandBuffer commandBuffer = RenderSystem.BeginSingleTimeCommands();
-            //MeshSystem.Update(deltaTime);
-            //RenderSystem.EndSingleTimeCommands(commandBuffer);
+            VkCommandBuffer commandBuffer = RenderSystem.BeginSingleTimeCommands();
+            MeshSystem.Update(deltaTime);
+            RenderSystem.EndSingleTimeCommands(commandBuffer);
         }
 
 
         public static void Draw(float deltaTime)
         {
-            //RenderSystem.StartFrame();
-            //LevelSystem.Draw(CommandBufferSubmitList, deltaTime);
-            //CommandBufferSubmitList.emplace_back(ImGui_Draw(renderSystem.renderer, renderSystem.imGuiRenderer));
-            //RenderSystem.EndFrame(CommandBufferSubmitList);
-            //CommandBufferSubmitList.clear();
+            RenderSystem.StartFrame();
+            LevelSystem.Draw(CommandBufferSubmitList, deltaTime);
+          //  CommandBufferSubmitList.Add(ImGui_Draw(RenderSystem.renderer, RenderSystem.imGuiRenderer));
+            RenderSystem.EndFrame(CommandBufferSubmitList);
+            CommandBufferSubmitList.Clear();
         }
 
         public static void Destroy()

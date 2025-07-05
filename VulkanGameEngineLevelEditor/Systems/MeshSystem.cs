@@ -1,5 +1,6 @@
 ﻿using GlmSharp;
 using Silk.NET.SDL;
+using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,35 +65,52 @@ namespace VulkanGameEngineLevelEditor.Systems
     public struct MeshPropertiesStruct
     {
         public uint ShaderMaterialBufferIndex = 0;
+        private uint _padding1 = 0;
+        private uint _padding2 = 0;
+        private uint _padding3 = 0;
         public mat4 MeshTransform = mat4.Identity;
 
         public MeshPropertiesStruct()
         {
+
         }
     };
 
-    [StructLayout(LayoutKind.Sequential, Pack = 0)] // Try default alignment; revert to Pack = 16 if confirmed
+    [StructLayout(LayoutKind.Sequential, Pack = 16)] 
     public struct Mesh
     {
-        public uint MeshId;
-        public uint ParentGameObjectID;
-        public uint GameObjectTransform;
-        public nuint VertexCount; // Match size_t (8 bytes on 64-bit)
-        public nuint IndexCount;  // Match size_t
-        public Guid MaterialId;   // Assuming VkGuid is a standard GUID
-        public BufferTypeEnum VertexType;
-        public vec3 MeshPosition;
-        public vec3 MeshRotation;
-        public vec3 MeshScale;
-        public int MeshVertexBufferId;
-        public int MeshIndexBufferId;
-        public int MeshTransformBufferId;
-        public int PropertiesBufferId;
-        public MeshPropertiesStruct MeshProperties;
+        public uint MeshId = 0;
+        public uint ParentGameObjectID = 0;
+        public uint GameObjectTransform = 0;
+        public nuint VertexCount = 0;
+        public nuint IndexCount = 0;
+        public Guid MaterialId = Guid.Empty;
+        public BufferTypeEnum VertexType = BufferTypeEnum.BufferType_Undefined;
+        public vec3 MeshPosition = new vec3(0.0f);
+        public vec3 MeshRotation = new vec3(0.0f);
+        public vec3 MeshScale = new vec3(1.0f);
+        public int MeshVertexBufferId = 0;
+        public int MeshIndexBufferId = 0;
+        public int MeshTransformBufferId = 0;
+        public int PropertiesBufferId = 0;
+        public MeshPropertiesStruct MeshProperties = new MeshPropertiesStruct();
+
+        public Mesh()
+        {
+        }
     };
 
     public unsafe static class MeshSystem
     {
+        public const VkBufferUsageFlagBits MeshBufferUsageSettings = VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
+                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
+                                                                     VkBufferUsageFlagBits.VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+
+        public const VkMemoryPropertyFlagBits MeshBufferPropertySettings = VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                                                           VkMemoryPropertyFlagBits.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+
         public static uint NextMeshId { get; private set; } = 0;
         public static uint NextSpriteMeshId { get; private set; } = 0;
         public static uint NextLevelLayerMeshId { get; private set; } = 0;
