@@ -56,16 +56,15 @@ namespace VulkanGameEngineLevelEditor.Systems
 
     public static unsafe class LevelSystem
     {
+        public static OrthographicCamera2D OrthographicCamera { get; set; }
+        public static SceneDataBuffer SceneProperties { get; set; }
         public static Guid levelRenderPass2DId { get; private set; }
         public static Guid spriteRenderPass2DId { get; private set; }
         public static Guid frameBufferId { get; private set; }
-        //  public static OrthographicCamera2D camera { get; set; }
-        //   public static Dictionary<uint, Sprite> SpriteMap { get; private set; } = new Dictionary<uint, Sprite>();
         public static LevelLayout levelLayout { get; private set; }
         public static List<LevelLayer> LevelLayerList { get; private set; } = new List<LevelLayer>();
         public static List<ListPtr<uint>> LevelTileMapList { get; private set; } = new List<ListPtr<uint>>();
         public static Dictionary<Guid, LevelTileSet> LevelTileSetMap { get; private set; } = new Dictionary<Guid, LevelTileSet>();
-        // public static Dictionary<Guid, List<SpriteBatchLayer>> SpriteBatchLayerListMap { get; private set; } = new Dictionary<Guid, List<SpriteBatchLayer>>();
         public static Dictionary<uint, List<SpriteInstanceStruct>> SpriteInstanceListMap { get; private set; } = new Dictionary<uint, List<SpriteInstanceStruct>>();
         public static Dictionary<uint, int> SpriteInstanceBufferMap { get; private set; } = new Dictionary<uint, int>();
         public static Dictionary<uint, List<uint>> SpriteBatchLayerObjectListMap { get; private set; } = new Dictionary<uint, List<uint>>();
@@ -130,7 +129,8 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static void Update(float deltaTime)
         {
-            OrthographicCamera->Update(SceneProperties);
+            SceneDataBuffer sceneDataBuffer = SceneProperties;
+            OrthographicCamera.Update(ref sceneDataBuffer);
             SpriteSystem.Update(deltaTime);
             foreach (var levelLayer in LevelLayerList)
             {

@@ -167,14 +167,14 @@ namespace VulkanGameEngineLevelEditor.Systems
     };
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public struct VulkanRenderPass
+    public unsafe struct VulkanRenderPass
     {
         public Guid RenderPassId { get; set; }
         public VkSampleCountFlagBits SampleCount { get; set; }
         public VkRect2D RenderArea { get; set; }
         public VkRenderPass RenderPass { get; set; }
-        public VkFramebuffer FrameBufferList { get; set; }
-        public VkClearValue ClearValueList { get; set; }
+        public VkFramebuffer* FrameBufferList { get; set; }
+        public VkClearValue* ClearValueList { get; set; }
         public int FrameBufferCount { get; set; }
         public int ClearValueCount { get; set; }
         public VkCommandBuffer CommandBuffer { get; set; }
@@ -268,25 +268,26 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static VkCommandBuffer RenderFrameBuffer(Guid renderPassId)
         {
-             VulkanRenderPass renderPass = FindRenderPass(renderPassId);
-             VulkanPipeline pipeline = FindRenderPipelineList(renderPassId)[0];
+             VulkanRenderPass renderPass = RenderPassList[renderPassId];
+             VulkanPipeline pipeline = RenderPipelineMap[renderPassId][0];
              VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
 
             VkRenderPassBeginInfo renderPassBeginInfo = new VkRenderPassBeginInfo
             {
-                sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+                sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                 renderPass = renderPass.RenderPass,
-                framebuffer = renderPass.FrameBufferList[renderer.ImageIndex],
+                framebuffer = renderPass.FrameBufferList[(uint)renderer.ImageIndex],
                 renderArea = renderPass.RenderArea,
-                clearValueCount = static_cast<uint32>(renderPass.ClearValueCount),
+                clearValueCount = renderPass.ClearValueCount,
                 pClearValues = renderPass.ClearValueList
             };
 
+            var beginCommandbufferindo = CommandBufferBeginInfo;
             VkFunc.vkResetCommandBuffer(commandBuffer, 0);
-            VkFunc.vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo);
-            VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-            VkFunc.vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
-            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, pipeline.DescriptorSetCount, pipeline.DescriptorSetList, 0, nullptr);
+            VkFunc.vkBeginCommandBuffer(commandBuffer, &beginCommandbufferindo);
+            VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
+            VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Pipeline);
+            VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.PipelineLayout, 0, (uint)pipeline.DescriptorSetCount, pipeline.DescriptorSetList, 0, null);
             VkFunc.vkCmdDraw(commandBuffer, 6, 1, 0, 0);
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);
@@ -295,56 +296,58 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static VkCommandBuffer RenderLevel(Guid renderPassId, Guid levelId, float deltaTime, SceneDataBuffer sceneDataBuffer)
         {
-            VulkanRenderPass renderPass = FindRenderPass(renderPassId);
-            VulkanPipeline spritePipeline = FindRenderPipelineList(renderPassId)[0];
-            VulkanPipeline levelPipeline = FindRenderPipelineList(renderPassId)[1];
-            List<SpriteBatchLayer> spriteLayerList = spriteSystem.FindSpriteBatchLayer(renderPassId);
-            List<Mesh> levelLayerList = meshSystem.FindLevelLayerMeshList(levelId);
+            VulkanRenderPass renderPass = RenderPassList[renderPassId];
+            VulkanPipeline spritePipeline = RenderPipelineMap[renderPassId][0];
+            VulkanPipeline levelPipeline = RenderPipelineMap[renderPassId][1];
+            ListPtr<SpriteBatchLayer> spriteLayerList = SpriteSystem.FindSpriteBatchLayer(renderPassId);
+            ListPtr<Mesh> levelLayerList = MeshSystem.FindLevelLayerMeshList(levelId);
+            ListPtr<VkClearValue> clearColorValues = new ListPtr<VkClearValue>(renderPass.ClearValueList, renderPass.ClearValueCount);
             VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
 
             VkRenderPassBeginInfo renderPassBeginInfo = new VkRenderPassBeginInfo
             {
-                sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+                sType = VkStructureType.VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
                 renderPass = renderPass.RenderPass,
-                framebuffer = renderPass.FrameBufferList[renderer.ImageIndex],
+                framebuffer = renderPass.FrameBufferList[(int)renderer.ImageIndex],
                 renderArea = renderPass.RenderArea,
-                clearValueCount = static_cast<uint32>(renderPass.ClearValueCount),
-                pClearValues = renderPass.ClearValueList
+                clearValueCount = clearColorValues.Count,
+                pClearValues = clearColorValues.Ptr
             };
 
-            VkFunc.vkResetCommandBuffer(commandBuffer, 0));
-            VkFunc.vkBeginCommandBuffer(commandBuffer, &CommandBufferBeginInfo));
-            VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+            var beginCommandbufferinfo = CommandBufferBeginInfo;
+            VkFunc.vkResetCommandBuffer(commandBuffer, 0);
+            VkFunc.vkBeginCommandBuffer(commandBuffer, &beginCommandbufferinfo);
+            VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
 
             foreach (var levelLayer in levelLayerList)
             {
-                VkBuffer meshVertexBuffer = bufferSystem.FindVulkanBuffer(levelLayer.MeshVertexBufferId).Buffer;
-                VkBuffer meshIndexBuffer = bufferSystem.FindVulkanBuffer(levelLayer.MeshIndexBufferId).Buffer;
+                VkBuffer meshVertexBuffer = BufferSystem.VulkanBufferMap[(uint)levelLayer.MeshVertexBufferId].Buffer;
+                VkBuffer meshIndexBuffer = BufferSystem.VulkanBufferMap[(uint)levelLayer.MeshIndexBufferId].Buffer;
 
-                VkDeviceSize offsets[] = { 0 };
-                VkFunc.vkCmdPushConstants(commandBuffer, levelPipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
-                VkFunc.vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, levelPipeline.Pipeline);
-                VkFunc.vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, levelPipeline.PipelineLayout, 0, levelPipeline.DescriptorSetCount, levelPipeline.DescriptorSetList, 0, nullptr);
-                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, &meshVertexBuffer, offsets);
-                VkFunc.vkCmdBindIndexBuffer(commandBuffer, meshIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-                VkFunc.vkCmdDrawIndexed(commandBuffer, levelLayer.IndexCount, 1, 0, 0, 0);
+                ListPtr<VkDeviceSize> offsets = new ListPtr<ulong> { 0 };
+                VkFunc.vkCmdPushConstants(commandBuffer, levelPipeline.PipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
+                VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, levelPipeline.Pipeline);
+                VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, levelPipeline.PipelineLayout, 0, (uint)levelPipeline.DescriptorSetCount, levelPipeline.DescriptorSetList, 0, null);
+                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, &meshVertexBuffer, offsets.Ptr);
+                VkFunc.vkCmdBindIndexBuffer(commandBuffer, meshIndexBuffer, 0, VkIndexType.VK_INDEX_TYPE_UINT32);
+                VkFunc.vkCmdDrawIndexed(commandBuffer, (uint)levelLayer.IndexCount, 1, 0, 0, 0);
             }
             foreach (var spriteLayer in spriteLayerList)
             {
-                List<SpriteInstanceStruct> spriteInstanceList = SpriteSystem.FindSpriteInstanceList(spriteLayer.SpriteBatchLayerID);
-                Mesh spriteMesh = MeshSystem.FindSpriteMesh(spriteLayer.SpriteLayerMeshId);
-                VkBuffer meshVertexBuffer = BufferSystem.FindVulkanBuffer(spriteMesh.MeshVertexBufferId).Buffer;
-                VkBuffer meshIndexBuffer = BufferSystem.FindVulkanBuffer(spriteMesh.MeshIndexBufferId).Buffer;
-                VkBuffer spriteInstanceBuffer = BufferSystem.FindVulkanBuffer(SpriteSystem.FindSpriteInstanceBufferId(spriteLayer.SpriteBatchLayerID)).Buffer;
+                ListPtr<SpriteInstanceStruct> spriteInstanceList = SpriteSystem.FindSpriteInstanceList((int)spriteLayer.SpriteBatchLayerId);
+                Mesh spriteMesh = MeshSystem.SpriteMeshMap[(int)spriteLayer.SpriteLayerMeshId];
+                VkBuffer meshVertexBuffer = BufferSystem.VulkanBufferMap[(uint)spriteMesh.MeshVertexBufferId].Buffer;
+                VkBuffer meshIndexBuffer = BufferSystem.VulkanBufferMap[(uint)spriteMesh.MeshIndexBufferId].Buffer;
+                VkBuffer spriteInstanceBuffer = BufferSystem.VulkanBufferMap[(uint)SpriteSystem.FindSpriteInstanceBufferId((int)spriteLayer.SpriteBatchLayerId)].Buffer;
 
-                VkDeviceSize offsets[] = { 0 };
-                VkFunc.vkCmdPushConstants(commandBuffer, spritePipeline.PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneDataBuffer);
-                VkFunc.vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, spritePipeline.Pipeline);
-                VkFunc.vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, spritePipeline.PipelineLayout, 0, spritePipeline.DescriptorSetCount, spritePipeline.DescriptorSetList, 0, nullptr);
-                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, &meshVertexBuffer, offsets);
-                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer, offsets);
-                VkFunc.vkCmdBindIndexBuffer(commandBuffer, meshIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-                VkFunc.vkCmdDrawIndexed(commandBuffer, GameObjectSystem.SpriteIndexList.size(), spriteInstanceList.size(), 0, 0, 0);
+                ListPtr<VkDeviceSize> offsets = new ListPtr<ulong>{ 0 };
+                VkFunc.vkCmdPushConstants(commandBuffer, spritePipeline.PipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
+                VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, spritePipeline.Pipeline);
+                VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, spritePipeline.PipelineLayout, 0, (uint)spritePipeline.DescriptorSetCount, spritePipeline.DescriptorSetList, 0, null);
+                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, &meshVertexBuffer, offsets.Ptr);
+                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer, offsets.Ptr);
+                VkFunc.vkCmdBindIndexBuffer(commandBuffer, meshIndexBuffer, 0, VkIndexType.VK_INDEX_TYPE_UINT32);
+                VkFunc.vkCmdDrawIndexed(commandBuffer, (uint)MeshSystem.IndexListMap.Count(), (uint)spriteInstanceList.Count, 0, 0, 0);
             }
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);
@@ -825,23 +828,32 @@ namespace VulkanGameEngineLevelEditor.Systems
             return texturePropertiesBuffer;
         }
 
+        public static VkCommandBuffer BeginSingleTimeCommands()
+        {
+            return Renderer_BeginSingleTimeCommands(RenderSystem.Device, RenderSystem.CommandPool);
+        }
+
+        public static VkCommandBuffer BeginSingleTimeCommands(VkCommandPool commandPool)
+        {
+            return Renderer_BeginSingleTimeCommands(RenderSystem.Device, RenderSystem.CommandPool);
+        }
+
+        public static VkResult EndSingleTimeCommands(VkCommandBuffer commandBuffer)
+        {
+            return Renderer_EndSingleTimeCommands(RenderSystem.Device, RenderSystem.CommandPool, RenderSystem.GraphicsQueue, commandBuffer);
+        }
+
+        public static VkResult EndSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool commandPool)
+        {
+            return Renderer_EndSingleTimeCommands(RenderSystem.Device, commandPool, RenderSystem.GraphicsQueue, commandBuffer);
+        }
+
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern GraphicsRenderer Renderer_RendererSetUp_CS(void* windowHandle);
-
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkCommandBuffer Renderer_BeginSingleTimeCommands(VkDevice device, VkCommandPool commandPool);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkCommandBuffer commandBuffer);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string renderPassLoader, ref VkExtent2D renderPassResolution, int ConstBuffer, Texture* renderedTextureListPtr, ref size_t renderedTextureCount, out Texture depthTexture);
-
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void VulkanRenderPass_DestroyRenderPass(GraphicsRenderer renderer, VulkanRenderPass renderPass);
-
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]
-        public static extern VulkanPipeline VulkanPipeline_CreateRenderPipeline(
-       IntPtr device, // VkDevice
-       ref Guid renderPassId,
-       uint renderPipelineId,
-       [MarshalAs(UnmanagedType.LPStr)] string pipelineJson,
-       IntPtr renderPass, // VkRenderPass
-       uint constBufferSize,
-       ref ivec2 renderPassResolution,
-       GPUIncludes includes);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VulkanPipeline VulkanPipeline_CreateRenderPipeline(IntPtr device, ref Guid renderPassId, uint renderPipelineId, [MarshalAs(UnmanagedType.LPStr)] string pipelineJson, IntPtr renderPass, uint constBufferSize, ref ivec2 renderPassResolution, GPUIncludes includes);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void VulkanPipeline_Destroy(VkDevice device, VulkanPipeline vulkanPipelineDLL);
-
     }
 }

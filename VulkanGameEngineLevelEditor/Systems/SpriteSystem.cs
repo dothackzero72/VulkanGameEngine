@@ -1,25 +1,16 @@
-﻿using CSScripting;
-using GlmSharp;
+﻿using GlmSharp;
 using Newtonsoft.Json;
-using Silk.NET.SDL;
-using Silk.NET.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography.Xml;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
-using VulkanGameEngineLevelEditor.Models;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace VulkanGameEngineLevelEditor.Systems
 {
-    public class SpriteBatchLayer
+    public struct SpriteBatchLayer
     {
         public Guid RenderPassId { get; set; }
         public uint SpriteBatchLayerId { get; set; }
@@ -63,7 +54,7 @@ namespace VulkanGameEngineLevelEditor.Systems
     {
         public float x, y;
     };
-    
+
     public unsafe struct AnimationFrames
     {
         public IntPtr frames;
@@ -72,17 +63,56 @@ namespace VulkanGameEngineLevelEditor.Systems
 
     public static unsafe class SpriteSystem
     {
-        public static List<Sprite> SpriteList = new List<Sprite>();
-        public static List<SpriteInstanceStruct> SpriteInstanceList = new List<SpriteInstanceStruct>();
-        public static List<SpriteBatchLayer> SpriteBatchLayerList = new List<SpriteBatchLayer>();
-        public static List<SpriteVram> SpriteVramList = new List<SpriteVram>();
+        public static ListPtr<Sprite> SpriteList = new ListPtr<Sprite>();
+        public static ListPtr<SpriteInstanceStruct> SpriteInstanceList = new ListPtr<SpriteInstanceStruct>();
+        public static ListPtr<SpriteBatchLayer> SpriteBatchLayerList = new ListPtr<SpriteBatchLayer>();
+        public static ListPtr<SpriteVram> SpriteVramList = new ListPtr<SpriteVram>();
         public static Dictionary<Guid, SpriteVram> SpriteVramMap = new Dictionary<Guid, SpriteVram>();
         public static Dictionary<int, size_t> SpriteIdToListIndexMap = new Dictionary<int, size_t>();
         public static Dictionary<int, int> SpriteInstanceBufferIdMap = new Dictionary<int, int>();
         public static Dictionary<uint, Animation2D> SpriteAnimationMap = new Dictionary<uint, Animation2D>();
         public static Dictionary<Guid, List<aniVec2[]>> SpriteAnimationFrameListMap = new Dictionary<Guid, List<aniVec2[]>>();
-        public static Dictionary<int, Vector<SpriteInstanceStruct>> SpriteInstanceListMap = new Dictionary<int, Vector<SpriteInstanceStruct>>();
-        public static Dictionary<int, Vector<int>> SpriteBatchObjectListMap = new Dictionary<int, Vector<int>>();
+        public static Dictionary<int, ListPtr<SpriteInstanceStruct>> SpriteInstanceListMap = new Dictionary<int, ListPtr<SpriteInstanceStruct>>();
+        public static Dictionary<int, ListPtr<int>> SpriteBatchObjectListMap = new Dictionary<int, ListPtr<int>>();
+
+        public static void Update(float deltaTime)
+        {
+            if (SpriteList.Count > 100)
+            {
+                UpdateBatchSprites(deltaTime);
+            }
+            else
+            {
+                UpdateSprites(deltaTime);
+            }
+
+            VkCommandBuffer commandBuffer = RenderSystem.BeginSingleTimeCommands();
+            UpdateSpriteBatchLayers(deltaTime);
+            RenderSystem.EndSingleTimeCommands(commandBuffer);
+        }
+
+        private static void UpdateSpriteBatchLayers(float deltaTime)
+        {
+            foreach (var spriteBatchLayer in SpriteBatchLayerList)
+            {
+                ListPtr<SpriteInstanceStruct> spriteInstanceStructList = FindSpriteInstanceList((int)spriteBatchLayer.SpriteBatchLayerId);
+                ListPtr<int> spriteBatchObjectList = FindSpriteBatchObjectListMap((int)spriteBatchLayer.SpriteBatchLayerId);
+
+                spriteInstanceStructList.Clear();
+                spriteInstanceStructList = new ListPtr<SpriteInstanceStruct>(spriteBatchObjectList.Count);
+                foreach (var gameObjectID in spriteBatchObjectList)
+                {
+                    SpriteInstanceStruct spriteInstanceStruct = FindSpriteInstance(gameObjectID);
+                    spriteInstanceStructList.Add(spriteInstanceStruct);
+                }
+
+                if (spriteBatchObjectList.Any())
+                {
+                    uint bufferId = (uint)FindSpriteInstanceBufferId((int)spriteBatchLayer.SpriteBatchLayerId);
+                    BufferSystem.UpdateBufferMemory(RenderSystem.renderer, bufferId, spriteInstanceStructList);
+                }
+            }
+        }
 
         private static void UpdateBatchSprites(float deltaTime)
         {
@@ -113,22 +143,14 @@ namespace VulkanGameEngineLevelEditor.Systems
                         count = (nint)frameArray.Length
                     };
                 }
-
-                Sprite_UpdateBatchSprites(
-                    SpriteInstanceList.ToListPtr(),
-                    SpriteList.ToListPtr(),
-                    transform2D.Ptr,
-                    vram.Ptr,
-                    animation.Ptr,
-                    frameList.Ptr,
-                    material.Ptr,
-                    (nint)SpriteInstanceList.Count,
-                    deltaTime);
+                Sprite_UpdateBatchSprites(SpriteInstanceList.Ptr, SpriteList.Ptr, transform2D.Ptr, vram.Ptr, animation.Ptr, frameList.Ptr, material.Ptr, (nint)SpriteInstanceList.Count, deltaTime);
             }
             finally
             {
                 foreach (var handle in pinnedHandles)
+                {
                     handle.Free();
+                }
             }
         }
 
@@ -224,6 +246,66 @@ namespace VulkanGameEngineLevelEditor.Systems
             //}
 
             return spriteVramJson.VramSpriteId;
+        }
+
+        public static Sprite FindSprite(int gameObjectId)
+        {
+            return SpriteList.Where(x => x.GameObjectId == gameObjectId).First();
+        }
+
+        public static SpriteVram FindVramSprite(Guid vramSpriteId)
+        {
+            return SpriteVramList.Where(x => x.VramSpriteId == vramSpriteId).First();
+        }
+
+        public static Animation2D FindSpriteAnimation(uint animationId)
+        {
+            return SpriteAnimationMap.Where(x => x.Key == animationId).First().Value;
+        }
+
+        public static List<aniVec2[]> FindSpriteAnimationFrames(Guid vramSpriteId)
+        {
+            return SpriteAnimationFrameListMap.Where(x => x.Key == vramSpriteId).First().Value;
+        }
+
+        public static SpriteInstanceStruct FindSpriteInstance(int gameObjectId)
+        {
+            if (SpriteInstanceList.Count() <= 200)
+            {
+                size_t spriteInstanceIndex = FindSpriteIndex(gameObjectId);
+                return SpriteInstanceList[(int)spriteInstanceIndex];
+            }
+            else
+            {
+                var spriteInstanceIndex = SpriteIdToListIndexMap.Where(x => x.Key == gameObjectId).First().Value;
+                return SpriteInstanceList[(int)spriteInstanceIndex];
+            }
+        }
+
+        public static int FindSpriteInstanceBufferId(int spriteInstanceBufferId)
+        {
+            return SpriteInstanceBufferIdMap.Where(x => x.Key == spriteInstanceBufferId).First().Value;
+        }
+
+        public static ListPtr<SpriteInstanceStruct> FindSpriteInstanceList(int spriteBatchId)
+        {
+            return SpriteInstanceListMap.Where(x => x.Key == spriteBatchId).First().Value;
+        }
+
+        public static ListPtr<int> FindSpriteBatchObjectListMap(int spriteBatchObjectListId)
+        {
+            return SpriteBatchObjectListMap.Where(x => x.Key == spriteBatchObjectListId).First().Value;
+        }
+
+        public static ListPtr<SpriteBatchLayer> FindSpriteBatchLayer(Guid renderPassId)
+        {
+            return new ListPtr<SpriteBatchLayer>(SpriteBatchLayerList.Where(x => x.RenderPassId == renderPassId).ToList());
+        }
+
+        public static int FindSpriteIndex(int gameObjectId)
+        {
+            var sprite = SpriteList.Where(x => x.GameObjectId == gameObjectId).First();
+            return SpriteList.ToList().IndexOf(sprite);
         }
 
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern SpriteVram VRAM_LoadSpriteVRAM([MarshalAs(UnmanagedType.LPStr)] string spritePath, ref Material material, ref Texture texture);

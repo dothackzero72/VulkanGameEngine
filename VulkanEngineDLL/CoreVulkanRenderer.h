@@ -90,6 +90,8 @@ extern "C" {
 #endif
 	DLL_EXPORT GraphicsRenderer Renderer_RendererSetUp(void* windowHandle);
 	DLL_EXPORT GraphicsRenderer Renderer_RendererSetUp_CS(void* windowHandle);
+	DLL_EXPORT VkCommandBuffer Renderer_BeginSingleTimeCommands(VkDevice device, VkCommandPool commandPool);
+	DLL_EXPORT VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkCommandBuffer commandBuffer);
 	DLL_EXPORT void Renderer_DestroyRenderer(GraphicsRenderer& renderer);
 #ifdef __cplusplus
 }

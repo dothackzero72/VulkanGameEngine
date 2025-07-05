@@ -14,22 +14,10 @@ namespace VulkanGameEngineLevelEditor.Systems
 {
     public static class GameSystem
     {
-        //   public static OrthographicCamera2D OrthographicCamera { get; set; }
         public static Guid TileSetId { get; set; }
         public static Guid LevelRendererId { get; set; }
         public static Guid SpriteRenderPass2DId { get; set; }
         public static Guid FrameBufferId { get; set; }
-
-        /*   public static extern IntPtr VulkanRenderPass_CreateVulkanRenderPassCS(
-        ref RendererStateCS renderStateCS,
-
-        [MarshalAs(UnmanagedType.LPStr)] string renderPassLoader,
-        VkExtent2D renderPassResolution,
-            int ConstBuffer,
-            TextureStruct* renderedTextureListPtr,
-            ulong* renderedTextureCount,
-            TextureStruct* depthTexture
-        );*/
 
         public static unsafe void StartUp(VkQueue window, VkQueue renderAreaHandle)
         {
@@ -55,32 +43,32 @@ namespace VulkanGameEngineLevelEditor.Systems
             MaterialSystem.Update(deltaTime);
             RenderSystem.Update(deltaTime);
 
-            VkCommandBuffer commandBuffer = RenderSystem.BeginSingleTimeCommands();
-            MeshSystem.Update(deltaTime);
-            RenderSystem.EndSingleTimeCommands(commandBuffer);
+            //VkCommandBuffer commandBuffer = RenderSystem.BeginSingleTimeCommands();
+            //MeshSystem.Update(deltaTime);
+            //RenderSystem.EndSingleTimeCommands(commandBuffer);
         }
 
 
         public static void Draw(float deltaTime)
         {
-            RenderSystem.StartFrame();
-            LevelSystem.Draw(CommandBufferSubmitList, deltaTime);
-            CommandBufferSubmitList.emplace_back(ImGui_Draw(renderSystem.renderer, renderSystem.imGuiRenderer));
-            RenderSystem.EndFrame(CommandBufferSubmitList);
-            CommandBufferSubmitList.clear();
+            //RenderSystem.StartFrame();
+            //LevelSystem.Draw(CommandBufferSubmitList, deltaTime);
+            //CommandBufferSubmitList.emplace_back(ImGui_Draw(renderSystem.renderer, renderSystem.imGuiRenderer));
+            //RenderSystem.EndFrame(CommandBufferSubmitList);
+            //CommandBufferSubmitList.clear();
         }
 
         public static void Destroy()
         {
-            //gameObjectSystem.DestroyGameObjects();
-            //meshSystem.DestroyAllGameObjects();
-            TextureSystem.DestroyAllTextures();
-            MaterialSystem.DestroyAllMaterials();
-            LevelSystem.DestoryLevel();
-            MeshSystem.DestroyAllGameObjects();
-            BufferSystem.DestroyAllBuffers();
-            RenderSystem.Destroy();
-            MemorySystem.ReportLeaks();
+            ////gameObjectSystem.DestroyGameObjects();
+            ////meshSystem.DestroyAllGameObjects();
+            //TextureSystem.DestroyAllTextures();
+            //MaterialSystem.DestroyAllMaterials();
+            //LevelSystem.DestoryLevel();
+            //MeshSystem.DestroyAllGameObjects();
+            //BufferSystem.DestroyAllBuffers();
+            //RenderSystem.Destroy();
+            //MemorySystem.ReportLeaks();
         }
     }
 }

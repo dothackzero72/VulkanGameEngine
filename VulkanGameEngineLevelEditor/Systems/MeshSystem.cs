@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor.Systems
@@ -355,15 +356,33 @@ namespace VulkanGameEngineLevelEditor.Systems
             MeshMap.Remove(meshId);
         }
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]  public static extern Mesh Mesh_CreateMesh(
-    GraphicsRenderer renderer,
-    MeshLoader meshLoader,
-    out VulkanBuffer outVertexBuffer,
-    out VulkanBuffer outIndexBuffer,
-    out VulkanBuffer outTransformBuffer,
-    out VulkanBuffer outPropertiesBuffer);
+        public static Mesh FindMesh(uint meshId)
+        {
+            return MeshMap.Where(x => x.Key == meshId).First().Value;
+        }
+
+        public static Mesh FindSpriteMesh(uint meshId)
+        {
+            return SpriteMeshMap.Where(x => x.Key == meshId).First().Value;
+        }
+
+        public static ListPtr<Mesh> FindLevelLayerMeshList(Guid levelGuid)
+        {
+            return LevelLayerMeshListMap.Where(x => x.Key == levelGuid).First().Value;
+        }
+
+        public static ListPtr<Vertex2D> FindVertex2DList(uint meshId)
+        {
+            return Vertex2DListMap.Where(x => x.Key == meshId).First().Value;
+        }
+
+        public static ListPtr<uint> FindIndexList(uint meshId)
+        {
+            return IndexListMap.Where(x => x.Key == meshId).First().Value;
+        }
+
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)]  public static extern Mesh Mesh_CreateMesh(GraphicsRenderer renderer, MeshLoader meshLoader, out VulkanBuffer outVertexBuffer, out VulkanBuffer outIndexBuffer, out VulkanBuffer outTransformBuffer, out VulkanBuffer outPropertiesBuffer);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Mesh_UpdateMesh(GraphicsRenderer renderer, Mesh mesh, VulkanBuffer meshPropertiesBuffer, uint shaderMaterialBufferIndex, float deltaTime);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Mesh_DestroyMesh(GraphicsRenderer renderer, Mesh mesh, VulkanBuffer vertexBuffer, VulkanBuffer indexBuffer, VulkanBuffer transformBuffer, VulkanBuffer propertiesBuffer);
-
     }
 }
