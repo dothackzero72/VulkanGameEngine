@@ -334,11 +334,11 @@ namespace VulkanGameEngineLevelEditor.Systems
             }
             foreach (var spriteLayer in spriteLayerList)
             {
-                ListPtr<SpriteInstanceStruct> spriteInstanceList = SpriteSystem.FindSpriteInstanceList((int)spriteLayer.SpriteBatchLayerId);
+                ListPtr<SpriteInstanceStruct> spriteInstanceList = SpriteSystem.FindSpriteInstanceList(spriteLayer.SpriteBatchLayerId);
                 Mesh spriteMesh = MeshSystem.SpriteMeshMap[(int)spriteLayer.SpriteLayerMeshId];
                 VkBuffer meshVertexBuffer = BufferSystem.VulkanBufferMap[(uint)spriteMesh.MeshVertexBufferId].Buffer;
                 VkBuffer meshIndexBuffer = BufferSystem.VulkanBufferMap[(uint)spriteMesh.MeshIndexBufferId].Buffer;
-                VkBuffer spriteInstanceBuffer = BufferSystem.VulkanBufferMap[(uint)SpriteSystem.FindSpriteInstanceBufferId((int)spriteLayer.SpriteBatchLayerId)].Buffer;
+                VkBuffer spriteInstanceBuffer = BufferSystem.VulkanBufferMap[(uint)SpriteSystem.FindSpriteInstanceBufferId(spriteLayer.SpriteBatchLayerId)].Buffer;
 
                 ListPtr<VkDeviceSize> offsets = new ListPtr<ulong>{ 0 };
                 VkFunc.vkCmdPushConstants(commandBuffer, spritePipeline.PipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
@@ -742,7 +742,7 @@ namespace VulkanGameEngineLevelEditor.Systems
             }
 
             ListPtr<VkDescriptorBufferInfo> meshPropertiesBuffer = new ListPtr<VkDescriptorBufferInfo>();
-            if (meshList.Any())
+            if (!meshList.Any())
             {
                 meshPropertiesBuffer.Add(new VkDescriptorBufferInfo
                     {
@@ -786,7 +786,7 @@ namespace VulkanGameEngineLevelEditor.Systems
             }
 
             ListPtr<VkDescriptorImageInfo> texturePropertiesBuffer = new ListPtr<VkDescriptorImageInfo>();
-            if (textureList.Any())
+            if (!textureList.Any())
             {
                 VkSamplerCreateInfo NullSamplerInfo = new VkSamplerCreateInfo()
                 {

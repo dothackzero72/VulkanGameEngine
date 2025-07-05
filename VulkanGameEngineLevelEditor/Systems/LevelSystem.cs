@@ -56,7 +56,7 @@ namespace VulkanGameEngineLevelEditor.Systems
 
     public static unsafe class LevelSystem
     {
-        public static OrthographicCamera2D OrthographicCamera { get; set; }
+        public static OrthographicCamera2D OrthographicCamera { get; set; } = new OrthographicCamera2D();
         public static SceneDataBuffer SceneProperties { get; set; }
         public static Guid levelRenderPass2DId { get; private set; }
         public static Guid spriteRenderPass2DId { get; private set; }

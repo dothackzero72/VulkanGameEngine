@@ -39,7 +39,7 @@ void SpriteSystem::UpdateBatchSprites(const float& deltaTime)
         transform2D[x] = gameObjectSystem.FindTransform2DComponent(sprite.GameObjectId);
         vram[x] = FindVramSprite(sprite.SpriteVramId);
         animation[x] = FindSpriteAnimation(sprite.CurrentAnimationID);
-        frameList[x] = spriteSystem.FindSpriteAnimationFrames(vram[x].VramSpriteID)[sprite.CurrentAnimationID];
+        frameList[x] = FindSpriteAnimationFrames(vram[x].VramSpriteID)[sprite.CurrentAnimationID];
         material[x] = materialSystem.FindMaterial(vram[x].SpriteMaterialID);
     }
     Sprite_UpdateBatchSprites(SpriteInstanceList.data(), SpriteList.data(), transform2D.data(), vram.data(), animation.data(), frameList.data(), material.data(), SpriteInstanceList.size(), deltaTime);
@@ -50,11 +50,11 @@ void SpriteSystem::UpdateSprites(const float& deltaTime)
     for (int x = 0; x < SpriteList.size(); x++)
     {
         const Transform2DComponent& transform2D = gameObjectSystem.FindTransform2DComponent(SpriteList[x].GameObjectId);
-        const SpriteVram& vram = spriteSystem.FindVramSprite(SpriteList[x].SpriteVramId);
-        const Animation2D& animation = spriteSystem.FindSpriteAnimation(SpriteList[x].CurrentAnimationID);
-        const AnimationFrames& frameList = spriteSystem.FindSpriteAnimationFrames(vram.VramSpriteID)[SpriteList[x].CurrentAnimationID];
+        const SpriteVram& vram = FindVramSprite(SpriteList[x].SpriteVramId);
+        const Animation2D& animation = FindSpriteAnimation(SpriteList[x].CurrentAnimationID);
+        const AnimationFrames& frameList = FindSpriteAnimationFrames(vram.VramSpriteID)[SpriteList[x].CurrentAnimationID];
         const Material& material = materialSystem.FindMaterial(vram.SpriteMaterialID);
-        const ivec2& currentFrame = frameList[SpriteList[x].CurrentFrame];
+        const vec2& currentFrame = frameList[SpriteList[x].CurrentFrame];
 
         SpriteInstanceList[x] = Sprite_UpdateSprites(transform2D, vram, animation, frameList, material, currentFrame, SpriteList[x], deltaTime);
     }

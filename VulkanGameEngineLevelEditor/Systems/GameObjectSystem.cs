@@ -58,7 +58,7 @@ namespace VulkanGameEngineLevelEditor.Systems
                 {
                     case  ComponentTypeEnum.kTransform2DComponent: Transform2DComponentMap[id] = new Transform2DComponent(objectPosition); break;
                     case ComponentTypeEnum.kInputComponent: InputComponentMap[id] = new InputComponent(id); break;
-                    case ComponentTypeEnum.kSpriteComponent: SpriteSystem.AddSprite(id, vramId); break;
+                    case ComponentTypeEnum.kSpriteComponent: SpriteSystem.AddSprite((uint)id, vramId); break;
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace VulkanGameEngineLevelEditor.Systems
                 {
                     case ComponentTypeEnum.kTransform2DComponent: LoadTransformComponent(component, id, component.GameObjectPosition); break;
                     case ComponentTypeEnum.kInputComponent: LoadInputComponent(component, id); break;
-                    case ComponentTypeEnum.kSpriteComponent: LoadSpriteComponent(component, id); break;
+                    case ComponentTypeEnum.kSpriteComponent: LoadSpriteComponent(component, (uint)id); break;
                 }
             }
         }
@@ -96,7 +96,7 @@ namespace VulkanGameEngineLevelEditor.Systems
             InputComponentMap[gameObjectId] = new InputComponent();
         }
 
-        public static void LoadSpriteComponent(GameObjectComponentLoader loader, int gameObjectId)
+        public static void LoadSpriteComponent(GameObjectComponentLoader loader, uint gameObjectId)
         {
             SpriteSystem.AddSprite(gameObjectId, loader.VramId);
         }

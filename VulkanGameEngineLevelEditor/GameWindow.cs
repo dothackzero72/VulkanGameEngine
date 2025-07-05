@@ -81,17 +81,17 @@ namespace VulkanGameEngineLevelEditor
                 GameSystem.StartUp(this.Handle, this.pictureBox1.Handle);
             }));
 
-            scene = new Scene();
+            
             stopwatch.Start();
-            scene.StartUp();
             while (running)
             {
                 float deltaTime = (float)stopwatch.Elapsed.TotalSeconds;
                 stopwatch.Restart();
-                scene.DrawFrame();
+                GameSystem.Update(deltaTime);
+                GameSystem.Draw(deltaTime);
             }
 
-            scene.Destroy();
+            GameSystem.Destroy();
         }
 
     }
