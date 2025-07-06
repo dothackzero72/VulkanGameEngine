@@ -1,4 +1,5 @@
-﻿using Silk.NET.Vulkan;
+﻿using Silk.NET.GLFW;
+using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
 using System;
@@ -46,12 +47,14 @@ namespace VulkanGameEngineLevelEditor.Vulkan
         public static UInt32 CommandIndex { get; private set; } = new UInt32();
         public static bool RebuildRendererFlag { get; private set; }
 
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkInstance Renderer_CreateVulkanInstance2();
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkSurfaceKHR Renderer_CreateVulkanSurface2(IntPtr windowHandle, VkInstance instance);
         public static void CreateVulkanRenderer(IntPtr window)
         {
             windowPtr = window;
-            instance = GameEngineImport.DLL_Renderer_CreateVulkanInstance();
-            debugMessenger = GameEngineImport.DLL_Renderer_SetupDebugMessenger(instance);
-            CreateSurface(windowPtr);
+            instance = Renderer_CreateVulkanInstance2();
+            surface = Renderer_CreateVulkanSurface2(windowPtr, instance);
+
             physicalDevice = GameEngineImport.DLL_Renderer_SetUpPhysicalDevice(instance, surface, GraphicsFamily, PresentFamily);
             device = GameEngineImport.DLL_Renderer_SetUpDevice(physicalDevice, GraphicsFamily, PresentFamily);
             CreateDeviceQueue();

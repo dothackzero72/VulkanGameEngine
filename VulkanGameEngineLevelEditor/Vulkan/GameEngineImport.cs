@@ -8,7 +8,7 @@ namespace VulkanGameEngineLevelEditor.Vulkan
 {
     public unsafe class GameEngineImport
     {
-        private const string DLLPath = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanEngineDLL.dll";
+        public const string DLLPath = "C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\x64\\Debug\\VulkanEngineDLL.dll";
 
         ///Renderer
         [DllImport(DLLPath, CallingConvention = CallingConvention.StdCall)] 
