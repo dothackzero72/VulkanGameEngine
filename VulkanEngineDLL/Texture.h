@@ -1,14 +1,11 @@
 #pragma once
-extern "C"
-{
-#include "CVulkanRenderer.h"
-}
 #include "pixel.h"
 #include "Typedef.h"
 #include "VkGuid.h"
 #include "json.h"
 #include "CoreVulkanRenderer.h"
 #include "VulkanBuffer.h"
+#include <algorithm> 
 
 typedef enum ColorChannelUsed
 {

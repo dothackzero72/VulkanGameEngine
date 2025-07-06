@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreVulkanRenderer.h"
+#include "Typedef.h"
 
 struct VulkanPipeline
 {

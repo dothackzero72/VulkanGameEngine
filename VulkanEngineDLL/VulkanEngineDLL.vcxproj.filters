@@ -51,9 +51,6 @@
     <ClInclude Include="SDLWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CVulkanRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CTypedef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -171,9 +168,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Keyboard.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CVulkanRenderer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CoreVulkanRenderer.cpp">

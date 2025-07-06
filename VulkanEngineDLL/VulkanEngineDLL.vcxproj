@@ -138,7 +138,6 @@
     <ClInclude Include="CoreVulkanRenderer.h" />
     <ClInclude Include="CShaderCompiler.h" />
     <ClInclude Include="CTypedef.h" />
-    <ClInclude Include="CVulkanRenderer.h" />
     <ClInclude Include="DLL.h" />
     <ClInclude Include="DLLStructs.h" />
     <ClInclude Include="ECSid.h" />
@@ -191,7 +190,6 @@
     <ClCompile Include="CFile.c" />
     <ClCompile Include="CoreVulkanRenderer.cpp" />
     <ClCompile Include="CShaderCompiler.c" />
-    <ClCompile Include="CVulkanRenderer.c" />
     <ClCompile Include="from_json.cpp" />
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="GameLevel.cpp" />
