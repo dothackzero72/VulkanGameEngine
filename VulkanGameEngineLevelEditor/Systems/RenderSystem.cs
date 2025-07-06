@@ -107,8 +107,8 @@ namespace VulkanGameEngineLevelEditor.Systems
         public VkSwapchainKHR Swapchain { get; set; }
 
         public size_t SwapChainImageCount { get; set; }
-        public uint ImageIndex { get; set; }
-        public uint CommandIndex { get; set; }
+        public size_t ImageIndex { get; set; }
+        public size_t CommandIndex { get; set; }
         public uint GraphicsFamily { get; set; }
         public uint PresentFamily { get; set; }
 
@@ -185,14 +185,22 @@ namespace VulkanGameEngineLevelEditor.Systems
         }
     };
 
+    //public unsafe struct ImGuiRenderer
+    //{
+    //    public VkRenderPass RenderPass = VK_NULL_HANDLE;
+    //    public VkDescriptorPool ImGuiDescriptorPool = VK_NULL_HANDLE;
+    //    public VkCommandBuffer ImGuiCommandBuffer = VK_NULL_HANDLE;
+    //    public ListPtr<VkFramebuffer> SwapChainFramebuffers;
+    //};
+
     public unsafe static class RenderSystem
     {
         public static GraphicsRenderer renderer { get; set; }
         public static size_t SwapChainImageCount { get; set; }
         public static uint GraphicsFamily { get; set; }
         public static uint PresentFamily { get; set; }
-        public static uint ImageIndex { get; set; }
-        public static uint CommandIndex { get; set; }
+        public static size_t ImageIndex { get; set; }
+        public static size_t CommandIndex { get; set; }
 
         public static VkInstance Instance { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
         public static VkDevice Device { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
@@ -488,137 +496,35 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static VkResult StartFrame()
         {
-            CommandIndex = (CommandIndex + 1) % VulkanCSConst.MAX_FRAMES_IN_FLIGHT;
 
-            var fence = InFlightFences[(int)CommandIndex];
-            var imageSemaphore = AcquireImageSemaphores[(int)CommandIndex];
+           var imageIndex = renderer.ImageIndex;
+            var commandIndex = renderer.CommandIndex;
+            var rebuildRendererFlag = renderer.RebuildRendererFlag;
+            var result = Renderer_StartFrame(renderer.Device, renderer.Swapchain, renderer.InFlightFences, renderer.AcquireImageSemaphores, &imageIndex, &commandIndex, &rebuildRendererFlag);
 
-            VkFunc.vkWaitForFences(Device, 1, &fence, true, ulong.MaxValue);
-            VkFunc.vkResetFences(Device, 1, &fence);
-
-            VkResult result = VkFunc.vkAcquireNextImageKHR(Device, Swapchain, ulong.MaxValue, imageSemaphore, fence, out var imageIndex);
-            ImageIndex = imageIndex;
-
-            if (result == VkResult.VK_ERROR_OUT_OF_DATE_KHR)
-            {
-                RebuildRendererFlag = true;
-                return result;
-            }
-
+            var rendererTemp = renderer;
+            rendererTemp.ImageIndex = imageIndex;
+            rendererTemp.CommandIndex = commandIndex;
+            rendererTemp.RebuildRendererFlag = rebuildRendererFlag;
+            renderer = rendererTemp;
             return result;
         }
 
         public static unsafe VkResult EndFrame(ListPtr<VkCommandBuffer> commandBufferSubmitList)
         {
-            var fence = InFlightFences[(int)CommandIndex];
-            var presentSemaphore = PresentImageSemaphores[(int)CommandIndex];
-            var imageSemaphore = AcquireImageSemaphores[(int)CommandIndex];
-
-            VkFunc.vkWaitForFences(Device, 1, &fence, true, ulong.MaxValue);
-            VkFunc.vkResetFences(Device, 1, &fence);
-            InFlightFences[(int)CommandIndex] = fence;
-
-            VkPipelineStageFlagBits[] waitStages = new VkPipelineStageFlagBits[]
-            {
-                VkPipelineStageFlagBits.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-            };
-
-            fixed (VkPipelineStageFlagBits* pWaitStages = waitStages)
-            {
-                VkSubmitInfo submitInfo = new VkSubmitInfo()
-                {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                    waitSemaphoreCount = 1,
-                    pWaitSemaphores = &imageSemaphore,
-                    pWaitDstStageMask = pWaitStages,
-                    commandBufferCount = (uint)commandBufferSubmitList.Count,
-                    pCommandBuffers = commandBufferSubmitList.Ptr,
-                    signalSemaphoreCount = 1,
-                    pSignalSemaphores = &presentSemaphore
-                };
-
-                VkResult submitResult = VkFunc.vkQueueSubmit(GraphicsQueue, 1, &submitInfo, fence);
-                if (submitResult != VkResult.VK_SUCCESS)
-                {
-                    return submitResult;
-                }
-
-                var imageIndex = ImageIndex;
-                var swapchain = Swapchain;
-                VkPresentInfoKHR presentInfo = new VkPresentInfoKHR()
-                {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-                    waitSemaphoreCount = 1,
-                    pWaitSemaphores = &presentSemaphore,
-                    swapchainCount = 1,
-                    pSwapchains = &swapchain,
-                    pImageIndices = &imageIndex
-                };
-
-                VkResult result = VkFunc.vkQueuePresentKHR(PresentQueue, in presentInfo);
-                if (result == VkResult.VK_ERROR_OUT_OF_DATE_KHR || result == VkResult.VK_SUBOPTIMAL_KHR)
-                {
-                    RebuildRendererFlag = true;
-                }
-
-                return result;
-            }
-        }
-
-        public static VkCommandBuffer BeginSingleUseCommandBuffer()
-        {
-            VkCommandBuffer commandBuffer = new VkCommandBuffer();
-            VkCommandBufferAllocateInfo allocInfo = new VkCommandBufferAllocateInfo()
-            {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-                level = VkCommandBufferLevel.VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-                commandPool = CommandPool,
-                commandBufferCount = 1
-            };
-            VkFunc.vkAllocateCommandBuffers(Device, in allocInfo, out commandBuffer);
-
-            VkCommandBufferBeginInfo beginInfo = new VkCommandBufferBeginInfo()
-            {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-                flags = VkCommandBufferUsageFlagBits.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
-            };
-            VkFunc.vkBeginCommandBuffer(commandBuffer, &beginInfo);
-            return commandBuffer;
-        }
-
-        public static VkResult EndSingleUseCommandBuffer(VkCommandBuffer commandBuffer)
-        {
-            VkSubmitInfo submitInfo = new VkSubmitInfo()
-            {
-                sType = VkStructureType.VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                commandBufferCount = 1,
-                pCommandBuffers = &commandBuffer
-            };
-
-            VkFence fence = new VkFence();
-            VkFunc.vkEndCommandBuffer(commandBuffer);
-            VkFunc.vkQueueSubmit(GraphicsQueue, 1, &submitInfo, fence);
-            VkFunc.vkQueueWaitIdle(GraphicsQueue);
-            VkFunc.vkFreeCommandBuffers(Device, CommandPool, 1, &commandBuffer);
-            return VkResult.VK_SUCCESS;
-        }
-
-        public static void CreateCommandBuffers(ListPtr<VkCommandBuffer> commandBufferList)
-        {
-            for (int x = 0; x < SwapChainImageViews.Count; x++)
-            {
-                VkCommandBufferAllocateInfo commandBufferAllocateInfo = new VkCommandBufferAllocateInfo()
-                {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-                    commandPool = CommandPool,
-                    level = VkCommandBufferLevel.VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-                    commandBufferCount = 1
-                };
-
-                VkCommandBuffer commandBuffer = new VkCommandBuffer();
-                VkFunc.vkAllocateCommandBuffers(Device, in commandBufferAllocateInfo, out commandBuffer);
-                commandBufferList.Add(commandBuffer);
-            }
+            VkSwapchainKHR swapChain = renderer.Swapchain;
+            VkSemaphore* acquireImageSemaphoreList = renderer.AcquireImageSemaphores;
+            VkSemaphore* presentImageSemaphoreList = renderer.PresentImageSemaphores;
+            VkFence* fenceList = renderer.InFlightFences;
+            VkQueue graphicsQueue = renderer.GraphicsQueue;
+            VkQueue presentQueue = renderer.PresentQueue;
+            size_t commandIndex = renderer.CommandIndex;
+            size_t imageIndex = renderer.ImageIndex;
+            VkCommandBuffer* pCommandBufferSubmitList = commandBufferSubmitList.Ptr;
+            size_t commandBufferCount = commandBufferSubmitList.Count;
+            bool rebuildRendererFlag = renderer.RebuildRendererFlag;
+            var result = Renderer_EndFrame(swapChain, acquireImageSemaphoreList, presentImageSemaphoreList, fenceList, graphicsQueue, presentQueue, commandIndex, imageIndex, pCommandBufferSubmitList, commandBufferCount, &rebuildRendererFlag);
+            return result;
         }
 
         public static ListPtr<VkDescriptorBufferInfo> GetVertexPropertiesBuffer()
@@ -853,6 +759,8 @@ namespace VulkanGameEngineLevelEditor.Systems
         }
 
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern GraphicsRenderer Renderer_RendererSetUp_CS(void* windowHandle);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* fenceList, VkSemaphore* acquireImageSemaphoreList, size_t* pImageIndex, size_t* pCommandIndex, bool* pRebuildRendererFlag);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, size_t commandIndex, size_t imageIndex, VkCommandBuffer* pCommandBufferSubmitList, size_t commandBufferCount, bool* rebuildRendererFlag);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkCommandBuffer Renderer_BeginSingleTimeCommands(VkDevice device, VkCommandPool commandPool);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkCommandBuffer commandBuffer);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VulkanRenderPass VulkanRenderPass_CreateVulkanRenderPass(GraphicsRenderer renderer, [MarshalAs(UnmanagedType.LPStr)] string renderPassLoader, ref VkExtent2D renderPassResolution, int ConstBuffer, Texture* renderedTextureListPtr, ref size_t renderedTextureCount, out Texture depthTexture);

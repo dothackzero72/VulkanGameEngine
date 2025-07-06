@@ -71,8 +71,8 @@ struct GraphicsRenderer
 	VkSwapchainKHR     Swapchain;
 
 	size_t			   SwapChainImageCount;
-	uint32			   ImageIndex;
-	uint32			   CommandIndex;
+	size_t			   ImageIndex;
+	size_t			   CommandIndex;
 	uint32			   GraphicsFamily;
 	uint32			   PresentFamily;
 
