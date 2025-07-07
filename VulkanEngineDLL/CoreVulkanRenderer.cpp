@@ -3,7 +3,6 @@
 #include <iostream>
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
-#include "../../../../../../VulkanSDK/1.4.304.0/Include/vulkan/vulkan_win32.h"
 #include "MemorySystem.h"
 
 GraphicsRenderer Renderer_RendererSetUp(void* windowHandle)
@@ -19,7 +18,7 @@ GraphicsRenderer Renderer_RendererSetUp(void* windowHandle)
     VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
     renderer.Instance = Renderer_CreateVulkanInstance();
     renderer.DebugMessenger = Renderer_SetupDebugMessenger(renderer.Instance);
-    vulkanWindow->CreateSurface(windowHandle, &renderer.Instance, &renderer.Surface);
+    renderer.Surface = Renderer_CreateVulkanSurface(windowHandle, renderer.Instance);
     renderer.PhysicalDevice = Renderer_SetUpPhysicalDevice(renderer.Instance, renderer.Surface, renderer.GraphicsFamily, renderer.PresentFamily);
     renderer.Device = Renderer_SetUpDevice(renderer.PhysicalDevice, renderer.GraphicsFamily, renderer.PresentFamily);
     VULKAN_RESULT(Renderer_SetUpSwapChain(windowHandle, renderer));
@@ -85,69 +84,10 @@ VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPo
      memorySystem.RemovePtrBuffer(renderer.SwapChainImageViews);
  }
 
- GraphicsRenderer Renderer_RendererSetUp_CS(void* windowHandle)
- {
-     GraphicsRenderer renderer;
-     renderer.ImageIndex = 0;
-     renderer.CommandIndex = 0;
-     renderer.InFlightFences = new VkFence[MAX_FRAMES_IN_FLIGHT];
-     renderer.AcquireImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
-     renderer.PresentImageSemaphores = new VkSemaphore[MAX_FRAMES_IN_FLIGHT];
-
-     renderer.RebuildRendererFlag = false;
-     VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
-     renderer.Instance = Renderer_CreateVulkanInstance();
-     renderer.DebugMessenger = Renderer_SetupDebugMessenger(renderer.Instance);
-
-     VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = VkWin32SurfaceCreateInfoKHR
-     {
-         .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
-         .pNext = nullptr,
-         .hinstance = GetModuleHandle(nullptr),
-         .hwnd = (HWND)windowHandle,
-     };
-     vkCreateWin32SurfaceKHR(renderer.Instance, &surfaceCreateInfo, nullptr, &renderer.Surface);
-
-     renderer.PhysicalDevice = Renderer_SetUpPhysicalDevice(renderer.Instance, renderer.Surface, renderer.GraphicsFamily, renderer.PresentFamily);
-     renderer.Device = Renderer_SetUpDevice(renderer.PhysicalDevice, renderer.GraphicsFamily, renderer.PresentFamily);
-     VULKAN_RESULT(Renderer_SetUpSwapChainCS(renderer));
-     renderer.CommandPool = Renderer_SetUpCommandPool(renderer.Device, renderer.GraphicsFamily);
-     VULKAN_RESULT(Renderer_SetUpSemaphores(renderer.Device, renderer.InFlightFences, renderer.AcquireImageSemaphores, renderer.PresentImageSemaphores, renderer.SwapChainImageCount));
-     VULKAN_RESULT(Renderer_GetDeviceQueue(renderer.Device, renderer.GraphicsFamily, renderer.PresentFamily, renderer.GraphicsQueue, renderer.PresentQueue));
-
-     GraphicsRenderer rendererCS = renderer;
-     return rendererCS;
- }
-
-  VkResult Renderer_SetUpSwapChainCS(GraphicsRenderer& renderer)
- {
-      int width = 0;
-      int height = 0;
-      uint32 surfaceFormatCount = 0;
-      uint32 presentModeCount = 0;
-
-      VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities(renderer.PhysicalDevice, renderer.Surface);
-      Vector<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats(renderer.PhysicalDevice, renderer.Surface);
-      VULKAN_RESULT(SwapChain_GetQueueFamilies(renderer.PhysicalDevice, renderer.Surface, renderer.GraphicsFamily, renderer.PresentFamily));
-      Vector<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(renderer.PhysicalDevice, renderer.Surface);
-      VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
-      VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
-      renderer.Swapchain = SwapChain_SetUpSwapChain(renderer.Device, renderer.PhysicalDevice, renderer.Surface, renderer.GraphicsFamily, renderer.PresentFamily, surfaceCapabilities.currentExtent.width, surfaceCapabilities.currentExtent.height, renderer.SwapChainImageCount);
-      renderer.SwapChainImages = SwapChain_SetUpSwapChainImages(renderer.Device, renderer.Swapchain, static_cast<uint32>(MAX_FRAMES_IN_FLIGHT));
-      renderer.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderer.Device, renderer.SwapChainImages, renderer.SwapChainImageCount, swapChainImageFormat);
-
-      renderer.SwapChainResolution.width = surfaceCapabilities.currentExtent.width;
-      renderer.SwapChainResolution.height = surfaceCapabilities.currentExtent.height;
-
-      return VK_SUCCESS;
- }
-
   VkResult Renderer_SetUpSwapChain(void* windowHandle, GraphicsRenderer& renderer)
   {
-      int width = 0;
-      int height = 0;
-      uint32 surfaceFormatCount = 0;
-      uint32 presentModeCount = 0;
+      uint32 width = 0;
+      uint32 height = 0;
 
       VkSurfaceCapabilitiesKHR surfaceCapabilities = SwapChain_GetSurfaceCapabilities(renderer.PhysicalDevice, renderer.Surface);
       Vector<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats(renderer.PhysicalDevice, renderer.Surface);
@@ -155,14 +95,94 @@ VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPo
       Vector<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(renderer.PhysicalDevice, renderer.Surface);
       VkSurfaceFormatKHR swapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
       VkPresentModeKHR swapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
-      vulkanWindow->GetFrameBufferSize(windowHandle, &width, &height);
+
       renderer.Swapchain = SwapChain_SetUpSwapChain(renderer.Device, renderer.PhysicalDevice, renderer.Surface, renderer.GraphicsFamily, renderer.PresentFamily, width, height, renderer.SwapChainImageCount);
       renderer.SwapChainImages = SwapChain_SetUpSwapChainImages(renderer.Device, renderer.Swapchain, static_cast<uint32>(MAX_FRAMES_IN_FLIGHT));
       renderer.SwapChainImageViews = SwapChain_SetUpSwapChainImageViews(renderer.Device, renderer.SwapChainImages, renderer.SwapChainImageCount, swapChainImageFormat);
-
       renderer.SwapChainResolution.width = width;
       renderer.SwapChainResolution.height = height;
+
       return VK_SUCCESS;
+  }
+
+  VkSurfaceKHR Renderer_CreateVulkanSurface(void* windowHandle, VkInstance instance)
+  {
+      if (!windowHandle || !instance) {
+          fprintf(stderr, "Invalid window handle (%p) or instance (%p)\n", windowHandle, instance);
+          return VK_NULL_HANDLE;
+      }
+
+      VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
+      surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+      surfaceCreateInfo.pNext = nullptr;
+      surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
+      surfaceCreateInfo.hwnd = (HWND)windowHandle;
+
+      fprintf(stderr, "Creating surface with hwnd=%p, hinstance=%p\n", windowHandle, surfaceCreateInfo.hinstance);
+
+      VkSurfaceKHR surface;
+      VkResult result = vkCreateWin32SurfaceKHR(instance, &surfaceCreateInfo, nullptr, &surface);
+      if (result != VK_SUCCESS) {
+          fprintf(stderr, "Failed to create Vulkan surface: %d\n", result);
+          return VK_NULL_HANDLE;
+      }
+
+      return surface;
+  }
+
+
+
+  VkBool32 VKAPI_CALL Vulkan_DebugCallBack(
+      VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity,
+      VkDebugUtilsMessageTypeFlagsEXT MessageType,
+      const VkDebugUtilsMessengerCallbackDataEXT* CallBackData,
+      void* UserData)
+  {
+      HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+      if (hConsole == INVALID_HANDLE_VALUE) {
+          printf("Failed to get console handle.\n");
+          return 1;
+      }
+
+      CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+      GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+      WORD originalAttributes = consoleInfo.wAttributes;
+
+      char message[4096];
+      snprintf(message, sizeof(message), "%s", CallBackData->pMessage);
+
+      switch (MessageSeverity)
+      {
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+          SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+          fprintf(stdout, "VERBOSE: ");
+          SetConsoleTextAttribute(hConsole, originalAttributes);
+          fprintf(stdout, "%s\n", message);
+          break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+          SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+          fprintf(stdout, "INFO: ");
+          SetConsoleTextAttribute(hConsole, originalAttributes);
+          fprintf(stdout, "%s\n", message);
+          break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+          SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+          fprintf(stdout, "WARNING: ");
+          SetConsoleTextAttribute(hConsole, originalAttributes);
+          fprintf(stdout, "%s\n", message);
+          break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+          SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+          fprintf(stdout, "ERROR: ");
+          SetConsoleTextAttribute(hConsole, originalAttributes);
+          fprintf(stdout, "%s\n", message);
+          break;
+      default:
+          fprintf(stderr, "UNKNOWN SEVERITY: %s\n", message);
+          break;
+      }
+
+      return VK_FALSE;
   }
 
 Vector<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice)
@@ -286,27 +306,23 @@ bool Renderer_GetRayTracingSupport()
 VkInstance Renderer_CreateVulkanInstance()
 {
     VkInstance instance = VK_NULL_HANDLE;
-    VkDebugUtilsMessengerEXT* debugMessenger = VK_NULL_HANDLE;
-    VkDebugUtilsMessengerCreateInfoEXT debugInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                           VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
-        .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                       VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                       VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-        .pfnUserCallback = Vulkan_DebugCallBack
-    };
 
-    VkValidationFeaturesEXT ValidationFeatures
-    {
-        .sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT,
-        .pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugInfo,
-        .enabledValidationFeatureCount = static_cast<uint32_t>(disabledList.size()),
-        .pEnabledValidationFeatures = enabledList.data(),
-        .disabledValidationFeatureCount = static_cast<uint32_t>(enabledList.size()),
-        .pDisabledValidationFeatures = disabledList.data(),
-    };
+    VkDebugUtilsMessengerCreateInfoEXT debugInfo = {};
+    debugInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    debugInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    debugInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    debugInfo.pfnUserCallback = Vulkan_DebugCallBack;
+
+    VkValidationFeaturesEXT validationFeatures = {};
+    validationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+    validationFeatures.pNext = &debugInfo;
+    validationFeatures.enabledValidationFeatureCount = static_cast<uint32_t>(enabledList.size());
+    validationFeatures.pEnabledValidationFeatures = enabledList.data();
+    validationFeatures.disabledValidationFeatureCount = static_cast<uint32_t>(disabledList.size());
+    validationFeatures.pDisabledValidationFeatures = disabledList.data();
 
     int enableValidationLayers = 1;
 #ifdef NDEBUG
@@ -314,41 +330,86 @@ VkInstance Renderer_CreateVulkanInstance()
 #endif
 
     uint32_t extensionCount = 0;
-    char** enabledExtensions = nullptr;
-    Renderer_GetWin32Extensions(&extensionCount, &enabledExtensions);
+    std::vector<std::string> extensionNames;
+    std::vector<const char*> extensionNamesPointers;
 
-    VkApplicationInfo applicationInfo = {
-        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-        .pApplicationName = "Vulkan Application",
-        .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-        .pEngineName = "No Engine",
-        .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-        .apiVersion = VK_API_VERSION_1_4
-    };
-
-    VkInstanceCreateInfo vulkanCreateInfo =
-    {
-        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-        .pNext = nullptr,
-        .pApplicationInfo = &applicationInfo,
-        .enabledLayerCount = static_cast<uint32>(enableValidationLayers),
-        .ppEnabledLayerNames = (enableValidationLayers ? ValidationLayers : nullptr),
-        .enabledExtensionCount = extensionCount,
-        .ppEnabledExtensionNames = enabledExtensions
-    };
-    if (enableValidationLayers)
-    {
-        vulkanCreateInfo.pNext = &ValidationFeatures;
+    VkResult result = Renderer_GetWin32Extensions(&extensionCount, extensionNames);
+    if (result != VK_SUCCESS) {
+        fprintf(stderr, "Failed to get extensions: %d\n", result);
+        return VK_NULL_HANDLE;
     }
 
-    VkResult result = vkCreateInstance(&vulkanCreateInfo, nullptr, &instance);
-    if (result != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to create Vulkan instance\n");
+    extensionNamesPointers.reserve(extensionCount);
+    for (const auto& name : extensionNames) {
+        extensionNamesPointers.push_back(name.c_str());
+    }
+
+    VkApplicationInfo applicationInfo = {};
+    applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    applicationInfo.pApplicationName = "Vulkan Application";
+    applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    applicationInfo.pEngineName = "No Engine";
+    applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    applicationInfo.apiVersion = VK_API_VERSION_1_4;
+
+    VkInstanceCreateInfo createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pNext = enableValidationLayers ? &validationFeatures : nullptr;
+    createInfo.pApplicationInfo = &applicationInfo;
+    createInfo.enabledLayerCount = enableValidationLayers ? 1 : 0;
+    createInfo.ppEnabledLayerNames = enableValidationLayers ? ValidationLayers : nullptr;
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensionNamesPointers.size());
+    createInfo.ppEnabledExtensionNames = extensionNamesPointers.data();
+
+    result = vkCreateInstance(&createInfo, nullptr, &instance);
+    if (result != VK_SUCCESS) {
+        fprintf(stderr, "Failed to create Vulkan instance: %d\n", result);
         return VK_NULL_HANDLE;
     }
 
     return instance;
+}
+
+VkResult Renderer_GetWin32Extensions(uint32_t* extensionCount, std::vector<std::string>& enabledExtensions)
+{
+    if (!extensionCount) {
+        fprintf(stderr, "Invalid argument: extensionCount cannot be NULL.\n");
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }
+
+    VkResult result = vkEnumerateInstanceExtensionProperties(nullptr, extensionCount, nullptr);
+    if (result != VK_SUCCESS) {
+        fprintf(stderr, "Failed to enumerate instance extension properties: %d\n", result);
+        *extensionCount = 0;
+        return result;
+    }
+
+    std::vector<VkExtensionProperties> extensions(*extensionCount);
+    result = vkEnumerateInstanceExtensionProperties(nullptr, extensionCount, extensions.data());
+    if (result != VK_SUCCESS) {
+        fprintf(stderr, "Failed to enumerate instance extension properties after allocation: %d\n", result);
+        *extensionCount = 0;
+        return result;
+    }
+
+    enabledExtensions.clear();
+    for (const char* requiredExt : InstanceExtensionList) {
+        bool found = false;
+        for (const auto& ext : extensions) {
+            if (strcmp(ext.extensionName, requiredExt) == 0) {
+                enabledExtensions.emplace_back(ext.extensionName);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            fprintf(stderr, "Required extension %s not supported\n", requiredExt);
+            return VK_ERROR_EXTENSION_NOT_PRESENT;
+        }
+    }
+
+    *extensionCount = static_cast<uint32_t>(enabledExtensions.size());
+    return VK_SUCCESS;
 }
 
 VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance)
@@ -789,16 +850,9 @@ Vector<VkPresentModeKHR> SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevic
     return compatiblePresentModesList;
 }
 
-VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, uint32 width, uint32 height, size_t& swapChainImageCount)
+VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, uint32& width, uint32& height, size_t& swapChainImageCount)
 {
     VkSwapchainKHR swapChain = VK_NULL_HANDLE;
-
-    VkExtent2D extent =
-    {
-        width,
-        height
-    };
-
     Vector<VkSurfaceFormatKHR> compatibleSwapChainFormatList = SwapChain_GetPhysicalDeviceFormats(physicalDevice, surface);
     Vector<VkPresentModeKHR> compatiblePresentModesList = SwapChain_GetPhysicalDevicePresentModes(physicalDevice, surface);
 
@@ -820,7 +874,7 @@ VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physic
         .minImageCount = static_cast<uint32>(swapChainImageCount),
         .imageFormat = swapChainImageFormat.format,
         .imageColorSpace = swapChainImageFormat.colorSpace,
-        .imageExtent = extent,
+        .imageExtent = surfaceCapabilities.maxImageExtent,
         .imageArrayLayers = 1,
         .imageUsage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
         .preTransform = surfaceCapabilities.currentTransform,
@@ -842,6 +896,9 @@ VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physic
         SwapChainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
     }
     VULKAN_RESULT(vkCreateSwapchainKHR(device, &SwapChainCreateInfo, nullptr, &swapChain));
+
+    width = surfaceCapabilities.maxImageExtent.width;
+    height = surfaceCapabilities.maxImageExtent.height;
     return swapChain;
 }
 

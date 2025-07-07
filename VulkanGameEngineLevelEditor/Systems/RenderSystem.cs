@@ -225,7 +225,7 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static void CreateVulkanRenderer(VkQueue window, VkQueue renderAreaHandle)
         {
-            renderer = Renderer_RendererSetUp_CS(window.ToPointer());
+            renderer = Renderer_RendererSetUp(renderAreaHandle.ToPointer());
 
             AcquireImageSemaphores = new ListPtr<VkSemaphore>(renderer.AcquireImageSemaphores, renderer.SwapChainImageCount);
             CommandIndex = renderer.CommandIndex;
@@ -758,7 +758,7 @@ namespace VulkanGameEngineLevelEditor.Systems
             return Renderer_EndSingleTimeCommands(RenderSystem.Device, commandPool, RenderSystem.GraphicsQueue, commandBuffer);
         }
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern GraphicsRenderer Renderer_RendererSetUp_CS(void* windowHandle);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern GraphicsRenderer Renderer_RendererSetUp(void* windowHandle);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* fenceList, VkSemaphore* acquireImageSemaphoreList, size_t* pImageIndex, size_t* pCommandIndex, bool* pRebuildRendererFlag);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, size_t commandIndex, size_t imageIndex, VkCommandBuffer* pCommandBufferSubmitList, size_t commandBufferCount, bool* rebuildRendererFlag);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkCommandBuffer Renderer_BeginSingleTimeCommands(VkDevice device, VkCommandPool commandPool);

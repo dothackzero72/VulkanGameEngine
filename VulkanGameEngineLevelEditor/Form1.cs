@@ -64,17 +64,16 @@ namespace VulkanGameEngineLevelEditor
 
             this.Invoke(new Action(() =>
             {
-                RenderSystem.CreateVulkanRenderer(this.Handle, pictureBox1.Handle);
+                GameSystem.StartUp(this.Handle, this.pictureBox1.Handle);
             }));
 
             stopwatch.Start();
-            scene.StartUp();
             while (running)
             {
                 float deltaTime = (float)stopwatch.Elapsed.TotalSeconds;
                 stopwatch.Restart();
-                scene.Update(deltaTime);
-                scene.DrawFrame();
+                GameSystem.Update(deltaTime);
+                GameSystem.Draw(deltaTime);
             }
         }
 

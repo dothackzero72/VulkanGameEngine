@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VulkanGameEngineLevelEditor", "VulkanGameEngineLevelEditor\VulkanGameEngineLevelEditor.csproj", "{44233629-8998-416F-B8FB-E454D1A0CDCA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D22B29FB-1F02-471C-81AC-A352862F6951} = {D22B29FB-1F02-471C-81AC-A352862F6951}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shaders", "Shaders", "{D6D5958C-19B6-4B6E-BA4B-28E99E6BE703}"
 	ProjectSection(SolutionItems) = preProject

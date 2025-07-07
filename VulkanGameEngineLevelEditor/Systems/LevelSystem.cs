@@ -140,7 +140,7 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static void Draw(ListPtr<VkCommandBuffer> commandBufferList, float deltaTime)
         {
-            commandBufferList.Add(RenderSystem.RenderLevel(spriteRenderPass2DId, levelLayout.LevelLayoutId, deltaTime, SceneProperties));
+         //   commandBufferList.Add(RenderSystem.RenderLevel(spriteRenderPass2DId, levelLayout.LevelLayoutId, deltaTime, SceneProperties));
             commandBufferList.Add(RenderSystem.RenderFrameBuffer(frameBufferId));
         }
 
