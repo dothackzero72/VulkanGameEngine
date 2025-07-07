@@ -5,54 +5,13 @@
 #extension GL_EXT_scalar_block_layout : enable
 #extension GL_EXT_debug_printf : enable
 
-layout (location = 0)  in vec2  VS_Position;
-layout (location = 1)  in vec2  VS_UV;
-
-layout (location = 0) out vec3  PS_Position;
-layout (location = 1) out vec2  PS_UV;
-
-layout(push_constant) uniform SceneDataBuffer {
-    int MeshBufferIndex;
-    mat4 Projection;
-    mat4 View;
-    vec3 CameraPosition;
-} sceneData;
-
-layout(binding = 0) buffer meshPropertiesBuffer
+layout(location = 0) out vec2 fragTexCoord;
+void main() 
 {
-	int	   MaterialIndex;
-	mat4   MeshTransform;
-} meshProperties[];
-layout(binding = 1) uniform sampler2D TextureMap[];
-layout(binding = 2) buffer MaterialPropertiesBuffer {
-    vec3 Albedo;
-    float Metallic;
-    float Roughness;
-    float AmbientOcclusion;
-    vec3 Emission;
-    float Alpha;
-    uint AlbedoMap;
-    uint MetallicRoughnessMap;
-    uint MetallicMap;
-    uint RoughnessMap;
-    uint AmbientOcclusionMap;
-    uint NormalMap;
-    uint DepthMap;
-    uint AlphaMap;
-    uint EmissionMap;
-    uint HeightMap;
-} materialBuffer[];
-
-void main()
-{
-    int meshIndex = sceneData.MeshBufferIndex;
-    mat4 meshTransform = meshProperties[meshIndex].MeshTransform;
-
-    PS_Position = vec3(meshTransform * vec4(VS_Position.xy, 0.0f, 1.0f));
-	PS_UV = VS_UV.xy;
-
-    gl_Position = sceneData.Projection * 
-                  sceneData.View *  
-                  meshTransform *
-                  vec4(VS_Position.xy, 0.0f, 1.0f);
+//    if(gl_VertexIndex == 0)
+//	{
+//		debugPrintfEXT(": %i \n", 432);
+//	}
+	fragTexCoord = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);
+	gl_Position = vec4(fragTexCoord * 2.0f - 1.0f, 0.0f, 1.0f);
 }

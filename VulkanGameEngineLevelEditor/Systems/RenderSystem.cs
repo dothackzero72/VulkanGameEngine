@@ -266,8 +266,6 @@ namespace VulkanGameEngineLevelEditor.Systems
         public static VkCommandBuffer RenderLevel(Guid renderPassId, Guid levelId, float deltaTime, SceneDataBuffer sceneDataBuffer)
         {
             VulkanRenderPass renderPass = RenderPassList[renderPassId];
-            VulkanPipeline spritePipeline = RenderPipelineMap[renderPassId][0];
-            VulkanPipeline levelPipeline = RenderPipelineMap[renderPassId][1];
             ListPtr<VkClearValue> clearColorValues = new ListPtr<VkClearValue>(renderPass.ClearValueList, renderPass.ClearValueCount);
             VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
 

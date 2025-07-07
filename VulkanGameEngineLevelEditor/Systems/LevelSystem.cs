@@ -126,8 +126,8 @@ namespace VulkanGameEngineLevelEditor.Systems
 
                 string fulRenderPassPath = Path.GetFullPath(Path.Combine(levelDirectory, "../RenderPass/LevelShader2DRenderPass.json"));
                 string fulRenderPassPath2 = Path.GetFullPath(Path.Combine(levelDirectory, "../RenderPass/FrameBufferRenderPass.json"));
-                spriteRenderPass2DId = RenderSystem.LoadRenderPass(levelLayout.LevelLayoutId, fulRenderPassPath, new ivec2((int)RenderSystem.renderer.SwapChainResolution.width, (int)RenderSystem.renderer.SwapChainResolution.height));
-                frameBufferId = RenderSystem.LoadRenderPass(dummyGuid, fulRenderPassPath2, TextureSystem.RenderedTextureList[spriteRenderPass2DId][0], new ivec2((int)RenderSystem.renderer.SwapChainResolution.width, (int)RenderSystem.renderer.SwapChainResolution.height));
+                spriteRenderPass2DId = RenderSystem.LoadRenderPass(dummyGuid, fulRenderPassPath, TextureSystem.TextureList[new Guid("ddb7c6f8-9521-45a1-a0a7-acf15ee3d861")], new ivec2((int)RenderSystem.renderer.SwapChainResolution.width, (int)RenderSystem.renderer.SwapChainResolution.height));
+                frameBufferId = RenderSystem.LoadRenderPass(dummyGuid, fulRenderPassPath2, TextureSystem.TextureList[new Guid("ddb7c6f8-9521-45a1-a0a7-acf15ee3d861")], new ivec2((int)RenderSystem.renderer.SwapChainResolution.width, (int)RenderSystem.renderer.SwapChainResolution.height));
             }
         }
 
@@ -145,7 +145,7 @@ namespace VulkanGameEngineLevelEditor.Systems
         public static void Draw(ListPtr<VkCommandBuffer> commandBufferList, float deltaTime)
         {
             commandBufferList.Add(RenderSystem.RenderLevel(spriteRenderPass2DId, levelLayout.LevelLayoutId, deltaTime, SceneProperties));
-            commandBufferList.Add(RenderSystem.RenderFrameBuffer(frameBufferId));
+           commandBufferList.Add(RenderSystem.RenderFrameBuffer(frameBufferId));
         }
 
         private static Guid LoadTileSetVRAM(string levelTileSetPath)
