@@ -268,8 +268,6 @@ namespace VulkanGameEngineLevelEditor.Systems
             VulkanRenderPass renderPass = RenderPassList[renderPassId];
             VulkanPipeline spritePipeline = RenderPipelineMap[renderPassId][0];
             VulkanPipeline levelPipeline = RenderPipelineMap[renderPassId][1];
-            ListPtr<SpriteBatchLayer> spriteLayerList = SpriteSystem.FindSpriteBatchLayer(renderPassId);
-            ListPtr<Mesh> levelLayerList = MeshSystem.FindLevelLayerMeshList(levelId);
             ListPtr<VkClearValue> clearColorValues = new ListPtr<VkClearValue>(renderPass.ClearValueList, renderPass.ClearValueCount);
             VkCommandBuffer commandBuffer = renderPass.CommandBuffer;
 
@@ -287,37 +285,6 @@ namespace VulkanGameEngineLevelEditor.Systems
             VkFunc.vkResetCommandBuffer(commandBuffer, 0);
             VkFunc.vkBeginCommandBuffer(commandBuffer, &beginCommandbufferinfo);
             VkFunc.vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VkSubpassContents.VK_SUBPASS_CONTENTS_INLINE);
-
-            foreach (var levelLayer in levelLayerList)
-            {
-                VkBuffer meshVertexBuffer = BufferSystem.VulkanBufferMap[(uint)levelLayer.MeshVertexBufferId].Buffer;
-                VkBuffer meshIndexBuffer = BufferSystem.VulkanBufferMap[(uint)levelLayer.MeshIndexBufferId].Buffer;
-
-                ListPtr<VkDeviceSize> offsets = new ListPtr<ulong> { 0 };
-                VkFunc.vkCmdPushConstants(commandBuffer, levelPipeline.PipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
-                VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, levelPipeline.Pipeline);
-                VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, levelPipeline.PipelineLayout, 0, (uint)levelPipeline.DescriptorSetCount, levelPipeline.DescriptorSetList, 0, null);
-                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, &meshVertexBuffer, offsets.Ptr);
-                VkFunc.vkCmdBindIndexBuffer(commandBuffer, meshIndexBuffer, 0, VkIndexType.VK_INDEX_TYPE_UINT32);
-                VkFunc.vkCmdDrawIndexed(commandBuffer, (uint)levelLayer.IndexCount, 1, 0, 0, 0);
-            }
-            foreach (var spriteLayer in spriteLayerList)
-            {
-                ListPtr<SpriteInstanceStruct> spriteInstanceList = SpriteSystem.FindSpriteInstanceList(spriteLayer.SpriteBatchLayerId);
-                Mesh spriteMesh = MeshSystem.SpriteMeshMap[(int)spriteLayer.SpriteLayerMeshId];
-                VkBuffer meshVertexBuffer = BufferSystem.VulkanBufferMap[(uint)spriteMesh.MeshVertexBufferId].Buffer;
-                VkBuffer meshIndexBuffer = BufferSystem.VulkanBufferMap[(uint)spriteMesh.MeshIndexBufferId].Buffer;
-                VkBuffer spriteInstanceBuffer = BufferSystem.VulkanBufferMap[(uint)SpriteSystem.FindSpriteInstanceBufferId(spriteLayer.SpriteBatchLayerId)].Buffer;
-
-                ListPtr<VkDeviceSize> offsets = new ListPtr<ulong>{ 0 };
-                VkFunc.vkCmdPushConstants(commandBuffer, spritePipeline.PipelineLayout, VkShaderStageFlagBits.VK_SHADER_STAGE_VERTEX_BIT | VkShaderStageFlagBits.VK_SHADER_STAGE_FRAGMENT_BIT, 0, (uint)sizeof(SceneDataBuffer), &sceneDataBuffer);
-                VkFunc.vkCmdBindPipeline(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, spritePipeline.Pipeline);
-                VkFunc.vkCmdBindDescriptorSets(commandBuffer, VkPipelineBindPoint.VK_PIPELINE_BIND_POINT_GRAPHICS, spritePipeline.PipelineLayout, 0, (uint)spritePipeline.DescriptorSetCount, spritePipeline.DescriptorSetList, 0, null);
-                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 0, 1, &meshVertexBuffer, offsets.Ptr);
-                VkFunc.vkCmdBindVertexBuffers(commandBuffer, 1, 1, &spriteInstanceBuffer, offsets.Ptr);
-                VkFunc.vkCmdBindIndexBuffer(commandBuffer, meshIndexBuffer, 0, VkIndexType.VK_INDEX_TYPE_UINT32);
-                VkFunc.vkCmdDrawIndexed(commandBuffer, (uint)MeshSystem.IndexListMap.Count(), (uint)spriteInstanceList.Count, 0, 0, 0);
-            }
             VkFunc.vkCmdEndRenderPass(commandBuffer);
             VkFunc.vkEndCommandBuffer(commandBuffer);
             return commandBuffer;
@@ -591,107 +558,51 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static ListPtr<VkDescriptorBufferInfo> GetMeshPropertiesBuffer(Guid levelLayerId)
         {
-            ListPtr<Mesh> meshList = new ListPtr<Mesh>();
-            if (levelLayerId == Guid.Empty)
-            {
-                foreach (var sprite in MeshSystem.SpriteMeshMap)
-                {
-                    meshList.Add(sprite.Value);
-
-                }
-            }
-            else
-            {
-                foreach (var layer in MeshSystem.LevelLayerMeshListMap[levelLayerId])
-                {
-                    meshList.Add(layer);
-                }
-            }
-
             ListPtr<VkDescriptorBufferInfo> meshPropertiesBuffer = new ListPtr<VkDescriptorBufferInfo>();
-            if (!meshList.Any())
-            {
+
                 meshPropertiesBuffer.Add(new VkDescriptorBufferInfo
                     {
                         buffer = VulkanCSConst.VK_NULL_HANDLE,
                         offset = 0,
                         range = VulkanCSConst.VK_WHOLE_SIZE
                 });
-            }
-            else
-            {
-                foreach (var mesh in meshList)
-                {
-                    VulkanBuffer meshProperties = BufferSystem.VulkanBufferMap[(uint)mesh.PropertiesBufferId];
-                    meshPropertiesBuffer.Add(new VkDescriptorBufferInfo
-                        {
-                            buffer = meshProperties.Buffer,
-                            offset = 0,
-                            range = VulkanCSConst.VK_WHOLE_SIZE
-                        });
-                }
-            }
-
+    
             return meshPropertiesBuffer;
         }
 
 
         public unsafe static ListPtr<VkDescriptorImageInfo> GetTexturePropertiesBuffer(Guid renderPassId, Texture* renderedTexture)
         {
-            ListPtr<Texture> textureList = new ListPtr<Texture>();
-            if ((IntPtr)renderedTexture != IntPtr.Zero)
-            {
-                var texture = *renderedTexture;
-                textureList.Add(texture);
-            }
-            else
-            {
-                foreach(var texture in TextureSystem.TextureList)
-                {
-                    textureList.Add(texture.Value);
-                }
-            }
-
             ListPtr<VkDescriptorImageInfo> texturePropertiesBuffer = new ListPtr<VkDescriptorImageInfo>();
-            if (!textureList.Any())
+            VkSamplerCreateInfo NullSamplerInfo = new VkSamplerCreateInfo()
             {
-                VkSamplerCreateInfo NullSamplerInfo = new VkSamplerCreateInfo()
-                {
-                    sType = VkStructureType.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-                    magFilter = VkFilter.VK_FILTER_NEAREST,
-                    minFilter = VkFilter.VK_FILTER_NEAREST,
-                    mipmapMode = VkSamplerMipmapMode.VK_SAMPLER_MIPMAP_MODE_LINEAR,
-                    addressModeU = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
-                    addressModeV = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
-                    addressModeW = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
-                    mipLodBias = 0,
-                    anisotropyEnable = true,
-                    maxAnisotropy = 16.0f,
-                    compareEnable = false,
-                    compareOp = VkCompareOp.VK_COMPARE_OP_ALWAYS,
-                    minLod = 0,
-                    maxLod = 0,
-                    borderColor = VkBorderColor.VK_BORDER_COLOR_INT_OPAQUE_BLACK,
-                    unnormalizedCoordinates = false,
-                };
+                sType = VkStructureType.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+                magFilter = VkFilter.VK_FILTER_NEAREST,
+                minFilter = VkFilter.VK_FILTER_NEAREST,
+                mipmapMode = VkSamplerMipmapMode.VK_SAMPLER_MIPMAP_MODE_LINEAR,
+                addressModeU = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
+                addressModeV = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
+                addressModeW = VkSamplerAddressMode.VK_SAMPLER_ADDRESS_MODE_REPEAT,
+                mipLodBias = 0,
+                anisotropyEnable = true,
+                maxAnisotropy = 16.0f,
+                compareEnable = false,
+                compareOp = VkCompareOp.VK_COMPARE_OP_ALWAYS,
+                minLod = 0,
+                maxLod = 0,
+                borderColor = VkBorderColor.VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+                unnormalizedCoordinates = false,
+            };
 
-                VkFunc.vkCreateSampler(renderer.Device, &NullSamplerInfo, null, out VkSampler nullSampler);
-                VkDescriptorImageInfo nullBuffer = new VkDescriptorImageInfo()
-                {
-                    sampler = nullSampler,
-                    imageView = VulkanCSConst.VK_NULL_HANDLE,
-                    imageLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
-                };
-                texturePropertiesBuffer.Add(nullBuffer);
-            }
-            else
+            VkFunc.vkCreateSampler(renderer.Device, &NullSamplerInfo, null, out VkSampler nullSampler);
+            VkDescriptorImageInfo nullBuffer = new VkDescriptorImageInfo()
             {
-                foreach (var texture in textureList)
-                {
-                    TextureSystem.GetTexturePropertiesBuffer(texture, ref texturePropertiesBuffer);
-                }
-            }
-
+                sampler = nullSampler,
+                imageView = VulkanCSConst.VK_NULL_HANDLE,
+                imageLayout = VkImageLayout.VK_IMAGE_LAYOUT_UNDEFINED,
+            };
+            texturePropertiesBuffer.Add(nullBuffer);
+            texturePropertiesBuffer.Add(nullBuffer);
             return texturePropertiesBuffer;
         }
 

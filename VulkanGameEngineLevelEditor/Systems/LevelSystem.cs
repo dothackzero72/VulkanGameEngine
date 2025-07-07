@@ -122,7 +122,7 @@ namespace VulkanGameEngineLevelEditor.Systems
                 VulkanRenderPass levelTileSetJson = JsonConvert.DeserializeObject<VulkanRenderPass>(jsonContent);
                 spriteRenderPass2DId = levelTileSetJson.RenderPassId;
 
-                SpriteSystem.AddSpriteBatchLayer(spriteRenderPass2DId);
+               // SpriteSystem.AddSpriteBatchLayer(spriteRenderPass2DId);
 
                 string fulRenderPassPath = Path.GetFullPath(Path.Combine(levelDirectory, "../RenderPass/LevelShader2DRenderPass.json"));
                 string fulRenderPassPath2 = Path.GetFullPath(Path.Combine(levelDirectory, "../RenderPass/FrameBufferRenderPass.json"));
@@ -206,16 +206,16 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static void LoadLevelMesh(Guid tileSetId)
         {
-            for (int x = 0; x < LevelTileMapList.Count(); x++)
-            {
-                LevelTileSet levelTileSet = LevelTileSetMap[tileSetId];
-                var levelBounds = levelLayout.LevelBounds;
-                LevelLayerList.Add(Level2D_LoadLevelInfo(levelLayout.LevelLayoutId, levelTileSet, LevelTileMapList[x].Ptr, LevelTileMapList[x].Count(), ref levelBounds, x));
+            //for (int x = 0; x < LevelTileMapList.Count(); x++)
+            //{
+            //    LevelTileSet levelTileSet = LevelTileSetMap[tileSetId];
+            //    var levelBounds = levelLayout.LevelBounds;
+            //    LevelLayerList.Add(Level2D_LoadLevelInfo(levelLayout.LevelLayoutId, levelTileSet, LevelTileMapList[x].Ptr, LevelTileMapList[x].Count(), ref levelBounds, x));
 
-                ListPtr<Vertex2D> vertexList = new ListPtr<Vertex2D>(LevelLayerList[x].VertexList, LevelLayerList[x].VertexListCount);
-                ListPtr<uint> indexList = new ListPtr<uint>(LevelLayerList[x].IndexList, LevelLayerList[x].IndexListCount);
-                MeshSystem.CreateLevelLayerMesh(levelLayout.LevelLayoutId, vertexList, indexList);
-            }
+            //    ListPtr<Vertex2D> vertexList = new ListPtr<Vertex2D>(LevelLayerList[x].VertexList, LevelLayerList[x].VertexListCount);
+            //    ListPtr<uint> indexList = new ListPtr<uint>(LevelLayerList[x].IndexList, LevelLayerList[x].IndexListCount);
+            //    MeshSystem.CreateLevelLayerMesh(levelLayout.LevelLayoutId, vertexList, indexList);
+            //}
         }
 
         public static void Destory()

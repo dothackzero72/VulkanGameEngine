@@ -103,28 +103,13 @@ namespace VulkanGameEngineLevelEditor.Systems
         public static ListPtr<VkDescriptorBufferInfo> GetMaterialPropertiesBuffer()
         {
             ListPtr<VkDescriptorBufferInfo> materialPropertiesBuffer = new ListPtr<VkDescriptorBufferInfo>();
-            if (MaterialMap.Any())
-            {
                 materialPropertiesBuffer.Add(new VkDescriptorBufferInfo
                 {
                     buffer = VulkanCSConst.VK_NULL_HANDLE,
                     offset = 0,
                     range = VulkanCSConst.VK_WHOLE_SIZE
                 });
-            }
-            else
-            {
-                foreach (var material in MaterialMap)
-                {
-                    VkDescriptorBufferInfo meshBufferInfo = new VkDescriptorBufferInfo
-                    {
-                        buffer = BufferSystem.VulkanBufferMap[(uint)material.Value.MaterialBufferId].Buffer,
-                        offset = 0,
-                        range = VulkanCSConst.VK_WHOLE_SIZE
-                    };
-                    materialPropertiesBuffer.Add(meshBufferInfo);
-                }
-            }
+
             return materialPropertiesBuffer;
         }
 
