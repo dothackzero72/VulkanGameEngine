@@ -13,6 +13,13 @@ using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.Systems
 {
+    public enum WindowType
+    {
+        Win32,
+        SDL,
+        GLFW
+    }
+
     public static class GameSystem
     {
         public static Guid TileSetId { get; set; }
@@ -22,19 +29,8 @@ namespace VulkanGameEngineLevelEditor.Systems
         public static ListPtr<VkCommandBuffer> CommandBufferSubmitList { get; set; } = new ListPtr<VkCommandBuffer>();
         public static unsafe void StartUp(VkQueue window, VkQueue renderAreaHandle)
         {
-            RenderSystem.CreateVulkanRenderer(window, renderAreaHandle);
+            RenderSystem.CreateVulkanRenderer(WindowType.Win32, window, renderAreaHandle);
             LevelSystem.LoadLevel("C:/Users/dotha/Documents/GitHub/VulkanGameEngine/Levels/TestLevel.json");
-        }
-
-        public static void LoadLevel(string levelPath)
-        {
-            var res = new vec2(RenderSystem.SwapChainResolution.width, RenderSystem.SwapChainResolution.height);
-            var pos = new vec2(0.0f, 0.0f);
-            //   OrthographicCamera = new OrthographicCamera2D(res, pos);
-
-            string jsonContent = File.ReadAllText(levelPath);
-            LevelLoader levelLoader = JsonConvert.DeserializeObject<LevelLoader>(levelPath);
-
         }
 
         public static void Update(float deltaTime)
@@ -48,7 +44,6 @@ namespace VulkanGameEngineLevelEditor.Systems
             MeshSystem.Update(deltaTime);
             RenderSystem.EndSingleTimeCommands(commandBuffer);
         }
-
 
         public static void Draw(float deltaTime)
         {

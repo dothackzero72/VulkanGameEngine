@@ -45,7 +45,7 @@ public:
     RenderSystem();
     ~RenderSystem();
 
-    void StartUp(void* windowHandle);
+    void StartUp(WindowType windowType, void* windowHandle);
     void Update(const float& deltaTime);
 
     VkCommandBuffer RenderFrameBuffer(VkGuid& renderPassId);

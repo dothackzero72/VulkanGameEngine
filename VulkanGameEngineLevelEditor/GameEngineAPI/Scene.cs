@@ -25,7 +25,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         public ListPtr<VkCommandBuffer> commandBufferList = new ListPtr<VkCommandBuffer>();
         public void StartUp()
         {
-            var res = new vec2((float)RenderSystem.SwapChainResolution.width, (float)RenderSystem.SwapChainResolution.height);
+            var res = new vec2((float)RenderSystem.renderer.SwapChainResolution.width, (float)RenderSystem.renderer.SwapChainResolution.height);
             var pos = new vec2(0.0f, 0.0f);
         //    orthographicCamera = new OrthographicCamera2D(res, pos);
 

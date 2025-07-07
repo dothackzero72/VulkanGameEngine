@@ -14,11 +14,12 @@ extern "C" {
 #define MAXMOUSEKEY 3
 #define MAXKEYBOARDKEY 350
 
-    typedef enum Window_Type
+    typedef enum WindowType
     {
-        SDL = 0,
-        GLFW = 1
-    } Window_Type;
+        Win32,
+        SDL,
+        GLFW
+    } WindowType;
 
     typedef enum mouseButtons
     {
@@ -224,7 +225,7 @@ extern "C" {
 
     typedef struct VulkanWindow
     {
-        Window_Type WindowType;
+        WindowType WindowType;
         void* WindowHandle;
         uint32_t    Width;
         uint32_t    Height;
@@ -246,7 +247,7 @@ extern "C" {
 
     DLL_EXPORT KeyboardKeyCode ConvertGLFWKeyToUnified(int glfwKey);
     DLL_EXPORT KeyboardKeyCode ConvertSDLKeyToUnified(SDL_Keycode sdlKey);
-    DLL_EXPORT VulkanWindow* Window_CreateWindow(Window_Type windowType, const char* WindowName, uint32_t width, uint32_t height);
+    DLL_EXPORT VulkanWindow* Window_CreateWindow(WindowType windowType, const char* WindowName, uint32_t width, uint32_t height);
 #ifdef __cplusplus
 }
 #endif

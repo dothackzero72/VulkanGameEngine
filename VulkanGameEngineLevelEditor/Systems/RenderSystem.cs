@@ -196,65 +196,22 @@ namespace VulkanGameEngineLevelEditor.Systems
     public unsafe static class RenderSystem
     {
         public static GraphicsRenderer renderer { get; set; }
-        public static size_t SwapChainImageCount { get; set; }
-        public static uint GraphicsFamily { get; set; }
-        public static uint PresentFamily { get; set; }
-        public static size_t ImageIndex { get; set; }
-        public static size_t CommandIndex { get; set; }
-
-        public static VkInstance Instance { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public static VkDevice Device { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public static VkPhysicalDevice PhysicalDevice { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public static VkSurfaceKHR Surface { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public static VkCommandPool CommandPool { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public static VkDebugUtilsMessengerEXT DebugMessenger { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public static VkExtent2D SwapChainResolution { get; set; }
-        public static VkSwapchainKHR Swapchain { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public static VkQueue GraphicsQueue { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public static VkQueue PresentQueue { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public static ListPtr<VkFence> InFlightFences { get; set; } = new ListPtr<VkFence>();
-        public static ListPtr<VkSemaphore> AcquireImageSemaphores { get; set; } = new ListPtr<VkSemaphore>();
-        public static ListPtr<VkSemaphore> PresentImageSemaphores { get; set; } = new ListPtr<VkSemaphore>();
-        public static ListPtr<VkImage> SwapChainImages { get; set; } = new ListPtr<VkImage>();
-        public static ListPtr<VkImageView> SwapChainImageViews { get; set; } = new ListPtr<VkImageView>();
-
         public static Dictionary<Guid, VulkanRenderPass> RenderPassList { get; set; } = new Dictionary<Guid, VulkanRenderPass>();
         public static Dictionary<Guid, ListPtr<VulkanPipeline>> RenderPipelineMap { get; set; } = new Dictionary<Guid, ListPtr<VulkanPipeline>>();
         public static VkCommandBufferBeginInfo CommandBufferBeginInfo { get; set; } = new VkCommandBufferBeginInfo();
         public static bool RebuildRendererFlag { get; set; }
 
-        public static void CreateVulkanRenderer(VkQueue window, VkQueue renderAreaHandle)
+        public static void CreateVulkanRenderer(WindowType windowType, IntPtr window, IntPtr renderAreaHandle)
         {
-            renderer = Renderer_RendererSetUp(renderAreaHandle.ToPointer());
-
-            AcquireImageSemaphores = new ListPtr<VkSemaphore>(renderer.AcquireImageSemaphores, renderer.SwapChainImageCount);
-            CommandIndex = renderer.CommandIndex;
-            CommandPool = renderer.CommandPool;
-            DebugMessenger = renderer.DebugMessenger;
-            Device = renderer.Device;
-            GraphicsFamily = renderer.GraphicsFamily;
-            GraphicsQueue = renderer.GraphicsQueue;
-            ImageIndex = renderer.ImageIndex;
-            InFlightFences = new ListPtr<VkFence>(renderer.InFlightFences, renderer.SwapChainImageCount);
-            Instance = renderer.Instance;
-            PhysicalDevice = renderer.PhysicalDevice;
-            PresentFamily = renderer.PresentFamily;
-            PresentImageSemaphores = new ListPtr<VkSemaphore>(renderer.PresentImageSemaphores, renderer.SwapChainImageCount);
-            PresentQueue = renderer.PresentQueue;
-            Surface = renderer.Surface;
-            Swapchain = renderer.Swapchain;
-            SwapChainImageCount = renderer.SwapChainImageCount;
-            SwapChainImages = new ListPtr<VkImage>(renderer.SwapChainImages, renderer.SwapChainImageCount);
-            SwapChainImageViews = new ListPtr<VkImageView>(renderer.SwapChainImageViews, renderer.SwapChainImageCount);
-            SwapChainResolution = renderer.SwapChainResolution;
+            renderer = Renderer_RendererSetUp(windowType, renderAreaHandle.ToPointer());
         }
 
         public static void Update(float deltaTime)
         {
             if (RebuildRendererFlag)
             {
-                uint width = SwapChainResolution.width;
-                uint height = SwapChainResolution.height;
+                uint width = renderer.SwapChainResolution.width;
+                uint height = renderer.SwapChainResolution.height;
                 RecreateSwapchain();
                 RebuildRendererFlag = false;
             }
@@ -740,25 +697,25 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static VkCommandBuffer BeginSingleTimeCommands()
         {
-            return Renderer_BeginSingleTimeCommands(RenderSystem.Device, RenderSystem.CommandPool);
+            return Renderer_BeginSingleTimeCommands(RenderSystem.renderer.Device, RenderSystem.renderer.CommandPool);
         }
 
         public static VkCommandBuffer BeginSingleTimeCommands(VkCommandPool commandPool)
         {
-            return Renderer_BeginSingleTimeCommands(RenderSystem.Device, RenderSystem.CommandPool);
+            return Renderer_BeginSingleTimeCommands(RenderSystem.renderer.Device, RenderSystem.renderer.CommandPool);
         }
 
         public static VkResult EndSingleTimeCommands(VkCommandBuffer commandBuffer)
         {
-            return Renderer_EndSingleTimeCommands(RenderSystem.Device, RenderSystem.CommandPool, RenderSystem.GraphicsQueue, commandBuffer);
+            return Renderer_EndSingleTimeCommands(RenderSystem.renderer.Device, RenderSystem.renderer.CommandPool, RenderSystem.renderer.GraphicsQueue, commandBuffer);
         }
 
         public static VkResult EndSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool commandPool)
         {
-            return Renderer_EndSingleTimeCommands(RenderSystem.Device, commandPool, RenderSystem.GraphicsQueue, commandBuffer);
+            return Renderer_EndSingleTimeCommands(RenderSystem.renderer.Device, commandPool, RenderSystem.renderer.GraphicsQueue, commandBuffer);
         }
 
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern GraphicsRenderer Renderer_RendererSetUp(void* windowHandle);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern GraphicsRenderer Renderer_RendererSetUp(WindowType windowType, void* windowHandle);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult Renderer_StartFrame(VkDevice device, VkSwapchainKHR swapChain, VkFence* fenceList, VkSemaphore* acquireImageSemaphoreList, size_t* pImageIndex, size_t* pCommandIndex, bool* pRebuildRendererFlag);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkResult Renderer_EndFrame(VkSwapchainKHR swapChain, VkSemaphore* acquireImageSemaphoreList, VkSemaphore* presentImageSemaphoreList, VkFence* fenceList, VkQueue graphicsQueue, VkQueue presentQueue, size_t commandIndex, size_t imageIndex, VkCommandBuffer* pCommandBufferSubmitList, size_t commandBufferCount, bool* rebuildRendererFlag);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern VkCommandBuffer Renderer_BeginSingleTimeCommands(VkDevice device, VkCommandPool commandPool);

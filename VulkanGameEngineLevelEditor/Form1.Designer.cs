@@ -59,7 +59,7 @@
             pictureBox1.Location = new System.Drawing.Point(0, 0);
             pictureBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new System.Drawing.Size(2470, 1245);
+            pictureBox1.Size = new System.Drawing.Size(1920, 1080);
             pictureBox1.TabIndex = 2;
             pictureBox1.TabStop = false;
             // 
@@ -89,7 +89,7 @@
             panel1.Location = new System.Drawing.Point(287, 40);
             panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             panel1.Name = "panel1";
-            panel1.Size = new System.Drawing.Size(2470, 1245);
+            panel1.Size = new System.Drawing.Size(1920, 1080);
             panel1.TabIndex = 5;
             // 
             // propertyGrid1

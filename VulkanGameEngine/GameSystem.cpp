@@ -17,9 +17,9 @@ GameSystem::~GameSystem()
 {
 }
 
-void GameSystem::StartUp(void* windowHandle)
+void GameSystem::StartUp(WindowType windowType, void* windowHandle)
 {
-    renderSystem.StartUp(windowHandle);
+    renderSystem.StartUp(windowType, windowHandle);
     levelSystem.LoadLevel("../Levels/TestLevel.json");
 }
 

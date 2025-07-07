@@ -74,6 +74,10 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static void LoadLevel(string levelPath)
         {
+            var res = new vec2(RenderSystem.renderer.SwapChainResolution.width, RenderSystem.renderer.SwapChainResolution.height);
+            var pos = new vec2(0.0f, 0.0f);
+            OrthographicCamera = new OrthographicCamera2D(res, pos);
+
             string levelDirectory = Path.GetDirectoryName(levelPath);
             string jsonContent = File.ReadAllText(levelPath);
             LevelLoader levelLoader = JsonConvert.DeserializeObject<LevelLoader>(jsonContent);
@@ -140,7 +144,7 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static void Draw(ListPtr<VkCommandBuffer> commandBufferList, float deltaTime)
         {
-         //   commandBufferList.Add(RenderSystem.RenderLevel(spriteRenderPass2DId, levelLayout.LevelLayoutId, deltaTime, SceneProperties));
+            commandBufferList.Add(RenderSystem.RenderLevel(spriteRenderPass2DId, levelLayout.LevelLayoutId, deltaTime, SceneProperties));
             commandBufferList.Add(RenderSystem.RenderFrameBuffer(frameBufferId));
         }
 

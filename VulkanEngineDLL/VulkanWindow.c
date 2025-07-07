@@ -4,7 +4,7 @@
 
 VulkanWindow* vulkanWindow = { 0 };
 
-VulkanWindow* Window_CreateWindow(Window_Type windowType, const char* WindowName, uint32_t width, uint32_t height)
+VulkanWindow* Window_CreateWindow(WindowType windowType, const char* WindowName, uint32_t width, uint32_t height)
 {
     switch (windowType)
     {

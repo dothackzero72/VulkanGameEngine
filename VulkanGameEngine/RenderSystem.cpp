@@ -20,9 +20,9 @@ RenderSystem::~RenderSystem()
 
 }
 
-void RenderSystem::StartUp(void* windowHandle)
+void RenderSystem::StartUp(WindowType windowType, void* windowHandle)
 {
-    renderer = Renderer_RendererSetUp(windowHandle);
+    renderer = Renderer_RendererSetUp(windowType, windowHandle);
     imGuiRenderer = ImGui_StartUp(renderer);
     shaderSystem.StartUp();
 }

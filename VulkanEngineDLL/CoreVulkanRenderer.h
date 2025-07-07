@@ -5,7 +5,9 @@
 #include <vulkan/vulkan_win32.h>
 #include "Typedef.h"
 #include "CVulkanRenderer.h"
+#include "VulkanWindow.h"
 #include "JsonStructs.h"
+
 static const char* ValidationLayers[] = { "VK_LAYER_KHRONOS_validation" };
 
 static const char* InstanceExtensionList[] =
@@ -93,7 +95,7 @@ struct GraphicsRenderer
 #ifdef __cplusplus
 extern "C" {
 #endif
-	DLL_EXPORT GraphicsRenderer Renderer_RendererSetUp(void* windowHandle);
+	DLL_EXPORT GraphicsRenderer Renderer_RendererSetUp(WindowType windowType, void* windowHandle);
 	DLL_EXPORT VkCommandBuffer Renderer_BeginSingleTimeCommands(VkDevice device, VkCommandPool commandPool);
 	DLL_EXPORT VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkCommandBuffer commandBuffer);
 	DLL_EXPORT void Renderer_DestroyRenderer(GraphicsRenderer& renderer);
@@ -123,13 +125,12 @@ extern "C" {
 	VkSurfaceCapabilitiesKHR SwapChain_GetSurfaceCapabilities(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 	Vector<VkSurfaceFormatKHR> SwapChain_GetPhysicalDeviceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 	Vector<VkPresentModeKHR> SwapChain_GetPhysicalDevicePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
-	VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, uint32& width, uint32& height, size_t& swapChainImageCount);
+	VkSwapchainKHR SwapChain_SetUpSwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32 graphicsFamily, uint32 presentFamily, size_t& swapChainImageCount);
 	VkImage* SwapChain_SetUpSwapChainImages(VkDevice device, VkSwapchainKHR swapChain, uint32 swapChainImageCount);
 
 	VkImageView* SwapChain_SetUpSwapChainImageViews(VkDevice device, VkImage* swapChainImageList, size_t swapChainImageCount, VkSurfaceFormatKHR swapChainImageFormat);
 	VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(Vector<VkSurfaceFormatKHR>&availableFormats);
 	VkPresentModeKHR SwapChain_FindSwapPresentMode(Vector<VkPresentModeKHR>&availablePresentModes);
 
-	VkResult Renderer_SetUpSwapChainCS(GraphicsRenderer& renderState);
-	VkResult Renderer_SetUpSwapChain(void* windowHandle, GraphicsRenderer& renderState);
+	VkResult Renderer_SetUpSwapChain(WindowType windowType, void* windowHandle, GraphicsRenderer& renderer);
 
