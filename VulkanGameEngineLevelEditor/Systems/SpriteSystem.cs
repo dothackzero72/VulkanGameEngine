@@ -87,21 +87,17 @@ namespace VulkanGameEngineLevelEditor.Systems
         {
             foreach (var spriteBatchLayer in SpriteBatchLayerList)
             {
-                ListPtr<SpriteInstanceStruct> spriteInstanceStructList = FindSpriteInstanceList(spriteBatchLayer.SpriteBatchLayerId);
-                ListPtr<uint> spriteBatchObjectList = FindSpriteBatchObjectListMap((int)spriteBatchLayer.SpriteBatchLayerId);
-
-                spriteInstanceStructList.Clear();
-                spriteInstanceStructList = new ListPtr<SpriteInstanceStruct>(spriteBatchObjectList.Count);
-                foreach (var gameObjectID in spriteBatchObjectList)
+                SpriteSystem.FindSpriteInstanceList(spriteBatchLayer.SpriteBatchLayerId).Clear();
+                var spritelayer = SpriteSystem.FindSpriteInstanceList(spriteBatchLayer.SpriteBatchLayerId);
+                spritelayer = new ListPtr<SpriteInstanceStruct>(FindSpriteBatchObjectListMap((int)spriteBatchLayer.SpriteBatchLayerId).Count());
+                foreach (var gameObjectID in FindSpriteBatchObjectListMap((int)spriteBatchLayer.SpriteBatchLayerId))
                 {
-                    SpriteInstanceStruct spriteInstanceStruct = FindSpriteInstance(gameObjectID);
-                    spriteInstanceStructList.Add(spriteInstanceStruct);
+                    FindSpriteInstanceList(spriteBatchLayer.SpriteBatchLayerId).Add(FindSpriteInstance(gameObjectID));
                 }
 
-                if (spriteBatchObjectList.Any())
+                if (FindSpriteBatchObjectListMap((int)spriteBatchLayer.SpriteBatchLayerId).Any())
                 {
-                    uint bufferId = (uint)FindSpriteInstanceBufferId(spriteBatchLayer.SpriteBatchLayerId);
-                    BufferSystem.UpdateBufferMemory(RenderSystem.renderer, bufferId, spriteInstanceStructList);
+                    BufferSystem.UpdateBufferMemory(RenderSystem.renderer, (uint)FindSpriteInstanceBufferId(spriteBatchLayer.SpriteBatchLayerId), FindSpriteInstanceList(spriteBatchLayer.SpriteBatchLayerId).ToList());
                 }
             }
         }
@@ -169,7 +165,7 @@ namespace VulkanGameEngineLevelEditor.Systems
             ListPtr<SpriteInstanceStruct> spriteBatchInstanceLayer = new ListPtr<SpriteInstanceStruct>(FindSpriteBatchObjectListMap((int)spriteBatchLayer.SpriteBatchLayerId).Count());
             AddSpriteInstanceLayerList(spriteBatchLayer.SpriteBatchLayerId, spriteBatchInstanceLayer);
             AddSpriteInstanceBufferId(spriteBatchLayer.SpriteBatchLayerId, (int)BufferSystem.CreateVulkanBuffer<SpriteInstanceStruct>(RenderSystem.renderer, FindSpriteInstanceList(spriteBatchLayer.SpriteBatchLayerId).ToList(), MeshSystem.MeshBufferUsageSettings, MeshSystem.MeshBufferPropertySettings, false));
-
+            SpriteBatchLayerList.Add(spriteBatchLayer);
         }
 
         public static void AddSpriteInstanceBufferId(uint spriteInstanceBufferId, int BufferId)

@@ -44,13 +44,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
             ViewMatrix = mat4.Identity;
         }
 
-        public override void Update(ref SceneDataBuffer sceneProperties)
+        public override SceneDataBuffer Update( SceneDataBuffer sceneProperties)
         {
             ProjectionMatrix = mat4.Ortho(0.0f, Width, Height, 0.0f);
 
             sceneProperties.CameraPosition = new vec3(Position.x, Position.y, Position.z);
             sceneProperties.View = ViewMatrix;
             sceneProperties.Projection = ProjectionMatrix;
+
+            return sceneProperties;
         }
 
         public override void UpdateKeyboard(float deltaTime)

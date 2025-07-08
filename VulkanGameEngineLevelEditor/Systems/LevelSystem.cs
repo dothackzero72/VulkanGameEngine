@@ -119,8 +119,8 @@ namespace VulkanGameEngineLevelEditor.Systems
                 string gameObjectPath = Path.GetFullPath(Path.Combine(levelDirectory, fullRenderPassPath));
 
                 string jsonContent2 = File.ReadAllText(gameObjectPath);
-                VulkanRenderPass levelTileSetJson = JsonConvert.DeserializeObject<VulkanRenderPass>(jsonContent);
-                spriteRenderPass2DId = levelTileSetJson.RenderPassId;
+                RenderPassBuildInfoModel renderPassId = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
+                spriteRenderPass2DId = new Guid("aa18e942-497b-4981-b917-d93a5b1de6eb");
 
                 SpriteSystem.AddSpriteBatchLayer(spriteRenderPass2DId);
 
@@ -133,8 +133,7 @@ namespace VulkanGameEngineLevelEditor.Systems
 
         public static void Update(float deltaTime)
         {
-            SceneDataBuffer sceneDataBuffer = SceneProperties;
-            OrthographicCamera.Update(ref sceneDataBuffer);
+            SceneProperties = OrthographicCamera.Update(SceneProperties);
             SpriteSystem.Update(deltaTime);
             foreach (var levelLayer in LevelLayerList)
             {
@@ -145,7 +144,7 @@ namespace VulkanGameEngineLevelEditor.Systems
         public static void Draw(ListPtr<VkCommandBuffer> commandBufferList, float deltaTime)
         {
             commandBufferList.Add(RenderSystem.RenderLevel(spriteRenderPass2DId, levelLayout.LevelLayoutId, deltaTime, SceneProperties));
-            commandBufferList.Add(RenderSystem.RenderFrameBuffer(frameBufferId));
+         //   commandBufferList.Add(RenderSystem.RenderFrameBuffer(frameBufferId));
         }
 
         private static Guid LoadTileSetVRAM(string levelTileSetPath)

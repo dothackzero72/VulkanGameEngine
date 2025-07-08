@@ -38,7 +38,7 @@ public class OrthographicCamera : Camera
         ViewMatrix = mat4.Identity;
     }
 
-    public override void Update(ref SceneDataBuffer sceneProperties)
+    public override SceneDataBuffer Update( SceneDataBuffer sceneProperties)
     {
         mat4 transform = mat4.Translate(Position) * mat4.Rotate(VMath.DegreesToRadians(0.0f), new vec3(0, 0, 1));
         ViewMatrix = transform.Inverse;
@@ -54,6 +54,8 @@ public class OrthographicCamera : Camera
         sceneProperties.CameraPosition = new vec3(Position.x, Position.y, Position.z);
         sceneProperties.View = ViewMatrix;
         sceneProperties.Projection = modifiedProjectionMatrix;
+
+        return sceneProperties;
     }
 
     public override void UpdateKeyboard(float deltaTime)

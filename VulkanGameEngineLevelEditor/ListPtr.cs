@@ -295,7 +295,10 @@ namespace VulkanGameEngineLevelEditor
             List<T> list = new List<T>();
             for (int x = 0; x < _count; x++)
             {
-                list.Add(_ptr[x]);
+                if (_ptr != null)
+                {
+                    list.Add(_ptr[x]);
+                }
             }
             return list;
         }
