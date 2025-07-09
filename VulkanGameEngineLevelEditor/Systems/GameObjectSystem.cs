@@ -77,15 +77,21 @@ namespace VulkanGameEngineLevelEditor.Systems
             }
         }
 
-        public static void CreateGameObject(string gameObjectPath)
+        public static void CreateGameObject(string gameObjectPath, vec2 positionOverride)
         {
             int id = GameObjectMap.Count() + 1;
             GameObjectMap[id] = new GameObject(id);
 
             string jsonContent = File.ReadAllText(gameObjectPath);
             LoadGameObjectComponents spriteVramJson = JsonConvert.DeserializeObject<LoadGameObjectComponents>(jsonContent);
-            foreach(var component in spriteVramJson.GameObjectComponentList)
+            foreach (var component in spriteVramJson.GameObjectComponentList)
             {
+                if (positionOverride.x != 0.0f ||
+                    positionOverride.y != 0.0f)
+                {
+                    component.GameObjectPosition = positionOverride;
+                }
+
                 int componentType = component.ComponentType;
                 switch ((ComponentTypeEnum)componentType)
                 {

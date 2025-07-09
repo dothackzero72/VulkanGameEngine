@@ -103,10 +103,11 @@ namespace VulkanGameEngineLevelEditor.Systems
                 string fullLevelLayoutPath = Path.GetFullPath(Path.Combine(levelDirectory, levelLayoutPath));
                 tileSetId = LoadTileSetVRAM(fullLevelLayoutPath);
             }
+
             foreach (var gameObjectLoader in levelLoader.GameObjectList)
             {
                 string gameObjectPath = Path.GetFullPath(Path.Combine(levelDirectory, gameObjectLoader.GameObjectPath));
-                GameObjectSystem.CreateGameObject(gameObjectPath);
+                GameObjectSystem.CreateGameObject(gameObjectPath, new vec2((float)gameObjectLoader.GameObjectPositionOverride[0], (float)gameObjectLoader.GameObjectPositionOverride[0]));
             }
             {
                 string fullLevelLayoutPath = Path.GetFullPath(Path.Combine(levelDirectory, levelLoader.LoadLevelLayout));

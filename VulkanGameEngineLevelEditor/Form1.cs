@@ -56,8 +56,6 @@ namespace VulkanGameEngineLevelEditor
             RenderPassMessager = new MessengerModel()
             {
                 IsActive = true,
-                richTextBox = richTextBox1,
-                TextBoxName = richTextBox1.Name,
                 ThreadId = Thread.CurrentThread.ManagedThreadId,
             };
             GlobalMessenger.AddMessenger(RenderPassMessager);
@@ -67,14 +65,21 @@ namespace VulkanGameEngineLevelEditor
                 GameSystem.StartUp(this.Handle, this.pictureBox1.Handle);
             }));
 
+            Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
+
+            double lastTime = 0.0;
             while (running)
             {
-                float deltaTime = (float)stopwatch.Elapsed.TotalSeconds;
-                stopwatch.Restart();
-                GameSystem.Update(deltaTime);
-                GameSystem.Draw(deltaTime);
+                double currentTime = stopwatch.Elapsed.TotalSeconds;
+                double deltaTime = currentTime - lastTime;
+                lastTime = currentTime;
+
+                GameSystem.Update((float)deltaTime);
+                GameSystem.Draw((float)deltaTime);
             }
+
+            GameSystem.Destroy();
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e)

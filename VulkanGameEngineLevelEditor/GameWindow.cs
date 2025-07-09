@@ -81,18 +81,21 @@ namespace VulkanGameEngineLevelEditor
                 GameSystem.StartUp(this.Handle, this.pictureBox1.Handle);
             }));
 
-            
+            Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
+
+            double lastTime = 0.0;
             while (running)
             {
-                float deltaTime = (float)stopwatch.Elapsed.TotalSeconds;
-                stopwatch.Restart();
-                GameSystem.Update(deltaTime);
-                GameSystem.Draw(deltaTime);
+                double currentTime = stopwatch.Elapsed.TotalSeconds;
+                double deltaTime = currentTime - lastTime;
+                lastTime = currentTime;
+
+                GameSystem.Update((float)deltaTime);
+                GameSystem.Draw((float)deltaTime);
             }
 
             GameSystem.Destroy();
         }
-
     }
 }

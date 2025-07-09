@@ -21,61 +21,7 @@ using VulkanGameEngineLevelEditor.Systems;
 
 namespace VulkanGameEngineLevelEditor.Systems
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct RenderPipelineJsonLoader
-    {
-        public String VertexShader { get; set; }
-        public String FragmentShader { get; set; }
-        public size_t DescriptorSetCount { get; set; }
-        public size_t DescriptorSetLayoutCount { get; set; }
-        public VertexTypeEnum VertexType { get; set; }
-        public ListPtr<VkViewport> ViewportList { get; set; } = new ListPtr<VkViewport>();
-        public ListPtr<VkRect2D> ScissorList { get; set; } = new ListPtr<VkRect2D>();
-        public ListPtr<VkPipelineColorBlendAttachmentState> PipelineColorBlendAttachmentStateList { get; set; } = new ListPtr<VkPipelineColorBlendAttachmentState>();
-        public VkPipelineColorBlendStateCreateInfoModel PipelineColorBlendStateCreateInfoModel { get; set; } = new VkPipelineColorBlendStateCreateInfoModel();
-        public VkPipelineRasterizationStateCreateInfoModel PipelineRasterizationStateCreateInfo { get; set; } = new VkPipelineRasterizationStateCreateInfoModel();
-        public VkPipelineMultisampleStateCreateInfoModel PipelineMultisampleStateCreateInfo { get; set; } = new VkPipelineMultisampleStateCreateInfoModel();
-        public VkPipelineDepthStencilStateCreateInfoModel PipelineDepthStencilStateCreateInfo { get; set; }
-        public VkPipelineInputAssemblyStateCreateInfoModel PipelineInputAssemblyStateCreateInfo { get; set; } = new VkPipelineInputAssemblyStateCreateInfoModel();
-        public ListPtr<VkDescriptorSetLayoutBindingModel> LayoutBindingList { get; set; } = new ListPtr<VkDescriptorSetLayoutBindingModel>();
-        public ListPtr<PipelineDescriptorModel> PipelineDescriptorModelsList { get; set; } = new ListPtr<PipelineDescriptorModel>();
-        public ListPtr<VkVertexInputBindingDescription> VertexInputBindingDescriptionList { get; set; } = new ListPtr<VkVertexInputBindingDescription>();
-        public ListPtr<VkVertexInputAttributeDescription> VertexInputAttributeDescriptionList { get; set; } = new ListPtr<VkVertexInputAttributeDescription>();
-        public ListPtr<VkClearValue> ClearValueList { get; set; } = new ListPtr<VkClearValue>();
 
-        public RenderPipelineJsonLoader()
-        {
-        }
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct RenderPipelineLoader
-    {
-        public string VertexShaderPath;
-        public string FragmentShaderPath;
-        public VertexTypeEnum VertexType;
-        public size_t ViewportListCount;
-        public size_t ScissorListCount;
-        public size_t DescriptorSetCount;
-        public size_t DescriptorSetLayoutCount;
-        public size_t LayoutBindingListCount;
-        public size_t PipelineDescriptorModelsListCount;
-        public size_t PipelineColorBlendAttachmentStateListCount;
-        public size_t VertexInputBindingDescriptionListCount;
-        public size_t VertexInputAttributeDescriptionListCount;
-        public VkViewport* ViewportList;
-        public VkRect2D* ScissorList;
-        public VkPipelineColorBlendStateCreateInfo PipelineColorBlendStateCreateInfoModel;
-        public VkPipelineRasterizationStateCreateInfo PipelineRasterizationStateCreateInfo;
-        public VkPipelineMultisampleStateCreateInfo PipelineMultisampleStateCreateInfo;
-        public VkPipelineDepthStencilStateCreateInfo PipelineDepthStencilStateCreateInfo;
-        public VkPipelineInputAssemblyStateCreateInfo PipelineInputAssemblyStateCreateInfo;
-        public VkDescriptorSetLayoutBinding* LayoutBindingList;
-        public PipelineDescriptorModel* PipelineDescriptorModelsList;
-        public VkPipelineColorBlendAttachmentState* PipelineColorBlendAttachmentStateList;
-        public VkVertexInputBindingDescription* VertexInputBindingDescriptionList;
-        public VkVertexInputAttributeDescription* VertexInputAttributeDescriptionList;
-    };
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public struct TextureJsonLoader
@@ -122,32 +68,6 @@ namespace VulkanGameEngineLevelEditor.Systems
     }
 
 
-    public unsafe struct RenderPipelineDLL
-    {
-
-        public String VertexShader { get; set; }
-        public String FragmentShader { get; set; }
-        public size_t DescriptorSetCount { get; set; }
-        public size_t DescriptorSetLayoutCount { get; set; }
-        public VertexTypeEnum VertexType { get; set; }
-        public List<VkViewport> ViewportList { get; set; } = new List<VkViewport>();
-        public List<VkRect2D> ScissorList { get; set; } = new List<VkRect2D>();
-        public List<VkPipelineColorBlendAttachmentState> PipelineColorBlendAttachmentStateList { get; set; } = new List<VkPipelineColorBlendAttachmentState>();
-        public VkPipelineColorBlendStateCreateInfoModel PipelineColorBlendStateCreateInfoModel { get; set; } = new VkPipelineColorBlendStateCreateInfoModel();
-        public VkPipelineRasterizationStateCreateInfoModel PipelineRasterizationStateCreateInfo { get; set; } = new VkPipelineRasterizationStateCreateInfoModel();
-        public VkPipelineMultisampleStateCreateInfoModel PipelineMultisampleStateCreateInfo { get; set; } = new VkPipelineMultisampleStateCreateInfoModel();
-        public VkPipelineDepthStencilStateCreateInfoModel PipelineDepthStencilStateCreateInfo { get; set; }
-        public VkPipelineInputAssemblyStateCreateInfoModel PipelineInputAssemblyStateCreateInfo { get; set; } = new VkPipelineInputAssemblyStateCreateInfoModel();
-        public List<VkDescriptorSetLayoutBindingModel> LayoutBindingList { get; set; } = new List<VkDescriptorSetLayoutBindingModel>();
-        //  public List<PipelineDescriptorModel> PipelineDescriptorModelsList { get; set; } = new List<PipelineDescriptorModel>();
-        public List<VkVertexInputBindingDescription> VertexInputBindingDescriptionList { get; set; } = new List<VkVertexInputBindingDescription>();
-        public List<VkVertexInputAttributeDescription> VertexInputAttributeDescriptionList { get; set; } = new List<VkVertexInputAttributeDescription>();
-        public List<VkClearValue> ClearValueList { get; set; } = new List<VkClearValue>();
-        public RenderPipelineDLL()
-        {
-        }
-    }
-
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public unsafe struct VulkanPipeline
     {
@@ -184,14 +104,6 @@ namespace VulkanGameEngineLevelEditor.Systems
         {
         }
     };
-
-    //public unsafe struct ImGuiRenderer
-    //{
-    //    public VkRenderPass RenderPass = VK_NULL_HANDLE;
-    //    public VkDescriptorPool ImGuiDescriptorPool = VK_NULL_HANDLE;
-    //    public VkCommandBuffer ImGuiCommandBuffer = VK_NULL_HANDLE;
-    //    public ListPtr<VkFramebuffer> SwapChainFramebuffers;
-    //};
 
     public unsafe static class RenderSystem
     {
