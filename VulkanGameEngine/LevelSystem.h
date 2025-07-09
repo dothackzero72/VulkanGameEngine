@@ -7,8 +7,6 @@
 #include <VRAM.h>
 #include <Level2D.h>
 
-typedef Vector<vec2> AnimationFrames;
-
 struct GameObjectLoader
 {
 	String GameObjectPath;

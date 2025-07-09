@@ -58,7 +58,7 @@ namespace VulkanGameEngineLevelEditor.Systems
         };
 
         public static Dictionary<int, GameObject> GameObjectMap { get; private set; } = new Dictionary<int, GameObject>();
-        public static Dictionary<int, Transform2DComponent> Transform2DComponentMap { get; private set; } = new Dictionary<int, Transform2DComponent>();
+        public static Dictionary<int, Transform2DComponent> Transform2DComponentMap { get; set; } = new Dictionary<int, Transform2DComponent>();
         public static Dictionary<int, InputComponent> InputComponentMap { get; private set; } = new Dictionary<int, InputComponent>();
 
         public static void CreateGameObject(string name, List<ComponentTypeEnum> gameObjectComponentTypeList, Guid vramId, vec2 objectPosition)

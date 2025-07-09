@@ -42,16 +42,16 @@ Animation2D* VRAM_LoadSpriteAnimations(const char* spritePath, size_t& animation
     return animationListPtr;
 }
 
-vec2* VRAM_LoadSpriteAnimationFrames(const char* spritePath, size_t& animationFrameCount)
+ivec2* VRAM_LoadSpriteAnimationFrames(const char* spritePath, size_t& animationFrameCount)
 {
-    Vector<vec2> animationFrameList;
+    Vector<ivec2> animationFrameList;
     nlohmann::json json = Json::ReadJson(spritePath);
     for (size_t x = 0; x < json["AnimationList"].size(); ++x)
     {
         AnimationFrames frameList;
         for (size_t y = 0; y < json["AnimationList"][x]["FrameList"].size(); ++y)
         {
-            vec2 frame =
+            ivec2 frame =
             {
                 json["AnimationList"][x]["FrameList"][y][0].get<float>(),
                 json["AnimationList"][x]["FrameList"][y][1].get<float>()
@@ -61,8 +61,8 @@ vec2* VRAM_LoadSpriteAnimationFrames(const char* spritePath, size_t& animationFr
     }
 
     animationFrameCount = animationFrameList.size();
-    vec2* animationFrameListPtr = memorySystem.AddPtrBuffer<vec2>(animationFrameList.size(), __FILE__, __LINE__, __func__);
-    std::memcpy(animationFrameListPtr, animationFrameList.data(), animationFrameList.size() * sizeof(vec2));
+    ivec2* animationFrameListPtr = memorySystem.AddPtrBuffer<ivec2>(animationFrameList.size(), __FILE__, __LINE__, __func__);
+    std::memcpy(animationFrameListPtr, animationFrameList.data(), animationFrameList.size() * sizeof(ivec2));
     return animationFrameListPtr;
 }
 
@@ -137,10 +137,10 @@ uint** VRAM_LoadLevelLayout(const char* levelLayoutPath, size_t& levelLayerCount
     return levelLayerListPtr;
 }
 
-void VRAM_DeleteSpriteVRAM(Animation2D* animationListPtr, vec2* animationFrameListPtr)
+void VRAM_DeleteSpriteVRAM(Animation2D* animationListPtr, ivec2* animationFrameListPtr)
 {
     memorySystem.RemovePtrBuffer<Animation2D>(animationListPtr);
-    memorySystem.RemovePtrBuffer<vec2>(animationFrameListPtr);
+    memorySystem.RemovePtrBuffer<ivec2>(animationFrameListPtr);
 }
 
 void VRAM_DeleteLevelVRAM(Tile* levelTileList)

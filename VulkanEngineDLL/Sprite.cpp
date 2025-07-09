@@ -42,7 +42,7 @@ void Sprite_UpdateBatchSprites(SpriteInstanceStruct* spriteInstanceList, Sprite*
     }
 }
 
-SpriteInstanceStruct Sprite_UpdateSprites(const Transform2DComponent& transform2D, const SpriteVram& vram, const Animation2D& animation, const AnimationFrames& frameList, const Material& material, const ivec2& currentFrame, Sprite& sprite, float deltaTime)
+SpriteInstanceStruct Sprite_UpdateSprites(const Transform2DComponent& transform2D, const SpriteVram& vram, const Animation2D& animation, const Material& material, const ivec2& currentFrame, Sprite& sprite, size_t frameCount, float deltaTime)
 {
     mat4 spriteMatrix = mat4(1.0f);
     if (sprite.LastSpritePosition != sprite.SpritePosition)
@@ -67,7 +67,7 @@ SpriteInstanceStruct Sprite_UpdateSprites(const Transform2DComponent& transform2
     if (sprite.CurrentFrameTime >= animation.FrameHoldTime) {
         sprite.CurrentFrame += 1;
         sprite.CurrentFrameTime = 0.0f;
-        if (sprite.CurrentFrame >= frameList.size())
+        if (sprite.CurrentFrame >= frameCount)
         {
             sprite.CurrentFrame = 0;
         }

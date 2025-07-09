@@ -134,7 +134,11 @@ namespace VulkanGameEngineLevelEditor.Systems
                 ListPtr<vec2> frameList = FindSpriteAnimationFrames(vram.VramSpriteId);
                 Material material = MaterialSystem.MaterialMap[vram.MaterialId];
                 vec2 currentFrame = frameList[(int)SpriteList[x].CurrentFrame];
-                SpriteInstanceList[x] = Sprite_UpdateSprites(ref transform2D, ref vram, ref animation, frameList.Ptr, ref material, ref currentFrame, ref sprite, deltaTime);
+                SpriteInstanceList[x] = Sprite_UpdateSprites(ref transform2D, ref vram, ref animation, ref material, ref currentFrame, ref sprite, frameList.Count, deltaTime);
+                SpriteList[x] = sprite;
+                var transformComponent = GameObjectSystem.Transform2DComponentMap[(int)sprite.GameObjectId];
+                transformComponent.GameObjectPosition += new vec2(0.01f, 0f);
+                GameObjectSystem.Transform2DComponentMap[(int)sprite.GameObjectId] = transformComponent;
             }
         }
 
@@ -282,7 +286,7 @@ namespace VulkanGameEngineLevelEditor.Systems
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern Animation2D* VRAM_LoadSpriteAnimations([MarshalAs(UnmanagedType.LPStr)] string spritePath, out size_t animationListCount);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] private static extern vec2* VRAM_LoadSpriteAnimationFrames([MarshalAs(UnmanagedType.LPStr)] string spritePath, out size_t animationFrameCount);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Sprite_UpdateBatchSprites(SpriteInstanceStruct* spriteInstanceList, Sprite* spriteList, Transform2DComponent* transform2DList, SpriteVram* vramList, Animation2D* animationList, vec2* frameList, Material* materialList, size_t spriteCount, float deltaTime);
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern SpriteInstanceStruct Sprite_UpdateSprites(ref Transform2DComponent transform2D, ref SpriteVram vram, ref Animation2D animation, vec2* frameList, ref Material material, ref vec2 currentFrame, ref Sprite sprite, float deltaTime);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern SpriteInstanceStruct Sprite_UpdateSprites(ref Transform2DComponent transform2D, ref SpriteVram vram, ref Animation2D animation, ref Material material, ref vec2 currentFrame, ref Sprite sprite, size_t frameCount, float deltaTime);
         [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Sprite_SetSpriteAnimation(Sprite* sprite, Sprite.SpriteAnimationEnum spriteAnimation);
     }
 }

@@ -54,9 +54,9 @@ void SpriteSystem::UpdateSprites(const float& deltaTime)
         const Animation2D& animation = FindSpriteAnimation(SpriteList[x].CurrentAnimationID);
         const AnimationFrames& frameList = FindSpriteAnimationFrames(vram.VramSpriteID)[SpriteList[x].CurrentAnimationID];
         const Material& material = materialSystem.FindMaterial(vram.SpriteMaterialID);
-        const vec2& currentFrame = frameList[SpriteList[x].CurrentFrame];
+        const ivec2& currentFrame = frameList[SpriteList[x].CurrentFrame];
 
-        SpriteInstanceList[x] = Sprite_UpdateSprites(transform2D, vram, animation, frameList, material, currentFrame, SpriteList[x], deltaTime);
+        SpriteInstanceList[x] = Sprite_UpdateSprites(transform2D, vram, animation, material, currentFrame, SpriteList[x], frameList.size(), deltaTime);
     }
 }
 
@@ -272,10 +272,10 @@ VkGuid SpriteSystem::LoadSpriteVRAM(const String& spriteVramPath)
 
     SpriteVramList.emplace_back(VRAM_LoadSpriteVRAM(spriteVramPath.c_str(), material, texture));
     Animation2D* animationListPtr = VRAM_LoadSpriteAnimations(spriteVramPath.c_str(), animationListCount);
-    vec2* animationFrameListPtr = VRAM_LoadSpriteAnimationFrames(spriteVramPath.c_str(), animationFrameCount);
+    ivec2* animationFrameListPtr = VRAM_LoadSpriteAnimationFrames(spriteVramPath.c_str(), animationFrameCount);
 
     Vector<Animation2D> animation2DList = Vector<Animation2D>(animationListPtr, animationListPtr + animationListCount);
-    Vector<vec2> animationFrameList = Vector<vec2>(animationFrameListPtr, animationFrameListPtr + animationFrameCount);
+    Vector<ivec2> animationFrameList = Vector<ivec2>(animationFrameListPtr, animationFrameListPtr + animationFrameCount);
 
     for (size_t x = 0; x < animation2DList.size(); x++)
     {
