@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {

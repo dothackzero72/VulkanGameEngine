@@ -1,5 +1,6 @@
 ﻿using GlmSharp;
 using System.Runtime.InteropServices;
+using Vulkan;
 
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI

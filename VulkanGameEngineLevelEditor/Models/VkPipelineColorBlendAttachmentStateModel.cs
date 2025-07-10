@@ -1,5 +1,6 @@
 ﻿using Silk.NET.Core;
 using System.Runtime.InteropServices;
+using Vulkan;
 
 
 namespace VulkanGameEngineLevelEditor.Models

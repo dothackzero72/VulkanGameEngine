@@ -8,7 +8,7 @@ namespace VulkanGameEngineLevelEditor.Models
     [Serializable]
     public abstract class RenderPassEditorBaseModel : INotifyPropertyChanged
     {
-        public string _name { get; set; }
+        public string Name { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
         public RenderPassEditorBaseModel()
@@ -18,7 +18,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public RenderPassEditorBaseModel(string name)
         {
-            _name = name;
+            Name = name;
         }
 
         protected virtual T LoadJsonComponent<T>(string jsonPath)
@@ -33,7 +33,7 @@ namespace VulkanGameEngineLevelEditor.Models
             File.WriteAllText(jsonPath, jsonString);
         }
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        public virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

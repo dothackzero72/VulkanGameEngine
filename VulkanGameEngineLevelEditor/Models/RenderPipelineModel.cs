@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Vulkan;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 
@@ -34,52 +35,5 @@ namespace VulkanGameEngineLevelEditor.Models
         public RenderPipelineModel(string name) : base(name)
         {
         }
-
-        //public unsafe RenderPipelineDLL ToDLL()
-        //{
-        //    List<VkDescriptorSetLayoutBinding> LayoutBindingListDLL = LayoutBindingList.Select(x => x.Convert()).ToList();
-
-        //    fixed (byte* namePtr = System.Text.Encoding.UTF8.GetBytes(_name + "\0"))
-        //    fixed (byte* vertexShaderPtr = System.Text.Encoding.UTF8.GetBytes(VertexShader + "\0"))
-        //    fixed (byte* fragmentShaderPtr = System.Text.Encoding.UTF8.GetBytes(FragmentShader + "\0"))
-        //    fixed (VkViewport* viewportPtr = ViewportList.ToArray())
-        //    fixed (VkRect2D* scissorPtr = ScissorList.ToArray())
-        //    fixed (VkPipelineColorBlendAttachmentState* blendAttachmentPtr = PipelineColorBlendAttachmentStateList.ToArray())
-        //    fixed (VkDescriptorSetLayoutBinding* layoutBindingPtr = LayoutBindingListDLL.ToArray())
-        //    fixed (PipelineDescriptorModel* descriptorPtr = PipelineDescriptorModelsList.ToArray())
-        //    fixed (VkVertexInputBindingDescription* vertexInputBindingDescriptionPtr = VertexInputBindingDescriptionList.ToArray())
-        //    fixed (VkVertexInputAttributeDescription* vertexInputAttributeDescriptionPtr = VertexInputAttributeDescriptionList.ToArray())
-        //    fixed (VkClearValue* clearColorPtr = ClearValueList.ToArray())
-        //    {
-        //        return new RenderPipelineDLL
-        //        {
-        //            Name = (IntPtr)namePtr,
-        //            VertexShader = (IntPtr)vertexShaderPtr,
-        //            FragmentShader = (IntPtr)fragmentShaderPtr,
-        //            VertexType = VertexType,
-        //            ViewportList = viewportPtr,
-        //            ScissorList = scissorPtr,
-        //            DescriptorSetCount = DescriptorSetCount,
-        //            DescriptorSetLayoutCount = DescriptorSetLayoutCount,
-        //            PipelineColorBlendAttachmentStateList = blendAttachmentPtr,
-        //            PipelineColorBlendStateCreateInfo = PipelineColorBlendStateCreateInfoModel.Convert(),
-        //            PipelineRasterizationStateCreateInfo = PipelineRasterizationStateCreateInfo.Convert(),
-        //            PipelineMultisampleStateCreateInfo = PipelineMultisampleStateCreateInfo.Convert(),
-        //            PipelineDepthStencilStateCreateInfo = PipelineDepthStencilStateCreateInfo.Convert(),
-        //            PipelineInputAssemblyStateCreateInfo = PipelineInputAssemblyStateCreateInfo.Convert(),
-        //            VertexInputAttributeDescription = vertexInputAttributeDescriptionPtr,
-        //            VertexInputBindingDescription = vertexInputBindingDescriptionPtr,
-        //            LayoutBindingList = layoutBindingPtr,
-        //            PipelineDescriptorList = descriptorPtr,
-        //            ViewportListCount = ViewportList.Count,
-        //            ScissorListCount = ScissorList.Count,
-        //            PipelineColorBlendAttachmentStateListCount = PipelineColorBlendAttachmentStateList.Count,
-        //            LayoutBindingListCount = LayoutBindingListDLL.Count,
-        //            PipelineDescriptorListCount = PipelineDescriptorModelsList.Count,
-        //            VertexInputAttributeDescriptionCount = VertexInputAttributeDescriptionList.Count(),
-        //            VertexInputBindingDescriptionCount = VertexInputBindingDescriptionList.Count(),
-        //        };
-        //    }
-        //}
     }
 }

@@ -1,0 +1,152 @@
+﻿using Newtonsoft.Json;
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Windows.Forms;
+using VulkanGameEngineLevelEditor.GameEngine.Systems;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.RenderPassWindows;
+
+namespace VulkanGameEngineLevelEditor
+{
+    public unsafe partial class LevelEditorForm : Form
+    {
+        private volatile bool running;
+        private volatile bool levelEditorRunning;
+        private Stopwatch stopwatch = new Stopwatch();
+        private Thread renderThread { get; set; }
+        public RenderPassBuildInfoModel renderPass { get; private set; } = new RenderPassBuildInfoModel();
+        public MessengerModel RenderPassMessager { get; set; }
+        [DllImport("kernel32.dll")] static extern bool AllocConsole();
+
+        public LevelEditorForm()
+        {
+            InitializeComponent();
+            AllocConsole();
+
+            this.Load += Form1_Load;
+
+            Thread.CurrentThread.Name = "LevelEditor";
+
+            // Buttons
+            var saveButton = new System.Windows.Forms.Button { Text = "Save", Location = new Point(13, 10), Size = new Size(80, 30) };
+            var undoButton = new System.Windows.Forms.Button { Text = "Undo", Location = new Point(100, 10), Size = new Size(80, 30) };
+            var redoButton = new System.Windows.Forms.Button { Text = "Redo", Location = new Point(190, 10), Size = new Size(80, 30) };
+            var addPipelineButton = new System.Windows.Forms.Button { Text = "Add Pipeline", Location = new Point(290, 10), Size = new Size(80, 30) };
+            saveButton.Click += (s, e) => objectDataGridView1.SaveToJson();
+            undoButton.Click += (s, e) => objectDataGridView1.Undo();
+            redoButton.Click += (s, e) => objectDataGridView1.Redo();
+            addPipelineButton.Click += (s, e) => levelEditorTreeView1.AddRenderPipeline();
+
+            // Connect TreeView to Grid
+            var renderPassBuildInfo = new RenderPassBuildInfoModel(); // Load or create your model
+            levelEditorTreeView1.RootObject = renderPassBuildInfo;
+            levelEditorTreeView1.SelectionChanged += obj =>
+            {
+                if (obj != null)
+                {
+                    objectDataGridView1.SelectedObject = obj;
+                }
+            };
+
+            // Add controls to form
+            Controls.AddRange(new Control[] { levelEditorTreeView1, objectDataGridView1, saveButton, undoButton, redoButton, addPipelineButton });
+
+            // Load data (example)
+            try
+            {
+                objectDataGridView1.LoadFromJson<RenderPassBuildInfoModel>("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\LevelShader2DRenderPass.json");
+                levelEditorTreeView1.RootObject = objectDataGridView1.SelectedObject; // Sync initial state
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load JSON: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            // Resize event to handle form resizing
+            this.Resize += (s, e) =>
+            {
+                levelEditorTreeView1.Size = new Size(270, this.ClientSize.Height - 51);
+                objectDataGridView1.Size = new Size(this.ClientSize.Width - 303, this.ClientSize.Height - 51);
+            };
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            StartRenderer();
+        }
+
+        public void StartRenderer()
+        {
+            running = true;
+            renderThread = new Thread(RenderLoop)
+            {
+                IsBackground = true,
+                Name = "VulkanRenderer"
+            };
+            renderThread.Start();
+        }
+
+        private void RenderLoop()
+        {
+            RenderPassMessager = new MessengerModel()
+            {
+                IsActive = true,
+                ThreadId = Thread.CurrentThread.ManagedThreadId,
+            };
+            GlobalMessenger.AddMessenger(RenderPassMessager);
+
+            this.Invoke(new Action(() =>
+            {
+                GameSystem.StartUp(this.Handle, this.pictureBox1.Handle);
+            }));
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            double lastTime = 0.0;
+            while (running)
+            {
+                double currentTime = stopwatch.Elapsed.TotalSeconds;
+                double deltaTime = currentTime - lastTime;
+                lastTime = currentTime;
+
+                GameSystem.Update((float)deltaTime);
+                GameSystem.Draw((float)deltaTime);
+            }
+
+            GameSystem.Destroy();
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            using (RendererEditorForm renderPassBuilder = new RendererEditorForm())
+            {
+                RenderPassMessager.IsActive = false;
+                if (renderPassBuilder.ShowDialog() == DialogResult.OK)
+                {
+                    RenderPassMessager.IsActive = false;
+                }
+            }
+        }
+
+        private void SaveRenderPass_Click(object sender, EventArgs e)
+        {
+            var a = JsonConvert.SerializeObject(renderPass, Formatting.Indented);
+            var ab = 32;
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SaveLevel_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
+}

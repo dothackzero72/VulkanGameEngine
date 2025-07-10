@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Reflection;
-using VulkanGameEngineLevelEditor.RenderPassEditor;
-
+using Vulkan;
+using VulkanGameEngineLevelEditor.LevelEditor;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
@@ -191,7 +191,7 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public void SaveJsonComponent()
         {
-            base.SaveJsonComponent($@"{ConstConfig.AttachmentDescriptionModelPath}{this._name}.json", this);
+            base.SaveJsonComponent($@"{ConstConfig.AttachmentDescriptionModelPath}{this.Name}.json", this);
         }
     }
 }

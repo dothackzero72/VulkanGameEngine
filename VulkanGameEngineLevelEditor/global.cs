@@ -1,5 +1,4 @@
-﻿global using VulkanCS;
-global using VkInstance = nint;
+﻿global using VkInstance = nint;
 global using VkDebugUtilsMessengerEXT = nint;
 global using VkQueue = nint;
 global using VkFence = nint;
