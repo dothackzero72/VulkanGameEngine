@@ -5,12 +5,14 @@
 #include <imgui/backends/imgui_impl_glfw.h>
 #include "MemorySystem.h"
 
-DLL_EXPORT void Log_LogVulkanMessage(const char* message, int severity)
+HWND editorRichTextBoxCallback = nullptr;
+
+void Debug_SetRichTextBoxHandle(HWND hwnd)
 {
-    return DLL_EXPORT void();
+    editorRichTextBoxCallback = hwnd;
 }
 
-GraphicsRenderer Renderer_RendererSetUp(WindowType windowType, void* windowHandle, void* editorRichTextBoxCallback)
+GraphicsRenderer Renderer_RendererSetUp(WindowType windowType, void* windowHandle)
 {
     GraphicsRenderer renderer;
     renderer.ImageIndex = 0;
@@ -21,8 +23,8 @@ GraphicsRenderer Renderer_RendererSetUp(WindowType windowType, void* windowHandl
 
     renderer.RebuildRendererFlag = false;
     VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
-    renderer.Instance = Renderer_CreateVulkanInstance(editorRichTextBoxCallback);
-    renderer.DebugMessenger = Renderer_SetupDebugMessenger(renderer.Instance, editorRichTextBoxCallback);
+    renderer.Instance = Renderer_CreateVulkanInstance();
+    renderer.DebugMessenger = Renderer_SetupDebugMessenger(renderer.Instance);
     if (windowType == WindowType::GLFW)
     {
         vulkanWindow->CreateSurface(windowHandle, &renderer.Instance, &renderer.Surface);
@@ -151,14 +153,13 @@ VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPo
       return surface;
   }
 
-  VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType, const VkDebugUtilsMessengerCallbackDataEXT* CallBackData, void* editorRichTextBoxCallback)
+  VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType, const VkDebugUtilsMessengerCallbackDataEXT* CallBackData, void* UserData)
   {
       HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
       if (hConsole == INVALID_HANDLE_VALUE) {
           printf("Failed to get console handle.\n");
           return VK_FALSE;
       }
-
       CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
       GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
       WORD originalAttributes = consoleInfo.wAttributes;
@@ -190,7 +191,34 @@ VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPo
       }
       SetConsoleTextAttribute(hConsole, originalAttributes);
 
-      Log_LogVulkanMessage(message, (int)MessageSeverity);
+      if (editorRichTextBoxCallback)
+      {
+          char formattedMessage[4096];
+          switch (MessageSeverity)
+          {
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+              SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+              snprintf(formattedMessage, sizeof(formattedMessage), "VERBOSE: %s\r\n", message);
+              break;
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+              SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+              snprintf(formattedMessage, sizeof(formattedMessage), "INFO: %s\r\n", message);
+              break;
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+              SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+              snprintf(formattedMessage, sizeof(formattedMessage), "WARNING: %s\r\n", message);
+              break;
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+              snprintf(formattedMessage, sizeof(formattedMessage), "ERROR: %s\r\n", message);
+              break;
+          default:
+              SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+              snprintf(formattedMessage, sizeof(formattedMessage), "UNKNOWN SEVERITY: %s\r\n", message);
+              break;
+          }
+          SendMessageA(editorRichTextBoxCallback, EM_SETSEL, (WPARAM)-1, (LPARAM)-1);
+          SendMessageA(editorRichTextBoxCallback, EM_REPLACESEL, FALSE, (LPARAM)formattedMessage);
+      }
 
       return VK_FALSE;
   }
@@ -313,7 +341,7 @@ bool Renderer_GetRayTracingSupport()
     return false;
 }
 
-VkInstance Renderer_CreateVulkanInstance(void* editorRichTextBoxCallback)
+VkInstance Renderer_CreateVulkanInstance()
 {
     VkInstance instance = VK_NULL_HANDLE;
 
@@ -325,7 +353,7 @@ VkInstance Renderer_CreateVulkanInstance(void* editorRichTextBoxCallback)
         VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
     debugInfo.pfnUserCallback = Vulkan_DebugCallBack;
-    debugInfo.pUserData = editorRichTextBoxCallback;
+   // debugInfo.pUserData = editorRichTextBoxCallback;
 
     VkValidationFeaturesEXT validationFeatures = {};
     validationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
@@ -423,7 +451,7 @@ VkResult Renderer_GetWin32Extensions(uint32_t* extensionCount, std::vector<std::
     return VK_SUCCESS;
 }
 
-VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance, void* editorRichTextBoxCallback)
+VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance)
 {
     VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
 
@@ -433,7 +461,6 @@ VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance, void*
         .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
         .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
         .pfnUserCallback = Vulkan_DebugCallBack,
-        .pUserData = editorRichTextBoxCallback
     };
 
     if (CreateDebugUtilsMessengerEXT(instance, &debugInfo, NULL, &debugMessenger) != VK_SUCCESS)

@@ -26,13 +26,22 @@ namespace VulkanGameEngineLevelEditor
         public LevelEditorForm()
         {
             InitializeComponent();
-            AllocConsole();
 
             this.Load += Form1_Load;
 
             Thread.CurrentThread.Name = "LevelEditor";
 
             textBoxWriter = new RichTextBoxWriter(richTextBox2);
+
+            RenderPassMessager = new MessengerModel()
+            {
+                IsActive = true,
+                richTextBox = richTextBox2,
+                TextBoxName = richTextBox2.Name,
+                ThreadId = Thread.CurrentThread.ManagedThreadId,
+            };
+            GlobalMessenger.AddMessenger(RenderPassMessager);
+            Debug_SetRichTextBoxHandle(this.richTextBox2.Handle);
 
             // Buttons
             var saveButton = new System.Windows.Forms.Button { Text = "Save", Location = new Point(13, 10), Size = new Size(80, 30) };
@@ -95,15 +104,6 @@ namespace VulkanGameEngineLevelEditor
 
         private void RenderLoop()
         {
-            RenderPassMessager = new MessengerModel()
-            {
-                IsActive = true,
-                richTextBox = richTextBox2,
-                TextBoxName = richTextBox2.Name,
-                ThreadId = Thread.CurrentThread.ManagedThreadId,
-            };
-            GlobalMessenger.AddMessenger(RenderPassMessager);
-
             this.Invoke(new Action(() =>
             {
                 GameSystem.StartUp(this.pictureBox1.Handle.ToPointer(), this.richTextBox2.Handle.ToPointer());
@@ -153,5 +153,7 @@ namespace VulkanGameEngineLevelEditor
         {
 
         }
+
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Debug_SetRichTextBoxHandle(IntPtr hwnd);
     }
 }
