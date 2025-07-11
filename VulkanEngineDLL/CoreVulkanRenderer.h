@@ -95,7 +95,7 @@ struct GraphicsRenderer
 #ifdef __cplusplus
 extern "C" {
 #endif
-	DLL_EXPORT GraphicsRenderer Renderer_RendererSetUp(WindowType windowType, void* windowHandle);
+	DLL_EXPORT GraphicsRenderer Renderer_RendererSetUp(WindowType windowType, void* windowHandle, void* editorRichTextBoxCallback);
 	DLL_EXPORT VkCommandBuffer Renderer_BeginSingleTimeCommands(VkDevice device, VkCommandPool commandPool);
 	DLL_EXPORT VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkCommandBuffer commandBuffer);
 	DLL_EXPORT void Renderer_DestroyRenderer(GraphicsRenderer& renderer);
@@ -105,14 +105,14 @@ extern "C" {
 
 	VkResult Renderer_GetWin32Extensions(uint32_t* extensionCount, std::vector<std::string>& enabledExtensions);
 	VkSurfaceKHR Renderer_CreateVulkanSurface(void* windowHandle, VkInstance instance);
-	VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType, const VkDebugUtilsMessengerCallbackDataEXT* CallBackData, void* UserData);
+	VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType, const VkDebugUtilsMessengerCallbackDataEXT* CallBackData, void* editorRichTextBoxCallback);
 	Vector<VkExtensionProperties> Renderer_GetDeviceExtensions(VkPhysicalDevice physicalDevice);
 	Vector<VkSurfaceFormatKHR> Renderer_GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 	Vector<VkPresentModeKHR> Renderer_GetSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 	bool Renderer_GetRayTracingSupport();
 	void Renderer_GetRendererFeatures(VkPhysicalDeviceVulkan11Features * physicalDeviceVulkan11Features);
-	VkInstance Renderer_CreateVulkanInstance();
-	VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance);
+	VkInstance Renderer_CreateVulkanInstance(void* editorRichTextBoxCallback);
+	VkDebugUtilsMessengerEXT Renderer_SetupDebugMessenger(VkInstance instance, void* editorRichTextBoxCallback);
 	VkPhysicalDeviceFeatures Renderer_GetPhysicalDeviceFeatures(VkPhysicalDevice physicalDevice);
 	Vector<VkPhysicalDevice> Renderer_GetPhysicalDeviceList(VkInstance & instance);
 	VkPhysicalDevice Renderer_SetUpPhysicalDevice(VkInstance instance, VkSurfaceKHR surface, uint32 & graphicsFamily, uint32 & presentFamily);

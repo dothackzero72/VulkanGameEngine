@@ -77,7 +77,7 @@ namespace VulkanGameEngineLevelEditor
 
             this.Invoke(new Action(() =>
             {
-                GameSystem.StartUp(this.Handle, this.pictureBox1.Handle);
+              //  GameSystem.StartUp(this.Handle, this.pictureBox1.Handle);
             }));
 
             Stopwatch stopwatch = new Stopwatch();

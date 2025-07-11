@@ -22,7 +22,7 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::StartUp(WindowType windowType, void* windowHandle)
 {
-    renderer = Renderer_RendererSetUp(windowType, windowHandle);
+    renderer = Renderer_RendererSetUp(windowType, windowHandle, nullptr);
     imGuiRenderer = ImGui_StartUp(renderer);
     shaderSystem.StartUp();
 }

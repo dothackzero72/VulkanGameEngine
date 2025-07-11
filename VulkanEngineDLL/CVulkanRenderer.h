@@ -12,7 +12,6 @@ extern "C" {
 #endif
 
 	static const int MAX_FRAMES_IN_FLIGHT = 3;
-	typedef void (*TextCallback)(const char*);
 	typedef void (*RichTextBoxCallback)(const char*);
 
 	typedef struct

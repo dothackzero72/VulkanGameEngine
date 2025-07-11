@@ -17,6 +17,7 @@ namespace VulkanGameEngineLevelEditor
         private volatile bool running;
         private volatile bool levelEditorRunning;
         private Stopwatch stopwatch = new Stopwatch();
+        private RichTextBoxWriter textBoxWriter;
         private Thread renderThread { get; set; }
         public RenderPassBuildInfoModel renderPass { get; private set; } = new RenderPassBuildInfoModel();
         public MessengerModel RenderPassMessager { get; set; }
@@ -30,6 +31,8 @@ namespace VulkanGameEngineLevelEditor
             this.Load += Form1_Load;
 
             Thread.CurrentThread.Name = "LevelEditor";
+
+            textBoxWriter = new RichTextBoxWriter(richTextBox2);
 
             // Buttons
             var saveButton = new System.Windows.Forms.Button { Text = "Save", Location = new Point(13, 10), Size = new Size(80, 30) };
@@ -101,7 +104,7 @@ namespace VulkanGameEngineLevelEditor
 
             this.Invoke(new Action(() =>
             {
-                GameSystem.StartUp(this.Handle, this.pictureBox1.Handle);
+                GameSystem.StartUp(this.pictureBox1.Handle.ToPointer(), this.richTextBox2.Handle.ToPointer());
             }));
 
             Stopwatch stopwatch = new Stopwatch();
