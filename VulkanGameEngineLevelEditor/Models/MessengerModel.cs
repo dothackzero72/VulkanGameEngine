@@ -1,5 +1,6 @@
 ﻿using Silk.NET.Vulkan;
 using System;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -14,28 +15,52 @@ namespace VulkanGameEngineLevelEditor.Models
 
         public void LogMessage(string formattedMessage, DebugUtilsMessageSeverityFlagsEXT severity)
         {
+            if (richTextBox.InvokeRequired)
+            {
+                richTextBox.Invoke(new Action(() => LogMessage(formattedMessage, severity)));
+                return;
+            }
 
-         
-                switch (severity)
-                {
-                    case DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt:
-                        richTextBox.AppendText($"VERBOSE: {formattedMessage}{Environment.NewLine}");
-                        break;
-                    case DebugUtilsMessageSeverityFlagsEXT.InfoBitExt:
-                        richTextBox.AppendText($"INFO: {formattedMessage}{Environment.NewLine}");
-                        break;
-                    case DebugUtilsMessageSeverityFlagsEXT.WarningBitExt:
-                        richTextBox.AppendText($"WARNING: {formattedMessage}{Environment.NewLine}");
-                        break;
-                    case DebugUtilsMessageSeverityFlagsEXT.ErrorBitExt:
-                        richTextBox.AppendText($"ERROR: {formattedMessage}{Environment.NewLine}");
-                        break;
-                    default:
-                        richTextBox.AppendText($"UNKNOWN SEVERITY: {formattedMessage}{Environment.NewLine}");
-                        break;
-                }
+            Color color;
+            string prefix;
+            switch (severity)
+            {
+                case DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt:
+                    color = Color.Blue;
+                    prefix = "VERBOSE: ";
+                    break;
+                case DebugUtilsMessageSeverityFlagsEXT.InfoBitExt:
+                    color = Color.Green;
+                    prefix = "INFO: ";
+                    break;
+                case DebugUtilsMessageSeverityFlagsEXT.WarningBitExt:
+                    color = Color.Orange;
+                    prefix = "WARNING: ";
+                    break;
+                case DebugUtilsMessageSeverityFlagsEXT.ErrorBitExt:
+                    color = Color.Red;
+                    prefix = "ERROR: ";
+                    break;
+                default:
+                    color = Color.Green;
+                    prefix = "UNKNOWN: ";
+                    break;
+            }
 
+            string modifiedMessage = ModifyMessage(formattedMessage, severity);
+            richTextBox.SelectionStart = richTextBox.TextLength;
+            richTextBox.SelectionLength = 0;
+            richTextBox.SelectionColor = color;
+            richTextBox.AppendText(prefix);
+            richTextBox.SelectionColor = Color.White;
+            richTextBox.AppendText(modifiedMessage + Environment.NewLine);
+            richTextBox.SelectionColor = Color.Black;
+            richTextBox.ScrollToCaret();
+        }
+
+        private string ModifyMessage(string message, DebugUtilsMessageSeverityFlagsEXT severity)
+        {
+            return message.Trim();
         }
     }
-
 }

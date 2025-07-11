@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Silk.NET.Vulkan;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -20,8 +21,14 @@ namespace VulkanGameEngineLevelEditor
         private RichTextBoxWriter textBoxWriter;
         private Thread renderThread { get; set; }
         public RenderPassBuildInfoModel renderPass { get; private set; } = new RenderPassBuildInfoModel();
-        public MessengerModel RenderPassMessager { get; set; }
+        private MessengerModel _messenger;
+        private GCHandle _callbackHandle;
+
         [DllImport("kernel32.dll")] static extern bool AllocConsole();
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void LogVulkanMessageDelegate(string message, int severity);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.Cdecl)] public static extern void SetRichTextBoxHandle(IntPtr hwnd);
+        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.Cdecl)] public static extern void SetLogVulkanMessageCallback(LogVulkanMessageDelegate callback);
 
         public LevelEditorForm()
         {
@@ -33,15 +40,26 @@ namespace VulkanGameEngineLevelEditor
 
             textBoxWriter = new RichTextBoxWriter(richTextBox2);
 
-            RenderPassMessager = new MessengerModel()
+            //RenderPassMessager = new MessengerModel()
+            //{
+            //    IsActive = true,
+            //    richTextBox = richTextBox2,
+            //    TextBoxName = richTextBox2.Name,
+            //    ThreadId = Thread.CurrentThread.ManagedThreadId,
+            //};
+            _messenger = new MessengerModel
             {
-                IsActive = true,
                 richTextBox = richTextBox2,
                 TextBoxName = richTextBox2.Name,
                 ThreadId = Thread.CurrentThread.ManagedThreadId,
+                IsActive = true
             };
-            GlobalMessenger.AddMessenger(RenderPassMessager);
-            Debug_SetRichTextBoxHandle(this.richTextBox2.Handle);
+
+            GlobalMessenger.AddMessenger(_messenger);
+
+            LogVulkanMessageDelegate callback = LogVulkanMessage;
+            _callbackHandle = GCHandle.Alloc(callback); 
+            SetLogVulkanMessageCallback(callback);
 
             // Buttons
             var saveButton = new System.Windows.Forms.Button { Text = "Save", Location = new Point(13, 10), Size = new Size(80, 30) };
@@ -53,8 +71,7 @@ namespace VulkanGameEngineLevelEditor
             redoButton.Click += (s, e) => objectDataGridView1.Redo();
             addPipelineButton.Click += (s, e) => levelEditorTreeView1.AddRenderPipeline();
 
-            // Connect TreeView to Grid
-            var renderPassBuildInfo = new RenderPassBuildInfoModel(); // Load or create your model
+            var renderPassBuildInfo = new RenderPassBuildInfoModel();
             levelEditorTreeView1.RootObject = renderPassBuildInfo;
             levelEditorTreeView1.SelectionChanged += obj =>
             {
@@ -89,6 +106,10 @@ namespace VulkanGameEngineLevelEditor
         private void Form1_Load(object sender, EventArgs e)
         {
             StartRenderer();
+        }
+        public static void LogVulkanMessage(string message, int severity)
+        {
+            GlobalMessenger.LogMessage(message, (DebugUtilsMessageSeverityFlagsEXT)severity);
         }
 
         public void StartRenderer()
@@ -128,14 +149,14 @@ namespace VulkanGameEngineLevelEditor
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            using (RendererEditorForm renderPassBuilder = new RendererEditorForm())
-            {
-                RenderPassMessager.IsActive = false;
-                if (renderPassBuilder.ShowDialog() == DialogResult.OK)
-                {
-                    RenderPassMessager.IsActive = false;
-                }
-            }
+            //using (RendererEditorForm renderPassBuilder = new RendererEditorForm())
+            //{
+            //    RenderPassMessager.IsActive = false;
+            //    if (renderPassBuilder.ShowDialog() == DialogResult.OK)
+            //    {
+            //        RenderPassMessager.IsActive = false;
+            //    }
+            //}
         }
 
         private void SaveRenderPass_Click(object sender, EventArgs e)
@@ -153,7 +174,5 @@ namespace VulkanGameEngineLevelEditor
         {
 
         }
-
-        [DllImport(GameEngineImport.DLLPath, CallingConvention = CallingConvention.StdCall)] public static extern void Debug_SetRichTextBoxHandle(IntPtr hwnd);
     }
 }

@@ -6,10 +6,24 @@
 #include "MemorySystem.h"
 
 HWND editorRichTextBoxCallback = nullptr;
+LogVulkanMessageCallback g_logVulkanMessageCallback = nullptr;
 
 void Debug_SetRichTextBoxHandle(HWND hwnd)
 {
     editorRichTextBoxCallback = hwnd;
+}
+
+void SetLogVulkanMessageCallback(LogVulkanMessageCallback callback)
+{
+    g_logVulkanMessageCallback = callback;
+}
+
+void LogVulkanMessage(const char* message, int severity)
+{
+    if (g_logVulkanMessageCallback)
+    {
+        g_logVulkanMessageCallback(message, severity);
+    }
 }
 
 GraphicsRenderer Renderer_RendererSetUp(WindowType windowType, void* windowHandle)
@@ -171,51 +185,42 @@ VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPo
       {
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
           SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
-          fprintf(stdout, "VERBOSE: %s\n", message);
+          fprintf(stdout, "VERBOSE: ");
+          SetConsoleTextAttribute(hConsole, originalAttributes);
+          fprintf(stdout, "%s\n", message);
           break;
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
           SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-          fprintf(stdout, "INFO: %s\n", message);
+          fprintf(stdout, "INFO: ");
+          SetConsoleTextAttribute(hConsole, originalAttributes);
+          fprintf(stdout, "%s\n", message);
           break;
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
           SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-          fprintf(stdout, "WARNING: %s\n", message);
+          fprintf(stdout, "WARNING: ");
+          SetConsoleTextAttribute(hConsole, originalAttributes);
+          fprintf(stdout, "%s\n", message);
           break;
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
           SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-          fprintf(stdout, "ERROR: %s\n", message);
+          fprintf(stdout, "ERROR: ");
+          SetConsoleTextAttribute(hConsole, originalAttributes);
+          fprintf(stdout, "%s\n", message);
           break;
       default:
-          fprintf(stdout, "UNKNOWN SEVERITY: %s\n", message);
+          SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+          fprintf(stderr, "UNKNOWN SEVERITY: ");
+          SetConsoleTextAttribute(hConsole, originalAttributes);
+          fprintf(stdout, "%s\n", message);
           break;
       }
-      SetConsoleTextAttribute(hConsole, originalAttributes);
 
+      LogVulkanMessage(message, (int)MessageSeverity);
+     
       if (editorRichTextBoxCallback)
       {
           char formattedMessage[4096];
-          switch (MessageSeverity)
-          {
-          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-              SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
-              snprintf(formattedMessage, sizeof(formattedMessage), "VERBOSE: %s\r\n", message);
-              break;
-          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-              SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-              snprintf(formattedMessage, sizeof(formattedMessage), "INFO: %s\r\n", message);
-              break;
-          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-              SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-              snprintf(formattedMessage, sizeof(formattedMessage), "WARNING: %s\r\n", message);
-              break;
-          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-              snprintf(formattedMessage, sizeof(formattedMessage), "ERROR: %s\r\n", message);
-              break;
-          default:
-              SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-              snprintf(formattedMessage, sizeof(formattedMessage), "UNKNOWN SEVERITY: %s\r\n", message);
-              break;
-          }
+          snprintf(formattedMessage, sizeof(formattedMessage), "%s\r\n", message);
           SendMessageA(editorRichTextBoxCallback, EM_SETSEL, (WPARAM)-1, (LPARAM)-1);
           SendMessageA(editorRichTextBoxCallback, EM_REPLACESEL, FALSE, (LPARAM)formattedMessage);
       }

@@ -112,7 +112,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
         private void cancelButton_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
-            GlobalMessenger.messenger.Remove(RenderPassMessager);
+        //    GlobalMessenger.messenger.Remove(RenderPassMessager);
             this.Close();
         }
 
@@ -144,7 +144,7 @@ namespace VulkanGameEngineLevelEditor.RenderPassWindows
 
         private void OnClose(object sender, FormClosingEventArgs e)
         {
-            GlobalMessenger.messenger.Remove(RenderPassMessager);
+       //     GlobalMessenger.messenger.Remove(RenderPassMessager);
         }
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)

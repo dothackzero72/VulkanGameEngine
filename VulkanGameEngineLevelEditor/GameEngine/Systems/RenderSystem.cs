@@ -241,6 +241,7 @@ namespace VulkanGameEngineLevelEditor.GameEngine.Systems
         {
             string jsonContent = File.ReadAllText(jsonPath);
             RenderPassBuildInfoModel model = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
+            model.IsRenderedToSwapchain = true;
 
             VkExtent2D extent2D = new VkExtent2D
             {
@@ -305,6 +306,7 @@ namespace VulkanGameEngineLevelEditor.GameEngine.Systems
         {
             string jsonContent = File.ReadAllText(jsonPath);
             RenderPassBuildInfoModel model = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
+            model.IsRenderedToSwapchain = true;
 
             VkExtent2D extent2D = new VkExtent2D
             {
