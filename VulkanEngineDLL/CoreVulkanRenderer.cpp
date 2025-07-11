@@ -146,13 +146,7 @@ VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPo
       return surface;
   }
 
-
-
-  VkBool32 VKAPI_CALL Vulkan_DebugCallBack(
-      VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity,
-      VkDebugUtilsMessageTypeFlagsEXT MessageType,
-      const VkDebugUtilsMessengerCallbackDataEXT* CallBackData,
-      void* UserData)
+  VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType, const VkDebugUtilsMessengerCallbackDataEXT* CallBackData, void* UserData)
   {
       HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
       if (hConsole == INVALID_HANDLE_VALUE) {
@@ -164,40 +158,52 @@ VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPo
       GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
       WORD originalAttributes = consoleInfo.wAttributes;
 
-      char message[4096];
-      snprintf(message, sizeof(message), "%s", CallBackData->pMessage);
-
-      switch (MessageSeverity)
+      RichTextBoxCallback callback = (RichTextBoxCallback)UserData;
+      if (callback)
       {
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-          SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
-          fprintf(stdout, "VERBOSE: ");
-          SetConsoleTextAttribute(hConsole, originalAttributes);
-          fprintf(stdout, "%s\n", message);
-          break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-          SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-          fprintf(stdout, "INFO: ");
-          SetConsoleTextAttribute(hConsole, originalAttributes);
-          fprintf(stdout, "%s\n", message);
-          break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-          SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-          fprintf(stdout, "WARNING: ");
-          SetConsoleTextAttribute(hConsole, originalAttributes);
-          fprintf(stdout, "%s\n", message);
-          break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-          SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-          fprintf(stdout, "ERROR: ");
-          SetConsoleTextAttribute(hConsole, originalAttributes);
-          fprintf(stdout, "%s\n", message);
-          break;
-      default:
-          fprintf(stderr, "UNKNOWN SEVERITY: %s\n", message);
-          break;
+          fprintf(stderr, "Validation Layer: %s\n", CallBackData->pMessage);
       }
+      else
+      {
+          char message[4096];
+          snprintf(message, sizeof(message), "%s", CallBackData->pMessage);
 
+          switch (MessageSeverity)
+          {
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+              SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+              fprintf(stdout, "VERBOSE: ");
+              SetConsoleTextAttribute(hConsole, originalAttributes);
+              fprintf(stdout, "%s\n", message);
+              break;
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+              SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+              fprintf(stdout, "INFO: ");
+              SetConsoleTextAttribute(hConsole, originalAttributes);
+              fprintf(stdout, "%s\n", message);
+              break;
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+              SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+              fprintf(stdout, "WARNING: ");
+              SetConsoleTextAttribute(hConsole, originalAttributes);
+              fprintf(stdout, "%s\n", message);
+              break;
+          case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+              SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+              fprintf(stdout, "ERROR: ");
+              SetConsoleTextAttribute(hConsole, originalAttributes);
+              fprintf(stdout, "%s\n", message);
+              break;
+          default:
+              fprintf(stderr, "UNKNOWN SEVERITY: %s\n", message);
+              break;
+          }
+
+          if (callback)
+          {
+              callback(message);
+          }
+      }
       return VK_FALSE;
   }
 
