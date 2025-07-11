@@ -23,24 +23,15 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         public static MessengerModel WaitForMessenger()
         {
-            _messageAvailable.WaitOne();
-            lock (_lockObject)
+            var messengerModel = messenger.First();
+            messenger.Remove(messengerModel);
+
+            if (messenger.Count == 0)
             {
-                if (messenger.Count > 0)
-                {
-                    var messengerModel = messenger.First();
-                    messenger.Remove(messengerModel);
-
-                    if (messenger.Count == 0)
-                    {
-                        _messageAvailable.Reset();
-                    }
-
-                    return messengerModel;
-                }
+                _messageAvailable.Reset();
             }
 
-            return null;
+            return messengerModel;
         }
     }
 }

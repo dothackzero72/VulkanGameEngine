@@ -98,6 +98,8 @@ namespace VulkanGameEngineLevelEditor
             RenderPassMessager = new MessengerModel()
             {
                 IsActive = true,
+                richTextBox = richTextBox2,
+                TextBoxName = richTextBox2.Name,
                 ThreadId = Thread.CurrentThread.ManagedThreadId,
             };
             GlobalMessenger.AddMessenger(RenderPassMessager);

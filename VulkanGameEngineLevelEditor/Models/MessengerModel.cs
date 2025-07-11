@@ -15,8 +15,7 @@ namespace VulkanGameEngineLevelEditor.Models
         public void LogMessage(string formattedMessage, DebugUtilsMessageSeverityFlagsEXT severity)
         {
 
-            if (ThreadId == Thread.CurrentThread.ManagedThreadId)
-            {
+         
                 switch (severity)
                 {
                     case DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt:
@@ -36,8 +35,6 @@ namespace VulkanGameEngineLevelEditor.Models
                         break;
                 }
 
-                richTextBox.ScrollToCaret();
-            }
         }
     }
 
