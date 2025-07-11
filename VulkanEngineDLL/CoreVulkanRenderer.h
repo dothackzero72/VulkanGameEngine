@@ -95,6 +95,7 @@ struct GraphicsRenderer
 #ifdef __cplusplus
 extern "C" {
 #endif
+	DLL_EXPORT void Log_LogVulkanMessage(const char* message, int severity);
 	DLL_EXPORT GraphicsRenderer Renderer_RendererSetUp(WindowType windowType, void* windowHandle, void* editorRichTextBoxCallback);
 	DLL_EXPORT VkCommandBuffer Renderer_BeginSingleTimeCommands(VkDevice device, VkCommandPool commandPool);
 	DLL_EXPORT VkResult Renderer_EndSingleTimeCommands(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkCommandBuffer commandBuffer);
