@@ -104,6 +104,7 @@ namespace VulkanGameEngineLevelEditor
             richTextBox2.Location = new System.Drawing.Point(13, 981);
             richTextBox2.Margin = new System.Windows.Forms.Padding(4);
             richTextBox2.Name = "richTextBox2";
+            richTextBox2.ReadOnly = true;
             richTextBox2.Size = new System.Drawing.Size(2495, 213);
             richTextBox2.TabIndex = 9;
             richTextBox2.Text = "";

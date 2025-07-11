@@ -9,51 +9,12 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using VulkanGameEngineLevelEditor.GameEngine.GameObjectComponents;
+using VulkanGameEngineLevelEditor.GameEngine.Structs;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace VulkanGameEngineLevelEditor.GameEngine.Systems
 {
-    public struct SpriteBatchLayer
-    {
-        public Guid RenderPassId { get; set; }
-        public uint SpriteBatchLayerId { get; set; }
-        public uint SpriteLayerMeshId { get; set; }
-        public SpriteBatchLayer() { }
-        public SpriteBatchLayer(Guid renderPassId)
-        {
-            RenderPassId = renderPassId;
-        }
-    }
-
-    public struct Sprite
-    {
-        public enum SpriteAnimationEnum
-        {
-            kStanding,
-            kWalking
-        };
-
-        public uint GameObjectId { get; set; }
-        public uint SpriteID { get; set; } = 0;
-        public uint CurrentAnimationID { get; set; } = 0;
-        public uint CurrentFrame { get; set; } = 0;
-        public Guid SpriteVramId { get; set; }
-        public float CurrentFrameTime { get; set; } = 0.0f;
-        public bool SpriteAlive { get; set; } = true;
-        public ivec2 FlipSprite { get; set; } = new ivec2(0);
-        public vec2 LastSpritePosition { get; set; } = new vec2(0.0f);
-        public vec2 LastSpriteRotation { get; set; } = new vec2(0.0f);
-        public vec2 LastSpriteScale { get; set; } = new vec2(1.0f);
-        public vec2 SpritePosition { get; set; } = new vec2(0.0f);
-        public vec2 SpriteRotation { get; set; } = new vec2(0.0f);
-        public vec2 SpriteScale { get; set; } = new vec2(1.0f);
-
-        public Sprite()
-        {
-        }
-    };
-
     public static unsafe class SpriteSystem
     {
         private static uint NextSpriteBatchLayerID = 0;

@@ -57,7 +57,7 @@
     <ClInclude Include="CTypedef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CoreVulkanRenderer.h">
+    <ClInclude Include="VulkanRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Typedef.h">
@@ -176,7 +176,7 @@
     <ClCompile Include="CVulkanRenderer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CoreVulkanRenderer.cpp">
+    <ClCompile Include="VulkanRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CShaderCompiler.c">

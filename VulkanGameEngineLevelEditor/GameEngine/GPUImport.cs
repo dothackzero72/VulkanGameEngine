@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngine;
+using VulkanGameEngineLevelEditor.GameEngine.Structs;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {

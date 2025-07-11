@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using Vulkan;
 
 
-namespace VulkanGameEngineLevelEditor.GameEngineAPI
+namespace VulkanGameEngineLevelEditor.GameEngine
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct SpriteInstanceStruct
@@ -237,7 +237,7 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
 
         static public ListPtr<VkVertexInputAttributeDescription> GetAttributeDescriptions()
         {
-            uint offsetInstanceTransform = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(SpriteInstanceVertex2D.InstanceTransform));
+            uint offsetInstanceTransform = (uint)Marshal.OffsetOf(typeof(SpriteInstanceVertex2D), nameof(InstanceTransform));
 
             return new ListPtr<VkVertexInputAttributeDescription>
             {

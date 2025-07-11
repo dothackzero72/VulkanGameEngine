@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using VulkanGameEngineLevelEditor.GameEngine.Systems;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
-using VulkanGameEngineLevelEditor.RenderPassWindows;
 
 namespace VulkanGameEngineLevelEditor
 {
@@ -40,13 +39,7 @@ namespace VulkanGameEngineLevelEditor
 
             textBoxWriter = new RichTextBoxWriter(richTextBox2);
 
-            //RenderPassMessager = new MessengerModel()
-            //{
-            //    IsActive = true,
-            //    richTextBox = richTextBox2,
-            //    TextBoxName = richTextBox2.Name,
-            //    ThreadId = Thread.CurrentThread.ManagedThreadId,
-            //};
+
             _messenger = new MessengerModel
             {
                 richTextBox = richTextBox2,

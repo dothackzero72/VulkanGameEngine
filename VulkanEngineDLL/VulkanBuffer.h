@@ -7,7 +7,7 @@
 #include <vector>
 #include "Macro.h"
 #include "Typedef.h"
-#include "CoreVulkanRenderer.h"
+#include "VulkanRenderer.h"
 
 enum BufferTypeEnum
 {

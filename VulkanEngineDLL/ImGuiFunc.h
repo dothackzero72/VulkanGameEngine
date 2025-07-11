@@ -7,7 +7,7 @@
 #include "DLL.h"
 #include "CTypedef.h"
 #include "VulkanWindow.h"
-#include "CoreVulkanRenderer.h"
+#include "VulkanRenderer.h"
 
 struct ImGuiRenderer
 {

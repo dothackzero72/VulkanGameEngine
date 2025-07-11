@@ -27,6 +27,7 @@ namespace VulkanGameEngineLevelEditor.Models
             {
                 case DebugUtilsMessageSeverityFlagsEXT.VerboseBitExt:
                     color = Color.Blue;
+                    
                     prefix = "VERBOSE: ";
                     break;
                 case DebugUtilsMessageSeverityFlagsEXT.InfoBitExt:
@@ -51,8 +52,10 @@ namespace VulkanGameEngineLevelEditor.Models
             richTextBox.SelectionStart = richTextBox.TextLength;
             richTextBox.SelectionLength = 0;
             richTextBox.SelectionColor = color;
+            richTextBox.SelectionFont = new Font(richTextBox.Font, FontStyle.Bold);
             richTextBox.AppendText(prefix);
             richTextBox.SelectionColor = Color.White;
+            richTextBox.SelectionFont = new Font(richTextBox.Font, FontStyle.Regular);
             richTextBox.AppendText(modifiedMessage + Environment.NewLine);
             richTextBox.SelectionColor = Color.Black;
             richTextBox.ScrollToCaret();

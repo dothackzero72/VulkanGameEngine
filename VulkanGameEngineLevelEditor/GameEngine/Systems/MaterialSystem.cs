@@ -13,65 +13,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Vulkan;
+using VulkanGameEngineLevelEditor.GameEngine.Structs;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor.GameEngine.Systems
 {
-    public struct Material
-    {
-        public int VectorMapKey;
-        public Guid MaterialId { get; set; } = new Guid();
-        public uint ShaderMaterialBufferIndex { get; set; } = 0;
-        public int MaterialBufferId { get; set; } = 0;
-
-        public Guid AlbedoMapId { get; set; } = new Guid();
-        public Guid MetallicRoughnessMapId { get; set; } = new Guid();
-        public Guid MetallicMapId { get; set; } = new Guid();
-        public Guid RoughnessMapId { get; set; } = new Guid();
-        public Guid AmbientOcclusionMapId { get; set; } = new Guid();
-        public Guid NormalMapId { get; set; } = new Guid();
-        public Guid DepthMapId { get; set; } = new Guid();
-        public Guid AlphaMapId { get; set; } = new Guid();
-        public Guid EmissionMapId { get; set; } = new Guid();
-        public Guid HeightMapId { get; set; } = new Guid();
-
-        public vec3 Albedo { get; set; } = new vec3(0.0f, 0.35f, 0.45f);
-        public vec3 Emission { get; set; } = new vec3(0.0f);
-        public float Metallic { get; set; } = 0.0f;
-        public float Roughness { get; set; } = 0.0f;
-        public float AmbientOcclusion { get; set; } = 1.0f;
-        public float Alpha { get; set; } = 1.0f;
-
-        public Material()
-        {
-        }
-    };
-
-    public struct MaterialProperitiesBuffer
-    {
-        public vec3 Albedo { get; set; } = new vec3(0.0f, 0.35f, 0.45f);
-        public float Metallic { get; set; } = 0.0f;
-        public float Roughness { get; set; } = 0.0f;
-        public float AmbientOcclusion { get; set; } = 1.0f;
-        public vec3 Emission { get; set; } = new vec3(0.0f);
-        public float Alpha { get; set; } = 1.0f;
-
-        public uint AlbedoMapId { get; set; } = 0;
-        public uint MetallicRoughnessMapId { get; set; } = 0;
-        public uint MetallicMapId { get; set; } = 0;
-        public uint RoughnessMapId { get; set; } = 0;
-        public uint AmbientOcclusionMapId { get; set; } = 0;
-        public uint NormalMapId { get; set; } = 0;
-        public uint DepthMapId { get; set; } = 0;
-        public uint AlphaMapId { get; set; } = 0;
-        public uint EmissionMapId { get; set; } = 0;
-        public uint HeightMapId { get; set; } = 0;
-
-        public MaterialProperitiesBuffer()
-        {
-        }
-    };
 
     public static unsafe class MaterialSystem
     {

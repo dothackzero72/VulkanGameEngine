@@ -14,96 +14,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Vulkan;
+using VulkanGameEngineLevelEditor.GameEngine.Structs;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 
 
 namespace VulkanGameEngineLevelEditor.GameEngine.Systems
 {
-
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public struct TextureJsonLoader
-    {
-        public string TextureFilePath { get; set; }
-        public Guid TextureId { get; set; }
-        public VkFormat TextureByteFormat { get; set; }
-        public VkImageAspectFlagBits ImageType { get; set; }
-        public TextureTypeEnum TextureType { get; set; }
-        public bool UseMipMaps { get; set; }
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct GraphicsRenderer
-    {
-        public VkInstance Instance { get; set; }
-        public VkDevice Device { get; set; }
-        public VkPhysicalDevice PhysicalDevice { get; set; }
-        public VkSurfaceKHR Surface { get; set; }
-        public VkCommandPool CommandPool { get; set; }
-        public VkDebugUtilsMessengerEXT DebugMessenger { get; set; }
-
-        public VkFence* InFlightFences { get; set; }
-        public VkSemaphore* AcquireImageSemaphores { get; set; }
-        public VkSemaphore* PresentImageSemaphores { get; set; }
-        public VkImage* SwapChainImages { get; set; }
-        public VkImageView* SwapChainImageViews { get; set; }
-        public VkExtent2D SwapChainResolution { get; set; }
-        public VkSwapchainKHR Swapchain { get; set; }
-
-        public size_t SwapChainImageCount { get; set; }
-        public size_t ImageIndex { get; set; }
-        public size_t CommandIndex { get; set; }
-        public uint GraphicsFamily { get; set; }
-        public uint PresentFamily { get; set; }
-
-        public VkQueue GraphicsQueue { get; set; }
-        public VkQueue PresentQueue { get; set; }
-        public VkFormat Format { get; set; }
-        public VkColorSpaceKHR ColorSpace { get; set; }
-        public VkPresentModeKHR PresentMode { get; set; }
-
-        public bool RebuildRendererFlag { get; set; }
-    }
-
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct VulkanPipeline
-    {
-        public uint RenderPipelineId { get; set; } = 0;
-        public size_t DescriptorSetLayoutCount { get; set; } = 0;
-        public size_t DescriptorSetCount { get; set; } = 0;
-        public VkDescriptorPool DescriptorPool { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public VkDescriptorSetLayout* DescriptorSetLayoutList { get; set; } = null;
-        public VkDescriptorSet* DescriptorSetList { get; set; } = null;
-        public VkPipeline Pipeline { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public VkPipelineLayout PipelineLayout { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public VkPipelineCache PipelineCache { get; set; } = VulkanCSConst.VK_NULL_HANDLE;
-        public VulkanPipeline()
-        {
-        }
-
-    };
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct VulkanRenderPass
-    {
-
-        public Guid RenderPassId { get; set; } = Guid.Empty;
-        public VkSampleCountFlagBits SampleCount { get; set; } = VkSampleCountFlagBits.VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM;
-        public VkRect2D RenderArea { get; set; } = new VkRect2D();
-        public VkRenderPass RenderPass { get; set; } = new VkRenderPass();
-        public VkFramebuffer* FrameBufferList { get; set; } = null;
-        public VkClearValue* ClearValueList { get; set; } = null;
-        public size_t FrameBufferCount { get; set; } = 0;
-        public size_t ClearValueCount { get; set; } = 0;
-        public VkCommandBuffer CommandBuffer { get; set; }
-        public bool UseFrameBufferResolution { get; set; }
-        public VulkanRenderPass()
-        {
-        }
-    };
-
     public unsafe static class RenderSystem
     {
         public static GraphicsRenderer renderer { get; set; }

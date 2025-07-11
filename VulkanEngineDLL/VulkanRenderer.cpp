@@ -1,11 +1,11 @@
-#include "CoreVulkanRenderer.h"
+#include "VulkanRenderer.h"
 #include <cstdlib>
 #include <iostream>
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 #include "MemorySystem.h"
 
-HWND editorRichTextBoxCallback = nullptr;
+HWND editorRichTextBoxCallback;
 LogVulkanMessageCallback g_logVulkanMessageCallback = nullptr;
 
 void Debug_SetRichTextBoxHandle(HWND hwnd)

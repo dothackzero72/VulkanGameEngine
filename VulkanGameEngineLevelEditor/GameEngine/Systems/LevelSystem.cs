@@ -12,47 +12,13 @@ using System.Runtime.InteropServices;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using VulkanGameEngineLevelEditor.GameEngine.Structs;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.Models;
 
 
 namespace VulkanGameEngineLevelEditor.GameEngine.Systems
 {
-    public class GameObjectLoader
-    {
-        public string GameObjectPath { get; set; }
-        public List<double> GameObjectPositionOverride { get; set; }
-    }
-
-    public class LevelLoader
-    {
-        public string LevelID { get; set; }
-        public List<string> LoadTextures { get; set; }
-        public List<string> LoadMaterials { get; set; }
-        public List<string> LoadSpriteVRAM { get; set; }
-        public List<string> LoadTileSetVRAM { get; set; }
-        public List<GameObjectLoader> GameObjectList { get; set; }
-        public string LoadLevelLayout { get; set; }
-    }
-
-    public unsafe struct LevelLayer
-    {
-        public Guid LevelId { get; set; }
-        public uint MeshId { get; set; }
-        public Guid MaterialId { get; set; }
-        public Guid TileSetId { get; set; }
-        public int LevelLayerIndex { get; set; }
-        public ivec2 LevelBounds { get; set; }
-        public uint* TileIdMap { get; set; }
-        public Tile* TileMap { get; set; }
-        public Vertex2D* VertexList { get; set; }
-        public uint* IndexList { get; set; }
-        public size_t TileIdMapCount { get; set; }
-        public size_t TileMapCount { get; set; }
-        public size_t VertexListCount { get; set; }
-        public size_t IndexListCount { get; set; }
-    };
-
     public static unsafe class LevelSystem
     {
         public static OrthographicCamera2D OrthographicCamera { get; set; } = new OrthographicCamera2D();

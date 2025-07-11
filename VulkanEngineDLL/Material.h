@@ -2,7 +2,7 @@
 #include "DLL.h"
 #include "Typedef.h"
 #include "json.h"
-#include "CoreVulkanRenderer.h"
+#include "VulkanRenderer.h"
 #include "VulkanBuffer.h"
 #include "Vector.h"
 #include "Texture.h"

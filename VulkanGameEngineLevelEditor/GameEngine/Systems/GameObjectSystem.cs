@@ -9,39 +9,11 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using VulkanGameEngineLevelEditor.GameEngine.GameObjectComponents;
+using VulkanGameEngineLevelEditor.GameEngine.Structs;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor.GameEngine.Systems
 {
-    public class GameObject
-    {
-        public int GameObjectId { get; set; }
-
-        public GameObject()
-        {
-
-        }
-
-        public GameObject(int gameObjectId)
-        {
-            GameObjectId = gameObjectId;
-        }
-    };
-
-    public class GameObjectComponentLoader
-    {
-        public vec2 GameObjectPosition { get; set; }
-        public vec2 GameObjectRotation { get; set; }
-        public vec2 GameObjectScale { get; set; }
-        public int ComponentType { get; set; }
-        public Guid VramId { get; set; }
-    }
-
-    public class LoadGameObjectComponents
-    {
-        public List<GameObjectComponentLoader> GameObjectComponentList { get; set; }
-    }
-
     public static class GameObjectSystem
     {
         public static ListPtr<Vertex2D> SpriteVertexList = new ListPtr<Vertex2D>()

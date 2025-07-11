@@ -1,5 +1,5 @@
 #pragma once
-#include <CoreVulkanRenderer.h>
+#include <VulkanRenderer.h>
 #include <VulkanRenderPass.h>
 #include <ImGuiFunc.h>
 #include "SceneDataBuffer.h"

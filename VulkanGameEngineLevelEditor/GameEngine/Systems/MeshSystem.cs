@@ -9,97 +9,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Vulkan;
-using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.GameEngine.Structs;
 
 namespace VulkanGameEngineLevelEditor.GameEngine.Systems
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct VertexLoaderStruct
-    {
-        public BufferTypeEnum VertexType { get; set; }
-        public uint MeshVertexBufferId { get; set; }
-        public size_t SizeofVertex { get; set; }
-        public size_t VertexCount { get; set; }
-        public void* VertexData { get; set; }
-    };
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct IndexLoaderStruct
-    {
-        public uint MeshIndexBufferId { get; set; }
-        public size_t SizeofIndex { get; set; }
-        public size_t IndexCount { get; set; }
-        public void* IndexData { get; set; }
-    };
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct TransformLoaderStruct
-    {
-        public uint MeshTransformBufferId { get; set; }
-        public size_t SizeofTransform { get; set; }
-        public void* TransformData { get; set; }
-    };
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct MeshPropertiesLoaderStruct
-    {
-        public uint PropertiesBufferId { get; set; }
-        public size_t SizeofMeshProperties { get; set; }
-        public void* MeshPropertiesData { get; set; }
-    };
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public unsafe struct MeshLoader
-    {
-        public uint ParentGameObjectID { get; set; }
-        public uint MeshId { get; set; }
-        public Guid MaterialId { get; set; }
-
-        public VertexLoaderStruct VertexLoader { get; set; }
-        public IndexLoaderStruct IndexLoader { get; set; }
-        public TransformLoaderStruct TransformLoader { get; set; }
-        public MeshPropertiesLoaderStruct MeshPropertiesLoader { get; set; }
-    };
-
-    [StructLayout(LayoutKind.Sequential, Pack = 16)]
-    public struct MeshPropertiesStruct
-    {
-        public uint ShaderMaterialBufferIndex = 0;
-        private uint _padding1 = 0;
-        private uint _padding2 = 0;
-        private uint _padding3 = 0;
-        public mat4 MeshTransform = mat4.Identity;
-
-        public MeshPropertiesStruct()
-        {
-
-        }
-    };
-
-    [StructLayout(LayoutKind.Sequential, Pack = 16)]
-    public struct Mesh
-    {
-        public uint MeshId = 0;
-        public uint ParentGameObjectID = 0;
-        public uint GameObjectTransform = 0;
-        public nuint VertexCount = 0;
-        public nuint IndexCount = 0;
-        public Guid MaterialId = Guid.Empty;
-        public BufferTypeEnum VertexType = BufferTypeEnum.BufferType_Undefined;
-        public vec3 MeshPosition = new vec3(0.0f);
-        public vec3 MeshRotation = new vec3(0.0f);
-        public vec3 MeshScale = new vec3(1.0f);
-        public int MeshVertexBufferId = 0;
-        public int MeshIndexBufferId = 0;
-        public int MeshTransformBufferId = 0;
-        public int PropertiesBufferId = 0;
-        public MeshPropertiesStruct MeshProperties = new MeshPropertiesStruct();
-
-        public Mesh()
-        {
-        }
-    };
-
     public unsafe static class MeshSystem
     {
         public const VkBufferUsageFlagBits MeshBufferUsageSettings = VkBufferUsageFlagBits.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |

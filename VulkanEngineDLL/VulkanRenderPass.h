@@ -3,7 +3,7 @@
 #include "JsonStruct.h"
 #include "JsonLoader.h"
 #include "MemorySystem.h"
-#include "CoreVulkanRenderer.h"
+#include "VulkanRenderer.h"
 #include "VulkanPipeline.h"
 #include "Texture.h"
 
