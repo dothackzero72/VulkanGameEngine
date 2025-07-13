@@ -42,6 +42,11 @@ namespace VulkanGameEngineLevelEditor
             objectDataGridView1 = new ObjectDataGridView();
             dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -91,7 +96,7 @@ namespace VulkanGameEngineLevelEditor
             // panel1
             // 
             panel1.Controls.Add(pictureBox1);
-            panel1.Location = new System.Drawing.Point(300, 74);
+            panel1.Location = new System.Drawing.Point(301, 70);
             panel1.Margin = new System.Windows.Forms.Padding(4);
             panel1.Name = "panel1";
             panel1.Size = new System.Drawing.Size(1600, 900);
@@ -112,15 +117,16 @@ namespace VulkanGameEngineLevelEditor
             // panel2
             // 
             panel2.Controls.Add(objectDataGridView1);
-            panel2.Location = new System.Drawing.Point(1908, 74);
+            panel2.Location = new System.Drawing.Point(1909, 74);
             panel2.Margin = new System.Windows.Forms.Padding(4);
             panel2.Name = "panel2";
-            panel2.Size = new System.Drawing.Size(600, 900);
+            panel2.Size = new System.Drawing.Size(599, 900);
             panel2.TabIndex = 11;
             // 
             // objectDataGridView1
             // 
             objectDataGridView1.AllowUserToAddRows = false;
+            objectDataGridView1.AutoGenerateColumns = false;
             objectDataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             objectDataGridView1.BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 30);
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -132,7 +138,7 @@ namespace VulkanGameEngineLevelEditor
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             objectDataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             objectDataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            objectDataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2 });
+            objectDataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2, dataGridViewTextBoxColumn5, dataGridViewTextBoxColumn6, dataGridViewTextBoxColumn7, dataGridViewTextBoxColumn8, dataGridViewTextBoxColumn9 });
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(40, 40, 40);
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -147,11 +153,12 @@ namespace VulkanGameEngineLevelEditor
             objectDataGridView1.RowHeadersVisible = false;
             objectDataGridView1.RowHeadersWidth = 62;
             objectDataGridView1.SelectedObject = null;
-            objectDataGridView1.Size = new System.Drawing.Size(600, 900);
+            objectDataGridView1.Size = new System.Drawing.Size(599, 900);
             objectDataGridView1.TabIndex = 1;
             // 
             // dataGridViewTextBoxColumn1
             // 
+            dataGridViewTextBoxColumn1.DataPropertyName = "Property";
             dataGridViewTextBoxColumn1.HeaderText = "Property";
             dataGridViewTextBoxColumn1.MinimumWidth = 8;
             dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
@@ -159,9 +166,46 @@ namespace VulkanGameEngineLevelEditor
             // 
             // dataGridViewTextBoxColumn2
             // 
+            dataGridViewTextBoxColumn2.DataPropertyName = "Value";
             dataGridViewTextBoxColumn2.HeaderText = "Value";
             dataGridViewTextBoxColumn2.MinimumWidth = 8;
             dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            // 
+            // dataGridViewTextBoxColumn5
+            // 
+            dataGridViewTextBoxColumn5.DataPropertyName = "Property";
+            dataGridViewTextBoxColumn5.HeaderText = "Property";
+            dataGridViewTextBoxColumn5.MinimumWidth = 8;
+            dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            dataGridViewTextBoxColumn5.ReadOnly = true;
+            // 
+            // dataGridViewTextBoxColumn6
+            // 
+            dataGridViewTextBoxColumn6.DataPropertyName = "Value";
+            dataGridViewTextBoxColumn6.HeaderText = "Value";
+            dataGridViewTextBoxColumn6.MinimumWidth = 8;
+            dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
+            // 
+            // dataGridViewTextBoxColumn7
+            // 
+            dataGridViewTextBoxColumn7.DataPropertyName = "PropertyType";
+            dataGridViewTextBoxColumn7.HeaderText = "PropertyType";
+            dataGridViewTextBoxColumn7.MinimumWidth = 8;
+            dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
+            // 
+            // dataGridViewTextBoxColumn8
+            // 
+            dataGridViewTextBoxColumn8.DataPropertyName = "Category";
+            dataGridViewTextBoxColumn8.HeaderText = "Category";
+            dataGridViewTextBoxColumn8.MinimumWidth = 8;
+            dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
+            // 
+            // dataGridViewTextBoxColumn9
+            // 
+            dataGridViewTextBoxColumn9.DataPropertyName = "PropertyName";
+            dataGridViewTextBoxColumn9.HeaderText = "PropertyName";
+            dataGridViewTextBoxColumn9.MinimumWidth = 8;
+            dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
             // 
             // dataGridViewTextBoxColumn3
             // 
@@ -264,6 +308,11 @@ namespace VulkanGameEngineLevelEditor
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private LevelEditorTreeView levelEditorTreeView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
     }
 }
 

@@ -1,13 +1,19 @@
 ﻿using Newtonsoft.Json;
 using Silk.NET.Vulkan;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using VulkanGameEngineLevelEditor.GameEngine.Structs;
 using VulkanGameEngineLevelEditor.GameEngine.Systems;
 using VulkanGameEngineLevelEditor.GameEngineAPI;
+using VulkanGameEngineLevelEditor.LevelEditor.EditorEnhancements;
 using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor
@@ -17,12 +23,16 @@ namespace VulkanGameEngineLevelEditor
         private volatile bool running;
         private volatile bool levelEditorRunning;
         private Stopwatch stopwatch = new Stopwatch();
-        private RichTextBoxWriter textBoxWriter;
+        public RichTextBoxWriter textBoxWriter;
         private Thread renderThread { get; set; }
         public RenderPassBuildInfoModel renderPass { get; private set; } = new RenderPassBuildInfoModel();
         private MessengerModel _messenger;
         private GCHandle _callbackHandle;
 
+        private object lockObject = new object();
+        private object sharedData;
+
+        BlockingCollection<Dictionary<int, GameObject>> gameObjectData = new BlockingCollection<Dictionary<int, GameObject>>();
         [DllImport("kernel32.dll")] static extern bool AllocConsole();
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void LogVulkanMessageDelegate(string message, int severity);
@@ -51,49 +61,11 @@ namespace VulkanGameEngineLevelEditor
             GlobalMessenger.AddMessenger(_messenger);
 
             LogVulkanMessageDelegate callback = LogVulkanMessage;
-            _callbackHandle = GCHandle.Alloc(callback); 
+            _callbackHandle = GCHandle.Alloc(callback);
             SetLogVulkanMessageCallback(callback);
 
-            // Buttons
-            var saveButton = new System.Windows.Forms.Button { Text = "Save", Location = new Point(13, 10), Size = new Size(80, 30) };
-            var undoButton = new System.Windows.Forms.Button { Text = "Undo", Location = new Point(100, 10), Size = new Size(80, 30) };
-            var redoButton = new System.Windows.Forms.Button { Text = "Redo", Location = new Point(190, 10), Size = new Size(80, 30) };
-            var addPipelineButton = new System.Windows.Forms.Button { Text = "Add Pipeline", Location = new Point(290, 10), Size = new Size(80, 30) };
-            saveButton.Click += (s, e) => objectDataGridView1.SaveToJson();
-            undoButton.Click += (s, e) => objectDataGridView1.Undo();
-            redoButton.Click += (s, e) => objectDataGridView1.Redo();
-            addPipelineButton.Click += (s, e) => levelEditorTreeView1.AddRenderPipeline();
-
-            var renderPassBuildInfo = new RenderPassBuildInfoModel();
-            levelEditorTreeView1.RootObject = renderPassBuildInfo;
-            levelEditorTreeView1.SelectionChanged += obj =>
-            {
-                if (obj != null)
-                {
-                    objectDataGridView1.SelectedObject = obj;
-                }
-            };
-
-            // Add controls to form
-            Controls.AddRange(new Control[] { levelEditorTreeView1, objectDataGridView1, saveButton, undoButton, redoButton, addPipelineButton });
-
-            // Load data (example)
-            try
-            {
-                objectDataGridView1.LoadFromJson<RenderPassBuildInfoModel>("C:\\Users\\dotha\\Documents\\GitHub\\VulkanGameEngine\\RenderPass\\LevelShader2DRenderPass.json");
-                levelEditorTreeView1.RootObject = objectDataGridView1.SelectedObject; // Sync initial state
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to load JSON: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            // Resize event to handle form resizing
-            this.Resize += (s, e) =>
-            {
-                levelEditorTreeView1.Size = new Size(270, this.ClientSize.Height - 51);
-                objectDataGridView1.Size = new Size(this.ClientSize.Width - 303, this.ClientSize.Height - 51);
-            };
+            levelEditorTreeView1.RootObject = new GameObject();
+            levelEditorTreeView1.dataGridView = objectDataGridView1;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -123,10 +95,27 @@ namespace VulkanGameEngineLevelEditor
                 GameSystem.StartUp(this.pictureBox1.Handle.ToPointer(), this.richTextBox2.Handle.ToPointer());
             }));
 
+            lock (lockObject)
+            {
+                sharedData = levelEditorTreeView1;
+            }
+
+            lock (lockObject)
+            {
+                if (sharedData is LevelEditorTreeView levelEditorTree)
+                {
+                    foreach (var gameObject in GameObjectSystem.GameObjectMap.Values)
+                    {
+                        levelEditorTree.AddGameObject(gameObject);
+                    }
+                    levelEditorTree.PopulateTree();
+                }
+            }
+
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-
             double lastTime = 0.0;
+
             while (running)
             {
                 double currentTime = stopwatch.Elapsed.TotalSeconds;
@@ -164,6 +153,11 @@ namespace VulkanGameEngineLevelEditor
         }
 
         private void SaveLevel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void levelEditorTreeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
 
         }

@@ -1,51 +1,50 @@
 ﻿using GlmSharp;
 using Newtonsoft.Json;
-using Silk.NET.Vulkan;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Numerics;
+using System.Data;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System;
+using VulkanGameEngineLevelEditor.GameEngine.GameObjectComponents;
+using VulkanGameEngineLevelEditor.GameEngine.Structs;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
 using VulkanGameEngineLevelEditor.LevelEditor.Commands;
 using VulkanGameEngineLevelEditor.LevelEditor.Dialog;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.IO;
+using System.Drawing;
+using System.Linq;
 
-namespace VulkanGameEngineLevelEditor.LevelEditor.EditorEnhancements
+public class ObjectDataGridView : DataGridView
 {
-    public class ObjectDataGridView : DataGridView
+    private object selectedObject;
+    private readonly Stack<ICommand> undoStack = new Stack<ICommand>();
+    private readonly Stack<ICommand> redoStack = new Stack<ICommand>();
+    private readonly ToolTip toolTip = new ToolTip();
+    private string jsonFilePath;
+    private DataTable dataTable;
+
+    public ObjectDataGridView()
     {
-        private object selectedObject;
-        private readonly Stack<ICommand> undoStack = new Stack<ICommand>();
-        private readonly Stack<ICommand> redoStack = new Stack<ICommand>();
-        private readonly System.Windows.Forms.ToolTip toolTip = new System.Windows.Forms.ToolTip();
-        private string jsonFilePath;
+        InitializeGrid();
+    }
 
-
-        public ObjectDataGridView()
+    public object SelectedObject
+    {
+        get => selectedObject;
+        set
         {
-            InitializeGrid();
+            selectedObject = value;
+            PopulateDataTable();
+            DataSource = dataTable;
         }
+    }
 
-        public object SelectedObject
+    public void LoadFromJson<T>(string filePath)
+    {
+        jsonFilePath = filePath;
+        try
         {
-            get => selectedObject;
-            set
-            {
-                selectedObject = value;
-                PopulateGrid();
-            }
-        }
-
-        public void LoadFromJson<T>(string filePath)
-        {
-            jsonFilePath = filePath;
             if (File.Exists(filePath))
             {
                 string json = File.ReadAllText(filePath);
@@ -56,215 +55,244 @@ namespace VulkanGameEngineLevelEditor.LevelEditor.EditorEnhancements
                 SelectedObject = Activator.CreateInstance<T>();
             }
         }
-
-        public void SaveToJson()
+        catch (JsonException ex)
         {
-            if (selectedObject == null || string.IsNullOrEmpty(jsonFilePath))
-            {
-                return;
-            }
-            string json = JsonConvert.SerializeObject(selectedObject, Formatting.Indented);
-            File.WriteAllText(jsonFilePath, json);
+            MessageBox.Show($"Failed to load JSON: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            SelectedObject = Activator.CreateInstance<T>();
         }
+    }
 
-        private void InitializeGrid()
+    public void SaveToJson()
+    {
+        if (selectedObject == null || string.IsNullOrEmpty(jsonFilePath)) return;
+        UpdateObjectFromDataTable();
+        string json = JsonConvert.SerializeObject(selectedObject, Formatting.Indented);
+        File.WriteAllText(jsonFilePath, json);
+    }
+
+    private void InitializeGrid()
+    {
+        Dock = DockStyle.Fill;
+        AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        AllowUserToAddRows = false;
+        RowHeadersVisible = false;
+        BackgroundColor = Color.FromArgb(30, 30, 30);
+        DefaultCellStyle.BackColor = Color.FromArgb(40, 40, 40);
+        DefaultCellStyle.ForeColor = Color.White;
+        ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(50, 50, 50);
+
+        dataTable = new DataTable();
+        dataTable.Columns.Add("Property", typeof(string));
+        dataTable.Columns.Add("Value", typeof(string));
+        dataTable.Columns.Add("PropertyType", typeof(Type)); // Hidden
+        dataTable.Columns.Add("Category", typeof(string));  // Hidden
+        dataTable.Columns.Add("PropertyName", typeof(string)); // Hidden
+
+        Columns.Add("Property", "Property");
+        Columns.Add("Value", "Value");
+        Columns[0].ReadOnly = true;
+        Columns[0].DataPropertyName = "Property";
+        Columns[1].DataPropertyName = "Value";
+
+        CellBeginEdit += ObjectDataGridView_CellBeginEdit;
+        CellEndEdit += ObjectDataGridView_CellEndEdit;
+        CellMouseEnter += ObjectDataGridView_CellMouseEnter;
+    }
+
+    private void PopulateDataTable()
+    {
+        dataTable.Rows.Clear();
+        if (selectedObject == null) return;
+
+        var properties = GetCachedProperties(selectedObject.GetType());
+        foreach (var prop in properties)
         {
-            Dock = DockStyle.Fill;
-            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            AllowUserToAddRows = false;
-            RowHeadersVisible = false;
-            BackgroundColor = Color.FromArgb(30, 30, 30);
-            DefaultCellStyle.BackColor = Color.FromArgb(40, 40, 40);
-            DefaultCellStyle.ForeColor = Color.White;
-            ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(50, 50, 50);
-
-            Columns.Add("Property", "Property");
-            Columns.Add("Value", "Value");
-            Columns[0].ReadOnly = true;
-
-            CellBeginEdit += ObjectDataGridView_CellBeginEdit;
-            CellEndEdit += ObjectDataGridView_CellEndEdit;
-            CellMouseEnter += ObjectDataGridView_CellMouseEnter;
+            var category = prop.GetCustomAttribute<CategoryAttribute>()?.Category ?? "General";
+            var displayName = $"{category}: {prop.Name}";
+            object value = prop.GetValue(selectedObject);
+            dataTable.Rows.Add(displayName, FormatValue(value, prop.PropertyType), prop.PropertyType, category, prop.Name);
         }
+    }
 
-        private void PopulateGrid()
+    private string FormatValue(object value, Type propertyType)
+    {
+        if (value == null) return string.Empty;
+        if (propertyType == typeof(Transform2DComponent)) return value.ToString();
+        if (propertyType == typeof(vec2)) return $"({((vec2)value).x}, {((vec2)value).y})";
+        if (propertyType == typeof(ivec2)) return $"({((ivec2)value).x}, {((ivec2)value).y})";
+        if (propertyType == typeof(Sprite.SpriteAnimationEnum)) return value.ToString();
+        if (propertyType == typeof(List<ComponentTypeEnum>)) return $"[{((List<ComponentTypeEnum>)value).Count} components]";
+        if (propertyType.IsEnum) return value.ToString();
+        return value?.ToString() ?? string.Empty;
+    }
+
+    private void UpdateObjectFromDataTable()
+    {
+        if (selectedObject == null) return;
+
+        foreach (DataRow row in dataTable.Rows)
         {
-            Rows.Clear();
-            if (selectedObject == null) return;
-
-            var properties = selectedObject.GetType().GetProperties()
-                .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable != false)
-                .OrderBy(p => p.GetCustomAttribute<CategoryAttribute>()?.Category ?? "General");
-
-            foreach (var prop in properties)
-            {
-                var category = prop.GetCustomAttribute<CategoryAttribute>()?.Category ?? "General";
-                var displayName = $"{category}: {prop.Name}";
-                object value = prop.GetValue(selectedObject);
-                Rows.Add(displayName, FormatValue(value, prop.PropertyType));
-            }
-        }
-        private string FormatValue(object value, Type propertyType)
-        {
-            if (value == null) return string.Empty;
-            if (propertyType == typeof(vec3)) return value.ToString();
-            if (propertyType == typeof(Color)) return ((Color)value).Name;
-            if (propertyType.IsEnum) return value.ToString();
-            if (propertyType == typeof(List<RenderPass>)) return $"[{((List<RenderPass>)value).Count} passes]";
-            return value.ToString();
-        }
-
-        private void ObjectDataGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
-        {
-            if (selectedObject == null) return;
-
-            string propName = Rows[e.RowIndex].Cells[0].Value.ToString().Split(':').Last().Trim();
+            string propName = row["PropertyName"].ToString();
             var propInfo = selectedObject.GetType().GetProperty(propName);
-
-            if (propInfo.PropertyType == typeof(vec3))
+            if (propInfo != null && propInfo.CanWrite)
             {
-                e.Cancel = true;
-                var currentValue = (vec3)propInfo.GetValue(selectedObject);
-                var dialog = new Vec3EditDialog(currentValue);
-                if (dialog.ShowDialog() == DialogResult.OK)
+                try
                 {
-                    var command = new PropertyChangeCommand(selectedObject, propInfo, currentValue, dialog.Result);
-                    command.Execute();
-                    undoStack.Push(command);
-                    redoStack.Clear();
-                    Rows[e.RowIndex].Cells[1].Value = FormatValue(dialog.Result, propInfo.PropertyType);
-                }
-            }
-            else if (propInfo.PropertyType == typeof(Color))
-            {
-                e.Cancel = true;
-                using (var colorDialog = new ColorDialog())
-                {
-                    colorDialog.Color = (Color)propInfo.GetValue(selectedObject);
-                    if (colorDialog.ShowDialog() == DialogResult.OK)
+                    object newValue = ConvertValue(row["Value"].ToString(), propInfo.PropertyType);
+                    if (newValue != null)
                     {
-                        var command = new PropertyChangeCommand(selectedObject, propInfo, propInfo.GetValue(selectedObject), colorDialog.Color);
-                        command.Execute();
-                        undoStack.Push(command);
-                        redoStack.Clear();
-                        Rows[e.RowIndex].Cells[1].Value = FormatValue(colorDialog.Color, propInfo.PropertyType);
+                        propInfo.SetValue(selectedObject, newValue);
                     }
                 }
-            }
-            else if (propInfo.PropertyType.IsEnum)
-            {
-                e.Cancel = true;
-                var currentValue = propInfo.GetValue(selectedObject);
-                var enumDialog = new EnumEditDialog(propInfo.PropertyType, currentValue);
-                if (enumDialog.ShowDialog() == DialogResult.OK)
+                catch
                 {
-                    var command = new PropertyChangeCommand(selectedObject, propInfo, currentValue, enumDialog.Result);
-                    command.Execute();
-                    undoStack.Push(command);
-                    redoStack.Clear();
-                    Rows[e.RowIndex].Cells[1].Value = FormatValue(enumDialog.Result, propInfo.PropertyType);
+                    // Skip invalid values
                 }
             }
-            //else if (propInfo.PropertyType == typeof(List<RenderPass>))
-            //{
-            //    e.Cancel = true;
-            //    var currentValue = (List<RenderPass>)propInfo.GetValue(selectedObject);
-            //    var dialog = new RenderPassListDialog(currentValue);
-            //    if (dialog.ShowDialog() == DialogResult.OK)
-            //    {
-            //        var command = new PropertyChangeCommand(selectedObject, propInfo, currentValue, dialog.Result);
-            //        command.Execute();
-            //        undoStack.Push(command);
-            //        redoStack.Clear();
-            //        Rows[e.RowIndex].Cells[1].Value = FormatValue(dialog.Result, propInfo.PropertyType);
-            //    }
-            //}
         }
+    }
 
-        private void ObjectDataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+    private void ObjectDataGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+    {
+        if (selectedObject == null) return;
+
+        string propName = dataTable.Rows[e.RowIndex]["PropertyName"].ToString();
+        var propInfo = selectedObject.GetType().GetProperty(propName);
+
+        if (propInfo?.PropertyType.IsEnum == true)
         {
-            if (selectedObject == null) return;
-
-            string propName = Rows[e.RowIndex].Cells[0].Value.ToString().Split(':').Last().Trim();
-            string newValue = Rows[e.RowIndex].Cells[1].Value?.ToString();
-            var propInfo = selectedObject.GetType().GetProperty(propName);
-
-            if (propInfo == null || !propInfo.CanWrite) return;
-
-            try
+            var cell = new DataGridViewComboBoxCell { DataSource = Enum.GetNames(propInfo.PropertyType) };
+            cell.Value = propInfo.GetValue(selectedObject)?.ToString();
+            Rows[e.RowIndex].Cells[1] = cell;
+        }
+        else if (propInfo?.PropertyType == typeof(bool))
+        {
+            var cell = new DataGridViewCheckBoxCell();
+            cell.Value = propInfo.GetValue(selectedObject);
+            Rows[e.RowIndex].Cells[1] = cell;
+        }
+        else if (propInfo?.PropertyType == typeof(vec2) || propInfo?.PropertyType == typeof(ivec2))
+        {
+            var currentValue = (dynamic)propInfo.GetValue(selectedObject);
+            var dialog = new Vec2EditDialog(currentValue.x, currentValue.y);
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
-                object oldValue = propInfo.GetValue(selectedObject);
-                object convertedValue = ConvertValue(newValue, propInfo.PropertyType);
+                var newValue = propInfo.PropertyType == typeof(vec2)
+                    ? new vec2(dialog.X, dialog.Y)
+                    : new ivec2((int)dialog.X, (int)dialog.Y);
+                var command = new PropertyChangeCommand(selectedObject, propInfo, currentValue, newValue);
+                command.Execute();
+                undoStack.Push(command);
+                redoStack.Clear();
+                dataTable.Rows[e.RowIndex]["Value"] = FormatValue(newValue, propInfo.PropertyType);
+            }
+            e.Cancel = true;
+        }
+    }
+
+    private void ObjectDataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+    {
+        if (selectedObject == null) return;
+
+        string propName = dataTable.Rows[e.RowIndex]["PropertyName"].ToString();
+        string newValue = dataTable.Rows[e.RowIndex]["Value"]?.ToString();
+        var propInfo = selectedObject.GetType().GetProperty(propName);
+
+        if (propInfo == null || !propInfo.CanWrite) return;
+
+        try
+        {
+            object oldValue = propInfo.GetValue(selectedObject);
+            object convertedValue = ConvertValue(newValue, propInfo.PropertyType);
+            if (convertedValue != null && !Equals(oldValue, convertedValue))
+            {
                 var command = new PropertyChangeCommand(selectedObject, propInfo, oldValue, convertedValue);
                 command.Execute();
                 undoStack.Push(command);
                 redoStack.Clear();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Invalid value: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Rows[e.RowIndex].Cells[1].Value = FormatValue(propInfo.GetValue(selectedObject), propInfo.PropertyType);
-            }
         }
-
-        private object ConvertValue(string input, Type targetType)
+        catch (Exception ex)
         {
-            if (string.IsNullOrEmpty(input)) return null;
-
-            if (targetType == typeof(string)) return input;
-            if (targetType == typeof(int)) return int.Parse(input);
-            if (targetType == typeof(float)) return float.Parse(input);
-            if (targetType == typeof(bool)) return bool.Parse(input);
-            if (targetType == typeof(Color)) return Color.FromName(input);
-            if (targetType == typeof(Vector3))
-            {
-                var cleaned = input.Trim('(', ')').Split(',');
-                if (cleaned.Length == 3)
-                    return new Vector3(
-                        float.Parse(cleaned[0].Trim()),
-                        float.Parse(cleaned[1].Trim()),
-                        float.Parse(cleaned[2].Trim())
-                    );
-                throw new FormatException("Vector3 format must be (x, y, z)");
-            }
-
-            throw new NotSupportedException($"Type {targetType.Name} is not supported.");
+            MessageBox.Show($"Invalid value: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            dataTable.Rows[e.RowIndex]["Value"] = FormatValue(propInfo.GetValue(selectedObject), propInfo.PropertyType);
         }
+    }
 
-        private void ObjectDataGridView_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+    private object ConvertValue(string input, Type targetType)
+    {
+        if (string.IsNullOrEmpty(input)) return null;
+
+        if (targetType == typeof(string)) return input;
+        if (targetType == typeof(int)) return int.TryParse(input, out int result) ? result : 0;
+        if (targetType == typeof(float)) return float.TryParse(input, out float result) ? result : 0f;
+        if (targetType == typeof(bool)) return bool.TryParse(input, out bool result) ? result : false;
+        if (targetType.IsEnum) return Enum.TryParse(targetType, input, out object result) ? result : Activator.CreateInstance(targetType);
+        if (targetType == typeof(vec2))
         {
-            if (e.RowIndex < 0) return;
-
-            string propName = Rows[e.RowIndex].Cells[0].Value.ToString().Split(':').Last().Trim();
-            var prop = selectedObject?.GetType().GetProperty(propName);
-            var description = prop?.GetCustomAttribute<DescriptionAttribute>()?.Description;
-            if (!string.IsNullOrEmpty(description))
-            {
-                toolTip.Show(description, this, PointToClient(Cursor.Position), 2000);
-            }
+            var parts = input.Replace("(", "").Replace(")", "").Split(',');
+            if (parts.Length == 2 && float.TryParse(parts[0].Trim(), out float x) && float.TryParse(parts[1].Trim(), out float y))
+                return new vec2(x, y);
         }
-
-        public void Undo()
+        if (targetType == typeof(ivec2))
         {
-            if (undoStack.Count == 0) return;
-            var command = undoStack.Pop();
-            command.Undo();
-            redoStack.Push(command);
-            PopulateGrid();
+            var parts = input.Replace("(", "").Replace(")", "").Split(',');
+            if (parts.Length == 2 && int.TryParse(parts[0].Trim(), out int x) && int.TryParse(parts[1].Trim(), out int y))
+                return new ivec2(x, y);
         }
+        return null;
+    }
 
-        public void Redo()
-        {
-            if (redoStack.Count == 0) return;
-            var command = redoStack.Pop();
-            command.Execute();
-            undoStack.Push(command);
-            PopulateGrid();
-        }
+    private void ObjectDataGridView_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+    {
+        if (e.RowIndex < 0) return;
 
-        public void RefreshGrid()
+        string propName = dataTable.Rows[e.RowIndex]["PropertyName"].ToString();
+        var prop = selectedObject?.GetType().GetProperty(propName);
+        var description = prop?.GetCustomAttribute<DescriptionAttribute>()?.Description;
+        if (!string.IsNullOrEmpty(description))
         {
-            PopulateGrid();
+            toolTip.Show(description, this, PointToClient(Cursor.Position), 2000);
         }
+    }
+
+    public void Undo()
+    {
+        if (undoStack.Count == 0) return;
+        var command = undoStack.Pop();
+        command.Undo();
+        redoStack.Push(command);
+        PopulateDataTable();
+        DataSource = dataTable;
+    }
+
+    public void Redo()
+    {
+        if (redoStack.Count == 0) return;
+        var command = redoStack.Pop();
+        command.Execute();
+        undoStack.Push(command);
+        PopulateDataTable();
+        DataSource = dataTable;
+    }
+
+    public void RefreshGrid()
+    {
+        PopulateDataTable();
+        DataSource = dataTable;
+    }
+
+    private readonly Dictionary<Type, PropertyInfo[]> propertyCache = new Dictionary<Type, PropertyInfo[]>();
+    private PropertyInfo[] GetCachedProperties(Type type)
+    {
+        if (!propertyCache.TryGetValue(type, out var properties))
+        {
+            properties = type.GetProperties()
+                .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable != false)
+                .OrderBy(p => p.GetCustomAttribute<CategoryAttribute>()?.Category ?? "General")
+                .ToArray();
+            propertyCache[type] = properties;
+        }
+        return properties;
     }
 }

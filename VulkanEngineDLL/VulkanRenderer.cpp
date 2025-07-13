@@ -983,4 +983,3 @@ VkResult Renderer_SetUpSemaphores(VkDevice device, VkFence* inFlightFences, VkSe
 {
     return Renderer_CreateSemaphores(device, inFlightFences, acquireImageSemaphores, presentImageSemaphores, swapChainImageCount);
 }
-

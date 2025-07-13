@@ -1,4 +1,6 @@
-﻿namespace VulkanGameEngineLevelEditor.Models
+﻿using VulkanGameEngineLevelEditor.GameEngine.GameObjectComponents;
+
+namespace VulkanGameEngineLevelEditor.Models
 {
     public class SpriteComponentModel : GameObjectComponentModel
     {

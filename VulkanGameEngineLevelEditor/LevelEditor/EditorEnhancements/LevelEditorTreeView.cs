@@ -1,103 +1,163 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using VulkanGameEngineLevelEditor.LevelEditor.Commands;
+﻿using System.Windows.Forms;
+using System.Xml.Linq;
+using System;
+using VulkanGameEngineLevelEditor.GameEngine.Structs;
+using VulkanGameEngineLevelEditor.GameEngineAPI;
+using static System.ComponentModel.Design.ObjectSelectorEditor;
+using VulkanGameEngineLevelEditor.GameEngine.Systems;
 using VulkanGameEngineLevelEditor.Models;
+using VulkanGameEngineLevelEditor.LevelEditor.EditorEnhancements;
 
-namespace VulkanGameEngineLevelEditor.LevelEditor.EditorEnhancements
+public class LevelEditorTreeView : TreeView
 {
-    public class LevelEditorTreeView : TreeView
+    private object rootObject;
+    private Action<object> onSelectionChanged;
+    private object lockObject = new object();
+    public object selectedObject;
+    public ObjectDataGridView dataGridView;
+
+    public LevelEditorTreeView()
     {
-        private object rootObject;
-        private Action<object> onSelectionChanged;
+        BackColor = System.Drawing.Color.FromArgb(30, 30, 30);
+        Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+        ForeColor = System.Drawing.Color.White;
+        Margin = new Padding(3, 4, 3, 4);
+        TabIndex = 0;
 
-        public LevelEditorTreeView()
+        AfterSelect += LevelEditorTreeView_AfterSelect;
+    }
+
+    public object RootObject
+    {
+        get => rootObject;
+        set
         {
-            BackColor = Color.FromArgb(30, 30, 30);
-            Font = new Font("Microsoft Sans Serif", 12F);
-            ForeColor = Color.White;
-            Margin = new Padding(3, 4, 3, 4);
-            TabIndex = 0;
+            rootObject = value;
+            PopulateTree();
+        }
+    }
 
-            AfterSelect += LevelEditorTreeView_AfterSelect;
+    public event Action<object> SelectionChanged
+    {
+        add { onSelectionChanged += value; }
+        remove { onSelectionChanged -= value; }
+    }
+
+    public void PopulateTree()
+    {
+        //if (this.InvokeRequired)
+        //{
+        //    this.Invoke(new Action(PopulateTree));
+        //    return;
+        //}
+
+        //Nodes.Clear();
+        //if (rootObject is GameObject gameObject)
+        //{
+        //    TreeNode rootNode;
+        //    if (Nodes.Count > 0)
+        //    {
+        //        rootNode = Nodes[0];
+        //    }
+        //    else
+        //    {
+        //        rootNode = Nodes.Add(gameObject.Name);
+        //    }
+
+        //    rootNode.Nodes.Clear();
+        //    foreach (var component in gameObject.GameObjectComponentTypeList)
+        //    {
+        //        switch (component)
+        //        {
+        //            case ComponentTypeEnum.kRenderMesh2DComponent:
+        //                rootNode.Nodes.Add("RenderMesh2DComponent");
+        //                break;
+        //            case ComponentTypeEnum.kTransform2DComponent:
+        //                rootNode.Nodes.Add("Transform2DComponent");
+        //                break;
+        //            case ComponentTypeEnum.kInputComponent:
+        //                rootNode.Nodes.Add("InputComponent");
+        //                break;
+        //            case ComponentTypeEnum.kSpriteComponent:
+        //                rootNode.Nodes.Add("SpriteComponent");
+        //                break;
+        //        }
+        //    }
+        //}
+    }
+
+    public void AddGameObject(GameObject gameObject)
+    {
+        if (this.InvokeRequired)
+        {
+            this.Invoke(new Action(() => AddGameObject(gameObject)));
+            return;
         }
 
-        public object RootObject
+        try
         {
-            get => rootObject;
-            set
+            TreeNode parentNode = Nodes.Count > 0 && Nodes[0].Text == "GameObjects" ? Nodes[0] : Nodes.Add("GameObjects");
+            TreeNode gameObjectNode = parentNode.Nodes.Add(gameObject.Name);
+            gameObjectNode.Tag = gameObject.GameObjectId;
+            foreach (var component in gameObject.GameObjectComponentTypeList)
             {
-                rootObject = value;
-                PopulateTree();
+                switch (component)
+                {
+                    case ComponentTypeEnum.kRenderMesh2DComponent:
+                        gameObjectNode.Nodes.Add("RenderMesh2DComponent");
+                        break;
+                    case ComponentTypeEnum.kTransform2DComponent:
+                        gameObjectNode.Nodes.Add("Transform2DComponent");
+                        break;
+                    case ComponentTypeEnum.kInputComponent:
+                        gameObjectNode.Nodes.Add("InputComponent");
+                        break;
+                    case ComponentTypeEnum.kSpriteComponent:
+                        gameObjectNode.Nodes.Add("SpriteComponent");
+                        break;
+                }
             }
-        }
 
-        public event Action<object> SelectionChanged
-        {
-            add { onSelectionChanged += value; }
-            remove { onSelectionChanged -= value; }
-        }
+            // parentNode.Expand();
 
-        public void PopulateTree()
+            onSelectionChanged?.Invoke(gameObject);
+        }
+        catch (Exception ex)
         {
-            Nodes.Clear();
-            if (rootObject is RenderPassBuildInfoModel renderPass)
+            MessageBox.Show($"Failed to add game object: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void LevelEditorTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+    {
+        if (rootObject is GameObject gameObject && e.Node != null)
+        {
+            object selectedObject = null;
+            if (e.Node.Text == "GameObjects")
             {
-                renderPass.renderPipelineModelList ??= new List<RenderPipelineModel>();
-                var rootNode = Nodes.Add("RenderPass");
-                foreach (var renderPipeline in renderPass.renderPipelineModelList)
-                {
-                    if (renderPipeline != null && !string.IsNullOrEmpty(renderPipeline.Name))
-                    {
-                        rootNode.Nodes.Add(renderPipeline.Name);
-                    }
-                }
+                selectedObject = rootObject;
             }
-        }
-
-        public void AddRenderPipeline()
-        {
-            if (rootObject is RenderPassBuildInfoModel renderPass)
+            else if (e.Node.Parent?.Text == "GameObjects") 
             {
-                var newPipeline = new RenderPipelineModel($"Pipeline{renderPass.renderPipelineModelList.Count + 1}");
-                var command = new AddRenderPipelineCommand(renderPass, newPipeline);
-                try
+                if (e.Node.Tag is ComponentTypeEnum componentType && gameObject.Components.ContainsKey(componentType))
                 {
-                    command.Execute();
-                    var rootNode = Nodes.Count > 0 ? Nodes[0] : Nodes.Add("RenderPass"); // Ensure root node exists
-                    rootNode.Nodes.Add(newPipeline.Name);
-                    onSelectionChanged?.Invoke(newPipeline); // Select the new pipeline
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to add pipeline: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    selectedObject = gameObject.Components[componentType];
                 }
             }
-        }
-
-        private void LevelEditorTreeView_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            if (rootObject is RenderPassBuildInfoModel renderPass && e.Node != null)
+            else if (e.Node.Tag is int gameObjectId) 
             {
-                if (e.Node.Text == "RenderPass")
+                selectedObject = GameObjectSystem.GameObjectMap[gameObjectId];
+            }
+            else if (e.Node.Tag is ComponentTypeEnum componentType && e.Node.Parent?.Tag is int parentId) 
+            {
+                var parentGameObject = GameObjectSystem.GameObjectMap[parentId];
+                if (parentGameObject?.Components.ContainsKey(componentType) == true)
                 {
-                    onSelectionChanged?.Invoke(renderPass);
-                }
-                else
-                {
-                    var selectedPipeline = renderPass.renderPipelineModelList.FirstOrDefault(p => p?.Name == e.Node.Text);
-                    if (selectedPipeline != null)
-                    {
-                        onSelectionChanged?.Invoke(selectedPipeline);
-                    }
-                    else
-                    {
-                        onSelectionChanged?.Invoke(renderPass);
-                    }
+                    selectedObject = parentGameObject.Components[componentType];
                 }
             }
+
+            onSelectionChanged?.Invoke(selectedObject);
         }
     }
 }

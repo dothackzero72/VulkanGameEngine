@@ -37,7 +37,8 @@ namespace VulkanGameEngineLevelEditor.GameEngine.Systems
         public static void CreateGameObject(string name, List<ComponentTypeEnum> gameObjectComponentTypeList, Guid vramId, vec2 objectPosition)
         {
             int id = GameObjectMap.Count() + 1;
-            GameObjectMap[id] = new GameObject(id);
+            GameObjectMap[id] = new GameObject(@$"GameObject-{id}", id);
+            GameObjectMap[id].GameObjectComponentTypeList = gameObjectComponentTypeList;
 
             foreach (var component in gameObjectComponentTypeList)
             {
@@ -53,7 +54,7 @@ namespace VulkanGameEngineLevelEditor.GameEngine.Systems
         public static void CreateGameObject(string gameObjectPath, vec2 positionOverride)
         {
             int id = GameObjectMap.Count() + 1;
-            GameObjectMap[id] = new GameObject(id);
+            GameObjectMap[id] = new GameObject(@$"GameObject-{id}", id);
 
             string jsonContent = File.ReadAllText(gameObjectPath);
             LoadGameObjectComponents spriteVramJson = JsonConvert.DeserializeObject<LoadGameObjectComponents>(jsonContent);
@@ -66,6 +67,7 @@ namespace VulkanGameEngineLevelEditor.GameEngine.Systems
                 }
 
                 int componentType = component.ComponentType;
+                GameObjectMap[id].GameObjectComponentTypeList.Add((ComponentTypeEnum)componentType);
                 switch ((ComponentTypeEnum)componentType)
                 {
                     case ComponentTypeEnum.kTransform2DComponent: LoadTransformComponent(component, id, component.GameObjectPosition); break;
