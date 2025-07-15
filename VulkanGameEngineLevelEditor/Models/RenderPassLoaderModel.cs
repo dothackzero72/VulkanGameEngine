@@ -11,17 +11,11 @@ namespace VulkanGameEngineLevelEditor.Models
     public unsafe class RenderPassLoaderModel : RenderPassEditorBaseModel
     {
         public Guid RenderPassId { get; set; } = Guid.NewGuid();
-        [IgnoreProperty]
         public List<string> RenderPipelineList { get; set; } = new List<string>();
-        [IgnoreProperty]
         public List<RenderPipelineLoaderModel> renderPipelineModelList { get; set; } = new List<RenderPipelineLoaderModel>();
-     
         public List<RenderedTextureInfoModel> RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>();
-        [IgnoreProperty]
         public List<VkSubpassDependencyModel> SubpassDependencyList { get; set; } = new List<VkSubpassDependencyModel>();
-        [IgnoreProperty]
         public List<VkClearValue> ClearValueList { get; set; } = new List<VkClearValue>();
-        [IgnoreProperty]
         public RenderAreaModel RenderArea { get; set; } = new RenderAreaModel();
         public bool IsRenderedToSwapchain { get; set; } = false;
 

@@ -147,47 +147,89 @@ namespace VulkanGameEngineLevelEditor.LevelEditor.EditorEnhancements
                 TypeOfVec2(parentObject, obj, prop, xPosition, controlWidth);
                 return null;
             }
-            else if (typeof(IList).IsAssignableFrom(obj.GetType()))
+            else if (typeof(IList).IsAssignableFrom(prop.PropertyType))
             {
-                var list = (IList)obj;
-                for (int x = 0; x < list.Count; x++)
-                {
-                    if (list[x] is string)
-                    {
-                        var textBox = new TextBox
-                        {
-                            Location = new Point(xPosition, yOffset),
-                            Size = new Size(xPosition, 30),
-                            Text = (string)list[x] ?? "",
-                            TextAlign = HorizontalAlignment.Left,
-                            BackColor = Color.FromArgb(60, 60, 60),
-                            ForeColor = Color.White
-                        };
-
-                        textBox.TextChanged += (s, e) =>
-                        {
-                            list[x] = ((TextBox)s).Text;
-                        };
-                        _contentPanel.Controls.Add(textBox);
-                        yOffset += 50;
-                    }
-                    else
-                    {
-                        foreach (var subObjectProp in list[x].GetType().GetProperties())
-                        {
-                            CreateControlForProperty(obj, list[x], subObjectProp);
-                            yOffset += 50;
-                        }
-                    }
-                }
+                TypeOfList(_targetObject, prop.GetValue(_targetObject) as IList);
+                return null;
             }
-            else
+
+            return null;
+        }
+
+        private Control TypeOfList(object parentObject, IList list)
+        {
+            for (int x = 0; x < list.Count; x++)
             {
-                //var childObj = prop.GetValue(obj);
-                //CreateControlForProperty(obj, childObj, prop);
+                var item = list[x];
+                if (item == null) continue;
+
+                //int controlWidth = 100;
+                //int totalControlWidth = controlWidth * 2 + 10;
+                //int rightMargin = 10;
+                //int xPosition = _contentPanel.Width - totalControlWidth - rightMargin;
+
+                foreach (var prop in item.GetType().GetProperties())
+                {
+                    CreateCustomControls(parentObject, item);
+
+                    //var readOnlyAttr = prop.GetCustomAttributes(typeof(ReadOnlyAttribute), true).FirstOrDefault() as ReadOnlyAttribute;
+                    //bool isReadOnly = readOnlyAttr?.IsReadOnly ?? false;
+
+                    //if (item is string)
+                    //{
+                    //    var textBox = new TextBox
+                    //    {
+                    //        Location = new Point(xPosition, yOffset),
+                    //        Size = new Size(totalControlWidth, 20),
+                    //        Text = (string)item ?? "",
+                    //        TextAlign = HorizontalAlignment.Left,
+                    //        BackColor = Color.FromArgb(60, 60, 60),
+                    //        ForeColor = Color.White
+                    //    };
+                    //    int index = x;
+                    //    textBox.TextChanged += (s, e) =>
+                    //    {
+                    //        list[index] = ((TextBox)s).Text;
+                    //    };
+                    //    _contentPanel.Controls.Add(textBox);
+                    //    yOffset += 50;
+                    //    return null;
+                    //}
+                    //else if (prop.PropertyType == typeof(int))
+                    //{
+                    //    return TypeOfInt(item, prop, xPosition, totalControlWidth, isReadOnly);
+                    //}
+                    //else if (prop.PropertyType == typeof(uint))
+                    //{
+                    //    return TypeOfUint(item, prop, xPosition, totalControlWidth, isReadOnly);
+                    //}
+                    //else if (prop.PropertyType == typeof(bool))
+                    //{
+                    //    //return TypeOfBool(obj, prop, xPosition, totalControlWidth, isReadOnly);
+                    //}
+                    //if (prop.PropertyType == typeof(Guid))
+                    //{
+                    //    return TypeOfGuid(item, prop, xPosition, totalControlWidth);
+                    //}
+                    //else if (prop.PropertyType == typeof(List<ComponentTypeEnum>))
+                    //{
+                    //    return HandleComponentList(item, prop, xPosition, totalControlWidth);
+                    //}
+                    //else if (prop.PropertyType == typeof(vec2))
+                    //{
+                    //    TypeOfVec2(parentObject, item, prop, xPosition, controlWidth);
+                    //    return null;
+                    //}
+                    //else if (typeof(IList).IsAssignableFrom(item.GetType()))
+                    //{
+                    //    TypeOfList(item, prop.GetValue(item) as IList);
+                    //    return null;
+                    //}
+                }
             }
             return null;
         }
+
 
         private Control TypeOfString(object obj, PropertyInfo property, int xPosition, int width)
         {
