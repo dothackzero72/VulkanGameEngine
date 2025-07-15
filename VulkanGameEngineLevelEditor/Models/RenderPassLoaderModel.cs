@@ -8,34 +8,40 @@ using VulkanGameEngineLevelEditor.GameEngineAPI;
 namespace VulkanGameEngineLevelEditor.Models
 {
     [Serializable]
-    public unsafe class RenderPassBuildInfoModel : RenderPassEditorBaseModel
+    public unsafe class RenderPassLoaderModel : RenderPassEditorBaseModel
     {
+        public Guid RenderPassId { get; set; } = Guid.NewGuid();
+        [IgnoreProperty]
         public List<string> RenderPipelineList { get; set; } = new List<string>();
-        public List<RenderPipelineModel> renderPipelineModelList { get; set; } = new List<RenderPipelineModel>();
-
+        [IgnoreProperty]
+        public List<RenderPipelineLoaderModel> renderPipelineModelList { get; set; } = new List<RenderPipelineLoaderModel>();
+     
         public List<RenderedTextureInfoModel> RenderedTextureInfoModelList = new List<RenderedTextureInfoModel>();
+        [IgnoreProperty]
         public List<VkSubpassDependencyModel> SubpassDependencyList { get; set; } = new List<VkSubpassDependencyModel>();
+        [IgnoreProperty]
         public List<VkClearValue> ClearValueList { get; set; } = new List<VkClearValue>();
+        [IgnoreProperty]
         public RenderAreaModel RenderArea { get; set; } = new RenderAreaModel();
         public bool IsRenderedToSwapchain { get; set; } = false;
 
-        public RenderPassBuildInfoModel()
+        public RenderPassLoaderModel()
         {
         }
 
-        public RenderPassBuildInfoModel(string jsonFilePath) : base()
+        public RenderPassLoaderModel(string jsonFilePath) : base()
         {
             LoadJsonComponent(jsonFilePath);
         }
 
-        public RenderPassBuildInfoModel(string name, string jsonFilePath) : base(name)
+        public RenderPassLoaderModel(string name, string jsonFilePath) : base(name)
         {
             LoadJsonComponent(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\RenderPass\DefaultSubpassDependency.json");
         }
 
         public void LoadJsonComponent(string jsonPath)
         {
-            var obj = base.LoadJsonComponent<RenderPassBuildInfoModel>(jsonPath);
+            var obj = base.LoadJsonComponent<RenderPassLoaderModel>(jsonPath);
             RenderPipelineList = obj.RenderPipelineList;
             RenderedTextureInfoModelList = obj.RenderedTextureInfoModelList;
             SubpassDependencyList = obj.SubpassDependencyList;

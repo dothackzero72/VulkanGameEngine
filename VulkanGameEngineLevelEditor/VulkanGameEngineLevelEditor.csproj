@@ -76,7 +76,6 @@
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="ppy.SDL2-CS" Version="1.0.82" />
-    <PackageReference Include="Silk.NET.Core" Version="2.22.0" />
     <PackageReference Include="Silk.NET.GLFW" Version="2.22.0" />
     <PackageReference Include="Silk.NET.Maths" Version="2.22.0" />
     <PackageReference Include="Silk.NET.SDL" Version="2.22.0" />

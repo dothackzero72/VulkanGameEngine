@@ -1,14 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using GlmSharp;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
 using VulkanGameEngineLevelEditor.GameEngine.GameObjectComponents;
 
 namespace VulkanGameEngineLevelEditor.GameEngineAPI
 {
     public class GameObject
     {
+        
         public string Name { get; set; }
+        [ReadOnly(true)]
         public int GameObjectId { get; set; }
         public List<ComponentTypeEnum> GameObjectComponentTypeList { get; set; } = new List<ComponentTypeEnum>();
-        public Dictionary<ComponentTypeEnum, object> Components { get; set; } = new Dictionary<ComponentTypeEnum, object>();
 
         public GameObject()
         {
@@ -18,12 +22,6 @@ namespace VulkanGameEngineLevelEditor.GameEngineAPI
         {
             Name = name;
             GameObjectId = gameObjectId;
-        }
-
-        public void AddComponent(ComponentTypeEnum type, object component)
-        {
-            GameObjectComponentTypeList.Add(type);
-            Components[type] = component;
         }
     }
 }

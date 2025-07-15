@@ -7,17 +7,6 @@ using Vulkan;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public struct Blender
-    {
-        public float R { get; set; } = 0.0f;
-        public float G { get; set; } = 0.0f;
-        public float B { get; set; } = 0.0f;
-        public float A { get; set; } = 0.0f;
-        public Blender()
-        {
-        }
-    }
-
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public unsafe struct VkPipelineColorBlendStateCreateInfoModel
     {

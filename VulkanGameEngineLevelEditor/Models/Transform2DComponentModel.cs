@@ -11,6 +11,8 @@ namespace VulkanGameEngineLevelEditor.GameEngine.GameObjectComponents
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [Category("Transform")]
+        [Tooltip("The name of this transform component.")]
         public string Name
         {
             get => name;
@@ -24,6 +26,8 @@ namespace VulkanGameEngineLevelEditor.GameEngine.GameObjectComponents
             }
         }
 
+        [Category("Transform")]
+        [Tooltip("The position of the game object in 2D space.")]
         public Transform2DComponent Transform
         {
             get => transform;
@@ -32,16 +36,6 @@ namespace VulkanGameEngineLevelEditor.GameEngine.GameObjectComponents
                 transform = value;
                 OnPropertyChanged();
             }
-        }
-
-        public Transform2DComponentModel()
-        {
-        }
-
-        public Transform2DComponentModel(string name, Transform2DComponent transform)
-        {
-            Name = name;
-            Transform = transform;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)

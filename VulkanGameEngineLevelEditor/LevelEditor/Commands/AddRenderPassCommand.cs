@@ -11,11 +11,11 @@ namespace VulkanGameEngineLevelEditor.LevelEditor.Commands
 {
     public class AddRenderPipelineCommand : ICommand
     {
-        private RenderPassBuildInfoModel target;
-        private RenderPipelineModel pipeline;
+        private RenderPassLoaderModel target;
+        private RenderPipelineLoaderModel pipeline;
         private int index;
 
-        public AddRenderPipelineCommand(RenderPassBuildInfoModel target, RenderPipelineModel pipeline)
+        public AddRenderPipelineCommand(RenderPassLoaderModel target, RenderPipelineLoaderModel pipeline)
         {
             this.target = target ?? throw new ArgumentNullException(nameof(target));
             this.pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
@@ -24,7 +24,7 @@ namespace VulkanGameEngineLevelEditor.LevelEditor.Commands
 
         public void Execute()
         {
-            target.renderPipelineModelList ??= new List<RenderPipelineModel>(); // Initialize if null
+            target.renderPipelineModelList ??= new List<RenderPipelineLoaderModel>(); // Initialize if null
             index = target.renderPipelineModelList.Count;
             target.renderPipelineModelList.Add(pipeline);
             target.OnPropertyChanged(nameof(target.renderPipelineModelList)); // Notify property change

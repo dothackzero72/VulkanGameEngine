@@ -7,8 +7,9 @@ using VulkanGameEngineLevelEditor.GameEngineAPI;
 
 namespace VulkanGameEngineLevelEditor.Models
 {
-    public unsafe class RenderPipelineModel : RenderPassEditorBaseModel
+    public unsafe class RenderPipelineLoaderModel : RenderPassEditorBaseModel
     {
+        public int RenderPipelineId = 0;
         public String VertexShader { get; set; }
         public String FragmentShader { get; set; }
         public size_t DescriptorSetCount { get; set; }
@@ -26,13 +27,12 @@ namespace VulkanGameEngineLevelEditor.Models
         public List<PipelineDescriptorModel> PipelineDescriptorModelsList { get; set; } = new List<PipelineDescriptorModel>();
         public List<VkVertexInputBindingDescription> VertexInputBindingDescriptionList { get; set; } = new List<VkVertexInputBindingDescription>();
         public List<VkVertexInputAttributeDescription> VertexInputAttributeDescriptionList { get; set; } = new List<VkVertexInputAttributeDescription>();
-        public List<VkClearValue> ClearValueList { get; set; } = new List<VkClearValue>();
 
-        public RenderPipelineModel()
+        public RenderPipelineLoaderModel()
         {
         }
 
-        public RenderPipelineModel(string name) : base(name)
+        public RenderPipelineLoaderModel(string name) : base(name)
         {
         }
     }

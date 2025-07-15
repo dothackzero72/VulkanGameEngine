@@ -26,6 +26,7 @@ namespace VulkanGameEngineLevelEditor.GameEngine.Systems
         public static GraphicsRenderer renderer { get; set; }
         public static Dictionary<Guid, VulkanRenderPass> RenderPassList { get; set; } = new Dictionary<Guid, VulkanRenderPass>();
         public static Dictionary<Guid, ListPtr<VulkanPipeline>> RenderPipelineMap { get; set; } = new Dictionary<Guid, ListPtr<VulkanPipeline>>();
+        public static Dictionary<Guid, RenderPassLoaderModel> RenderPassEditor_RenderPass = new Dictionary<Guid, RenderPassLoaderModel>();
         public static VkCommandBufferBeginInfo CommandBufferBeginInfo { get; set; } = new VkCommandBufferBeginInfo();
         public static bool RebuildRendererFlag { get; set; }
 
@@ -157,7 +158,7 @@ namespace VulkanGameEngineLevelEditor.GameEngine.Systems
         public static Guid LoadRenderPass(Guid levelId, string jsonPath, ivec2 renderPassResolution)
         {
             string jsonContent = File.ReadAllText(jsonPath);
-            RenderPassBuildInfoModel model = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
+            RenderPassLoaderModel model = JsonConvert.DeserializeObject<RenderPassLoaderModel>(jsonContent);
             model.IsRenderedToSwapchain = true;
 
             VkExtent2D extent2D = new VkExtent2D
@@ -222,7 +223,7 @@ namespace VulkanGameEngineLevelEditor.GameEngine.Systems
         public static Guid LoadRenderPass(Guid levelId, string jsonPath, Texture inputTexture, ivec2 renderPassResolution)
         {
             string jsonContent = File.ReadAllText(jsonPath);
-            RenderPassBuildInfoModel model = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
+            RenderPassLoaderModel model = JsonConvert.DeserializeObject<RenderPassLoaderModel>(jsonContent);
             model.IsRenderedToSwapchain = true;
 
             VkExtent2D extent2D = new VkExtent2D

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VulkanGameEngineLevelEditor.GameEngine.GameObjectComponents
 {
-    public class InputComponent
+    public struct InputComponent
     {
 
         public int GameObjectId;

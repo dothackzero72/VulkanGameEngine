@@ -7,14 +7,16 @@ using static System.ComponentModel.Design.ObjectSelectorEditor;
 using VulkanGameEngineLevelEditor.GameEngine.Systems;
 using VulkanGameEngineLevelEditor.Models;
 using VulkanGameEngineLevelEditor.LevelEditor.EditorEnhancements;
+using VulkanGameEngineLevelEditor;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
-public class LevelEditorTreeView : TreeView
+public class LevelEditorTreeView : System.Windows.Forms.TreeView
 {
     private object rootObject;
     private Action<object> onSelectionChanged;
     private object lockObject = new object();
     public object selectedObject;
-    public ObjectDataGridView dataGridView;
+    public DynamicControlPanelView dynamicControlPanelView;
 
     public LevelEditorTreeView()
     {
@@ -96,9 +98,11 @@ public class LevelEditorTreeView : TreeView
 
         try
         {
-            TreeNode parentNode = Nodes.Count > 0 && Nodes[0].Text == "GameObjects" ? Nodes[0] : Nodes.Add("GameObjects");
-            TreeNode gameObjectNode = parentNode.Nodes.Add(gameObject.Name);
+            //  this.Nodes.Clear();
+
+            TreeNode gameObjectNode = Nodes.Add(gameObject.Name);
             gameObjectNode.Tag = gameObject.GameObjectId;
+
             foreach (var component in gameObject.GameObjectComponentTypeList)
             {
                 switch (component)
@@ -128,36 +132,96 @@ public class LevelEditorTreeView : TreeView
         }
     }
 
-    private void LevelEditorTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+    public void AddRenderPass(RenderPassLoaderModel renderPass)
     {
-        if (rootObject is GameObject gameObject && e.Node != null)
+        if (this.InvokeRequired)
         {
-            object selectedObject = null;
-            if (e.Node.Text == "GameObjects")
+            this.Invoke(new Action(() => AddRenderPass(renderPass)));
+            return;
+        }
+        try
+        {
+            TreeNode renderPassNode = Nodes.Add("RenderPass");
+            renderPassNode.Tag = renderPass.RenderPassId;
+
+            for (int x = 0; x < renderPass.renderPipelineModelList.Count; x++)
             {
-                selectedObject = rootObject;
+                renderPassNode.Nodes.Add($@"RenderPipelineModelList[{x}]").Tag = x;
             }
-            else if (e.Node.Parent?.Text == "GameObjects") 
+            for (int x = 0; x < renderPass.RenderedTextureInfoModelList.Count; x++)
             {
-                if (e.Node.Tag is ComponentTypeEnum componentType && gameObject.Components.ContainsKey(componentType))
-                {
-                    selectedObject = gameObject.Components[componentType];
-                }
+                renderPassNode.Nodes.Add($@"RenderedTextureInfoModelList[{x}]").Tag = x;
             }
-            else if (e.Node.Tag is int gameObjectId) 
+            for (int x = 0; x < renderPass.SubpassDependencyList.Count; x++)
             {
-                selectedObject = GameObjectSystem.GameObjectMap[gameObjectId];
+                renderPassNode.Nodes.Add($@"SubpassDependencyList[{x}]").Tag = x;
             }
-            else if (e.Node.Tag is ComponentTypeEnum componentType && e.Node.Parent?.Tag is int parentId) 
+            for (int x = 0; x < renderPass.ClearValueList.Count; x++)
             {
-                var parentGameObject = GameObjectSystem.GameObjectMap[parentId];
-                if (parentGameObject?.Components.ContainsKey(componentType) == true)
-                {
-                    selectedObject = parentGameObject.Components[componentType];
-                }
+                renderPassNode.Nodes.Add($@"ClearValue[{x}]").Tag = x;
             }
 
-            onSelectionChanged?.Invoke(selectedObject);
+            onSelectionChanged?.Invoke(renderPass);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to add game object: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void LevelEditorTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+    {
+        if (rootObject is GameObject gameObject)
+        {
+            if (e.Node?.Tag is int gameObjectId)
+            {
+                selectedObject = GameObjectSystem.GameObjectMap[gameObjectId];
+                dynamicControlPanelView.SelectedObject = selectedObject;
+            }
+            else if (e.Node.Tag is ComponentTypeEnum componentType && e.Node.Parent?.Tag is int parentId) // Component under GameObject
+            {
+                var parentGameObject = GameObjectSystem.GameObjectMap[parentId];
+                //if (parentGameObject?.Components.ContainsKey(componentType) == true)
+                //{
+                //    selectedObject = parentGameObject.Components[componentType];
+                //}
+            }
+        }
+        else if (rootObject is RenderPassLoaderModel)
+        {
+            var renderPassModel = (RenderPassLoaderModel)rootObject;
+            if (e.Node?.Tag is Guid renderPassId)
+            {
+                selectedObject = RenderSystem.RenderPassEditor_RenderPass[renderPassId];
+                dynamicControlPanelView.SelectedObject = selectedObject;
+            }
+        }
+        else if (rootObject is RenderPipelineLoaderModel)
+        {
+            if (e.Node.Parent?.Tag is Guid renderPassId)
+            {
+                int tag = (int)e.Node.Tag;
+                selectedObject = RenderSystem.RenderPassEditor_RenderPass[renderPassId].renderPipelineModelList[tag];
+                dynamicControlPanelView.SelectedObject = selectedObject;
+            }
+        }
+        else if (rootObject is RenderedTextureInfoModel)
+        {
+            if (e.Node.Parent?.Tag is Guid renderPassId)
+            {
+                int tag = (int)e.Node.Tag;
+                selectedObject = RenderSystem.RenderPassEditor_RenderPass[renderPassId].RenderedTextureInfoModelList[tag];
+                dynamicControlPanelView.SelectedObject = selectedObject;
+            }
+        }
+        else if (rootObject is VkSubpassDependencyModel)
+        {
+            if (e.Node.Parent?.Tag is Guid renderPassId)
+            {
+                int tag = (int)e.Node.Tag;
+                selectedObject = RenderSystem.RenderPassEditor_RenderPass[renderPassId].SubpassDependencyList[tag];
+                dynamicControlPanelView.SelectedObject = selectedObject;
+            }
         }
     }
 }

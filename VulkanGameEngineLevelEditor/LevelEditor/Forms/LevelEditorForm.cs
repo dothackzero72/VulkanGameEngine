@@ -18,14 +18,20 @@ using VulkanGameEngineLevelEditor.Models;
 
 namespace VulkanGameEngineLevelEditor
 {
+    public enum LevelEditorModeEnum
+    {
+        kLevelEditorMode,
+        kRenderPassEditorMode
+    }
+
     public unsafe partial class LevelEditorForm : Form
     {
+        LevelEditorModeEnum LevelEditorMode = LevelEditorModeEnum.kLevelEditorMode;
         private volatile bool running;
         private volatile bool levelEditorRunning;
         private Stopwatch stopwatch = new Stopwatch();
         public RichTextBoxWriter textBoxWriter;
         private Thread renderThread { get; set; }
-        public RenderPassBuildInfoModel renderPass { get; private set; } = new RenderPassBuildInfoModel();
         private MessengerModel _messenger;
         private GCHandle _callbackHandle;
 
@@ -64,8 +70,27 @@ namespace VulkanGameEngineLevelEditor
             _callbackHandle = GCHandle.Alloc(callback);
             SetLogVulkanMessageCallback(callback);
 
-            levelEditorTreeView1.RootObject = new GameObject();
-            levelEditorTreeView1.dataGridView = objectDataGridView1;
+            this.Text = "Vulkan Level Editor - RenderPassEditorView";
+            var renderPass = new RenderPassLoaderModel(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\DefaultRenderPass.json");
+            RenderSystem.RenderPassEditor_RenderPass[renderPass.RenderPassId] = renderPass;
+
+            levelEditorTreeView1.RootObject = new RenderPassLoaderModel();
+            levelEditorTreeView1.dynamicControlPanelView = dynamicControlPanelView1;
+            levelEditorTreeView1.dynamicControlPanelView.SelectedObject = renderPass;
+
+            lock (lockObject)
+            {
+                sharedData = levelEditorTreeView1;
+            }
+
+            lock (lockObject)
+            {
+                if (sharedData is LevelEditorTreeView levelEditorTree)
+                {
+                    levelEditorTree.AddRenderPass(renderPass);
+                    levelEditorTree.PopulateTree();
+                }
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -95,22 +120,22 @@ namespace VulkanGameEngineLevelEditor
                 GameSystem.StartUp(this.pictureBox1.Handle.ToPointer(), this.richTextBox2.Handle.ToPointer());
             }));
 
-            lock (lockObject)
-            {
-                sharedData = levelEditorTreeView1;
-            }
+            //lock (lockObject)
+            //{
+            //    sharedData = levelEditorTreeView1;
+            //}
 
-            lock (lockObject)
-            {
-                if (sharedData is LevelEditorTreeView levelEditorTree)
-                {
-                    foreach (var gameObject in GameObjectSystem.GameObjectMap.Values)
-                    {
-                        levelEditorTree.AddGameObject(gameObject);
-                    }
-                    levelEditorTree.PopulateTree();
-                }
-            }
+            //lock (lockObject)
+            //{
+            //    if (sharedData is LevelEditorTreeView levelEditorTree)
+            //    {
+            //        foreach (var gameObject in GameObjectSystem.GameObjectMap.Values)
+            //        {
+            //            levelEditorTree.AddGameObject(gameObject);
+            //        }
+            //        levelEditorTree.PopulateTree();
+            //    }
+            //}
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -124,6 +149,10 @@ namespace VulkanGameEngineLevelEditor
 
                 GameSystem.Update((float)deltaTime);
                 GameSystem.Draw((float)deltaTime);
+                lock (lockObject)
+                {
+                    dynamicControlPanelView1.UpdateOriginalObject();
+                }
             }
 
             GameSystem.Destroy();
@@ -131,20 +160,25 @@ namespace VulkanGameEngineLevelEditor
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            //using (RendererEditorForm renderPassBuilder = new RendererEditorForm())
-            //{
-            //    RenderPassMessager.IsActive = false;
-            //    if (renderPassBuilder.ShowDialog() == DialogResult.OK)
-            //    {
-            //        RenderPassMessager.IsActive = false;
-            //    }
-            //}
+            LevelEditorMode = LevelEditorModeEnum.kLevelEditorMode;
+
+            this.Text = "Vulkan Level Editor - LevelEditorView";
+            levelEditorTreeView1.RootObject = new GameObject();
+            levelEditorTreeView1.dynamicControlPanelView = dynamicControlPanelView1;
+        }
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            LevelEditorMode = LevelEditorModeEnum.kRenderPassEditorMode;
+
+            this.Text = "Vulkan Level Editor - RenderPassEditorView";
+            levelEditorTreeView1.RootObject = new RenderPassLoaderModel(@"C:\Users\dotha\Documents\GitHub\VulkanGameEngine\RenderPass\DefaultRenderPass.json");
+            levelEditorTreeView1.dynamicControlPanelView = dynamicControlPanelView1;
         }
 
         private void SaveRenderPass_Click(object sender, EventArgs e)
         {
-            var a = JsonConvert.SerializeObject(renderPass, Formatting.Indented);
-            var ab = 32;
+            //var a = JsonConvert.SerializeObject(renderPass, Formatting.Indented);
+            //var ab = 32;
         }
 
         private void richTextBox1_TextChanged(object sender, EventArgs e)
@@ -161,5 +195,11 @@ namespace VulkanGameEngineLevelEditor
         {
 
         }
+
+        private void dynamicControlPanelView1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
     }
 }

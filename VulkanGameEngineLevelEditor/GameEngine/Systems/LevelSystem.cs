@@ -85,7 +85,7 @@ namespace VulkanGameEngineLevelEditor.GameEngine.Systems
                 string gameObjectPath = Path.GetFullPath(Path.Combine(levelDirectory, fullRenderPassPath));
 
                 string jsonContent2 = File.ReadAllText(gameObjectPath);
-                RenderPassBuildInfoModel renderPassId = JsonConvert.DeserializeObject<RenderPassBuildInfoModel>(jsonContent);
+                RenderPassLoaderModel renderPassId = JsonConvert.DeserializeObject<RenderPassLoaderModel>(jsonContent);
                 spriteRenderPass2DId = new Guid("aa18e942-497b-4981-b917-d93a5b1de6eb");
 
                 SpriteSystem.AddSpriteBatchLayer(spriteRenderPass2DId);

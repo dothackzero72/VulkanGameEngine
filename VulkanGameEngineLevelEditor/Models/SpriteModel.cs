@@ -4,203 +4,234 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using VulkanGameEngineLevelEditor.GameEngine.Structs;
 
-namespace VulkanGameEngineLevelEditor.GameEngine.GameObjectComponents
+public class SpriteModel : INotifyPropertyChanged
 {
-    public class SpriteModel : INotifyPropertyChanged
+    private Sprite sprite = new Sprite();
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    [Category("Sprite")]
+    [Tooltip("The unique ID of the game object this sprite belongs to.")]
+    public uint GameObjectId
     {
-        private Sprite sprite = new Sprite();
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public uint GameObjectId
+        get => sprite.GameObjectId;
+        private set
         {
-            get => sprite.GameObjectId;
-            private set
+            if (sprite.GameObjectId != value)
             {
-                if (sprite.GameObjectId != value)
-                {
-                    sprite.GameObjectId = value;
-                    OnPropertyChanged();
-                }
+                sprite.GameObjectId = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public uint SpriteID
+    [Category("Sprite")]
+    [Tooltip("The unique ID of the sprite asset.")]
+    public uint SpriteID
+    {
+        get => sprite.SpriteID;
+        set
         {
-            get => sprite.SpriteID;
-            private set
+            if (sprite.SpriteID != value)
             {
-                if (sprite.SpriteID != value)
-                {
-                    sprite.SpriteID = value;
-                    OnPropertyChanged();
-                }
+                sprite.SpriteID = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public uint CurrentAnimationID
+    [Category("Sprite")]
+    [Tooltip("The current animation ID being played.")]
+    public uint CurrentAnimationID
+    {
+        get => sprite.CurrentAnimationID;
+        set
         {
-            get => sprite.CurrentAnimationID;
-            set
+            if (sprite.CurrentAnimationID != value)
             {
-                if (sprite.CurrentAnimationID != value)
-                {
-                    sprite.CurrentAnimationID = value;
-                    OnPropertyChanged();
-                }
+                sprite.CurrentAnimationID = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public uint CurrentFrame
+    [Category("Sprite")]
+    [Tooltip("The current frame of the animation.")]
+    public uint CurrentFrame
+    {
+        get => sprite.CurrentFrame;
+        set
         {
-            get => sprite.CurrentFrame;
-            set
+            if (sprite.CurrentFrame != value)
             {
-                if (sprite.CurrentFrame != value)
-                {
-                    sprite.CurrentFrame = value;
-                    OnPropertyChanged();
-                }
+                sprite.CurrentFrame = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public Guid SpriteVramId
+    [Category("Sprite")]
+    [Tooltip("The VRAM ID for the sprite texture.")]
+    public Guid SpriteVramId
+    {
+        get => sprite.SpriteVramId;
+        set
         {
-            get => sprite.SpriteVramId;
-            set
+            if (sprite.SpriteVramId != value)
             {
-                if (sprite.SpriteVramId != value)
-                {
-                    sprite.SpriteVramId = value;
-                    OnPropertyChanged();
-                }
+                sprite.SpriteVramId = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public float CurrentFrameTime
+    [Category("Sprite")]
+    [Tooltip("The time elapsed on the current frame (hidden from UI).")]
+    [Browsable(false)]
+    public float CurrentFrameTime
+    {
+        get => sprite.CurrentFrameTime;
+        set
         {
-            get => sprite.CurrentFrameTime;
-            set
+            if (sprite.CurrentFrameTime != value)
             {
-                if (sprite.CurrentFrameTime != value)
-                {
-                    sprite.CurrentFrameTime = value;
-                    OnPropertyChanged();
-                }
+                sprite.CurrentFrameTime = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public bool SpriteAlive
+    [Category("Sprite")]
+    [Tooltip("Whether the sprite is active.")]
+    public bool SpriteAlive
+    {
+        get => sprite.SpriteAlive;
+        set
         {
-            get => sprite.SpriteAlive;
-            set
+            if (sprite.SpriteAlive != value)
             {
-                if (sprite.SpriteAlive != value)
-                {
-                    sprite.SpriteAlive = value;
-                    OnPropertyChanged();
-                }
+                sprite.SpriteAlive = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public ivec2 FlipSprite
+    [Category("Sprite")]
+    [Tooltip("Flip direction of the sprite (0 or 1).")]
+    public ivec2 FlipSprite
+    {
+        get => sprite.FlipSprite;
+        set
         {
-            get => sprite.FlipSprite;
-            set
+            if (sprite.FlipSprite != value)
             {
-                if (sprite.FlipSprite != value)
-                {
-                    sprite.FlipSprite = value;
-                    OnPropertyChanged();
-                }
+                sprite.FlipSprite = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public vec2 LastSpritePosition
+    [Category("Sprite")]
+    [Tooltip("The last recorded position (hidden from UI).")]
+    [Browsable(false)]
+    public vec2 LastSpritePosition
+    {
+        get => sprite.LastSpritePosition;
+        set
         {
-            get => sprite.LastSpritePosition;
-            set
+            if (sprite.LastSpritePosition != value)
             {
-                if (sprite.LastSpritePosition != value)
-                {
-                    sprite.LastSpritePosition = value;
-                    OnPropertyChanged();
-                }
+                sprite.LastSpritePosition = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public vec2 LastSpriteRotation
+    [Category("Sprite")]
+    [Tooltip("The last recorded rotation (hidden from UI).")]
+    [Browsable(false)]
+    public vec2 LastSpriteRotation
+    {
+        get => sprite.LastSpriteRotation;
+        set
         {
-            get => sprite.LastSpriteRotation;
-            set
+            if (sprite.LastSpriteRotation != value)
             {
-                if (sprite.LastSpriteRotation != value)
-                {
-                    sprite.LastSpriteRotation = value;
-                    OnPropertyChanged();
-                }
+                sprite.LastSpriteRotation = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public vec2 LastSpriteScale
+    [Category("Sprite")]
+    [Tooltip("The last recorded scale (hidden from UI).")]
+    [Browsable(false)]
+    public vec2 LastSpriteScale
+    {
+        get => sprite.LastSpriteScale;
+        set
         {
-            get => sprite.LastSpriteScale;
-            set
+            if (sprite.LastSpriteScale != value)
             {
-                if (sprite.LastSpriteScale != value)
-                {
-                    sprite.LastSpriteScale = value;
-                    OnPropertyChanged();
-                }
+                sprite.LastSpriteScale = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public vec2 SpritePosition
+    [Category("Sprite")]
+    [Tooltip("The current position of the sprite.")]
+    public vec2 SpritePosition
+    {
+        get => sprite.SpritePosition;
+        set
         {
-            get => sprite.SpritePosition;
-            set
+            if (sprite.SpritePosition != value)
             {
-                if (sprite.SpritePosition != value)
-                {
-                    sprite.SpritePosition = value;
-                    OnPropertyChanged();
-                }
+                sprite.SpritePosition = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public vec2 SpriteRotation
+    [Category("Sprite")]
+    [Tooltip("The current rotation of the sprite in degrees.")]
+    [Range(-360f, 360f)]
+    public vec2 SpriteRotation
+    {
+        get => sprite.SpriteRotation;
+        set
         {
-            get => sprite.SpriteRotation;
-            set
+            if (sprite.SpriteRotation != value)
             {
-                if (sprite.SpriteRotation != value)
-                {
-                    sprite.SpriteRotation = value;
-                    OnPropertyChanged();
-                }
+                sprite.SpriteRotation = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public vec2 SpriteScale
+    [Category("Sprite")]
+    [Tooltip("The current scale of the sprite.")]
+    [Range(0.1f, 10f)]
+    public vec2 SpriteScale
+    {
+        get => sprite.SpriteScale;
+        set
         {
-            get => sprite.SpriteScale;
-            set
+            if (sprite.SpriteScale != value)
             {
-                if (sprite.SpriteScale != value)
-                {
-                    sprite.SpriteScale = value;
-                    OnPropertyChanged();
-                }
+                sprite.SpriteScale = value;
+                OnPropertyChanged();
             }
         }
+    }
 
-        public SpriteModel()
-        {
-        }
+    public SpriteModel()
+    {
+    }
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+    protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
